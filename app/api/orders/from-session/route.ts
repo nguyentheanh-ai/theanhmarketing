@@ -9,7 +9,7 @@ export async function POST(request: Request) {
 
     if (!user) {
       return NextResponse.json(
-        { ok: false, message: "Ban can dang nhap truoc khi thanh toan." },
+        { ok: false, message: "Bạn cần đăng nhập trước khi thanh toán." },
         { status: 401 },
       );
     }
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
     if (!email) {
       return NextResponse.json(
-        { ok: false, message: "Tai khoan chua co email hop le de tao don thanh toan." },
+        { ok: false, message: "Tài khoản chưa có email hợp lệ để tạo đơn thanh toán." },
         { status: 400 },
       );
     }
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         ok: false,
-        message: error instanceof Error ? error.message : "Khong tao duoc don thanh toan.",
+        message: error instanceof Error ? error.message : "Không tạo được đơn thanh toán.",
       },
       { status: 500 },
     );

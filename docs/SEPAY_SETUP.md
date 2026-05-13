@@ -27,8 +27,11 @@ SEPAY_WEBHOOK_API_KEY=your-sepay-webhook-api-key
 Configure this URL in Sepay:
 
 ```txt
-https://your-domain.com/api/sepay/webhook
+https://www.your-domain.com/api/sepay/webhook
 ```
+
+Important: avoid a URL that redirects (3xx).  
+If your apex domain redirects to `www`, always use the final `www` webhook URL directly.
 
 Use API key authentication. Sepay sends:
 

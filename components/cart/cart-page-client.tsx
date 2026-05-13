@@ -64,7 +64,7 @@ export function CartPageClient({ auth }: CartPageClientProps) {
     };
 
     if (!response.ok || !payload.order?.orderCode) {
-      setMessage(payload.message ?? "Khong tao duoc don thanh toan. Vui long thu lai.");
+      setMessage(payload.message ?? "Không tạo được đơn thanh toán. Vui lòng thử lại.");
       setIsCreatingOrder(false);
       return;
     }
@@ -76,12 +76,12 @@ export function CartPageClient({ auth }: CartPageClientProps) {
   if (items.length === 0) {
     return (
       <div className="rounded-3xl border border-black/10 bg-white p-6">
-        <p className="text-lg font-bold text-black/70">Gio hang dang trong.</p>
+        <p className="text-lg font-bold text-black/70">Giỏ hàng đang trống.</p>
         <p className="mt-2 text-sm leading-6 text-black/60">
-          Hay them khoa hoc tu trang danh sach hoac trang chi tiet khoa hoc.
+          Hãy thêm khóa học từ trang danh sách hoặc trang chi tiết khóa học.
         </p>
         <ButtonLink href="/khoa-hoc" className="mt-5">
-          Xem khoa hoc
+          Xem khóa học
         </ButtonLink>
       </div>
     );
@@ -91,13 +91,13 @@ export function CartPageClient({ auth }: CartPageClientProps) {
     <div className="grid gap-5">
       <div className="rounded-3xl border border-black/10 bg-white p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-xl font-black tracking-[-0.03em]">Khoa hoc trong gio</p>
+          <p className="text-xl font-black tracking-[-0.03em]">Khóa học trong giỏ</p>
           <button
             className="text-sm font-bold text-black/45 transition hover:text-black"
             onClick={() => clearCart()}
             type="button"
           >
-            Xoa toan bo
+            Xóa toàn bộ
           </button>
         </div>
         <div className="mt-5 grid gap-3">
@@ -116,7 +116,7 @@ export function CartPageClient({ auth }: CartPageClientProps) {
                 onClick={() => removeFromCart(item.slug)}
                 type="button"
               >
-                Xoa
+                Xóa
               </button>
             </div>
           ))}
@@ -124,36 +124,36 @@ export function CartPageClient({ auth }: CartPageClientProps) {
       </div>
 
       <div className="rounded-3xl border border-black/10 bg-[#fff7ea] p-6">
-        <p className="text-sm font-semibold text-[#b56b18]">Tong thanh toan</p>
+        <p className="text-sm font-semibold text-[#b56b18]">Tổng thanh toán</p>
         <p className="mt-2 text-4xl font-black tracking-[-0.04em]">{formatVnd(total)}</p>
         <p className="mt-2 text-sm leading-6 text-black/60">
           {auth.isLoggedIn
-            ? "Ban da dang nhap, bam thanh toan ngay de tao don va hien ma QR."
-            : "Buoc tiep theo la tao tai khoan de gan don hang va chuyen den ma QR thanh toan."}
+            ? "Bạn đã đăng nhập, bấm thanh toán ngay để tạo đơn và hiện mã QR."
+            : "Bước tiếp theo là tạo tài khoản để gắn đơn hàng và chuyển đến mã QR thanh toán."}
         </p>
         {auth.isLoggedIn ? (
           <p className="mt-2 text-xs font-semibold text-black/50">
-            Tai khoan: {auth.fullName || auth.email || "Hoc vien"}
+            Tài khoản: {auth.fullName || auth.email || "Học viên"}
           </p>
         ) : null}
         <div className="mt-5 flex flex-wrap gap-3">
           {auth.isLoggedIn ? (
             <Button
               isLoading={isCreatingOrder}
-              loadingLabel="Dang tao don..."
+              loadingLabel="Đang tạo đơn..."
               onClick={handleCheckout}
               type="button"
             >
-              Thanh toan ngay
+              Thanh toán ngay
             </Button>
           ) : (
-            <ButtonLink href="/dang-ky">Tao tai khoan</ButtonLink>
+            <ButtonLink href="/dang-ky">Tạo tài khoản</ButtonLink>
           )}
           <Link
             href="/khoa-hoc"
             className="inline-flex min-h-11 items-center rounded-full border border-black/10 px-5 text-sm font-bold text-black/65 transition hover:text-black"
           >
-            Them khoa hoc khac
+            Thêm khóa học khác
           </Link>
         </div>
         {message ? (
