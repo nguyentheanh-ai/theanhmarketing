@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BrandSettingsManager } from "@/components/admin/brand-settings-manager";
-import { AdminShell } from "@/components/app/admin-shell";
+import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { SoftCard } from "@/components/ui/soft-card";
 import { cmsSections } from "@/data/cms";
 import { validateCmsContent } from "@/lib/cms-validation";
@@ -67,7 +67,7 @@ export default async function AdminCmsPage() {
   ];
 
   return (
-    <AdminShell>
+    <ProtectedAdminShell nextPath="/admin/cms">
       <div className="mx-auto max-w-7xl">
         <p className="text-sm font-semibold text-[#c77b20]">CMS</p>
         <h1 className="mt-4 text-5xl font-black tracking-[-0.04em]">
@@ -174,6 +174,6 @@ export default async function AdminCmsPage() {
           ))}
         </section>
       </div>
-    </AdminShell>
+    </ProtectedAdminShell>
   );
 }

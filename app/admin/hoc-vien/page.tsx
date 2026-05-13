@@ -1,5 +1,5 @@
 import { StudentIntakeForm } from "@/components/admin/student-intake-form";
-import { AdminShell } from "@/components/app/admin-shell";
+import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { SoftCard } from "@/components/ui/soft-card";
 import { sampleStudents } from "@/data/platform";
 import { getCourses } from "@/services/courseService";
@@ -10,7 +10,7 @@ export default async function AdminStudentsPage() {
   const studentLeads = leads.filter((lead) => lead.source.startsWith("admin-student"));
 
   return (
-    <AdminShell>
+    <ProtectedAdminShell nextPath="/admin/hoc-vien">
       <div className="mx-auto max-w-7xl">
         <p className="text-sm font-semibold text-[#c77b20]">Admin</p>
         <h1 className="mt-4 text-5xl font-black tracking-[-0.04em]">
@@ -110,6 +110,6 @@ export default async function AdminStudentsPage() {
           </div>
         </SoftCard>
       </div>
-    </AdminShell>
+    </ProtectedAdminShell>
   );
 }

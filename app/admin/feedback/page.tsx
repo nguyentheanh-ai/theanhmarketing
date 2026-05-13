@@ -1,5 +1,5 @@
 import { TestimonialManager } from "@/components/admin/testimonial-manager";
-import { AdminShell } from "@/components/app/admin-shell";
+import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { SoftCard } from "@/components/ui/soft-card";
 import { getTestimonials } from "@/services/testimonialService";
 
@@ -7,7 +7,7 @@ export default async function AdminFeedbackPage() {
   const testimonials = await getTestimonials();
 
   return (
-    <AdminShell>
+    <ProtectedAdminShell nextPath="/admin/feedback">
       <div className="mx-auto max-w-7xl">
         <p className="text-sm font-semibold text-[#c77b20]">Admin</p>
         <h1 className="mt-4 text-5xl font-black tracking-[-0.04em]">
@@ -28,6 +28,6 @@ export default async function AdminFeedbackPage() {
           <TestimonialManager testimonials={testimonials} />
         </SoftCard>
       </div>
-    </AdminShell>
+    </ProtectedAdminShell>
   );
 }

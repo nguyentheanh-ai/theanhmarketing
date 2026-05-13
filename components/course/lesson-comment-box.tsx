@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Button } from "@/components/ui/button";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export function LessonCommentBox({ lessonId }: { lessonId: string }) {
@@ -64,13 +65,15 @@ export function LessonCommentBox({ lessonId }: { lessonId: string }) {
         placeholder="Nhập câu hỏi về bài học..."
         required
       />
-      <button
-        className="w-fit rounded-full bg-black px-5 py-2.5 text-sm font-bold text-white disabled:opacity-60"
-        disabled={isSaving}
+      <Button
+        className="w-fit"
+        isLoading={isSaving}
+        loadingLabel="Đang gửi..."
+        size="md"
         type="submit"
       >
-        {isSaving ? "Đang gửi..." : "Gửi câu hỏi"}
-      </button>
+        Gửi câu hỏi
+      </Button>
       {message ? <p className="text-sm font-semibold text-black/55">{message}</p> : null}
     </form>
   );

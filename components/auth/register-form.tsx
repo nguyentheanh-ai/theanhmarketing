@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import type { Course } from "@/data/courses";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -88,13 +89,9 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
   return (
     <>
       <form onSubmit={handleSubmit} className="grid gap-4">
-        <button
-          className="min-h-12 rounded-full border border-black/10 bg-white px-6 text-sm font-bold text-black shadow-[0_10px_30px_rgba(0,0,0,0.05)] transition hover:-translate-y-0.5"
-          type="button"
-          onClick={handleGoogleLogin}
-        >
+        <Button variant="secondary" type="button" onClick={handleGoogleLogin}>
           Đăng ký / đăng nhập với Google
-        </button>
+        </Button>
         <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.12em] text-black/35">
           <span className="h-px flex-1 bg-black/10" />
           hoặc tạo bằng email
@@ -164,13 +161,9 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
             {message}
           </p>
         ) : null}
-        <button
-          className="min-h-12 rounded-full bg-black px-6 text-sm font-bold text-white transition hover:-translate-y-0.5 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={isSubmitting}
-          type="submit"
-        >
-          {isSubmitting ? "Đang tạo hồ sơ..." : "Tạo tài khoản học viên"}
-        </button>
+        <Button isLoading={isSubmitting} loadingLabel="Đang tạo hồ sơ..." type="submit">
+          Tạo tài khoản học viên
+        </Button>
       </form>
       <p className="mt-6 text-center text-sm text-black/55">
         Đã có tài khoản?{" "}

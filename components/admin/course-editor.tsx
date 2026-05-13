@@ -1,9 +1,11 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { SoftCard } from "@/components/ui/soft-card";
 import type { Course, CourseStatus, LessonAccess } from "@/data/courses";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { uploadMediaFile } from "@/lib/supabase/media-upload";
 import { toYouTubeEmbedUrl } from "@/lib/youtube";
 
 const storageKey = "tam-admin-courses";
@@ -77,6 +79,9 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
   const [selectedSlug, setSelectedSlug] = useState(courses[0]?.slug ?? "");
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
   const [notice, setNotice] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [uploadingField, setUploadingField] = useState<"banner" | "thumbnail" | null>(null);
+  const [hasLocalChanges, setHasLocalChanges] = useState(false);
 
   const selectedCourse = useMemo(
     () => courses.find((course) => course.slug === selectedSlug) ?? courses[0],
@@ -86,6 +91,7 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
   function persist(nextCourses: Course[]) {
     setCourses(nextCourses);
     window.localStorage.setItem(storageKey, JSON.stringify(nextCourses));
+    setHasLocalChanges(true);
   }
 
   function exportCourses() {
@@ -177,10 +183,12 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
   }
 
   async function saveSelectedCourseToSupabase() {
+    setIsSaving(true);
     const supabase = createSupabaseBrowserClient();
 
     if (!supabase) {
       setNotice("Thiếu biến môi trường Supabase. Dữ liệu vẫn được lưu local.");
+      setIsSaving(false);
       return;
     }
 
@@ -229,6 +237,7 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
 
     if (courseError || !savedCourse) {
       setNotice(`Không lưu được khóa học lên Supabase. Local vẫn an toàn. ${courseError?.message ?? ""}`);
+      setIsSaving(false);
       return;
     }
 
@@ -249,6 +258,7 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
 
       if (moduleError || !savedModule) {
         setNotice(`Khóa học đã lưu, nhưng module bị lỗi: ${moduleError?.message ?? ""}`);
+        setIsSaving(false);
         return;
       }
 
@@ -268,6 +278,7 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
 
         if (lessonError) {
           setNotice(`Module đã lưu, nhưng bài học bị lỗi: ${lessonError.message}`);
+          setIsSaving(false);
           return;
         }
 
@@ -288,7 +299,15 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
     }
 
     setNotice("Đã lưu khóa học, module và bài học lên Supabase.");
+    setHasLocalChanges(false);
+    setIsSaving(false);
   }
+
+  const saveButtonLabel = isSaving
+    ? "Đang lưu..."
+    : hasLocalChanges
+      ? "Lưu thay đổi"
+      : "Đã lưu local";
 
   async function deleteSelectedCourseFromSupabase() {
     if (!window.confirm(`Xóa khóa học "${selectedCourse.title}" khỏi local CMS và Supabase?`)) {
@@ -302,6 +321,7 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
     const supabase = createSupabaseBrowserClient();
     if (!supabase) {
       setNotice("Đã xóa khỏi local CMS. Supabase chưa được cấu hình.");
+      setIsSaving(false);
       return;
     }
 
@@ -340,6 +360,39 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
           : course,
       ),
     );
+  }
+
+  async function uploadCourseImage(
+    field: "bannerImageUrl" | "thumbnailImageUrl",
+    file: File | undefined,
+  ) {
+    if (!file || !selectedCourse) {
+      return;
+    }
+
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) {
+      setNotice("Chưa cấu hình Supabase. Không thể upload ảnh.");
+      return;
+    }
+
+    const uploadKind = field === "bannerImageUrl" ? "banner" : "thumbnail";
+    setUploadingField(uploadKind);
+    setNotice("");
+
+    try {
+      const url = await uploadMediaFile({
+        file,
+        folder: `courses/${selectedCourse.slug}/${uploadKind}`,
+        supabase,
+      });
+      updateCourse(field, url);
+      setNotice("Đã upload ảnh và cập nhật URL. Bấm lưu để ghi vào Supabase.");
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "Không upload được ảnh.");
+    } finally {
+      setUploadingField(null);
+    }
   }
 
   function updateModule(
@@ -544,48 +597,36 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
           ))}
         </select>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-          <button
-            className="rounded-full bg-black px-5 py-3 text-sm font-bold text-white"
-            type="button"
-            onClick={addCourse}
-          >
+          <Button size="md" type="button" onClick={addCourse}>
             Thêm khóa học
-          </button>
-          <button
-            className="rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-bold"
+          </Button>
+          <Button
+            isLoading={isSaving}
+            loadingLabel="Đang lưu..."
+            size="md"
             type="button"
+            variant={hasLocalChanges ? "primary" : "secondary"}
             onClick={saveSelectedCourseToSupabase}
           >
-            Lưu Supabase
-          </button>
-          <button
-            className="rounded-full border border-red-200 bg-red-50 px-5 py-3 text-sm font-bold text-red-700"
-            type="button"
-            onClick={deleteSelectedCourseFromSupabase}
-          >
+            {saveButtonLabel}
+          </Button>
+          <Button size="md" type="button" variant="danger" onClick={deleteSelectedCourseFromSupabase}>
             Xóa khóa học
-          </button>
-          <button
-            className="rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-bold"
-            type="button"
-            onClick={exportCourses}
-          >
+          </Button>
+          <Button size="md" type="button" variant="secondary" onClick={exportCourses}>
             Xuất JSON
-          </button>
-          <button
-            className="rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-bold"
+          </Button>
+          <Button
+            size="md"
             type="button"
+            variant="secondary"
             onClick={() => importInputRef.current?.click()}
           >
             Nhập JSON
-          </button>
-          <button
-            className="rounded-full border border-red-200 bg-red-50 px-5 py-3 text-sm font-bold text-red-700"
-            type="button"
-            onClick={resetCourses}
-          >
+          </Button>
+          <Button size="md" type="button" variant="danger" onClick={resetCourses}>
             Khôi phục mặc định
-          </button>
+          </Button>
           <input
             ref={importInputRef}
             className="hidden"
@@ -616,6 +657,24 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
           <input className="min-h-12 rounded-2xl border border-black/10 px-4" value={selectedCourse.updatedAt} onChange={(e) => updateCourse("updatedAt", e.target.value)} />
           <input className="min-h-12 rounded-2xl border border-black/10 px-4" placeholder="Banner image URL cho trang chi tiết" value={selectedCourse.bannerImageUrl} onChange={(e) => updateCourse("bannerImageUrl", e.target.value)} />
           <input className="min-h-12 rounded-2xl border border-black/10 px-4" placeholder="Thumbnail image URL cho card khóa học" value={selectedCourse.thumbnailImageUrl} onChange={(e) => updateCourse("thumbnailImageUrl", e.target.value)} />
+          <label className="grid gap-2 rounded-2xl border border-black/10 bg-white p-4 text-sm font-semibold text-black/60">
+            Upload banner khóa học
+            <input
+              accept="image/*"
+              type="file"
+              onChange={(event) => uploadCourseImage("bannerImageUrl", event.target.files?.[0])}
+            />
+            {uploadingField === "banner" ? <span>Đang upload banner...</span> : null}
+          </label>
+          <label className="grid gap-2 rounded-2xl border border-black/10 bg-white p-4 text-sm font-semibold text-black/60">
+            Upload thumbnail khóa học
+            <input
+              accept="image/*"
+              type="file"
+              onChange={(event) => uploadCourseImage("thumbnailImageUrl", event.target.files?.[0])}
+            />
+            {uploadingField === "thumbnail" ? <span>Đang upload thumbnail...</span> : null}
+          </label>
           <input className="min-h-12 rounded-2xl border border-black/10 px-4 md:col-span-2" placeholder="YouTube preview URL" value={selectedCourse.videoPreviewUrl} onChange={(e) => updatePreviewUrl(e.target.value)} />
         </div>
         <textarea className="mt-4 min-h-28 w-full rounded-2xl border border-black/10 p-4" value={selectedCourse.description} onChange={(e) => updateCourse("description", e.target.value)} />
@@ -650,9 +709,9 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
             <p className="text-sm font-semibold text-[#c77b20]">Module & bài học</p>
             <h2 className="mt-2 text-3xl font-black tracking-[-0.05em]">Quản lý curriculum</h2>
           </div>
-          <button className="rounded-full bg-black px-5 py-3 text-sm font-bold text-white" type="button" onClick={addModule}>
+          <Button size="md" type="button" onClick={addModule}>
             Thêm module
-          </button>
+          </Button>
         </div>
         <div className="mt-6 grid gap-5">
           {selectedCourse.modules
@@ -677,13 +736,15 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
                         {isExpanded ? "Thu gọn bài học" : "Show bài học"} · {module.lessons.length} bài
                       </span>
                     </button>
-                    <button
-                      className="w-fit rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-bold text-red-700"
+                    <Button
+                      className="w-fit"
+                      size="sm"
                       type="button"
+                      variant="danger"
                       onClick={() => deleteModule(module.id)}
                     >
                       Xóa module
-                    </button>
+                    </Button>
                   </div>
 
                   <div className="mt-4 grid gap-4 md:grid-cols-[90px_1fr]">
@@ -711,13 +772,15 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
                                   <option value="paid">Chỉ học viên đã mua</option>
                                   <option value="locked">Khóa</option>
                                 </select>
-                                <button
-                                  className="rounded-xl border border-red-200 bg-red-50 px-3 text-sm font-bold text-red-700"
+                                <Button
+                                  className="rounded-xl"
+                                  size="sm"
                                   type="button"
+                                  variant="danger"
                                   onClick={() => deleteLesson(module.id, lesson.id)}
                                 >
                                   Xóa
-                                </button>
+                                </Button>
                               </div>
                               </div>
                               <textarea
@@ -737,9 +800,15 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
                             </div>
                           ))}
                       </div>
-                      <button className="mt-4 rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-bold" type="button" onClick={() => addLesson(module.id)}>
+                      <Button
+                        className="mt-4"
+                        size="md"
+                        type="button"
+                        variant="secondary"
+                        onClick={() => addLesson(module.id)}
+                      >
                         Thêm bài học
-                      </button>
+                      </Button>
                     </>
                   ) : null}
                 </div>

@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import type { ResourceItem } from "@/services/resourceService";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
@@ -180,21 +181,13 @@ export function ResourceManager({ resources }: { resources: ResourceItem[] }) {
           placeholder="Mô tả tài liệu"
         />
         <div className="flex flex-col gap-3 sm:flex-row">
-          <button
-            className="w-fit rounded-full bg-black px-6 py-3 text-sm font-bold text-white disabled:opacity-60"
-            disabled={isSaving}
-            type="submit"
-          >
-            {isSaving ? "Đang lưu..." : "Lưu tài liệu"}
-          </button>
+          <Button className="w-fit" isLoading={isSaving} loadingLabel="Đang lưu..." type="submit">
+            Lưu tài liệu
+          </Button>
           {selectedResource.id ? (
-            <button
-              className="w-fit rounded-full border border-red-200 bg-red-50 px-6 py-3 text-sm font-bold text-red-700"
-              type="button"
-              onClick={handleDelete}
-            >
+            <Button className="w-fit" variant="danger" type="button" onClick={handleDelete}>
               Xóa tài liệu
-            </button>
+            </Button>
           ) : null}
         </div>
         {message ? (

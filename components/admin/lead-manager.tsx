@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { createLead, type LeadItem } from "@/services/leadService";
 
 export function LeadManager({ leads }: { leads: LeadItem[] }) {
@@ -106,13 +107,9 @@ export function LeadManager({ leads }: { leads: LeadItem[] }) {
           name="message"
           placeholder="Nhu cầu / ghi chú tư vấn"
         />
-        <button
-          className="w-fit rounded-full bg-black px-6 py-3 text-sm font-bold text-white disabled:opacity-60"
-          disabled={isSaving}
-          type="submit"
-        >
-          {isSaving ? "Đang lưu..." : "Lưu lead"}
-        </button>
+        <Button className="w-fit" isLoading={isSaving} loadingLabel="Đang lưu..." type="submit">
+          Lưu lead
+        </Button>
         {message ? (
           <p className="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-black/65">
             {message}

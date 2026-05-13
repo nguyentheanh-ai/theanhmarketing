@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 
 type AdminActionFormProps = {
   children: ReactNode;
@@ -30,12 +31,9 @@ export function AdminActionForm({
       }}
     >
       {children}
-      <button
-        className="w-fit rounded-full bg-black px-6 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 active:scale-[0.98]"
-        type="submit"
-      >
+      <Button className="w-fit" type="submit">
         {submitLabel}
-      </button>
+      </Button>
       {message ? (
         <p className="rounded-2xl bg-[#f2eadf] px-4 py-3 text-sm font-semibold text-black/65">
           {message}
@@ -52,16 +50,15 @@ export function AdminActionButton({
 }: AdminActionButtonProps) {
   const [notice, setNotice] = useState("");
 
-  const className =
-    variant === "primary"
-      ? "rounded-full bg-black px-6 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 active:scale-[0.98]"
-      : "rounded-full border border-black/10 bg-white px-6 py-3 text-sm font-bold text-black transition hover:-translate-y-0.5 active:scale-[0.98]";
-
   return (
     <div>
-      <button className={className} type="button" onClick={() => setNotice(message)}>
+      <Button
+        type="button"
+        variant={variant === "primary" ? "primary" : "secondary"}
+        onClick={() => setNotice(message)}
+      >
         {children}
-      </button>
+      </Button>
       {notice ? <p className="mt-3 text-sm font-semibold text-black/55">{notice}</p> : null}
     </div>
   );

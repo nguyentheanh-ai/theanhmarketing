@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import type { Course } from "@/data/courses";
 import { createLead } from "@/services/leadService";
 
@@ -94,13 +95,9 @@ export function StudentIntakeForm({ courses }: { courses: Course[] }) {
         name="note"
         placeholder="Ghi chú tư vấn / nhu cầu học"
       />
-      <button
-        className="w-fit rounded-full bg-black px-6 py-3 text-sm font-bold text-white disabled:opacity-60"
-        disabled={isSaving}
-        type="submit"
-      >
-        {isSaving ? "Đang lưu..." : "Lưu hồ sơ học viên"}
-      </button>
+      <Button className="w-fit" isLoading={isSaving} loadingLabel="Đang lưu..." type="submit">
+        Lưu hồ sơ học viên
+      </Button>
       {message ? (
         <p className="rounded-2xl bg-[#f2eadf] px-4 py-3 text-sm font-semibold text-black/65">
           {message}

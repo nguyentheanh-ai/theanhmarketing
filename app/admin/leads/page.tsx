@@ -1,5 +1,5 @@
 import { LeadManager } from "@/components/admin/lead-manager";
-import { AdminShell } from "@/components/app/admin-shell";
+import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { SoftCard } from "@/components/ui/soft-card";
 import { getLeads } from "@/services/leadService";
 
@@ -7,7 +7,7 @@ export default async function AdminLeadsPage() {
   const leads = await getLeads();
 
   return (
-    <AdminShell>
+    <ProtectedAdminShell nextPath="/admin/leads">
       <div className="mx-auto max-w-7xl">
         <p className="text-sm font-semibold text-[#c77b20]">Admin</p>
         <h1 className="mt-4 text-5xl font-black tracking-[-0.04em]">
@@ -22,6 +22,6 @@ export default async function AdminLeadsPage() {
           <LeadManager leads={leads} />
         </SoftCard>
       </div>
-    </AdminShell>
+    </ProtectedAdminShell>
   );
 }

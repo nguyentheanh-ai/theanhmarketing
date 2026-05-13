@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ButtonLink } from "@/components/ui/button-link";
 import type { Course } from "@/data/courses";
 import { getCourseLessonCount } from "@/data/courses";
 
@@ -59,18 +60,17 @@ export function CourseCard({ course }: { course: Course }) {
           <span>{getCourseLessonCount(course)} bài học</span>
         </div>
         <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-          <Link
-            href={`/khoa-hoc/${course.slug}#giao-trinh`}
-            className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-black px-4 text-sm font-bold text-white transition hover:-translate-y-0.5"
-          >
+          <ButtonLink href={`/khoa-hoc/${course.slug}#giao-trinh`} className="flex-1" size="md">
             Học thử miễn phí
-          </Link>
-          <Link
+          </ButtonLink>
+          <ButtonLink
             href={`/khoa-hoc/${course.slug}`}
-            className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-black/10 bg-white px-4 text-sm font-bold text-black transition hover:-translate-y-0.5 hover:border-black/20"
+            className="flex-1"
+            size="md"
+            variant="secondary"
           >
             Chi tiết
-          </Link>
+          </ButtonLink>
         </div>
       </div>
     </article>

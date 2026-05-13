@@ -16,20 +16,13 @@ export function SignOutButton({
 
   async function handleSignOut() {
     setIsSubmitting(true);
-    if (mode === "admin") {
-      await fetch("/api/admin/logout", { method: "POST" });
-      router.push("/admin/login");
-      router.refresh();
-      return;
-    }
-
     const supabase = createSupabaseBrowserClient();
 
     if (supabase) {
       await supabase.auth.signOut();
     }
 
-    router.push("/");
+    router.push(mode === "admin" ? "/admin/login" : "/");
     router.refresh();
   }
 

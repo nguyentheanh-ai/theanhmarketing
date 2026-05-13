@@ -2,13 +2,50 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import type { BrandSettings } from "@/services/brandService";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { uploadMediaFile } from "@/lib/supabase/media-upload";
 
 export function BrandSettingsManager({ settings }: { settings: BrandSettings }) {
   const router = useRouter();
+  const [form, setForm] = useState(settings);
   const [message, setMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [uploadingField, setUploadingField] = useState<keyof BrandSettings | null>(null);
+
+  function updateField(field: keyof BrandSettings, value: string) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
+
+  async function uploadBrandImage(field: "logoImage" | "heroImageUrl", file: File | undefined) {
+    if (!file) {
+      return;
+    }
+
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) {
+      setMessage("Chưa cấu hình Supabase. Không thể upload ảnh.");
+      return;
+    }
+
+    setUploadingField(field);
+    setMessage("");
+
+    try {
+      const url = await uploadMediaFile({
+        file,
+        folder: field === "logoImage" ? "brand/logo" : "brand/hero",
+        supabase,
+      });
+      updateField(field, url);
+      setMessage("Đã upload ảnh và cập nhật URL trong form. Bấm lưu để ghi vào database.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Không upload được ảnh.");
+    } finally {
+      setUploadingField(null);
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -20,13 +57,13 @@ export function BrandSettingsManager({ settings }: { settings: BrandSettings }) 
       name: String(formData.get("name") ?? ""),
       shortName: String(formData.get("shortName") ?? ""),
       logoMark: String(formData.get("logoMark") ?? ""),
-      logoImage: String(formData.get("logoImage") ?? ""),
+      logoImage: form.logoImage,
       tagline: String(formData.get("tagline") ?? ""),
       phone: String(formData.get("phone") ?? ""),
       email: String(formData.get("email") ?? ""),
       primaryCtaLabel: String(formData.get("primaryCtaLabel") ?? ""),
       primaryCtaHref: String(formData.get("primaryCtaHref") ?? ""),
-      heroImageUrl: String(formData.get("heroImageUrl") ?? ""),
+      heroImageUrl: form.heroImageUrl,
       heroVideoUrl: String(formData.get("heroVideoUrl") ?? ""),
     };
     const supabase = createSupabaseBrowserClient();
@@ -61,81 +98,97 @@ export function BrandSettingsManager({ settings }: { settings: BrandSettings }) 
       <div className="grid gap-4 md:grid-cols-2">
         <input
           className="min-h-12 rounded-2xl border border-black/10 px-4"
-          defaultValue={settings.name}
+          defaultValue={form.name}
           name="name"
           placeholder="Tên thương hiệu"
           required
         />
         <input
           className="min-h-12 rounded-2xl border border-black/10 px-4"
-          defaultValue={settings.shortName}
+          defaultValue={form.shortName}
           name="shortName"
           placeholder="Tên ngắn"
           required
         />
         <input
           className="min-h-12 rounded-2xl border border-black/10 px-4"
-          defaultValue={settings.logoMark}
+          defaultValue={form.logoMark}
           name="logoMark"
           placeholder="Logo mark dạng chữ"
         />
         <input
           className="min-h-12 rounded-2xl border border-black/10 px-4"
-          defaultValue={settings.logoImage}
+          value={form.logoImage}
           name="logoImage"
           placeholder="Logo image URL"
+          onChange={(event) => updateField("logoImage", event.target.value)}
         />
+        <label className="grid gap-2 rounded-2xl border border-black/10 bg-white p-4 text-sm font-semibold text-black/60">
+          Upload logo
+          <input
+            accept="image/*"
+            type="file"
+            onChange={(event) => uploadBrandImage("logoImage", event.target.files?.[0])}
+          />
+          {uploadingField === "logoImage" ? <span>Đang upload logo...</span> : null}
+        </label>
         <input
           className="min-h-12 rounded-2xl border border-black/10 px-4"
-          defaultValue={settings.phone}
+          defaultValue={form.phone}
           name="phone"
           placeholder="Hotline/Zalo"
         />
         <input
           className="min-h-12 rounded-2xl border border-black/10 px-4"
-          defaultValue={settings.email}
+          defaultValue={form.email}
           name="email"
           placeholder="Email"
           type="email"
         />
         <input
           className="min-h-12 rounded-2xl border border-black/10 px-4"
-          defaultValue={settings.primaryCtaLabel}
+          defaultValue={form.primaryCtaLabel}
           name="primaryCtaLabel"
           placeholder="Header CTA label"
         />
         <input
           className="min-h-12 rounded-2xl border border-black/10 px-4"
-          defaultValue={settings.primaryCtaHref}
+          defaultValue={form.primaryCtaHref}
           name="primaryCtaHref"
           placeholder="Header CTA href"
         />
         <input
           className="min-h-12 rounded-2xl border border-black/10 px-4"
-          defaultValue={settings.heroImageUrl}
+          value={form.heroImageUrl}
           name="heroImageUrl"
           placeholder="Homepage hero image URL"
+          onChange={(event) => updateField("heroImageUrl", event.target.value)}
         />
+        <label className="grid gap-2 rounded-2xl border border-black/10 bg-white p-4 text-sm font-semibold text-black/60">
+          Upload ảnh hero
+          <input
+            accept="image/*"
+            type="file"
+            onChange={(event) => uploadBrandImage("heroImageUrl", event.target.files?.[0])}
+          />
+          {uploadingField === "heroImageUrl" ? <span>Đang upload ảnh hero...</span> : null}
+        </label>
         <input
           className="min-h-12 rounded-2xl border border-black/10 px-4"
-          defaultValue={settings.heroVideoUrl}
+          defaultValue={form.heroVideoUrl}
           name="heroVideoUrl"
           placeholder="Homepage hero video URL"
         />
       </div>
       <textarea
         className="min-h-24 rounded-2xl border border-black/10 p-4"
-        defaultValue={settings.tagline}
+        defaultValue={form.tagline}
         name="tagline"
         placeholder="Tagline thương hiệu"
       />
-      <button
-        className="w-fit rounded-full bg-black px-6 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-60"
-        disabled={isSaving}
-        type="submit"
-      >
-        {isSaving ? "Đang lưu..." : "Lưu thương hiệu"}
-      </button>
+      <Button className="w-fit" isLoading={isSaving} loadingLabel="Đang lưu..." type="submit">
+        Lưu thương hiệu
+      </Button>
       {message ? (
         <p className="rounded-2xl bg-[#f2eadf] px-4 py-3 text-sm font-semibold text-black/65">
           {message}

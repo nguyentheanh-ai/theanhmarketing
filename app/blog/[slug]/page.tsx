@@ -79,19 +79,10 @@ export default async function BlogPostPage({
           </ol>
         </SoftCard>
 
-        <div className="mt-10 space-y-6 text-lg leading-9 text-black/70">
-          <p>{post.content}</p>
-          <p>
-            Khi phát triển phần blog thành content hub đầy đủ, mỗi bài có thể
-            được lưu trong CMS hoặc file nội dung riêng. Giao diện hiện tại đã
-            chừa sẵn cấu trúc cho mục lục, CTA, tác giả và bài liên quan.
-          </p>
-          <p>
-            Mục tiêu là giữ bài viết gọn, dễ đọc, dẫn người đọc đến tài liệu
-            hoặc khóa học phù hợp thay vì biến blog thành trang bán hàng quá
-            mạnh.
-          </p>
-        </div>
+        <div
+          className="blog-content mt-10"
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
 
         <div className="mt-10 rounded-[2rem] bg-[#f2eadf] p-8">
           <SectionHeading

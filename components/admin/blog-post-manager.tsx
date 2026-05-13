@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import type { BlogPostItem } from "@/services/blogService";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { uploadMediaFile } from "@/lib/supabase/media-upload";
 
 function slugify(value: string) {
   return value
@@ -199,30 +201,21 @@ export function BlogPostManager({ posts }: { posts: BlogPostItem[] }) {
           placeholder="Mô tả ngắn"
           required
         />
-        <textarea
-          className="min-h-48 rounded-2xl border border-black/10 p-4"
-          defaultValue={selectedPost.content}
-          key={`content-${selectedSlug}`}
-          name="content"
-          placeholder="Nội dung bài viết"
-          required
+        <BlogHtmlEditor
+          key={`content-editor-${selectedSlug}`}
+          initialContent={selectedPost.content}
+          postSlug={selectedPost.slug || "new-post"}
+          postTitle={selectedPost.title || "Ảnh bài viết"}
+          onMessage={setMessage}
         />
         <div className="flex flex-col gap-3 sm:flex-row">
-          <button
-            className="w-fit rounded-full bg-black px-6 py-3 text-sm font-bold text-white disabled:opacity-60"
-            disabled={isSaving}
-            type="submit"
-          >
-            {isSaving ? "Đang lưu..." : "Lưu bài viết"}
-          </button>
+          <Button className="w-fit" isLoading={isSaving} loadingLabel="Đang lưu..." type="submit">
+            Lưu bài viết
+          </Button>
           {selectedPost.id ? (
-            <button
-              className="w-fit rounded-full border border-red-200 bg-red-50 px-6 py-3 text-sm font-bold text-red-700"
-              type="button"
-              onClick={handleDelete}
-            >
+            <Button className="w-fit" variant="danger" type="button" onClick={handleDelete}>
               Xóa bài viết
-            </button>
+            </Button>
           ) : null}
         </div>
         {message ? (
@@ -231,6 +224,123 @@ export function BlogPostManager({ posts }: { posts: BlogPostItem[] }) {
           </p>
         ) : null}
       </form>
+    </div>
+  );
+}
+
+function BlogHtmlEditor({
+  initialContent,
+  onMessage,
+  postSlug,
+  postTitle,
+}: {
+  initialContent: string;
+  onMessage: (message: string) => void;
+  postSlug: string;
+  postTitle: string;
+}) {
+  const contentRef = useRef<HTMLTextAreaElement>(null);
+  const [content, setContent] = useState(initialContent ?? "");
+  const [isUploading, setIsUploading] = useState(false);
+
+  function insertHtml(snippet: string) {
+    const textarea = contentRef.current;
+    if (!textarea) {
+      setContent((current) => `${current}\n${snippet}`);
+      return;
+    }
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const nextContent = `${content.slice(0, start)}${snippet}${content.slice(end)}`;
+    setContent(nextContent);
+
+    window.requestAnimationFrame(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + snippet.length, start + snippet.length);
+    });
+  }
+
+  async function uploadAndInsertImage(file: File | undefined) {
+    if (!file) {
+      return;
+    }
+
+    const supabase = createSupabaseBrowserClient();
+
+    if (!supabase) {
+      onMessage("Chưa cấu hình Supabase. Không thể upload ảnh.");
+      return;
+    }
+
+    setIsUploading(true);
+    onMessage("");
+
+    try {
+      const url = await uploadMediaFile({
+        file,
+        folder: `blog/${postSlug}`,
+        supabase,
+      });
+      insertHtml(
+        `<figure><img src="${url}" alt="${postTitle}" /><figcaption>Chú thích ảnh</figcaption></figure>`,
+      );
+      onMessage("Đã upload ảnh, chèn URL vào nội dung HTML. Bấm lưu để ghi vào database.");
+    } catch (error) {
+      onMessage(error instanceof Error ? error.message : "Không upload được ảnh.");
+    } finally {
+      setIsUploading(false);
+    }
+  }
+
+  return (
+    <div className="rounded-3xl border border-black/10 bg-white p-4">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p className="text-sm font-bold text-black">Editor nội dung HTML</p>
+          <p className="mt-1 text-sm leading-6 text-black/55">
+            Upload ảnh để lấy URL rồi chèn vào bài, hoặc dán HTML trực tiếp.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button size="sm" type="button" variant="secondary" onClick={() => insertHtml("<h2>Tiêu đề phần</h2>")}>
+            H2
+          </Button>
+          <Button size="sm" type="button" variant="secondary" onClick={() => insertHtml("<h3>Tiêu đề nhỏ</h3>")}>
+            H3
+          </Button>
+          <Button size="sm" type="button" variant="secondary" onClick={() => insertHtml("<p>Đoạn nội dung...</p>")}>
+            Đoạn
+          </Button>
+          <Button size="sm" type="button" variant="secondary" onClick={() => insertHtml("<blockquote>Trích dẫn nổi bật...</blockquote>")}>
+            Quote
+          </Button>
+        </div>
+      </div>
+      <label className="mt-4 grid gap-2 rounded-2xl bg-[#f7f3ec] p-4 text-sm font-semibold text-black/60">
+        Upload ảnh vào bài viết
+        <input
+          accept="image/*"
+          type="file"
+          onChange={(event) => uploadAndInsertImage(event.target.files?.[0])}
+        />
+        {isUploading ? <span>Đang upload ảnh...</span> : null}
+      </label>
+      <textarea
+        ref={contentRef}
+        className="mt-4 min-h-64 w-full rounded-2xl border border-black/10 p-4 font-mono text-sm leading-7"
+        name="content"
+        placeholder="<h2>Tiêu đề</h2><p>Nội dung bài viết...</p>"
+        required
+        value={content}
+        onChange={(event) => setContent(event.target.value)}
+      />
+      {content ? (
+        <div className="mt-4 rounded-2xl border border-black/10 bg-[#fbfaf7] p-5">
+          <p className="mb-4 text-sm font-bold text-black/55">Preview</p>
+          <div className="blog-content" dangerouslySetInnerHTML={{ __html: content }} />
+        </div>
+      ) : null}
     </div>
   );
 }

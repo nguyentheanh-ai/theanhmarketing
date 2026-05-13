@@ -1,5 +1,5 @@
 import { BlogPostManager } from "@/components/admin/blog-post-manager";
-import { AdminShell } from "@/components/app/admin-shell";
+import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { SoftCard } from "@/components/ui/soft-card";
 import { getBlogPosts } from "@/services/blogService";
 
@@ -7,7 +7,7 @@ export default async function AdminPostsPage() {
   const posts = await getBlogPosts();
 
   return (
-    <AdminShell>
+    <ProtectedAdminShell nextPath="/admin/bai-viet">
       <div className="mx-auto max-w-7xl">
         <p className="text-sm font-semibold text-[#c77b20]">Admin</p>
         <h1 className="mt-4 text-5xl font-black tracking-[-0.04em]">
@@ -26,6 +26,6 @@ export default async function AdminPostsPage() {
           <BlogPostManager posts={posts} />
         </SoftCard>
       </div>
-    </AdminShell>
+    </ProtectedAdminShell>
   );
 }

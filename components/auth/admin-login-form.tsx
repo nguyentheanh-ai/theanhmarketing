@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { Button } from "@/components/ui/button";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export function AdminLoginForm() {
   const router = useRouter();
@@ -15,16 +17,26 @@ export function AdminLoginForm() {
     setMessage("");
     setIsSubmitting(true);
 
-    const response = await fetch("/api/admin/login", {
-      method: "POST",
-      body: new FormData(event.currentTarget),
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email") ?? "");
+    const password = String(formData.get("password") ?? "");
+    const supabase = createSupabaseBrowserClient();
+
+    if (!supabase) {
+      setMessage("Chưa cấu hình Supabase. Không thể đăng nhập quản trị.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     });
 
-    const result = (await response.json()) as { ok: boolean; message?: string };
     setIsSubmitting(false);
 
-    if (!response.ok || !result.ok) {
-      setMessage(result.message || "Không thể đăng nhập quản trị.");
+    if (error) {
+      setMessage(error.message || "Không thể đăng nhập quản trị.");
       return;
     }
 
@@ -59,13 +71,13 @@ export function AdminLoginForm() {
           {message}
         </p>
       ) : null}
-      <button
-        className="min-h-12 rounded-full bg-black px-6 text-sm font-bold text-white transition hover:-translate-y-0.5 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
-        disabled={isSubmitting}
+      <Button
+        isLoading={isSubmitting}
+        loadingLabel="Đang đăng nhập..."
         type="submit"
       >
-        {isSubmitting ? "Đang đăng nhập..." : "Vào trang quản trị"}
-      </button>
+        Vào trang quản trị
+      </Button>
     </form>
   );
 }

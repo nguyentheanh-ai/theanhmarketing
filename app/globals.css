@@ -47,6 +47,86 @@ html {
   color: #000000;
 }
 
+.blog-content {
+  color: rgb(0 0 0 / 0.72);
+  font-size: 1.125rem;
+  line-height: 2rem;
+}
+
+.blog-content > * + * {
+  margin-top: 1.25rem;
+}
+
+.blog-content h2 {
+  color: #0b0b0c;
+  font-size: 2.25rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  margin-top: 2.5rem;
+}
+
+.blog-content h3 {
+  color: #0b0b0c;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin-top: 2rem;
+}
+
+.blog-content a {
+  color: #a85f12;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.blog-content img {
+  border-radius: 1.5rem;
+  display: block;
+  width: 100%;
+}
+
+.blog-content figure {
+  margin: 2rem 0;
+}
+
+.blog-content figcaption {
+  color: rgb(0 0 0 / 0.48);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+.blog-content blockquote {
+  background: #f2eadf;
+  border-left: 4px solid #c77b20;
+  border-radius: 1rem;
+  color: rgb(0 0 0 / 0.72);
+  font-weight: 700;
+  padding: 1.25rem;
+}
+
+.blog-content ul,
+.blog-content ol {
+  padding-left: 1.4rem;
+}
+
+.blog-content li + li {
+  margin-top: 0.5rem;
+}
+
+.blog-content pre {
+  background: #111111;
+  border-radius: 1.25rem;
+  color: #f8f4ec;
+  font-size: 0.9rem;
+  overflow-x: auto;
+  padding: 1.25rem;
+}
+
 @keyframes fade-up {
   from {
     opacity: 0;

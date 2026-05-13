@@ -1,4 +1,5 @@
 import { SoftCard } from "@/components/ui/soft-card";
+import { ButtonLink } from "@/components/ui/button-link";
 
 type Resource = {
   title: string;
@@ -24,14 +25,15 @@ export function ResourceCard({ resource }: { resource: Resource }) {
         {resource.title}
       </h2>
       <p className="mt-4 leading-7 text-black/60">{resource.description}</p>
-      <a
+      <ButtonLink
         href={requestHref}
         target={resource.fileUrl ? "_blank" : undefined}
         rel={resource.fileUrl ? "noreferrer" : undefined}
-        className="mt-7 inline-flex rounded-full bg-black px-5 py-3 text-sm font-bold text-white transition-all duration-300 ease-out hover:-translate-y-0.5 active:scale-[0.98]"
+        className="mt-7"
+        size="md"
       >
         Nhận tài liệu
-      </a>
+      </ButtonLink>
     </SoftCard>
   );
 }

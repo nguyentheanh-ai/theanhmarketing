@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { createLead } from "@/services/leadService";
 
 type LeadFormProps = {
@@ -64,13 +65,9 @@ export function LeadForm({ source, submitLabel = "Gửi thông tin" }: LeadFormP
         name="need"
         placeholder="Nhu cầu học / lời nhắn"
       />
-      <button
-        className="w-fit rounded-full bg-black px-6 py-3 text-sm font-bold text-white disabled:opacity-60"
-        disabled={isSubmitting}
-        type="submit"
-      >
-        {isSubmitting ? "Đang gửi..." : submitLabel}
-      </button>
+      <Button className="w-fit" isLoading={isSubmitting} loadingLabel="Đang gửi..." type="submit">
+        {submitLabel}
+      </Button>
       {message ? (
         <p className="rounded-2xl bg-white/70 px-4 py-3 text-sm font-semibold text-black/65">
           {message}

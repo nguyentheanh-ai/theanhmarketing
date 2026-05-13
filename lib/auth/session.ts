@@ -63,8 +63,7 @@ export async function getCurrentAuth(): Promise<AuthResult> {
 
   const adminEmails = getAdminEmails();
   const userEmail = user?.email?.toLowerCase() ?? "";
-  const isAdmin =
-    Boolean(user) && (adminEmails.length === 0 || adminEmails.includes(userEmail));
+  const isAdmin = Boolean(user) && adminEmails.includes(userEmail);
 
   return { user, isAdmin };
 }
@@ -91,7 +90,7 @@ export async function requireAdminAuth(nextPath: string) {
   const { user, isAdmin } = await getCurrentAuth();
 
   if (!user) {
-    redirect(`/dang-nhap?next=${encodeURIComponent(nextPath)}`);
+    redirect(`/admin/login?next=${encodeURIComponent(nextPath)}`);
   }
 
   if (!isAdmin) {

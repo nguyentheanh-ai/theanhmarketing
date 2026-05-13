@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { siteConfig } from "@/data/site";
@@ -12,6 +15,8 @@ const studentNav = [
 ];
 
 export function DashboardShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+
   return (
     <main className="min-h-screen bg-[#fbfaf7] text-[#0b0b0c]">
       <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-black/10 bg-white/70 p-6 backdrop-blur-xl lg:block">
@@ -26,7 +31,12 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-full px-4 py-3 text-sm font-semibold text-black/60 transition hover:bg-black hover:text-white"
+              aria-current={pathname === item.href ? "page" : undefined}
+              className={`rounded-full px-4 py-3 text-sm font-semibold transition ${
+                pathname === item.href
+                  ? "bg-black text-white"
+                  : "text-black/60 hover:bg-black hover:text-white"
+              }`}
             >
               {item.label}
             </Link>

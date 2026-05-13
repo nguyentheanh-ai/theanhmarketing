@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export function LoginForm() {
@@ -67,13 +68,9 @@ export function LoginForm() {
   return (
     <>
       <form onSubmit={handleSubmit} className="grid gap-4">
-        <button
-          className="min-h-12 rounded-full border border-black/10 bg-white px-6 text-sm font-bold text-black shadow-[0_10px_30px_rgba(0,0,0,0.05)] transition hover:-translate-y-0.5"
-          type="button"
-          onClick={handleGoogleLogin}
-        >
+        <Button variant="secondary" type="button" onClick={handleGoogleLogin}>
           Đăng nhập với Google
-        </button>
+        </Button>
         <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.12em] text-black/35">
           <span className="h-px flex-1 bg-black/10" />
           hoặc
@@ -104,13 +101,9 @@ export function LoginForm() {
             {message}
           </p>
         ) : null}
-        <button
-          className="min-h-12 rounded-full bg-black px-6 text-sm font-bold text-white transition hover:-translate-y-0.5 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={isSubmitting}
-          type="submit"
-        >
-          {isSubmitting ? "Đang đăng nhập..." : "Vào dashboard học viên"}
-        </button>
+        <Button isLoading={isSubmitting} loadingLabel="Đang đăng nhập..." type="submit">
+          Vào dashboard học viên
+        </Button>
       </form>
       <div className="mt-6 grid gap-3 rounded-2xl bg-[#f2eadf] p-4 text-sm leading-6 text-black/60">
         <p>

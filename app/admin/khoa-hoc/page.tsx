@@ -1,5 +1,5 @@
 import { CourseEditor } from "@/components/admin/course-editor";
-import { AdminShell } from "@/components/app/admin-shell";
+import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { SoftCard } from "@/components/ui/soft-card";
 import { getCourses } from "@/services/courseService";
 
@@ -7,7 +7,7 @@ export default async function AdminCoursesPage() {
   const courses = await getCourses();
 
   return (
-    <AdminShell>
+    <ProtectedAdminShell nextPath="/admin/khoa-hoc">
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
@@ -32,6 +32,6 @@ export default async function AdminCoursesPage() {
           <CourseEditor initialCourses={courses} />
         </div>
       </div>
-    </AdminShell>
+    </ProtectedAdminShell>
   );
 }

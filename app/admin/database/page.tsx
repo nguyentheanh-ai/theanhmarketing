@@ -1,4 +1,4 @@
-import { AdminShell } from "@/components/app/admin-shell";
+import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { SoftCard } from "@/components/ui/soft-card";
 import { getDatabaseHealth } from "@/services/databaseHealthService";
 
@@ -6,7 +6,7 @@ export default async function AdminDatabasePage() {
   const health = await getDatabaseHealth();
 
   return (
-    <AdminShell>
+    <ProtectedAdminShell nextPath="/admin/database">
       <div className="mx-auto max-w-7xl">
         <p className="text-sm font-semibold text-[#c77b20]">Supabase</p>
         <h1 className="mt-4 text-5xl font-black tracking-[-0.04em]">
@@ -69,6 +69,6 @@ export default async function AdminDatabasePage() {
           ))}
         </section>
       </div>
-    </AdminShell>
+    </ProtectedAdminShell>
   );
 }

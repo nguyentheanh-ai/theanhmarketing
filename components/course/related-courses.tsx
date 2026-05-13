@@ -1,10 +1,13 @@
 import { CourseCard } from "@/components/content/course-card";
 import { SectionHeading } from "@/components/ui/section-heading";
 import type { Course } from "@/data/courses";
-import { getRelatedCourses } from "@/data/courses";
+import { getCourses } from "@/services/courseService";
 
-export function RelatedCourses({ course }: { course: Course }) {
-  const related = getRelatedCourses(course);
+export async function RelatedCourses({ course }: { course: Course }) {
+  const courses = await getCourses();
+  const related = courses
+    .filter((item) => course.relatedSlugs.includes(item.slug))
+    .slice(0, 2);
 
   if (related.length === 0) {
     return null;

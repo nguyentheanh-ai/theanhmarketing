@@ -1,11 +1,11 @@
-import { AdminShell } from "@/components/app/admin-shell";
+import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SoftCard } from "@/components/ui/soft-card";
 import { adminMetrics, sampleLeads, sampleOrders, sampleStudents } from "@/data/platform";
 
 export default function AdminDashboardPage() {
   return (
-    <AdminShell>
+    <ProtectedAdminShell nextPath="/admin/dashboard">
       <div className="mx-auto max-w-[1440px]">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
@@ -89,6 +89,6 @@ export default function AdminDashboardPage() {
           </div>
         </SoftCard>
       </div>
-    </AdminShell>
+    </ProtectedAdminShell>
   );
 }

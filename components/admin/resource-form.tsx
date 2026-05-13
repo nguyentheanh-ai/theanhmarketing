@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 function toAccessType(value: string) {
@@ -86,13 +87,9 @@ export function ResourceForm() {
         name="description"
         placeholder="Mô tả tài liệu"
       />
-      <button
-        className="w-fit rounded-full bg-black px-6 py-3 text-sm font-bold text-white disabled:opacity-60"
-        disabled={isSaving}
-        type="submit"
-      >
-        {isSaving ? "Đang lưu..." : "Lưu tài liệu"}
-      </button>
+      <Button className="w-fit" isLoading={isSaving} loadingLabel="Đang lưu..." type="submit">
+        Lưu tài liệu
+      </Button>
       {message ? <p className="text-sm font-semibold text-black/55">{message}</p> : null}
     </form>
   );
