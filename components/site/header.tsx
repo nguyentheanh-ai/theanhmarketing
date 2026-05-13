@@ -1,11 +1,16 @@
 import Link from "next/link";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 import { ButtonLink } from "@/components/ui/button-link";
 import { mainNav } from "@/data/site";
+import { getCurrentAuth } from "@/lib/auth/session";
 import { getBrandSettings } from "@/services/brandService";
 
 export async function SiteHeader() {
-  const brand = await getBrandSettings();
+  const [brand, auth] = await Promise.all([getBrandSettings(), getCurrentAuth()]);
+  const isLoggedIn = Boolean(auth.user);
+  const primaryHref = isLoggedIn ? "/dashboard" : brand.primaryCtaHref;
+  const primaryLabel = isLoggedIn ? "Khóa học của tôi" : brand.primaryCtaLabel;
 
   return (
     <header className="site-header-motion fixed inset-x-0 top-0 z-50 border-b border-black/[0.04] bg-[#fbfaf7]/90 backdrop-blur-xl">
@@ -39,13 +44,17 @@ export async function SiteHeader() {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <ThemeToggle />
-          <ButtonLink href={brand.primaryCtaHref} className="hidden sm:inline-flex">
-            {brand.primaryCtaLabel}
+          <ButtonLink href={primaryHref} className="hidden sm:inline-flex">
+            {primaryLabel}
             <span aria-hidden="true">→</span>
           </ButtonLink>
-          <ButtonLink href="/dang-nhap" variant="ghost" className="hidden px-0 md:inline-flex">
-            Đăng nhập
-          </ButtonLink>
+          {isLoggedIn ? (
+            <SignOutButton className="hidden min-h-10 rounded-full px-4 text-sm font-bold text-black/60 transition hover:bg-black/[0.04] hover:text-black disabled:opacity-50 md:inline-flex md:items-center" />
+          ) : (
+            <ButtonLink href="/dang-nhap" variant="ghost" className="hidden px-0 md:inline-flex">
+              Đăng nhập
+            </ButtonLink>
+          )}
         </div>
       </div>
 
@@ -59,6 +68,14 @@ export async function SiteHeader() {
             {item.label}
           </Link>
         ))}
+        {isLoggedIn ? (
+          <Link
+            href="/dashboard"
+            className="shrink-0 rounded-full bg-black px-4 py-2 text-white shadow-[0_8px_24px_rgba(0,0,0,0.08)]"
+          >
+            Khóa học của tôi
+          </Link>
+        ) : null}
       </nav>
     </header>
   );
