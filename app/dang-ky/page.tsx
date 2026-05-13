@@ -24,15 +24,14 @@ export default async function RegisterPage() {
             Tạo hồ sơ học viên.
           </h1>
           <p className="mt-6 text-lg leading-9 text-black/65">
-            Bản hiện tại đã kết nối Supabase Auth. Khi admin xác nhận thanh
-            toán, học viên sẽ được gắn khóa học và mở quyền học trong dashboard.
+            Flow hiện tại đã có giỏ hàng và thanh toán Sepay tự động. Học viên chỉ cần tạo tài khoản, hệ thống sẽ tạo đơn và chuyển sang trang QR thanh toán.
           </p>
           <div className="mt-8 grid gap-4">
             {[
+              "Thêm khóa học vào giỏ",
               "Tạo tài khoản học viên",
-              "Chọn khóa học",
-              "Admin xác nhận thanh toán",
-              "Mở quyền học trong dashboard",
+              "Chuyển khoản qua mã QR Sepay",
+              "Hệ thống tự xác nhận thanh toán",
             ].map((item, index) => (
               <div key={item} className="flex gap-4">
                 <span className="grid size-8 shrink-0 place-items-center rounded-full bg-black text-xs font-bold text-white">

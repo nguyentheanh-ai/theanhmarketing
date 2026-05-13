@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
+import { Suspense } from "react";
 import { OrganizationJsonLd, WebsiteJsonLd } from "@/components/seo/json-ld";
+import { RouteProgress } from "@/components/site/route-progress";
 import { siteConfig } from "@/data/site";
 import "./globals.css";
 
@@ -53,6 +55,9 @@ export default function RootLayout({
       className={`${beVietnamPro.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <Suspense fallback={null}>
+          <RouteProgress />
+        </Suspense>
         <OrganizationJsonLd />
         <WebsiteJsonLd />
         {children}

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { SignOutButton } from "@/components/auth/sign-out-button";
-import { ThemeToggle } from "@/components/site/theme-toggle";
 import { ButtonLink } from "@/components/ui/button-link";
 import { mainNav } from "@/data/site";
 import { getCurrentAuth } from "@/lib/auth/session";
@@ -19,11 +18,7 @@ export async function SiteHeader() {
           <span className="grid size-9 place-items-center overflow-hidden rounded-full bg-[#09090a] text-sm font-bold text-white">
             {brand.logoImage ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img
-                alt={brand.name}
-                className="size-full object-cover"
-                src={brand.logoImage}
-              />
+              <img alt={brand.name} className="size-full object-cover" src={brand.logoImage} />
             ) : (
               brand.logoMark
             )}
@@ -43,7 +38,6 @@ export async function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <ThemeToggle />
           <ButtonLink href={primaryHref} className="hidden sm:inline-flex">
             {primaryLabel}
             <span aria-hidden="true">→</span>

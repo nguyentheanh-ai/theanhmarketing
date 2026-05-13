@@ -1,0 +1,44 @@
+import { NextResponse } from "next/server";
+import { verifySepayApiKey, type SepayWebhookPayload } from "@/lib/payments/sepay";
+import { confirmOrderFromSepay } from "@/services/orderService";
+
+export const runtime = "nodejs";
+
+export async function POST(request: Request) {
+  if (!verifySepayApiKey(request.headers)) {
+    return NextResponse.json({ success: false, message: "Sai API key Sepay." }, { status: 401 });
+  }
+
+  let payload: SepayWebhookPayload;
+  const contentType = request.headers.get("content-type") ?? "";
+
+  try {
+    if (contentType.includes("application/json")) {
+      payload = (await request.json()) as SepayWebhookPayload;
+    } else if (contentType.includes("application/x-www-form-urlencoded")) {
+      const form = await request.formData();
+      payload = Object.fromEntries(form.entries()) as SepayWebhookPayload;
+    } else {
+      payload = (await request.json()) as SepayWebhookPayload;
+    }
+  } catch {
+    return NextResponse.json(
+      { success: false, message: "Payload webhook Sepay không hợp lệ." },
+      { status: 400 },
+    );
+  }
+
+  try {
+    const order = await confirmOrderFromSepay(payload);
+
+    return NextResponse.json({ success: true, orderCode: order.orderCode });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: error instanceof Error ? error.message : "Không xử lý được webhook Sepay.",
+      },
+      { status: 422 },
+    );
+  }
+}

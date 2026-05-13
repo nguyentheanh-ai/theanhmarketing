@@ -20,6 +20,7 @@ type DbCourse = {
   thumbnail_image: string | null;
   preview_video_url: string | null;
   cta_text: string | null;
+  sort_order: number | null;
   course_modules?: DbModule[];
 };
 
@@ -203,7 +204,7 @@ export function mapDbCourseToCourse(course: DbCourse): Course {
     originalPrice: toDisplayPrice(course.original_price),
     status: toCourseStatus(course.status),
     statusLabel: toCourseStatus(course.status) === "coming-soon" ? "Sắp ra mắt" : "Đang mở đăng ký",
-    ctaText: course.cta_text ?? "Đăng ký khóa học",
+    ctaText: course.cta_text ?? "Tạo tài khoản",
     duration: toDisplayDuration(course.duration),
     level: toDisplayLevel(course.level),
     updatedAt: course.updated_at ?? "",
@@ -247,6 +248,7 @@ export async function getCourses() {
     .select(
       "*, course_modules(*, lessons(*))",
     )
+    .order("sort_order", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: false });
 
   if (error || !data || data.length === 0) {

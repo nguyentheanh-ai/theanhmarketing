@@ -82,7 +82,7 @@ export const courses: Course[] = [
     originalPrice: "3.995.000đ",
     status: "open",
     statusLabel: "Đang mở đăng ký",
-    ctaText: "Đăng ký khóa học",
+    ctaText: "Tạo tài khoản",
     duration: "4 giờ",
     level: "Người mới đến thực chiến",
     updatedAt: "12/04/2026",

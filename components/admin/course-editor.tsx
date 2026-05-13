@@ -88,6 +88,10 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
     () => courses.find((course) => course.slug === selectedSlug) ?? courses[0],
     [courses, selectedSlug],
   );
+  const selectedCourseIndex = useMemo(
+    () => courses.findIndex((course) => course.slug === selectedSlug),
+    [courses, selectedSlug],
+  );
 
   function persist(nextCourses: Course[]) {
     setCourses(nextCourses);
@@ -183,6 +187,23 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
     setNotice("Đã tạo khóa học mới trong local CMS. Bấm Lưu Supabase để ghi vào database.");
   }
 
+  function moveSelectedCourse(direction: "up" | "down") {
+    if (selectedCourseIndex < 0) {
+      return;
+    }
+
+    const targetIndex = direction === "up" ? selectedCourseIndex - 1 : selectedCourseIndex + 1;
+    if (targetIndex < 0 || targetIndex >= courses.length) {
+      return;
+    }
+
+    const nextCourses = courses.slice();
+    const [current] = nextCourses.splice(selectedCourseIndex, 1);
+    nextCourses.splice(targetIndex, 0, current);
+    persist(nextCourses);
+    setNotice("Đã cập nhật thứ tự khóa học. Bấm lưu để đồng bộ Supabase.");
+  }
+
   async function saveSelectedCourseToSupabase() {
     setIsSaving(true);
     const supabase = createSupabaseBrowserClient();
@@ -212,6 +233,7 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
           thumbnail_image: selectedCourse.thumbnailImageUrl,
           preview_video_url: selectedCourse.videoPreviewUrl,
           cta_text: selectedCourse.ctaText,
+          sort_order: selectedCourseIndex >= 0 ? selectedCourseIndex + 1 : null,
         };
 
     let { data: savedCourse, error: courseError } = await supabase
@@ -591,12 +613,36 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
           value={selectedCourse.slug}
           onChange={(event) => setSelectedSlug(event.target.value)}
         >
-          {courses.map((course) => (
+          {courses.map((course, index) => (
             <option key={course.slug} value={course.slug}>
-              {course.title}
+              {index + 1}. {course.title}
             </option>
           ))}
         </select>
+        <div className="mt-4 rounded-2xl border border-black/10 bg-[#fbfaf7] p-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-black/45">
+            Thứ tự hiển thị hiện tại
+          </p>
+          <div className="mt-2 grid gap-2">
+            {courses.map((course, index) => (
+              <button
+                key={`order-${course.slug}`}
+                className={`flex items-center gap-3 rounded-xl px-3 py-2 text-left text-sm transition ${
+                  course.slug === selectedCourse.slug
+                    ? "bg-[#e7f3df] font-bold text-[#1f5e41]"
+                    : "bg-white text-black/65 hover:text-black"
+                }`}
+                type="button"
+                onClick={() => setSelectedSlug(course.slug)}
+              >
+                <span className="grid size-6 place-items-center rounded-full bg-black text-xs font-bold text-white">
+                  {index + 1}
+                </span>
+                <span className="line-clamp-1">{course.title}</span>
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Button size="md" type="button" onClick={addCourse}>
             Thêm khóa học
@@ -613,6 +659,24 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
           </Button>
           <Button size="md" type="button" variant="danger" onClick={deleteSelectedCourseFromSupabase}>
             Xóa khóa học
+          </Button>
+          <Button
+            size="md"
+            type="button"
+            variant="secondary"
+            disabled={selectedCourseIndex <= 0}
+            onClick={() => moveSelectedCourse("up")}
+          >
+            Đưa lên
+          </Button>
+          <Button
+            size="md"
+            type="button"
+            variant="secondary"
+            disabled={selectedCourseIndex < 0 || selectedCourseIndex >= courses.length - 1}
+            onClick={() => moveSelectedCourse("down")}
+          >
+            Đưa xuống
           </Button>
           <Button size="md" type="button" variant="secondary" onClick={exportCourses}>
             Xuất JSON

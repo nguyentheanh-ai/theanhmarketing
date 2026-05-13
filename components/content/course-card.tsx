@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ButtonLink } from "@/components/ui/button-link";
+import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import type { Course } from "@/data/courses";
 import { getCourseLessonCount } from "@/data/courses";
 
@@ -20,9 +20,7 @@ function getPosterStyle(course: Course) {
 
 export function CourseCard({ course }: { course: Course }) {
   return (
-    <article
-      className="group flex min-h-[390px] flex-col overflow-hidden rounded-[1.35rem] bg-white shadow-[0_22px_70px_rgba(50,34,12,0.07)] ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_90px_rgba(50,34,12,0.11)]"
-    >
+    <article className="group flex min-h-[390px] flex-col overflow-hidden rounded-[1.35rem] bg-white shadow-[0_22px_70px_rgba(50,34,12,0.07)] ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_90px_rgba(50,34,12,0.11)]">
       <div
         className="relative flex min-h-[230px] flex-1 flex-col justify-between overflow-hidden bg-cover bg-center p-5"
         style={getPosterStyle(course)}
@@ -60,17 +58,18 @@ export function CourseCard({ course }: { course: Course }) {
           <span>{getCourseLessonCount(course)} bài học</span>
         </div>
         <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-          <ButtonLink href={`/khoa-hoc/${course.slug}#giao-trinh`} className="flex-1" size="md">
-            Học thử miễn phí
-          </ButtonLink>
-          <ButtonLink
-            href={`/khoa-hoc/${course.slug}`}
+          <AddToCartButton
+            slug={course.slug}
+            title={course.title}
+            price={course.price}
             className="flex-1"
-            size="md"
-            variant="secondary"
+          />
+          <Link
+            href={`/khoa-hoc/${course.slug}#giao-trinh`}
+            className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-black/10 bg-white px-5 text-sm font-bold text-black/72 transition hover:border-black/25 hover:text-black"
           >
-            Chi tiết
-          </ButtonLink>
+            Học thử miễn phí
+          </Link>
         </div>
       </div>
     </article>

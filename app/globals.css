@@ -18,24 +18,21 @@ body {
   font-family: var(--font-be-vietnam-pro), Arial, Helvetica, sans-serif;
 }
 
-html.dark-preview {
-  --background: #171717;
-  --foreground: #f8f4ec;
+.route-progress {
+  background: linear-gradient(90deg, #1f6bff 0%, #41a0ff 100%);
+  height: 3px;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  transition: width 220ms ease-out, opacity 180ms ease;
+  width: 0;
+  z-index: 90;
 }
 
-html.dark-preview body {
-  background: #171717;
-}
-
-html.dark-preview .page-motion,
-html.dark-preview footer {
-  filter: invert(1) hue-rotate(180deg);
-}
-
-html.dark-preview img,
-html.dark-preview iframe,
-html.dark-preview video {
-  filter: invert(1) hue-rotate(180deg);
+.route-progress--active {
+  opacity: 1;
 }
 
 html {

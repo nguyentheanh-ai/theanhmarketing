@@ -36,7 +36,7 @@ function createMarketingCourse(title: string, index: number): Course {
     originalPrice: index < 3 ? "3.990.000đ" : "2.490.000đ",
     status: "open",
     statusLabel: "Đang mở đăng ký",
-    ctaText: "Đăng ký khóa học",
+    ctaText: "Tạo tài khoản",
     duration: index < 3 ? "6 giờ" : "4 giờ",
     level: "Cơ bản đến thực chiến",
     updatedAt: "13/05/2026",

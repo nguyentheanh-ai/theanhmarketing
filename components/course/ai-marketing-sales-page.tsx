@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
+import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SiteOfferPopup } from "@/components/site/offer-popup";
@@ -295,7 +296,10 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
             ))}
           </nav>
           <div className="hidden items-center gap-3 lg:flex">
-            <ButtonLink href="/dang-ky">Đăng ký tư vấn</ButtonLink>
+            <ButtonLink href="/gio-hang" variant="secondary">
+              Giỏ hàng
+            </ButtonLink>
+            <ButtonLink href="/dang-ky">Tạo tài khoản</ButtonLink>
           </div>
           <button
             className="grid size-12 place-items-center rounded-full border-2 border-black bg-white text-2xl font-black shadow-[4px_4px_0_#111] lg:hidden"
@@ -319,8 +323,11 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
                 {item.label}
               </a>
             ))}
+            <ButtonLink href="/gio-hang" variant="secondary" className="mt-2">
+              Giỏ hàng
+            </ButtonLink>
             <ButtonLink href="/dang-ky" className="mt-2">
-              Đăng ký tư vấn
+              Tạo tài khoản
             </ButtonLink>
           </nav>
         ) : null}
@@ -339,7 +346,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
           </h1>
           <p className="hero-copy mt-7 max-w-2xl text-lg leading-9 text-black/68">{content.subheadline}</p>
           <div className="hero-actions mt-8 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href="/dang-ky">Đăng ký tư vấn</ButtonLink>
+            <ButtonLink href="/dang-ky">Tạo tài khoản</ButtonLink>
             <ButtonLink href="#lo-trinh" variant="secondary">
               Xem lộ trình học
             </ButtonLink>
@@ -485,8 +492,14 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
               )}
             </div>
             <ButtonLink href="/dang-ky" className="mt-8 w-full">
-              Đăng ký tư vấn
+              Tạo tài khoản
             </ButtonLink>
+            <AddToCartButton
+              slug={course.slug}
+              title={course.title}
+              price={course.price}
+              className="mt-3 w-full"
+            />
           </Card>
           <Card title={`Giảng viên: ${course.instructor?.name || "Thế Anh Marketing"}`}>{content.instructorCopy}</Card>
         </div>

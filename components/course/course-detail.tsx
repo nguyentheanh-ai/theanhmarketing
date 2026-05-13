@@ -1,3 +1,4 @@
+import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { CourseMedia } from "@/components/course/course-media";
 import { CoursePriceCard } from "@/components/course/course-price-card";
 import { CourseTabs } from "@/components/course/course-tabs";
@@ -26,8 +27,9 @@ export function CourseDetail({ course }: { course: Course }) {
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <ButtonLink href="#giao-trinh">Học thử miễn phí</ButtonLink>
+              <AddToCartButton slug={course.slug} title={course.title} price={course.price} />
               <ButtonLink href="/dang-ky" variant="secondary">
-                Đăng ký khóa học
+                Tạo tài khoản
               </ButtonLink>
             </div>
             <div className="mt-10 grid gap-4 sm:grid-cols-4">

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { CartToast } from "@/components/cart/cart-toast";
 import { SiteOfferPopup } from "@/components/site/offer-popup";
 import { SiteFooter } from "@/components/site/footer";
 import { SiteHeader } from "@/components/site/header";
@@ -12,6 +13,7 @@ export async function PageShell({ children }: { children: ReactNode }) {
       <SiteHeader />
       <div className="page-motion">{children}</div>
       <SiteFooter />
+      <CartToast />
       <SiteOfferPopup offer={offer} />
     </main>
   );
