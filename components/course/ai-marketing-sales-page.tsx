@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { ButtonLink } from "@/components/ui/button-link";
+import { SiteOfferPopup } from "@/components/site/offer-popup";
 import type { Course } from "@/data/courses";
 import type { OfferSettings } from "@/services/offerService";
 
@@ -276,7 +277,6 @@ function buildLandingContent(course: Course): LandingContent {
 
 export function CourseSalesPage({ course, offer }: { course: Course; offer: OfferSettings }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isOfferOpen, setIsOfferOpen] = useState(true);
   const [openLesson, setOpenLesson] = useState(0);
   const content = useMemo(() => buildLandingContent(course), [course]);
 
@@ -527,9 +527,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
         </div>
       </footer>
 
-      {offer.enabled ? (
-        <OfferPopup isOpen={isOfferOpen} offer={offer} onToggle={() => setIsOfferOpen((current) => !current)} courseTitle={course.title} />
-      ) : null}
+      <SiteOfferPopup contextTitle={course.title} offer={offer} />
     </main>
   );
 }
@@ -554,61 +552,5 @@ function Card({ children, title }: { children: ReactNode; title?: string }) {
       {title ? <h3 className="card-title mb-3 text-xl font-black tracking-[-0.03em]">{title}</h3> : null}
       <div className="leading-7 text-black/68">{children}</div>
     </div>
-  );
-}
-
-function OfferPopup({
-  isOpen,
-  offer,
-  onToggle,
-  courseTitle,
-}: {
-  isOpen: boolean;
-  offer: OfferSettings;
-  onToggle: () => void;
-  courseTitle: string;
-}) {
-  if (!isOpen) {
-    return (
-      <button
-        className="fixed bottom-6 left-5 z-50 rounded-full border-2 border-black bg-[#e7f3df] px-5 py-3 text-sm font-black shadow-[6px_6px_0_#111]"
-        type="button"
-        onClick={onToggle}
-      >
-        {offer.discountLabel || "Ưu đãi"}
-      </button>
-    );
-  }
-
-  return (
-    <aside className="fixed bottom-5 left-5 z-50 w-[min(380px,calc(100vw-2.5rem))] rounded-3xl border-2 border-black bg-white p-4 shadow-[8px_8px_0_#111]">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xl font-black tracking-[-0.04em]">{offer.title}</p>
-          <p className="mt-1 text-sm font-semibold text-black/55">
-            {offer.description || `Nhận tư vấn lộ trình và tài liệu phù hợp với ${courseTitle}.`}
-          </p>
-        </div>
-        <button className="grid size-9 shrink-0 place-items-center rounded-full bg-[#e7f3df] text-2xl font-black" type="button" onClick={onToggle}>
-          ×
-        </button>
-      </div>
-      {offer.couponCode ? (
-        <div className="mt-4 rounded-2xl border-2 border-dashed border-[#2f8f62] bg-[#e7f3df] p-3">
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2f6f4d]">{offer.discountLabel || "Mã giảm giá"}</p>
-          <p className="mt-1 text-2xl font-black tracking-[0.08em] text-black">{offer.couponCode}</p>
-        </div>
-      ) : null}
-      <div className="mt-4 grid gap-3">
-        {offer.items.map((item) => (
-          <div key={item} className="motion-card rounded-2xl border border-black/10 bg-[#fbfaf7] p-3">
-            <p className="text-sm font-bold">{item}</p>
-            <ButtonLink href={offer.ctaHref || "/dang-ky"} size="sm" className="mt-3">
-              {offer.ctaLabel || "Nhận ưu đãi"}
-            </ButtonLink>
-          </div>
-        ))}
-      </div>
-    </aside>
   );
 }
