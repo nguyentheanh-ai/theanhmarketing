@@ -36,13 +36,15 @@ export default async function PaymentPage({
   const sepay = getSepayConfig();
   const configured = isSepayConfigured();
   const transferContent = (order.sepayReferenceCode || order.orderCode).toUpperCase();
+  const staticQrUrl = "/sepay/QR_Code.png";
   const qrUrl =
     order.paymentQrUrl ||
     createVietQrUrl({
       amount: order.amount,
       orderCode: transferContent,
       accountName: sepay.bankAccountName,
-    });
+    }) ||
+    staticQrUrl;
   const bankName = getBankDisplayName(sepay.bankCode);
 
   return (
@@ -65,7 +67,7 @@ export default async function PaymentPage({
         </div>
 
         <SoftCard>
-          {configured && qrUrl ? (
+          {qrUrl ? (
             <div className="grid gap-5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -74,12 +76,19 @@ export default async function PaymentPage({
                 src={qrUrl}
               />
               <div className="grid gap-3 rounded-2xl border border-black/10 bg-[#fbfaf7] p-4 text-sm leading-6 text-black/65">
+                {!configured ? (
+                  <p className="rounded-xl bg-[#fff4df] px-3 py-2 text-[#9b5c13]">
+                    Dang dung QR du phong. Vui long giu dung noi dung chuyen khoan ben duoi.
+                  </p>
+                ) : null}
                 <p>
-                  Ngan hang: <span className="font-bold text-black">{bankName}</span>
+                  Ngan hang: <span className="font-bold text-black">{bankName || "Theo ma QR SePay"}</span>
                 </p>
                 <p>
                   So tai khoan:{" "}
-                  <span className="font-bold text-black">{sepay.bankAccountNumber}</span>
+                  <span className="font-bold text-black">
+                    {sepay.bankAccountNumber || "Theo ma QR SePay"}
+                  </span>
                 </p>
                 {sepay.bankAccountName ? (
                   <p>
