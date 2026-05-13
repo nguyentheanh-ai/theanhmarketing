@@ -23,8 +23,13 @@ export default async function AdminCoursesPage() {
           <p className="mt-3 max-w-3xl leading-8 text-black/60">
             Editor này đọc Supabase trước, fallback về dữ liệu mẫu nếu database
             rỗng. Khi bấm lưu Supabase, khóa học, module và bài học được ghi
-            vào bảng thật. localStorage chỉ còn là lớp backup/export an toàn
-            trong lúc vận hành.
+            vào bảng thật. Trang public `/khoa-hoc` và khu học viên đều đọc lại
+            cùng nguồn dữ liệu này, nên đổi tiêu đề, link YouTube hoặc quyền học
+            thử trong admin rồi lưu là hai nơi kia sẽ đồng bộ. localStorage chỉ
+            còn là lớp backup/export an toàn, không tự đè dữ liệu Supabase khi
+            mở admin. Logic preview tại đây cũng đồng bộ với trang khóa học
+            public: bài Miễn phí phát video, bài Premium chỉ hiện thumbnail cho
+            tới khi khách mua khóa.
           </p>
         </SoftCard>
 

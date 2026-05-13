@@ -12,7 +12,7 @@ type BlogPost = {
 export function BlogCard({ post }: { post: BlogPost }) {
   return (
     <Link href={`/blog/${post.slug}`}>
-      <SoftCard className="group h-full hover:-translate-y-1 hover:shadow-[0_28px_80px_rgba(0,0,0,0.08)]">
+      <SoftCard className="group h-full hover:shadow-[0_28px_80px_rgba(0,0,0,0.08)]">
         <p className="text-sm font-semibold text-[#c77b20]">
           {post.category} · {post.readTime}
         </p>

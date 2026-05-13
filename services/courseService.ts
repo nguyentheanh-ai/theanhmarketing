@@ -151,7 +151,7 @@ export function toLessonAccess(accessType: string | null): LessonAccess {
     return "paid";
   }
 
-  return "locked";
+  return "paid";
 }
 
 export function toDbLessonAccess(access: LessonAccess) {
@@ -163,7 +163,7 @@ export function toDbLessonAccess(access: LessonAccess) {
     return "enrolled_only";
   }
 
-  return "locked";
+  return "enrolled_only";
 }
 
 export function mapDbCourseToCourse(course: DbCourse): Course {
@@ -223,8 +223,8 @@ export function mapDbCourseToCourse(course: DbCourse): Course {
     requirements: [],
     modules,
     instructor: {
-      name: "Thế Anh",
-      title: "Founder Thế Anh Marketing",
+      name: "The Anh",
+      title: "Founder The Anh Marketing",
       bio: "Đào tạo Marketing & Kinh doanh Online theo hướng thực chiến, dễ hiểu và có thể áp dụng.",
     },
     reviews: [],

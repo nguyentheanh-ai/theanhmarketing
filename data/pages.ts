@@ -30,12 +30,12 @@ export const publicPages = {
   },
   about: {
     eyebrow: "Giới thiệu",
-    title: "Thế Anh Marketing được xây để học marketing dễ hiểu hơn.",
+    title: "The Anh Marketing được xây để học marketing dễ hiểu hơn.",
     description:
       "Nền tảng tập trung vào cách học thực chiến, có lộ trình, có tài liệu và có khả năng áp dụng vào kinh doanh thật.",
     mediaLabel: "Ảnh founder / lớp học",
     mediaNote:
-      "Bạn có thể bổ sung ảnh Thế Anh, ảnh lớp học hoặc hình ảnh cộng đồng tại đây.",
+      "Bạn có thể bổ sung ảnh The Anh, ảnh lớp học hoặc hình ảnh cộng đồng tại đây.",
     principlesEyebrow: "Triết lý đào tạo",
     principlesTitle: "Thực dụng, rõ ràng, có hệ thống.",
     principles: [
@@ -60,7 +60,7 @@ export const publicPages = {
     eyebrow: "Liên hệ",
     title: "Cần tư vấn lộ trình học phù hợp?",
     description:
-      "Liên hệ Thế Anh Marketing qua Zalo, hotline hoặc email để được định hướng khóa học, tài liệu và lộ trình phù hợp.",
+      "Liên hệ The Anh Marketing qua Zalo, hotline hoặc email để được định hướng khóa học, tài liệu và lộ trình phù hợp.",
     phoneDescription:
       "Phù hợp nếu bạn muốn được tư vấn nhanh về khóa học hoặc lộ trình.",
     emailDescription:

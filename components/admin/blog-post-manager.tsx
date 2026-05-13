@@ -21,7 +21,7 @@ const emptyPost: BlogPostItem = {
   title: "",
   category: "Facebook Ads",
   readTime: "5 phút đọc",
-  author: "Thế Anh Marketing",
+  author: "The Anh Marketing",
   excerpt: "",
   content: "",
   status: "published",

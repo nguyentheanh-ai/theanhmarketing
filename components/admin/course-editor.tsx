@@ -1,13 +1,14 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { Button } from "@/components/ui/button";
 import { SoftCard } from "@/components/ui/soft-card";
 import type { Course, CourseStatus, LessonAccess } from "@/data/courses";
+import { cleanLessonTitle } from "@/lib/lesson-title";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { uploadMediaFile } from "@/lib/supabase/media-upload";
-import { toYouTubeEmbedUrl } from "@/lib/youtube";
+import { toYouTubeEmbedUrl, toYouTubeThumbnailUrl } from "@/lib/youtube";
 
 const storageKey = "tam-admin-courses";
 
@@ -20,7 +21,7 @@ function toDbLessonAccess(access: LessonAccess) {
     return "enrolled_only";
   }
 
-  return "locked";
+  return "enrolled_only";
 }
 
 function toDatabasePrice(value: string) {
@@ -60,7 +61,6 @@ type CourseEditorProps = {
 
 export function CourseEditor({ initialCourses }: CourseEditorProps) {
   const importInputRef = useRef<HTMLInputElement>(null);
-  const [isMounted, setIsMounted] = useState(false);
   const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [selectedSlug, setSelectedSlug] = useState(initialCourses[0]?.slug ?? "");
   const [draggedSlug, setDraggedSlug] = useState("");
@@ -78,32 +78,6 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
     () => courses.findIndex((course) => course.slug === selectedSlug),
     [courses, selectedSlug],
   );
-
-  useEffect(() => {
-    setIsMounted(true);
-
-    const cached = window.localStorage.getItem(storageKey);
-    if (!cached) {
-      return;
-    }
-
-    try {
-      const parsed = JSON.parse(cached) as Course[];
-      if (!Array.isArray(parsed) || parsed.length === 0) {
-        return;
-      }
-
-      setCourses(parsed);
-      setSelectedSlug((currentSlug) => {
-        if (parsed.some((course) => course.slug === currentSlug)) {
-          return currentSlug;
-        }
-        return parsed[0]?.slug ?? "";
-      });
-    } catch {
-      // Ignore invalid local cache and keep server-provided data.
-    }
-  }, []);
 
   function persist(nextCourses: Course[]) {
     setCourses(nextCourses);
@@ -338,6 +312,9 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
       }
 
       setNotice("Đã lưu khóa học, module và bài học lên Supabase.");
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(storageKey, JSON.stringify(courses));
+      }
       setHasLocalChanges(false);
       setIsSaving(false);
     } catch (error) {
@@ -575,7 +552,7 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
                           order: module.lessons.length + 1,
                           youtubeUrl: "",
                           embedUrl: "",
-                          access: "locked",
+                          access: "paid",
                           resources: [],
                           allowComments: true,
                         },
@@ -634,21 +611,17 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
     <div className="grid gap-5">
       <SoftCard>
         <p className="text-sm font-semibold text-[#c77b20]">Chọn khóa học</p>
-        {isMounted ? (
-          <select
-            className="mt-4 min-h-12 w-full rounded-2xl border border-black/10 bg-white px-4"
-            value={selectedCourse.slug}
-            onChange={(event) => setSelectedSlug(event.target.value)}
-          >
-            {courses.map((course, index) => (
-              <option key={course.slug} value={course.slug}>
-                {index + 1}. {course.title}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <div className="mt-4 h-12 w-full animate-pulse rounded-2xl border border-black/10 bg-[#f4f0e8]" />
-        )}
+        <select
+          className="mt-4 min-h-12 w-full rounded-2xl border border-black/10 bg-white px-4"
+          value={selectedCourse.slug}
+          onChange={(event) => setSelectedSlug(event.target.value)}
+        >
+          {courses.map((course, index) => (
+            <option key={course.slug} value={course.slug}>
+              {index + 1}. {course.title}
+            </option>
+          ))}
+        </select>
         <div className="mt-4 rounded-2xl border border-black/10 bg-[#fbfaf7] p-3">
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-black/45">
             Thứ tự hiển thị hiện tại
@@ -821,8 +794,8 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
                       type="button"
                       onClick={() => toggleModule(module.id)}
                     >
-                      <span className={`inline-block transition-transform ${isExpanded ? "rotate-90" : ""}`}>
-                        →
+                      <span className="inline-block">
+                        {isExpanded ? "−" : "+"}
                       </span>
                       <span>
                         {isExpanded ? "Thu gọn bài học" : "Show bài học"} · {module.lessons.length} bài
@@ -851,46 +824,97 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
                         {module.lessons
                           .slice()
                           .sort((a, b) => a.order - b.order)
-                          .map((lesson) => (
-                            <div key={lesson.id} className="grid gap-3 rounded-2xl bg-[#f7f3ec] p-4">
-                              <div className="grid gap-3 md:grid-cols-[70px_1fr_120px_1fr_220px]">
-                              <input className="min-h-11 rounded-xl border border-black/10 px-3" value={lesson.order} onChange={(e) => updateLesson(module.id, lesson.id, "order", e.target.value)} />
-                              <input className="min-h-11 rounded-xl border border-black/10 px-3" value={lesson.title} onChange={(e) => updateLesson(module.id, lesson.id, "title", e.target.value)} />
-                              <input className="min-h-11 rounded-xl border border-black/10 px-3" value={lesson.duration} onChange={(e) => updateLesson(module.id, lesson.id, "duration", e.target.value)} />
-                              <input className="min-h-11 rounded-xl border border-black/10 px-3" placeholder="YouTube URL" value={lesson.youtubeUrl} onChange={(e) => updateLesson(module.id, lesson.id, "youtubeUrl", e.target.value)} />
-                              <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
-                                <select className="min-h-11 rounded-xl border border-black/10 bg-white px-3" value={lesson.access} onChange={(e) => updateLesson(module.id, lesson.id, "access", e.target.value)}>
-                                  <option value="free">Học thử miễn phí</option>
-                                  <option value="paid">Chỉ học viên đã mua</option>
-                                  <option value="locked">Khóa</option>
-                                </select>
-                                <Button
-                                  className="rounded-xl"
-                                  size="sm"
-                                  type="button"
-                                  variant="danger"
-                                  onClick={() => deleteLesson(module.id, lesson.id)}
-                                >
-                                  Xóa
-                                </Button>
-                              </div>
-                              </div>
-                              <textarea
-                                className="min-h-20 rounded-xl border border-black/10 p-3 text-sm"
-                                placeholder={"Tài liệu bài học, mỗi dòng: Tên tài liệu|https://link"}
-                                value={serializeLessonResources(lesson.resources)}
-                                onChange={(e) => updateLesson(module.id, lesson.id, "resources", e.target.value)}
-                              />
-                              <label className="flex items-center gap-2 text-sm font-semibold text-black/60">
-                                <input
-                                  checked={lesson.allowComments ?? true}
-                                  type="checkbox"
-                                  onChange={(e) => updateLesson(module.id, lesson.id, "allowComments", String(e.target.checked))}
+                          .map((lesson) => {
+                            const displayTitle = cleanLessonTitle(lesson.title);
+                            const embedUrl = toYouTubeEmbedUrl(lesson.youtubeUrl);
+                            const thumbnailUrl = toYouTubeThumbnailUrl(lesson.youtubeUrl);
+                            const isFreePreview = lesson.access === "free";
+
+                            return (
+                              <div key={lesson.id} className="grid gap-3 rounded-2xl bg-[#f7f3ec] p-4">
+                                <div className="grid gap-3 md:grid-cols-[70px_1fr_120px_1fr_220px]">
+                                  <input className="min-h-11 rounded-xl border border-black/10 px-3" value={lesson.order} onChange={(e) => updateLesson(module.id, lesson.id, "order", e.target.value)} />
+                                  <input className="min-h-11 rounded-xl border border-black/10 px-3" value={lesson.title} onChange={(e) => updateLesson(module.id, lesson.id, "title", e.target.value)} />
+                                  <input className="min-h-11 rounded-xl border border-black/10 px-3" value={lesson.duration} onChange={(e) => updateLesson(module.id, lesson.id, "duration", e.target.value)} />
+                                  <input className="min-h-11 rounded-xl border border-black/10 px-3" placeholder="YouTube URL" value={lesson.youtubeUrl} onChange={(e) => updateLesson(module.id, lesson.id, "youtubeUrl", e.target.value)} />
+                                  <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+                                    <select className="min-h-11 rounded-xl border border-black/10 bg-white px-3" value={lesson.access} onChange={(e) => updateLesson(module.id, lesson.id, "access", e.target.value)}>
+                                      <option value="free">Miễn phí</option>
+                                      <option value="paid">Premium</option>
+                                    </select>
+                                    <Button
+                                      className="rounded-xl"
+                                      size="sm"
+                                      type="button"
+                                      variant="danger"
+                                      onClick={() => deleteLesson(module.id, lesson.id)}
+                                    >
+                                      Xóa
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                <div className="grid gap-4 rounded-2xl bg-white p-4 md:grid-cols-[180px_1fr] md:items-start">
+                                  <div className="relative overflow-hidden rounded-2xl bg-black">
+                                    {isFreePreview && embedUrl ? (
+                                      <iframe
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen
+                                        className="aspect-video w-full"
+                                        src={embedUrl}
+                                        title={displayTitle}
+                                      />
+                                    ) : thumbnailUrl ? (
+                                      <div
+                                        aria-label={displayTitle}
+                                        className="aspect-video w-full bg-cover bg-center"
+                                        role="img"
+                                        style={{ backgroundImage: `url(${thumbnailUrl})` }}
+                                      />
+                                    ) : (
+                                      <div className="flex aspect-video items-center justify-center bg-[#eadfce] px-3 text-center text-xs font-bold text-black/55">
+                                        Chưa có video
+                                      </div>
+                                    )}
+                                    <span className="absolute left-3 top-3 rounded-full bg-black/78 px-3 py-1 text-xs font-black text-white">
+                                      Bài {lesson.order}
+                                    </span>
+                                    {!isFreePreview ? (
+                                      <span className="absolute bottom-3 left-3 rounded-full bg-white px-3 py-1 text-xs font-black text-black">
+                                        Premium
+                                      </span>
+                                    ) : null}
+                                  </div>
+                                  <div>
+                                    <p className="text-xs font-black uppercase tracking-[0.12em] text-[#c77b20]">
+                                      Preview đồng bộ ngoài website
+                                    </p>
+                                    <p className="mt-2 font-bold text-black">{displayTitle}</p>
+                                      <p className="mt-2 text-sm leading-6 text-black/58">
+                                      {isFreePreview
+                                        ? "Bài miễn phí sẽ phát video trực tiếp trong lộ trình."
+                                        : "Bài Premium vẫn hiện trong lộ trình nhưng video chỉ mở cho khách đã mua khóa."}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <textarea
+                                  className="min-h-20 rounded-xl border border-black/10 p-3 text-sm"
+                                  placeholder={"Tài liệu bài học, mỗi dòng: Tên tài liệu|https://link"}
+                                  value={serializeLessonResources(lesson.resources)}
+                                  onChange={(e) => updateLesson(module.id, lesson.id, "resources", e.target.value)}
                                 />
-                                Cho phép học viên comment/hỏi ở bài này
-                              </label>
-                            </div>
-                          ))}
+                                <label className="flex items-center gap-2 text-sm font-semibold text-black/60">
+                                  <input
+                                    checked={lesson.allowComments ?? true}
+                                    type="checkbox"
+                                    onChange={(e) => updateLesson(module.id, lesson.id, "allowComments", String(e.target.checked))}
+                                  />
+                                  Cho phép học viên comment/hỏi ở bài này
+                                </label>
+                              </div>
+                            );
+                          })}
                       </div>
                       <Button
                         className="mt-4"

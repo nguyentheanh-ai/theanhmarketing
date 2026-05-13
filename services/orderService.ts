@@ -71,6 +71,10 @@ export type CreatePaymentOrderInput = {
   courseSlugs?: string[];
 };
 
+export type CreateManualPaidOrderInput = CreatePaymentOrderInput & {
+  note?: string;
+};
+
 function toOrderStatus(status: string | null | undefined): OrderStatus {
   if (status === "paid" || status === "failed" || status === "expired") {
     return status;
@@ -230,6 +234,82 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
   return mapDbOrder(fallbackInsert.data as DbOrder);
 }
 
+export async function createManualPaidOrder(input: CreateManualPaidOrderInput) {
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    throw new Error("Chưa cấu hình Supabase để cấp quyền học viên.");
+  }
+
+  const selectedCourses = await resolveCourses(input);
+
+  if (selectedCourses.length === 0) {
+    throw new Error("Không tìm thấy khóa học đã chọn.");
+  }
+
+  const amount = selectedCourses.reduce((sum, course) => sum + parseVndAmount(course.price), 0);
+  const orderCode = createOrderCode();
+  const courseSlug = selectedCourses.map((course) => course.slug).join(",");
+  const courseTitle = selectedCourses.map((course) => course.title).join(" | ");
+  const orderItems: OrderItem[] = selectedCourses.map((course) => ({
+    slug: course.slug,
+    title: course.title,
+    price: parseVndAmount(course.price),
+  }));
+  const paidAt = new Date().toISOString();
+
+  const firstInsert = await supabase
+    .from("orders")
+    .insert({
+      order_code: orderCode,
+      student_name: input.studentName,
+      email: input.email,
+      phone: input.phone,
+      course_slug: courseSlug,
+      course_title: courseTitle,
+      amount,
+      currency: "VND",
+      status: "paid",
+      payment_method: "manual-admin",
+      payment_qr_url: "",
+      paid_at: paidAt,
+      order_items: orderItems,
+    })
+    .select("*")
+    .single();
+
+  if (!firstInsert.error && firstInsert.data) {
+    return mapDbOrder(firstInsert.data as DbOrder);
+  }
+
+  const fallbackInsert = await supabase
+    .from("orders")
+    .insert({
+      order_code: orderCode,
+      student_name: input.studentName,
+      email: input.email,
+      phone: input.phone,
+      course_slug: courseSlug,
+      course_title: courseTitle,
+      amount,
+      currency: "VND",
+      status: "paid",
+      payment_method: "manual-admin",
+      payment_qr_url: "",
+      paid_at: paidAt,
+    })
+    .select("*")
+    .single();
+
+  if (fallbackInsert.error || !fallbackInsert.data) {
+    throw new Error(
+      fallbackInsert.error?.message ?? firstInsert.error?.message ?? "Không cấp được quyền học viên.",
+    );
+  }
+
+  return mapDbOrder(fallbackInsert.data as DbOrder);
+}
+
 export async function getPaymentOrder(orderCode: string) {
   const supabase = createSupabaseAdminClient();
 
@@ -250,11 +330,12 @@ export async function getPaymentOrder(orderCode: string) {
   return mapDbOrder(data as DbOrder);
 }
 
-export async function getPaymentOrders() {
+export async function getPaymentOrders(options: { includeFallback?: boolean } = {}) {
+  const includeFallback = options.includeFallback ?? true;
   const supabase = createSupabaseAdminClient();
 
   if (!supabase) {
-    return getFallbackOrders();
+    return includeFallback ? getFallbackOrders() : [];
   }
 
   const { data, error } = await supabase
@@ -263,6 +344,10 @@ export async function getPaymentOrders() {
     .order("created_at", { ascending: false });
 
   if (error || !data || data.length === 0) {
+    if (!includeFallback) {
+      return [];
+    }
+
     return getFallbackOrders();
   }
 

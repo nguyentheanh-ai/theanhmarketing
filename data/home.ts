@@ -3,7 +3,7 @@ export const homePage = {
     badge: "Nền tảng học Marketing thực chiến cho người làm thật",
     titleLines: ["Học Marketing", "& AI ứng dụng", "Có hệ thống"],
     description:
-      "Thế Anh Marketing là platform đào tạo Marketing thực chiến: khóa học, tài liệu, blog, khu học viên và hệ thống quản trị nội dung để học, triển khai và cập nhật lâu dài.",
+      "The Anh Marketing là platform đào tạo Marketing thực chiến: khóa học, tài liệu, blog, khu học viên và hệ thống quản trị nội dung để học, triển khai và cập nhật lâu dài.",
     primaryCta: {
       label: "Khám Phá Khóa Học",
       href: "/khoa-hoc",

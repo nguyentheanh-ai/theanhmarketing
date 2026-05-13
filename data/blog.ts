@@ -14,7 +14,7 @@ export const blogPosts: BlogPost[] = [
     title: "Cách học Facebook Ads cho người mới mà không bị lan man",
     category: "Facebook Ads",
     readTime: "6 phút đọc",
-    author: "Thế Anh Marketing",
+    author: "The Anh Marketing",
     excerpt:
       "Một lộ trình ngắn gọn để bắt đầu từ tư duy marketing, cấu trúc chiến dịch và cách đọc số liệu.",
     content:
@@ -25,7 +25,7 @@ export const blogPosts: BlogPost[] = [
     title: "Ứng dụng AI trong Marketing Online sao cho thực tế",
     category: "AI Marketing",
     readTime: "5 phút đọc",
-    author: "Thế Anh Marketing",
+    author: "The Anh Marketing",
     excerpt:
       "AI hữu ích nhất khi bạn có quy trình rõ: nghiên cứu khách hàng, viết angle, tạo biến thể và đo hiệu quả.",
     content:
@@ -36,7 +36,7 @@ export const blogPosts: BlogPost[] = [
     title: "Đọc chỉ số quảng cáo Facebook: nên nhìn gì trước?",
     category: "Hướng dẫn",
     readTime: "7 phút đọc",
-    author: "Thế Anh Marketing",
+    author: "The Anh Marketing",
     excerpt:
       "Không phải chỉ số nào cũng quan trọng như nhau. Hãy bắt đầu từ mục tiêu kinh doanh và tín hiệu chuyển đổi.",
     content:

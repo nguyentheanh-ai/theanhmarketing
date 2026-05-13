@@ -28,3 +28,8 @@ export function toYouTubeEmbedUrl(url: string) {
   const id = getYouTubeId(url);
   return id ? `https://www.youtube.com/embed/${id}` : "";
 }
+
+export function toYouTubeThumbnailUrl(url: string) {
+  const id = getYouTubeId(url);
+  return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : "";
+}

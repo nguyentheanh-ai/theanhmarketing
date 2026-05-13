@@ -8,7 +8,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { SoftCard } from "@/components/ui/soft-card";
 import type { Course } from "@/data/courses";
-import { getCourseLessonCount } from "@/data/courses";
+import { getCourseLessonCount, getCourseModuleCount } from "@/data/courses";
 
 export function CourseDetail({ course }: { course: Course }) {
   return (
@@ -35,7 +35,7 @@ export function CourseDetail({ course }: { course: Course }) {
             <div className="mt-10 grid gap-4 sm:grid-cols-4">
               {[
                 ["Bài học", String(getCourseLessonCount(course))],
-                ["Thời lượng", course.duration],
+                ["Module", String(getCourseModuleCount(course))],
                 ["Cấp độ", course.level],
                 ["Cập nhật", course.updatedAt],
               ].map(([label, value]) => (

@@ -4,7 +4,6 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import type { Course } from "@/data/courses";
-import { createLead } from "@/services/leadService";
 
 export function StudentIntakeForm({ courses }: { courses: Course[] }) {
   const router = useRouter();
@@ -17,32 +16,29 @@ export function StudentIntakeForm({ courses }: { courses: Course[] }) {
     setIsSaving(true);
 
     const formData = new FormData(event.currentTarget);
-    const name = String(formData.get("name") ?? "");
-    const phone = String(formData.get("phone") ?? "");
-    const email = String(formData.get("email") ?? "");
-    const course = String(formData.get("course") ?? "");
-    const paymentStatus = String(formData.get("paymentStatus") ?? "");
-    const source = String(formData.get("source") ?? "Admin");
-    const note = String(formData.get("note") ?? "");
-
-    const result = await createLead({
-      name,
-      phone,
-      email,
-      source: `admin-student:${source}`,
-      message: `Khóa học: ${course}\nTrạng thái: ${paymentStatus}\nGhi chú: ${note}`,
+    const response = await fetch("/api/admin/students/grant", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: String(formData.get("name") ?? ""),
+        phone: String(formData.get("phone") ?? ""),
+        email: String(formData.get("email") ?? ""),
+        courseSlug: String(formData.get("courseSlug") ?? ""),
+        paymentStatus: String(formData.get("paymentStatus") ?? ""),
+        source: String(formData.get("source") ?? "Admin"),
+        note: String(formData.get("note") ?? ""),
+      }),
     });
+    const result = (await response.json()) as { ok: boolean; message?: string };
 
     setIsSaving(false);
 
-    if (!result.ok) {
-      setMessage(`Chưa lưu được hồ sơ: ${result.error}`);
+    if (!response.ok || !result.ok) {
+      setMessage(result.message ?? "Chưa lưu được hồ sơ học viên.");
       return;
     }
 
-    setMessage(
-      "Đã lưu hồ sơ học viên vào Supabase leads. Khi có bảng enrollments/service role, bước này sẽ cấp quyền học thật.",
-    );
+    setMessage(result.message ?? "Đã lưu hồ sơ học viên.");
     event.currentTarget.reset();
     router.refresh();
   }
@@ -65,24 +61,28 @@ export function StudentIntakeForm({ courses }: { courses: Course[] }) {
         <input
           className="min-h-12 rounded-2xl border border-black/10 px-4 outline-none"
           name="email"
-          placeholder="Email"
+          placeholder="Email dùng để đăng nhập học"
+          required
           type="email"
         />
         <select
           className="min-h-12 rounded-2xl border border-black/10 bg-white px-4 outline-none"
-          name="course"
+          name="courseSlug"
+          required
         >
           {courses.map((course) => (
-            <option key={course.slug}>{course.title}</option>
+            <option key={course.slug} value={course.slug}>
+              {course.title}
+            </option>
           ))}
         </select>
         <select
           className="min-h-12 rounded-2xl border border-black/10 bg-white px-4 outline-none"
           name="paymentStatus"
         >
-          <option>Đã thanh toán</option>
-          <option>Chờ thanh toán</option>
-          <option>Học thử</option>
+          <option value="paid">Đã thanh toán - cấp quyền học</option>
+          <option value="pending">Chờ thanh toán</option>
+          <option value="trial">Học thử / chưa cấp quyền</option>
         </select>
         <input
           className="min-h-12 rounded-2xl border border-black/10 px-4 outline-none"
@@ -96,7 +96,7 @@ export function StudentIntakeForm({ courses }: { courses: Course[] }) {
         placeholder="Ghi chú tư vấn / nhu cầu học"
       />
       <Button className="w-fit" isLoading={isSaving} loadingLabel="Đang lưu..." type="submit">
-        Lưu hồ sơ học viên
+        Lưu hồ sơ và xử lý quyền học
       </Button>
       {message ? (
         <p className="rounded-2xl bg-[#f2eadf] px-4 py-3 text-sm font-semibold text-black/65">

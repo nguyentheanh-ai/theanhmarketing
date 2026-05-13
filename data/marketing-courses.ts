@@ -146,7 +146,7 @@ function createMarketingCourse(title: string, index: number): Course {
             order: 2,
             youtubeUrl: "",
             embedUrl: "",
-            access: "locked",
+            access: "paid",
             resources: [],
             allowComments: true,
           },
@@ -154,13 +154,13 @@ function createMarketingCourse(title: string, index: number): Course {
       },
     ],
     instructor: {
-      name: "Thế Anh",
-      title: "Founder Thế Anh Marketing",
+      name: "The Anh",
+      title: "Founder The Anh Marketing",
       bio: "Đào tạo Marketing & Kinh doanh Online theo hướng thực chiến, dễ hiểu và có thể áp dụng.",
     },
     reviews: [
       {
-        name: "Học viên Thế Anh Marketing",
+        name: "Học viên The Anh Marketing",
         role: "Marketing team",
         quote:
           "Cách học theo hệ thống giúp mình biết nên bắt đầu từ đâu và áp dụng AI vào việc thật rõ hơn.",

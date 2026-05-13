@@ -17,7 +17,7 @@ export function ResourceCard({ resource }: { resource: Resource }) {
     )}`;
 
   return (
-    <SoftCard className="h-full hover:-translate-y-1 hover:shadow-[0_28px_80px_rgba(0,0,0,0.08)]">
+    <SoftCard className="h-full hover:shadow-[0_28px_80px_rgba(0,0,0,0.08)]">
       <p className="text-sm font-semibold text-[#c77b20]">
         {resource.type} · {resource.access}
       </p>

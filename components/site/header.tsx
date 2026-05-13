@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { BrandMark } from "@/components/site/brand-mark";
 import { ButtonLink } from "@/components/ui/button-link";
 import { mainNav } from "@/data/site";
 import { getCurrentAuth } from "@/lib/auth/session";
@@ -15,17 +16,10 @@ export async function SiteHeader() {
     <header className="site-header-motion fixed inset-x-0 top-0 z-50 border-b border-black/[0.04] bg-[#fbfaf7]/90 backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-[1440px] items-center justify-between px-5 lg:px-12 xl:px-16">
         <Link href="/" className="flex items-center gap-3" aria-label={brand.name}>
-          <span className="grid size-9 place-items-center overflow-hidden rounded-full bg-[#09090a] text-sm font-bold text-white">
-            {brand.logoImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img alt={brand.name} className="size-full object-cover" src={brand.logoImage} />
-            ) : (
-              brand.logoMark
-            )}
-          </span>
+          <BrandMark brand={brand} className="grid size-11 place-items-center overflow-hidden rounded-lg bg-white p-1 shadow-[0_10px_26px_rgba(0,0,0,0.06)] ring-1 ring-black/8" />
           <span className="text-lg font-bold tracking-[-0.03em]">
             {brand.shortName}
-            <span className="text-[#f2a23a]">.</span>
+            <span className="text-[#d8ad57]">.</span>
           </span>
         </Link>
 

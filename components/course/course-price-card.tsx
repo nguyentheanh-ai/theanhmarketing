@@ -2,7 +2,7 @@ import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SoftCard } from "@/components/ui/soft-card";
 import type { Course } from "@/data/courses";
-import { getCourseLessonCount } from "@/data/courses";
+import { getCourseLessonCount, getCourseModuleCount } from "@/data/courses";
 
 export function CoursePriceCard({ course }: { course: Course }) {
   return (
@@ -18,7 +18,7 @@ export function CoursePriceCard({ course }: { course: Course }) {
       </div>
       <div className="mt-6 grid gap-3 rounded-3xl bg-[#fff7ea] p-5 text-sm text-black/58 ring-1 ring-[#f3dec0]">
         <p>Bài học: {getCourseLessonCount(course)}</p>
-        <p>Thời lượng: {course.duration}</p>
+        <p>Module: {getCourseModuleCount(course)}</p>
         <p>Cấp độ: {course.level}</p>
         <p>Cập nhật: {course.updatedAt}</p>
       </div>

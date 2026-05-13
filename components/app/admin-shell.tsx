@@ -25,7 +25,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
     <main className="min-h-screen bg-[#f6f4ef] text-[#0b0b0c]">
       <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-black/10 bg-[#101010] p-6 text-white lg:block">
         <Link href="/" className="text-lg font-black tracking-[-0.04em]">
-          Admin · Thế Anh
+          Admin · The Anh
         </Link>
         <nav className="mt-10 grid gap-2">
           {adminNav.map((item) => {
@@ -51,7 +51,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
       </aside>
       <header className="sticky top-0 z-40 border-b border-black/10 bg-[#f6f4ef]/90 px-5 py-4 backdrop-blur-xl lg:hidden">
         <Link href="/" className="font-black tracking-[-0.04em]">
-          Admin · Thế Anh
+          Admin · The Anh
         </Link>
         <nav className="mt-4 flex gap-2 overflow-x-auto">
           {adminNav.map((item) => {

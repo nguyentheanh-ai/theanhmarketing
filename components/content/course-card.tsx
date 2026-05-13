@@ -2,13 +2,17 @@ import Link from "next/link";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import type { Course } from "@/data/courses";
 import { getCourseLessonCount } from "@/data/courses";
+import { toYouTubeThumbnailUrl } from "@/lib/youtube";
 
 function getPosterStyle(course: Course) {
-  const imageUrl = course.thumbnailImageUrl || course.bannerImageUrl;
+  const imageUrl =
+    course.thumbnailImageUrl ||
+    course.bannerImageUrl ||
+    toYouTubeThumbnailUrl(course.videoPreviewUrl);
 
   if (imageUrl) {
     return {
-      backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,247,235,0.88)), url(${imageUrl})`,
+      backgroundImage: `url(${imageUrl})`,
     };
   }
 
@@ -20,41 +24,28 @@ function getPosterStyle(course: Course) {
 
 export function CourseCard({ course }: { course: Course }) {
   return (
-    <article className="group flex min-h-[390px] flex-col overflow-hidden rounded-[1.35rem] bg-white shadow-[0_22px_70px_rgba(50,34,12,0.07)] ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_90px_rgba(50,34,12,0.11)]">
+    <article className="group flex min-h-[390px] flex-col overflow-hidden rounded-[1.35rem] bg-white shadow-[0_22px_70px_rgba(50,34,12,0.07)] ring-1 ring-black/5">
       <div
-        className="relative flex min-h-[230px] flex-1 flex-col justify-between overflow-hidden bg-cover bg-center p-5"
+        className="relative min-h-[230px] overflow-hidden bg-cover bg-center"
         style={getPosterStyle(course)}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="rounded-full bg-white/90 px-3 py-1 text-[11px] font-black text-black shadow-sm">
-            TAM
-          </div>
-          <span className="rounded-full bg-[#fff4df] px-3 py-1 text-[11px] font-bold text-[#9b5c13]">
-            {course.statusLabel}
-          </span>
-        </div>
-        <div>
-          <Link
-            href={`/khoa-hoc/${course.slug}`}
-            className="inline bg-white/85 px-2 py-1 text-lg font-black leading-snug tracking-[-0.025em] text-black shadow-sm transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c77b20]"
-          >
-            {course.title}
-          </Link>
-          <p className="mt-3 line-clamp-2 text-base font-semibold leading-7 text-black/60">
-            {course.shortDescription}
-          </p>
-        </div>
+        <span className="absolute right-4 top-4 rounded-full bg-white/92 px-3 py-1 text-[11px] font-bold text-[#9b5c13] shadow-sm">
+          {course.statusLabel}
+        </span>
       </div>
 
       <div className="bg-white p-5 text-black">
-        <Link href={`/khoa-hoc/${course.slug}`} className="block">
-          <p className="line-clamp-3 min-h-[4.5rem] text-sm leading-6 text-black/58">
-            {course.description}
+        <Link href={`/khoa-hoc/${course.slug}`} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c77b20]">
+          <h2 className="text-2xl font-black tracking-[-0.04em] text-black">
+            {course.title}
+          </h2>
+          <p className="mt-3 line-clamp-2 text-sm font-semibold leading-6 text-black/58">
+            {course.shortDescription || course.description}
           </p>
         </Link>
         <div className="mt-5 flex items-center justify-between gap-4 text-xs font-bold text-black/50">
-          <span>Thế Anh Marketing</span>
-          <span>{course.duration}</span>
+          <span>The Anh Marketing</span>
+          <span>{course.modules.length} module</span>
         </div>
         <div className="mt-2 flex items-center justify-between gap-4 text-sm font-black text-black/80">
           <span className="text-[#b56b18]">{course.price}</span>
@@ -68,7 +59,7 @@ export function CourseCard({ course }: { course: Course }) {
             className="flex-1"
           />
           <Link
-            href={`/khoa-hoc/${course.slug}#giao-trinh`}
+            href={`/khoa-hoc/${course.slug}#lo-trinh`}
             className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-black/10 bg-white px-5 text-sm font-bold text-black/72 transition hover:border-black/25 hover:text-black"
           >
             Học thử miễn phí

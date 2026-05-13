@@ -15,8 +15,8 @@ const beVietnamPro = Be_Vietnam_Pro({
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: "Thế Anh Marketing | Nền tảng học Marketing thực chiến",
-    template: "%s | Thế Anh Marketing",
+    default: "The Anh Marketing | Nền tảng học Marketing thực chiến",
+    template: "%s | The Anh Marketing",
   },
   description:
     "Nền tảng đào tạo Marketing, Facebook Ads và Kinh doanh Online thực chiến cho người mới, chủ shop và marketer.",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Thế Anh Marketing",
+    title: "The Anh Marketing",
     description:
       "Nền tảng học Marketing, Facebook Ads và Kinh doanh Online thực chiến.",
     url: siteConfig.url,
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Thế Anh Marketing",
+    title: "The Anh Marketing",
     description:
       "Nền tảng học Marketing, Facebook Ads và Kinh doanh Online thực chiến.",
   },

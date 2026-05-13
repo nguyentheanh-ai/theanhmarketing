@@ -22,15 +22,13 @@ export function PaymentStatusPoller({ initialOrder }: { initialOrder: PaymentOrd
 
   const countdownTarget = useMemo(() => {
     const createdTime = Date.parse(order.createdAt);
-    if (Number.isNaN(createdTime)) {
-      return Date.now() + 5 * 60 * 1000;
-    }
-    return createdTime + 5 * 60 * 1000;
+    return Number.isNaN(createdTime) ? null : createdTime + 5 * 60 * 1000;
   }, [order.createdAt]);
 
   useEffect(() => {
     const updateCountdown = () => {
-      const left = Math.ceil((countdownTarget - Date.now()) / 1000);
+      const target = countdownTarget ?? Date.now() + 5 * 60 * 1000;
+      const left = Math.ceil((target - Date.now()) / 1000);
       setSecondsLeft(Math.max(0, left));
     };
 

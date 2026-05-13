@@ -4,18 +4,18 @@ type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "quiet";
 type ButtonSize = "sm" | "md" | "lg";
 
 const baseClasses =
-  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full font-bold leading-none transition-all duration-200 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f2a23a] active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-55";
+  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full font-bold leading-none transition-colors duration-200 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f2a23a] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-55";
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-black text-white shadow-[0_16px_36px_rgba(0,0,0,0.14)] hover:-translate-y-0.5 hover:shadow-[0_20px_44px_rgba(0,0,0,0.18)]",
+    "bg-black text-white shadow-[0_16px_36px_rgba(0,0,0,0.14)] hover:bg-black/86",
   secondary:
-    "border border-black/10 bg-white text-black shadow-[0_10px_28px_rgba(0,0,0,0.05)] hover:-translate-y-0.5 hover:border-black/25",
+    "border border-black/10 bg-white text-black shadow-[0_10px_28px_rgba(0,0,0,0.05)] hover:border-black/25",
   ghost: "bg-transparent text-black/62 hover:bg-black/[0.05] hover:text-black",
   danger:
-    "border border-red-200 bg-red-50 text-red-700 hover:-translate-y-0.5 hover:border-red-300 hover:bg-red-100",
+    "border border-red-200 bg-red-50 text-red-700 hover:border-red-300 hover:bg-red-100",
   quiet:
-    "border border-black/10 bg-[#f7f3ec] text-black/70 hover:-translate-y-0.5 hover:border-black/20 hover:bg-white hover:text-black",
+    "border border-black/10 bg-[#f7f3ec] text-black/70 hover:border-black/20 hover:bg-white hover:text-black",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

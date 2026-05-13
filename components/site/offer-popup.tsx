@@ -5,7 +5,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import type { OfferSettings } from "@/services/offerService";
 
 export function SiteOfferPopup({
-  contextTitle = "Thế Anh Marketing",
+  contextTitle = "The Anh Marketing",
   offer,
 }: {
   contextTitle?: string;

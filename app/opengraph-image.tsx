@@ -37,15 +37,16 @@ export default function Image() {
             style={{
               width: 52,
               height: 52,
-              borderRadius: 999,
-              background: "#0b0b0c",
-              color: "#ffffff",
+              borderRadius: 14,
+              background: "#ffffff",
+              color: "#0b0b0c",
+              border: "1px solid rgba(11,11,12,0.12)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            T
+            TA
           </div>
           {siteConfig.name}
         </div>

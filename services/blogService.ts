@@ -27,7 +27,7 @@ function mapDbBlogPost(post: DbBlogPost): BlogPostItem {
     title: post.title,
     category: post.category ?? "Blog",
     readTime: post.read_time ?? "5 phút đọc",
-    author: post.author ?? "Thế Anh Marketing",
+    author: post.author ?? "The Anh Marketing",
     excerpt: post.excerpt ?? "",
     content: post.content ?? "",
     status: post.status ?? "published",

@@ -32,7 +32,7 @@ export function LeadForm({ source, submitLabel = "Gửi thông tin" }: LeadFormP
         setIsSubmitting(false);
         setMessage(
           result.ok
-            ? "Đã gửi thông tin. Team Thế Anh Marketing sẽ liên hệ lại."
+            ? "Đã gửi thông tin. Team The Anh Marketing sẽ liên hệ lại."
             : "Đã ghi nhận trên giao diện. Supabase chưa sẵn sàng nên dữ liệu chưa được lưu vào database.",
         );
 

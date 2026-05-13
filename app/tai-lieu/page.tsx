@@ -9,7 +9,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Tài liệu",
   description:
-    "Thư viện ebook, checklist, template và tài liệu Marketing thực chiến của Thế Anh Marketing.",
+    "Thư viện ebook, checklist, template và tài liệu Marketing thực chiến của The Anh Marketing.",
 };
 
 export const dynamic = "force-dynamic";

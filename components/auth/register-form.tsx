@@ -196,7 +196,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
 
         <label className="flex gap-3 text-sm leading-6 text-black/60">
           <input className="mt-1" required type="checkbox" />
-          Tôi đồng ý để Thế Anh Marketing liên hệ tư vấn và tạo hồ sơ học viên cho khóa học đã chọn.
+          Tôi đồng ý để The Anh Marketing liên hệ tư vấn và tạo hồ sơ học viên cho khóa học đã chọn.
         </label>
         {message ? (
           <p className="rounded-2xl bg-[#f2eadf] p-4 text-sm font-semibold text-black/70">

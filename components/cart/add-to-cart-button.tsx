@@ -9,9 +9,10 @@ type AddToCartButtonProps = {
   title: string;
   price: string;
   className?: string;
+  label?: string;
 };
 
-export function AddToCartButton({ slug, title, price, className = "" }: AddToCartButtonProps) {
+export function AddToCartButton({ slug, title, price, className = "", label = "Thêm vào giỏ" }: AddToCartButtonProps) {
   const [exists, setExists] = useState(false);
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export function AddToCartButton({ slug, title, price, className = "" }: AddToCar
       }}
       type="button"
     >
-      {exists ? "Đã trong giỏ" : "Thêm vào giỏ"}
+      {exists ? "Đã trong giỏ" : label}
     </Button>
   );
 }

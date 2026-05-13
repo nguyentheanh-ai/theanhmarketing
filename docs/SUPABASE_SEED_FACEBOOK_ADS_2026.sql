@@ -77,16 +77,16 @@ with upserted_course as (
     'facebook-ads-2026',
     'Tự chạy quảng cáo, đọc dữ liệu và tối ưu chiến dịch Facebook Ads theo lộ trình thực chiến.',
     'Học cách tự triển khai Facebook Ads bài bản, hiểu đúng tư duy Marketing & Kinh doanh Online, biết đọc dữ liệu và tối ưu quảng cáo theo tình huống thực tế.',
-    '799.000đ',
-    '3.995.000đ',
+    799000,
+    3995000,
     'open',
-    '4 giờ',
-    8,
+    '3 module',
+    18,
     'Người mới đến thực chiến',
-    '12/04/2026',
+    '13/05/2026',
     '',
     '',
-    'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    'https://youtu.be/8xLstSFsHp8',
     'Đăng ký khóa học'
   )
   on conflict (slug) do update set
@@ -112,8 +112,8 @@ module_1 as (
   insert into public.course_modules (course_id, title, description, sort_order)
   values (
     (select id from upserted_course),
-    'Nền tảng trước khi chạy tiền',
-    'Hiểu vai trò của Facebook Ads trong hệ thống marketing và cách đặt mục tiêu đúng.',
+    'Tổng quan và nền tảng Facebook Ads',
+    'Nắm tư duy chạy quảng cáo, thuật ngữ quan trọng, cách nhận diện khách hàng kém chất lượng và những lỗi thường gặp trước khi triển khai.',
     1
   )
   returning id
@@ -122,8 +122,8 @@ module_2 as (
   insert into public.course_modules (course_id, title, description, sort_order)
   values (
     (select id from upserted_course),
-    'Chuẩn bị tài khoản và tracking',
-    'Thiết lập nền tảng kỹ thuật đủ gọn để đo lường và ra quyết định.',
+    'Tài sản Facebook, Fanpage và nội dung nền',
+    'Chuẩn bị tài khoản, Fanpage, hình ảnh nhận diện và lịch đăng bài để quảng cáo có nền tảng vận hành rõ ràng.',
     2
   )
   returning id
@@ -132,8 +132,8 @@ module_3 as (
   insert into public.course_modules (course_id, title, description, sort_order)
   values (
     (select id from upserted_course),
-    'Triển khai và tối ưu chiến dịch',
-    'Xây campaign, test creative, đọc dữ liệu và scale có kỷ luật.',
+    'Triển khai, đo lường và tối ưu quảng cáo',
+    'Lập kế hoạch, quản trị BM, thêm thanh toán, target, đọc chỉ số và scale ngân sách quảng cáo Facebook.',
     3
   )
   returning id
@@ -149,11 +149,21 @@ insert into public.lessons (
   sort_order
 )
 values
-  ((select id from module_1), 'Facebook Ads nên đứng ở đâu trong phễu bán hàng?', '', '18 phút', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'https://www.youtube.com/embed/dQw4w9WgXcQ', 'free_preview', 1),
-  ((select id from module_1), 'Tư duy khách hàng, offer và thông điệp', '', '22 phút', '', '', 'enrolled_only', 2),
-  ((select id from module_1), 'Các lỗi người mới thường gặp', '', '16 phút', '', '', 'locked', 3),
-  ((select id from module_2), 'Tài khoản quảng cáo, fanpage và quyền truy cập', '', '20 phút', '', '', 'enrolled_only', 1),
-  ((select id from module_2), 'Pixel, event, UTM và tín hiệu chuyển đổi', '', '26 phút', '', '', 'enrolled_only', 2),
-  ((select id from module_3), 'Cấu trúc campaign cho người mới', '', '28 phút', 'https://youtu.be/dQw4w9WgXcQ', 'https://www.youtube.com/embed/dQw4w9WgXcQ', 'free_preview', 1),
-  ((select id from module_3), 'Test creative, hook và angle', '', '24 phút', '', '', 'enrolled_only', 2),
-  ((select id from module_3), 'Đọc số liệu để tắt, sửa hoặc scale', '', '32 phút', '', '', 'locked', 3);
+  ((select id from module_1), 'CÁCH LOẠI TRỪ 90% TỆP KHÁCH RÁC ( không mua hàng) TRÊN QUẢNG CÁO FACEBOOK', '', 'Video bài học', 'https://youtu.be/8xLstSFsHp8', 'https://www.youtube.com/embed/8xLstSFsHp8', 'free_preview', 1),
+  ((select id from module_1), 'Quảng cáo FACEBOOK từ A tới Z | Cập nhật mới nhất 2025', '', 'Video bài học', 'https://youtu.be/xEDLxoS4um0', 'https://www.youtube.com/embed/xEDLxoS4um0', 'enrolled_only', 2),
+  ((select id from module_1), 'HỌC CHẠY QUẢNG CÁO FACEBOOK - CẬP NHẬT MỚI NHẤT 2026', '', 'Video bài học', 'https://youtu.be/yRTveHLi9dQ', 'https://www.youtube.com/embed/yRTveHLi9dQ', 'enrolled_only', 3),
+  ((select id from module_1), 'Bài 2 - Thuật ngữ chuyên ngành trong Quảng Cáo Facebook', '', 'Video bài học', 'https://youtu.be/rlPDU64iPEw', 'https://www.youtube.com/embed/rlPDU64iPEw', 'enrolled_only', 4),
+  ((select id from module_1), 'Bài 3 - Những sai lầm phổ biến khi chạy Quảng cáo Facebook', '', 'Video bài học', 'https://youtu.be/aPDm4pBxkTo', 'https://www.youtube.com/embed/aPDm4pBxkTo', 'enrolled_only', 5),
+  ((select id from module_2), 'Bài 4 - Hướng dẫn mua VIA', '', 'Video bài học', 'https://youtu.be/RVOZ6mA6uj4', 'https://www.youtube.com/embed/RVOZ6mA6uj4', 'enrolled_only', 1),
+  ((select id from module_2), 'Bài 5 - Tất tần tật về Fanpage Facebook P.1', '', 'Video bài học', 'https://youtu.be/J_wK-2oVOlc', 'https://www.youtube.com/embed/J_wK-2oVOlc', 'enrolled_only', 2),
+  ((select id from module_2), 'Bài 5 - Tất tần tật về Fanpage Facebook P.2', '', 'Video bài học', 'https://youtu.be/1lqGT1oXUWE', 'https://www.youtube.com/embed/1lqGT1oXUWE', 'enrolled_only', 3),
+  ((select id from module_2), 'Bài 6 - Hướng dẫn nhanh thiết kế Poster - Cover - Avatar Facebook', '', 'Video bài học', 'https://youtu.be/77SD1NNfx9Y', 'https://www.youtube.com/embed/77SD1NNfx9Y', 'enrolled_only', 4),
+  ((select id from module_2), 'Bài 8 - Đăng bài trên Facebook', '', 'Video bài học', 'https://youtu.be/rZgq1_VLXoU', 'https://www.youtube.com/embed/rZgq1_VLXoU', 'enrolled_only', 5),
+  ((select id from module_3), 'Bài 9 - Tại sao content lại quan trọng, các dạng content phổ biến', '', 'Video bài học', 'https://youtu.be/EOoDp0yD3_M', 'https://www.youtube.com/embed/EOoDp0yD3_M', 'enrolled_only', 1),
+  ((select id from module_3), 'Bài 10 - Hướng dẫn nghiên cứu đối thủ, lập kế hoạch quảng cáo', '', 'Video bài học', 'https://youtu.be/Wafs1qAU17w', 'https://www.youtube.com/embed/Wafs1qAU17w', 'enrolled_only', 2),
+  ((select id from module_3), 'Bài 11 - Tổng quan về quảng cáo Facebook', '', 'Video bài học', 'https://youtu.be/DaDZlw5oHkw', 'https://www.youtube.com/embed/DaDZlw5oHkw', 'enrolled_only', 3),
+  ((select id from module_3), 'Bài 12 -  Hướng dẫn quản trị tài khoản doanh nghiệp BM', '', 'Video bài học', 'https://youtu.be/hyBXCRsyyiw', 'https://www.youtube.com/embed/hyBXCRsyyiw', 'enrolled_only', 4),
+  ((select id from module_3), 'Bài 13 - Hướng dẫn thêm thẻ thanh toán trên Facebook Ads', '', 'Video bài học', 'https://youtu.be/6zgdfns010s', 'https://www.youtube.com/embed/6zgdfns010s', 'enrolled_only', 5),
+  ((select id from module_3), 'Bài 14 - Tất tần tật về Target trên Facebook Ads', '', 'Video bài học', 'https://youtu.be/VDjPx-X-JL0', 'https://www.youtube.com/embed/VDjPx-X-JL0', 'enrolled_only', 6),
+  ((select id from module_3), 'Bài 15 - Thiết lập và đọc các chỉ số trên Facebook ADs', '', 'Video bài học', 'https://youtu.be/V5xlkhR2BaM', 'https://www.youtube.com/embed/V5xlkhR2BaM', 'enrolled_only', 7),
+  ((select id from module_3), 'Bài 16 - Scale Ngân sách quảng cáo', '', 'Video bài học', 'https://youtu.be/CPQCVqHjjhk', 'https://www.youtube.com/embed/CPQCVqHjjhk', 'enrolled_only', 8);

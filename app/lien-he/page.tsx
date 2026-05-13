@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Liên hệ",
   description:
-    "Liên hệ Thế Anh Marketing để được tư vấn khóa học, tài liệu và lộ trình học Marketing phù hợp.",
+    "Liên hệ The Anh Marketing để được tư vấn khóa học, tài liệu và lộ trình học Marketing phù hợp.",
 };
 
 export default function ContactPage() {

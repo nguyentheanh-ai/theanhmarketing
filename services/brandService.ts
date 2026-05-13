@@ -24,7 +24,7 @@ export const fallbackBrandSettings: BrandSettings = {
   name: siteConfig.name,
   shortName: siteConfig.shortName,
   logoMark: siteConfig.logoMark,
-  logoImage: "",
+  logoImage: siteConfig.logoImage,
   tagline: siteConfig.tagline,
   phone: siteConfig.phone,
   email: siteConfig.email,
@@ -53,8 +53,12 @@ export async function getBrandSettings(): Promise<BrandSettings> {
 
   const setting = data as DbSetting;
 
+  const value: Partial<BrandSettings> = setting.value ?? {};
+
   return {
     ...fallbackBrandSettings,
-    ...(setting.value ?? {}),
+    ...value,
+    logoImage: value.logoImage || fallbackBrandSettings.logoImage,
+    logoMark: value.logoMark || fallbackBrandSettings.logoMark,
   };
 }

@@ -158,7 +158,7 @@ export default async function AdminCmsPage() {
         <section className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {cmsModules.map((module) => (
             <Link key={module.href} href={module.href}>
-              <SoftCard className="h-full hover:-translate-y-1 hover:shadow-[0_28px_80px_rgba(0,0,0,0.08)]">
+              <SoftCard className="h-full hover:shadow-[0_28px_80px_rgba(0,0,0,0.08)]">
                 <p className="text-sm font-semibold text-[#c77b20]">CMS module</p>
                 <h2 className="mt-3 text-2xl font-black tracking-[-0.04em]">
                   {module.label}

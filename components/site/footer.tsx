@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandMark } from "@/components/site/brand-mark";
 import { getBrandSettings } from "@/services/brandService";
 
 export async function SiteFooter() {
@@ -29,14 +30,7 @@ export async function SiteFooter() {
       <div className="mx-auto grid max-w-[1440px] gap-10 lg:grid-cols-[1.4fr_0.6fr_0.7fr_0.7fr]">
         <div className="max-w-2xl">
           <Link href="/" className="inline-flex items-center gap-3" aria-label={brand.name}>
-            <span className="grid size-11 place-items-center overflow-hidden rounded-full bg-black text-base font-black text-white">
-              {brand.logoImage ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img alt={brand.name} className="size-full object-cover" src={brand.logoImage} />
-              ) : (
-                brand.logoMark
-              )}
-            </span>
+            <BrandMark brand={brand} className="grid size-14 place-items-center overflow-hidden rounded-xl bg-white p-1.5 ring-1 ring-black/10" />
             <span className="text-2xl font-black tracking-[-0.04em]">
               {brand.shortName}
             </span>
@@ -58,7 +52,7 @@ export async function SiteFooter() {
                 type="email"
               />
               <button
-                className="grid size-10 shrink-0 place-items-center rounded-full bg-black text-lg font-black text-white transition hover:scale-105"
+                className="grid size-10 shrink-0 place-items-center rounded-full bg-black text-lg font-black text-white transition-colors hover:bg-black/82"
                 type="submit"
                 aria-label="Đăng ký nhận bản tin"
               >

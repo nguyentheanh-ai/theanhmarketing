@@ -9,7 +9,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Giới thiệu",
   description:
-    "Tìm hiểu về Thế Anh Marketing, triết lý đào tạo và định hướng học Marketing thực chiến.",
+    "Tìm hiểu về The Anh Marketing, triết lý đào tạo và định hướng học Marketing thực chiến.",
 };
 
 export default function AboutPage() {

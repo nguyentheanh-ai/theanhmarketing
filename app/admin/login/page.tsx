@@ -21,7 +21,7 @@ export default function AdminLoginPage() {
             Đăng nhập quản trị
           </h1>
           <p className="mt-6 text-lg leading-9 text-black/65">
-            Khu vực dành riêng cho quản trị viên Thế Anh Marketing để quản lý
+            Khu vực dành riêng cho quản trị viên The Anh Marketing để quản lý
             khóa học, nội dung, học viên và dữ liệu vận hành.
           </p>
         </div>

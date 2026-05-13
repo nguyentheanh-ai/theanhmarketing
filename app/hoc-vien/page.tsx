@@ -9,7 +9,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Học viên",
   description:
-    "Feedback, case study và câu chuyện học viên của Thế Anh Marketing.",
+    "Feedback, case study và câu chuyện học viên của The Anh Marketing.",
 };
 
 export const dynamic = "force-dynamic";

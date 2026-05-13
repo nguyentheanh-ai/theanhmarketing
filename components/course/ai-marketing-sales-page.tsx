@@ -1,13 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { AnimatedNumber } from "@/components/ui/animated-number";
+import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SiteOfferPopup } from "@/components/site/offer-popup";
 import type { Course } from "@/data/courses";
+import { cleanLessonTitle } from "@/lib/lesson-title";
+import { formatCurrency, getDiscountPercent, parsePrice } from "@/lib/price";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { toYouTubeEmbedUrl, toYouTubeThumbnailUrl } from "@/lib/youtube";
 import type { OfferSettings } from "@/services/offerService";
 
 const navItems = [
@@ -23,6 +29,8 @@ type LessonPlan = {
   description: string;
   result: string;
   practice: string;
+  access?: string;
+  youtubeUrl?: string;
 };
 
 type LandingContent = {
@@ -38,7 +46,6 @@ type LandingContent = {
   benefits: string[];
   faqs: [string, string][];
   instructorCopy: string;
-  dashboardTitle: string;
 };
 
 const aiLessons: LessonPlan[] = [
@@ -145,18 +152,18 @@ function buildLessons(course: Course, isAiCourse: boolean): LessonPlan[] {
     return aiLessons;
   }
 
-  const moduleLessons = course.modules
-    .flatMap((module, moduleIndex) =>
-      module.lessons.map((lesson, lessonIndex) => ({
-        title: `Buổi ${moduleIndex + lessonIndex + 1}: ${lesson.title}`,
+  const moduleLessons = course.modules.flatMap((module) =>
+      module.lessons.map((lesson) => ({
+        title: cleanLessonTitle(lesson.title),
         description:
           module.description ||
           "Đi vào một phần quan trọng trong quy trình triển khai, có ví dụ và cách áp dụng vào công việc thật.",
         result: `Hiểu và áp dụng được phần "${module.title}" vào bối cảnh của bạn.`,
         practice: "Hoàn thành một checklist hoặc bản nháp triển khai để dùng lại sau buổi học.",
+        access: lesson.access,
+        youtubeUrl: lesson.youtubeUrl,
       })),
-    )
-    .slice(0, 8);
+    );
 
   if (moduleLessons.length >= 4) {
     return moduleLessons;
@@ -164,37 +171,37 @@ function buildLessons(course: Course, isAiCourse: boolean): LessonPlan[] {
 
   return [
     {
-      title: `Buổi 1: Nền tảng ${course.title}`,
+      title: `Bài 1: Nền tảng ${course.title}`,
       description: "Làm rõ vai trò của khóa học, các khái niệm cần nắm và cách học để tạo ra đầu ra thực tế.",
       result: "Có bản đồ kiến thức và mục tiêu học tập rõ ràng.",
       practice: "Audit tình trạng hiện tại của sản phẩm, dự án hoặc kỹ năng cá nhân.",
     },
     {
-      title: "Buổi 2: Khách hàng, thị trường và mục tiêu",
+      title: "Bài 2: Khách hàng, thị trường và mục tiêu",
       description: "Học cách đọc bối cảnh, xác định nhóm khách hàng và ưu tiên vấn đề cần giải quyết.",
       result: "Có chân dung khách hàng và mục tiêu triển khai cụ thể.",
       practice: "Viết một bản phân tích ngắn cho sản phẩm hoặc dự án thật.",
     },
     {
-      title: "Buổi 3: Quy trình triển khai từng bước",
+      title: "Bài 3: Quy trình triển khai từng bước",
       description: "Biến kiến thức thành quy trình làm việc có thứ tự, tránh nhảy bước và giảm sai sót.",
       result: "Có checklist triển khai dùng được sau khóa học.",
       practice: "Xây một workflow ngắn cho tuần làm việc đầu tiên.",
     },
     {
-      title: "Buổi 4: Tối ưu và đo lường",
+      title: "Bài 4: Tối ưu và đo lường",
       description: "Biết nhìn vào dữ liệu, phản hồi và kết quả để điều chỉnh thay vì làm theo cảm tính.",
       result: "Có bộ tiêu chí đánh giá hiệu quả.",
       practice: "Tạo bảng theo dõi kết quả và đề xuất hướng tối ưu.",
     },
     {
-      title: "Buổi 5: Ứng dụng vào dự án thật",
+      title: "Bài 5: Ứng dụng vào dự án thật",
       description: "Tổng hợp kiến thức thành một bản kế hoạch có thể triển khai ngay sau khóa học.",
       result: "Hoàn thiện bản kế hoạch hành động cá nhân.",
       practice: "Nộp kế hoạch triển khai và checklist kiểm tra chất lượng.",
     },
     ...moduleLessons,
-  ].slice(0, 8);
+  ];
 }
 
 function buildLandingContent(course: Course): LandingContent {
@@ -243,10 +250,10 @@ function buildLandingContent(course: Course): LandingContent {
       course.description ||
       "Khóa học được thiết kế để bạn không chỉ hiểu lý thuyết, mà còn biết biến kiến thức thành kế hoạch, checklist và đầu ra dùng được trong công việc thật.",
     quickInfo: [
-      course.duration || `${lessons.length} buổi học`,
+      `${lessons.length} bài học`,
+      course.modules.length ? `${course.modules.length} module` : course.duration || "Lộ trình thực chiến",
       course.format || "Video hoặc live tùy lớp",
       course.level || "Người mới đến thực chiến",
-      course.outcomes[0] ? "Có đầu ra sau khóa học" : "Có kế hoạch hành động",
     ],
     audiences: course.audience.length
       ? course.audience.slice(0, 4).map((item, index) => [defaultAudiences[index]?.[0] ?? "Học viên phù hợp", item])
@@ -271,22 +278,26 @@ function buildLandingContent(course: Course): LandingContent {
     ],
     instructorCopy:
       course.instructor?.bio ||
-      "Thế Anh Marketing tập trung vào đào tạo marketing theo hướng thực chiến: dễ hiểu, có quy trình, có ví dụ gần với công việc thật. Khóa học được thiết kế để người học biến kiến thức thành hệ thống làm việc có thể lặp lại.",
-    dashboardTitle: isAiCourse ? "Marketing workflow dashboard" : "Course operating dashboard",
+      "The Anh Marketing tập trung vào đào tạo marketing theo hướng thực chiến: dễ hiểu, có quy trình, có ví dụ gần với công việc thật. Khóa học được thiết kế để người học biến kiến thức thành hệ thống làm việc có thể lặp lại.",
   };
 }
 
 export function CourseSalesPage({ course, offer }: { course: Course; offer: OfferSettings }) {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openLesson, setOpenLesson] = useState(0);
+  const [isTrialFormOpen, setIsTrialFormOpen] = useState(false);
   const content = useMemo(() => buildLandingContent(course), [course]);
+  const previewThumbnailUrl = toYouTubeThumbnailUrl(course.videoPreviewUrl);
+  const discountPercent = getDiscountPercent(course.price, course.originalPrice);
+  const nextPrice = formatCurrency(parsePrice(course.price) + 190000);
 
   return (
     <main className="min-h-screen bg-[#fbfaf7] text-[#111111]">
       <header className="sticky top-0 z-50 border-b-2 border-black bg-[#fbfaf7]/95 backdrop-blur-xl">
         <div className="mx-auto flex h-20 max-w-[1440px] items-center justify-between px-5 sm:px-8">
           <Link href="/" className="motion-lift text-lg font-black tracking-[-0.04em]">
-            Thế Anh Marketing<span className="text-[#2f8f62]">.</span>
+            The Anh Marketing<span className="text-[#2f8f62]">.</span>
           </Link>
           <nav className="hidden items-center gap-7 text-sm font-bold text-black/62 lg:flex">
             {navItems.map((item) => (
@@ -346,7 +357,13 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
           </h1>
           <p className="hero-copy mt-7 max-w-2xl text-lg leading-9 text-black/68">{content.subheadline}</p>
           <div className="hero-actions mt-8 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href="/dang-ky">Tạo tài khoản</ButtonLink>
+            <button
+              className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[#4fb37a] px-6 text-sm font-bold leading-none text-white shadow-[0_16px_36px_rgba(79,179,122,0.22)] transition-colors hover:bg-[#419f69] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4fb37a]"
+              type="button"
+              onClick={() => setIsTrialFormOpen(true)}
+            >
+              ▶ Học thử
+            </button>
             <ButtonLink href="#lo-trinh" variant="secondary">
               Xem lộ trình học
             </ButtonLink>
@@ -359,23 +376,64 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
             ))}
           </div>
         </div>
-        <div className="course-dashboard-pulse rounded-[1.75rem] border-2 border-black bg-white p-5 shadow-[10px_10px_0_#111]">
-          <div className="rounded-2xl bg-[#111111] p-5 text-white">
-            <p className="text-sm font-bold text-[#85d49b]">{content.dashboardTitle}</p>
+        <div className="rounded-[1.75rem] bg-white p-4 shadow-[0_24px_90px_rgba(19,31,55,0.12)] ring-1 ring-black/6">
+          <div
+            aria-label={course.thumbnailLabel}
+            className="min-h-[250px] rounded-2xl bg-[#dce9ff] bg-cover bg-center"
+            role="img"
+            style={{
+              backgroundImage: previewThumbnailUrl
+                ? `url(${previewThumbnailUrl})`
+                : "linear-gradient(135deg, #dce9ff, #f4fbff)",
+            }}
+          />
+          <div className="mt-8">
+            <p className="text-sm font-black uppercase tracking-[0.16em] text-black/52">
+              Học trọn gói chỉ
+            </p>
+            <div className="mt-3 flex flex-wrap items-end gap-3">
+              <p className="text-5xl font-black tracking-[-0.05em] text-[#15192a]">
+                {course.price}
+              </p>
+              {course.originalPrice ? (
+                <p className="pb-2 text-lg font-bold text-black/35 line-through">
+                  {course.originalPrice}
+                </p>
+              ) : null}
+            </div>
+            <p className="mt-3 text-base font-bold text-[#4fb37a]">
+              Còn 63 suất trước khi tăng lên {nextPrice}
+            </p>
+            {discountPercent ? (
+              <p className="mt-6 inline-flex rounded-full bg-[#ddf7e8] px-4 py-2 text-sm font-black text-[#45ae73]">
+                Limited offer -{discountPercent}%
+              </p>
+            ) : null}
+            <div className="mt-6 overflow-hidden rounded-2xl border border-[#cfd9ff] bg-[#f3f6ff] text-sm font-bold text-[#20263a]">
+              <div className="flex items-center justify-between gap-4 border-b border-[#dbe2ff] px-5 py-4">
+                <span>Giá hiện tại</span>
+                <span className="text-lg text-[#45ae73]">{course.price}</span>
+              </div>
+              <div className="flex items-center justify-between gap-4 px-5 py-4">
+                <span>Ưu đãi sắp tăng</span>
+                <span className="text-lg text-[#45ae73]">Còn 63 suất → {nextPrice}</span>
+              </div>
+            </div>
             <div className="mt-5 grid gap-3">
-              {["Research", "Message", "Workflow", "Quality"].map((item, index) => (
-                <div key={item} className="motion-card rounded-2xl border border-white/10 bg-white p-4 text-black">
-                  <div className="flex items-center justify-between gap-4">
-                    <p className="font-black">{item}</p>
-                    <span className="rounded-full bg-[#e7f3df] px-3 py-1 text-xs font-black text-[#2f6f4d]">
-                      Step {index + 1}
-                    </span>
-                  </div>
-                  <div className="mt-4 h-2 rounded-full bg-black/10">
-                    <div className="h-full rounded-full bg-[#2f8f62]" style={{ width: `${55 + index * 10}%` }} />
-                  </div>
-                </div>
-              ))}
+              <button
+                className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-[#4fb37a] px-5 text-sm font-black text-white transition-colors hover:bg-[#419f69]"
+                type="button"
+                onClick={() => setIsTrialFormOpen(true)}
+              >
+                ▶ Học thử
+              </button>
+              <AddToCartButton
+                slug={course.slug}
+                title={course.title}
+                price={course.price}
+                label="🔓 Nâng cấp"
+                className="w-full border-[#4fb37a] text-[#379965]"
+              />
             </div>
           </div>
         </div>
@@ -422,33 +480,76 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
         </div>
       </Section>
 
-      <Section id="lo-trinh" eyebrow="Lộ trình" title={`${content.lessons.length} buổi học mẫu, đi từ nền tảng đến kế hoạch triển khai.`}>
-        <div className="grid gap-3">
-          {content.lessons.map((lesson, index) => (
-            <div key={`${lesson.title}-${index}`} className="motion-card rounded-2xl border-2 border-black bg-white">
-              <button
-                className="flex w-full items-center justify-between gap-4 p-5 text-left"
-                type="button"
-                onClick={() => setOpenLesson(openLesson === index ? -1 : index)}
-              >
-                <span className="text-xl font-black tracking-[-0.03em]">{lesson.title}</span>
-                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#e7f3df] text-2xl font-black text-[#2f6f4d]">
-                  {openLesson === index ? "−" : "+"}
-                </span>
-              </button>
-              {openLesson === index ? (
-                <div className="grid gap-4 border-t-2 border-black p-5 text-sm leading-7 text-black/68 md:grid-cols-3">
-                  <p>{lesson.description}</p>
-                  <p>
-                    <strong className="text-black">Kết quả:</strong> {lesson.result}
-                  </p>
-                  <p>
-                    <strong className="text-black">Thực hành:</strong> {lesson.practice}
-                  </p>
-                </div>
-              ) : null}
-            </div>
-          ))}
+      <Section id="lo-trinh" eyebrow="Lộ trình" title={`${content.lessons.length} bài học, đi từ nền tảng đến kế hoạch triển khai.`}>
+        <div className="overflow-hidden rounded-2xl bg-white shadow-[0_24px_90px_rgba(19,31,55,0.08)] ring-1 ring-black/5">
+          {content.lessons.map((lesson, index) => {
+            const thumbnailUrl = toYouTubeThumbnailUrl(lesson.youtubeUrl ?? "");
+            const embedUrl = toYouTubeEmbedUrl(lesson.youtubeUrl ?? "");
+            const isFree = lesson.access === "free";
+
+            return (
+              <div key={`${lesson.title}-${index}`} className="border-b border-black/6 last:border-b-0">
+                <button
+                  className="grid w-full gap-4 p-4 text-left md:grid-cols-[240px_1fr_auto] md:items-start"
+                  type="button"
+                  onClick={() => setOpenLesson(openLesson === index ? -1 : index)}
+                >
+                  <span className="relative block overflow-hidden rounded-xl bg-black">
+                    {thumbnailUrl ? (
+                      <span
+                        aria-label={lesson.title}
+                        className="block aspect-video bg-cover bg-center"
+                        role="img"
+                        style={{ backgroundImage: `url(${thumbnailUrl})` }}
+                      />
+                    ) : (
+                      <span className="block aspect-video bg-[#e7f3df]" />
+                    )}
+                    <span className="absolute left-3 top-3 rounded-full bg-black/78 px-3 py-1 text-xs font-black text-white">
+                      Bài {index + 1}
+                    </span>
+                  </span>
+                  <span>
+                    <span
+                      className={`inline-flex rounded px-2 py-1 text-[11px] font-black uppercase tracking-[0.04em] ${
+                        isFree ? "bg-[#2f8f62] text-white" : "bg-[#f4d48c] text-[#7b5613]"
+                      }`}
+                    >
+                      {isFree ? "Miễn phí" : "Premium"}
+                    </span>
+                    <span className="mt-2 block text-xl font-black tracking-[-0.03em] text-[#15192a]">{lesson.title}</span>
+                    <span className="mt-2 block text-sm font-medium leading-7 text-[#68728a]">
+                      {lesson.description}
+                    </span>
+                  </span>
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#f1f5f9] text-2xl font-black text-[#4b5565]">
+                    {openLesson === index ? "−" : "+"}
+                  </span>
+                </button>
+                {openLesson === index ? (
+                  <div className="grid gap-4 px-4 pb-5 text-sm leading-7 text-black/68 md:ml-[256px] md:grid-cols-2">
+                    {isFree && embedUrl ? (
+                      <div className="overflow-hidden rounded-2xl bg-black md:col-span-2">
+                        <iframe
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                          className="aspect-video w-full"
+                          src={embedUrl}
+                          title={lesson.title}
+                        />
+                      </div>
+                    ) : null}
+                    <p>
+                      <strong className="text-black">Kết quả:</strong> {lesson.result}
+                    </p>
+                    <p>
+                      <strong className="text-black">Thực hành:</strong> {lesson.practice}
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
         </div>
       </Section>
 
@@ -501,7 +602,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
               className="mt-3 w-full"
             />
           </Card>
-          <Card title={`Giảng viên: ${course.instructor?.name || "Thế Anh Marketing"}`}>{content.instructorCopy}</Card>
+          <Card title={`Giảng viên: ${course.instructor?.name || "The Anh Marketing"}`}>{content.instructorCopy}</Card>
         </div>
       </Section>
 
@@ -518,7 +619,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
       <footer className="border-t-2 border-black bg-[#111111] px-5 py-10 text-white sm:px-8">
         <div className="mx-auto flex max-w-[1440px] flex-col gap-5 text-sm font-bold text-white/68 md:flex-row md:items-center md:justify-between">
           <p>
-            <span className="text-white">Thế Anh Marketing.</span> Học marketing thực chiến, ứng dụng công cụ có quy trình.
+            <span className="text-white">The Anh Marketing.</span> Học marketing thực chiến, ứng dụng công cụ có quy trình.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link className="hover:text-[#85d49b]" href="/khoa-hoc">
@@ -541,12 +642,170 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
       </footer>
 
       <SiteOfferPopup contextTitle={course.title} offer={offer} />
+      <TrialAccessModal
+        course={course}
+        isOpen={isTrialFormOpen}
+        onClose={() => setIsTrialFormOpen(false)}
+        onSuccess={() => {
+          setIsTrialFormOpen(false);
+          router.push("/dashboard");
+          router.refresh();
+        }}
+      />
     </main>
   );
 }
 
 export function AiMarketingSalesPage({ course, offer }: { course: Course; offer: OfferSettings }) {
   return <CourseSalesPage course={course} offer={offer} />;
+}
+
+function TrialAccessModal({
+  course,
+  isOpen,
+  onClose,
+  onSuccess,
+}: {
+  course: Course;
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const [mode, setMode] = useState<"register" | "login">("register");
+  const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (!isOpen) {
+    return null;
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setMessage("");
+    setIsSubmitting(true);
+
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email") ?? "");
+    const password = String(formData.get("password") ?? "");
+    const fullName = String(formData.get("name") ?? "");
+    const phone = String(formData.get("phone") ?? "");
+    const supabase = createSupabaseBrowserClient();
+
+    if (!supabase) {
+      setMessage("Chưa cấu hình Supabase. Vui lòng kiểm tra lại hệ thống.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const result =
+      mode === "register"
+        ? await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                full_name: fullName,
+                phone,
+                interested_course: course.title,
+              },
+            },
+          })
+        : await supabase.auth.signInWithPassword({ email, password });
+
+    if (result.error) {
+      setMessage(result.error.message);
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (mode === "register") {
+      await supabase.from("leads").insert({
+        name: fullName,
+        phone,
+        email,
+        message: `Đăng ký học thử: ${course.title}`,
+        source: "trial",
+      });
+    }
+
+    setIsSubmitting(false);
+    onSuccess();
+  }
+
+  async function handleGoogleLogin() {
+    setMessage("");
+    const supabase = createSupabaseBrowserClient();
+
+    if (!supabase) {
+      setMessage("Chưa cấu hình Supabase. Vui lòng kiểm tra lại hệ thống.");
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+      },
+    });
+
+    if (error) {
+      setMessage(error.message);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[90] grid place-items-center bg-black/48 px-4 py-8">
+      <div className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-3xl bg-white p-6 shadow-[0_28px_90px_rgba(0,0,0,0.25)]">
+        <div className="flex items-start justify-between gap-5">
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.14em] text-[#4fb37a]">Học thử miễn phí</p>
+            <h2 className="mt-2 text-3xl font-black tracking-[-0.04em]">{course.title}</h2>
+            <p className="mt-2 text-sm leading-6 text-black/58">
+              Đăng ký hoặc đăng nhập để vào dashboard học viên và tiếp tục bài học thử.
+            </p>
+          </div>
+          <button className="grid size-10 shrink-0 place-items-center rounded-full bg-[#f1f5f9] text-xl font-black" type="button" onClick={onClose}>
+            ×
+          </button>
+        </div>
+
+        <div className="mt-6 grid grid-cols-2 rounded-2xl bg-[#f1f5f9] p-1 text-sm font-black">
+          <button
+            className={`rounded-xl px-4 py-3 ${mode === "register" ? "bg-white shadow-sm" : "text-black/52"}`}
+            type="button"
+            onClick={() => setMode("register")}
+          >
+            Đăng ký
+          </button>
+          <button
+            className={`rounded-xl px-4 py-3 ${mode === "login" ? "bg-white shadow-sm" : "text-black/52"}`}
+            type="button"
+            onClick={() => setMode("login")}
+          >
+            Đăng nhập
+          </button>
+        </div>
+
+        <form className="mt-5 grid gap-4" onSubmit={handleSubmit}>
+          <Button variant="secondary" type="button" onClick={handleGoogleLogin}>
+            Tiếp tục với Google
+          </Button>
+          {mode === "register" ? (
+            <>
+              <input className="min-h-12 rounded-2xl border border-black/10 px-4" name="name" placeholder="Họ và tên" required />
+              <input className="min-h-12 rounded-2xl border border-black/10 px-4" name="phone" placeholder="Số điện thoại/Zalo" required />
+            </>
+          ) : null}
+          <input className="min-h-12 rounded-2xl border border-black/10 px-4" name="email" placeholder="Email" required type="email" />
+          <input className="min-h-12 rounded-2xl border border-black/10 px-4" minLength={6} name="password" placeholder="Mật khẩu" required type="password" />
+          {message ? <p className="rounded-2xl bg-[#f2eadf] p-4 text-sm font-bold text-black/68">{message}</p> : null}
+          <Button isLoading={isSubmitting} loadingLabel="Đang xử lý..." type="submit">
+            Vào dashboard học viên
+          </Button>
+        </form>
+      </div>
+    </div>
+  );
 }
 
 function Section({ children, eyebrow, id, title }: { children: ReactNode; eyebrow: string; id: string; title: string }) {

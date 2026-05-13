@@ -53,11 +53,12 @@ export async function createLead(input: LeadInput) {
   return { ok: true, fallback: false, error: null };
 }
 
-export async function getLeads(): Promise<LeadItem[]> {
+export async function getLeads(options: { includeFallback?: boolean } = {}): Promise<LeadItem[]> {
+  const includeFallback = options.includeFallback ?? true;
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
-    return sampleLeads;
+    return includeFallback ? sampleLeads : [];
   }
 
   const { data, error } = await supabase
@@ -66,6 +67,10 @@ export async function getLeads(): Promise<LeadItem[]> {
     .order("created_at", { ascending: false });
 
   if (error || !data || data.length === 0) {
+    if (!includeFallback) {
+      return [];
+    }
+
     return sampleLeads;
   }
 

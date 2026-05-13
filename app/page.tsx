@@ -132,7 +132,7 @@ export default async function Home() {
           {courses.map((course) => (
             <SoftCard
               key={course.slug}
-              className="h-full transition hover:-translate-y-1"
+              className="h-full"
             >
               <Link href={`/khoa-hoc/${course.slug}`} className="block">
                 <p className="text-sm font-semibold text-[#c77b20]">{course.eyebrow}</p>
@@ -246,7 +246,7 @@ export default async function Home() {
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {blogPosts.map((post) => (
             <Link key={post.slug} href={`/blog/${post.slug}`}>
-              <SoftCard className="h-full transition hover:-translate-y-1">
+              <SoftCard className="h-full">
                 <p className="text-sm font-semibold text-[#c77b20]">
                   {post.category}
                 </p>

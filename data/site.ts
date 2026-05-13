@@ -1,7 +1,8 @@
 export const siteConfig = {
-  name: "Thế Anh Marketing",
-  shortName: "Thế Anh",
-  logoMark: "T",
+  name: "The Anh Marketing",
+  shortName: "The Anh",
+  logoMark: "TA",
+  logoImage: "/brand/ta-mark.svg",
   tagline: "Marketing & Kinh doanh Online thực chiến.",
   url: "https://theanhmarketing.com",
   phone: "0367 928 921",
@@ -15,7 +16,7 @@ export const mainNav = [
   { label: "Học viên", href: "/hoc-vien" },
   { label: "Tài liệu", href: "/tai-lieu" },
   { label: "Blog", href: "/blog" },
-  { label: "Về Thế Anh", href: "/gioi-thieu" },
+  { label: "Về The Anh", href: "/gioi-thieu" },
 ];
 
 export const platformStats = [
@@ -26,7 +27,7 @@ export const platformStats = [
 
 export const faqs = [
   {
-    question: "Thế Anh Marketing phù hợp với ai?",
+    question: "The Anh Marketing phù hợp với ai?",
     answer:
       "Phù hợp với người mới, chủ shop, chủ doanh nghiệp nhỏ, marketer nội bộ và người muốn học marketing theo hướng thực chiến.",
   },
@@ -43,6 +44,6 @@ export const faqs = [
   {
     question: "Tôi cần hỗ trợ thì liên hệ ở đâu?",
     answer:
-      "Bạn có thể liên hệ hotline/Zalo hoặc email của Thế Anh Marketing để được tư vấn lộ trình phù hợp.",
+      "Bạn có thể liên hệ hotline/Zalo hoặc email của The Anh Marketing để được tư vấn lộ trình phù hợp.",
   },
 ];
