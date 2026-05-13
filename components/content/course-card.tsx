@@ -34,9 +34,12 @@ export function CourseCard({ course }: { course: Course }) {
           </span>
         </div>
         <div>
-          <p className="inline bg-white/85 px-2 py-1 text-lg font-black leading-snug tracking-[-0.025em] text-black shadow-sm">
+          <Link
+            href={`/khoa-hoc/${course.slug}`}
+            className="inline bg-white/85 px-2 py-1 text-lg font-black leading-snug tracking-[-0.025em] text-black shadow-sm transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c77b20]"
+          >
             {course.title}
-          </p>
+          </Link>
           <p className="mt-3 line-clamp-2 text-base font-semibold leading-7 text-black/60">
             {course.shortDescription}
           </p>

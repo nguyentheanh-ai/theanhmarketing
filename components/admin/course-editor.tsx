@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { Button } from "@/components/ui/button";
 import { SoftCard } from "@/components/ui/soft-card";
@@ -60,24 +60,10 @@ type CourseEditorProps = {
 
 export function CourseEditor({ initialCourses }: CourseEditorProps) {
   const importInputRef = useRef<HTMLInputElement>(null);
-  const [courses, setCourses] = useState<Course[]>(() => {
-    if (typeof window === "undefined") {
-      return initialCourses;
-    }
-
-    const cached = window.localStorage.getItem(storageKey);
-    if (!cached) {
-      return initialCourses;
-    }
-
-    try {
-      const parsed = JSON.parse(cached) as Course[];
-      return Array.isArray(parsed) && parsed.length > 0 ? parsed : initialCourses;
-    } catch {
-      return initialCourses;
-    }
-  });
-  const [selectedSlug, setSelectedSlug] = useState(courses[0]?.slug ?? "");
+  const [isMounted, setIsMounted] = useState(false);
+  const [courses, setCourses] = useState<Course[]>(initialCourses);
+  const [selectedSlug, setSelectedSlug] = useState(initialCourses[0]?.slug ?? "");
+  const [draggedSlug, setDraggedSlug] = useState("");
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
   const [notice, setNotice] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -93,9 +79,37 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
     [courses, selectedSlug],
   );
 
+  useEffect(() => {
+    setIsMounted(true);
+
+    const cached = window.localStorage.getItem(storageKey);
+    if (!cached) {
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(cached) as Course[];
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        return;
+      }
+
+      setCourses(parsed);
+      setSelectedSlug((currentSlug) => {
+        if (parsed.some((course) => course.slug === currentSlug)) {
+          return currentSlug;
+        }
+        return parsed[0]?.slug ?? "";
+      });
+    } catch {
+      // Ignore invalid local cache and keep server-provided data.
+    }
+  }, []);
+
   function persist(nextCourses: Course[]) {
     setCourses(nextCourses);
-    window.localStorage.setItem(storageKey, JSON.stringify(nextCourses));
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(storageKey, JSON.stringify(nextCourses));
+    }
     setHasLocalChanges(true);
   }
 
@@ -187,143 +201,150 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
     setNotice("Đã tạo khóa học mới trong local CMS. Bấm Lưu Supabase để ghi vào database.");
   }
 
-  function moveSelectedCourse(direction: "up" | "down") {
-    if (selectedCourseIndex < 0) {
+  function moveCourseBySlug(fromSlug: string, toSlug: string) {
+    if (!fromSlug || !toSlug || fromSlug === toSlug) {
       return;
     }
 
-    const targetIndex = direction === "up" ? selectedCourseIndex - 1 : selectedCourseIndex + 1;
-    if (targetIndex < 0 || targetIndex >= courses.length) {
+    const fromIndex = courses.findIndex((course) => course.slug === fromSlug);
+    const toIndex = courses.findIndex((course) => course.slug === toSlug);
+    if (fromIndex < 0 || toIndex < 0) {
       return;
     }
 
     const nextCourses = courses.slice();
-    const [current] = nextCourses.splice(selectedCourseIndex, 1);
-    nextCourses.splice(targetIndex, 0, current);
+    const [current] = nextCourses.splice(fromIndex, 1);
+    nextCourses.splice(toIndex, 0, current);
     persist(nextCourses);
     setNotice("Đã cập nhật thứ tự khóa học. Bấm lưu để đồng bộ Supabase.");
   }
 
   async function saveSelectedCourseToSupabase() {
-    setIsSaving(true);
-    const supabase = createSupabaseBrowserClient();
+    try {
+      setIsSaving(true);
+      const supabase = createSupabaseBrowserClient();
 
-    if (!supabase) {
-      setNotice("Thiếu biến môi trường Supabase. Dữ liệu vẫn được lưu local.");
-      setIsSaving(false);
-      return;
-    }
-
-    const coursePayload = {
-          title: selectedCourse.title,
-          slug: selectedCourse.slug,
-          short_description: selectedCourse.shortDescription,
-          description: selectedCourse.description,
-          price: toDatabasePrice(selectedCourse.price),
-          original_price: toDatabasePrice(selectedCourse.originalPrice),
-          status: selectedCourse.status,
-          duration: selectedCourse.duration,
-          lesson_count: selectedCourse.modules.reduce(
-            (total, courseModule) => total + courseModule.lessons.length,
-            0,
-          ),
-          level: selectedCourse.level,
-          updated_at: selectedCourse.updatedAt,
-          banner_image: selectedCourse.bannerImageUrl,
-          thumbnail_image: selectedCourse.thumbnailImageUrl,
-          preview_video_url: selectedCourse.videoPreviewUrl,
-          cta_text: selectedCourse.ctaText,
-          sort_order: selectedCourseIndex >= 0 ? selectedCourseIndex + 1 : null,
-        };
-
-    let { data: savedCourse, error: courseError } = await supabase
-      .from("courses")
-      .upsert(coursePayload, { onConflict: "slug" })
-      .select("id")
-      .single();
-
-    if (courseError) {
-      const textPricePayload = {
-        ...coursePayload,
-        price: toDatabasePriceText(selectedCourse.price),
-        original_price: toDatabasePriceText(selectedCourse.originalPrice),
-      };
-      const retryResult = await supabase
-        .from("courses")
-        .upsert(textPricePayload, { onConflict: "slug" })
-        .select("id")
-        .single();
-
-      savedCourse = retryResult.data;
-      courseError = retryResult.error;
-    }
-
-    if (courseError || !savedCourse) {
-      setNotice(`Không lưu được khóa học lên Supabase. Local vẫn an toàn. ${courseError?.message ?? ""}`);
-      setIsSaving(false);
-      return;
-    }
-
-    const courseId = savedCourse.id as string;
-    await supabase.from("course_modules").delete().eq("course_id", courseId);
-
-    for (const courseModule of selectedCourse.modules) {
-      const { data: savedModule, error: moduleError } = await supabase
-        .from("course_modules")
-        .insert({
-          course_id: courseId,
-          title: courseModule.title,
-          description: courseModule.description,
-          sort_order: courseModule.order,
-        })
-        .select("id")
-        .single();
-
-      if (moduleError || !savedModule) {
-        setNotice(`Khóa học đã lưu, nhưng module bị lỗi: ${moduleError?.message ?? ""}`);
+      if (!supabase) {
+        setNotice("Thiếu biến môi trường Supabase. Dữ liệu vẫn được lưu local.");
         setIsSaving(false);
         return;
       }
 
-      if (courseModule.lessons.length > 0) {
-        const { data: savedLessons, error: lessonError } = await supabase.from("lessons").insert(
-          courseModule.lessons.map((lesson) => ({
-            module_id: savedModule.id,
-            title: lesson.title,
-            description: "",
-            duration: lesson.duration,
-            youtube_url: lesson.youtubeUrl,
-            embed_url: lesson.embedUrl || toYouTubeEmbedUrl(lesson.youtubeUrl),
-            access_type: toDbLessonAccess(lesson.access),
-            sort_order: lesson.order,
-          })),
-        ).select("id");
+      const coursePayload = {
+            title: selectedCourse.title,
+            slug: selectedCourse.slug,
+            short_description: selectedCourse.shortDescription,
+            description: selectedCourse.description,
+            price: toDatabasePrice(selectedCourse.price),
+            original_price: toDatabasePrice(selectedCourse.originalPrice),
+            status: selectedCourse.status,
+            duration: selectedCourse.duration,
+            lesson_count: selectedCourse.modules.reduce(
+              (total, courseModule) => total + courseModule.lessons.length,
+              0,
+            ),
+            level: selectedCourse.level,
+            updated_at: selectedCourse.updatedAt,
+            banner_image: selectedCourse.bannerImageUrl,
+            thumbnail_image: selectedCourse.thumbnailImageUrl,
+            preview_video_url: selectedCourse.videoPreviewUrl,
+            cta_text: selectedCourse.ctaText,
+            sort_order: selectedCourseIndex >= 0 ? selectedCourseIndex + 1 : null,
+          };
 
-        if (lessonError) {
-          setNotice(`Module đã lưu, nhưng bài học bị lỗi: ${lessonError.message}`);
+      let { data: savedCourse, error: courseError } = await supabase
+        .from("courses")
+        .upsert(coursePayload, { onConflict: "slug" })
+        .select("id")
+        .single();
+
+      if (courseError) {
+        const textPricePayload = {
+          ...coursePayload,
+          price: toDatabasePriceText(selectedCourse.price),
+          original_price: toDatabasePriceText(selectedCourse.originalPrice),
+        };
+        const retryResult = await supabase
+          .from("courses")
+          .upsert(textPricePayload, { onConflict: "slug" })
+          .select("id")
+          .single();
+
+        savedCourse = retryResult.data;
+        courseError = retryResult.error;
+      }
+
+      if (courseError || !savedCourse) {
+        setNotice(`Không lưu được khóa học lên Supabase. Local vẫn an toàn. ${courseError?.message ?? ""}`);
+        setIsSaving(false);
+        return;
+      }
+
+      const courseId = savedCourse.id as string;
+      await supabase.from("course_modules").delete().eq("course_id", courseId);
+
+      for (const courseModule of selectedCourse.modules) {
+        const { data: savedModule, error: moduleError } = await supabase
+          .from("course_modules")
+          .insert({
+            course_id: courseId,
+            title: courseModule.title,
+            description: courseModule.description,
+            sort_order: courseModule.order,
+          })
+          .select("id")
+          .single();
+
+        if (moduleError || !savedModule) {
+          setNotice(`Khóa học đã lưu, nhưng module bị lỗi: ${moduleError?.message ?? ""}`);
           setIsSaving(false);
           return;
         }
 
-        const lessonResources = courseModule.lessons
-          .flatMap((lesson, index) =>
-            (lesson.resources ?? []).map((resource) => ({
-              lesson_id: String(savedLessons?.[index]?.id ?? ""),
-              title: resource.title,
-              url: resource.url,
+        if (courseModule.lessons.length > 0) {
+          const { data: savedLessons, error: lessonError } = await supabase.from("lessons").insert(
+            courseModule.lessons.map((lesson) => ({
+              module_id: savedModule.id,
+              title: lesson.title,
+              description: "",
+              duration: lesson.duration,
+              youtube_url: lesson.youtubeUrl,
+              embed_url: lesson.embedUrl || toYouTubeEmbedUrl(lesson.youtubeUrl),
+              access_type: toDbLessonAccess(lesson.access),
+              sort_order: lesson.order,
             })),
-          )
-          .filter((resource) => resource.lesson_id);
+          ).select("id");
 
-        if (lessonResources.length > 0) {
-          await supabase.from("lesson_resources").insert(lessonResources);
+          if (lessonError) {
+            setNotice(`Module đã lưu, nhưng bài học bị lỗi: ${lessonError.message}`);
+            setIsSaving(false);
+            return;
+          }
+
+          const lessonResources = courseModule.lessons
+            .flatMap((lesson, index) =>
+              (lesson.resources ?? []).map((resource) => ({
+                lesson_id: String(savedLessons?.[index]?.id ?? ""),
+                title: resource.title,
+                url: resource.url,
+              })),
+            )
+            .filter((resource) => resource.lesson_id);
+
+          if (lessonResources.length > 0) {
+            await supabase.from("lesson_resources").insert(lessonResources);
+          }
         }
       }
-    }
 
-    setNotice("Đã lưu khóa học, module và bài học lên Supabase.");
-    setHasLocalChanges(false);
-    setIsSaving(false);
+      setNotice("Đã lưu khóa học, module và bài học lên Supabase.");
+      setHasLocalChanges(false);
+      setIsSaving(false);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Không thể kết nối Supabase.";
+      setNotice(`Lỗi đăng nhập phiên Supabase hoặc kết nối. Vui lòng đăng nhập lại admin. ${message}`);
+      setIsSaving(false);
+    }
   }
 
   const saveButtonLabel = isSaving
@@ -348,14 +369,19 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
       return;
     }
 
-    const { error } = await supabase.from("courses").delete().eq("slug", selectedCourse.slug);
+    try {
+      const { error } = await supabase.from("courses").delete().eq("slug", selectedCourse.slug);
 
-    if (error) {
-      setNotice(`Đã xóa local, nhưng Supabase báo lỗi: ${error.message}`);
-      return;
+      if (error) {
+        setNotice(`Đã xóa local, nhưng Supabase báo lỗi: ${error.message}`);
+        return;
+      }
+
+      setNotice("Đã xóa khóa học khỏi Supabase.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Không thể kết nối Supabase.";
+      setNotice(`Đã xóa local, nhưng phiên Supabase lỗi. Vui lòng đăng nhập lại admin. ${message}`);
     }
-
-    setNotice("Đã xóa khóa học khỏi Supabase.");
   }
 
   function updateCourse(field: keyof Course, value: string) {
@@ -608,17 +634,21 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
     <div className="grid gap-5">
       <SoftCard>
         <p className="text-sm font-semibold text-[#c77b20]">Chọn khóa học</p>
-        <select
-          className="mt-4 min-h-12 w-full rounded-2xl border border-black/10 bg-white px-4"
-          value={selectedCourse.slug}
-          onChange={(event) => setSelectedSlug(event.target.value)}
-        >
-          {courses.map((course, index) => (
-            <option key={course.slug} value={course.slug}>
-              {index + 1}. {course.title}
-            </option>
-          ))}
-        </select>
+        {isMounted ? (
+          <select
+            className="mt-4 min-h-12 w-full rounded-2xl border border-black/10 bg-white px-4"
+            value={selectedCourse.slug}
+            onChange={(event) => setSelectedSlug(event.target.value)}
+          >
+            {courses.map((course, index) => (
+              <option key={course.slug} value={course.slug}>
+                {index + 1}. {course.title}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <div className="mt-4 h-12 w-full animate-pulse rounded-2xl border border-black/10 bg-[#f4f0e8]" />
+        )}
         <div className="mt-4 rounded-2xl border border-black/10 bg-[#fbfaf7] p-3">
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-black/45">
             Thứ tự hiển thị hiện tại
@@ -627,16 +657,31 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
             {courses.map((course, index) => (
               <button
                 key={`order-${course.slug}`}
-                className={`flex items-center gap-3 rounded-xl px-3 py-2 text-left text-sm transition ${
+                className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm transition ${
                   course.slug === selectedCourse.slug
                     ? "bg-[#e7f3df] font-bold text-[#1f5e41]"
                     : "bg-white text-black/65 hover:text-black"
                 }`}
                 type="button"
                 onClick={() => setSelectedSlug(course.slug)}
+                draggable
+                onDragStart={() => setDraggedSlug(course.slug)}
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={() => {
+                  moveCourseBySlug(draggedSlug, course.slug);
+                  setDraggedSlug("");
+                }}
+                onDragEnd={() => setDraggedSlug("")}
               >
                 <span className="grid size-6 place-items-center rounded-full bg-black text-xs font-bold text-white">
                   {index + 1}
+                </span>
+                <span
+                  className="inline-flex min-h-8 min-w-8 items-center justify-center rounded-lg border border-black/10 bg-white text-base text-black/55 cursor-grab active:cursor-grabbing"
+                  aria-hidden
+                  title="Kéo để đổi thứ tự"
+                >
+                  ⋮⋮
                 </span>
                 <span className="line-clamp-1">{course.title}</span>
               </button>
@@ -659,24 +704,6 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
           </Button>
           <Button size="md" type="button" variant="danger" onClick={deleteSelectedCourseFromSupabase}>
             Xóa khóa học
-          </Button>
-          <Button
-            size="md"
-            type="button"
-            variant="secondary"
-            disabled={selectedCourseIndex <= 0}
-            onClick={() => moveSelectedCourse("up")}
-          >
-            Đưa lên
-          </Button>
-          <Button
-            size="md"
-            type="button"
-            variant="secondary"
-            disabled={selectedCourseIndex < 0 || selectedCourseIndex >= courses.length - 1}
-            onClick={() => moveSelectedCourse("down")}
-          >
-            Đưa xuống
           </Button>
           <Button size="md" type="button" variant="secondary" onClick={exportCourses}>
             Xuất JSON
