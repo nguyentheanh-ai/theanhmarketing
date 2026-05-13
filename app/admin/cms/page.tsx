@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandSettingsManager } from "@/components/admin/brand-settings-manager";
+import { OfferSettingsManager } from "@/components/admin/offer-settings-manager";
 import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { SoftCard } from "@/components/ui/soft-card";
 import { cmsSections } from "@/data/cms";
@@ -9,6 +10,7 @@ import { getBrandSettings } from "@/services/brandService";
 import { getCourses } from "@/services/courseService";
 import { getDatabaseHealth } from "@/services/databaseHealthService";
 import { getLeads } from "@/services/leadService";
+import { getOfferSettings } from "@/services/offerService";
 import { getResources } from "@/services/resourceService";
 import { getTestimonials } from "@/services/testimonialService";
 
@@ -46,8 +48,9 @@ const cmsModules = [
 ];
 
 export default async function AdminCmsPage() {
-  const [brand, courses, resources, posts, testimonials, leads, health] = await Promise.all([
+  const [brand, offer, courses, resources, posts, testimonials, leads, health] = await Promise.all([
     getBrandSettings(),
+    getOfferSettings(),
     getCourses(),
     getResources(),
     getBlogPosts(),
@@ -137,6 +140,19 @@ export default async function AdminCmsPage() {
             fallback về cấu hình trong file.
           </p>
           <BrandSettingsManager settings={brand} />
+        </SoftCard>
+
+        <SoftCard className="mt-5">
+          <p className="text-sm font-semibold text-[#2f8f62]">Ưu đãi</p>
+          <h2 className="mt-3 text-3xl font-black tracking-[-0.05em]">
+            Popup ưu đãi và mã giảm giá.
+          </h2>
+          <p className="mt-3 max-w-3xl leading-8 text-black/60">
+            Cập nhật nội dung popup trên trang khóa học: tiêu đề, mô tả, quyền lợi,
+            mã giảm giá và link CTA. Nếu chưa có dữ liệu trong Supabase, website sẽ
+            dùng cấu hình mặc định.
+          </p>
+          <OfferSettingsManager settings={offer} />
         </SoftCard>
 
         <section className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">

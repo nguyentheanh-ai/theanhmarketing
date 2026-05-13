@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { ButtonLink } from "@/components/ui/button-link";
 import type { Course } from "@/data/courses";
+import type { OfferSettings } from "@/services/offerService";
 
 const navItems = [
   { label: "Khóa học", href: "#hero" },
@@ -273,7 +274,7 @@ function buildLandingContent(course: Course): LandingContent {
   };
 }
 
-export function CourseSalesPage({ course }: { course: Course }) {
+export function CourseSalesPage({ course, offer }: { course: Course; offer: OfferSettings }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isOfferOpen, setIsOfferOpen] = useState(true);
   const [openLesson, setOpenLesson] = useState(0);
@@ -526,13 +527,15 @@ export function CourseSalesPage({ course }: { course: Course }) {
         </div>
       </footer>
 
-      <OfferPopup isOpen={isOfferOpen} onToggle={() => setIsOfferOpen((current) => !current)} courseTitle={course.title} />
+      {offer.enabled ? (
+        <OfferPopup isOpen={isOfferOpen} offer={offer} onToggle={() => setIsOfferOpen((current) => !current)} courseTitle={course.title} />
+      ) : null}
     </main>
   );
 }
 
-export function AiMarketingSalesPage({ course }: { course: Course }) {
-  return <CourseSalesPage course={course} />;
+export function AiMarketingSalesPage({ course, offer }: { course: Course; offer: OfferSettings }) {
+  return <CourseSalesPage course={course} offer={offer} />;
 }
 
 function Section({ children, eyebrow, id, title }: { children: ReactNode; eyebrow: string; id: string; title: string }) {
@@ -548,13 +551,23 @@ function Section({ children, eyebrow, id, title }: { children: ReactNode; eyebro
 function Card({ children, title }: { children: ReactNode; title?: string }) {
   return (
     <div className="motion-card rounded-2xl border-2 border-black bg-white p-5">
-      {title ? <h3 className="mb-3 text-xl font-black tracking-[-0.03em]">{title}</h3> : null}
+      {title ? <h3 className="card-title mb-3 text-xl font-black tracking-[-0.03em]">{title}</h3> : null}
       <div className="leading-7 text-black/68">{children}</div>
     </div>
   );
 }
 
-function OfferPopup({ isOpen, onToggle, courseTitle }: { isOpen: boolean; onToggle: () => void; courseTitle: string }) {
+function OfferPopup({
+  isOpen,
+  offer,
+  onToggle,
+  courseTitle,
+}: {
+  isOpen: boolean;
+  offer: OfferSettings;
+  onToggle: () => void;
+  courseTitle: string;
+}) {
   if (!isOpen) {
     return (
       <button
@@ -562,7 +575,7 @@ function OfferPopup({ isOpen, onToggle, courseTitle }: { isOpen: boolean; onTogg
         type="button"
         onClick={onToggle}
       >
-        Ưu đãi
+        {offer.discountLabel || "Ưu đãi"}
       </button>
     );
   }
@@ -571,19 +584,27 @@ function OfferPopup({ isOpen, onToggle, courseTitle }: { isOpen: boolean; onTogg
     <aside className="fixed bottom-5 left-5 z-50 w-[min(380px,calc(100vw-2.5rem))] rounded-3xl border-2 border-black bg-white p-4 shadow-[8px_8px_0_#111]">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xl font-black tracking-[-0.04em]">Ưu đãi dành cho bạn</p>
-          <p className="mt-1 text-sm font-semibold text-black/55">Nhận tư vấn lộ trình và tài liệu phù hợp với {courseTitle}.</p>
+          <p className="text-xl font-black tracking-[-0.04em]">{offer.title}</p>
+          <p className="mt-1 text-sm font-semibold text-black/55">
+            {offer.description || `Nhận tư vấn lộ trình và tài liệu phù hợp với ${courseTitle}.`}
+          </p>
         </div>
         <button className="grid size-9 shrink-0 place-items-center rounded-full bg-[#e7f3df] text-2xl font-black" type="button" onClick={onToggle}>
           ×
         </button>
       </div>
+      {offer.couponCode ? (
+        <div className="mt-4 rounded-2xl border-2 border-dashed border-[#2f8f62] bg-[#e7f3df] p-3">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2f6f4d]">{offer.discountLabel || "Mã giảm giá"}</p>
+          <p className="mt-1 text-2xl font-black tracking-[0.08em] text-black">{offer.couponCode}</p>
+        </div>
+      ) : null}
       <div className="mt-4 grid gap-3">
-        {["Tặng checklist triển khai sau khóa học", "Tặng template kế hoạch 30 ngày", "Tư vấn chọn lộ trình phù hợp"].map((item) => (
+        {offer.items.map((item) => (
           <div key={item} className="motion-card rounded-2xl border border-black/10 bg-[#fbfaf7] p-3">
             <p className="text-sm font-bold">{item}</p>
-            <ButtonLink href="/dang-ky" size="sm" className="mt-3">
-              Nhận ưu đãi
+            <ButtonLink href={offer.ctaHref || "/dang-ky"} size="sm" className="mt-3">
+              {offer.ctaLabel || "Nhận ưu đãi"}
             </ButtonLink>
           </div>
         ))}
