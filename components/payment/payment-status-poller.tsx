@@ -1,16 +1,50 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { PaymentOrder } from "@/services/orderService";
+
+function formatCountdown(totalSeconds: number) {
+  const safe = Math.max(0, totalSeconds);
+  const minutes = Math.floor(safe / 60)
+    .toString()
+    .padStart(2, "0");
+  const seconds = Math.floor(safe % 60)
+    .toString()
+    .padStart(2, "0");
+  return `${minutes}:${seconds}`;
+}
 
 export function PaymentStatusPoller({ initialOrder }: { initialOrder: PaymentOrder }) {
   const router = useRouter();
   const [order, setOrder] = useState(initialOrder);
+  const [secondsLeft, setSecondsLeft] = useState(0);
+
+  const countdownTarget = useMemo(() => {
+    const createdTime = Date.parse(order.createdAt);
+    if (Number.isNaN(createdTime)) {
+      return Date.now() + 5 * 60 * 1000;
+    }
+    return createdTime + 5 * 60 * 1000;
+  }, [order.createdAt]);
+
+  useEffect(() => {
+    const updateCountdown = () => {
+      const left = Math.ceil((countdownTarget - Date.now()) / 1000);
+      setSecondsLeft(Math.max(0, left));
+    };
+
+    updateCountdown();
+    const timer = window.setInterval(updateCountdown, 1000);
+    return () => window.clearInterval(timer);
+  }, [countdownTarget]);
 
   useEffect(() => {
     if (order.status === "paid") {
-      return;
+      const redirectTimer = window.setTimeout(() => {
+        router.push("/dashboard");
+      }, 1200);
+      return () => window.clearTimeout(redirectTimer);
     }
 
     const timer = window.setInterval(async () => {
@@ -44,9 +78,15 @@ export function PaymentStatusPoller({ initialOrder }: { initialOrder: PaymentOrd
       </p>
       <p className="mt-2 text-sm leading-6 text-black/60">
         {paid
-          ? "Sepay đã báo tiền vào và đơn hàng đã được cập nhật tự động."
+          ? "SePay đã báo tiền vào. Đang chuyển bạn tới khu học viên..."
           : "Trang này tự kiểm tra mỗi vài giây. Sau khi chuyển khoản thành công, trạng thái sẽ đổi tự động."}
       </p>
+
+      {!paid ? (
+        <div className="mt-3 inline-flex items-center rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-bold text-black/65">
+          Thời gian giữ đơn: {formatCountdown(secondsLeft)}
+        </div>
+      ) : null}
     </div>
   );
 }

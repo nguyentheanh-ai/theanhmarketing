@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PaymentStatusPoller } from "@/components/payment/payment-status-poller";
+import { TransferDetails } from "@/components/payment/transfer-details";
 import { PageShell } from "@/components/site/page-shell";
 import { SoftCard } from "@/components/ui/soft-card";
 import {
@@ -73,24 +74,12 @@ export default async function PaymentPage({
                 className="mx-auto aspect-square w-full max-w-[340px] rounded-3xl border border-black/10 bg-white object-contain p-4"
                 src={qrUrl}
               />
-              <div className="grid gap-3 rounded-2xl border border-black/10 bg-[#fbfaf7] p-4 text-sm leading-6 text-black/65">
-                <p>
-                  Ngân hàng: <span className="font-bold text-black">{bankName}</span>
-                </p>
-                <p>
-                  Số tài khoản:{" "}
-                  <span className="font-bold text-black">{sepay.bankAccountNumber}</span>
-                </p>
-                {sepay.bankAccountName ? (
-                  <p>
-                    Chủ tài khoản:{" "}
-                    <span className="font-bold text-black">{sepay.bankAccountName}</span>
-                  </p>
-                ) : null}
-                <p>
-                  Nội dung: <span className="font-bold text-black">{transferContent}</span>
-                </p>
-              </div>
+              <TransferDetails
+                bankAccountName={sepay.bankAccountName}
+                bankAccountNumber={sepay.bankAccountNumber}
+                bankName={bankName}
+                transferContent={transferContent}
+              />
             </div>
           ) : (
             <div className="rounded-2xl bg-[#f2eadf] p-4 text-sm font-semibold leading-6 text-black/65">
