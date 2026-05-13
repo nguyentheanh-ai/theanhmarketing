@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useMemo, useRef, useState } from "react";
+import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { Button } from "@/components/ui/button";
 import { SoftCard } from "@/components/ui/soft-card";
 import type { Course, CourseStatus, LessonAccess } from "@/data/courses";
@@ -655,27 +656,27 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
           <input className="min-h-12 rounded-2xl border border-black/10 px-4" value={selectedCourse.duration} onChange={(e) => updateCourse("duration", e.target.value)} />
           <input className="min-h-12 rounded-2xl border border-black/10 px-4" value={selectedCourse.level} onChange={(e) => updateCourse("level", e.target.value)} />
           <input className="min-h-12 rounded-2xl border border-black/10 px-4" value={selectedCourse.updatedAt} onChange={(e) => updateCourse("updatedAt", e.target.value)} />
-          <input className="min-h-12 rounded-2xl border border-black/10 px-4" placeholder="Banner image URL cho trang chi tiết" value={selectedCourse.bannerImageUrl} onChange={(e) => updateCourse("bannerImageUrl", e.target.value)} />
-          <input className="min-h-12 rounded-2xl border border-black/10 px-4" placeholder="Thumbnail image URL cho card khóa học" value={selectedCourse.thumbnailImageUrl} onChange={(e) => updateCourse("thumbnailImageUrl", e.target.value)} />
-          <label className="grid gap-2 rounded-2xl border border-black/10 bg-white p-4 text-sm font-semibold text-black/60">
-            Upload banner khóa học
-            <input
-              accept="image/*"
-              type="file"
-              onChange={(event) => uploadCourseImage("bannerImageUrl", event.target.files?.[0])}
-            />
-            {uploadingField === "banner" ? <span>Đang upload banner...</span> : null}
-          </label>
-          <label className="grid gap-2 rounded-2xl border border-black/10 bg-white p-4 text-sm font-semibold text-black/60">
-            Upload thumbnail khóa học
-            <input
-              accept="image/*"
-              type="file"
-              onChange={(event) => uploadCourseImage("thumbnailImageUrl", event.target.files?.[0])}
-            />
-            {uploadingField === "thumbnail" ? <span>Đang upload thumbnail...</span> : null}
-          </label>
           <input className="min-h-12 rounded-2xl border border-black/10 px-4 md:col-span-2" placeholder="YouTube preview URL" value={selectedCourse.videoPreviewUrl} onChange={(e) => updatePreviewUrl(e.target.value)} />
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <ImageUploadField
+            description="Dùng cho hero/trang chi tiết khóa học. Đây là vùng bấm lớn, dễ thao tác hơn input file mặc định."
+            isUploading={uploadingField === "banner"}
+            label="Banner khóa học"
+            uploadLabel="Upload banner"
+            value={selectedCourse.bannerImageUrl}
+            onFileSelect={(file) => uploadCourseImage("bannerImageUrl", file)}
+            onUrlChange={(url) => updateCourse("bannerImageUrl", url)}
+          />
+          <ImageUploadField
+            description="Dùng cho card khóa học ở trang danh sách và trang chủ."
+            isUploading={uploadingField === "thumbnail"}
+            label="Thumbnail khóa học"
+            uploadLabel="Upload thumbnail"
+            value={selectedCourse.thumbnailImageUrl}
+            onFileSelect={(file) => uploadCourseImage("thumbnailImageUrl", file)}
+            onUrlChange={(url) => updateCourse("thumbnailImageUrl", url)}
+          />
         </div>
         <textarea className="mt-4 min-h-28 w-full rounded-2xl border border-black/10 p-4" value={selectedCourse.description} onChange={(e) => updateCourse("description", e.target.value)} />
         {selectedCourse.thumbnailImageUrl || selectedCourse.bannerImageUrl ? (

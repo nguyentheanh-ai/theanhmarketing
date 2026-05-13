@@ -21,6 +21,23 @@ export async function uploadMediaFile({
   folder: string;
   supabase: SupabaseClient;
 }) {
+  const formData = new FormData();
+  formData.set("file", file);
+  formData.set("folder", folder);
+
+  const serverUpload = await fetch("/api/admin/media/upload", {
+    body: formData,
+    method: "POST",
+  });
+
+  if (serverUpload.ok) {
+    const result = (await serverUpload.json()) as { ok: boolean; url?: string; message?: string };
+
+    if (result.ok && result.url) {
+      return result.url;
+    }
+  }
+
   const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const path = `${safeSegment(folder) || "uploads"}/${Date.now()}-${safeSegment(
     file.name.replace(/\.[^.]+$/, ""),
@@ -32,8 +49,16 @@ export async function uploadMediaFile({
   });
 
   if (error) {
+    let serverMessage = "";
+    try {
+      const result = (await serverUpload.json()) as { message?: string };
+      serverMessage = result.message ? ` Server upload: ${result.message}` : "";
+    } catch {
+      serverMessage = "";
+    }
+
     throw new Error(
-      `${error.message}. Kiểm tra Supabase Storage bucket "${mediaBucket}" và policy upload.`,
+      `${error.message}. Kiểm tra Supabase Storage bucket "${mediaBucket}" và policy upload.${serverMessage}`,
     );
   }
 

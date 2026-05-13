@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { Button } from "@/components/ui/button";
 import type { BrandSettings } from "@/services/brandService";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -118,22 +119,6 @@ export function BrandSettingsManager({ settings }: { settings: BrandSettings }) 
         />
         <input
           className="min-h-12 rounded-2xl border border-black/10 px-4"
-          value={form.logoImage}
-          name="logoImage"
-          placeholder="Logo image URL"
-          onChange={(event) => updateField("logoImage", event.target.value)}
-        />
-        <label className="grid gap-2 rounded-2xl border border-black/10 bg-white p-4 text-sm font-semibold text-black/60">
-          Upload logo
-          <input
-            accept="image/*"
-            type="file"
-            onChange={(event) => uploadBrandImage("logoImage", event.target.files?.[0])}
-          />
-          {uploadingField === "logoImage" ? <span>Đang upload logo...</span> : null}
-        </label>
-        <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4"
           defaultValue={form.phone}
           name="phone"
           placeholder="Hotline/Zalo"
@@ -159,25 +144,29 @@ export function BrandSettingsManager({ settings }: { settings: BrandSettings }) 
         />
         <input
           className="min-h-12 rounded-2xl border border-black/10 px-4"
-          value={form.heroImageUrl}
-          name="heroImageUrl"
-          placeholder="Homepage hero image URL"
-          onChange={(event) => updateField("heroImageUrl", event.target.value)}
-        />
-        <label className="grid gap-2 rounded-2xl border border-black/10 bg-white p-4 text-sm font-semibold text-black/60">
-          Upload ảnh hero
-          <input
-            accept="image/*"
-            type="file"
-            onChange={(event) => uploadBrandImage("heroImageUrl", event.target.files?.[0])}
-          />
-          {uploadingField === "heroImageUrl" ? <span>Đang upload ảnh hero...</span> : null}
-        </label>
-        <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4"
           defaultValue={form.heroVideoUrl}
           name="heroVideoUrl"
           placeholder="Homepage hero video URL"
+        />
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        <ImageUploadField
+          description="Logo này hiển thị ở header và footer. Bấm chọn ảnh để upload, URL sẽ tự điền."
+          isUploading={uploadingField === "logoImage"}
+          label="Logo website"
+          uploadLabel="Upload logo"
+          value={form.logoImage}
+          onFileSelect={(file) => uploadBrandImage("logoImage", file)}
+          onUrlChange={(url) => updateField("logoImage", url)}
+        />
+        <ImageUploadField
+          description="Ảnh hero trang chủ. Sau khi upload, bấm lưu thương hiệu để cập nhật public site."
+          isUploading={uploadingField === "heroImageUrl"}
+          label="Ảnh hero trang chủ"
+          uploadLabel="Upload ảnh hero"
+          value={form.heroImageUrl}
+          onFileSelect={(file) => uploadBrandImage("heroImageUrl", file)}
+          onUrlChange={(url) => updateField("heroImageUrl", url)}
         />
       </div>
       <textarea
