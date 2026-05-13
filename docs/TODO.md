@@ -176,38 +176,46 @@ Current focus for the next session should be production hardening, not redesign.
 
 ## NEXT PRIORITY
 
-1. Add real auth.
+1. Performance pass for public pages.
+   - Review `force-dynamic` usage on public routes.
+   - Add caching/revalidation for Supabase-backed reads.
+   - Reduce client JS on course landing pages by splitting interactive widgets.
+   - Optimize uploaded media rendering and add size rules for admin uploads.
+
+2. Add real auth.
    - Turn on `AUTH_GUARD_ENABLED=true` in production.
    - Set `ADMIN_EMAILS` before deploy.
    - Add database-backed profiles/roles if email allowlist is not enough.
    - Test Supabase email confirmation settings.
 
-2. Replace demo Supabase policies.
+3. Replace demo Supabase policies.
    - Keep public reads.
    - Restrict writes to admins.
    - Restrict enrollments/progress to owner/admin.
+   - Restrict `site_settings` writes for brand and offer settings.
 
-3. Connect manual student creation to real database.
+4. Connect manual student creation to real database.
    - Current intake writes a lead.
    - Next: create user with service role.
    - Next: create enrollment.
    - Assign course
    - Send login info
 
-4. Add media storage.
-   - Banner image upload
-   - Thumbnail image upload
-   - Resource file upload
+5. Continue media storage hardening.
+   - Banner image upload is available; add image dimension/size validation.
+   - Thumbnail image upload is available; add optimization guidance.
+   - Resource file upload still needs a managed workflow.
 
-5. Improve learning page.
+6. Improve learning page.
    - Respect real enrollment access rules
    - Save progress
 
-6. Improve registration flow.
+7. Improve registration flow.
    - Create lead
    - Create pending order
    - Admin approval
    - Enrollment creation
+   - Connect coupon/offer code to the order or lead record if discount logic is required.
 
 ## LATER IMPROVEMENTS
 
@@ -217,7 +225,7 @@ Current focus for the next session should be production hardening, not redesign.
 - Email automation.
 - CRM pipeline for leads.
 - Student notes and tags.
-- Coupon system.
+- Coupon system is partially started as editable offer/coupon display in `/admin/cms`; still needs real order/checkout discount logic.
 - Payment integration.
 - Community integration.
 - Analytics dashboard.

@@ -2,6 +2,85 @@
 
 ## Handoff Snapshot - 2026-05-13
 
+## Audit Snapshot - 2026-05-13
+
+Latest verification after course landing animation and offer CMS work:
+
+- `npm.cmd run lint`: pass.
+- `npm.cmd run build`: pass.
+- `npm.cmd run verify:routes`: pass, all checked routes returned 200.
+- Browser console audit on key pages found 0 localhost warnings/errors:
+  - `/`
+  - `/khoa-hoc`
+  - `/khoa-hoc/marketing-operation-management`
+  - `/khoa-hoc/ai-fullstack-marketing-system`
+  - `/blog`
+  - `/dang-nhap`
+  - `/admin/cms`
+  - `/admin/khoa-hoc`
+  - `/learn/facebook-ads-2026/lesson-1`
+
+Local response timing sample on `http://localhost:3000`:
+
+| Route | Status | HTML bytes | Time |
+| --- | ---: | ---: | ---: |
+| `/` | 200 | 154,276 | 977 ms |
+| `/khoa-hoc` | 200 | 118,853 | 606 ms |
+| `/khoa-hoc/marketing-operation-management` | 200 | 70,758 | 749 ms |
+| `/khoa-hoc/ai-fullstack-marketing-system` | 200 | 72,449 | 692 ms |
+| `/blog` | 200 | 64,209 | 355 ms |
+| `/dang-nhap` | 200 | 60,674 | 347 ms |
+| `/dashboard` | 200 | 56,168 | 518 ms |
+| `/admin/cms` | 200 | 76,510 | 580 ms |
+| `/admin/khoa-hoc` | 200 | 75,453 | 480 ms |
+| `/learn/facebook-ads-2026/lesson-1` | 200 | 55,673 | 490 ms |
+
+Performance and reliability warnings:
+
+- Many public routes are currently `force-dynamic`, so they depend on server render and Supabase latency instead of static/CDN caching.
+- Homepage HTML is the heaviest sample route. It pulls brand, courses, resources, testimonials, and blog data in one request.
+- Course detail pages are now richer and use a large client component for interaction, animation, offer popup, accordion, and counters.
+- Admin CMS performs several parallel Supabase reads. This is acceptable for admin, but slow Supabase/RLS queries will show up there first.
+- Uploaded images and brand/course media currently render through plain `img`/video URLs. Next priority should include image sizing/optimization and avoiding oversized uploaded assets.
+- YouTube iframes and preview media should stay lazy or conditional; do not add many always-loaded embeds to listing pages.
+- Offer settings are stored in `site_settings` key `offer`; brand settings use key `brand`. Keep these keys stable.
+
+Latest shipped UX/CMS changes:
+
+- All course detail pages now use the course sales landing template inspired by `ai-fullstack-marketing-system`, with per-course content.
+- Course stats animate up, including student count to `2.000+`.
+- Course cards/content boxes have stronger hover animation with green accent, border shift, shadow, and card title color.
+- Login/header UX was updated so authenticated users see `Khóa học của tôi` and sign-out behavior.
+- Admin CMS has an offer popup manager for title, description, coupon code, discount label, CTA, and benefit lines.
+- Course offer popup reads Supabase `site_settings.offer` with fallback defaults.
+- Blog post editor has basic rich content support including image upload to URL and HTML insertion workflow.
+- Brand CMS can upload/update logo and homepage hero media through the media upload workflow.
+
+Recommended next-session plan:
+
+1. Performance pass for public routes.
+   - Decide which pages can move away from `force-dynamic`.
+   - Add caching/revalidation around brand, offer, course, blog, resource, and testimonial reads.
+   - Split the course sales page so non-interactive content can stay server-rendered while only accordion/counter/popup remain client-side.
+
+2. Media optimization pass.
+   - Add size guidance for uploaded logo/banner/thumbnail/hero media.
+   - Consider `next/image` or a safe wrapper for known public media URLs.
+   - Add lazy loading for non-critical images/iframes where missing.
+
+3. Supabase/RLS hardening.
+   - Replace demo anon write policies with admin-only writes.
+   - Keep public reads for public content.
+   - Verify `site_settings` write access only for admins before production.
+
+4. UX QA pass on mobile.
+   - Check course landing hero, offer popup, accordion, and admin CMS forms on small screens.
+   - Tune hover-only effects with focus/tap states for mobile users.
+
+5. Product flow pass.
+   - Connect coupon/offer code to registration/order flow if discounts should affect checkout later.
+   - Continue enrollment/progress model and admin student creation.
+
 Project da chuyen tu mock/local-only sang kien truc **Supabase-first with mock fallback** cho cac phan quan trong. Public UI hien tai dang on va KHONG duoc redesign manh neu khong co yeu cau rieng.
 
 ### Supabase Status
