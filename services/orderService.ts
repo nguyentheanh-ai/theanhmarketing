@@ -3,6 +3,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import {
   createOrderCode,
   createSepayQrUrl,
+  createVietQrUrl,
   formatVnd,
   getSepayOrderCode,
   getSepayReference,
@@ -164,7 +165,9 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
   }
 
   const orderCode = createOrderCode();
-  const paymentQrUrl = isSepayConfigured() ? createSepayQrUrl({ amount, orderCode }) : "";
+  const paymentQrUrl = isSepayConfigured()
+    ? createVietQrUrl({ amount, orderCode }) || createSepayQrUrl({ amount, orderCode })
+    : "";
   const expiresAt = new Date(Date.now() + 20 * 60 * 1000).toISOString();
   const courseSlug = selectedCourses.map((course) => course.slug).join(",");
   const courseTitle = selectedCourses.map((course) => course.title).join(" | ");

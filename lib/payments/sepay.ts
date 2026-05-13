@@ -64,6 +64,67 @@ export function createSepayQrUrl({
   return `https://qr.sepay.vn/img?${params.toString()}`;
 }
 
+const bankNameMap: Record<string, string> = {
+  VCB: "Vietcombank",
+  TCB: "Techcombank",
+  ACB: "ACB",
+  MBB: "MB Bank",
+  BIDV: "BIDV",
+  ICB: "VietinBank",
+  CTG: "VietinBank",
+  VPB: "VPBank",
+  TPB: "TPBank",
+  STB: "Sacombank",
+  VIB: "VIB",
+  HDB: "HDBank",
+  OCB: "OCB",
+  SHB: "SHB",
+  EIB: "Eximbank",
+  MSB: "MSB",
+  CAKE: "Cake by VPBank",
+  Ubank: "Ubank",
+  TIMO: "Timo",
+};
+
+export function getBankDisplayName(bankCode: string) {
+  const normalized = bankCode.trim().toUpperCase();
+  if (!normalized) {
+    return "";
+  }
+
+  return bankNameMap[normalized] ?? normalized;
+}
+
+export function createVietQrUrl({
+  amount,
+  orderCode,
+  accountName,
+}: {
+  amount: number;
+  orderCode: string;
+  accountName?: string;
+}) {
+  const config = getSepayConfig();
+  const normalizedBank = config.bankCode.trim().toUpperCase();
+  const normalizedAccount = config.bankAccountNumber.trim();
+
+  if (!normalizedBank || !normalizedAccount) {
+    return "";
+  }
+
+  const params = new URLSearchParams({
+    amount: String(Math.max(0, Math.round(amount))),
+    addInfo: orderCode.trim().toUpperCase(),
+  });
+
+  const name = (accountName ?? config.bankAccountName).trim();
+  if (name) {
+    params.set("accountName", name);
+  }
+
+  return `https://img.vietqr.io/image/${normalizedBank}-${normalizedAccount}-compact2.png?${params.toString()}`;
+}
+
 export function parseVndAmount(value: string | number | null | undefined) {
   if (typeof value === "number" && Number.isFinite(value)) {
     return Math.max(0, Math.round(value));
