@@ -214,4 +214,33 @@ html {
   .media-float {
     animation: soft-float 5s ease-in-out infinite;
   }
+
+  .motion-card {
+    transform: translateY(0);
+    transition:
+      transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 260ms ease,
+      background-color 260ms ease;
+  }
+
+  .motion-card:hover {
+    border-color: #2f8f62;
+    box-shadow: 8px 8px 0 rgb(47 143 98 / 0.18), 0 20px 50px rgb(0 0 0 / 0.08);
+    transform: translateY(-6px) rotate(-0.35deg);
+  }
+
+  .motion-lift {
+    transition:
+      transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .motion-lift:hover {
+    transform: translateY(-4px);
+  }
+
+  .course-dashboard-pulse {
+    animation: soft-float 4.8s ease-in-out infinite;
+  }
 }

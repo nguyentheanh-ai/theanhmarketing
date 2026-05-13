@@ -1,9 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { CourseDetail } from "@/components/course/course-detail";
-import { AiMarketingSalesPage } from "@/components/course/ai-marketing-sales-page";
+import { CourseSalesPage } from "@/components/course/ai-marketing-sales-page";
 import { CourseJsonLd } from "@/components/seo/json-ld";
-import { PageShell } from "@/components/site/page-shell";
 import { getCourseBySlug, getCourseStaticParams } from "@/services/courseService";
 
 export const dynamic = "force-dynamic";
@@ -42,19 +40,10 @@ export default async function CourseDetailPage({
     notFound();
   }
 
-  if (course.slug === "ai-fullstack-marketing-system") {
-    return (
-      <>
-        <CourseJsonLd course={course} />
-        <AiMarketingSalesPage course={course} />
-      </>
-    );
-  }
-
   return (
-    <PageShell>
+    <>
       <CourseJsonLd course={course} />
-      <CourseDetail course={course} />
-    </PageShell>
+      <CourseSalesPage course={course} />
+    </>
   );
 }
