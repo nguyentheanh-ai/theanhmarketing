@@ -1,0 +1,79 @@
+import { ImageResponse } from "next/og";
+import { siteConfig } from "@/data/site";
+
+export const size = {
+  width: 1200,
+  height: 630,
+};
+
+export const contentType = "image/png";
+
+export default function Image() {
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          background: "#fbfaf7",
+          color: "#0b0b0c",
+          padding: "72px",
+          fontFamily: "Arial",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "18px",
+            fontSize: 28,
+            fontWeight: 700,
+          }}
+        >
+          <div
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: 999,
+              background: "#0b0b0c",
+              color: "#ffffff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            T
+          </div>
+          {siteConfig.name}
+        </div>
+        <div
+          style={{
+            marginTop: 70,
+            fontSize: 86,
+            lineHeight: 0.95,
+            letterSpacing: "-5px",
+            fontWeight: 900,
+            maxWidth: 950,
+          }}
+        >
+          Nền tảng học Marketing thực chiến
+        </div>
+        <div
+          style={{
+            marginTop: 32,
+            fontSize: 28,
+            color: "rgba(11,11,12,0.62)",
+            maxWidth: 780,
+            lineHeight: 1.45,
+          }}
+        >
+          Facebook Ads, AI Marketing và Kinh doanh Online cho người làm thật.
+        </div>
+      </div>
+    ),
+    size,
+  );
+}
