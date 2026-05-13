@@ -2,7 +2,7 @@
 
 ## Domain
 
-Primary domain: `https://theanhmarketing.com`
+Primary domain: `https://www.theanhmarketing.com`
 
 If the production domain changes, update:
 
