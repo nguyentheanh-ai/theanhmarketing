@@ -10,18 +10,18 @@ export async function SiteFooter() {
     { label: "Solopreneur OS", href: "/khoa-hoc" },
     { label: "Content Engine", href: "/blog" },
     { label: "AI Workflow", href: "/tai-lieu" },
-    { label: "Tai nguyen mien phi", href: "/tai-lieu" },
+    { label: "Tài nguyên miễn phí", href: "/tai-lieu" },
   ];
   const usefulLinks = [
     { label: "Blog", href: "/blog" },
-    { label: "He sinh thai", href: "/khoa-hoc" },
-    { label: "Hoc vien", href: "/hoc-vien" },
-    { label: "Dang ky", href: "/dang-ky" },
+    { label: "Hệ sinh thái", href: "/khoa-hoc" },
+    { label: "Học viên", href: "/hoc-vien" },
+    { label: "Đăng ký", href: "/dang-ky" },
   ];
   const helpLinks = [
-    { label: "Lien he chung toi", href: "/lien-he" },
-    { label: "Ve chung toi", href: "/gioi-thieu" },
-    { label: "Dang nhap hoc vien", href: "/dang-nhap" },
+    { label: "Liên hệ chúng tôi", href: "/lien-he" },
+    { label: "Về chúng tôi", href: "/gioi-thieu" },
+    { label: "Đăng nhập học viên", href: "/dang-nhap" },
     { label: "Dashboard", href: "/dashboard" },
   ];
 
@@ -36,11 +36,11 @@ export async function SiteFooter() {
             </span>
           </Link>
           <p className="mt-6 max-w-xl text-sm font-medium leading-7 text-black/62">
-            He sinh thai giup solopreneur dong goi chuyen mon, xay content engine,
-            thiet ke sales system va dung AI workflow de van hanh gon hon.
+            Hệ sinh thái giúp solopreneur đóng gói chuyên môn, xây content engine,
+            thiết kế sales system và dùng AI workflow để vận hành gọn hơn.
           </p>
           <div className="mt-10">
-            <p className="text-lg font-black text-[#c77b20]">Dang ky nhan ban tin</p>
+            <p className="text-lg font-black text-[#c77b20]">Đăng ký nhận bản tin</p>
             <form
               className="mt-5 flex max-w-sm items-center gap-2 rounded-full border border-black/15 bg-white p-1.5 shadow-[0_16px_45px_rgba(0,0,0,0.06)]"
               action={emailHref}
@@ -48,13 +48,13 @@ export async function SiteFooter() {
               <input
                 className="min-h-10 flex-1 bg-transparent px-4 text-sm text-black outline-none placeholder:text-black/38"
                 name="subject"
-                placeholder="Nhap dia chi email cua ban"
+                placeholder="Nhập địa chỉ email của bạn"
                 type="email"
               />
               <button
                 className="grid size-10 shrink-0 place-items-center rounded-full bg-black text-lg font-black text-white transition-colors hover:bg-black/82"
                 type="submit"
-                aria-label="Dang ky nhan ban tin"
+                aria-label="Đăng ký nhận bản tin"
               >
                 -&gt;
               </button>
@@ -62,10 +62,10 @@ export async function SiteFooter() {
           </div>
         </div>
 
-        <FooterColumn title="He sinh thai" links={featuredLinks} />
-        <FooterColumn title="Lien ket huu ich" links={usefulLinks} />
+        <FooterColumn title="Hệ sinh thái" links={featuredLinks} />
+        <FooterColumn title="Liên kết hữu ích" links={usefulLinks} />
         <div>
-          <FooterColumn title="Tro giup" links={helpLinks} />
+          <FooterColumn title="Trợ giúp" links={helpLinks} />
           <div className="mt-6 grid gap-2 text-sm font-semibold text-black/62">
             <a href={phoneHref} className="text-black/62 transition hover:text-[#c77b20]">
               Hotline/Zalo: {brand.phone}
@@ -77,13 +77,13 @@ export async function SiteFooter() {
         </div>
       </div>
       <div className="mx-auto mt-12 flex max-w-[1440px] flex-col gap-3 border-t border-black/10 pt-6 text-xs font-semibold text-black/42 sm:flex-row sm:items-center sm:justify-between">
-        <p>(c) {new Date().getFullYear()} {brand.name}. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} {brand.name}. All rights reserved.</p>
         <div className="flex flex-wrap gap-4">
           <Link href="/lien-he" className="transition hover:text-black">
-            Chinh sach bao mat
+            Chính sách bảo mật
           </Link>
           <Link href="/dang-ky" className="transition hover:text-black">
-            Dieu khoan va dieu kien
+            Điều khoản và điều kiện
           </Link>
         </div>
       </div>

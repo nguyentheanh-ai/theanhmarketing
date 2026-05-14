@@ -8,112 +8,152 @@ import { getTestimonials } from "@/services/testimonialService";
 export const dynamic = "force-dynamic";
 
 const solopreneurStats = [
-  { value: "01", label: "Nguoi lam chu he thong" },
-  { value: "24/7", label: "Dong co noi dung va ban hang" },
-  { value: "04", label: "Lop van hanh can nam" },
+  { value: "01", label: "Người làm chủ hệ thống" },
+  { value: "24/7", label: "Động cơ nội dung và bán hàng" },
+  { value: "04", label: "Lớp vận hành cần nắm" },
 ];
 
 const ecosystemLayers = [
   {
     label: "Positioning",
-    title: "Dinh vi de khong bi tro thanh freelancer gia re.",
-    copy: "Lam ro thi truong, loi hua, offer va ly do khach hang nen chon ban.",
+    title: "Định vị để không bị trở thành freelancer giá rẻ.",
+    copy: "Làm rõ thị trường, lời hứa, offer và lý do khách hàng nên chọn bạn.",
   },
   {
     label: "Content Engine",
-    title: "Bien chuyen mon thanh noi dung co kha nang ban hang.",
-    copy: "Co khung research, angle, hook, lich xuat ban va tai san noi dung co the tai su dung.",
+    title: "Biến chuyên môn thành nội dung có khả năng bán hàng.",
+    copy: "Có khung research, angle, hook, lịch xuất bản và tài sản nội dung có thể tái sử dụng.",
   },
   {
     label: "Sales System",
-    title: "Thiet ke hanh trinh tu nguoi la thanh khach hang.",
-    copy: "Lien ket lead magnet, landing page, email/Zalo follow-up va quy trinh tu van.",
+    title: "Thiết kế hành trình từ người lạ thành khách hàng.",
+    copy: "Liên kết lead magnet, landing page, email/Zalo follow-up và quy trình tư vấn.",
   },
   {
     label: "AI Workflow",
-    title: "Dung AI nhu bo xu ly, khong phai nhu mot mon do choi.",
-    copy: "Tao workflow de nghien cuu, viet, do luong va tu dong hoa nhung viec lap lai.",
+    title: "Dùng AI như bộ xử lý, không phải như một món đồ chơi.",
+    copy: "Tạo workflow để nghiên cứu, viết, đo lường và tự động hóa những việc lặp lại.",
   },
 ];
 
-const chipSignals = ["Research", "Content", "Offer", "CRM", "Ads", "Analytics", "Automation", "Learning"];
+const workflowModules = [
+  { label: "Automation", x: "9%", y: "47%", path: "M520 290 H390 L350 246 H140", delay: "0s" },
+  { label: "Sales & CS", x: "78%", y: "31%", path: "M680 290 H820 L880 212 H1060", delay: "-0.6s" },
+  { label: "Onboarding", x: "62%", y: "15%", path: "M620 230 V150 L690 92 H850", delay: "-1.2s" },
+  { label: "Chăm sóc khách hàng", x: "19%", y: "72%", path: "M540 360 V430 H400 L360 492 H190", delay: "-1.8s" },
+  { label: "Phân tích dữ liệu", x: "13%", y: "23%", path: "M540 250 L455 150 H290 L245 118 H118", delay: "-2.4s" },
+  { label: "Trợ lý Coaching", x: "79%", y: "58%", path: "M685 350 H840 L900 396 H1080", delay: "-3s" },
+  { label: "Số hóa tuyển dụng", x: "35%", y: "14%", path: "M575 226 V130 L520 82 H350", delay: "-3.6s" },
+  { label: "Quản trị rủi ro", x: "29%", y: "59%", path: "M518 338 H388 L330 402 H270", delay: "-4.2s" },
+];
 
 const operatingBlocks = [
-  "Thu vien tai lieu va checklist cho nguoi tu van hanh",
-  "Dashboard hoc vien de theo doi lo trinh va tai san da so huu",
-  "CMS de cap nhat khoa hoc, noi dung, media va du lieu van hanh",
-  "He thong thanh toan, phan quyen hoc vien va tai nguyen rieng",
+  "Thư viện tài liệu và checklist cho người tự vận hành",
+  "Dashboard học viên để theo dõi lộ trình và tài sản đã sở hữu",
+  "CMS để cập nhật khóa học, nội dung, media và dữ liệu vận hành",
+  "Hệ thống thanh toán, phân quyền học viên và tài nguyên riêng",
 ];
 
 const solopreneurFaqs = [
   {
-    question: "Trang nay danh cho ai?",
+    question: "Trang này dành cho ai?",
     answer:
-      "Danh cho solopreneur, founder nho, creator, consultant va nguoi ban tri thuc muon xay he thong noi dung, ban hang va van hanh gon hon.",
+      "Dành cho solopreneur, founder nhỏ, creator, consultant và người bán tri thức muốn xây hệ thống nội dung, bán hàng và vận hành gọn hơn.",
   },
   {
-    question: "Co phai chi hoc marketing khong?",
+    question: "Có phải chỉ học marketing không?",
     answer:
-      "Khong. Trong tam la he sinh thai van hanh cho mot nguoi: dinh vi, san pham tri thuc, noi dung, sales, AI workflow va dashboard hoc tap.",
+      "Không. Trọng tâm là hệ sinh thái vận hành cho một người: định vị, sản phẩm tri thức, nội dung, sales, AI workflow và dashboard học tập.",
   },
   {
-    question: "AI nam o dau trong he sinh thai?",
+    question: "AI nằm ở đâu trong hệ sinh thái?",
     answer:
-      "AI duoc dung nhu lop xu ly: research, viet nhap, bien tap, tao checklist, phan tich du lieu va tu dong hoa cac buoc lap lai.",
+      "AI được dùng như lớp xử lý: research, viết nháp, biên tập, tạo checklist, phân tích dữ liệu và tự động hóa các bước lặp lại.",
   },
 ];
 
-function AiChipScene() {
+function WorkflowIcon() {
   return (
-    <div className="relative min-h-[520px] overflow-hidden rounded-[2rem] bg-[#0f1012] p-6 text-white shadow-[0_34px_100px_rgba(0,0,0,0.22)] ring-1 ring-white/10">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,rgba(47,143,98,0.26),transparent_32%),linear-gradient(135deg,rgba(216,173,87,0.12),transparent_38%,rgba(255,255,255,0.04))]" />
-      <div className="absolute left-8 right-8 top-12 h-px bg-white/10" />
-      <div className="absolute bottom-16 left-8 right-8 h-px bg-white/10" />
-      <div className="absolute bottom-8 top-8 left-14 w-px bg-white/10" />
-      <div className="absolute bottom-8 top-8 right-14 w-px bg-white/10" />
-
-      <div className="ai-chip-line absolute left-[12%] top-[25%] h-px w-[28%] bg-[#6fcf97]/70" />
-      <div className="ai-chip-line ai-chip-line--slow absolute right-[12%] top-[36%] h-px w-[25%] bg-[#d8ad57]/70" />
-      <div className="ai-chip-line absolute bottom-[30%] left-[16%] h-px w-[24%] bg-[#6fcf97]/70" />
-      <div className="ai-chip-line ai-chip-line--slow absolute bottom-[22%] right-[15%] h-px w-[26%] bg-[#d8ad57]/70" />
-
-      <div className="ai-chip-orbit absolute left-1/2 top-1/2 grid size-[250px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[2rem] border border-white/12 bg-white/[0.04] shadow-[inset_0_0_40px_rgba(255,255,255,0.05)]">
-        <div className="ai-chip-pulse absolute inset-8 rounded-[1.5rem] border border-[#6fcf97]/30" />
-        <div className="relative grid size-36 place-items-center rounded-[1.4rem] border border-[#d8ad57]/40 bg-[#161719] shadow-[0_0_60px_rgba(47,143,98,0.34)]">
-          <div className="absolute -left-7 top-5 h-2 w-7 rounded-full bg-[#6fcf97]/70" />
-          <div className="absolute -right-7 top-5 h-2 w-7 rounded-full bg-[#6fcf97]/70" />
-          <div className="absolute -left-7 bottom-5 h-2 w-7 rounded-full bg-[#d8ad57]/70" />
-          <div className="absolute -right-7 bottom-5 h-2 w-7 rounded-full bg-[#d8ad57]/70" />
-          <div className="absolute -top-7 left-6 h-7 w-2 rounded-full bg-[#6fcf97]/70" />
-          <div className="absolute -top-7 right-6 h-7 w-2 rounded-full bg-[#d8ad57]/70" />
-          <div className="absolute -bottom-7 left-6 h-7 w-2 rounded-full bg-[#d8ad57]/70" />
-          <div className="absolute -bottom-7 right-6 h-7 w-2 rounded-full bg-[#6fcf97]/70" />
-          <div className="text-center">
-            <p className="text-xs font-black uppercase tracking-[0.22em] text-[#d8ad57]">AI Chip</p>
-            <p className="mt-2 text-3xl font-black">SOLO</p>
-            <p className="text-xs font-bold text-white/48">Operating Core</p>
-          </div>
-        </div>
+    <div className="relative grid size-28 place-items-center rounded-[1.65rem] border border-black/8 bg-white shadow-[0_22px_70px_rgba(47,143,98,0.16)]">
+      <div className="workflow-core-glow absolute inset-0 rounded-[1.65rem]" />
+      <div className="relative grid size-16 grid-cols-3 items-end gap-1.5">
+        <span className="h-10 rounded-md bg-[#2f8f62]" />
+        <span className="h-14 rounded-md bg-[#d8ad57]" />
+        <span className="h-12 rounded-md bg-[#111113]" />
       </div>
+    </div>
+  );
+}
 
-      <div className="relative z-10 grid min-h-[472px] content-between">
-        <div className="flex flex-wrap gap-2">
-          {chipSignals.slice(0, 4).map((item) => (
-            <span key={item} className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs font-bold text-white/68">
-              {item}
-            </span>
-          ))}
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {chipSignals.slice(4).map((item) => (
-            <div key={item} className="rounded-[1rem] border border-white/10 bg-black/20 p-4 backdrop-blur">
-              <p className="text-sm font-black text-white">{item}</p>
-              <div className="mt-3 h-1 rounded-full bg-[#2f8f62]" />
+function AiWorkflowEcosystem() {
+  return (
+    <section className="bg-[#fbfaf7] px-5 py-24 sm:px-8">
+      <div className="mx-auto max-w-[1440px]">
+        <SectionHeading
+          eyebrow="AI workflow ecosystem"
+          title="Một hệ sinh thái workflow chạy quanh lõi Solopreneur."
+          description="Các module không đứng độc lập. Chúng được nối bằng luồng dữ liệu mảnh, giúp solopreneur nhìn thấy cách AI hỗ trợ toàn bộ vòng vận hành."
+          align="center"
+        />
+
+        <div className="workflow-ecosystem relative mt-12 min-h-[620px] overflow-hidden rounded-[2rem] border border-black/8 bg-[#f8f8f6] shadow-[0_34px_100px_rgba(0,0,0,0.08)]">
+          <svg
+            className="absolute inset-0 h-full w-full"
+            viewBox="0 0 1200 620"
+            fill="none"
+            aria-hidden="true"
+            preserveAspectRatio="none"
+          >
+            <defs>
+              <linearGradient id="workflowFlow" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0%" stopColor="#2f8f62" stopOpacity="0" />
+                <stop offset="45%" stopColor="#2f8f62" stopOpacity="0.2" />
+                <stop offset="55%" stopColor="#2f8f62" stopOpacity="1" />
+                <stop offset="100%" stopColor="#d8ad57" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            {workflowModules.map((module, index) => (
+              <g key={module.label}>
+                <path
+                  className="workflow-path-base"
+                  d={module.path}
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  className="workflow-path-flow"
+                  data-index={index}
+                  d={module.path}
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ animationDelay: module.delay }}
+                />
+              </g>
+            ))}
+          </svg>
+
+          <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
+            <WorkflowIcon />
+          </div>
+
+          {workflowModules.map((module, index) => (
+            <div
+              key={module.label}
+              className="workflow-pill absolute z-20 inline-flex min-h-11 items-center gap-2 rounded-full border border-black/8 bg-white px-4 text-sm font-black text-[#141414] shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_46px_rgba(47,143,98,0.2)]"
+              data-index={index}
+              style={{ left: module.x, top: module.y, animationDelay: module.delay }}
+            >
+              <span className="grid size-6 place-items-center rounded-full bg-[#edf7ee] text-[#2f8f62]">
+                ✦
+              </span>
+              {module.label}
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -147,21 +187,21 @@ export default async function Home() {
               Solopreneur Operating System
             </div>
             <h1 className="mt-8 max-w-4xl text-5xl font-black leading-none text-[#101012] sm:text-6xl lg:text-7xl">
-              <span className="block">Mot he sinh thai</span>
+              <span className="block">Một hệ sinh thái</span>
               <span className="block text-[#2f8f62]">cho Solopreneur</span>
-              <span className="block">van hanh gon hon</span>
+              <span className="block">vận hành gọn hơn</span>
             </h1>
             <p className="mt-6 max-w-2xl text-lg font-medium leading-8 text-black/68">
-              The Anh Marketing se phat trien thanh nen tang giup solopreneur dong goi chuyen mon,
-              xay content engine, tao he thong ban hang va dung AI nhu mot bo xu ly van hanh moi ngay.
+              The Anh Marketing sẽ phát triển thành nền tảng giúp solopreneur đóng gói chuyên môn,
+              xây content engine, tạo hệ thống bán hàng và dùng AI như một bộ xử lý vận hành mỗi ngày.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <ButtonLink href="/khoa-hoc" className="w-full sm:w-auto">
-                Kham pha he sinh thai
+                Khám phá hệ sinh thái
                 <span aria-hidden="true">-&gt;</span>
               </ButtonLink>
               <ButtonLink href="/tai-lieu" variant="secondary" className="w-full sm:w-auto">
-                Tai tai nguyen mien phi
+                Tải tài nguyên miễn phí
               </ButtonLink>
             </div>
             <div className="mt-10">
@@ -169,9 +209,22 @@ export default async function Home() {
             </div>
           </div>
 
-          <AiChipScene />
+          <div className="relative overflow-hidden rounded-[2rem] border border-black/8 bg-white p-6 shadow-[0_34px_100px_rgba(0,0,0,0.1)]">
+            <div className="grid gap-4">
+              {ecosystemLayers.map((item, index) => (
+                <div key={item.label} className="rounded-[1.25rem] border border-black/8 bg-[#fbfaf7] p-5">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2f8f62]">
+                    Layer {index + 1} / {item.label}
+                  </p>
+                  <h2 className="mt-2 text-2xl font-black leading-tight">{item.title}</h2>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
+
+      <AiWorkflowEcosystem />
 
       <section className="border-y border-black/8 bg-[#111113] px-5 py-16 text-white sm:px-8">
         <div className="mx-auto grid max-w-[1440px] gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
@@ -180,13 +233,13 @@ export default async function Home() {
               Solopreneur stack
             </p>
             <h2 className="mt-4 max-w-3xl text-4xl font-black leading-tight sm:text-6xl">
-              Tu mot nguoi lam tat ca thanh mot he thong biet phan vai.
+              Từ một người làm tất cả thành một hệ thống biết phân vai.
             </h2>
           </div>
           <div>
             <p className="text-lg font-medium leading-9 text-white/68">
-              Trang chu khong tap trung vao mot khoa hoc don le. Day la lop dinh vi cho ca he
-              sinh thai: noi dung, san pham tri thuc, sales, tai lieu, dashboard va AI workflow.
+              Trang chủ không tập trung vào một khóa học đơn lẻ. Đây là lớp định vị cho cả hệ
+              sinh thái: nội dung, sản phẩm tri thức, sales, tài liệu, dashboard và AI workflow.
             </p>
             <div className="mt-8 grid gap-3 sm:grid-cols-4">
               {["Think", "Build", "Sell", "Scale"].map((item) => (
@@ -202,9 +255,9 @@ export default async function Home() {
 
       <section className="mx-auto grid max-w-[1440px] gap-10 px-5 py-24 sm:px-8 lg:grid-cols-[0.85fr_1.15fr]">
         <SectionHeading
-          eyebrow="Van de cua Solopreneur"
-          title="Ban khong thieu cong cu. Ban thieu mot he dieu hanh cho cong viec mot nguoi."
-          description="Solopreneur thuong bi keo giua chuyen mon, noi dung, khach hang, sale, hoc tap va van hanh. He sinh thai nay gom cac lop can thiet de moi viec khong con nam het trong dau ban."
+          eyebrow="Vấn đề của Solopreneur"
+          title="Bạn không thiếu công cụ. Bạn thiếu một hệ điều hành cho công việc một người."
+          description="Solopreneur thường bị kéo giữa chuyên môn, nội dung, khách hàng, sale, học tập và vận hành. Hệ sinh thái này gom các lớp cần thiết để mọi việc không còn nằm hết trong đầu bạn."
         />
         <div className="grid gap-4">
           {ecosystemLayers.map((item, index) => (
@@ -225,33 +278,11 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-24 sm:px-8">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr]">
-            <SectionHeading
-              eyebrow="AI chip layer"
-              title="AI la lop xu ly nam giua chuyen mon va hanh dong."
-              description="Thay vi dung AI roi rac, he sinh thai can cac workflow on dinh: research, viet, bien tap, phan tich, chuyen doi va tai su dung tai san tri thuc."
-            />
-            <div className="grid gap-4 md:grid-cols-2">
-              {chipSignals.map((signal) => (
-                <div key={signal} className="rounded-[1.25rem] border border-black/8 bg-[#fbfaf7] p-6">
-                  <p className="text-sm font-black uppercase tracking-[0.14em] text-[#b86f1e]">{signal}</p>
-                  <div className="mt-5 h-2 overflow-hidden rounded-full bg-black/8">
-                    <div className="ai-signal-bar h-full rounded-full bg-[#2f8f62]" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="mx-auto max-w-[1440px] px-5 py-24 sm:px-8">
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
           <SectionHeading
-            eyebrow="He sinh thai"
-            title="Cac lop can co de mot solopreneur van hanh nhu mot doi nho."
+            eyebrow="Hệ sinh thái"
+            title="Các lớp cần có để một solopreneur vận hành như một đội nhỏ."
           />
           <div className="grid gap-4">
             {operatingBlocks.map((item, index) => (
@@ -268,11 +299,11 @@ export default async function Home() {
         <div className="mx-auto max-w-[1440px]">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <SectionHeading
-              eyebrow="Tai nguyen"
-              title="Tai san thuc hanh de solopreneur trien khai nhanh hon."
+              eyebrow="Tài nguyên"
+              title="Tài sản thực hành để solopreneur triển khai nhanh hơn."
             />
             <ButtonLink href="/tai-lieu" variant="secondary">
-              Xem thu vien
+              Xem thư viện
             </ButtonLink>
           </div>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
@@ -293,8 +324,8 @@ export default async function Home() {
 
       <section className="mx-auto max-w-[1440px] px-5 py-24 sm:px-8">
         <SectionHeading
-          eyebrow="Hoc vien"
-          title="Tap trung vao kha nang bien kien thuc thanh he thong lam viec."
+          eyebrow="Học viên"
+          title="Tập trung vào khả năng biến kiến thức thành hệ thống làm việc."
           align="center"
         />
         <div className="mt-10 grid gap-5 md:grid-cols-3">
@@ -309,7 +340,7 @@ export default async function Home() {
       </section>
 
       <section className="mx-auto grid max-w-[1440px] gap-10 px-5 py-24 sm:px-8 lg:grid-cols-[0.7fr_1.3fr]">
-        <SectionHeading eyebrow="FAQ" title="Nhung cau hoi nen lam ro." />
+        <SectionHeading eyebrow="FAQ" title="Những câu hỏi nên làm rõ." />
         <div className="grid gap-4">
           {solopreneurFaqs.map((item) => (
             <div key={item.question} className="rounded-[1.25rem] border border-black/8 bg-white p-6">
@@ -329,14 +360,14 @@ export default async function Home() {
               Solopreneur ecosystem
             </p>
             <h2 className="mt-4 max-w-4xl text-4xl font-black leading-tight sm:text-6xl">
-              Xay he thong de ban khong phai luc nao cung tu minh keo moi thu.
+              Xây hệ thống để bạn không phải lúc nào cũng tự mình kéo mọi thứ.
             </h2>
             <p className="mt-6 max-w-2xl text-lg font-medium leading-8 text-white/68">
-              Bat dau tu tai nguyen, lo trinh hoc va nhung workflow co the dung ngay cho cong viec mot nguoi.
+              Bắt đầu từ tài nguyên, lộ trình học và những workflow có thể dùng ngay cho công việc một người.
             </p>
           </div>
           <ButtonLink href="/tai-lieu" className="mt-9 bg-white text-black hover:bg-white/88 lg:mt-0">
-            Lay tai nguyen dau tien
+            Lấy tài nguyên đầu tiên
           </ButtonLink>
         </div>
       </section>

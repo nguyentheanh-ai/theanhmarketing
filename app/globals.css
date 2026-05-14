@@ -204,6 +204,82 @@ html {
   }
 }
 
+@keyframes workflow-flow {
+  to {
+    stroke-dashoffset: -224;
+  }
+}
+
+@keyframes workflow-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes workflow-core-pulse {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+.workflow-path-base {
+  stroke: rgb(17 17 19 / 0.1);
+}
+
+.workflow-path-flow {
+  animation: workflow-flow 4.8s linear infinite;
+  opacity: 0.72;
+  stroke: url("#workflowFlow");
+  stroke-dasharray: 34 190;
+  stroke-dashoffset: 0;
+  transition:
+    filter 220ms ease,
+    opacity 220ms ease,
+    stroke-width 220ms ease;
+}
+
+.workflow-core-glow {
+  animation: workflow-core-pulse 3.8s ease-in-out infinite;
+  background:
+    radial-gradient(circle at 45% 42%, rgb(47 143 98 / 0.22), transparent 56%),
+    radial-gradient(circle at 62% 62%, rgb(216 173 87 / 0.18), transparent 62%);
+}
+
+.workflow-pill {
+  animation: workflow-float 6s ease-in-out infinite;
+}
+
+.workflow-ecosystem:has(.workflow-pill[data-index="0"]:hover) .workflow-path-flow[data-index="0"],
+.workflow-ecosystem:has(.workflow-pill[data-index="1"]:hover) .workflow-path-flow[data-index="1"],
+.workflow-ecosystem:has(.workflow-pill[data-index="2"]:hover) .workflow-path-flow[data-index="2"],
+.workflow-ecosystem:has(.workflow-pill[data-index="3"]:hover) .workflow-path-flow[data-index="3"],
+.workflow-ecosystem:has(.workflow-pill[data-index="4"]:hover) .workflow-path-flow[data-index="4"],
+.workflow-ecosystem:has(.workflow-pill[data-index="5"]:hover) .workflow-path-flow[data-index="5"],
+.workflow-ecosystem:has(.workflow-pill[data-index="6"]:hover) .workflow-path-flow[data-index="6"],
+.workflow-ecosystem:has(.workflow-pill[data-index="7"]:hover) .workflow-path-flow[data-index="7"] {
+  filter: drop-shadow(0 0 10px rgb(47 143 98 / 0.62));
+  opacity: 1;
+  stroke-width: 4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workflow-core-glow,
+  .workflow-path-flow,
+  .workflow-pill {
+    animation: none;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .site-header-motion {
     animation: header-drop 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
