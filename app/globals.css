@@ -338,10 +338,20 @@ html[data-route-pending="true"] .page-motion {
 @keyframes social-node-drift {
   0%,
   100% {
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) translate(0, 0) scale(1);
   }
   50% {
-    transform: translate(-50%, calc(-50% - 10px)) scale(1.04);
+    transform: translate(-50%, -50%) translate(8px, -10px) scale(1.04);
+  }
+}
+
+@keyframes social-core-glow {
+  0%,
+  100% {
+    box-shadow: 0 16px 40px rgb(67 87 216 / 0.28), 0 0 0 10px rgb(67 87 216 / 0.08);
+  }
+  50% {
+    box-shadow: 0 22px 56px rgb(67 87 216 / 0.4), 0 0 0 16px rgb(67 87 216 / 0.05);
   }
 }
 
@@ -452,6 +462,21 @@ html[data-route-pending="true"] .page-motion {
   isolation: isolate;
 }
 
+.social-orbit::before {
+  background:
+    radial-gradient(circle at 48% 45%, rgb(67 87 216 / 0.16), transparent 38%),
+    radial-gradient(circle at 58% 66%, rgb(47 143 98 / 0.12), transparent 30%);
+  border-radius: 999px;
+  content: "";
+  filter: blur(16px);
+  inset: 8%;
+  position: absolute;
+}
+
+.social-orbit-core {
+  animation: social-core-glow 4.4s ease-in-out infinite;
+}
+
 .social-ring {
   animation: social-ring-pulse 6s ease-in-out infinite;
   border-radius: 999px;
@@ -462,20 +487,23 @@ html[data-route-pending="true"] .page-motion {
 }
 
 .social-ring--outer {
+  animation: social-ring-pulse 6s ease-in-out infinite, social-orbit-spin 38s linear infinite;
   border: 12px solid rgb(67 87 216 / 0.07);
   height: 92%;
   width: 92%;
 }
 
 .social-ring--middle {
-  animation-delay: -1.5s;
+  animation: social-ring-pulse 6s ease-in-out infinite, social-orbit-spin 32s linear infinite reverse;
+  animation-delay: -1.5s, 0s;
   border: 9px solid rgb(89 217 141 / 0.18);
   height: 66%;
   width: 66%;
 }
 
 .social-ring--inner {
-  animation-delay: -3s;
+  animation: social-ring-pulse 6s ease-in-out infinite, social-orbit-spin 24s linear infinite;
+  animation-delay: -3s, 0s;
   border: 7px solid rgb(67 87 216 / 0.2);
   height: 36%;
   width: 36%;
@@ -499,6 +527,15 @@ html[data-route-pending="true"] .page-motion {
   transform: translate(-50%, -50%);
   width: 70px;
   z-index: 2;
+  transition:
+    background-color 220ms ease,
+    box-shadow 260ms var(--ease-out-soft),
+    filter 260ms ease;
+}
+
+.social-node:hover {
+  box-shadow: 0 24px 64px rgb(67 87 216 / 0.22), 0 0 0 8px rgb(67 87 216 / 0.08);
+  filter: brightness(1.04);
 }
 
 .social-node--facebook {
@@ -569,6 +606,7 @@ html[data-route-pending="true"] .page-motion {
   .social-keyword,
   .social-line--green,
   .social-line--red,
+  .social-orbit-core,
   .social-node,
   .social-ring {
     animation: none;

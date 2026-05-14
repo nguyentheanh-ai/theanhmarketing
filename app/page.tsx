@@ -1,8 +1,8 @@
 import { PageShell } from "@/components/site/page-shell";
 import {
+  SocialListeningOrbit,
   SocialTrackHeroCharts,
   SocialTrackInsightCards,
-  SocialTrackListeningSection,
 } from "@/components/site/socialtrack-chart-visuals";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -39,17 +39,6 @@ const ecosystemLayers = [
     title: "Dùng AI như bộ xử lý, không phải như một món đồ chơi.",
     copy: "Tạo workflow để nghiên cứu, viết, đo lường và tự động hóa những việc lặp lại.",
   },
-];
-
-const workflowModules = [
-  { label: "Automation", x: "9%", y: "47%", path: "M520 290 H390 L350 246 H140", delay: "0s" },
-  { label: "Sales & CS", x: "78%", y: "31%", path: "M680 290 H820 L880 212 H1060", delay: "-0.6s" },
-  { label: "Onboarding", x: "62%", y: "15%", path: "M620 230 V150 L690 92 H850", delay: "-1.2s" },
-  { label: "Chăm sóc khách hàng", x: "19%", y: "72%", path: "M540 360 V430 H400 L360 492 H190", delay: "-1.8s" },
-  { label: "Phân tích dữ liệu", x: "13%", y: "23%", path: "M540 250 L455 150 H290 L245 118 H118", delay: "-2.4s" },
-  { label: "Trợ lý Coaching", x: "79%", y: "58%", path: "M685 350 H840 L900 396 H1080", delay: "-3s" },
-  { label: "Số hóa tuyển dụng", x: "35%", y: "14%", path: "M575 226 V130 L520 82 H350", delay: "-3.6s" },
-  { label: "Quản trị rủi ro", x: "29%", y: "59%", path: "M518 338 H388 L330 402 H270", delay: "-4.2s" },
 ];
 
 const operatingBlocks = [
@@ -125,86 +114,44 @@ const solopreneurFaqs = [
   },
 ];
 
-function WorkflowIcon() {
-  return (
-    <div className="relative grid size-28 place-items-center rounded-[1.65rem] border border-black/8 bg-white shadow-[0_22px_70px_rgba(47,143,98,0.16)]">
-      <div className="workflow-core-glow absolute inset-0 rounded-[1.65rem]" />
-      <div className="relative grid size-16 grid-cols-3 items-end gap-1.5">
-        <span className="h-10 rounded-md bg-[#2f8f62]" />
-        <span className="h-14 rounded-md bg-[#d8ad57]" />
-        <span className="h-12 rounded-md bg-[#111113]" />
-      </div>
-    </div>
-  );
-}
-
 function AiWorkflowEcosystem() {
+  const bullets = [
+    "AI hỗ trợ nghiên cứu thị trường, khách hàng và xu hướng trên Facebook, TikTok, YouTube và Google.",
+    "Phát hiện insight, ý tưởng content và cơ hội tăng trưởng nhanh hơn bằng dữ liệu thực tế.",
+    "Tự động hóa quy trình marketing, content và chăm sóc khách hàng mà không cần đội ngũ lớn.",
+  ];
+
   return (
-    <section className="bg-[#fbfaf7] px-5 py-24 sm:px-8">
-      <div className="mx-auto max-w-[1440px]">
-        <SectionHeading
-          eyebrow="AI workflow ecosystem"
-          title="Một hệ sinh thái workflow chạy quanh lõi Solopreneur."
-          description="Các module không đứng độc lập. Chúng được nối bằng luồng dữ liệu mảnh, giúp solopreneur nhìn thấy cách AI hỗ trợ toàn bộ vòng vận hành."
-          align="center"
-        />
-
-        <div className="workflow-ecosystem relative mt-12 min-h-[620px] overflow-hidden rounded-[2rem] border border-black/8 bg-[#f8f8f6] shadow-[0_34px_100px_rgba(0,0,0,0.08)]">
-          <svg
-            className="absolute inset-0 h-full w-full"
-            viewBox="0 0 1200 620"
-            fill="none"
-            aria-hidden="true"
-            preserveAspectRatio="none"
-          >
-            <defs>
-              <linearGradient id="workflowFlow" x1="0" x2="1" y1="0" y2="0">
-                <stop offset="0%" stopColor="#2f8f62" stopOpacity="0" />
-                <stop offset="45%" stopColor="#2f8f62" stopOpacity="0.2" />
-                <stop offset="55%" stopColor="#2f8f62" stopOpacity="1" />
-                <stop offset="100%" stopColor="#d8ad57" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            {workflowModules.map((module, index) => (
-              <g key={module.label}>
-                <path
-                  className="workflow-path-base"
-                  d={module.path}
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  className="workflow-path-flow"
-                  data-index={index}
-                  d={module.path}
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  style={{ animationDelay: module.delay }}
-                />
-              </g>
-            ))}
-          </svg>
-
-          <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
-            <WorkflowIcon />
+    <section className="bg-white px-5 py-24 sm:px-8 lg:py-28">
+      <div className="mx-auto grid max-w-[1440px] gap-12 lg:grid-cols-[0.96fr_1.04fr] lg:items-center">
+        <div className="relative overflow-hidden rounded-[2rem] border border-black/6 bg-white/70 px-4 py-10 shadow-[0_34px_100px_rgba(15,23,42,0.08)] backdrop-blur sm:px-8">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_48%_48%,rgba(67,87,216,0.14),transparent_34%),radial-gradient(circle_at_55%_70%,rgba(47,143,98,0.12),transparent_28%)]" />
+          <div className="relative">
+            <SocialListeningOrbit centerLabel="AI" />
           </div>
-
-          {workflowModules.map((module, index) => (
-            <div
-              key={module.label}
-              className="workflow-pill absolute z-20 inline-flex min-h-11 items-center gap-2 rounded-full border border-black/8 bg-white px-4 text-sm font-black text-[#141414] shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_46px_rgba(47,143,98,0.2)]"
-              data-index={index}
-              style={{ left: module.x, top: module.y, animationDelay: module.delay }}
-            >
-              <span className="grid size-6 place-items-center rounded-full bg-[#edf7ee] text-[#2f8f62]">
-                ✦
-              </span>
-              {module.label}
-            </div>
-          ))}
         </div>
+
+        <div>
+          <p className="text-sm font-black tracking-[0.16em] text-[#4357d8]">
+            AI Marketing & Automation
+          </p>
+          <h2 className="mt-5 max-w-3xl text-4xl font-black leading-[1.04] tracking-[-0.04em] text-[#07111f] sm:text-5xl lg:text-6xl">
+            Vận hành marketing như một team nhiều người với AI.
+          </h2>
+          <div className="mt-9 grid gap-5">
+            {bullets.map((item) => (
+              <div key={item} className="grid grid-cols-[34px_1fr] gap-4">
+                <span className="mt-1 grid size-7 place-items-center rounded-full border border-[#4357d8]/35 bg-white text-sm font-black text-[#4357d8] shadow-[0_10px_30px_rgba(67,87,216,0.12)]">
+                  ✓
+                </span>
+                <p className="text-base font-semibold leading-8 text-black/66 sm:text-lg sm:leading-9">
+                  {item}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </section>
   );
@@ -360,11 +307,9 @@ export default async function Home() {
         </div>
       </section>
 
-      <SocialTrackListeningSection />
+      <AiWorkflowEcosystem />
 
       <SocialTrackInsightCards />
-
-      <AiWorkflowEcosystem />
 
       <AiOperatingSection />
 

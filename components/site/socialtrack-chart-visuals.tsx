@@ -162,14 +162,14 @@ export function SocialTrackHeroCharts() {
   );
 }
 
-export function SocialListeningOrbit() {
+export function SocialListeningOrbit({ centerLabel = "AI" }: { centerLabel?: string }) {
   return (
     <div className="social-orbit relative mx-auto aspect-square w-full max-w-[520px]">
       <div className="social-ring social-ring--outer" />
       <div className="social-ring social-ring--middle" />
       <div className="social-ring social-ring--inner" />
-      <div className="absolute left-1/2 top-1/2 z-10 grid size-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[#4357d8] text-lg font-black text-white shadow-[0_14px_34px_rgba(67,87,216,0.34)]">
-        ST
+      <div className="social-orbit-core absolute left-1/2 top-1/2 z-10 grid size-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[#4357d8] text-lg font-black text-white shadow-[0_14px_34px_rgba(67,87,216,0.34)]">
+        {centerLabel}
       </div>
       {platformNodes.map((node, index) => (
         <div
