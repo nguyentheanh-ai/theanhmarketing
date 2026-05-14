@@ -28,7 +28,7 @@ export const fallbackBrandSettings: BrandSettings = {
   tagline: siteConfig.tagline,
   phone: siteConfig.phone,
   email: siteConfig.email,
-  primaryCtaLabel: "Tham gia khóa học",
+  primaryCtaLabel: "Khám phá hệ sinh thái",
   primaryCtaHref: "/khoa-hoc",
   heroImageUrl: "",
   heroVideoUrl: "",

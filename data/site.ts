@@ -3,7 +3,7 @@ export const siteConfig = {
   shortName: "The Anh",
   logoMark: "TA",
   logoImage: "/brand/ta-mark.svg",
-  tagline: "Marketing & Kinh doanh Online thực chiến.",
+  tagline: "Solopreneur Operating System.",
   url: "https://www.theanhmarketing.com",
   phone: "0367 928 921",
   phoneHref: "tel:0367928921",
