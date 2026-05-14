@@ -1,4 +1,9 @@
 import { PageShell } from "@/components/site/page-shell";
+import {
+  SocialTrackHeroCharts,
+  SocialTrackInsightCards,
+  SocialTrackListeningSection,
+} from "@/components/site/socialtrack-chart-visuals";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { SoftCard } from "@/components/ui/soft-card";
@@ -351,20 +356,13 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-[2rem] border border-black/8 bg-white p-6 shadow-[0_34px_100px_rgba(0,0,0,0.1)]">
-            <div className="grid gap-4">
-              {ecosystemLayers.map((item, index) => (
-                <div key={item.label} className="rounded-[1.25rem] border border-black/8 bg-[#fbfaf7] p-5">
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2f8f62]">
-                    Layer {index + 1} / {item.label}
-                  </p>
-                  <h2 className="mt-2 text-2xl font-black leading-tight">{item.title}</h2>
-                </div>
-              ))}
-            </div>
-          </div>
+          <SocialTrackHeroCharts />
         </div>
       </section>
+
+      <SocialTrackListeningSection />
+
+      <SocialTrackInsightCards />
 
       <AiWorkflowEcosystem />
 

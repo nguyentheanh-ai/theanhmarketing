@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ArticleJsonLd } from "@/components/seo/json-ld";
 import { PageShell } from "@/components/site/page-shell";
+import { ArticleInsightPanel } from "@/components/site/socialtrack-chart-visuals";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { SoftCard } from "@/components/ui/soft-card";
@@ -78,6 +79,8 @@ export default async function BlogPostPage({
             <li>3. Gợi ý hành động tiếp theo</li>
           </ol>
         </SoftCard>
+
+        <ArticleInsightPanel />
 
         <div
           className="blog-content mt-10"

@@ -290,6 +290,73 @@ html[data-route-pending="true"] .page-motion {
   }
 }
 
+@keyframes social-bar-rise {
+  from {
+    opacity: 0.35;
+    transform: scaleY(0.18);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes social-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes social-keyword-pulse {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, calc(-50% - 5px)) scale(1.06);
+  }
+}
+
+@keyframes social-line-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes social-orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes social-node-drift {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, calc(-50% - 10px)) scale(1.04);
+  }
+}
+
+@keyframes social-ring-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translate(-50%, -50%) scale(0.98);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1.02);
+  }
+}
+
 .workflow-path-base {
   stroke: rgb(17 17 19 / 0.1);
 }
@@ -330,6 +397,156 @@ html[data-route-pending="true"] .page-motion {
   stroke-width: 4;
 }
 
+.social-dashboard {
+  isolation: isolate;
+}
+
+.social-chart-card {
+  transform: translateZ(0);
+  transition:
+    box-shadow 260ms var(--ease-out-soft),
+    transform 260ms var(--ease-out-soft);
+}
+
+.social-chart-card:hover {
+  box-shadow: 8px 10px 0 rgb(67 87 216 / 0.15), 0 24px 64px rgb(30 64 175 / 0.18);
+  transform: translateY(-3px);
+}
+
+.social-bar {
+  animation: social-bar-rise 900ms var(--ease-out-soft) both;
+  transform-origin: bottom;
+}
+
+.social-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 4;
+}
+
+.social-line--green {
+  animation: social-line-draw 2.8s ease-in-out infinite alternate;
+  stroke: #59d98d;
+  stroke-dasharray: 360;
+  stroke-dashoffset: 360;
+}
+
+.social-line--red {
+  animation: social-line-draw 3.2s ease-in-out infinite alternate;
+  stroke: #e45b40;
+  stroke-dasharray: 360;
+  stroke-dashoffset: 360;
+}
+
+.social-float-card {
+  animation: social-float 5.8s ease-in-out infinite;
+}
+
+.social-keyword {
+  animation: social-keyword-pulse 4.2s ease-in-out infinite;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.social-orbit {
+  isolation: isolate;
+}
+
+.social-ring {
+  animation: social-ring-pulse 6s ease-in-out infinite;
+  border-radius: 999px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.social-ring--outer {
+  border: 12px solid rgb(67 87 216 / 0.07);
+  height: 92%;
+  width: 92%;
+}
+
+.social-ring--middle {
+  animation-delay: -1.5s;
+  border: 9px solid rgb(89 217 141 / 0.18);
+  height: 66%;
+  width: 66%;
+}
+
+.social-ring--inner {
+  animation-delay: -3s;
+  border: 7px solid rgb(67 87 216 / 0.2);
+  height: 36%;
+  width: 36%;
+}
+
+.social-node {
+  align-items: center;
+  animation: social-node-drift 5s ease-in-out infinite;
+  background: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 18px 46px rgb(30 64 175 / 0.13);
+  color: #07111f;
+  display: flex;
+  font-size: 0.86rem;
+  font-weight: 900;
+  height: 70px;
+  justify-content: center;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 70px;
+  z-index: 2;
+}
+
+.social-node--facebook {
+  background: #e8f2ff;
+  color: #3478f6;
+  left: 16%;
+  top: 20%;
+}
+
+.social-node--tiktok {
+  background: #f6f7f9;
+  color: #050505;
+  height: 86px;
+  left: 86%;
+  top: 31%;
+  width: 86px;
+}
+
+.social-node--youtube {
+  background: #fff1f1;
+  color: #ef3325;
+  height: 90px;
+  left: 40%;
+  top: 88%;
+  width: 90px;
+}
+
+.social-node--instagram {
+  background: #fbf0ff;
+  color: #d84c8f;
+  left: 70%;
+  top: 33%;
+}
+
+.social-node--x {
+  background: #f8fafc;
+  color: #111827;
+  left: 53%;
+  top: 74%;
+}
+
+.social-node--threads {
+  background: #f7f7f7;
+  color: #050505;
+  left: 19%;
+  top: 35%;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -346,7 +563,14 @@ html[data-route-pending="true"] .page-motion {
 
   .workflow-core-glow,
   .workflow-path-flow,
-  .workflow-pill {
+  .workflow-pill,
+  .social-bar,
+  .social-float-card,
+  .social-keyword,
+  .social-line--green,
+  .social-line--red,
+  .social-node,
+  .social-ring {
     animation: none;
   }
 }
