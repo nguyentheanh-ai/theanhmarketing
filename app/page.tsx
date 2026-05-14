@@ -54,6 +54,54 @@ const operatingBlocks = [
   "Hệ thống thanh toán, phân quyền học viên và tài nguyên riêng",
 ];
 
+const aiOperatingLayers = [
+  {
+    label: "Research OS",
+    title: "AI giúp gom tín hiệu thị trường trước khi bạn viết hay bán.",
+    copy: "Biến insight khách hàng, câu hỏi lặp lại, phản hồi tư vấn và dữ liệu nội dung thành nguyên liệu ra quyết định.",
+  },
+  {
+    label: "Content Copilot",
+    title: "Tạo nháp nhanh nhưng vẫn giữ được góc nhìn chuyên môn của bạn.",
+    copy: "Từ idea bank, hook, outline, bài viết dài, email đến kịch bản video ngắn cho từng giai đoạn trong hành trình mua.",
+  },
+  {
+    label: "Sales Assistant",
+    title: "Chuẩn hóa tư vấn, follow-up và xử lý phản hồi khách hàng.",
+    copy: "AI không thay bạn bán hàng. Nó giúp bạn không quên ngữ cảnh, không bỏ sót lead và trả lời có hệ thống hơn.",
+  },
+  {
+    label: "Operating Brain",
+    title: "Kết nối tài liệu, checklist, dữ liệu và dashboard thành một bộ não phụ.",
+    copy: "Mỗi tài sản được đóng gói để dùng lại: SOP, prompt, template, form, nội dung mẫu và báo cáo gọn.",
+  },
+];
+
+const solopreneurKitItems = [
+  {
+    label: "Clarity Kit",
+    title: "Bộ định vị",
+    items: ["Chân dung khách hàng", "Offer map", "Thông điệp cốt lõi"],
+  },
+  {
+    label: "Content Kit",
+    title: "Bộ nội dung",
+    items: ["Idea bank", "Hook library", "Lịch xuất bản"],
+  },
+  {
+    label: "Sales Kit",
+    title: "Bộ bán hàng",
+    items: ["Lead magnet", "Kịch bản tư vấn", "Follow-up Zalo/email"],
+  },
+  {
+    label: "AI Kit",
+    title: "Bộ workflow AI",
+    items: ["Prompt theo vai trò", "Checklist tự động hóa", "Báo cáo dữ liệu"],
+  },
+];
+
+const kitFlowSteps = ["Định vị", "Đóng gói", "Xuất bản", "Bán hàng", "Tối ưu"];
+
 const solopreneurFaqs = [
   {
     question: "Trang này dành cho ai?",
@@ -157,6 +205,100 @@ function AiWorkflowEcosystem() {
   );
 }
 
+function AiOperatingSection() {
+  return (
+    <section className="bg-[#f6f0e4] px-5 py-24 sm:px-8">
+      <div className="mx-auto grid max-w-[1440px] gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
+        <div>
+          <SectionHeading
+            eyebrow="AI operating layer"
+            title="AI không phải một công cụ rời rạc. AI là lớp vận hành nằm dưới mọi việc."
+            description="Solopreneur không cần thêm một đống app để nhớ. Điều cần hơn là một hệ thống biết thu thập tín hiệu, tạo nháp, chuẩn hóa phản hồi và biến tri thức cá nhân thành tài sản dùng lại được."
+          />
+          <div className="mt-8 rounded-[1.5rem] border border-black/8 bg-white p-4 shadow-[0_22px_70px_rgba(0,0,0,0.06)]">
+            <div className="flex flex-wrap gap-2">
+              {kitFlowSteps.map((step) => (
+                <span
+                  key={step}
+                  className="rounded-full border border-black/8 bg-[#fbfaf7] px-4 py-2 text-sm font-black text-black/72"
+                >
+                  {step}
+                </span>
+              ))}
+            </div>
+            <div className="mt-5 h-2 overflow-hidden rounded-full bg-black/8">
+              <div className="ai-signal-bar h-full rounded-full bg-[#2f8f62]" />
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {aiOperatingLayers.map((item, index) => (
+            <div
+              key={item.label}
+              className="motion-card min-h-[260px] rounded-[1.35rem] border border-black/8 bg-white p-6 shadow-[0_18px_55px_rgba(0,0,0,0.055)]"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2f8f62]">
+                  {item.label}
+                </p>
+                <span className="grid size-10 place-items-center rounded-full bg-[#111113] text-sm font-black text-white">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+              </div>
+              <h3 className="card-title mt-8 text-2xl font-black leading-tight text-[#111113]">
+                {item.title}
+              </h3>
+              <p className="mt-4 text-sm font-semibold leading-7 text-black/58">{item.copy}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SolopreneurKitSection() {
+  return (
+    <section className="mx-auto max-w-[1440px] px-5 py-24 sm:px-8">
+      <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
+        <SectionHeading
+          eyebrow="Solopreneur kit"
+          title="Một bộ kit để biến chuyên môn thành hệ thống có thể chạy mỗi tuần."
+          description="Mỗi kit là một nhóm tài sản thực hành: rõ đầu vào, rõ đầu ra, dễ cập nhật và có thể đưa vào dashboard học viên hoặc thư viện tài liệu khi bạn muốn mở rộng."
+        />
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          {solopreneurKitItems.map((kit) => (
+            <div
+              key={kit.label}
+              className="rounded-[1.35rem] border border-black/8 bg-white p-6 shadow-[0_18px_55px_rgba(0,0,0,0.05)]"
+            >
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#c77b20]">
+                {kit.label}
+              </p>
+              <h3 className="mt-3 text-3xl font-black tracking-[-0.04em] text-[#111113]">
+                {kit.title}
+              </h3>
+              <div className="mt-6 grid gap-3">
+                {kit.items.map((item) => (
+                  <div
+                    key={item}
+                    className="flex items-center gap-3 rounded-full border border-black/8 bg-[#fbfaf7] px-4 py-3"
+                  >
+                    <span className="size-2 rounded-full bg-[#2f8f62]" />
+                    <span className="text-sm font-bold text-black/68">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function SolopreneurStats() {
   return (
     <div className="grid gap-3 rounded-[1.5rem] border border-black/8 bg-white p-3 shadow-[0_22px_70px_rgba(0,0,0,0.06)] sm:grid-cols-3">
@@ -225,6 +367,10 @@ export default async function Home() {
       </section>
 
       <AiWorkflowEcosystem />
+
+      <AiOperatingSection />
+
+      <SolopreneurKitSection />
 
       <section className="border-y border-black/8 bg-[#111113] px-5 py-16 text-white sm:px-8">
         <div className="mx-auto grid max-w-[1440px] gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">

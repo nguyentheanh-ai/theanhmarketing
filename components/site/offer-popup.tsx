@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ButtonLink } from "@/components/ui/button-link";
 import type { OfferSettings } from "@/services/offerService";
+
+const offerPopupSeenKey = "tam-offer-popup-seen";
 
 export function SiteOfferPopup({
   contextTitle = "The Anh Marketing",
@@ -11,9 +13,34 @@ export function SiteOfferPopup({
   contextTitle?: string;
   offer: OfferSettings;
 }) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isReady, setIsReady] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  if (!offer.enabled) {
+  useEffect(() => {
+    if (!offer.enabled) {
+      return;
+    }
+
+    let shouldOpen = false;
+
+    try {
+      const hasSeenPopup = window.localStorage.getItem(offerPopupSeenKey) === "true";
+
+      if (!hasSeenPopup) {
+        window.localStorage.setItem(offerPopupSeenKey, "true");
+        shouldOpen = true;
+      }
+    } catch {
+      shouldOpen = false;
+    } finally {
+      window.setTimeout(() => {
+        setIsOpen(shouldOpen);
+        setIsReady(true);
+      }, 0);
+    }
+  }, [offer.enabled]);
+
+  if (!offer.enabled || !isReady) {
     return null;
   }
 
