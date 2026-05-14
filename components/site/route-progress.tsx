@@ -12,8 +12,10 @@ export function RouteProgress() {
   const timeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
+    const root = document.documentElement;
     const stop = () => {
       setWidth(100);
+      root.removeAttribute("data-route-pending");
       if (timeoutRef.current) {
         window.clearTimeout(timeoutRef.current);
       }
@@ -60,6 +62,10 @@ export function RouteProgress() {
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
       const target = event.target as HTMLElement | null;
       if (!target) {
         return;
@@ -71,10 +77,40 @@ export function RouteProgress() {
       }
 
       const href = anchor.getAttribute("href");
-      if (!href || href.startsWith("http") || href.startsWith("mailto:") || href.startsWith("#")) {
+      const targetAttr = anchor.getAttribute("target");
+      const downloadAttr = anchor.getAttribute("download");
+
+      if (
+        !href ||
+        targetAttr === "_blank" ||
+        downloadAttr !== null ||
+        href.startsWith("mailto:") ||
+        href.startsWith("tel:") ||
+        href.startsWith("#")
+      ) {
         return;
       }
 
+      const destination = new URL(href, window.location.href);
+      const current = new URL(window.location.href);
+
+      if (destination.origin !== current.origin) {
+        return;
+      }
+
+      if (
+        destination.pathname === current.pathname &&
+        destination.search === current.search &&
+        destination.hash
+      ) {
+        return;
+      }
+
+      if (destination.href === current.href) {
+        return;
+      }
+
+      document.documentElement.setAttribute("data-route-pending", "true");
       setActive(true);
       setWidth(12);
     };
