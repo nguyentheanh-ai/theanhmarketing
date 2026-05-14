@@ -11,11 +11,11 @@ export function CartToast() {
 
   useEffect(() => {
     let timer: number | undefined;
-    const update = () => {
+    const update = (showToast = false) => {
       const latest = readCart();
       setItems(latest);
 
-      if (latest.length > 0) {
+      if (latest.length > 0 && showToast) {
         setVisible(true);
         if (timer) {
           window.clearTimeout(timer);
@@ -26,8 +26,8 @@ export function CartToast() {
       }
     };
 
-    update();
-    const unsubscribe = subscribeCart(update);
+    update(false);
+    const unsubscribe = subscribeCart((action) => update(action === "add"));
     return () => {
       unsubscribe();
       if (timer) {

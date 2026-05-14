@@ -3,12 +3,15 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
+import { getSafeNextPath } from "@/lib/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export function AdminLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nextPath = searchParams.get("next") || "/admin/dashboard";
+  const nextPath = getSafeNextPath(searchParams.get("next"), "/admin/dashboard", {
+    requiredPrefix: "/admin",
+  });
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 

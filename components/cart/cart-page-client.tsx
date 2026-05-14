@@ -36,7 +36,7 @@ export function CartPageClient({ auth }: CartPageClientProps) {
 
   async function handleCheckout() {
     if (!auth.isLoggedIn) {
-      router.push("/dang-ky");
+      router.push(`/dang-nhap?next=${encodeURIComponent("/gio-hang")}`);
       return;
     }
 
@@ -147,7 +147,14 @@ export function CartPageClient({ auth }: CartPageClientProps) {
               Thanh toán ngay
             </Button>
           ) : (
-            <ButtonLink href="/dang-ky">Tạo tài khoản</ButtonLink>
+            <>
+              <ButtonLink href={`/dang-ky?next=${encodeURIComponent("/gio-hang")}`}>
+                Tạo tài khoản
+              </ButtonLink>
+              <ButtonLink href={`/dang-nhap?next=${encodeURIComponent("/gio-hang")}`} variant="secondary">
+                Đăng nhập để thanh toán
+              </ButtonLink>
+            </>
           )}
           <Link
             href="/khoa-hoc"

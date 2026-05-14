@@ -4,6 +4,8 @@ export type CartItem = {
   price: string;
 };
 
+export type CartAction = "add" | "remove" | "clear" | "sync";
+
 const cartKey = "tam-cart-courses";
 const cartEvent = "tam:cart-updated";
 
@@ -30,13 +32,13 @@ export function readCart(): CartItem[] {
   }
 }
 
-function writeCart(items: CartItem[]) {
+function writeCart(items: CartItem[], action: CartAction) {
   if (!isBrowser()) {
     return;
   }
 
   window.localStorage.setItem(cartKey, JSON.stringify(items));
-  window.dispatchEvent(new Event(cartEvent));
+  window.dispatchEvent(new CustomEvent<CartAction>(cartEvent, { detail: action }));
 }
 
 export function addToCart(item: CartItem) {
@@ -47,30 +49,35 @@ export function addToCart(item: CartItem) {
   }
 
   const next = [...current, item];
-  writeCart(next);
+  writeCart(next, "add");
   return next;
 }
 
 export function removeFromCart(slug: string) {
   const next = readCart().filter((item) => item.slug !== slug);
-  writeCart(next);
+  writeCart(next, "remove");
   return next;
 }
 
 export function clearCart() {
-  writeCart([]);
+  writeCart([], "clear");
 }
 
-export function subscribeCart(listener: () => void) {
+export function subscribeCart(listener: (action?: CartAction) => void) {
   if (!isBrowser()) {
     return () => {};
   }
 
-  window.addEventListener(cartEvent, listener);
-  window.addEventListener("storage", listener);
+  const handleCartEvent = (event: Event) => {
+    listener(event instanceof CustomEvent ? event.detail : "sync");
+  };
+  const handleStorageEvent = () => listener("sync");
+
+  window.addEventListener(cartEvent, handleCartEvent);
+  window.addEventListener("storage", handleStorageEvent);
 
   return () => {
-    window.removeEventListener(cartEvent, listener);
-    window.removeEventListener("storage", listener);
+    window.removeEventListener(cartEvent, handleCartEvent);
+    window.removeEventListener("storage", handleStorageEvent);
   };
 }

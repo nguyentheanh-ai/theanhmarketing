@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { RegisterForm } from "@/components/auth/register-form";
 import { PageShell } from "@/components/site/page-shell";
 import { SoftCard } from "@/components/ui/soft-card";
@@ -44,7 +45,9 @@ export default async function RegisterPage() {
         </div>
 
         <SoftCard>
-          <RegisterForm courses={courses} />
+          <Suspense fallback={null}>
+            <RegisterForm courses={courses} />
+          </Suspense>
         </SoftCard>
       </section>
     </PageShell>

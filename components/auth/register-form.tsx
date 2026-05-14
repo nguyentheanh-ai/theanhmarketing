@@ -1,19 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import type { Course } from "@/data/courses";
 import { clearCart, readCart, subscribeCart, type CartItem } from "@/lib/cart";
+import { getSafeNextPath } from "@/lib/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export function RegisterForm({ courses }: { courses: Course[] }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextPath = getSafeNextPath(searchParams.get("next"), "/dashboard");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const loginHref =
+    cartItems.length > 0
+      ? `/dang-nhap?next=${encodeURIComponent("/gio-hang")}`
+      : `/dang-nhap?next=${encodeURIComponent(nextPath)}`;
 
   useEffect(() => {
     const update = () => setCartItems(readCart());
@@ -113,7 +120,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/dashboard`,
+        redirectTo: `${window.location.origin}${nextPath}`,
       },
     });
 
@@ -209,7 +216,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
       </form>
       <p className="mt-6 text-center text-sm text-black/55">
         Đã có tài khoản?{" "}
-        <Link className="font-bold text-black" href="/dang-nhap">
+        <Link className="font-bold text-black" href={loginHref}>
           Đăng nhập
         </Link>
       </p>

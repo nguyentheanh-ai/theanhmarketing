@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { requireStudentAuth } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
   robots: {
@@ -15,7 +14,5 @@ export default async function LearnLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await requireStudentAuth("/dashboard");
-
   return children;
 }
