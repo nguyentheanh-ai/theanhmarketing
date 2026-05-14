@@ -16,13 +16,14 @@ export default async function AdminResourcesPage() {
         <p className="mt-4 max-w-3xl text-lg leading-8 text-black/60">
           Tài liệu đọc từ Supabase trước, fallback về file tĩnh nếu database
           chưa có dữ liệu. Form bên dưới tạo/sửa/xóa trực tiếp trong bảng
-          resources.
+          resources. Tài liệu miễn phí cần tối thiểu tên tài liệu, link tải và
+          bài viết giới thiệu để hiển thị mượt trên website.
         </p>
 
         <SoftCard className="mt-10">
           <p className="text-sm font-semibold text-[#c77b20]">Resource CMS</p>
           <h2 className="mt-3 text-3xl font-black tracking-[-0.05em]">
-            Tạo, sửa, xóa tài liệu.
+            Đăng tài liệu miễn phí.
           </h2>
           <ResourceManager resources={resources} />
         </SoftCard>

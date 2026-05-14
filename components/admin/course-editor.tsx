@@ -306,7 +306,13 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
             .filter((resource) => resource.lesson_id);
 
           if (lessonResources.length > 0) {
-            await supabase.from("lesson_resources").insert(lessonResources);
+            const { error: resourceError } = await supabase.from("lesson_resources").insert(lessonResources);
+
+            if (resourceError) {
+              setNotice(`Bài học đã lưu, nhưng tài liệu đính kèm bị lỗi: ${resourceError.message}`);
+              setIsSaving(false);
+              return;
+            }
           }
         }
       }
@@ -362,6 +368,21 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
   }
 
   function updateCourse(field: keyof Course, value: string) {
+    if (field === "slug") {
+      persist(
+        courses.map((course, index) =>
+          index === selectedCourseIndex
+            ? {
+                ...course,
+                slug: value,
+              }
+            : course,
+        ),
+      );
+      setSelectedSlug(value);
+      return;
+    }
+
     persist(
       courses.map((course) =>
         course.slug === selectedCourse.slug

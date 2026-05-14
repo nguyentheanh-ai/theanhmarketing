@@ -28,6 +28,17 @@ const emptyResource: ResourceItem = {
   fileUrl: "",
 };
 
+function isValidDownloadUrl(value: string) {
+  const link = value.trim();
+
+  return (
+    link.startsWith("https://") ||
+    link.startsWith("http://") ||
+    link.startsWith("/") ||
+    link.startsWith("mailto:")
+  );
+}
+
 export function ResourceManager({ resources }: { resources: ResourceItem[] }) {
   const router = useRouter();
   const [selectedSlug, setSelectedSlug] = useState(resources[0]?.slug ?? "new");
@@ -45,6 +56,10 @@ export function ResourceManager({ resources }: { resources: ResourceItem[] }) {
 
     const formData = new FormData(event.currentTarget);
     const supabase = createSupabaseBrowserClient();
+    const title = String(formData.get("title") ?? "").trim();
+    const fileUrl = String(formData.get("fileUrl") ?? "").trim();
+    const description = String(formData.get("description") ?? "").trim();
+    const thumbnail = String(formData.get("thumbnail") ?? "").trim();
 
     if (!supabase) {
       setMessage("Chưa cấu hình Supabase. Tài liệu chưa được lưu.");
@@ -52,11 +67,23 @@ export function ResourceManager({ resources }: { resources: ResourceItem[] }) {
       return;
     }
 
+    if (!title) {
+      setMessage("Vui lòng nhập tên tài liệu.");
+      setIsSaving(false);
+      return;
+    }
+
+    if (!isValidDownloadUrl(fileUrl)) {
+      setMessage("Link tải cần bắt đầu bằng https://, http://, / hoặc mailto:.");
+      setIsSaving(false);
+      return;
+    }
+
     const payload = {
-      title: String(formData.get("title") ?? ""),
-      description: String(formData.get("description") ?? ""),
-      thumbnail: String(formData.get("thumbnail") ?? ""),
-      file_url: String(formData.get("fileUrl") ?? ""),
+      title,
+      description,
+      thumbnail,
+      file_url: fileUrl,
       access_type: toAccessType(String(formData.get("access") ?? "")),
     };
 
@@ -116,7 +143,7 @@ export function ResourceManager({ resources }: { resources: ResourceItem[] }) {
           type="button"
           onClick={() => setSelectedSlug("new")}
         >
-          + Tạo tài liệu mới
+          + Đăng tài liệu miễn phí mới
         </button>
         {resources.map((resource) => (
           <button
@@ -137,49 +164,88 @@ export function ResourceManager({ resources }: { resources: ResourceItem[] }) {
         ))}
       </div>
 
-      <form className="grid gap-4" onSubmit={handleSubmit}>
-        <div className="grid gap-4 md:grid-cols-2">
-          <input
-            className="min-h-12 rounded-2xl border border-black/10 px-4"
-            defaultValue={selectedResource.title}
-            key={`title-${selectedSlug}`}
-            name="title"
-            placeholder="Tên tài liệu"
-            required
-          />
-          <select
-            className="min-h-12 rounded-2xl border border-black/10 bg-white px-4"
-            defaultValue={selectedResource.access}
-            key={`access-${selectedSlug}`}
-            name="access"
-          >
-            <option>Miễn phí</option>
-            <option>Trả phí</option>
-            <option>Chỉ học viên</option>
-          </select>
-          <input
-            className="min-h-12 rounded-2xl border border-black/10 px-4"
-            defaultValue={selectedResource.fileUrl}
-            key={`file-${selectedSlug}`}
-            name="fileUrl"
-            placeholder="Link file"
-            required
-          />
-          <input
-            className="min-h-12 rounded-2xl border border-black/10 px-4"
-            defaultValue={selectedResource.thumbnail}
-            key={`thumb-${selectedSlug}`}
-            name="thumbnail"
-            placeholder="Thumbnail URL"
-          />
+      <form className="grid gap-5" onSubmit={handleSubmit}>
+        <div className="rounded-2xl border border-black/10 bg-[#fbfaf7] p-4">
+          <p className="text-sm font-black text-black">Thông tin tài liệu</p>
+          <p className="mt-2 text-sm leading-6 text-black/55">
+            Với tài liệu miễn phí, admin chỉ cần nhập rõ tên tài liệu, link tải và bài viết giới thiệu.
+            Nội dung này sẽ hiển thị ở trang tài liệu public và dashboard học viên.
+          </p>
         </div>
-        <textarea
-          className="min-h-24 w-full rounded-2xl border border-black/10 p-4"
-          defaultValue={selectedResource.description}
-          key={`description-${selectedSlug}`}
-          name="description"
-          placeholder="Mô tả tài liệu"
-        />
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="grid gap-2">
+            <span className="text-sm font-bold text-black/62">Tên tài liệu</span>
+            <input
+              className="min-h-12 rounded-2xl border border-black/10 px-4"
+              defaultValue={selectedResource.title}
+              key={`title-${selectedSlug}`}
+              name="title"
+              placeholder="Ví dụ: Checklist xây AI workflow cho Solopreneur"
+              required
+            />
+          </label>
+
+          <label className="grid gap-2">
+            <span className="text-sm font-bold text-black/62">Quyền truy cập</span>
+            <select
+              className="min-h-12 rounded-2xl border border-black/10 bg-white px-4"
+              defaultValue={selectedResource.access || "Miễn phí"}
+              key={`access-${selectedSlug}`}
+              name="access"
+            >
+              <option>Miễn phí</option>
+              <option>Trả phí</option>
+              <option>Chỉ học viên</option>
+            </select>
+          </label>
+
+          <label className="grid gap-2 md:col-span-2">
+            <span className="text-sm font-bold text-black/62">Link tải</span>
+            <input
+              className="min-h-12 rounded-2xl border border-black/10 px-4"
+              defaultValue={selectedResource.fileUrl}
+              key={`file-${selectedSlug}`}
+              name="fileUrl"
+              placeholder="https://... hoặc /tai-lieu/..."
+              required
+            />
+          </label>
+
+          <label className="grid gap-2 md:col-span-2">
+            <span className="text-sm font-bold text-black/62">Thumbnail URL</span>
+            <input
+              className="min-h-12 rounded-2xl border border-black/10 px-4"
+              defaultValue={selectedResource.thumbnail}
+              key={`thumb-${selectedSlug}`}
+              name="thumbnail"
+              placeholder="https://... ảnh minh họa tài liệu"
+            />
+          </label>
+        </div>
+
+        <label className="grid gap-2">
+          <span className="text-sm font-bold text-black/62">Bài viết về tài liệu</span>
+          <textarea
+            className="min-h-44 w-full rounded-2xl border border-black/10 p-4"
+            defaultValue={selectedResource.description}
+            key={`description-${selectedSlug}`}
+            name="description"
+            placeholder="Viết nội dung giới thiệu: tài liệu này giúp ai, dùng trong tình huống nào, sau khi tải về nên làm bước gì..."
+          />
+        </label>
+
+        {selectedResource.fileUrl ? (
+          <a
+            className="w-fit rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-bold text-black/65 transition hover:border-black/20 hover:text-black"
+            href={selectedResource.fileUrl}
+            rel="noreferrer"
+            target={selectedResource.fileUrl.startsWith("http") ? "_blank" : undefined}
+          >
+            Mở link tải hiện tại
+          </a>
+        ) : null}
+
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button className="w-fit" isLoading={isSaving} loadingLabel="Đang lưu..." type="submit">
             Lưu tài liệu
