@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
 
 const mediaBucket = "media";
+const allowedImageTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 function safeSegment(value: string) {
   return value
@@ -55,6 +56,13 @@ export async function POST(request: Request) {
     );
   }
 
+  if (!allowedImageTypes.includes(file.type)) {
+    return NextResponse.json(
+      { ok: false, message: "Chi ho tro upload anh JPG, PNG, WebP hoac GIF." },
+      { status: 400 },
+    );
+  }
+
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, serviceRoleKey, {
     auth: {
       autoRefreshToken: false,
@@ -73,7 +81,7 @@ export async function POST(request: Request) {
 
   if (!buckets.some((bucket) => bucket.name === mediaBucket)) {
     const { error: createError } = await supabase.storage.createBucket(mediaBucket, {
-      allowedMimeTypes: ["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"],
+      allowedMimeTypes: allowedImageTypes,
       fileSizeLimit: "8MB",
       public: true,
     });

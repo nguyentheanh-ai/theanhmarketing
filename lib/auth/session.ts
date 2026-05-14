@@ -10,7 +10,7 @@ type AuthResult = {
 };
 
 export function isAuthGuardEnabled() {
-  return process.env.AUTH_GUARD_ENABLED === "true";
+  return process.env.AUTH_GUARD_ENABLED === "true" || process.env.VERCEL_ENV === "production";
 }
 
 export function getAdminEmails() {
