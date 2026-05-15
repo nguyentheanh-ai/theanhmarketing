@@ -726,6 +726,25 @@ function TrialAccessModal({
         message: `Đăng ký học thử: ${course.title}`,
         source: "trial",
       });
+
+      try {
+        await fetch("/api/notifications/registration", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            studentName: fullName,
+            phone,
+            email,
+            courseTitle: course.title,
+            registeredAt: new Date().toISOString(),
+            source: "trial",
+          }),
+        });
+      } catch (notificationError) {
+        console.error("Registration notification failed", notificationError);
+      }
     }
 
     setIsSubmitting(false);

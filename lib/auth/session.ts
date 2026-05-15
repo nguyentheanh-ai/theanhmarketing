@@ -14,10 +14,18 @@ export function isAuthGuardEnabled() {
 }
 
 export function getAdminEmails() {
-  return (process.env.ADMIN_EMAILS ?? "")
+  const configuredEmails = (process.env.ADMIN_EMAILS ?? "")
     .split(",")
     .map((email) => email.trim().toLowerCase())
     .filter(Boolean);
+
+  const fallbackEmail = process.env.ADMIN_LOGIN_EMAIL?.trim().toLowerCase();
+
+  if (configuredEmails.length > 0 || !fallbackEmail) {
+    return configuredEmails;
+  }
+
+  return [fallbackEmail];
 }
 
 export async function createSupabaseAuthServerClient() {
