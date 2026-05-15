@@ -102,7 +102,7 @@ export async function requireAdminAuth(nextPath: string) {
   }
 
   if (!isAdmin) {
-    redirect("/dashboard?error=admin");
+    redirect(`/admin/login?next=${encodeURIComponent(nextPath)}&error=admin`);
   }
 
   return user;
