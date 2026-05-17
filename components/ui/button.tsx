@@ -4,7 +4,7 @@ type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "quiet";
 type ButtonSize = "sm" | "md" | "lg";
 
 const baseClasses =
-  "tap-motion inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full font-bold leading-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f2a23a] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0";
+  "tap-motion inline-flex max-w-full shrink-0 items-center justify-center gap-2 rounded-full text-center font-bold leading-tight focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f2a23a] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0";
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:

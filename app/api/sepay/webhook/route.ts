@@ -1,11 +1,25 @@
 import { NextResponse } from "next/server";
 import { verifySepayApiKey, type SepayWebhookPayload } from "@/lib/payments/sepay";
+import { logSecurityEvent } from "@/lib/security/audit-log";
+import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import { confirmOrderFromSepay } from "@/services/orderService";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  const rateLimit = checkRateLimit({
+    key: rateLimitKey(request, "sepay:webhook"),
+    limit: 120,
+    windowMs: 10 * 60 * 1000,
+  });
+
+  if (!rateLimit.ok) {
+    logSecurityEvent({ action: "sepay_webhook_rate_limited", request });
+    return rateLimitResponse(rateLimit.resetAt);
+  }
+
   if (!verifySepayApiKey(request.headers)) {
+    logSecurityEvent({ action: "sepay_webhook_bad_api_key", request });
     return NextResponse.json({ success: false, message: "Sai API key Sepay." }, { status: 401 });
   }
 
@@ -22,6 +36,7 @@ export async function POST(request: Request) {
       payload = (await request.json()) as SepayWebhookPayload;
     }
   } catch {
+    logSecurityEvent({ action: "sepay_webhook_invalid_payload", request });
     return NextResponse.json(
       { success: false, message: "Payload webhook Sepay không hợp lệ." },
       { status: 400 },
@@ -33,6 +48,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, orderCode: order.orderCode });
   } catch (error) {
+    logSecurityEvent({
+      action: "sepay_webhook_rejected",
+      request,
+      detail: { reason: error instanceof Error ? error.message : "unknown" },
+    });
     return NextResponse.json(
       {
         success: false,

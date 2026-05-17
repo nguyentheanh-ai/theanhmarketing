@@ -1,7 +1,9 @@
 import { siteConfig } from "@/data/site";
 import type { Course } from "@/data/courses";
+import { getCspNonce } from "@/lib/security/nonce";
 
-export function OrganizationJsonLd() {
+export async function OrganizationJsonLd() {
+  const nonce = await getCspNonce();
   const data = {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
@@ -16,13 +18,15 @@ export function OrganizationJsonLd() {
 
   return (
     <script
+      nonce={nonce}
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
     />
   );
 }
 
-export function WebsiteJsonLd() {
+export async function WebsiteJsonLd() {
+  const nonce = await getCspNonce();
   const data = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -38,13 +42,15 @@ export function WebsiteJsonLd() {
 
   return (
     <script
+      nonce={nonce}
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
     />
   );
 }
 
-export function CourseJsonLd({ course }: { course: Course }) {
+export async function CourseJsonLd({ course }: { course: Course }) {
+  const nonce = await getCspNonce();
   const data = {
     "@context": "https://schema.org",
     "@type": "Course",
@@ -70,13 +76,14 @@ export function CourseJsonLd({ course }: { course: Course }) {
 
   return (
     <script
+      nonce={nonce}
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
     />
   );
 }
 
-export function ArticleJsonLd({
+export async function ArticleJsonLd({
   title,
   description,
   slug,
@@ -87,6 +94,7 @@ export function ArticleJsonLd({
   slug: string;
   author: string;
 }) {
+  const nonce = await getCspNonce();
   const data = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -106,6 +114,7 @@ export function ArticleJsonLd({
 
   return (
     <script
+      nonce={nonce}
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
     />

@@ -1,22 +1,31 @@
+import { randomUUID } from "crypto";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
+import { logSecurityEvent } from "@/lib/security/audit-log";
 
 const mediaBucket = "media";
-const allowedImageTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const maxUploadBytes = 8 * 1024 * 1024;
+const allowedImageTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
+const extensionByType: Record<(typeof allowedImageTypes)[number], string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+};
 
-function safeSegment(value: string) {
-  return value
+function safeSegment(value: string, fallback: string) {
+  const slug = value
     .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "")
-    .slice(0, 80);
+    .replace(/[^a-z0-9-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return slug || fallback;
 }
 
 async function ensureAdminAccess() {
-  if (!isAuthGuardEnabled()) {
+  if (!isAuthGuardEnabled() && process.env.NODE_ENV === "development") {
     return true;
   }
 
@@ -24,46 +33,96 @@ async function ensureAdminAccess() {
   return isAdmin;
 }
 
+function isAllowedImageType(type: string): type is (typeof allowedImageTypes)[number] {
+  return allowedImageTypes.includes(type as (typeof allowedImageTypes)[number]);
+}
+
+function hasBytes(bytes: Uint8Array, signature: number[]) {
+  return signature.every((byte, index) => bytes[index] === byte);
+}
+
+async function hasValidImageSignature(file: File) {
+  const bytes = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+
+  if (file.type === "image/jpeg") {
+    return hasBytes(bytes, [0xff, 0xd8, 0xff]);
+  }
+
+  if (file.type === "image/png") {
+    return hasBytes(bytes, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  }
+
+  if (file.type === "image/gif") {
+    const header = String.fromCharCode(...bytes.slice(0, 6));
+    return header === "GIF87a" || header === "GIF89a";
+  }
+
+  if (file.type === "image/webp") {
+    const riff = String.fromCharCode(...bytes.slice(0, 4));
+    const webp = String.fromCharCode(...bytes.slice(8, 12));
+    return riff === "RIFF" && webp === "WEBP";
+  }
+
+  return false;
+}
+
 export async function POST(request: Request) {
-  if (!(await ensureAdminAccess())) {
+  const isAllowed = await ensureAdminAccess();
+
+  if (!isAllowed) {
+    logSecurityEvent({ action: "admin_media_upload_forbidden", request });
     return NextResponse.json(
-      { ok: false, message: "Bạn không có quyền upload media." },
+      { ok: false, message: "Bạn không có quyền tải ảnh lên." },
       { status: 403 },
     );
   }
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !serviceRoleKey) {
+  if (!supabaseUrl || !serviceRoleKey) {
     return NextResponse.json(
-      {
-        ok: false,
-        message:
-          "Thiếu SUPABASE_SERVICE_ROLE_KEY nên server không thể tự tạo bucket/upload media.",
-      },
-      { status: 501 },
+      { ok: false, message: "Chưa cấu hình Supabase Storage." },
+      { status: 500 },
     );
   }
 
   const formData = await request.formData();
   const file = formData.get("file");
-  const folder = safeSegment(String(formData.get("folder") ?? "uploads")) || "uploads";
+  const folder = safeSegment(String(formData.get("folder") ?? "blog"), "blog");
 
   if (!(file instanceof File)) {
     return NextResponse.json(
-      { ok: false, message: "Không tìm thấy file upload." },
+      { ok: false, message: "Không tìm thấy file ảnh." },
       { status: 400 },
     );
   }
 
-  if (!allowedImageTypes.includes(file.type)) {
+  if (file.size <= 0 || file.size > maxUploadBytes) {
+    logSecurityEvent({
+      action: "admin_media_upload_bad_size",
+      request,
+      detail: { size: file.size },
+    });
     return NextResponse.json(
-      { ok: false, message: "Chi ho tro upload anh JPG, PNG, WebP hoac GIF." },
+      { ok: false, message: "Ảnh phải nhỏ hơn 8MB." },
       { status: 400 },
     );
   }
 
-  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, serviceRoleKey, {
+  if (!isAllowedImageType(file.type) || !(await hasValidImageSignature(file))) {
+    logSecurityEvent({
+      action: "admin_media_upload_bad_type",
+      request,
+      detail: { type: file.type || "unknown" },
+    });
+    return NextResponse.json(
+      { ok: false, message: "Chỉ hỗ trợ ảnh JPG, PNG, WebP hoặc GIF hợp lệ." },
+      { status: 400 },
+    );
+  }
+
+  const supabase = createClient(supabaseUrl, serviceRoleKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
@@ -74,42 +133,48 @@ export async function POST(request: Request) {
 
   if (listError) {
     return NextResponse.json(
-      { ok: false, message: `Không đọc được bucket Supabase: ${listError.message}` },
+      { ok: false, message: "Không kiểm tra được Storage bucket." },
       { status: 500 },
     );
   }
 
-  if (!buckets.some((bucket) => bucket.name === mediaBucket)) {
-    const { error: createError } = await supabase.storage.createBucket(mediaBucket, {
-      allowedMimeTypes: allowedImageTypes,
-      fileSizeLimit: "8MB",
+  const bucketExists = buckets?.some((bucket) => bucket.name === mediaBucket);
+
+  if (!bucketExists) {
+    const { error: bucketError } = await supabase.storage.createBucket(mediaBucket, {
       public: true,
+      fileSizeLimit: String(maxUploadBytes),
+      allowedMimeTypes: [...allowedImageTypes],
     });
 
-    if (createError) {
+    if (bucketError) {
       return NextResponse.json(
-        { ok: false, message: `Không tạo được bucket media: ${createError.message}` },
+        { ok: false, message: "Không tạo được Storage bucket." },
         { status: 500 },
       );
     }
   }
 
-  const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
-  const name = safeSegment(file.name.replace(/\.[^.]+$/, "")) || "image";
-  const path = `${folder}/${Date.now()}-${name}.${extension}`;
-  const { error: uploadError } = await supabase.storage.from(mediaBucket).upload(path, file, {
+  const name = safeSegment(file.name.replace(/\.[^.]+$/, ""), "image");
+  const extension = extensionByType[file.type];
+  const path = `${folder}/${Date.now()}-${randomUUID()}-${name}.${extension}`;
+  const { error } = await supabase.storage.from(mediaBucket).upload(path, file, {
     cacheControl: "31536000",
-    contentType: file.type || undefined,
-    upsert: true,
+    contentType: file.type,
+    upsert: false,
   });
 
-  if (uploadError) {
+  if (error) {
+    logSecurityEvent({ action: "admin_media_upload_storage_error", request });
     return NextResponse.json(
-      { ok: false, message: `Không upload được ảnh: ${uploadError.message}` },
+      { ok: false, message: "Không tải được ảnh lên Storage." },
       { status: 500 },
     );
   }
 
-  const { data } = supabase.storage.from(mediaBucket).getPublicUrl(path);
-  return NextResponse.json({ ok: true, url: data.publicUrl });
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from(mediaBucket).getPublicUrl(path);
+
+  return NextResponse.json({ ok: true, url: publicUrl, path });
 }

@@ -8,6 +8,7 @@ import {
   getSepayOrderCode,
   getSepayReference,
   getSepayTransferAmount,
+  isSepayAccountMatched,
   isSepayConfigured,
   parseVndAmount,
   type SepayWebhookPayload,
@@ -359,6 +360,10 @@ export async function confirmOrderFromSepay(payload: SepayWebhookPayload) {
 
   if (transferType && transferType !== "in") {
     throw new Error("Webhook Sepay không phải giao dịch tiền vào.");
+  }
+
+  if (!isSepayAccountMatched(payload)) {
+    throw new Error("Webhook Sepay không khớp tài khoản nhận tiền.");
   }
 
   const orderCode = getSepayOrderCode(payload);

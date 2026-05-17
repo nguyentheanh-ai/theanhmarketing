@@ -1,11 +1,31 @@
 import { NextResponse } from "next/server";
 import { getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
+import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
+import {
+  cleanEmail,
+  cleanPhone,
+  cleanSlug,
+  cleanText,
+  isValidEmail,
+  isValidPhone,
+  isValidSlug,
+} from "@/lib/security/validation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createManualPaidOrder } from "@/services/orderService";
 
 export async function POST(request: Request) {
   try {
-    if (isAuthGuardEnabled()) {
+    const rateLimit = checkRateLimit({
+      key: rateLimitKey(request, "admin:students:grant"),
+      limit: 30,
+      windowMs: 10 * 60 * 1000,
+    });
+
+    if (!rateLimit.ok) {
+      return rateLimitResponse(rateLimit.resetAt);
+    }
+
+    if (isAuthGuardEnabled() || process.env.NODE_ENV !== "development") {
       const { isAdmin } = await getCurrentAuth();
 
       if (!isAdmin) {
@@ -25,15 +45,23 @@ export async function POST(request: Request) {
       source?: string;
       note?: string;
     };
-    const name = String(body.name ?? "").trim();
-    const phone = String(body.phone ?? "").trim();
-    const email = String(body.email ?? "").trim().toLowerCase();
-    const courseSlug = String(body.courseSlug ?? "").trim();
-    const paymentStatus = String(body.paymentStatus ?? "");
-    const source = String(body.source ?? "Admin").trim() || "Admin";
-    const note = String(body.note ?? "").trim();
+    const name = cleanText(body.name, 120);
+    const phone = cleanPhone(body.phone);
+    const email = cleanEmail(body.email);
+    const courseSlug = cleanSlug(body.courseSlug);
+    const paymentStatus = cleanText(body.paymentStatus, 30);
+    const source = cleanText(body.source, 80) || "Admin";
+    const note = cleanText(body.note, 500);
 
-    if (!name || !phone || !email || !courseSlug) {
+    if (
+      !name ||
+      !phone ||
+      !email ||
+      !courseSlug ||
+      !isValidEmail(email) ||
+      !isValidPhone(phone) ||
+      !isValidSlug(courseSlug)
+    ) {
       return NextResponse.json(
         { ok: false, message: "Thiếu tên, số điện thoại, email hoặc khóa học." },
         { status: 400 },

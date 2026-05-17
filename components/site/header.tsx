@@ -14,10 +14,10 @@ export async function SiteHeader() {
 
   return (
     <header className="site-header-motion fixed inset-x-0 top-0 z-50 border-b border-black/[0.04] bg-[#fbfaf7]/90 backdrop-blur-xl">
-      <div className="mx-auto flex h-20 max-w-[1440px] items-center justify-between px-5 lg:px-12 xl:px-16">
+      <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 sm:h-20 sm:px-5 lg:px-12 xl:px-16">
         <Link href="/" className="flex items-center gap-3" aria-label={brand.name}>
-          <BrandMark brand={brand} className="grid size-11 place-items-center overflow-hidden rounded-lg bg-white p-1 shadow-[0_10px_26px_rgba(0,0,0,0.06)] ring-1 ring-black/8" />
-          <span className="text-lg font-bold tracking-[-0.03em]">
+          <BrandMark brand={brand} className="grid size-10 place-items-center overflow-hidden rounded-lg bg-white p-1 shadow-[0_10px_26px_rgba(0,0,0,0.06)] ring-1 ring-black/8 sm:size-11" />
+          <span className="text-base font-bold tracking-[-0.03em] sm:text-lg">
             {brand.shortName}
             <span className="text-[#d8ad57]">.</span>
           </span>
@@ -32,26 +32,26 @@ export async function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <ButtonLink href={primaryHref} className="hidden sm:inline-flex">
+          <ButtonLink href={primaryHref} className="!hidden sm:!inline-flex">
             {primaryLabel}
             <span aria-hidden="true">→</span>
           </ButtonLink>
           {isLoggedIn ? (
             <SignOutButton className="hidden min-h-10 rounded-full px-4 text-sm font-bold text-black/60 transition hover:bg-black/[0.04] hover:text-black disabled:opacity-50 md:inline-flex md:items-center" />
           ) : (
-            <ButtonLink href="/dang-nhap" variant="ghost" className="hidden px-0 md:inline-flex">
+            <ButtonLink href="/dang-nhap" variant="ghost" className="!hidden px-0 md:!inline-flex">
               Đăng nhập
             </ButtonLink>
           )}
         </div>
       </div>
 
-      <nav className="mx-auto flex max-w-[1440px] gap-2 overflow-x-auto px-5 pb-3 text-sm font-semibold text-black/60 lg:hidden">
+      <nav className="mobile-nav-scroll mx-auto flex max-w-[1440px] gap-2 overflow-x-auto px-4 pb-3 text-sm font-semibold text-black/60 lg:hidden">
         {mainNav.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className="shrink-0 rounded-full bg-white px-4 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.04)] transition hover:text-black"
+            className="shrink-0 rounded-full bg-white px-3.5 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.04)] transition hover:text-black"
           >
             {item.label}
           </Link>

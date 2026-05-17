@@ -4,6 +4,7 @@ import { useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import type { BlogPostItem } from "@/services/blogService";
+import { sanitizeCmsHtml } from "@/lib/security/html";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { uploadMediaFile } from "@/lib/supabase/media-upload";
 
@@ -338,7 +339,7 @@ function BlogHtmlEditor({
       {content ? (
         <div className="mt-4 rounded-2xl border border-black/10 bg-[#fbfaf7] p-5">
           <p className="mb-4 text-sm font-bold text-black/55">Preview</p>
-          <div className="blog-content" dangerouslySetInnerHTML={{ __html: content }} />
+          <div className="blog-content" dangerouslySetInnerHTML={{ __html: sanitizeCmsHtml(content) }} />
         </div>
       ) : null}
     </div>

@@ -1,4 +1,5 @@
 import { blogPosts as mockBlogPosts, type BlogPost } from "@/data/blog";
+import { sanitizeCmsHtml } from "@/lib/security/html";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type BlogPostItem = BlogPost & {
@@ -29,7 +30,7 @@ function mapDbBlogPost(post: DbBlogPost): BlogPostItem {
     readTime: post.read_time ?? "5 phút đọc",
     author: post.author ?? "The Anh Marketing",
     excerpt: post.excerpt ?? "",
-    content: post.content ?? "",
+    content: sanitizeCmsHtml(post.content ?? ""),
     status: post.status ?? "published",
     createdAt: post.created_at ?? "",
   };

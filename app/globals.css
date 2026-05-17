@@ -89,7 +89,21 @@ button {
 }
 
 html {
+  overflow-x: hidden;
   scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.mobile-nav-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.mobile-nav-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 html[data-route-pending="true"] .page-motion {
@@ -666,6 +680,38 @@ html[data-route-pending="true"] .page-motion {
   color: #050505;
   left: 19%;
   top: 35%;
+}
+
+@media (max-width: 639px) {
+  .social-ring--outer {
+    border-width: 8px;
+  }
+
+  .social-ring--middle {
+    border-width: 6px;
+  }
+
+  .social-ring--inner {
+    border-width: 5px;
+  }
+
+  .social-node {
+    font-size: 0.72rem;
+    height: 54px;
+    width: 54px;
+  }
+
+  .social-node--tiktok {
+    height: 62px;
+    left: 83%;
+    width: 62px;
+  }
+
+  .social-node--youtube {
+    height: 64px;
+    top: 86%;
+    width: 64px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -3,20 +3,45 @@ import {
   sendRegistrationNotification,
   type RegistrationNotificationInput,
 } from "@/lib/notifications/registration-email";
+import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
+import {
+  cleanEmail,
+  cleanPhone,
+  cleanText,
+  isValidEmail,
+  isValidPhone,
+} from "@/lib/security/validation";
 
 export async function POST(request: Request) {
   try {
+    const rateLimit = checkRateLimit({
+      key: rateLimitKey(request, "notifications:registration"),
+      limit: 8,
+      windowMs: 10 * 60 * 1000,
+    });
+
+    if (!rateLimit.ok) {
+      return rateLimitResponse(rateLimit.resetAt);
+    }
+
     const body = (await request.json()) as Partial<RegistrationNotificationInput>;
     const payload: RegistrationNotificationInput = {
-      studentName: String(body.studentName ?? "").trim(),
-      phone: String(body.phone ?? "").trim(),
-      email: String(body.email ?? "").trim(),
-      courseTitle: String(body.courseTitle ?? "").trim(),
-      registeredAt: body.registeredAt ? String(body.registeredAt) : new Date().toISOString(),
-      source: body.source ? String(body.source) : "Website",
+      studentName: cleanText(body.studentName, 120),
+      phone: cleanPhone(body.phone),
+      email: cleanEmail(body.email),
+      courseTitle: cleanText(body.courseTitle, 180),
+      registeredAt: body.registeredAt ? cleanText(body.registeredAt, 80) : new Date().toISOString(),
+      source: body.source ? cleanText(body.source, 80) : "Website",
     };
 
-    if (!payload.studentName || !payload.phone || !payload.email || !payload.courseTitle) {
+    if (
+      !payload.studentName ||
+      !payload.phone ||
+      !payload.email ||
+      !payload.courseTitle ||
+      !isValidEmail(payload.email) ||
+      !isValidPhone(payload.phone)
+    ) {
       return NextResponse.json(
         { ok: false, message: "Thiếu tên học viên, SĐT, email hoặc khóa đăng ký." },
         { status: 400 },

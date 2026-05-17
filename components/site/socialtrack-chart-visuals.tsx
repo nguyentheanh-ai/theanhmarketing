@@ -18,11 +18,11 @@ const sourceBars = [
 const campaignBars = [32, 82, 64, 76, 58, 88, 70, 92, 80, 96, 74];
 
 const keywords = [
-  { text: "Giá tốt", className: "left-[17%] top-[28%] text-[#4357d8] text-xl" },
+  { text: "Giá tốt", className: "left-[17%] top-[28%] text-[#4357d8] text-base sm:text-xl" },
   { text: "Trải nghiệm", className: "left-[34%] top-[62%] text-[#59d98d] text-sm" },
   { text: "Dịch vụ", className: "left-[58%] top-[22%] text-[#4357d8] text-xs" },
-  { text: "Tư vấn", className: "left-[64%] top-[56%] text-[#9ca3af] text-lg" },
-  { text: "Uy tín", className: "left-[45%] top-[42%] text-[#111827] text-3xl" },
+  { text: "Tư vấn", className: "left-[64%] top-[56%] text-[#9ca3af] text-base sm:text-lg" },
+  { text: "Uy tín", className: "left-[45%] top-[42%] text-[#111827] text-2xl sm:text-3xl" },
   { text: "Nhanh", className: "left-[25%] top-[50%] text-[#59d98d] text-xs" },
   { text: "Đối thủ", className: "left-[70%] top-[34%] text-[#4357d8] text-sm" },
 ];
@@ -32,9 +32,9 @@ function MiniDonut({ tone = "blue" }: { tone?: "blue" | "green" | "red" }) {
     tone === "green" ? "text-[#59d98d]" : tone === "red" ? "text-[#e45b40]" : "text-[#4357d8]";
 
   return (
-    <div className="relative size-20">
+    <div className="relative size-16 sm:size-20">
       <div className="absolute inset-0 rounded-full bg-[conic-gradient(#4357d8_0_48%,#59d98d_48%_76%,#d5d9e3_76%_100%)]" />
-      <div className="absolute inset-4 grid place-items-center rounded-full bg-white">
+      <div className="absolute inset-3 grid place-items-center rounded-full bg-white sm:inset-4">
         <span className={`text-[10px] font-black ${color}`}>1.0K</span>
       </div>
     </div>
@@ -53,7 +53,7 @@ function ChartShell({
   className?: string;
 }) {
   return (
-    <div className={`social-chart-card rounded-[1rem] border border-[#3654ff] bg-white p-4 shadow-[0_18px_55px_rgba(30,64,175,0.14)] ${className}`}>
+    <div className={`social-chart-card rounded-[1rem] border border-[#3654ff] bg-white p-3 shadow-[0_18px_55px_rgba(30,64,175,0.14)] sm:p-4 ${className}`}>
       <div className="flex items-start gap-2">
         <span className="grid size-7 shrink-0 place-items-center rounded-lg border border-black/10 text-[11px] font-black text-[#4357d8]">
           {eyebrow}
@@ -72,11 +72,11 @@ function ChartShell({
 
 export function SocialTrackHeroCharts() {
   return (
-    <div className="social-dashboard relative min-h-[520px] overflow-hidden rounded-[2rem] border border-[#3654ff] bg-[#f8fbff] p-5 shadow-[0_34px_100px_rgba(30,64,175,0.14)] sm:min-h-[560px]">
+    <div className="social-dashboard relative min-h-[430px] overflow-hidden rounded-[1.5rem] border border-[#3654ff] bg-[#f8fbff] p-3 shadow-[0_34px_100px_rgba(30,64,175,0.14)] sm:min-h-[560px] sm:rounded-[2rem] sm:p-5">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_54%_44%,rgba(67,87,216,0.14),transparent_36%),radial-gradient(circle_at_72%_72%,rgba(89,217,141,0.18),transparent_30%)]" />
-      <div className="relative mx-auto grid max-w-[680px] grid-cols-12 gap-3">
+      <div className="relative mx-auto grid max-w-[680px] grid-cols-12 gap-2 sm:gap-3">
         <ChartShell title="Total Mentions" eyebrow="M" className="col-span-12 sm:col-span-7">
-          <div className="flex h-36 items-end gap-2 border-b border-l border-black/8 px-2">
+          <div className="flex h-24 items-end gap-1.5 border-b border-l border-black/8 px-2 sm:h-36 sm:gap-2">
             {campaignBars.map((value, index) => (
               <span
                 key={`${value}-${index}`}
@@ -85,14 +85,14 @@ export function SocialTrackHeroCharts() {
               />
             ))}
           </div>
-          <div className="mt-3 flex gap-3 text-[10px] font-bold text-black/55">
+          <div className="mt-3 flex flex-wrap gap-2 text-[10px] font-bold text-black/55 sm:gap-3">
             <span className="flex items-center gap-1"><i className="size-2 rounded-full bg-[#4357d8]" /> Mentions 48%</span>
             <span className="flex items-center gap-1"><i className="size-2 rounded-full bg-[#59d98d]" /> Comments 29%</span>
           </div>
         </ChartShell>
 
         <ChartShell title="Total Source" eyebrow="S" className="social-float-card col-span-12 sm:col-span-5">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <MiniDonut />
             <div className="grid flex-1 gap-2">
               {sourceBars.map((bar) => (
@@ -111,7 +111,7 @@ export function SocialTrackHeroCharts() {
         </ChartShell>
 
         <ChartShell title="Keyword Cloud" eyebrow="K" className="social-float-card col-span-12 min-h-40">
-          <div className="relative h-36">
+          <div className="relative h-28 sm:h-36">
             {keywords.map((word, index) => (
               <span
                 key={word.text}
@@ -127,7 +127,7 @@ export function SocialTrackHeroCharts() {
         <ChartShell title="Sentiment Analysis" eyebrow="A" className="col-span-12 sm:col-span-8">
           <div className="grid grid-cols-[auto_1fr] items-center gap-4">
             <MiniDonut tone="green" />
-            <div className="relative h-28 border-b border-l border-black/8">
+            <div className="relative h-24 border-b border-l border-black/8 sm:h-28">
               <svg viewBox="0 0 280 120" className="absolute inset-0 h-full w-full" aria-hidden="true">
                 <path className="social-line social-line--green" d="M0 86 C45 66 70 82 112 58 S190 50 280 26" />
                 <path className="social-line social-line--red" d="M0 104 C70 96 118 100 168 88 S226 86 280 78" />
@@ -136,7 +136,7 @@ export function SocialTrackHeroCharts() {
           </div>
         </ChartShell>
 
-        <div className="social-profile-card social-float-card col-span-12 rounded-[1rem] border border-[#3654ff] bg-white p-4 shadow-[10px_14px_0_#1f2a89,0_18px_46px_rgba(30,64,175,0.2)] sm:absolute sm:bottom-10 sm:right-3 sm:w-[230px]">
+        <div className="social-profile-card social-float-card col-span-12 hidden rounded-[1rem] border border-[#3654ff] bg-white p-4 shadow-[10px_14px_0_#1f2a89,0_18px_46px_rgba(30,64,175,0.2)] sm:absolute sm:bottom-10 sm:right-3 sm:block sm:w-[230px]">
           <div className="flex items-center gap-3">
             <div className="grid size-11 place-items-center rounded-full bg-[#eef4ff] text-sm font-black text-[#4357d8]">TC</div>
             <div>
@@ -164,7 +164,7 @@ export function SocialTrackHeroCharts() {
 
 export function SocialListeningOrbit({ centerLabel = "AI" }: { centerLabel?: string }) {
   return (
-    <div className="social-orbit relative mx-auto aspect-square w-full max-w-[520px]">
+    <div className="social-orbit relative mx-auto aspect-square w-full max-w-[360px] sm:max-w-[520px]">
       <div className="social-ring social-ring--outer" />
       <div className="social-ring social-ring--middle" />
       <div className="social-ring social-ring--inner" />
@@ -198,7 +198,7 @@ export function SocialTrackListeningSection() {
         <SocialListeningOrbit />
         <div>
           <p className="text-sm font-black uppercase tracking-[0.16em] text-[#4357d8]">Social listening đa nền tảng</p>
-          <h2 className="mt-4 text-4xl font-black leading-tight tracking-[-0.04em] text-[#07111f] sm:text-5xl">
+          <h2 className="mt-4 text-3xl font-black leading-[1.08] tracking-[-0.03em] text-[#07111f] sm:text-5xl sm:tracking-[-0.04em]">
             Lắng nghe dữ liệu trước khi thị trường lên tiếng quá muộn.
           </h2>
           <div className="mt-8 grid gap-5">
@@ -233,11 +233,11 @@ export function SocialTrackInsightCards() {
     <section className="bg-[#fbfaf7] px-5 py-24 sm:px-8">
       <div className="mx-auto grid max-w-[1440px] gap-10 lg:grid-cols-2">
         {cards.map((card, index) => (
-          <div key={card.title} className="rounded-[1.75rem] border border-[#3654ff] bg-white p-6 shadow-[0_24px_80px_rgba(30,64,175,0.08)] sm:p-8">
-            <div className={`rounded-[1.25rem] p-5 ${index === 0 ? "bg-[#4357d8]" : "bg-white"}`}>
+          <div key={card.title} className="rounded-[1.5rem] border border-[#3654ff] bg-white p-4 shadow-[0_24px_80px_rgba(30,64,175,0.08)] sm:rounded-[1.75rem] sm:p-8">
+            <div className={`rounded-[1.25rem] p-3 sm:p-5 ${index === 0 ? "bg-[#4357d8]" : "bg-white"}`}>
               <SocialTrackHeroCharts />
             </div>
-            <h3 className="mt-9 text-3xl font-black tracking-[-0.04em] text-[#07111f]">{card.title}</h3>
+            <h3 className="mt-7 text-2xl font-black leading-tight tracking-[-0.03em] text-[#07111f] sm:mt-9 sm:text-3xl sm:tracking-[-0.04em]">{card.title}</h3>
             <p className="mt-4 text-base font-semibold leading-8 text-black/62">{card.copy}</p>
             <div className="mt-7 grid gap-4">
               {["Custom keywords theo mục tiêu", "So sánh trước - sau chiến dịch", "Nhận diện chủ đề và bài viết nổi bật"].map((item) => (

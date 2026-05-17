@@ -1,9 +1,30 @@
 import { NextResponse } from "next/server";
 import { getCurrentAuth } from "@/lib/auth/session";
+import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
+import {
+  cleanEmail,
+  cleanPhone,
+  cleanSlug,
+  cleanSlugList,
+  cleanText,
+  isValidEmail,
+  isValidPhone,
+  isValidSlug,
+} from "@/lib/security/validation";
 import { createPaymentOrder } from "@/services/orderService";
 
 export async function POST(request: Request) {
   try {
+    const rateLimit = checkRateLimit({
+      key: rateLimitKey(request, "orders:from-session"),
+      limit: 12,
+      windowMs: 10 * 60 * 1000,
+    });
+
+    if (!rateLimit.ok) {
+      return rateLimitResponse(rateLimit.resetAt);
+    }
+
     const auth = await getCurrentAuth();
     const user = auth.user;
 
@@ -19,13 +40,30 @@ export async function POST(request: Request) {
       courseSlugs?: string[];
     };
 
-    const studentName = String(user.user_metadata?.full_name ?? "").trim() || user.email || "Hoc vien";
-    const email = user.email ?? "";
-    const phone = String(user.user_metadata?.phone ?? "").trim() || "Chua cap nhat";
+    const studentName =
+      cleanText(user.user_metadata?.full_name, 120) || cleanEmail(user.email) || "Học viên";
+    const email = cleanEmail(user.email);
+    const phone = cleanPhone(user.user_metadata?.phone);
+    const courseSlug = cleanSlug(body.courseSlug);
+    const courseSlugs = cleanSlugList(body.courseSlugs);
 
-    if (!email) {
+    if (!email || !isValidEmail(email)) {
       return NextResponse.json(
         { ok: false, message: "Tài khoản chưa có email hợp lệ để tạo đơn thanh toán." },
+        { status: 400 },
+      );
+    }
+
+    if (phone && !isValidPhone(phone)) {
+      return NextResponse.json(
+        { ok: false, message: "Số điện thoại trong tài khoản chưa hợp lệ." },
+        { status: 400 },
+      );
+    }
+
+    if (!courseSlugs.length && (!courseSlug || !isValidSlug(courseSlug))) {
+      return NextResponse.json(
+        { ok: false, message: "Khóa học thanh toán không hợp lệ." },
         { status: 400 },
       );
     }
@@ -33,9 +71,9 @@ export async function POST(request: Request) {
     const order = await createPaymentOrder({
       studentName,
       email,
-      phone,
-      courseSlug: body.courseSlug,
-      courseSlugs: body.courseSlugs,
+      phone: phone || "Chưa cập nhật",
+      courseSlug,
+      courseSlugs,
     });
 
     return NextResponse.json({ ok: true, order });

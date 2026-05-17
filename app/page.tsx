@@ -122,9 +122,9 @@ function AiWorkflowEcosystem() {
   ];
 
   return (
-    <section className="bg-white px-5 py-24 sm:px-8 lg:py-28">
-      <div className="mx-auto grid max-w-[1440px] gap-12 lg:grid-cols-[0.96fr_1.04fr] lg:items-center">
-        <div className="relative overflow-hidden rounded-[2rem] border border-black/6 bg-white/70 px-4 py-10 shadow-[0_34px_100px_rgba(15,23,42,0.08)] backdrop-blur sm:px-8">
+    <section className="bg-white px-4 py-16 sm:px-8 sm:py-24 lg:py-28">
+      <div className="mx-auto grid max-w-[1440px] gap-8 sm:gap-12 lg:grid-cols-[0.96fr_1.04fr] lg:items-center">
+        <div className="relative overflow-hidden rounded-[1.5rem] border border-black/6 bg-white/70 px-3 py-8 shadow-[0_34px_100px_rgba(15,23,42,0.08)] backdrop-blur sm:rounded-[2rem] sm:px-8 sm:py-10">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_48%_48%,rgba(67,87,216,0.14),transparent_34%),radial-gradient(circle_at_55%_70%,rgba(47,143,98,0.12),transparent_28%)]" />
           <div className="relative">
             <SocialListeningOrbit centerLabel="AI" />
@@ -135,12 +135,12 @@ function AiWorkflowEcosystem() {
           <p className="text-sm font-black tracking-[0.16em] text-[#4357d8]">
             AI Marketing & Automation
           </p>
-          <h2 className="mt-5 max-w-3xl text-4xl font-black leading-[1.04] tracking-[-0.04em] text-[#07111f] sm:text-5xl lg:text-6xl">
+          <h2 className="mt-5 max-w-3xl text-3xl font-black leading-[1.08] tracking-[-0.03em] text-[#07111f] sm:text-5xl sm:tracking-[-0.04em] lg:text-6xl">
             Vận hành marketing như một team nhiều người với AI.
           </h2>
           <div className="mt-9 grid gap-5">
             {bullets.map((item) => (
-              <div key={item} className="grid grid-cols-[34px_1fr] gap-4">
+              <div key={item} className="grid grid-cols-[28px_1fr] gap-3 sm:grid-cols-[34px_1fr] sm:gap-4">
                 <span className="mt-1 grid size-7 place-items-center rounded-full border border-[#4357d8]/35 bg-white text-sm font-black text-[#4357d8] shadow-[0_10px_30px_rgba(67,87,216,0.12)]">
                   ✓
                 </span>
@@ -159,8 +159,8 @@ function AiWorkflowEcosystem() {
 
 function AiOperatingSection() {
   return (
-    <section className="bg-[#f6f0e4] px-5 py-24 sm:px-8">
-      <div className="mx-auto grid max-w-[1440px] gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
+    <section className="bg-[#f6f0e4] px-4 py-16 sm:px-8 sm:py-24">
+      <div className="mx-auto grid max-w-[1440px] gap-8 sm:gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
         <div>
           <SectionHeading
             eyebrow="AI operating layer"
@@ -188,7 +188,7 @@ function AiOperatingSection() {
           {aiOperatingLayers.map((item, index) => (
             <div
               key={item.label}
-              className="motion-card min-h-[260px] rounded-[1.35rem] border border-black/8 bg-white p-6 shadow-[0_18px_55px_rgba(0,0,0,0.055)]"
+              className="motion-card min-h-[220px] rounded-[1.25rem] border border-black/8 bg-white p-5 shadow-[0_18px_55px_rgba(0,0,0,0.055)] sm:min-h-[260px] sm:rounded-[1.35rem] sm:p-6"
             >
               <div className="flex items-center justify-between gap-4">
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2f8f62]">
@@ -198,7 +198,7 @@ function AiOperatingSection() {
                   {String(index + 1).padStart(2, "0")}
                 </span>
               </div>
-              <h3 className="card-title mt-8 text-2xl font-black leading-tight text-[#111113]">
+              <h3 className="card-title mt-6 text-xl font-black leading-tight text-[#111113] sm:mt-8 sm:text-2xl">
                 {item.title}
               </h3>
               <p className="mt-4 text-sm font-semibold leading-7 text-black/58">{item.copy}</p>
@@ -212,8 +212,8 @@ function AiOperatingSection() {
 
 function SolopreneurKitSection() {
   return (
-    <section className="mx-auto max-w-[1440px] px-5 py-24 sm:px-8">
-      <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
+    <section className="mx-auto max-w-[1440px] px-4 py-16 sm:px-8 sm:py-24">
+      <div className="grid gap-8 sm:gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
         <SectionHeading
           eyebrow="Solopreneur kit"
           title="Một bộ kit để biến chuyên môn thành hệ thống có thể chạy mỗi tuần."
@@ -224,12 +224,12 @@ function SolopreneurKitSection() {
           {solopreneurKitItems.map((kit) => (
             <div
               key={kit.label}
-              className="rounded-[1.35rem] border border-black/8 bg-white p-6 shadow-[0_18px_55px_rgba(0,0,0,0.05)]"
+              className="rounded-[1.25rem] border border-black/8 bg-white p-5 shadow-[0_18px_55px_rgba(0,0,0,0.05)] sm:rounded-[1.35rem] sm:p-6"
             >
               <p className="text-xs font-black uppercase tracking-[0.16em] text-[#c77b20]">
                 {kit.label}
               </p>
-              <h3 className="mt-3 text-3xl font-black tracking-[-0.04em] text-[#111113]">
+              <h3 className="mt-3 text-2xl font-black leading-tight tracking-[-0.03em] text-[#111113] sm:text-3xl sm:tracking-[-0.04em]">
                 {kit.title}
               </h3>
               <div className="mt-6 grid gap-3">
@@ -253,7 +253,7 @@ function SolopreneurKitSection() {
 
 function SolopreneurStats() {
   return (
-    <div className="grid gap-3 rounded-[1.5rem] border border-black/8 bg-white p-3 shadow-[0_22px_70px_rgba(0,0,0,0.06)] sm:grid-cols-3">
+    <div className="grid gap-3 rounded-[1.35rem] border border-black/8 bg-white p-3 shadow-[0_22px_70px_rgba(0,0,0,0.06)] sm:grid-cols-3 sm:rounded-[1.5rem]">
       {solopreneurStats.map((item) => (
         <div key={item.label} className="rounded-[1.1rem] bg-[#f7f3ec] px-5 py-4">
           <p className="text-3xl font-black text-[#111113]">{item.value}</p>
@@ -274,27 +274,27 @@ export default async function Home() {
 
   return (
     <PageShell>
-      <section className="bg-[#f6f0e4] px-5 pb-20 pt-36 sm:px-8 lg:pt-32">
-        <div className="mx-auto grid max-w-[1440px] items-center gap-12 lg:grid-cols-[0.92fr_1.08fr]">
-          <div>
+      <section className="bg-[#f6f0e4] px-4 pb-16 pt-32 sm:px-8 sm:pb-20 sm:pt-36 lg:pt-32">
+        <div className="mx-auto grid max-w-[1440px] items-center gap-8 sm:gap-12 lg:grid-cols-[0.92fr_1.08fr]">
+          <div className="max-w-[360px] sm:max-w-none">
             <div className="inline-flex items-center rounded-full border border-black/10 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-black/58 shadow-[0_12px_34px_rgba(0,0,0,0.05)]">
               Solopreneur Operating System
             </div>
-            <h1 className="mt-8 max-w-4xl text-5xl font-black leading-none text-[#101012] sm:text-6xl lg:text-7xl">
+            <h1 className="mt-7 max-w-4xl text-[2.28rem] font-black leading-[1.02] text-[#101012] sm:mt-8 sm:text-6xl sm:leading-none lg:text-7xl">
               <span className="block">Một hệ sinh thái</span>
               <span className="block text-[#2f8f62]">cho Solopreneur</span>
               <span className="block">vận hành gọn hơn</span>
             </h1>
-            <p className="mt-6 max-w-2xl text-lg font-medium leading-8 text-black/68">
+            <p className="mt-5 max-w-[31ch] text-base font-medium leading-8 text-black/68 sm:mt-6 sm:max-w-2xl sm:text-lg">
               The Anh Marketing sẽ phát triển thành nền tảng giúp solopreneur đóng gói chuyên môn,
               xây content engine, tạo hệ thống bán hàng và dùng AI như một bộ xử lý vận hành mỗi ngày.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/khoa-hoc" className="w-full sm:w-auto">
+              <ButtonLink href="/khoa-hoc" className="w-full max-w-[330px] sm:w-auto sm:max-w-none">
                 Khám phá hệ sinh thái
                 <span aria-hidden="true">-&gt;</span>
               </ButtonLink>
-              <ButtonLink href="/tai-lieu" variant="secondary" className="w-full sm:w-auto">
+              <ButtonLink href="/tai-lieu" variant="secondary" className="w-full max-w-[330px] sm:w-auto sm:max-w-none">
                 Tải tài nguyên miễn phí
               </ButtonLink>
             </div>
@@ -315,18 +315,18 @@ export default async function Home() {
 
       <SolopreneurKitSection />
 
-      <section className="border-y border-black/8 bg-[#111113] px-5 py-16 text-white sm:px-8">
-        <div className="mx-auto grid max-w-[1440px] gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+      <section className="border-y border-black/8 bg-[#111113] px-4 py-14 text-white sm:px-8 sm:py-16">
+        <div className="mx-auto grid max-w-[1440px] gap-7 sm:gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.18em] text-[#d8ad57]">
               Solopreneur stack
             </p>
-            <h2 className="mt-4 max-w-3xl text-4xl font-black leading-tight sm:text-6xl">
+            <h2 className="mt-4 max-w-3xl text-3xl font-black leading-[1.08] sm:text-6xl sm:leading-tight">
               Từ một người làm tất cả thành một hệ thống biết phân vai.
             </h2>
           </div>
           <div>
-            <p className="text-lg font-medium leading-9 text-white/68">
+            <p className="text-base font-medium leading-8 text-white/68 sm:text-lg sm:leading-9">
               Trang chủ không tập trung vào một khóa học đơn lẻ. Đây là lớp định vị cho cả hệ
               sinh thái: nội dung, sản phẩm tri thức, sales, tài liệu, dashboard và AI workflow.
             </p>
@@ -342,7 +342,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-[1440px] gap-10 px-5 py-24 sm:px-8 lg:grid-cols-[0.85fr_1.15fr]">
+      <section className="mx-auto grid max-w-[1440px] gap-8 px-4 py-16 sm:gap-10 sm:px-8 sm:py-24 lg:grid-cols-[0.85fr_1.15fr]">
         <SectionHeading
           eyebrow="Vấn đề của Solopreneur"
           title="Bạn không thiếu công cụ. Bạn thiếu một hệ điều hành cho công việc một người."
@@ -352,14 +352,14 @@ export default async function Home() {
           {ecosystemLayers.map((item, index) => (
             <div
               key={item.label}
-              className="grid gap-4 rounded-[1.25rem] border border-black/8 bg-white p-6 shadow-[0_18px_60px_rgba(0,0,0,0.045)] sm:grid-cols-[64px_1fr]"
+              className="grid gap-4 rounded-[1.25rem] border border-black/8 bg-white p-5 shadow-[0_18px_60px_rgba(0,0,0,0.045)] sm:grid-cols-[64px_1fr] sm:p-6"
             >
               <span className="grid size-12 place-items-center rounded-full bg-[#111113] text-sm font-black text-white">
                 {String(index + 1).padStart(2, "0")}
               </span>
               <div>
                 <p className="text-sm font-black uppercase tracking-[0.14em] text-[#2f8f62]">{item.label}</p>
-                <h3 className="mt-2 text-2xl font-black leading-tight">{item.title}</h3>
+                <h3 className="mt-2 text-xl font-black leading-tight sm:text-2xl">{item.title}</h3>
                 <p className="mt-3 text-base font-semibold leading-7 text-black/60">{item.copy}</p>
               </div>
             </div>
@@ -367,7 +367,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1440px] px-5 py-24 sm:px-8">
+      <section className="mx-auto max-w-[1440px] px-4 py-16 sm:px-8 sm:py-24">
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
           <SectionHeading
             eyebrow="Hệ sinh thái"
@@ -384,7 +384,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="bg-[#ebe2d4] px-5 py-24 sm:px-8">
+      <section className="bg-[#ebe2d4] px-4 py-16 sm:px-8 sm:py-24">
         <div className="mx-auto max-w-[1440px]">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <SectionHeading
@@ -411,7 +411,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1440px] px-5 py-24 sm:px-8">
+      <section className="mx-auto max-w-[1440px] px-4 py-16 sm:px-8 sm:py-24">
         <SectionHeading
           eyebrow="Học viên"
           title="Tập trung vào khả năng biến kiến thức thành hệ thống làm việc."
@@ -428,7 +428,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-[1440px] gap-10 px-5 py-24 sm:px-8 lg:grid-cols-[0.7fr_1.3fr]">
+      <section className="mx-auto grid max-w-[1440px] gap-8 px-4 py-16 sm:gap-10 sm:px-8 sm:py-24 lg:grid-cols-[0.7fr_1.3fr]">
         <SectionHeading eyebrow="FAQ" title="Những câu hỏi nên làm rõ." />
         <div className="grid gap-4">
           {solopreneurFaqs.map((item) => (
@@ -442,13 +442,13 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="px-5 pb-24 sm:px-8">
-        <div className="mx-auto max-w-[1440px] overflow-hidden rounded-[1.75rem] bg-[#111113] p-8 text-white shadow-[0_30px_90px_rgba(0,0,0,0.14)] sm:p-12 lg:grid lg:grid-cols-[1fr_auto] lg:items-end lg:gap-10">
+      <section className="px-4 pb-16 sm:px-8 sm:pb-24">
+        <div className="mx-auto max-w-[1440px] overflow-hidden rounded-[1.5rem] bg-[#111113] p-6 text-white shadow-[0_30px_90px_rgba(0,0,0,0.14)] sm:rounded-[1.75rem] sm:p-12 lg:grid lg:grid-cols-[1fr_auto] lg:items-end lg:gap-10">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.18em] text-[#d8ad57]">
               Solopreneur ecosystem
             </p>
-            <h2 className="mt-4 max-w-4xl text-4xl font-black leading-tight sm:text-6xl">
+            <h2 className="mt-4 max-w-4xl text-3xl font-black leading-[1.08] sm:text-6xl sm:leading-tight">
               Xây hệ thống để bạn không phải lúc nào cũng tự mình kéo mọi thứ.
             </h2>
             <p className="mt-6 max-w-2xl text-lg font-medium leading-8 text-white/68">

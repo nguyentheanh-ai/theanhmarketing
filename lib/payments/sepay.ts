@@ -154,11 +154,21 @@ export function verifySepayApiKey(headers: Headers) {
   const { webhookApiKey } = getSepayConfig();
 
   if (!webhookApiKey) {
-    return process.env.NODE_ENV !== "production";
+    return process.env.NODE_ENV === "development";
   }
 
   const authorization = headers.get("authorization") ?? "";
   return safeEqual(authorization, `Apikey ${webhookApiKey}`);
+}
+
+export function isSepayAccountMatched(payload: SepayWebhookPayload) {
+  const expectedAccount = getSepayConfig().bankAccountNumber.replace(/\D/g, "");
+  const receivedAccount = String(payload.accountNumber ?? payload.account_number ?? "").replace(
+    /\D/g,
+    "",
+  );
+
+  return !expectedAccount || !receivedAccount || expectedAccount === receivedAccount;
 }
 
 export function getSepayOrderCode(payload: SepayWebhookPayload) {

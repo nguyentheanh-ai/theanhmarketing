@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+/mobile-home-*.png
+/.edge-mobile-profile*/
 
 # next.js
 /.next/

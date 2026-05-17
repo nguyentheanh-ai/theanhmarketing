@@ -26,8 +26,8 @@ export async function SiteFooter() {
   ];
 
   return (
-    <footer id="lien-he" className="border-t border-black/10 bg-[#fbfaf7] px-5 py-14 text-black sm:px-8">
-      <div className="mx-auto grid max-w-[1440px] gap-10 lg:grid-cols-[1.4fr_0.6fr_0.7fr_0.7fr]">
+    <footer id="lien-he" className="border-t border-black/10 bg-[#fbfaf7] px-4 py-12 text-black sm:px-8 sm:py-14">
+      <div className="mx-auto grid max-w-[1440px] gap-8 sm:gap-10 lg:grid-cols-[1.4fr_0.6fr_0.7fr_0.7fr]">
         <div className="max-w-2xl">
           <Link href="/" className="inline-flex items-center gap-3" aria-label={brand.name}>
             <BrandMark brand={brand} className="grid size-14 place-items-center overflow-hidden rounded-xl bg-white p-1.5 ring-1 ring-black/10" />
@@ -42,11 +42,11 @@ export async function SiteFooter() {
           <div className="mt-10">
             <p className="text-lg font-black text-[#c77b20]">Đăng ký nhận bản tin</p>
             <form
-              className="mt-5 flex max-w-sm items-center gap-2 rounded-full border border-black/15 bg-white p-1.5 shadow-[0_16px_45px_rgba(0,0,0,0.06)]"
+              className="mt-5 flex max-w-full items-center gap-2 rounded-full border border-black/15 bg-white p-1.5 shadow-[0_16px_45px_rgba(0,0,0,0.06)] sm:max-w-sm"
               action={emailHref}
             >
               <input
-                className="min-h-10 flex-1 bg-transparent px-4 text-sm text-black outline-none placeholder:text-black/38"
+                className="min-h-10 min-w-0 flex-1 bg-transparent px-4 text-sm text-black outline-none placeholder:text-black/38"
                 name="subject"
                 placeholder="Nhập địa chỉ email của bạn"
                 type="email"
@@ -76,7 +76,7 @@ export async function SiteFooter() {
           </div>
         </div>
       </div>
-      <div className="mx-auto mt-12 flex max-w-[1440px] flex-col gap-3 border-t border-black/10 pt-6 text-xs font-semibold text-black/42 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto mt-10 flex max-w-[1440px] flex-col gap-3 border-t border-black/10 pt-6 text-xs font-semibold leading-6 text-black/42 sm:mt-12 sm:flex-row sm:items-center sm:justify-between">
         <p>© {new Date().getFullYear()} {brand.name}. All rights reserved.</p>
         <div className="flex flex-wrap gap-4">
           <Link href="/lien-he" className="transition hover:text-black">
@@ -104,7 +104,7 @@ function FooterColumn({
       <div className="mt-6 grid gap-4">
         {links.map((item) => (
           <Link
-            key={item.href}
+            key={`${title}-${item.href}-${item.label}`}
             href={item.href}
             className="text-sm font-bold text-black/68 transition hover:text-black"
           >
