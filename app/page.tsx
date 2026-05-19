@@ -1,463 +1,234 @@
+import Link from "next/link";
+import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { PageShell } from "@/components/site/page-shell";
-import {
-  SocialListeningOrbit,
-  SocialTrackHeroCharts,
-  SocialTrackInsightCards,
-} from "@/components/site/socialtrack-chart-visuals";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { SoftCard } from "@/components/ui/soft-card";
+import { getCourses } from "@/services/courseService";
 import { getResources } from "@/services/resourceService";
 import { getTestimonials } from "@/services/testimonialService";
 
 export const dynamic = "force-dynamic";
 
-const solopreneurStats = [
-  { value: "01", label: "Người làm chủ hệ thống" },
-  { value: "24/7", label: "Động cơ nội dung và bán hàng" },
-  { value: "04", label: "Lớp vận hành cần nắm" },
+const osNodes = [
+  "AI Marketing",
+  "CRM",
+  "Templates",
+  "Community",
+  "Workflow Automation",
+  "Data Analytics",
 ];
 
-const ecosystemLayers = [
-  {
-    label: "Positioning",
-    title: "Định vị để không bị trở thành freelancer giá rẻ.",
-    copy: "Làm rõ thị trường, lời hứa, offer và lý do khách hàng nên chọn bạn.",
-  },
-  {
-    label: "Content Engine",
-    title: "Biến chuyên môn thành nội dung có khả năng bán hàng.",
-    copy: "Có khung research, angle, hook, lịch xuất bản và tài sản nội dung có thể tái sử dụng.",
-  },
-  {
-    label: "Sales System",
-    title: "Thiết kế hành trình từ người lạ thành khách hàng.",
-    copy: "Liên kết lead magnet, landing page, email/Zalo follow-up và quy trình tư vấn.",
-  },
-  {
-    label: "AI Workflow",
-    title: "Dùng AI như bộ xử lý, không phải như một món đồ chơi.",
-    copy: "Tạo workflow để nghiên cứu, viết, đo lường và tự động hóa những việc lặp lại.",
-  },
-];
-
-const operatingBlocks = [
-  "Thư viện tài liệu và checklist cho người tự vận hành",
-  "Dashboard học viên để theo dõi lộ trình và tài sản đã sở hữu",
-  "CMS để cập nhật khóa học, nội dung, media và dữ liệu vận hành",
-  "Hệ thống thanh toán, phân quyền học viên và tài nguyên riêng",
-];
-
-const aiOperatingLayers = [
-  {
-    label: "Research OS",
-    title: "AI giúp gom tín hiệu thị trường trước khi bạn viết hay bán.",
-    copy: "Biến insight khách hàng, câu hỏi lặp lại, phản hồi tư vấn và dữ liệu nội dung thành nguyên liệu ra quyết định.",
-  },
-  {
-    label: "Content Copilot",
-    title: "Tạo nháp nhanh nhưng vẫn giữ được góc nhìn chuyên môn của bạn.",
-    copy: "Từ idea bank, hook, outline, bài viết dài, email đến kịch bản video ngắn cho từng giai đoạn trong hành trình mua.",
-  },
-  {
-    label: "Sales Assistant",
-    title: "Chuẩn hóa tư vấn, follow-up và xử lý phản hồi khách hàng.",
-    copy: "AI không thay bạn bán hàng. Nó giúp bạn không quên ngữ cảnh, không bỏ sót lead và trả lời có hệ thống hơn.",
-  },
-  {
-    label: "Operating Brain",
-    title: "Kết nối tài liệu, checklist, dữ liệu và dashboard thành một bộ não phụ.",
-    copy: "Mỗi tài sản được đóng gói để dùng lại: SOP, prompt, template, form, nội dung mẫu và báo cáo gọn.",
-  },
-];
-
-const solopreneurKitItems = [
-  {
-    label: "Clarity Kit",
-    title: "Bộ định vị",
-    items: ["Chân dung khách hàng", "Offer map", "Thông điệp cốt lõi"],
-  },
-  {
-    label: "Content Kit",
-    title: "Bộ nội dung",
-    items: ["Idea bank", "Hook library", "Lịch xuất bản"],
-  },
-  {
-    label: "Sales Kit",
-    title: "Bộ bán hàng",
-    items: ["Lead magnet", "Kịch bản tư vấn", "Follow-up Zalo/email"],
-  },
-  {
-    label: "AI Kit",
-    title: "Bộ workflow AI",
-    items: ["Prompt theo vai trò", "Checklist tự động hóa", "Báo cáo dữ liệu"],
-  },
-];
-
-const kitFlowSteps = ["Định vị", "Đóng gói", "Xuất bản", "Bán hàng", "Tối ưu"];
-
-const solopreneurFaqs = [
-  {
-    question: "Trang này dành cho ai?",
-    answer:
-      "Dành cho solopreneur, founder nhỏ, creator, consultant và người bán tri thức muốn xây hệ thống nội dung, bán hàng và vận hành gọn hơn.",
-  },
-  {
-    question: "Có phải chỉ học marketing không?",
-    answer:
-      "Không. Trọng tâm là hệ sinh thái vận hành cho một người: định vị, sản phẩm tri thức, nội dung, sales, AI workflow và dashboard học tập.",
-  },
-  {
-    question: "AI nằm ở đâu trong hệ sinh thái?",
-    answer:
-      "AI được dùng như lớp xử lý: research, viết nháp, biên tập, tạo checklist, phân tích dữ liệu và tự động hóa các bước lặp lại.",
-  },
-];
-
-function AiWorkflowEcosystem() {
-  const bullets = [
-    "AI hỗ trợ nghiên cứu thị trường, khách hàng và xu hướng trên Facebook, TikTok, YouTube và Google.",
-    "Phát hiện insight, ý tưởng content và cơ hội tăng trưởng nhanh hơn bằng dữ liệu thực tế.",
-    "Tự động hóa quy trình marketing, content và chăm sóc khách hàng mà không cần đội ngũ lớn.",
-  ];
-
+function DashboardPreview() {
   return (
-    <section className="bg-white px-4 py-16 sm:px-8 sm:py-24 lg:py-28">
-      <div className="mx-auto grid max-w-[1440px] gap-8 sm:gap-12 lg:grid-cols-[0.96fr_1.04fr] lg:items-center">
-        <div className="relative overflow-hidden rounded-[1.5rem] border border-black/6 bg-white/70 px-3 py-8 shadow-[0_34px_100px_rgba(15,23,42,0.08)] backdrop-blur sm:rounded-[2rem] sm:px-8 sm:py-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_48%_48%,rgba(67,87,216,0.14),transparent_34%),radial-gradient(circle_at_55%_70%,rgba(47,143,98,0.12),transparent_28%)]" />
-          <div className="relative">
-            <SocialListeningOrbit centerLabel="AI" />
+    <div className="ai-panel-strong relative overflow-hidden p-4 sm:p-5">
+      <div className="flex items-center justify-between border-b border-white/10 pb-4">
+        <div>
+          <p className="text-sm font-black text-white">AI Content Engine & Workflows</p>
+          <p className="mt-1 text-xs font-semibold text-white/42">Analytics · Workflow · Research · Settings</p>
+        </div>
+        <span className="rounded-lg border border-[#77d7ff]/25 bg-[#159cfb]/15 px-3 py-1.5 text-xs font-black text-[#8bdcff]">
+          AI Seeded
+        </span>
+      </div>
+
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <div className="rounded-xl border border-white/10 bg-black/25 p-4">
+          <div className="flex items-center justify-between text-xs font-bold text-white/45">
+            <span>Content Performance</span>
+            <span className="text-emerald-200">+ green</span>
+          </div>
+          <div className="mt-8 h-32">
+            <div className="relative h-full overflow-hidden rounded-lg border border-white/8 bg-[#081422]">
+              <div className="absolute inset-x-0 bottom-0 h-[72%] bg-[linear-gradient(180deg,rgba(56,189,248,0.52),rgba(56,189,248,0.03))]" />
+              <div className="absolute left-[7%] top-[58%] h-1 w-[18%] rotate-[-18deg] rounded-full bg-[#77d7ff] shadow-[0_0_18px_rgba(56,189,248,0.8)]" />
+              <div className="absolute left-[24%] top-[46%] h-1 w-[20%] rotate-[-8deg] rounded-full bg-[#77d7ff] shadow-[0_0_18px_rgba(56,189,248,0.8)]" />
+              <div className="absolute left-[43%] top-[35%] h-1 w-[20%] rotate-[18deg] rounded-full bg-[#77d7ff] shadow-[0_0_18px_rgba(56,189,248,0.8)]" />
+              <div className="absolute left-[61%] top-[30%] h-1 w-[28%] rotate-[-20deg] rounded-full bg-[#77d7ff] shadow-[0_0_18px_rgba(56,189,248,0.8)]" />
+            </div>
           </div>
         </div>
 
-        <div>
-          <p className="text-sm font-black tracking-[0.16em] text-[#4357d8]">
-            AI Marketing & Automation
-          </p>
-          <h2 className="mt-5 max-w-3xl text-3xl font-black leading-[1.08] tracking-[-0.03em] text-[#07111f] sm:text-5xl sm:tracking-[-0.04em] lg:text-6xl">
-            Vận hành marketing như một team nhiều người với AI.
-          </h2>
-          <div className="mt-9 grid gap-5">
-            {bullets.map((item) => (
-              <div key={item} className="grid grid-cols-[28px_1fr] gap-3 sm:grid-cols-[34px_1fr] sm:gap-4">
-                <span className="mt-1 grid size-7 place-items-center rounded-full border border-[#4357d8]/35 bg-white text-sm font-black text-[#4357d8] shadow-[0_10px_30px_rgba(67,87,216,0.12)]">
-                  ✓
-                </span>
-                <p className="text-base font-semibold leading-8 text-black/66 sm:text-lg sm:leading-9">
-                  {item}
-                </p>
-              </div>
+        <div className="rounded-xl border border-white/10 bg-black/25 p-4">
+          <div className="flex items-center justify-between text-xs font-bold text-white/45">
+            <span>Audience Engagement</span>
+            <span>•••</span>
+          </div>
+          <div className="mt-8 flex h-32 items-end gap-2">
+            {[42, 68, 55, 82, 38, 74, 91, 64].map((value, index) => (
+              <span
+                key={`${value}-${index}`}
+                className="flex-1 rounded-t bg-gradient-to-t from-[#3654ff] to-[#77d7ff] shadow-[0_0_16px_rgba(56,189,248,0.35)]"
+                style={{ height: `${value}%` }}
+              />
             ))}
           </div>
         </div>
-
       </div>
-    </section>
-  );
-}
 
-function AiOperatingSection() {
-  return (
-    <section className="bg-[#f6f0e4] px-4 py-16 sm:px-8 sm:py-24">
-      <div className="mx-auto grid max-w-[1440px] gap-8 sm:gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
-        <div>
-          <SectionHeading
-            eyebrow="AI operating layer"
-            title="AI không phải một công cụ rời rạc. AI là lớp vận hành nằm dưới mọi việc."
-            description="Solopreneur không cần thêm một đống app để nhớ. Điều cần hơn là một hệ thống biết thu thập tín hiệu, tạo nháp, chuẩn hóa phản hồi và biến tri thức cá nhân thành tài sản dùng lại được."
-          />
-          <div className="mt-8 rounded-[1.5rem] border border-black/8 bg-white p-4 shadow-[0_22px_70px_rgba(0,0,0,0.06)]">
-            <div className="flex flex-wrap gap-2">
-              {kitFlowSteps.map((step) => (
-                <span
-                  key={step}
-                  className="rounded-full border border-black/8 bg-[#fbfaf7] px-4 py-2 text-sm font-black text-black/72"
-                >
-                  {step}
-                </span>
-              ))}
-            </div>
-            <div className="mt-5 h-2 overflow-hidden rounded-full bg-black/8">
-              <div className="ai-signal-bar h-full rounded-full bg-[#2f8f62]" />
-            </div>
-          </div>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          {aiOperatingLayers.map((item, index) => (
-            <div
-              key={item.label}
-              className="motion-card min-h-[220px] rounded-[1.25rem] border border-black/8 bg-white p-5 shadow-[0_18px_55px_rgba(0,0,0,0.055)] sm:min-h-[260px] sm:rounded-[1.35rem] sm:p-6"
-            >
-              <div className="flex items-center justify-between gap-4">
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2f8f62]">
-                  {item.label}
-                </p>
-                <span className="grid size-10 place-items-center rounded-full bg-[#111113] text-sm font-black text-white">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-              </div>
-              <h3 className="card-title mt-6 text-xl font-black leading-tight text-[#111113] sm:mt-8 sm:text-2xl">
-                {item.title}
-              </h3>
-              <p className="mt-4 text-sm font-semibold leading-7 text-black/58">{item.copy}</p>
+      <div className="mt-4 rounded-xl border border-white/10 bg-black/25 p-4">
+        <p className="text-xs font-bold text-white/45">Node Based</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-5">
+          {["Market Trends", "AI Ideation", "Content Creation", "Automated Outreach", "Performance"].map((item, index) => (
+            <div key={item} className="rounded-lg border border-[#77d7ff]/25 bg-[#102033] p-3 text-center shadow-[0_0_24px_rgba(56,189,248,0.1)]">
+              <span className="mx-auto grid size-8 place-items-center rounded-md bg-[#159cfb]/18 text-xs font-black text-[#8bdcff]">
+                {index + 1}
+              </span>
+              <p className="mt-2 text-[11px] font-bold leading-4 text-white/70">{item}</p>
             </div>
           ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 
-function SolopreneurKitSection() {
+function EcosystemMap() {
   return (
-    <section className="mx-auto max-w-[1440px] px-4 py-16 sm:px-8 sm:py-24">
-      <div className="grid gap-8 sm:gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
-        <SectionHeading
-          eyebrow="Solopreneur kit"
-          title="Một bộ kit để biến chuyên môn thành hệ thống có thể chạy mỗi tuần."
-          description="Mỗi kit là một nhóm tài sản thực hành: rõ đầu vào, rõ đầu ra, dễ cập nhật và có thể đưa vào dashboard học viên hoặc thư viện tài liệu khi bạn muốn mở rộng."
-        />
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          {solopreneurKitItems.map((kit) => (
-            <div
-              key={kit.label}
-              className="rounded-[1.25rem] border border-black/8 bg-white p-5 shadow-[0_18px_55px_rgba(0,0,0,0.05)] sm:rounded-[1.35rem] sm:p-6"
-            >
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#c77b20]">
-                {kit.label}
-              </p>
-              <h3 className="mt-3 text-2xl font-black leading-tight tracking-[-0.03em] text-[#111113] sm:text-3xl sm:tracking-[-0.04em]">
-                {kit.title}
-              </h3>
-              <div className="mt-6 grid gap-3">
-                {kit.items.map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-center gap-3 rounded-full border border-black/8 bg-[#fbfaf7] px-4 py-3"
-                  >
-                    <span className="size-2 rounded-full bg-[#2f8f62]" />
-                    <span className="text-sm font-bold text-black/68">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className="ai-panel-strong relative overflow-hidden px-4 py-12 sm:px-8">
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(rgba(56,189,248,0.14)_1px,transparent_1px),linear-gradient(90deg,rgba(56,189,248,0.14)_1px,transparent_1px)] bg-[length:48px_48px] opacity-55 [transform:perspective(520px)_rotateX(58deg)]" />
+      <div className="relative mx-auto grid size-40 place-items-center rounded-full border border-[#77d7ff]/35 bg-[#0d1825]/90 text-center shadow-[0_0_90px_rgba(56,189,248,0.34)]">
+        <span className="ai-orb absolute -right-2 top-4 size-5" />
+        <p className="text-2xl font-black leading-tight">THE ANH<br />OS</p>
       </div>
-    </section>
-  );
-}
-
-function SolopreneurStats() {
-  return (
-    <div className="grid gap-3 rounded-[1.35rem] border border-black/8 bg-white p-3 shadow-[0_22px_70px_rgba(0,0,0,0.06)] sm:grid-cols-3 sm:rounded-[1.5rem]">
-      {solopreneurStats.map((item) => (
-        <div key={item.label} className="rounded-[1.1rem] bg-[#f7f3ec] px-5 py-4">
-          <p className="text-3xl font-black text-[#111113]">{item.value}</p>
-          <p className="mt-1 text-sm font-bold text-black/54">{item.label}</p>
-        </div>
-      ))}
+      <div className="relative mt-10 grid gap-4 md:grid-cols-3">
+        {osNodes.map((node) => (
+          <Link key={node} href="/khoa-hoc" className="rounded-xl border border-[#77d7ff]/18 bg-white/[0.07] p-5 backdrop-blur transition hover:border-[#77d7ff]/45 hover:bg-white/[0.1]">
+            <span className="ai-orb block size-9" />
+            <p className="mt-5 text-lg font-black">{node}</p>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
 
 export default async function Home() {
-  const [resources, testimonials] = await Promise.all([
+  const [courses, resources, testimonials] = await Promise.all([
+    getCourses(),
     getResources(),
     getTestimonials(),
   ]);
+  const featuredCourses = courses.slice(0, 6);
   const featuredResources = resources.slice(0, 3);
-  const featuredTestimonials = testimonials.slice(0, 3);
+  const featuredTestimonials = testimonials.slice(0, 4);
 
   return (
     <PageShell>
-      <section className="bg-[#f6f0e4] px-4 pb-16 pt-32 sm:px-8 sm:pb-20 sm:pt-36 lg:pt-32">
-        <div className="mx-auto grid max-w-[1440px] items-center gap-8 sm:gap-12 lg:grid-cols-[0.92fr_1.08fr]">
-          <div className="max-w-[360px] sm:max-w-none">
-            <div className="inline-flex items-center rounded-full border border-black/10 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-black/58 shadow-[0_12px_34px_rgba(0,0,0,0.05)]">
-              Solopreneur Operating System
-            </div>
-            <h1 className="mt-7 max-w-4xl text-[2.28rem] font-black leading-[1.02] text-[#101012] sm:mt-8 sm:text-6xl sm:leading-none lg:text-7xl">
-              <span className="block">Một hệ sinh thái</span>
-              <span className="block text-[#2f8f62]">cho Solopreneur</span>
-              <span className="block">vận hành gọn hơn</span>
+      <section className="ai-shell pt-32 pb-20 sm:pt-40">
+        <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
+          <div>
+            <p className="ai-kicker">AI Operating System</p>
+            <h1 className="ai-glow-text mt-6 max-w-4xl text-5xl font-black leading-[0.98] tracking-[-0.05em] sm:text-7xl">
+              The Operating System for Modern Marketers
             </h1>
-            <p className="mt-5 max-w-[31ch] text-base font-medium leading-8 text-black/68 sm:mt-6 sm:max-w-2xl sm:text-lg">
-              The Anh Marketing sẽ phát triển thành nền tảng giúp solopreneur đóng gói chuyên môn,
-              xây content engine, tạo hệ thống bán hàng và dùng AI như một bộ xử lý vận hành mỗi ngày.
+            <p className="ai-muted mt-6 max-w-2xl text-lg leading-8">
+              Build, automate, and scale your AI-powered business with The Anh&apos;s integrated marketing ecosystem.
             </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/khoa-hoc" className="w-full max-w-[330px] sm:w-auto sm:max-w-none">
-                Khám phá hệ sinh thái
-                <span aria-hidden="true">-&gt;</span>
-              </ButtonLink>
-              <ButtonLink href="/tai-lieu" variant="secondary" className="w-full max-w-[330px] sm:w-auto sm:max-w-none">
-                Tải tài nguyên miễn phí
-              </ButtonLink>
-            </div>
-            <div className="mt-10">
-              <SolopreneurStats />
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <ButtonLink href="/khoa-hoc">Explore Ecosystem</ButtonLink>
+              <ButtonLink href="/tai-lieu" variant="secondary">Watch the film</ButtonLink>
             </div>
           </div>
-
-          <SocialTrackHeroCharts />
+          <DashboardPreview />
         </div>
       </section>
 
-      <AiWorkflowEcosystem />
+      <section className="ai-shell py-16 text-center">
+        <p className="ai-kicker">AI Operating System</p>
+        <h2 className="ai-glow-text mt-4 text-4xl font-black tracking-[-0.04em] sm:text-6xl">
+          Sticky-scroll behavior of the modem.
+        </h2>
+        <div className="mt-10">
+          <EcosystemMap />
+        </div>
+      </section>
 
-      <SocialTrackInsightCards />
-
-      <AiOperatingSection />
-
-      <SolopreneurKitSection />
-
-      <section className="border-y border-black/8 bg-[#111113] px-4 py-14 text-white sm:px-8 sm:py-16">
-        <div className="mx-auto grid max-w-[1440px] gap-7 sm:gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#d8ad57]">
-              Solopreneur stack
-            </p>
-            <h2 className="mt-4 max-w-3xl text-3xl font-black leading-[1.08] sm:text-6xl sm:leading-tight">
-              Từ một người làm tất cả thành một hệ thống biết phân vai.
-            </h2>
-          </div>
-          <div>
-            <p className="text-base font-medium leading-8 text-white/68 sm:text-lg sm:leading-9">
-              Trang chủ không tập trung vào một khóa học đơn lẻ. Đây là lớp định vị cho cả hệ
-              sinh thái: nội dung, sản phẩm tri thức, sales, tài liệu, dashboard và AI workflow.
-            </p>
-            <div className="mt-8 grid gap-3 sm:grid-cols-4">
-              {["Think", "Build", "Sell", "Scale"].map((item) => (
-                <div key={item} className="rounded-[1.1rem] border border-white/10 bg-white/6 p-4">
-                  <p className="text-sm font-black text-white">{item}</p>
-                  <div className="mt-4 h-1.5 rounded-full bg-[#2f8f62]" />
+      <section className="ai-shell py-16">
+        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <SectionHeading
+            eyebrow="Product modules"
+            title="Transformation & Product Modules"
+            description="Khám phá hệ sinh thái các module AI tự động hóa để tăng hiệu suất làm việc."
+          />
+          <ButtonLink href="/khoa-hoc" variant="secondary">Xem tất cả</ButtonLink>
+        </div>
+        <div className="mt-10 grid gap-5 lg:grid-cols-3">
+          {featuredCourses.map((course, index) => (
+            <article key={course.slug} className="ai-panel grid gap-4 p-4 sm:grid-cols-[160px_1fr]">
+              <Link href={`/khoa-hoc/${course.slug}`} className="grid min-h-36 place-items-center rounded-lg bg-white text-black">
+                <span className="rounded-full bg-black px-5 py-2 text-xs font-black text-white">Workflow Preview</span>
+              </Link>
+              <div>
+                <Link href={`/khoa-hoc/${course.slug}`} className="text-xl font-black leading-tight hover:text-[#8bdcff]">
+                  {course.title}
+                </Link>
+                <p className="mt-3 text-xs font-bold text-white/55">Module Timeline</p>
+                <ol className="mt-2 space-y-1 text-xs leading-5 text-white/65">
+                  <li>1. Foundation Setup</li>
+                  <li>2. AI Integration</li>
+                  <li>3. Deployment & Scaling</li>
+                </ol>
+                <p className="mt-3 text-sm font-black text-[#8bdcff]">
+                  {index % 2 === 0 ? "8X Content Output" : "10X Insights"}
+                </p>
+                <div className="mt-4">
+                  <AddToCartButton slug={course.slug} title={course.title} price={course.price} label="Thêm khóa học" />
                 </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="ai-shell py-16">
+        <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <SectionHeading
+              eyebrow="Proof content hub"
+              title="Social Proof & Media Ecosystem"
+              description="Niềm tin, nội dung, case study và tài nguyên được đóng gói thành một proof hub."
+            />
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {featuredTestimonials.map((item) => (
+                <SoftCard key={`${item.name}-${item.quote}`} className="p-5">
+                  <p className="text-sm leading-6 text-white/70">&ldquo;{item.quote}&rdquo;</p>
+                  <p className="mt-4 font-black">{item.name}</p>
+                  <p className="text-xs text-white/45">{item.title}</p>
+                </SoftCard>
+              ))}
+            </div>
+          </div>
+          <div className="ai-panel-strong p-5">
+            <p className="ai-kicker">Media hub</p>
+            <h3 className="mt-3 text-3xl font-black">AI Workflows in Action</h3>
+            <div className="mt-6 grid gap-4 sm:grid-cols-3">
+              {featuredResources.map((item) => (
+                <Link key={item.slug} href="/tai-lieu" className="rounded-xl border border-white/10 bg-white/7 p-4 transition hover:border-[#77d7ff]/35">
+                  <div className="grid aspect-[9/13] place-items-center rounded-lg bg-black/35">
+                    <span className="grid size-12 place-items-center rounded-full bg-[#159cfb] text-xl">▶</span>
+                  </div>
+                  <p className="mt-4 font-black">{item.title}</p>
+                  <p className="mt-1 text-xs text-white/45">{item.type}</p>
+                </Link>
               ))}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-[1440px] gap-8 px-4 py-16 sm:gap-10 sm:px-8 sm:py-24 lg:grid-cols-[0.85fr_1.15fr]">
-        <SectionHeading
-          eyebrow="Vấn đề của Solopreneur"
-          title="Bạn không thiếu công cụ. Bạn thiếu một hệ điều hành cho công việc một người."
-          description="Solopreneur thường bị kéo giữa chuyên môn, nội dung, khách hàng, sale, học tập và vận hành. Hệ sinh thái này gom các lớp cần thiết để mọi việc không còn nằm hết trong đầu bạn."
-        />
-        <div className="grid gap-4">
-          {ecosystemLayers.map((item, index) => (
-            <div
-              key={item.label}
-              className="grid gap-4 rounded-[1.25rem] border border-black/8 bg-white p-5 shadow-[0_18px_60px_rgba(0,0,0,0.045)] sm:grid-cols-[64px_1fr] sm:p-6"
-            >
-              <span className="grid size-12 place-items-center rounded-full bg-[#111113] text-sm font-black text-white">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <div>
-                <p className="text-sm font-black uppercase tracking-[0.14em] text-[#2f8f62]">{item.label}</p>
-                <h3 className="mt-2 text-xl font-black leading-tight sm:text-2xl">{item.title}</h3>
-                <p className="mt-3 text-base font-semibold leading-7 text-black/60">{item.copy}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[1440px] px-4 py-16 sm:px-8 sm:py-24">
-        <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-          <SectionHeading
-            eyebrow="Hệ sinh thái"
-            title="Các lớp cần có để một solopreneur vận hành như một đội nhỏ."
-          />
-          <div className="grid gap-4">
-            {operatingBlocks.map((item, index) => (
-              <div key={item} className="rounded-[1.25rem] border border-black/8 bg-white p-6">
-                <p className="text-sm font-black text-[#2f8f62]">Layer {index + 1}</p>
-                <p className="mt-3 text-lg font-bold leading-8 text-black/70">{item}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[#ebe2d4] px-4 py-16 sm:px-8 sm:py-24">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <SectionHeading
-              eyebrow="Tài nguyên"
-              title="Tài sản thực hành để solopreneur triển khai nhanh hơn."
-            />
-            <ButtonLink href="/tai-lieu" variant="secondary">
-              Xem thư viện
-            </ButtonLink>
-          </div>
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {featuredResources.map((item) => (
-              <SoftCard key={item.title} className="h-full rounded-[1.25rem]">
-                <p className="text-sm font-black uppercase tracking-[0.14em] text-[#b86f1e]">
-                  {item.type} / {item.access}
-                </p>
-                <h3 className="mt-4 text-2xl font-black leading-tight">{item.title}</h3>
-                <p className="mt-4 line-clamp-3 text-sm font-semibold leading-7 text-black/58">
-                  {item.description}
-                </p>
-              </SoftCard>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[1440px] px-4 py-16 sm:px-8 sm:py-24">
-        <SectionHeading
-          eyebrow="Học viên"
-          title="Tập trung vào khả năng biến kiến thức thành hệ thống làm việc."
-          align="center"
-        />
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
-          {featuredTestimonials.map((item) => (
-            <SoftCard key={item.name} className="h-full rounded-[1.25rem]">
-              <p className="text-lg font-semibold leading-8 text-black/70">&ldquo;{item.quote}&rdquo;</p>
-              <p className="mt-7 font-black">{item.name}</p>
-              <p className="mt-1 text-sm font-semibold text-black/45">{item.title}</p>
-            </SoftCard>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto grid max-w-[1440px] gap-8 px-4 py-16 sm:gap-10 sm:px-8 sm:py-24 lg:grid-cols-[0.7fr_1.3fr]">
-        <SectionHeading eyebrow="FAQ" title="Những câu hỏi nên làm rõ." />
-        <div className="grid gap-4">
-          {solopreneurFaqs.map((item) => (
-            <div key={item.question} className="rounded-[1.25rem] border border-black/8 bg-white p-6">
-              <h3 className="text-xl font-black leading-tight">{item.question}</h3>
-              <p className="mt-3 text-base font-medium leading-8 text-black/62">
-                {item.answer}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="px-4 pb-16 sm:px-8 sm:pb-24">
-        <div className="mx-auto max-w-[1440px] overflow-hidden rounded-[1.5rem] bg-[#111113] p-6 text-white shadow-[0_30px_90px_rgba(0,0,0,0.14)] sm:rounded-[1.75rem] sm:p-12 lg:grid lg:grid-cols-[1fr_auto] lg:items-end lg:gap-10">
+      <section className="ai-shell pb-20 pt-10">
+        <div className="ai-panel-strong overflow-hidden p-8 sm:p-12 lg:grid lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#d8ad57]">
-              Solopreneur ecosystem
-            </p>
-            <h2 className="mt-4 max-w-4xl text-3xl font-black leading-[1.08] sm:text-6xl sm:leading-tight">
-              Xây hệ thống để bạn không phải lúc nào cũng tự mình kéo mọi thứ.
+            <p className="ai-kicker">Final CTA</p>
+            <h2 className="mt-4 max-w-4xl text-4xl font-black leading-tight tracking-[-0.04em] sm:text-6xl">
+              Build your AI marketing operating system.
             </h2>
-            <p className="mt-6 max-w-2xl text-lg font-medium leading-8 text-white/68">
-              Bắt đầu từ tài nguyên, lộ trình học và những workflow có thể dùng ngay cho công việc một người.
+            <p className="ai-muted mt-5 max-w-2xl leading-8">
+              Bắt đầu bằng khóa học, tài liệu hoặc dashboard học viên hiện có. Logic tài khoản và quyền học vẫn được giữ nguyên.
             </p>
           </div>
-          <ButtonLink href="/tai-lieu" className="mt-9 bg-white text-black hover:bg-white/88 lg:mt-0">
-            Lấy tài nguyên đầu tiên
-          </ButtonLink>
+          <ButtonLink href="/dang-ky" className="mt-8 lg:mt-0">Bắt đầu</ButtonLink>
         </div>
       </section>
     </PageShell>

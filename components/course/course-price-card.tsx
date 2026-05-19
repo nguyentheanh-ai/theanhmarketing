@@ -6,17 +6,17 @@ import { getCourseLessonCount, getCourseModuleCount } from "@/data/courses";
 
 export function CoursePriceCard({ course }: { course: Course }) {
   return (
-    <SoftCard className="bg-white/92 shadow-[0_24px_80px_rgba(50,34,12,0.07)] lg:sticky lg:top-36">
-      <p className="text-sm font-semibold text-[#b56b18]">Học trọn gói</p>
+    <SoftCard className="ai-panel-strong lg:sticky lg:top-36">
+      <p className="ai-kicker">Học trọn gói</p>
       <div className="mt-4 flex flex-wrap items-end gap-3">
-        <p className="text-4xl font-black tracking-[-0.05em] text-[#1f160d]">
+        <p className="text-4xl font-black tracking-[-0.05em] text-white">
           {course.price}
         </p>
         {course.originalPrice ? (
-          <p className="pb-1 text-sm text-black/35 line-through">{course.originalPrice}</p>
+          <p className="pb-1 text-sm text-white/35 line-through">{course.originalPrice}</p>
         ) : null}
       </div>
-      <div className="mt-6 grid gap-3 rounded-3xl bg-[#fff7ea] p-5 text-sm text-black/58 ring-1 ring-[#f3dec0]">
+      <div className="mt-6 grid gap-3 rounded-xl bg-white/7 p-5 text-sm text-white/58 ring-1 ring-white/10">
         <p>Bài học: {getCourseLessonCount(course)}</p>
         <p>Module: {getCourseModuleCount(course)}</p>
         <p>Cấp độ: {course.level}</p>

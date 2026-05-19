@@ -12,15 +12,15 @@ type BlogPost = {
 export function BlogCard({ post }: { post: BlogPost }) {
   return (
     <Link href={`/blog/${post.slug}`}>
-      <SoftCard className="group h-full hover:shadow-[0_28px_80px_rgba(0,0,0,0.08)]">
-        <p className="text-sm font-semibold text-[#c77b20]">
+      <SoftCard className="group h-full hover:border-[#77d7ff]/35">
+        <p className="ai-kicker">
           {post.category} · {post.readTime}
         </p>
         <h2 className="mt-4 text-2xl font-black tracking-[-0.04em]">
           {post.title}
         </h2>
-        <p className="mt-4 leading-7 text-black/60">{post.excerpt}</p>
-        <p className="mt-7 text-sm font-bold text-black/50 transition group-hover:text-black">
+        <p className="ai-muted mt-4 leading-7">{post.excerpt}</p>
+        <p className="mt-7 text-sm font-bold text-white/50 transition group-hover:text-white">
           Đọc bài viết →
         </p>
       </SoftCard>

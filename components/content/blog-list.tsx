@@ -26,10 +26,10 @@ export function BlogList({ posts, categories }: BlogListProps) {
         {categories.map((item) => (
           <button
             key={item}
-            className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${
+            className={`shrink-0 rounded-xl px-4 py-2 text-sm font-semibold transition ${
               activeCategory === item
-                ? "bg-black text-white"
-                : "border border-black/10 bg-white text-black/65 hover:text-black"
+                ? "bg-[#159cfb] text-white"
+                : "border border-white/12 bg-white/6 text-white/65 hover:text-white"
             }`}
             type="button"
             onClick={() => setActiveCategory(item)}
@@ -46,7 +46,7 @@ export function BlogList({ posts, categories }: BlogListProps) {
           ))}
         </div>
         {visiblePosts.length === 0 ? (
-          <div className="rounded-[1.5rem] bg-[#f2eadf] p-6 text-sm font-semibold text-black/60">
+          <div className="ai-panel p-6 text-sm font-semibold text-white/60">
             Chưa có bài viết trong danh mục này.
           </div>
         ) : null}

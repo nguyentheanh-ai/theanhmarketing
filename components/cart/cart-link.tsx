@@ -16,10 +16,10 @@ export function CartLink() {
   return (
     <Link
       href="/gio-hang"
-      className="tap-motion inline-flex min-h-10 items-center gap-2 rounded-full border border-black/10 bg-white px-4 text-sm font-bold text-black/70 hover:border-black/20 hover:text-black"
+      className="tap-motion inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/8 px-4 text-sm font-bold text-white/70 hover:border-[#77d7ff]/35 hover:text-white"
     >
       Giỏ hàng
-      <span className="grid size-6 place-items-center rounded-full bg-black text-xs font-bold text-white">
+      <span className="grid size-6 place-items-center rounded-full bg-[#159cfb] text-xs font-bold text-white">
         {count}
       </span>
     </Link>

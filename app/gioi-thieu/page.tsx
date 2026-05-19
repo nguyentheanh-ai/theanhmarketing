@@ -17,7 +17,7 @@ export default function AboutPage() {
 
   return (
     <PageShell>
-      <section className="mx-auto grid max-w-6xl gap-10 px-5 pb-20 pt-36 sm:px-8 lg:grid-cols-[1fr_0.9fr] lg:items-center">
+      <section className="ai-shell grid gap-10 pb-20 pt-32 sm:pt-40 lg:grid-cols-[1fr_0.9fr] lg:items-center">
         <div>
           <SectionHeading
             eyebrow={page.eyebrow}
@@ -34,13 +34,13 @@ export default function AboutPage() {
         />
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
+      <section className="ai-shell py-20">
         <SectionHeading eyebrow={page.principlesEyebrow} title={page.principlesTitle} />
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {page.principles.map((item) => (
             <SoftCard key={item}>
               <h2 className="text-2xl font-black tracking-[-0.04em]">{item}</h2>
-              <p className="mt-4 leading-8 text-black/65">
+              <p className="ai-muted mt-4 leading-8">
                 Nội dung được tổ chức để người học hiểu việc cần làm, thực hành
                 theo thứ tự và có tài liệu quay lại tra cứu.
               </p>

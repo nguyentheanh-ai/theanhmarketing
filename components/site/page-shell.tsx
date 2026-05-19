@@ -9,9 +9,9 @@ export async function PageShell({ children }: { children: ReactNode }) {
   const offer = await getOfferSettings();
 
   return (
-    <main className="min-h-screen bg-[#fbfaf7] text-[#0b0b0c]">
+    <main className="ai-os-bg ai-grid min-h-screen text-white">
       <SiteHeader />
-      <div className="page-motion">{children}</div>
+      <div className="page-motion relative z-10">{children}</div>
       <SiteFooter />
       <CartToast />
       <SiteOfferPopup offer={offer} />

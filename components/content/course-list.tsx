@@ -58,10 +58,10 @@ export function CourseList({ courses, filters }: CourseListProps) {
           {filters.map((filter, index) => (
             <button
               key={filter}
-              className={`shrink-0 rounded-full px-4 py-2 text-sm font-bold transition ${
+              className={`shrink-0 rounded-xl px-4 py-2 text-sm font-bold transition ${
                 activeIndex === index
-                  ? "bg-black text-white"
-                  : "border border-black/10 bg-white text-black/65 hover:text-black"
+                  ? "bg-[#159cfb] text-white shadow-[0_0_24px_rgba(56,189,248,0.24)]"
+                  : "border border-white/12 bg-white/6 text-white/65 hover:border-[#77d7ff]/30 hover:text-white"
               }`}
               type="button"
               onClick={() => setActiveIndex(index)}
@@ -71,7 +71,7 @@ export function CourseList({ courses, filters }: CourseListProps) {
           ))}
         </div>
         <input
-          className="min-h-11 w-full rounded-full border border-black/10 bg-white px-4 text-sm outline-none transition focus:border-black/25 lg:w-[340px]"
+          className="min-h-11 w-full rounded-xl border border-white/12 bg-white/8 px-4 text-sm text-white outline-none transition placeholder:text-white/38 focus:border-[#77d7ff]/40 lg:w-[340px]"
           placeholder="Tìm kiếm khóa học..."
           value={keyword}
           onChange={(event) => setKeyword(event.target.value)}
@@ -85,7 +85,7 @@ export function CourseList({ courses, filters }: CourseListProps) {
       </div>
 
       {visibleCourses.length === 0 ? (
-        <div className="mt-8 rounded-[1.5rem] bg-[#f2eadf] p-6 text-sm font-semibold text-black/60">
+        <div className="ai-panel mt-8 p-6 text-sm font-semibold text-white/60">
           Chưa có khóa học phù hợp với bộ lọc hoặc từ khóa này.
         </div>
       ) : null}

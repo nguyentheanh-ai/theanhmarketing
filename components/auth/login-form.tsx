@@ -72,15 +72,15 @@ export function LoginForm() {
         <Button variant="secondary" type="button" onClick={handleGoogleLogin}>
           Đăng nhập với Google
         </Button>
-        <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.12em] text-black/35">
-          <span className="h-px flex-1 bg-black/10" />
+        <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.12em] text-white/35">
+          <span className="h-px flex-1 bg-white/10" />
           hoặc
-          <span className="h-px flex-1 bg-black/10" />
+          <span className="h-px flex-1 bg-white/10" />
         </div>
         <div className="grid gap-2">
-          <label className="text-sm font-semibold text-black/60">Email</label>
+          <label className="text-sm font-semibold text-white/60">Email</label>
           <input
-            className="min-h-12 rounded-2xl border border-black/10 px-4 outline-none transition focus:border-black/30"
+            className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none transition placeholder:text-white/35 focus:border-[#77d7ff]/35"
             name="email"
             placeholder="email@example.com"
             required
@@ -88,9 +88,9 @@ export function LoginForm() {
           />
         </div>
         <div className="grid gap-2">
-          <label className="text-sm font-semibold text-black/60">Mật khẩu</label>
+          <label className="text-sm font-semibold text-white/60">Mật khẩu</label>
           <input
-            className="min-h-12 rounded-2xl border border-black/10 px-4 outline-none transition focus:border-black/30"
+            className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none transition placeholder:text-white/35 focus:border-[#77d7ff]/35"
             name="password"
             placeholder="••••••••"
             required
@@ -98,7 +98,7 @@ export function LoginForm() {
           />
         </div>
         {message ? (
-          <p className="rounded-2xl bg-[#f2eadf] p-4 text-sm font-semibold text-black/70">
+          <p className="rounded-xl bg-red-500/12 p-4 text-sm font-semibold text-red-100">
             {message}
           </p>
         ) : null}
@@ -106,10 +106,10 @@ export function LoginForm() {
           Vào dashboard học viên
         </Button>
       </form>
-      <div className="mt-6 grid gap-3 rounded-2xl bg-[#f2eadf] p-4 text-sm leading-6 text-black/60">
+      <div className="mt-6 grid gap-3 rounded-xl bg-white/8 p-4 text-sm leading-6 text-white/60">
         <p>
           Chưa có tài khoản?{" "}
-          <Link className="font-bold text-black" href="/dang-ky">
+          <Link className="font-bold text-white" href="/dang-ky">
             Đăng ký học
           </Link>
         </p>

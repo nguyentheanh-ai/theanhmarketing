@@ -14,7 +14,7 @@ export async function RelatedCourses({ course }: { course: Course }) {
   }
 
   return (
-    <section className="mx-auto max-w-[1440px] px-5 py-20 sm:px-8">
+    <section className="ai-shell py-20">
       <SectionHeading eyebrow="Liên quan" title="Khóa học liên quan." />
       <div className="mt-10 grid gap-5 md:grid-cols-2">
         {related.map((item) => (

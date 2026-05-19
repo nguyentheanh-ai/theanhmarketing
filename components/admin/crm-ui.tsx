@@ -4,11 +4,11 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 type Tone = "success" | "warning" | "danger" | "neutral" | "info";
 
 const toneStyles: Record<Tone, string> = {
-  success: "bg-[#e9f7ef] text-[#1f7a4d] border-[#bfe6cf]",
-  warning: "bg-[#fff5df] text-[#9a6418] border-[#f0d394]",
-  danger: "bg-[#fff0ed] text-[#b23b2f] border-[#f0b9b1]",
-  neutral: "bg-[#f1f2f4] text-black/55 border-black/10",
-  info: "bg-[#edf4ff] text-[#285f9f] border-[#c8dcf8]",
+  success: "bg-emerald-300/10 text-emerald-100 border-emerald-300/25",
+  warning: "bg-amber-300/10 text-amber-100 border-amber-300/25",
+  danger: "bg-red-300/10 text-red-100 border-red-300/25",
+  neutral: "bg-white/8 text-white/55 border-white/10",
+  info: "bg-[#159cfb]/15 text-sky-100 border-[#77d7ff]/25",
 };
 
 export function AdminPanel({
@@ -19,7 +19,7 @@ export function AdminPanel({
   return (
     <div
       {...props}
-      className={`rounded-lg border border-black/10 bg-white shadow-[0_12px_35px_rgba(15,23,42,0.04)] ${className}`}
+      className={`ai-panel ${className}`}
     >
       {children}
     </div>
@@ -46,14 +46,14 @@ export function AdminPageHeader({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-4 border-b border-black/10 pb-6 md:flex-row md:items-end md:justify-between">
+    <div className="flex flex-col gap-4 border-b border-[#77d7ff]/15 pb-6 md:flex-row md:items-end md:justify-between">
       <div>
-        <p className="text-xs font-black uppercase tracking-[0.16em] text-[#8f6124]">{eyebrow}</p>
-        <h1 className="mt-3 text-3xl font-black tracking-[-0.035em] text-[#111315] md:text-4xl">
+        <p className="ai-kicker">{eyebrow}</p>
+        <h1 className="ai-glow-text mt-3 text-3xl font-black tracking-[-0.035em] md:text-4xl">
           {title}
         </h1>
         {description ? (
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-black/58">{description}</p>
+          <p className="ai-muted mt-3 max-w-3xl text-sm leading-6">{description}</p>
         ) : null}
       </div>
       {action}
@@ -63,16 +63,16 @@ export function AdminPageHeader({
 
 export function EmptyState({ title, description }: { title: string; description: string }) {
   return (
-    <div className="rounded-lg border border-dashed border-black/15 bg-[#fafafa] p-5 text-sm">
-      <p className="font-black text-black/75">{title}</p>
-      <p className="mt-2 leading-6 text-black/50">{description}</p>
+    <div className="rounded-lg border border-dashed border-[#77d7ff]/20 bg-white/5 p-5 text-sm">
+      <p className="font-black text-white/75">{title}</p>
+      <p className="mt-2 leading-6 text-white/50">{description}</p>
     </div>
   );
 }
 
 export function TextLink({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <Link href={href} className="text-sm font-black text-black/60 transition hover:text-black">
+    <Link href={href} className="text-sm font-black text-white/60 transition hover:text-white">
       {children}
     </Link>
   );

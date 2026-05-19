@@ -50,9 +50,9 @@ export function AdminLoginForm() {
   return (
     <form className="grid gap-4" onSubmit={handleSubmit}>
       <div className="grid gap-2">
-        <label className="text-sm font-semibold text-black/60">Email</label>
+        <label className="text-sm font-semibold text-white/65">Email</label>
         <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4 outline-none transition focus:border-black/30"
+          className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none transition placeholder:text-white/35 focus:border-[#77d7ff]/35"
           name="email"
           placeholder="admin@example.com"
           required
@@ -60,9 +60,9 @@ export function AdminLoginForm() {
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm font-semibold text-black/60">Mật khẩu</label>
+        <label className="text-sm font-semibold text-white/65">Mật khẩu</label>
         <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4 outline-none transition focus:border-black/30"
+          className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none transition placeholder:text-white/35 focus:border-[#77d7ff]/35"
           name="password"
           placeholder="••••••••"
           required
@@ -70,7 +70,7 @@ export function AdminLoginForm() {
         />
       </div>
       {message ? (
-        <p className="rounded-2xl bg-red-50 p-4 text-sm font-semibold text-red-700">
+        <p className="rounded-xl border border-red-300/20 bg-red-400/10 p-4 text-sm font-semibold text-red-100">
           {message}
         </p>
       ) : null}

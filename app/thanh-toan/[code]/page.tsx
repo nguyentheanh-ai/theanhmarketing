@@ -48,16 +48,16 @@ export default async function PaymentPage({
 
   return (
     <PageShell>
-      <section className="mx-auto grid max-w-6xl gap-8 px-5 pb-24 pt-40 sm:px-8 lg:grid-cols-[0.95fr_1.05fr]">
+      <section className="ai-shell grid gap-8 pb-24 pt-32 sm:pt-40 lg:grid-cols-[0.95fr_1.05fr]">
         <div>
-          <p className="text-sm font-semibold text-[#c77b20]">Thanh toán SePay</p>
-          <h1 className="mt-4 text-5xl font-black leading-[1.02] tracking-[-0.04em] sm:text-7xl">
+          <p className="ai-kicker">Thanh toán SePay</p>
+          <h1 className="ai-glow-text mt-4 text-5xl font-black leading-[1.02] tracking-[-0.04em] sm:text-7xl">
             Quét QR để hoàn tất đăng ký.
           </h1>
-          <p className="mt-6 text-lg leading-9 text-black/65">
+          <p className="ai-muted mt-6 text-lg leading-9">
             Vui lòng giữ nguyên nội dung chuyển khoản để hệ thống đối soát đúng đơn.
           </p>
-          <div className="mt-8 grid gap-4 text-sm font-semibold text-black/70">
+          <div className="mt-8 grid gap-4 text-sm font-semibold text-white/70">
             <p>Mã đơn: {order.orderCode}</p>
             <p>Khóa học: {order.courseTitle}</p>
             <p>Học viên: {order.studentName}</p>
@@ -71,7 +71,7 @@ export default async function PaymentPage({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 alt={`QR thanh toán ${order.orderCode}`}
-                className="mx-auto aspect-square w-full max-w-[340px] rounded-3xl border border-black/10 bg-white object-contain p-4"
+                className="mx-auto aspect-square w-full max-w-[340px] rounded-xl border border-white/10 bg-white object-contain p-4"
                 src={qrUrl}
               />
               <TransferDetails
@@ -82,7 +82,7 @@ export default async function PaymentPage({
               />
             </div>
           ) : (
-            <div className="rounded-2xl bg-[#f2eadf] p-4 text-sm font-semibold leading-6 text-black/65">
+            <div className="rounded-xl border border-amber-300/20 bg-amber-300/10 p-4 text-sm font-semibold leading-6 text-amber-100/85">
               Chưa cấu hình tài khoản nhận tiền SePay. Thêm `SEPAY_BANK_CODE` và
               `SEPAY_BANK_ACCOUNT_NUMBER` trong biến môi trường để hiện mã QR tự động.
             </div>

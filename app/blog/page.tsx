@@ -23,7 +23,7 @@ export default async function BlogPage() {
 
   return (
     <PageShell>
-      <section className="mx-auto max-w-6xl px-5 pb-16 pt-36 sm:px-8">
+      <section className="ai-shell pb-16 pt-32 sm:pt-40">
         <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
           <SectionHeading
             eyebrow={page.eyebrow}
@@ -31,8 +31,8 @@ export default async function BlogPage() {
             description={page.description}
           />
           <SoftCard>
-            <p className="text-sm font-semibold text-[#c77b20]">{page.directionTitle}</p>
-            <p className="mt-4 text-lg leading-8 text-black/65">
+            <p className="ai-kicker">{page.directionTitle}</p>
+            <p className="ai-muted mt-4 text-lg leading-8">
               {page.directionDescription}
             </p>
           </SoftCard>

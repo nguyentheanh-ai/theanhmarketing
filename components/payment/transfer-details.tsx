@@ -33,17 +33,17 @@ export function TransferDetails({
   }
 
   return (
-    <div className="grid gap-3 rounded-2xl border border-black/10 bg-[#fbfaf7] p-4 text-sm leading-6 text-black/65">
+    <div className="grid gap-3 rounded-xl border border-white/10 bg-white/7 p-4 text-sm leading-6 text-white/65">
       <p>
-        Ngân hàng: <span className="font-bold text-black">{bankName}</span>
+        Ngân hàng: <span className="font-bold text-white">{bankName}</span>
       </p>
 
       <div className="flex flex-wrap items-center gap-2">
         <p>
-          Số tài khoản: <span className="font-bold text-black">{bankAccountNumber}</span>
+          Số tài khoản: <span className="font-bold text-white">{bankAccountNumber}</span>
         </p>
         <Button
-          className="min-h-8 rounded-full px-3 text-xs"
+          className="min-h-8 rounded-xl px-3 text-xs"
           size="sm"
           type="button"
           variant="secondary"
@@ -55,16 +55,16 @@ export function TransferDetails({
 
       {bankAccountName ? (
         <p>
-          Chủ tài khoản: <span className="font-bold text-black">{bankAccountName}</span>
+          Chủ tài khoản: <span className="font-bold text-white">{bankAccountName}</span>
         </p>
       ) : null}
 
       <div className="flex flex-wrap items-center gap-2">
         <p>
-          Nội dung: <span className="font-bold text-black">{transferContent}</span>
+          Nội dung: <span className="font-bold text-white">{transferContent}</span>
         </p>
         <Button
-          className="min-h-8 rounded-full px-3 text-xs"
+          className="min-h-8 rounded-xl px-3 text-xs"
           size="sm"
           type="button"
           variant="secondary"
@@ -74,7 +74,7 @@ export function TransferDetails({
         </Button>
       </div>
 
-      {message ? <p className="text-xs font-semibold text-[#1f5e41]">{message}</p> : null}
+      {message ? <p className="text-xs font-semibold text-emerald-200">{message}</p> : null}
     </div>
   );
 }

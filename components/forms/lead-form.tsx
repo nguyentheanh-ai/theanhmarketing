@@ -43,25 +43,25 @@ export function LeadForm({ source, submitLabel = "Gửi thông tin" }: LeadFormP
     >
       <div className="grid gap-4 md:grid-cols-3">
         <input
-          className="min-h-12 rounded-2xl border border-black/10 bg-white px-4 outline-none"
+          className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none placeholder:text-white/35"
           name="name"
           placeholder="Họ và tên"
           required
         />
         <input
-          className="min-h-12 rounded-2xl border border-black/10 bg-white px-4 outline-none"
+          className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none placeholder:text-white/35"
           name="phone"
           placeholder="Số điện thoại"
         />
         <input
-          className="min-h-12 rounded-2xl border border-black/10 bg-white px-4 outline-none"
+          className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none placeholder:text-white/35"
           name="email"
           placeholder="Email"
           type="email"
         />
       </div>
       <input
-        className="min-h-12 rounded-2xl border border-black/10 bg-white px-4 outline-none"
+        className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none placeholder:text-white/35"
         name="need"
         placeholder="Nhu cầu học / lời nhắn"
       />
@@ -69,7 +69,7 @@ export function LeadForm({ source, submitLabel = "Gửi thông tin" }: LeadFormP
         {submitLabel}
       </Button>
       {message ? (
-        <p className="rounded-2xl bg-white/70 px-4 py-3 text-sm font-semibold text-black/65">
+        <p className="rounded-xl bg-white/8 px-4 py-3 text-sm font-semibold text-white/65">
           {message}
         </p>
       ) : null}

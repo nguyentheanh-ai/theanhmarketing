@@ -61,25 +61,25 @@ export function Curriculum({ course }: { course: Course }) {
                 <span className="block text-2xl font-black tracking-[-0.04em]">
                   {module.title}
                 </span>
-                <span className="mt-2 block leading-7 text-black/60">
+                <span className="mt-2 block leading-7 text-white/60">
                   {module.description}
                 </span>
-                <span className="mt-3 block text-sm font-semibold text-[#c77b20]">
+                <span className="mt-3 block text-sm font-semibold text-[#8bdcff]">
                   {lessons.length} bài học
                 </span>
               </span>
-              <span className="grid size-10 place-items-center rounded-full border border-black/10 bg-white text-xl font-bold text-black/60">
+              <span className="grid size-10 place-items-center rounded-xl border border-white/10 bg-white/8 text-xl font-bold text-white/60">
                 {isOpen ? "−" : "+"}
               </span>
             </button>
 
             {isOpen ? (
-              <div className="mt-5 grid gap-3 border-t border-black/10 pt-5">
+              <div className="mt-5 grid gap-3 border-t border-white/10 pt-5">
                 {lessons.map((lesson, lessonIndex) => {
                   const thumbnailUrl = toYouTubeThumbnailUrl(lesson.youtubeUrl);
 
                   return (
-                    <div key={lesson.id} className="rounded-2xl bg-[#f7f3ec] p-4">
+                    <div key={lesson.id} className="rounded-xl border border-white/10 bg-white/6 p-4">
                       <div className="grid gap-4 text-sm lg:grid-cols-[180px_1fr_auto]">
                         <div className="relative overflow-hidden rounded-2xl bg-black">
                           {thumbnailUrl ? (
@@ -90,7 +90,7 @@ export function Curriculum({ course }: { course: Course }) {
                               style={{ backgroundImage: `url(${thumbnailUrl})` }}
                             />
                           ) : (
-                            <div className="aspect-video w-full bg-[#eadfce]" />
+                            <div className="aspect-video w-full bg-white/10" />
                           )}
                           <span className="absolute left-3 top-3 rounded-full bg-black/78 px-3 py-1 text-xs font-black text-white">
                             Bài {lessonIndex + 1}
@@ -103,16 +103,16 @@ export function Curriculum({ course }: { course: Course }) {
                         </div>
                         <div>
                           <p className="font-semibold">{cleanLessonTitle(lesson.title)}</p>
-                          <p className="mt-1 text-xs font-semibold text-[#c77b20]">
+                          <p className="mt-1 text-xs font-semibold text-[#8bdcff]">
                             {getAccessLabel(lesson.access)}
                           </p>
                           {lesson.access !== "free" ? (
-                            <p className="mt-3 leading-6 text-black/60">
+                            <p className="mt-3 leading-6 text-white/60">
                               Bài học hiển thị trong lộ trình, video chỉ mở cho khách đã mua khóa.
                             </p>
                           ) : null}
                         </div>
-                        <span className="text-black/50">{lesson.duration}</span>
+                        <span className="text-white/50">{lesson.duration}</span>
                       </div>
                       {lesson.access === "free" && lesson.embedUrl ? (
                         <div className="mt-4 overflow-hidden rounded-2xl bg-black">
@@ -126,22 +126,22 @@ export function Curriculum({ course }: { course: Course }) {
                         </div>
                       ) : null}
                       {lesson.access !== "free" ? (
-                        <div className="mt-4 flex flex-col gap-3 rounded-2xl bg-white p-4 text-sm text-black/60 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="mt-4 flex flex-col gap-3 rounded-xl bg-white/8 p-4 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
                           <span>
                             Bài học Premium dành cho khách đã mua khóa.
                           </span>
-                          <a href="/dang-ky" className="font-bold text-black">
+                          <a href="/dang-ky" className="font-bold text-white">
                             Đăng ký để học →
                           </a>
                         </div>
                       ) : null}
                       {lesson.resources && lesson.resources.length > 0 ? (
-                        <div className="mt-4 rounded-2xl bg-white p-4">
-                          <p className="text-sm font-bold text-black">Tài liệu bài học</p>
+                        <div className="mt-4 rounded-xl bg-white/8 p-4">
+                          <p className="text-sm font-bold text-white">Tài liệu bài học</p>
                           <div className="mt-3 flex flex-wrap gap-2">
                             {lesson.resources.map((resource) => (
                               <a
-                                className="rounded-full border border-black/10 bg-[#fbfaf7] px-4 py-2 text-sm font-semibold text-black/65 transition hover:border-black/20 hover:text-black"
+                                className="rounded-xl border border-white/10 bg-white/7 px-4 py-2 text-sm font-semibold text-white/65 transition hover:border-white/20 hover:text-white"
                                 href={resource.url}
                                 key={`${lesson.id}-${resource.url}`}
                                 rel="noreferrer"

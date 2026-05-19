@@ -26,33 +26,33 @@ export async function SiteFooter() {
   ];
 
   return (
-    <footer id="lien-he" className="border-t border-black/10 bg-[#fbfaf7] px-4 py-12 text-black sm:px-8 sm:py-14">
+    <footer id="lien-he" className="relative z-10 border-t border-[#77d7ff]/15 bg-[#04070c]/88 px-4 py-12 text-white sm:px-8 sm:py-14">
       <div className="mx-auto grid max-w-[1440px] gap-8 sm:gap-10 lg:grid-cols-[1.4fr_0.6fr_0.7fr_0.7fr]">
         <div className="max-w-2xl">
           <Link href="/" className="inline-flex items-center gap-3" aria-label={brand.name}>
-            <BrandMark brand={brand} className="grid size-14 place-items-center overflow-hidden rounded-xl bg-white p-1.5 ring-1 ring-black/10" />
+            <BrandMark brand={brand} className="grid size-14 place-items-center overflow-hidden rounded-xl bg-white/8 p-1.5 ring-1 ring-[#77d7ff]/25" />
             <span className="text-2xl font-black tracking-[-0.04em]">
               {brand.shortName}
             </span>
           </Link>
-          <p className="mt-6 max-w-xl text-sm font-medium leading-7 text-black/62">
+          <p className="ai-muted mt-6 max-w-xl text-sm font-medium leading-7">
             Hệ sinh thái giúp solopreneur đóng gói chuyên môn, xây content engine,
             thiết kế sales system và dùng AI workflow để vận hành gọn hơn.
           </p>
           <div className="mt-10">
-            <p className="text-lg font-black text-[#c77b20]">Đăng ký nhận bản tin</p>
+            <p className="text-lg font-black text-[#8bdcff]">Đăng ký nhận bản tin</p>
             <form
-              className="mt-5 flex max-w-full items-center gap-2 rounded-full border border-black/15 bg-white p-1.5 shadow-[0_16px_45px_rgba(0,0,0,0.06)] sm:max-w-sm"
+              className="mt-5 flex max-w-full items-center gap-2 rounded-xl border border-[#77d7ff]/18 bg-white/7 p-1.5 shadow-[0_0_34px_rgba(56,189,248,0.12)] sm:max-w-sm"
               action={emailHref}
             >
               <input
-                className="min-h-10 min-w-0 flex-1 bg-transparent px-4 text-sm text-black outline-none placeholder:text-black/38"
+                className="min-h-10 min-w-0 flex-1 bg-transparent px-4 text-sm text-white outline-none placeholder:text-white/38"
                 name="subject"
                 placeholder="Nhập địa chỉ email của bạn"
                 type="email"
               />
               <button
-                className="grid size-10 shrink-0 place-items-center rounded-full bg-black text-lg font-black text-white transition-colors hover:bg-black/82"
+                className="grid size-10 shrink-0 place-items-center rounded-lg bg-[#159cfb] text-lg font-black text-white transition-colors hover:bg-[#38bdf8]"
                 type="submit"
                 aria-label="Đăng ký nhận bản tin"
               >
@@ -67,22 +67,22 @@ export async function SiteFooter() {
         <div>
           <FooterColumn title="Trợ giúp" links={helpLinks} />
           <div className="mt-6 grid gap-2 text-sm font-semibold text-black/62">
-            <a href={phoneHref} className="text-black/62 transition hover:text-[#c77b20]">
+            <a href={phoneHref} className="text-white/62 transition hover:text-[#8bdcff]">
               Hotline/Zalo: {brand.phone}
             </a>
-            <a href={emailHref} className="text-black/62 transition hover:text-[#c77b20]">
+            <a href={emailHref} className="text-white/62 transition hover:text-[#8bdcff]">
               {brand.email}
             </a>
           </div>
         </div>
       </div>
-      <div className="mx-auto mt-10 flex max-w-[1440px] flex-col gap-3 border-t border-black/10 pt-6 text-xs font-semibold leading-6 text-black/42 sm:mt-12 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto mt-10 flex max-w-[1440px] flex-col gap-3 border-t border-white/10 pt-6 text-xs font-semibold leading-6 text-white/42 sm:mt-12 sm:flex-row sm:items-center sm:justify-between">
         <p>© {new Date().getFullYear()} {brand.name}. All rights reserved.</p>
         <div className="flex flex-wrap gap-4">
-          <Link href="/lien-he" className="transition hover:text-black">
+          <Link href="/lien-he" className="transition hover:text-white">
             Chính sách bảo mật
           </Link>
-          <Link href="/dang-ky" className="transition hover:text-black">
+          <Link href="/dang-ky" className="transition hover:text-white">
             Điều khoản và điều kiện
           </Link>
         </div>
@@ -100,13 +100,13 @@ function FooterColumn({
 }) {
   return (
     <nav>
-      <p className="text-lg font-black text-[#c77b20]">{title}</p>
+      <p className="text-lg font-black text-[#8bdcff]">{title}</p>
       <div className="mt-6 grid gap-4">
         {links.map((item) => (
           <Link
             key={`${title}-${item.href}-${item.label}`}
             href={item.href}
-            className="text-sm font-bold text-black/68 transition hover:text-black"
+            className="text-sm font-bold text-white/68 transition hover:text-white"
           >
             {item.label}
           </Link>

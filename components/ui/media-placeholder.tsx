@@ -5,10 +5,11 @@ type MediaPlaceholderProps = {
 
 export function MediaPlaceholder({ label, note }: MediaPlaceholderProps) {
   return (
-    <div className="flex min-h-[280px] items-center justify-center rounded-[2rem] bg-[#f2eadf] p-8 text-center">
+    <div className="ai-panel flex min-h-[280px] items-center justify-center p-8 text-center">
       <div>
-        <p className="text-sm font-semibold text-[#c77b20]">{label}</p>
-        {note ? <p className="mt-3 text-sm leading-6 text-black/55">{note}</p> : null}
+        <span className="ai-orb mx-auto mb-5 block size-12" />
+        <p className="ai-kicker">{label}</p>
+        {note ? <p className="ai-muted mt-3 text-sm leading-6">{note}</p> : null}
       </div>
     </div>
   );

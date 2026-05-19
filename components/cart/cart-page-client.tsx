@@ -75,9 +75,9 @@ export function CartPageClient({ auth }: CartPageClientProps) {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-3xl border border-black/10 bg-white p-6">
-        <p className="text-lg font-bold text-black/70">Giỏ hàng đang trống.</p>
-        <p className="mt-2 text-sm leading-6 text-black/60">
+      <div className="ai-panel p-6">
+        <p className="text-lg font-bold text-white/70">Giỏ hàng đang trống.</p>
+        <p className="mt-2 text-sm leading-6 text-white/60">
           Hãy thêm khóa học từ trang danh sách hoặc trang chi tiết khóa học.
         </p>
         <ButtonLink href="/khoa-hoc" className="mt-5">
@@ -89,11 +89,11 @@ export function CartPageClient({ auth }: CartPageClientProps) {
 
   return (
     <div className="grid gap-5">
-      <div className="rounded-3xl border border-black/10 bg-white p-6">
+      <div className="ai-panel p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-xl font-black tracking-[-0.03em]">Khóa học trong giỏ</p>
           <button
-            className="text-sm font-bold text-black/45 transition hover:text-black"
+            className="text-sm font-bold text-white/45 transition hover:text-white"
             onClick={() => clearCart()}
             type="button"
           >
@@ -104,15 +104,15 @@ export function CartPageClient({ auth }: CartPageClientProps) {
           {items.map((item) => (
             <div
               key={item.slug}
-              className="grid gap-3 rounded-2xl border border-black/10 p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center"
+              className="grid gap-3 rounded-xl border border-white/10 bg-white/5 p-4 sm:grid-cols-[1fr_auto_auto] sm:items-center"
             >
               <div>
                 <p className="font-bold">{item.title}</p>
-                <p className="mt-1 text-sm text-black/55">{item.slug}</p>
+                <p className="mt-1 text-sm text-white/55">{item.slug}</p>
               </div>
-              <p className="font-bold text-[#b56b18]">{item.price}</p>
+              <p className="font-bold text-[#8bdcff]">{item.price}</p>
               <button
-                className="text-sm font-bold text-black/45 transition hover:text-black"
+                className="text-sm font-bold text-white/45 transition hover:text-white"
                 onClick={() => removeFromCart(item.slug)}
                 type="button"
               >
@@ -123,16 +123,16 @@ export function CartPageClient({ auth }: CartPageClientProps) {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-black/10 bg-[#fff7ea] p-6">
-        <p className="text-sm font-semibold text-[#b56b18]">Tổng thanh toán</p>
+      <div className="ai-panel-strong p-6">
+        <p className="ai-kicker">Tổng thanh toán</p>
         <p className="mt-2 text-4xl font-black tracking-[-0.04em]">{formatVnd(total)}</p>
-        <p className="mt-2 text-sm leading-6 text-black/60">
+        <p className="mt-2 text-sm leading-6 text-white/60">
           {auth.isLoggedIn
             ? "Bạn đã đăng nhập, bấm thanh toán ngay để tạo đơn và hiện mã QR."
             : "Bước tiếp theo là tạo tài khoản để gắn đơn hàng và chuyển đến mã QR thanh toán."}
         </p>
         {auth.isLoggedIn ? (
-          <p className="mt-2 text-xs font-semibold text-black/50">
+          <p className="mt-2 text-xs font-semibold text-white/50">
             Tài khoản: {auth.fullName || auth.email || "Học viên"}
           </p>
         ) : null}
@@ -158,13 +158,13 @@ export function CartPageClient({ auth }: CartPageClientProps) {
           )}
           <Link
             href="/khoa-hoc"
-            className="inline-flex min-h-11 items-center rounded-full border border-black/10 px-5 text-sm font-bold text-black/65 transition hover:text-black"
+            className="inline-flex min-h-11 items-center rounded-xl border border-white/10 px-5 text-sm font-bold text-white/65 transition hover:text-white"
           >
             Thêm khóa học khác
           </Link>
         </div>
         {message ? (
-          <p className="mt-4 rounded-2xl bg-[#f2eadf] p-4 text-sm font-semibold text-black/70">
+          <p className="mt-4 rounded-xl bg-red-500/12 p-4 text-sm font-semibold text-red-100">
             {message}
           </p>
         ) : null}

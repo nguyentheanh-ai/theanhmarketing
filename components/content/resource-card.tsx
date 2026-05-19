@@ -17,14 +17,14 @@ export function ResourceCard({ resource }: { resource: Resource }) {
     )}`;
 
   return (
-    <SoftCard className="h-full hover:shadow-[0_28px_80px_rgba(0,0,0,0.08)]">
-      <p className="text-sm font-semibold text-[#c77b20]">
+    <SoftCard className="h-full hover:border-[#77d7ff]/35">
+      <p className="ai-kicker">
         {resource.type} · {resource.access}
       </p>
       <h2 className="mt-4 text-2xl font-black tracking-[-0.04em]">
         {resource.title}
       </h2>
-      <p className="mt-4 leading-7 text-black/60">{resource.description}</p>
+      <p className="ai-muted mt-4 leading-7">{resource.description}</p>
       <ButtonLink
         href={requestHref}
         target={resource.fileUrl ? "_blank" : undefined}

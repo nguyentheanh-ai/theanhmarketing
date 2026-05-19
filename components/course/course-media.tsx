@@ -6,7 +6,7 @@ export function CourseMedia({ course }: { course: Course }) {
 
   if (previewThumbnailUrl) {
     return (
-      <div className="relative overflow-hidden rounded-[2rem] bg-black shadow-[0_24px_80px_rgba(0,0,0,0.08)]">
+      <div className="ai-panel-strong relative overflow-hidden rounded-[1.25rem] bg-black">
         <div
           aria-label={course.thumbnailLabel}
           className="aspect-video w-full bg-cover bg-center"
@@ -23,7 +23,7 @@ export function CourseMedia({ course }: { course: Course }) {
   if (course.thumbnailImageUrl || course.bannerImageUrl) {
     return (
       <div
-        className="min-h-[280px] rounded-[2rem] bg-cover bg-center shadow-[0_24px_80px_rgba(0,0,0,0.08)]"
+        className="ai-panel-strong min-h-[280px] rounded-[1.25rem] bg-cover bg-center"
         style={{
           backgroundImage: `url(${course.thumbnailImageUrl || course.bannerImageUrl})`,
         }}
@@ -33,10 +33,10 @@ export function CourseMedia({ course }: { course: Course }) {
   }
 
   return (
-    <div className="flex min-h-[280px] items-center justify-center rounded-[2rem] bg-[#f2eadf] p-8 text-center">
+    <div className="ai-panel flex min-h-[280px] items-center justify-center p-8 text-center">
       <div>
-        <p className="text-sm font-semibold text-[#c77b20]">{course.thumbnailLabel}</p>
-        <p className="mt-3 text-sm leading-6 text-black/55">{course.previewNote}</p>
+        <p className="ai-kicker">{course.thumbnailLabel}</p>
+        <p className="ai-muted mt-3 text-sm leading-6">{course.previewNote}</p>
       </div>
     </div>
   );

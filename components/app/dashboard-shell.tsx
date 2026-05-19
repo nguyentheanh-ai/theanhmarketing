@@ -18,13 +18,13 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <main className="min-h-screen bg-[#fbfaf7] text-[#0b0b0c]">
-      <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-black/10 bg-white/70 p-6 backdrop-blur-xl lg:block">
+    <main className="ai-os-bg ai-grid min-h-screen text-white">
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-72 border-r border-[#77d7ff]/15 bg-[#07111d]/82 p-6 backdrop-blur-xl lg:block">
         <Link href="/" className="flex items-center gap-3">
-          <span className="grid size-9 place-items-center rounded-full bg-black text-sm font-bold text-white">
+          <span className="grid size-9 place-items-center rounded-lg border border-[#77d7ff]/20 bg-white/8 text-sm font-bold text-white">
             {siteConfig.logoMark}
           </span>
-          <span className="font-bold tracking-[-0.03em]">{siteConfig.name}</span>
+          <span className="font-bold tracking-[-0.03em] text-white">{siteConfig.name}</span>
         </Link>
         <nav className="mt-10 grid gap-2">
           {studentNav.map((item) => (
@@ -34,17 +34,17 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               aria-current={pathname === item.href ? "page" : undefined}
               className={`rounded-full px-4 py-3 text-sm font-semibold transition ${
                 pathname === item.href
-                  ? "bg-black text-white"
-                  : "text-black/60 hover:bg-black hover:text-white"
+                  ? "bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.12)]"
+                  : "text-white/62 hover:bg-white/10 hover:text-white"
               }`}
             >
               {item.label}
             </Link>
           ))}
         </nav>
-        <SignOutButton className="mt-8 rounded-full border border-black/10 px-4 py-3 text-left text-sm font-semibold text-black/50 transition hover:bg-black hover:text-white disabled:opacity-50" />
+        <SignOutButton className="mt-8 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white/62 transition hover:bg-white/10 hover:text-white disabled:opacity-50" />
       </aside>
-      <section className="px-5 py-8 lg:ml-72 lg:px-10">{children}</section>
+      <section className="relative z-10 px-5 py-8 lg:ml-72 lg:px-10">{children}</section>
     </main>
   );
 }

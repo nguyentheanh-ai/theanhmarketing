@@ -69,19 +69,25 @@ export function PaymentStatusPoller({ initialOrder }: { initialOrder: PaymentOrd
   const paid = order.status === "paid";
 
   return (
-    <div className={paid ? "rounded-2xl bg-[#e7f3df] p-4" : "rounded-2xl bg-[#f2eadf] p-4"}>
-      <p className="text-sm font-bold text-black/55">Trạng thái</p>
+    <div
+      className={
+        paid
+          ? "rounded-xl border border-emerald-300/20 bg-emerald-300/10 p-4"
+          : "rounded-xl border border-white/10 bg-white/8 p-4"
+      }
+    >
+      <p className="text-sm font-bold text-white/55">Trạng thái</p>
       <p className="mt-1 text-2xl font-black tracking-[-0.03em]">
         {paid ? "Đã nhận thanh toán" : "Đang chờ chuyển khoản"}
       </p>
-      <p className="mt-2 text-sm leading-6 text-black/60">
+      <p className="mt-2 text-sm leading-6 text-white/60">
         {paid
           ? "SePay đã báo tiền vào. Đang chuyển bạn tới khu học viên..."
           : "Trang này tự kiểm tra mỗi vài giây. Sau khi chuyển khoản thành công, trạng thái sẽ đổi tự động."}
       </p>
 
       {!paid ? (
-        <div className="mt-3 inline-flex items-center rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-bold text-black/65">
+        <div className="mt-3 inline-flex items-center rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-bold text-white/65">
           Thời gian giữ đơn: {formatCountdown(secondsLeft)}
         </div>
       ) : null}

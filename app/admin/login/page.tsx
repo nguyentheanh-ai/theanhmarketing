@@ -13,14 +13,14 @@ export const metadata: Metadata = {
 
 export default function AdminLoginPage() {
   return (
-    <main className="min-h-screen bg-[#fbfaf7] px-5 py-16 text-[#0b0b0c] sm:px-8">
+    <main className="ai-os-bg ai-grid min-h-screen px-5 py-16 text-white sm:px-8">
       <section className="mx-auto grid min-h-[calc(100vh-8rem)] max-w-5xl items-center gap-8 lg:grid-cols-[0.9fr_1.1fr]">
         <div>
-          <p className="text-sm font-semibold text-[#c77b20]">Admin</p>
-          <h1 className="mt-4 text-5xl font-black leading-[0.98] tracking-[-0.045em] sm:text-7xl">
+          <p className="ai-kicker">Admin</p>
+          <h1 className="ai-glow-text mt-4 text-5xl font-black leading-[0.98] tracking-[-0.045em] sm:text-7xl">
             Đăng nhập quản trị
           </h1>
-          <p className="mt-6 text-lg leading-9 text-black/65">
+          <p className="ai-muted mt-6 text-lg leading-9">
             Khu vực dành riêng cho quản trị viên The Anh Marketing để quản lý
             khóa học, nội dung, học viên và dữ liệu vận hành.
           </p>

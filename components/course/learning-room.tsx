@@ -53,7 +53,6 @@ export function LearningRoom({
   nextLesson,
   previousLesson,
 }: LearningRoomProps) {
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const moduleGroups = useMemo(() => getModuleGroups(lessons), [lessons]);
   const currentIndex = lessons.findIndex((lesson) => lesson.id === currentLesson.id);
@@ -61,27 +60,23 @@ export function LearningRoom({
     lessons.length > 0 ? Math.round(((currentIndex + 1) / lessons.length) * 100) : 0;
   const canWatchVideo = Boolean(currentLesson.embedUrl);
   const thumbnailUrl = toYouTubeThumbnailUrl(currentLesson.youtubeUrl);
-  const shellClass = isDarkMode ? "bg-[#1f2028] text-white" : "bg-[#f5f1e9] text-[#111111]";
-  const panelClass = isDarkMode
-    ? "bg-[#272831] text-white ring-white/6"
-    : "bg-white text-[#111111] ring-black/8";
-  const mutedText = isDarkMode ? "text-white/62" : "text-black/58";
-  const subtlePanel = isDarkMode ? "bg-[#20212a]" : "bg-[#f8f3eb]";
-  const dividerClass = isDarkMode ? "border-white/10" : "border-black/10";
+  const shellClass = "ai-os-bg ai-grid text-white";
+  const panelClass = "ai-panel text-white";
+  const mutedText = "text-white/62";
+  const subtlePanel = "border border-white/10 bg-white/8 text-white/72";
+  const dividerClass = "border-white/10";
 
   return (
     <main className={`min-h-screen ${shellClass}`}>
       <aside
         className={`fixed inset-y-0 left-0 z-30 hidden w-72 border-r p-5 transition-transform lg:flex lg:flex-col ${
           isSidebarVisible ? "translate-x-0" : "-translate-x-full"
-        } ${isDarkMode ? "border-white/8 bg-[#22232b]" : "border-black/10 bg-white"}`}
+        } border-[#77d7ff]/15 bg-[#05080d]/88 backdrop-blur-2xl`}
       >
         <button
           aria-label="Ẩn thanh bên"
           className={`absolute -right-4 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-sm font-black shadow-[0_12px_34px_rgba(0,0,0,0.22)] ${
-            isDarkMode
-              ? "bg-white text-black hover:bg-white/90"
-              : "bg-black text-white hover:bg-black/86"
+            "bg-white text-black hover:bg-white/90"
           }`}
           type="button"
           onClick={() => setIsSidebarVisible(false)}
@@ -89,26 +84,24 @@ export function LearningRoom({
           {"<"}
         </button>
 
-        <Link href="/" className="flex items-center gap-3 rounded-xl bg-white p-3 text-black">
-          <BrandMark className="grid size-10 place-items-center overflow-hidden rounded-lg bg-white p-1 ring-1 ring-black/8" />
+        <Link href="/" className="flex items-center gap-3 rounded-xl border border-[#77d7ff]/18 bg-white/8 p-3 text-white">
+          <BrandMark className="grid size-10 place-items-center overflow-hidden rounded-lg bg-white/8 p-1 ring-1 ring-[#77d7ff]/25" />
           <span>
             <span className="block text-sm font-black">{siteConfig.name}</span>
-            <span className="block text-xs font-bold text-black/48">The Anh Academy</span>
+            <span className="block text-xs font-bold text-white/48">The Anh Academy</span>
           </span>
         </Link>
 
         <nav className="mt-8 grid gap-2 text-sm font-bold">
           <Link
-            className={`rounded-xl px-4 py-3 ${isDarkMode ? "bg-white/8 text-white" : "bg-black text-white"}`}
+            className="rounded-xl bg-[#159cfb] px-4 py-3 text-white"
             href="/dashboard"
           >
             Khóa học của tôi
           </Link>
           <a
             className={`rounded-xl px-4 py-3 ${
-              isDarkMode
-                ? "text-white/68 hover:bg-white/8 hover:text-white"
-                : "text-black/62 hover:bg-black/5 hover:text-black"
+              "text-white/68 hover:bg-white/8 hover:text-white"
             }`}
             href="#support"
           >
@@ -117,24 +110,16 @@ export function LearningRoom({
         </nav>
 
         <div className="mt-auto grid gap-3">
-          <button
-            className={`flex min-h-12 items-center justify-between rounded-full px-4 text-sm font-black ${
-              isDarkMode ? "bg-[#6d3be8] text-white" : "bg-[#eadff8] text-[#4d1f7f]"
-            }`}
-            type="button"
-            onClick={() => setIsDarkMode((current) => !current)}
+          <div
+            className="flex min-h-12 items-center justify-between rounded-xl border border-[#77d7ff]/18 bg-white/8 px-4 text-sm font-black text-white"
           >
-            <span>Dark Mode</span>
+            <span>Content OS</span>
             <span className="grid size-7 place-items-center rounded-full bg-black text-white">
-              {isDarkMode ? "On" : "Off"}
+              AI
             </span>
-          </button>
+          </div>
           <SignOutButton
-            className={`rounded-full border px-4 py-3 text-left text-sm font-bold ${
-              isDarkMode
-                ? "border-white/10 text-white/62 hover:bg-white/8 hover:text-white"
-                : "border-black/10 text-black/58 hover:bg-black hover:text-white"
-            }`}
+            className="rounded-xl border border-white/10 px-4 py-3 text-left text-sm font-bold text-white/62 hover:bg-white/8 hover:text-white"
           />
         </div>
       </aside>
@@ -143,7 +128,7 @@ export function LearningRoom({
         <button
           aria-label="Hiện thanh bên"
           className={`fixed left-4 top-1/2 z-30 hidden size-8 -translate-y-1/2 place-items-center rounded-full text-sm font-black shadow-[0_12px_34px_rgba(0,0,0,0.22)] lg:grid ${
-            isDarkMode ? "bg-white text-black hover:bg-white/90" : "bg-black text-white hover:bg-black/86"
+            "bg-white text-black hover:bg-white/90"
           }`}
           type="button"
           onClick={() => setIsSidebarVisible(true)}
@@ -155,7 +140,7 @@ export function LearningRoom({
       <section className={isSidebarVisible ? "transition-[margin] lg:ml-72" : "transition-[margin]"}>
         <header
           className={`sticky top-0 z-20 flex min-h-16 items-center justify-between border-b px-5 backdrop-blur-xl lg:px-6 ${
-            isDarkMode ? "border-white/8 bg-[#1f2028]/88" : "border-black/10 bg-[#f5f1e9]/88"
+            "border-[#77d7ff]/15 bg-[#05080d]/78"
           }`}
         >
           <div>
@@ -163,18 +148,16 @@ export function LearningRoom({
             <p className="font-bold">{course.title}</p>
           </div>
           <div className="flex items-center gap-3">
-            <button
+            <span
               className={`rounded-full px-4 py-2 text-sm font-black lg:hidden ${
-                isDarkMode ? "bg-[#6d3be8] text-white" : "bg-black text-white"
+                "bg-[#159cfb] text-white"
               }`}
-              type="button"
-              onClick={() => setIsDarkMode((current) => !current)}
             >
-              {isDarkMode ? "Dark" : "Light"}
-            </button>
+              OS
+            </span>
             <Link
               className={`rounded-full px-4 py-2 text-sm font-black ${
-                isDarkMode ? "bg-white text-black" : "bg-black text-white"
+                "bg-white text-black"
               }`}
               href="/dashboard"
             >
@@ -186,9 +169,7 @@ export function LearningRoom({
         <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_390px] lg:p-6">
           <div className="min-w-0">
             <div
-              className={`overflow-hidden rounded-2xl shadow-[0_24px_90px_rgba(0,0,0,0.18)] ring-1 ${
-                isDarkMode ? "ring-white/8" : "ring-black/8"
-              }`}
+              className="overflow-hidden rounded-xl border border-[#77d7ff]/15 shadow-[0_24px_90px_rgba(0,0,0,0.35)]"
             >
               {canWatchVideo ? (
                 <iframe
@@ -244,14 +225,14 @@ export function LearningRoom({
                   ) : null}
                   {nextLesson ? (
                     <Link
-                      className="rounded-xl bg-[#6d3be8] px-5 py-3 text-center text-sm font-bold text-white"
+                      className="rounded-xl bg-[#159cfb] px-5 py-3 text-center text-sm font-bold text-white"
                       href={getLessonHref(course.slug, nextLesson.id)}
                     >
                       Bài tiếp theo
                     </Link>
                   ) : (
                     <Link
-                      className="rounded-xl bg-[#2f8f62] px-5 py-3 text-center text-sm font-bold text-white"
+                      className="rounded-xl bg-emerald-400/80 px-5 py-3 text-center text-sm font-bold text-white"
                       href="/dashboard"
                     >
                       Hoàn thành khóa học
@@ -262,13 +243,13 @@ export function LearningRoom({
 
               <aside className="grid gap-4">
                 <section id="support" className={`rounded-2xl p-5 ring-1 ${panelClass}`}>
-                  <p className="text-sm font-black text-[#4fb37a]">Hỗ trợ học viên</p>
+                  <p className="ai-kicker">Hỗ trợ học viên</p>
                   <p className={`mt-3 text-sm leading-6 ${mutedText}`}>
                     Cần hỏi về bài học, tài khoản hoặc chiến dịch đang chạy?
                   </p>
                   <div className="mt-4 grid gap-2">
                     <a
-                      className="rounded-xl bg-[#4fb37a] px-4 py-3 text-center text-sm font-black text-white"
+                      className="rounded-xl bg-[#159cfb] px-4 py-3 text-center text-sm font-black text-white"
                       href={siteConfig.emailHref}
                     >
                       Gửi email hỗ trợ
@@ -286,7 +267,7 @@ export function LearningRoom({
           </div>
 
           <aside className={`max-h-[calc(100vh-96px)] overflow-y-auto rounded-2xl p-4 ring-1 ${panelClass}`}>
-            <p className="text-sm font-black uppercase tracking-[0.14em] text-[#8e62ff]">Danh sách bài học</p>
+            <p className="ai-kicker">Danh sách bài học</p>
             <div className="mt-4 grid gap-6">
               {moduleGroups.map((module) => (
                 <section className={`border-t pt-4 first:border-t-0 first:pt-0 ${dividerClass}`} key={module.key}>
@@ -301,10 +282,8 @@ export function LearningRoom({
                           key={lesson.id}
                           className={`grid grid-cols-[92px_1fr] gap-3 rounded-xl p-2 text-sm ${
                             isActive
-                              ? "bg-[#6d3be8] text-white"
-                              : isDarkMode
-                                ? "bg-white/5 text-white/78 hover:bg-white/10"
-                                : "bg-black/5 text-black/72 hover:bg-black/10"
+                              ? "bg-[#159cfb] text-white"
+                              : "bg-white/5 text-white/78 hover:bg-white/10"
                           }`}
                           href={getLessonHref(course.slug, lesson.id)}
                         >

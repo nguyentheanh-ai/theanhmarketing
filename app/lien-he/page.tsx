@@ -18,7 +18,7 @@ export default function ContactPage() {
 
   return (
     <PageShell>
-      <section className="mx-auto max-w-6xl px-5 pb-20 pt-36 sm:px-8">
+      <section className="ai-shell pb-20 pt-32 sm:pt-40">
         <SectionHeading
           eyebrow={page.eyebrow}
           title={page.title}
@@ -26,11 +26,11 @@ export default function ContactPage() {
         />
         <div className="mt-10 grid gap-5 md:grid-cols-2">
           <SoftCard>
-            <p className="text-sm font-semibold text-[#c77b20]">Hotline/Zalo</p>
+            <p className="ai-kicker">Hotline/Zalo</p>
             <h2 className="mt-4 text-3xl font-black tracking-[-0.05em]">
               {siteConfig.phone}
             </h2>
-            <p className="mt-4 leading-8 text-black/60">
+            <p className="ai-muted mt-4 leading-8">
               {page.phoneDescription}
             </p>
             <ButtonLink href={siteConfig.phoneHref} className="mt-6">
@@ -38,11 +38,11 @@ export default function ContactPage() {
             </ButtonLink>
           </SoftCard>
           <SoftCard>
-            <p className="text-sm font-semibold text-[#c77b20]">Email</p>
+            <p className="ai-kicker">Email</p>
             <h2 className="mt-4 text-3xl font-black tracking-[-0.05em]">
               {siteConfig.email}
             </h2>
-            <p className="mt-4 leading-8 text-black/60">
+            <p className="ai-muted mt-4 leading-8">
               {page.emailDescription}
             </p>
             <ButtonLink href={siteConfig.emailHref} variant="secondary" className="mt-6">
@@ -52,9 +52,9 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
-        <div className="rounded-[2rem] bg-[#f2eadf] p-8 sm:p-12">
-          <p className="text-sm font-semibold text-[#c77b20]">{page.leadFormEyebrow}</p>
+      <section className="ai-shell py-20">
+        <div className="ai-panel-strong p-8 sm:p-12">
+          <p className="ai-kicker">{page.leadFormEyebrow}</p>
           <h2 className="mt-4 text-4xl font-black tracking-[-0.05em] sm:text-6xl">
             {page.leadFormTitle}
           </h2>

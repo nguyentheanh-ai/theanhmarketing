@@ -17,12 +17,12 @@ export default async function CartPage() {
 
   return (
     <PageShell>
-      <section className="mx-auto max-w-6xl px-5 pb-24 pt-40 sm:px-8">
-        <p className="text-sm font-semibold text-[#c77b20]">Giỏ hàng</p>
-        <h1 className="mt-4 text-5xl font-black tracking-[-0.04em] sm:text-7xl">
+      <section className="ai-shell pb-24 pt-32 sm:pt-40">
+        <p className="ai-kicker">Giỏ hàng</p>
+        <h1 className="ai-glow-text mt-4 text-5xl font-black tracking-[-0.04em] sm:text-7xl">
           Chốt khóa học trước khi thanh toán.
         </h1>
-        <p className="mt-6 max-w-3xl text-lg leading-9 text-black/65">
+        <p className="ai-muted mt-6 max-w-3xl text-lg leading-9">
           Bạn có thể thêm nhiều khóa học vào giỏ và thanh toán tự động qua SePay.
         </p>
         <div className="mt-10">
