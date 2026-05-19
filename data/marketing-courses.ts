@@ -93,7 +93,7 @@ function createMarketingCourse(title: string, index: number): Course {
             resources: [
               {
                 title: "Workbook định hướng",
-                url: "/tai-lieu",
+                url: "/blog#tai-lieu",
               },
             ],
             allowComments: true,
@@ -109,7 +109,7 @@ function createMarketingCourse(title: string, index: number): Course {
             resources: [
               {
                 title: "Checklist triển khai",
-                url: "/tai-lieu",
+                url: "/blog#tai-lieu",
               },
             ],
             allowComments: true,
@@ -134,7 +134,7 @@ function createMarketingCourse(title: string, index: number): Course {
             resources: [
               {
                 title: "Prompt workflow",
-                url: "/tai-lieu",
+                url: "/blog#tai-lieu",
               },
             ],
             allowComments: true,
@@ -174,3 +174,4 @@ function createMarketingCourse(title: string, index: number): Course {
 }
 
 export const marketingCourses = courseNames.map(createMarketingCourse);
+

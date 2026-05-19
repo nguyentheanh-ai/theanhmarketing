@@ -29,7 +29,7 @@ export const fallbackBrandSettings: BrandSettings = {
   phone: siteConfig.phone,
   email: siteConfig.email,
   primaryCtaLabel: "Khám phá hệ sinh thái",
-  primaryCtaHref: "/khoa-hoc",
+  primaryCtaHref: "/dang-ky",
   heroImageUrl: "",
   heroVideoUrl: "",
 };

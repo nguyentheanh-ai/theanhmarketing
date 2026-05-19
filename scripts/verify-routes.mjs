@@ -3,7 +3,10 @@ const baseUrl = process.env.VERIFY_BASE_URL || "http://localhost:3000";
 const routes = [
   "/",
   "/gioi-thieu",
+  "/he-sinh-thai",
   "/khoa-hoc",
+  "/workshop",
+  "/doi-tac",
   "/khoa-hoc/facebook-ads-2026",
   "/khoa-hoc/marketing-online-nen-tang",
   "/blog",

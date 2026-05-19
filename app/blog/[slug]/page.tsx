@@ -95,7 +95,7 @@ export default async function BlogPostPage({
           />
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <ButtonLink href="/khoa-hoc/facebook-ads-2026">Xem khóa học</ButtonLink>
-            <ButtonLink href="/tai-lieu" variant="secondary">
+            <ButtonLink href="/blog#tai-lieu" variant="secondary">
               Xem tài liệu
             </ButtonLink>
           </div>
@@ -120,3 +120,4 @@ export default async function BlogPostPage({
     </PageShell>
   );
 }
+

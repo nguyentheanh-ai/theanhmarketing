@@ -10,7 +10,7 @@ export const homePage = {
     },
     secondaryCta: {
       label: "Xem Tài Liệu Miễn Phí",
-      href: "/tai-lieu",
+      href: "/blog#tai-lieu",
     },
   },
   problem: {
@@ -53,7 +53,7 @@ export const homePage = {
     title: "Thư viện giúp bạn bắt đầu nhanh hơn.",
     cta: {
       label: "Xem thư viện",
-      href: "/tai-lieu",
+      href: "/blog#tai-lieu",
     },
   },
   testimonials: {
@@ -83,3 +83,4 @@ export const homePage = {
     },
   },
 };
+

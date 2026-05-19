@@ -47,7 +47,7 @@ export function SiteOfferPopup({
   if (!isOpen) {
     return (
       <button
-        className="fixed bottom-6 left-5 z-50 rounded-full border-2 border-black bg-[#e7f3df] px-5 py-3 text-sm font-black shadow-[6px_6px_0_#111]"
+        className="fixed bottom-6 left-5 z-50 rounded-full border-2 border-[#061018] bg-[#e7f3df] px-5 py-3 text-sm font-black text-[#061018] shadow-[6px_6px_0_#111] transition hover:bg-[#d7eccb]"
         type="button"
         onClick={() => setIsOpen(true)}
       >
@@ -57,37 +57,38 @@ export function SiteOfferPopup({
   }
 
   return (
-    <aside className="fixed bottom-5 left-5 z-50 w-[min(380px,calc(100vw-2.5rem))] rounded-3xl border-2 border-black bg-white p-4 shadow-[8px_8px_0_#111]">
+    <aside className="fixed bottom-5 left-5 z-50 w-[min(390px,calc(100vw-2.5rem))] rounded-3xl border-2 border-[#061018] bg-[#fffdf8] p-4 text-[#07111f] shadow-[8px_8px_0_#111]">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xl font-black tracking-[-0.04em]">{offer.title}</p>
-          <p className="mt-1 text-sm font-semibold text-black/55">
+          <p className="text-xl font-black tracking-[-0.04em] text-[#07111f]">{offer.title}</p>
+          <p className="mt-1 text-sm font-bold leading-6 text-[#334155]">
             {offer.description || `Nhận tư vấn lộ trình và tài liệu phù hợp với ${contextTitle}.`}
           </p>
         </div>
         <button
-          className="grid size-9 shrink-0 place-items-center rounded-full bg-[#e7f3df] text-2xl font-black"
+          className="grid size-9 shrink-0 place-items-center rounded-full bg-[#dff0d3] text-2xl font-black text-[#07111f] transition hover:bg-[#c8eab6]"
           type="button"
           onClick={() => setIsOpen(false)}
+          aria-label="Đóng popup ưu đãi"
         >
           ×
         </button>
       </div>
 
       {offer.couponCode ? (
-        <div className="mt-4 rounded-2xl border-2 border-dashed border-[#2f8f62] bg-[#e7f3df] p-3">
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2f6f4d]">
+        <div className="mt-4 rounded-2xl border-2 border-dashed border-[#16834e] bg-[#e7f3df] p-3 shadow-inner">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-[#17633f]">
             {offer.discountLabel || "Mã giảm giá"}
           </p>
-          <p className="mt-1 text-2xl font-black tracking-[0.08em] text-black">{offer.couponCode}</p>
+          <p className="mt-1 text-2xl font-black tracking-[0.08em] text-[#020617]">{offer.couponCode}</p>
         </div>
       ) : null}
 
       <div className="mt-4 grid gap-3">
         {offer.items.map((item) => (
-          <div key={item} className="motion-card rounded-2xl border border-black/10 bg-[#fbfaf7] p-3">
-            <p className="text-sm font-bold">{item}</p>
-            <ButtonLink href={offer.ctaHref || "/dang-ky"} size="sm" className="mt-3">
+          <div key={item} className="rounded-2xl border border-[#cbd5e1] bg-white p-3 shadow-[0_8px_22px_rgba(15,23,42,0.08)] transition hover:border-[#159cfb]/60">
+            <p className="text-sm font-bold leading-6 text-[#1f2937]">{item}</p>
+            <ButtonLink href={offer.ctaHref || "/dang-ky"} size="sm" className="mt-3 !text-white">
               {offer.ctaLabel || "Nhận ưu đãi"}
             </ButtonLink>
           </div>

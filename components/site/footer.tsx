@@ -7,22 +7,24 @@ export async function SiteFooter() {
   const phoneHref = `tel:${brand.phone.replace(/\D/g, "")}`;
   const emailHref = `mailto:${brand.email}`;
   const featuredLinks = [
-    { label: "Solopreneur OS", href: "/khoa-hoc" },
-    { label: "Content Engine", href: "/blog" },
-    { label: "AI Workflow", href: "/tai-lieu" },
-    { label: "Tài nguyên miễn phí", href: "/tai-lieu" },
+    { label: "The Anh OS", href: "/he-sinh-thai" },
+    { label: "Khóa học", href: "/khoa-hoc" },
+    { label: "AI Workflow", href: "/blog#tai-lieu" },
+    { label: "Workshop live", href: "/workshop" },
   ];
   const usefulLinks = [
     { label: "Blog", href: "/blog" },
-    { label: "Hệ sinh thái", href: "/khoa-hoc" },
+    { label: "Hệ sinh thái", href: "/he-sinh-thai" },
     { label: "Học viên", href: "/hoc-vien" },
+    { label: "Đối tác", href: "/doi-tac" },
     { label: "Đăng ký", href: "/dang-ky" },
   ];
   const helpLinks = [
-    { label: "Liên hệ chúng tôi", href: "/lien-he" },
-    { label: "Về chúng tôi", href: "/gioi-thieu" },
+    { label: "Liên hệ", href: "/lien-he" },
+    { label: "Về The Anh", href: "/gioi-thieu" },
     { label: "Đăng nhập học viên", href: "/dang-nhap" },
-    { label: "Dashboard", href: "/dashboard" },
+    { label: "Dashboard học viên", href: "/dashboard" },
+    { label: "Admin CRM", href: "/admin/dashboard" },
   ];
 
   return (
@@ -36,8 +38,8 @@ export async function SiteFooter() {
             </span>
           </Link>
           <p className="ai-muted mt-6 max-w-xl text-sm font-medium leading-7">
-            Hệ sinh thái giúp solopreneur đóng gói chuyên môn, xây content engine,
-            thiết kế sales system và dùng AI workflow để vận hành gọn hơn.
+            Hệ sinh thái giúp người học xây nền tảng marketing, dùng AI workflow để sản xuất nội dung,
+            quản lý tài liệu, học theo khóa và được chăm sóc qua CRM/admin.
           </p>
           <div className="mt-10">
             <p className="text-lg font-black text-[#8bdcff]">Đăng ký nhận bản tin</p>
@@ -48,7 +50,7 @@ export async function SiteFooter() {
               <input
                 className="min-h-10 min-w-0 flex-1 bg-transparent px-4 text-sm text-white outline-none placeholder:text-white/38"
                 name="subject"
-                placeholder="Nhập địa chỉ email của bạn"
+                placeholder="Nhập email của bạn"
                 type="email"
               />
               <button
@@ -63,10 +65,10 @@ export async function SiteFooter() {
         </div>
 
         <FooterColumn title="Hệ sinh thái" links={featuredLinks} />
-        <FooterColumn title="Liên kết hữu ích" links={usefulLinks} />
+        <FooterColumn title="Liên kết" links={usefulLinks} />
         <div>
           <FooterColumn title="Trợ giúp" links={helpLinks} />
-          <div className="mt-6 grid gap-2 text-sm font-semibold text-black/62">
+          <div className="mt-6 grid gap-2 text-sm font-semibold">
             <a href={phoneHref} className="text-white/62 transition hover:text-[#8bdcff]">
               Hotline/Zalo: {brand.phone}
             </a>
@@ -115,3 +117,4 @@ function FooterColumn({
     </nav>
   );
 }
+

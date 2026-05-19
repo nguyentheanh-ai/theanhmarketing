@@ -8,9 +8,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = [
     "",
     "/gioi-thieu",
+    "/he-sinh-thai",
     "/khoa-hoc",
+    "/workshop",
+    "/doi-tac",
     "/blog",
-    "/tai-lieu",
     "/hoc-vien",
     "/lien-he",
   ];

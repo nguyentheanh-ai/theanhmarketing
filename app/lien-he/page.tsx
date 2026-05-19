@@ -3,39 +3,34 @@ import { PageShell } from "@/components/site/page-shell";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { SoftCard } from "@/components/ui/soft-card";
-import { publicPages } from "@/data/pages";
 import { siteConfig } from "@/data/site";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Liên hệ",
+  title: "Liên hệ tư vấn",
   description:
-    "Liên hệ The Anh Marketing để được tư vấn khóa học, tài liệu và lộ trình học Marketing phù hợp.",
+    "Liên hệ The Anh Marketing để được tư vấn khóa học, tài liệu, workshop hoặc hợp tác triển khai AI Marketing.",
 };
 
 export default function ContactPage() {
-  const page = publicPages.contact;
-
   return (
     <PageShell>
-      <section className="ai-shell pb-20 pt-32 sm:pt-40">
+      <section className="ai-shell pb-16 pt-28 sm:pt-32">
         <SectionHeading
-          eyebrow={page.eyebrow}
-          title={page.title}
-          description={page.description}
+          eyebrow="Liên hệ"
+          title="Chọn đúng lộ trình học hoặc hợp tác với The Anh Marketing."
+          description="Bạn có thể hỏi về khóa học, quyền truy cập học viên, tài liệu, workshop, thanh toán hoặc hợp tác phân phối. Form bên dưới đi thẳng vào hệ lead/admin CRM."
         />
-        <div className="mt-10 grid gap-5 md:grid-cols-2">
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
           <SoftCard>
             <p className="ai-kicker">Hotline/Zalo</p>
             <h2 className="mt-4 text-3xl font-black tracking-[-0.05em]">
               {siteConfig.phone}
             </h2>
             <p className="ai-muted mt-4 leading-8">
-              {page.phoneDescription}
+              Phù hợp khi bạn cần tư vấn nhanh về khóa học, tài khoản hoặc thanh toán.
             </p>
-            <ButtonLink href={siteConfig.phoneHref} className="mt-6">
-              Gọi tư vấn
-            </ButtonLink>
+            <ButtonLink href={siteConfig.phoneHref} className="mt-6">Gọi tư vấn</ButtonLink>
           </SoftCard>
           <SoftCard>
             <p className="ai-kicker">Email</p>
@@ -43,20 +38,31 @@ export default function ContactPage() {
               {siteConfig.email}
             </h2>
             <p className="ai-muted mt-4 leading-8">
-              {page.emailDescription}
+              Phù hợp cho yêu cầu chi tiết, hợp tác, tài liệu hoặc hỗ trợ học viên.
             </p>
-            <ButtonLink href={siteConfig.emailHref} variant="secondary" className="mt-6">
-              Gửi email
-            </ButtonLink>
+            <ButtonLink href={siteConfig.emailHref} variant="secondary" className="mt-6">Gửi email</ButtonLink>
+          </SoftCard>
+          <SoftCard>
+            <p className="ai-kicker">Dashboard</p>
+            <h2 className="mt-4 text-3xl font-black tracking-[-0.05em]">
+              Học viên & Admin
+            </h2>
+            <p className="ai-muted mt-4 leading-8">
+              Học viên vào dashboard để học tiếp. Admin vào CRM để xử lý lead, đơn hàng và quyền học.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <ButtonLink href="/dashboard" variant="secondary">Học viên</ButtonLink>
+              <ButtonLink href="/admin/dashboard" variant="secondary">Admin</ButtonLink>
+            </div>
           </SoftCard>
         </div>
       </section>
 
-      <section className="ai-shell py-20">
+      <section className="ai-shell pb-20">
         <div className="ai-panel-strong p-8 sm:p-12">
-          <p className="ai-kicker">{page.leadFormEyebrow}</p>
+          <p className="ai-kicker">Form lead</p>
           <h2 className="mt-4 text-4xl font-black tracking-[-0.05em] sm:text-6xl">
-            {page.leadFormTitle}
+            Để lại nhu cầu, hệ thống sẽ đưa vào CRM.
           </h2>
           <LeadForm source="Trang liên hệ" submitLabel="Gửi thông tin tư vấn" />
         </div>

@@ -88,6 +88,133 @@ function toDisplayLevel(value: string | null | undefined) {
   return text;
 }
 
+const windows1252Bytes: Record<string, number> = {
+  "€": 0x80,
+  "‚": 0x82,
+  "ƒ": 0x83,
+  "„": 0x84,
+  "…": 0x85,
+  "†": 0x86,
+  "‡": 0x87,
+  "ˆ": 0x88,
+  "‰": 0x89,
+  "Š": 0x8a,
+  "‹": 0x8b,
+  "Œ": 0x8c,
+  "Ž": 0x8e,
+  "‘": 0x91,
+  "’": 0x92,
+  "“": 0x93,
+  "”": 0x94,
+  "•": 0x95,
+  "–": 0x96,
+  "—": 0x97,
+  "˜": 0x98,
+  "™": 0x99,
+  "š": 0x9a,
+  "›": 0x9b,
+  "œ": 0x9c,
+  "ž": 0x9e,
+  "Ÿ": 0x9f,
+};
+
+function looksMojibake(value: string) {
+  return /[ÃÂÄÆÅâ]|á[º»]/.test(value);
+}
+
+function decodeMojibake(value: string) {
+  let text = value;
+
+  for (let pass = 0; pass < 2 && looksMojibake(text); pass += 1) {
+    const bytes: number[] = [];
+    let canDecode = true;
+
+    for (const char of text) {
+      const code = char.codePointAt(0) ?? 0;
+      const byte = code <= 0xff ? code : windows1252Bytes[char];
+
+      if (typeof byte !== "number" || byte > 0xff) {
+        canDecode = false;
+        break;
+      }
+
+      bytes.push(byte);
+    }
+
+    if (!canDecode) {
+      break;
+    }
+
+    const decoded = new TextDecoder("utf-8").decode(new Uint8Array(bytes));
+
+    if (!decoded || decoded.includes("�")) {
+      break;
+    }
+
+    text = decoded;
+  }
+
+  return text;
+}
+
+function normalizeText(value: string) {
+  return looksMojibake(value) ? decodeMojibake(value) : value;
+}
+
+function normalizeTextArray(values: string[]) {
+  return values.map(normalizeText);
+}
+
+function normalizeCourseText(course: Course): Course {
+  return {
+    ...course,
+    title: normalizeText(course.title),
+    eyebrow: normalizeText(course.eyebrow),
+    description: normalizeText(course.description),
+    shortDescription: normalizeText(course.shortDescription),
+    price: normalizeText(course.price),
+    originalPrice: normalizeText(course.originalPrice),
+    statusLabel: normalizeText(course.statusLabel),
+    ctaText: normalizeText(course.ctaText),
+    duration: normalizeText(course.duration),
+    level: normalizeText(course.level),
+    format: normalizeText(course.format),
+    thumbnailLabel: normalizeText(course.thumbnailLabel),
+    previewNote: normalizeText(course.previewNote),
+    topics: normalizeTextArray(course.topics),
+    audience: normalizeTextArray(course.audience),
+    outcomes: normalizeTextArray(course.outcomes),
+    benefits: normalizeTextArray(course.benefits),
+    includes: normalizeTextArray(course.includes),
+    requirements: normalizeTextArray(course.requirements),
+    modules: course.modules.map((module) => ({
+      ...module,
+      title: normalizeText(module.title),
+      description: normalizeText(module.description),
+      lessons: module.lessons.map((lesson) => ({
+        ...lesson,
+        title: normalizeText(lesson.title),
+        duration: normalizeText(lesson.duration),
+        resources: lesson.resources?.map((resource) => ({
+          title: normalizeText(resource.title),
+          url: resource.url,
+        })),
+      })),
+    })),
+    instructor: {
+      ...course.instructor,
+      name: normalizeText(course.instructor.name),
+      title: normalizeText(course.instructor.title),
+      bio: normalizeText(course.instructor.bio),
+    },
+    reviews: course.reviews.map((review) => ({
+      name: normalizeText(review.name),
+      role: normalizeText(review.role),
+      quote: normalizeText(review.quote),
+    })),
+  };
+}
+
 function normalizeCourseTiming(course: Course): Course {
   return {
     ...course,
@@ -233,7 +360,7 @@ export function mapDbCourseToCourse(course: DbCourse): Course {
 }
 
 function getFallbackCourses() {
-  return mockCourses.map(normalizeCourseTiming);
+  return mockCourses.map((course) => normalizeCourseText(normalizeCourseTiming(course)));
 }
 
 export async function getCourses() {
@@ -255,7 +382,7 @@ export async function getCourses() {
     return getFallbackCourses();
   }
 
-  let dbCourses = (data as DbCourse[]).map(mapDbCourseToCourse);
+  let dbCourses = (data as DbCourse[]).map((course) => normalizeCourseText(normalizeCourseTiming(mapDbCourseToCourse(course))));
   const lessonIds = dbCourses.flatMap((course) =>
     course.modules.flatMap((module) => module.lessons.map((lesson) => lesson.id)),
   );
@@ -299,26 +426,29 @@ export async function getCourseBySlug(slug: string) {
   const courses = await getCourses();
   const course = courses.find((course) => course.slug === slug);
   const mockCourse = mockCourses.find((item) => item.slug === slug);
+  const normalizedMockCourse = mockCourse
+    ? normalizeCourseText(normalizeCourseTiming(mockCourse))
+    : null;
 
   if (!course) {
-    return mockCourse ?? null;
+    return normalizedMockCourse;
   }
 
-  if (course.modules.length === 0 && mockCourse?.modules.length) {
+  if (course.modules.length === 0 && normalizedMockCourse?.modules.length) {
     return {
       ...course,
-      modules: mockCourse.modules,
-      topics: course.topics.length > 0 ? course.topics : mockCourse.topics,
-      audience: course.audience.length > 0 ? course.audience : mockCourse.audience,
-      outcomes: course.outcomes.length > 0 ? course.outcomes : mockCourse.outcomes,
-      benefits: course.benefits.length > 0 ? course.benefits : mockCourse.benefits,
-      includes: course.includes.length > 0 ? course.includes : mockCourse.includes,
+      modules: normalizedMockCourse.modules,
+      topics: course.topics.length > 0 ? course.topics : normalizedMockCourse.topics,
+      audience: course.audience.length > 0 ? course.audience : normalizedMockCourse.audience,
+      outcomes: course.outcomes.length > 0 ? course.outcomes : normalizedMockCourse.outcomes,
+      benefits: course.benefits.length > 0 ? course.benefits : normalizedMockCourse.benefits,
+      includes: course.includes.length > 0 ? course.includes : normalizedMockCourse.includes,
       requirements:
-        course.requirements.length > 0 ? course.requirements : mockCourse.requirements,
-      instructor: course.instructor.name ? course.instructor : mockCourse.instructor,
-      reviews: course.reviews.length > 0 ? course.reviews : mockCourse.reviews,
+        course.requirements.length > 0 ? course.requirements : normalizedMockCourse.requirements,
+      instructor: course.instructor.name ? course.instructor : normalizedMockCourse.instructor,
+      reviews: course.reviews.length > 0 ? course.reviews : normalizedMockCourse.reviews,
       relatedSlugs:
-        course.relatedSlugs.length > 0 ? course.relatedSlugs : mockCourse.relatedSlugs,
+        course.relatedSlugs.length > 0 ? course.relatedSlugs : normalizedMockCourse.relatedSlugs,
     };
   }
 
