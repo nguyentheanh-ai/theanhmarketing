@@ -1,71 +1,78 @@
 import { PageShell } from "@/components/site/page-shell";
+import { ContentOsDashboardMockup, EcosystemFeatureGrid } from "@/components/site/ai-os-visuals";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { SoftCard } from "@/components/ui/soft-card";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Về The Anh",
+  title: "Marketing OS",
   description:
-    "The Anh Marketing xây hệ sinh thái học Marketing thực chiến, AI workflow, tài liệu và CRM học viên.",
+    "Marketing OS kết nối khóa học, tài liệu, workflow, dashboard học viên và admin CRM trong hệ sinh thái The Anh Marketing.",
 };
 
-const principles = [
-  ["Học theo hệ thống", "Đi từ nền tảng marketing, hành vi khách hàng, offer đến quảng cáo, nội dung và đo lường."],
-  ["Có tài liệu để triển khai", "Prompt, checklist, template và SOP giúp người học áp dụng lại sau mỗi bài."],
-  ["Gắn với vận hành thật", "Khóa học, học viên, đơn hàng và admin CRM được nối với nhau để quản lý lâu dài."],
+const operatingLayers = [
+  ["Learning layer", "Khóa học được chia theo module, bài học, tài liệu và quyền truy cập để học viên biết nên học gì tiếp theo."],
+  ["Workflow layer", "Prompt, checklist, template và SOP giúp biến kiến thức thành quy trình có thể áp dụng lại."],
+  ["CRM layer", "Lead, đơn hàng, học viên và quyền học được gom về admin để vận hành như một hệ thống thật."],
 ];
 
-export default function AboutPage() {
+const osMetrics = [
+  ["Course", "Module, lesson, access"],
+  ["Docs", "Prompt, checklist, SOP"],
+  ["Student", "Progress, support, upgrade"],
+  ["Admin", "Lead, order, CRM"],
+];
+
+export default function MarketingOsPage() {
   return (
     <PageShell>
-      <section className="ai-shell grid gap-10 pb-20 pt-28 sm:pt-32 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+      <section className="ai-shell grid gap-10 pb-16 pt-28 sm:pt-32 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
         <div>
           <SectionHeading
-            eyebrow="Về The Anh"
-            title="The Anh Marketing xây hệ sinh thái học Marketing thực chiến"
-            description="Trọng tâm là giúp người học hiểu hệ thống, triển khai được và dùng AI đúng chỗ trong công việc thật."
+            eyebrow="Marketing OS"
+            title="Một hệ điều hành để học, triển khai và vận hành Marketing."
+            description="Trang này tập trung vào cấu trúc Marketing OS: khóa học, tài liệu, workflow, dashboard học viên và admin CRM kết nối với nhau để người học không bị rời rạc."
           />
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href="/he-sinh-thai">Xem hệ sinh thái</ButtonLink>
+            <ButtonLink href="/dang-ky">Khám phá hệ sinh thái</ButtonLink>
             <ButtonLink href="/khoa-hoc" variant="secondary">Xem khóa học</ButtonLink>
           </div>
         </div>
-        <div className="content-os-frame compact">
-          <aside className="content-os-sidebar">
-            <strong>The Anh OS</strong>
-            {["Khóa học", "Tài liệu", "Học viên", "Admin"].map((item, index) => (
-              <span key={item} className={index === 0 ? "active" : ""}>{item}</span>
+        <ContentOsDashboardMockup compact />
+      </section>
+
+      <section className="ai-shell pb-14">
+        <div className="grid gap-4 md:grid-cols-4">
+          {osMetrics.map(([label, detail]) => (
+            <SoftCard key={label} className="p-5">
+              <p className="ai-kicker">{label}</p>
+              <p className="ai-muted mt-3 text-sm leading-6">{detail}</p>
+            </SoftCard>
+          ))}
+        </div>
+      </section>
+
+      <section className="ai-shell pb-16">
+        <div className="ai-panel-strong p-8 sm:p-10">
+          <SectionHeading
+            eyebrow="Operating layers"
+            title="Không phải trang giới thiệu. Đây là bản đồ vận hành."
+            description="Mỗi lớp trong OS có nhiệm vụ riêng: học kiến thức, lấy tài liệu, áp dụng workflow, theo dõi tiến độ và chăm sóc học viên qua CRM."
+          />
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {operatingLayers.map(([title, description]) => (
+              <article key={title} className="rounded-xl border border-white/10 bg-white/7 p-5">
+                <h2 className="text-2xl font-black tracking-[-0.04em] text-white">{title}</h2>
+                <p className="ai-muted mt-4 leading-7">{description}</p>
+              </article>
             ))}
-          </aside>
-          <main className="content-os-main">
-            <div className="content-os-titlebar">
-              <div>
-                <span>Main Stage</span>
-                <h3>Lộ trình học và vận hành Marketing</h3>
-              </div>
-            </div>
-            <section className="content-os-canvas">
-              {["Nền tảng Marketing", "AI Workflow", "Quyền học", "CRM chăm sóc"].map((item, index) => (
-                <div key={item} className={`content-node node-${index + 1}`}>
-                  <i>{index + 1}</i>
-                  <strong>{item}</strong>
-                </div>
-              ))}
-            </section>
-          </main>
+          </div>
         </div>
       </section>
 
       <section className="ai-shell pb-20">
-        <div className="grid gap-5 md:grid-cols-3">
-          {principles.map(([title, description]) => (
-            <SoftCard key={title}>
-              <h2 className="text-2xl font-black tracking-[-0.04em]">{title}</h2>
-              <p className="ai-muted mt-4 leading-8">{description}</p>
-            </SoftCard>
-          ))}
-        </div>
+        <EcosystemFeatureGrid />
       </section>
     </PageShell>
   );

@@ -17,7 +17,6 @@ export const mainNav = [
   { label: "Học viên", href: "/hoc-vien" },
   { label: "Workshop", href: "/workshop" },
   { label: "Blog", href: "/blog" },
-  { label: "Về The Anh", href: "/gioi-thieu" },
 ];
 
 export const platformStats = [

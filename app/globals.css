@@ -1846,15 +1846,28 @@ body {
   margin-bottom: 8px;
 }
 
-.community-hub aside span {
+.community-hub aside span,
+.community-hub aside button {
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: 10px;
   color: rgb(226 238 255 / 0.7);
+  cursor: pointer;
   font-size: 0.9rem;
   font-weight: 800;
   padding: 13px;
+  text-align: left;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
-.community-hub aside span.active {
+.community-hub aside button:hover {
+  background: rgb(255 255 255 / 0.08);
+  color: white;
+  transform: translateX(3px);
+}
+
+.community-hub aside span.active,
+.community-hub aside button.active {
   background: linear-gradient(90deg, rgb(119 215 255 / 0.3), rgb(255 255 255 / 0.08));
   border: 1px solid rgb(119 215 255 / 0.48);
   box-shadow: 0 0 28px rgb(56 189 248 / 0.22);
@@ -1881,13 +1894,27 @@ body {
   letter-spacing: -0.035em;
 }
 
-.community-hub main > header div {
+.community-hub main > header div,
+.community-hub main > header label {
   background: rgb(255 255 255 / 0.08);
   border: 1px solid rgb(155 211 255 / 0.18);
   border-radius: 10px;
   color: rgb(226 238 255 / 0.52);
   min-width: min(100%, 360px);
   padding: 12px 16px;
+}
+
+.community-hub main > header input {
+  background: transparent;
+  border: 0;
+  color: white;
+  font: inherit;
+  outline: none;
+  width: 100%;
+}
+
+.community-hub main > header input::placeholder {
+  color: rgb(226 238 255 / 0.52);
 }
 
 .community-grid {
@@ -1968,6 +1995,49 @@ body {
   font-size: 0.78rem;
   font-weight: 800;
   padding: 8px 10px;
+}
+
+.student-action-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 18px;
+}
+
+.student-action-grid a {
+  background:
+    radial-gradient(circle at 18% 14%, rgb(119 215 255 / 0.22), transparent 54%),
+    rgb(255 255 255 / 0.07);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 12px;
+  color: white;
+  display: grid;
+  min-height: 118px;
+  padding: 16px;
+  text-decoration: none;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.student-action-grid a:hover {
+  border-color: rgb(119 215 255 / 0.58);
+  box-shadow: 0 18px 48px rgb(56 189 248 / 0.16);
+  transform: translateY(-3px);
+}
+
+.student-action-grid strong {
+  font-size: 1rem;
+  font-weight: 950;
+  line-height: 1.2;
+}
+
+.student-action-grid span {
+  align-self: end;
+  background: transparent;
+  border: 0;
+  color: rgb(139 220 255 / 0.92);
+  font-size: 0.8rem;
+  font-weight: 900;
+  padding: 0;
 }
 
 .map-orbits {
@@ -2215,6 +2285,7 @@ body {
   .module-catalog-grid,
   .module-card-body,
   .ecosystem-feature-grid,
+  .student-action-grid,
   .content-os-predictions {
     grid-template-columns: 1fr;
   }

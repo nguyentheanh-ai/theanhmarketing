@@ -21,7 +21,7 @@ export async function SiteFooter() {
   ];
   const helpLinks = [
     { label: "Liên hệ", href: "/lien-he" },
-    { label: "Về The Anh", href: "/gioi-thieu" },
+    { label: "Marketing OS", href: "/gioi-thieu" },
     { label: "Đăng nhập học viên", href: "/dang-nhap" },
     { label: "Dashboard học viên", href: "/dashboard" },
     { label: "Admin CRM", href: "/admin/dashboard" },
