@@ -10,7 +10,7 @@ const routes = [
   "/khoa-hoc/facebook-ads-2026",
   "/khoa-hoc/marketing-online-nen-tang",
   "/blog",
-  "/blog/cach-hoc-facebook-ads-cho-nguoi-moi",
+  "/blog/sme-khong-thieu-tool-thieu-growth-system",
   "/tai-lieu",
   "/hoc-vien",
   "/lien-he",

@@ -8,9 +8,9 @@ import { getResources } from "@/services/resourceService";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Blog & Tài liệu",
+  title: "AI Growth Knowledge Hub",
   description:
-    "Bài viết, tài liệu, checklist và workflow Marketing thực chiến của The Anh Marketing.",
+    "Bài viết, toolkit, checklist và workflow để xây AI Growth System cho SME và Solopreneur.",
 };
 
 export const dynamic = "force-dynamic";
@@ -43,16 +43,16 @@ export default async function BlogPage() {
 
       <section id="tai-lieu" className="ai-shell scroll-mt-28 pb-20">
         <div className="workflow-library-head">
-          <p className="ai-kicker">Tài liệu & Workflow</p>
-          <h2>Prompt, checklist và tài nguyên triển khai</h2>
+          <p className="ai-kicker">AI Growth Toolkit</p>
+          <h2>Toolkit, template và blueprint triển khai</h2>
           <div>
-            {["Prompt", "Checklist", "Template", "SOP"].map((item, index) => (
+            {["Toolkit", "Checklist", "Template", "SOP"].map((item, index) => (
               <span key={item} className={index === 0 ? "active" : ""}>{item}</span>
             ))}
           </div>
         </div>
 
-        <p className="workflow-section-label">Resource library</p>
+        <p className="workflow-section-label">Growth resource library</p>
         <div className="workflow-resource-grid">
           {resources.map((resource, index) => {
             const resourceHref =
@@ -78,13 +78,13 @@ export default async function BlogPage() {
                 </div>
                 <p>{resource.description}</p>
                 <div className="workflow-stack-row">
-                  {["Prompt", "Checklist", "AI Workflow"].map((item) => (
+                  {["Toolkit", "Checklist", "AI Workflow"].map((item) => (
                     <span key={item}>{item}</span>
                   ))}
                 </div>
                 <div className="workflow-card-score">
                   <span>{resource.access}</span>
-                  <strong>Xem tài liệu</strong>
+                  <strong>Xem toolkit</strong>
                 </div>
               </a>
             );

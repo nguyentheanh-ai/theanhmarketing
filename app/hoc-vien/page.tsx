@@ -4,9 +4,9 @@ import { getTestimonials } from "@/services/testimonialService";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Học viên",
+  title: "AI Operator Hub",
   description:
-    "Khu học viên để học, lưu tài liệu, theo dõi tiến độ và nhận hỗ trợ trong hệ sinh thái The Anh Marketing.",
+    "Khu học viên để học, lưu toolkit, theo dõi tiến độ, mở workflow và nhận hỗ trợ trong AI Growth System của The Anh Marketing.",
 };
 
 export const dynamic = "force-dynamic";

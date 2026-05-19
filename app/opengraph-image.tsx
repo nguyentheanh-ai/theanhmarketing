@@ -60,7 +60,7 @@ export default function Image() {
             maxWidth: 950,
           }}
         >
-          Nền tảng học Marketing thực chiến
+          AI Performance Marketing System
         </div>
         <div
           style={{
@@ -71,7 +71,7 @@ export default function Image() {
             lineHeight: 1.45,
           }}
         >
-          Facebook Ads, AI Marketing và Kinh doanh Online cho người làm thật.
+          Xây Growth System bằng AI, Performance Ads, Funnel, Automation và CRM/Data.
         </div>
       </div>
     ),

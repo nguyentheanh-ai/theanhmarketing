@@ -10,7 +10,7 @@ export async function SiteHeader() {
   const [brand, auth] = await Promise.all([getBrandSettings(), getCurrentAuth()]);
   const isLoggedIn = Boolean(auth.user);
   const primaryHref = isLoggedIn ? "/dashboard" : "/dang-ky";
-  const primaryLabel = isLoggedIn ? "Khóa học của tôi" : "Khám phá hệ sinh thái";
+  const primaryLabel = isLoggedIn ? "Growth Hub của tôi" : "Khám phá Growth System";
 
   return (
     <header className="site-header-motion fixed inset-x-0 top-0 z-50 border-b border-[#77d7ff]/15 bg-[#05080d]/78 backdrop-blur-2xl">
@@ -34,7 +34,7 @@ export async function SiteHeader() {
         <div className="flex items-center gap-2 sm:gap-3">
           <ButtonLink href={primaryHref} className="!hidden sm:!inline-flex">
             {primaryLabel}
-            <span aria-hidden="true">→</span>
+            <span aria-hidden="true">-&gt;</span>
           </ButtonLink>
           {isLoggedIn ? (
             <SignOutButton className="hidden min-h-10 rounded-xl px-4 text-sm font-bold text-white/62 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-50 md:inline-flex md:items-center" />
@@ -61,7 +61,7 @@ export async function SiteHeader() {
             href="/dashboard"
             className="shrink-0 rounded-xl bg-[#159cfb] px-4 py-2 text-white shadow-[0_0_24px_rgba(56,189,248,0.28)]"
           >
-            Khóa học của tôi
+            Growth Hub của tôi
           </Link>
         ) : null}
       </nav>

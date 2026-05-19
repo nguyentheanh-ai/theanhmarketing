@@ -4,14 +4,14 @@ import { getResources } from "@/services/resourceService";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Đối tác đào tạo",
+  title: "Triển khai AI Growth System cho team",
   description:
-    "Trang dành cho doanh nghiệp, cộng đồng hoặc đối tác muốn tổ chức workshop, khóa học hoặc workflow training cùng The Anh Marketing.",
+    "Trang dành cho SME, team marketing, cộng đồng hoặc đối tác muốn training, workshop hoặc triển khai AI Growth System cùng The Anh Marketing.",
 };
 
 export const dynamic = "force-dynamic";
 
-const leaders = ["Doanh nghiệp", "Cộng đồng", "Creator", "Team Marketing"];
+const leaders = ["SME", "Team Marketing", "Cộng đồng", "Creator"];
 
 export default async function PartnerPage() {
   const resources = await getResources();
@@ -22,7 +22,7 @@ export default async function PartnerPage() {
         <div className="partner-dashboard">
           <header>
             <strong>THE ANH MARKETING</strong>
-            <span>Partner & Training Dashboard</span>
+            <span>AI Growth Partner Dashboard</span>
           </header>
 
           <div className="partner-grid">
@@ -32,9 +32,9 @@ export default async function PartnerPage() {
                 <div>theanh.marketing/doi-tac</div>
               </section>
               {[
-                ["Workshop", "Live training"],
-                ["Khóa học", "Team access"],
-                ["Workflow", "Theo nhu cầu"],
+                ["Diagnosis", "Growth audit"],
+                ["Training", "Team access"],
+                ["Implementation", "Workflow theo nhu cầu"],
               ].map(([label, value]) => (
                 <section key={label}>
                   <p>{label}</p>
@@ -45,12 +45,12 @@ export default async function PartnerPage() {
 
             <main className="partner-main">
               <section className="partner-network">
-                <h1>Hợp tác đào tạo Marketing & AI cho team</h1>
+                <h1>Training và triển khai AI Growth System cho team</h1>
                 <div className="network-map">
                   {Array.from({ length: 34 }).map((_, index) => (
                     <i key={index} style={{ left: `${12 + (index * 19) % 76}%`, top: `${18 + (index * 29) % 62}%` }} />
                   ))}
-                  <strong>THE ANH<br />TRAINING HUB</strong>
+                  <strong>AI GROWTH<br />PARTNER HUB</strong>
                 </div>
               </section>
 
@@ -59,13 +59,13 @@ export default async function PartnerPage() {
                 {leaders.map((leader, index) => (
                   <p key={leader}>
                     <span>{index + 1}. {leader}</span>
-                    <strong>{["Đào tạo nội bộ", "Workshop cộng đồng", "Nội dung đồng thương hiệu", "Workflow vận hành"][index]}</strong>
+                    <strong>{["Chẩn đoán hệ thống", "Đào tạo nội bộ", "Workshop cộng đồng", "Nội dung đồng thương hiệu"][index]}</strong>
                   </p>
                 ))}
               </section>
 
               <section className="partner-assets">
-                <h2>Tài liệu có thể dùng khi hợp tác</h2>
+                <h2>Toolkit có thể dùng khi hợp tác</h2>
                 <div>
                   {resources.slice(0, 4).map((resource) => (
                     <span key={resource.slug}>{resource.title}</span>
@@ -77,14 +77,14 @@ export default async function PartnerPage() {
         </div>
 
         <div className="mt-8 ai-panel-strong p-8 sm:p-10">
-          <p className="ai-kicker">Đăng ký đối tác</p>
+          <p className="ai-kicker">Đăng ký triển khai</p>
           <h2 className="mt-4 text-4xl font-black tracking-[-0.04em] sm:text-6xl">
-            Muốn tổ chức workshop, khóa học hoặc workflow training theo nhu cầu?
+            Muốn audit, training hoặc triển khai Growth System cho team?
           </h2>
           <p className="ai-muted mt-4 max-w-3xl leading-8">
-            Form này đi vào lead service/admin CRM hiện có, nên team có thể xem và chăm sóc trong admin mà không cần thêm database mới.
+            Form này đi vào lead service/admin CRM hiện có, nên team có thể xem nhu cầu, phân loại pipeline và chăm sóc mà không cần thêm database mới.
           </p>
-          <LeadForm source="Trang đối tác" submitLabel="Gửi đề xuất hợp tác" />
+          <LeadForm source="Trang đối tác" submitLabel="Gửi nhu cầu triển khai" />
         </div>
       </section>
     </PageShell>

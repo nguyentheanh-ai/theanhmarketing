@@ -6,9 +6,9 @@ import { getCourses } from "@/services/courseService";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Workshop AI Marketing",
+  title: "Workshop AI Growth System",
   description:
-    "Workshop live về Marketing, AI và workflow thực chiến của The Anh Marketing.",
+    "Workshop live chẩn đoán Growth System, AI Ads Engine, Funnel và Automation của The Anh Marketing.",
 };
 
 export const dynamic = "force-dynamic";
@@ -21,9 +21,9 @@ const countdown = [
 ];
 
 const sessions = [
-  "Thiết kế content engine bằng AI",
-  "Facebook Ads 2026: đọc số và tối ưu",
-  "Workflow tự động hóa cho team nhỏ",
+  "Chẩn đoán AI Growth System cho SME",
+  "Facebook Ads 2026: chạy theo funnel và đọc dữ liệu",
+  "Automation workflow cho founder và team nhỏ",
 ];
 
 export default async function WorkshopPage() {
@@ -37,13 +37,13 @@ export default async function WorkshopPage() {
           <nav>
             <span>The Anh Marketing</span>
             <Link href="/workshop">Workshop</Link>
-            <Link href="/he-sinh-thai">Hệ sinh thái</Link>
-            <Link href="/hoc-vien">Học viên</Link>
+            <Link href="/he-sinh-thai">Growth System</Link>
+            <Link href="/hoc-vien">Operator Hub</Link>
           </nav>
           <div className="text-center">
             <p className="ai-kicker">Live workshop</p>
-            <h1>Workshop live về Marketing, AI và workflow thực chiến</h1>
-            <p>Các buổi live giúp bạn triển khai prompt, content engine, quảng cáo và automation theo tình huống thật.</p>
+            <h1>Workshop chẩn đoán Growth System và AI Ads Engine</h1>
+            <p>Các buổi live giúp bạn nhìn ra điểm nghẽn ở content, ads, funnel, automation và CRM rồi chọn việc cần xử lý trước.</p>
             <div className="workshop-countdown">
               {countdown.map(([value, label]) => (
                 <span key={label}>
@@ -66,7 +66,7 @@ export default async function WorkshopPage() {
                   <div>
                     <span>Digital pass</span>
                     <h2>{session}</h2>
-                    <p>Thứ 6 hằng tuần, 20:00 GMT+7 · Instructor: The Anh</p>
+                    <p>Thứ 6 hằng tuần, 20:00 GMT+7 - Instructor: The Anh</p>
                     {featuredCourse ? (
                       <AddToCartButton
                         slug={featuredCourse.slug}
@@ -85,14 +85,14 @@ export default async function WorkshopPage() {
           </div>
 
           <div className="ai-panel-strong p-7">
-            <p className="ai-kicker">Replay & tài liệu</p>
+            <p className="ai-kicker">Replay & toolkit</p>
             <h2 className="mt-4 text-3xl font-black tracking-[-0.04em]">Xem lại các buổi đã diễn ra</h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-              {["Mở đầu AI Marketing", "Nền tảng Facebook Ads", "Prompt system", "Workflow automation"].map((item) => (
+              {["AI Growth System Diagnosis", "Facebook Ads trong funnel", "AI Content Engine", "Workflow automation"].map((item) => (
                 <Link key={item} href="/blog#tai-lieu" className="rounded-xl border border-white/10 bg-white/7 p-4 transition hover:border-[#77d7ff]/35">
                   <span className="text-xs font-black text-[#8bdcff]">Replay</span>
                   <p className="mt-2 text-lg font-black">{item}</p>
-                  <p className="mt-2 text-sm text-white/55">Tài liệu, checklist và replay nằm trong thư viện học viên.</p>
+                  <p className="mt-2 text-sm text-white/55">Toolkit, checklist và replay nằm trong thư viện học viên.</p>
                 </Link>
               ))}
             </div>

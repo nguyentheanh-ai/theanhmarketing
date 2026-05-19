@@ -13,9 +13,9 @@ import { getTestimonials } from "@/services/testimonialService";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Hệ sinh thái AI Marketing",
+  title: "AI Growth System",
   description:
-    "Bản đồ hệ sinh thái The Anh OS: khóa học, workflow, tài liệu, cộng đồng, CRM học viên và dashboard vận hành.",
+    "Bản đồ AI Growth Operating System: Content Engine, Ads Engine, Funnel, Automation, CRM/Data và AI Solopreneur OS.",
 };
 
 export const dynamic = "force-dynamic";
@@ -32,16 +32,16 @@ export default async function EcosystemPage() {
       <section className="ai-shell pb-14 pt-28 sm:pt-32">
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
           <div>
-            <p className="ai-kicker">The Anh OS</p>
+            <p className="ai-kicker">AI Growth Operating System</p>
             <h1 className="ai-glow-text mt-5 text-5xl font-black leading-[0.98] tracking-[-0.05em] sm:text-7xl">
-              Một hệ sinh thái học Marketing vận hành như CRM mini.
+              Một hệ thống tăng trưởng bằng AI cho SME và Solopreneur.
             </h1>
             <p className="ai-muted mt-6 max-w-2xl text-lg leading-8">
-              Khóa học, tài liệu, workflow, học viên và admin được nối thành một đường đi rõ ràng: học nền tảng, áp dụng vào việc thật, theo dõi tiến độ và được hỗ trợ khi cần.
+              Content, ads, funnel, automation, học viên và admin CRM được nối thành một bản đồ vận hành rõ ràng: ATTRACT để tạo nhu cầu, GROW để nuôi lead, SCALE để chuẩn hóa bằng dữ liệu.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/dang-ky">Đăng ký tư vấn</ButtonLink>
-              <ButtonLink href="/khoa-hoc" variant="secondary">Xem khóa học</ButtonLink>
+              <ButtonLink href="/dang-ky">Nhận chẩn đoán Growth System</ButtonLink>
+              <ButtonLink href="/khoa-hoc" variant="secondary">Xem AI Ads Engine</ButtonLink>
             </div>
           </div>
           <ContentOsDashboardMockup compact />
@@ -59,13 +59,13 @@ export default async function EcosystemPage() {
         <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="ai-panel-strong p-7">
             <p className="ai-kicker">Logic đang gắn</p>
-            <h2 className="mt-4 text-4xl font-black tracking-[-0.04em]">Không chỉ là giao diện.</h2>
+            <h2 className="mt-4 text-4xl font-black tracking-[-0.04em]">Không chỉ là giao diện. Đây là hệ thống vận hành.</h2>
             <div className="mt-6 grid gap-3">
               {[
-                ["Khóa học", `${courses.length} khóa đang lấy từ course service`, "/khoa-hoc"],
-                ["Tài liệu", `${resources.length} tài nguyên trong thư viện`, "/blog#tai-lieu"],
-                ["Học viên", "Dashboard dùng đơn paid để cấp quyền học", "/dashboard"],
-                ["Admin", "CRM quản lý lead, đơn hàng, học viên và CMS", "/admin/dashboard"],
+                ["AI Ads Engine", `${courses.length} chương trình đang lấy từ course service`, "/khoa-hoc"],
+                ["AI Growth Toolkit", `${resources.length} tài nguyên trong thư viện`, "/blog#tai-lieu"],
+                ["AI Operator Hub", "Dashboard dùng đơn paid để cấp quyền học và lưu tiến độ", "/dashboard"],
+                ["CRM/Data Layer", "Admin quản lý lead, đơn hàng, học viên và CMS", "/admin/dashboard"],
               ].map(([label, detail, href]) => (
                 <Link key={label} href={href} className="rounded-lg border border-white/10 bg-white/7 p-4 transition hover:border-[#77d7ff]/35">
                   <p className="font-black">{label}</p>

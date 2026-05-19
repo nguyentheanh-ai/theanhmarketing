@@ -31,7 +31,7 @@ function mapDbResource(resource: DbResource): ResourceItem {
     id: resource.id,
     slug: slugify(resource.title || resource.id),
     title: resource.title,
-    type: "Tài liệu",
+    type: "Toolkit",
     access:
       resource.access_type === "enrolled_only"
         ? "Chỉ học viên"

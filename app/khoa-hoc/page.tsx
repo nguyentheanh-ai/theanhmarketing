@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Khóa học",
   description:
-    "Danh sách khóa học Marketing, AI ứng dụng, Facebook Ads, Content, Data và vận hành Marketing thực chiến của The Anh Marketing.",
+    "Danh sách chương trình trong AI Growth System: Facebook Ads 2026, AI Ads Engine, Funnel-driven Ads và Marketing nền tảng.",
 };
 
 export const dynamic = "force-dynamic";

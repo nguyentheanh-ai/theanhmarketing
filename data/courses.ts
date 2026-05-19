@@ -73,46 +73,46 @@ export const courses: Course[] = [
   {
     slug: "facebook-ads-2026",
     title: "Facebook Ads 2026",
-    eyebrow: "Khóa học nổi bật",
+    eyebrow: "AI Ads Engine",
     description:
-      "Học cách tự triển khai Facebook Ads bài bản, hiểu đúng tư duy Marketing & Kinh doanh Online, biết đọc dữ liệu và tối ưu quảng cáo theo tình huống thực tế.",
+      "Học cách triển khai Facebook Ads trong một Growth System hoàn chỉnh: nghiên cứu khách hàng, lọc tệp kém chất lượng, thiết kế content/offer, chạy ads theo funnel, đọc dữ liệu và tối ưu theo mục tiêu kinh doanh.",
     shortDescription:
-      "Tự chạy quảng cáo, đọc dữ liệu và tối ưu chiến dịch Facebook Ads theo lộ trình thực chiến.",
+      "AI Ads Engine giúp bạn chạy Facebook Ads 2026 theo funnel, đọc dữ liệu và tối ưu lead thay vì chỉ tăng ngân sách.",
     price: "799.000đ",
     originalPrice: "3.995.000đ",
     status: "open",
     statusLabel: "Đang mở đăng ký",
-    ctaText: "Tạo tài khoản",
+    ctaText: "Vào AI Ads Engine",
     duration: "3 module",
     level: "Người mới đến thực chiến",
     updatedAt: "13/05/2026",
-    format: "Video bài học + tài liệu + cộng đồng hỗ trợ",
+    format: "Video bài học + checklist + AI workflow + cộng đồng hỗ trợ",
     bannerImageUrl: "",
-    thumbnailImageUrl: "",
-    videoPreviewUrl: "https://youtu.be/8xLstSFsHp8",
-    videoPreviewEmbedUrl: "https://www.youtube.com/embed/8xLstSFsHp8",
+    thumbnailImageUrl: "https://i.ytimg.com/vi/yRTveHLi9dQ/hqdefault.jpg",
+    videoPreviewUrl: "https://youtu.be/yRTveHLi9dQ",
+    videoPreviewEmbedUrl: "https://www.youtube.com/embed/yRTveHLi9dQ",
     thumbnailLabel: "Video preview khóa Facebook Ads 2026",
     previewNote:
-      "Khu vực này sẵn sàng để thay bằng thumbnail hoặc video học thử khi bạn bổ sung media.",
-    topics: ["Facebook Ads", "Marketing Online", "AI Marketing"],
+      "Thumbnail và preview đang trỏ về bài cập nhật Facebook Ads 2026 để tránh hiển thị sai khóa.",
+    topics: ["AI Ads Engine", "Facebook Ads 2026", "Funnel-driven Ads"],
     audience: [
-      "Người mới muốn học Facebook Ads từ nền tảng.",
-      "Chủ shop/chủ doanh nghiệp nhỏ muốn tự chạy quảng cáo.",
-      "Marketer muốn hệ thống lại tư duy đọc số liệu và tối ưu.",
+      "SME owner muốn biết ads đang mất tiền ở traffic, offer hay funnel.",
+      "Chủ shop/seller muốn tự chạy quảng cáo và lọc tệp khách kém chất lượng.",
+      "Marketer muốn hệ thống lại tư duy đọc số liệu, tối ưu và scale.",
     ],
     outcomes: [
-      "Nắm nền tảng quảng cáo Facebook từ thuật toán, hành vi khách hàng đến tư duy ra quyết định bằng dữ liệu.",
-      "Biết thiết lập chiến dịch, nhóm quảng cáo, mẫu quảng cáo và ngân sách theo mục tiêu kinh doanh thật.",
-      "Có lộ trình tối ưu từ đo lường, đọc chỉ số, xử lý quảng cáo kém hiệu quả đến scale chiến dịch bền vững.",
+      "Nắm nền tảng quảng cáo Facebook từ thuật toán, hành vi khách hàng, offer đến tư duy ra quyết định bằng dữ liệu.",
+      "Biết thiết lập chiến dịch, nhóm quảng cáo, mẫu quảng cáo và ngân sách theo từng giai đoạn funnel.",
+      "Có lộ trình tối ưu từ đo lường, đọc chỉ số, xử lý lead kém chất lượng đến scale chiến dịch bền vững.",
     ],
     benefits: [
-      "Học theo thứ tự từ tư duy, thiết lập, tracking đến tối ưu.",
-      "Có tài liệu và checklist để áp dụng lại cho chiến dịch thật.",
-      "Có dashboard học viên để xem bài học, tiến độ và tài liệu đi kèm.",
+      "Học theo thứ tự từ tư duy, thiết lập, tracking, đọc dữ liệu đến tối ưu.",
+      "Có checklist và workflow để áp dụng lại cho chiến dịch thật.",
+      "Có dashboard học viên để xem bài học, tiến độ, tài liệu và quyền học hiện có.",
     ],
     includes: [
       "Quyền học trọn đời theo tài khoản học viên.",
-      "Tài liệu checklist và khung triển khai đi kèm.",
+      "Tài liệu checklist, khung triển khai funnel và AI prompt đi kèm.",
       "Cộng đồng hỗ trợ trong quá trình thực hành.",
     ],
     requirements: [
@@ -123,9 +123,9 @@ export const courses: Course[] = [
     modules: [
       {
         id: "facebook-ads-foundation",
-        title: "Tổng quan và nền tảng Facebook Ads",
+        title: "AI Ads Foundation: nền tảng và tư duy dữ liệu",
         description:
-          "Nắm tư duy chạy quảng cáo, thuật ngữ quan trọng, cách nhận diện khách hàng kém chất lượng và những lỗi thường gặp trước khi triển khai.",
+          "Nắm tư duy chạy quảng cáo, thuật ngữ quan trọng, cách nhận diện khách hàng kém chất lượng và những lỗi thường gặp trước khi đổ ngân sách.",
         order: 1,
         lessons: [
           {
@@ -177,9 +177,9 @@ export const courses: Course[] = [
       },
       {
         id: "facebook-assets-fanpage",
-        title: "Tài sản Facebook, Fanpage và nội dung nền",
+        title: "Tài sản Facebook, Fanpage và content nền cho funnel",
         description:
-          "Chuẩn bị tài khoản, Fanpage, hình ảnh nhận diện và lịch đăng bài để quảng cáo có nền tảng vận hành rõ ràng.",
+          "Chuẩn bị tài khoản, Fanpage, hình ảnh nhận diện, content nền và lịch đăng bài để quảng cáo có điểm tựa chuyển đổi rõ ràng.",
         order: 2,
         lessons: [
           {
@@ -231,9 +231,9 @@ export const courses: Course[] = [
       },
       {
         id: "facebook-campaign-optimization",
-        title: "Triển khai, đo lường và tối ưu quảng cáo",
+        title: "Triển khai, đo lường và scale chiến dịch",
         description:
-          "Lập kế hoạch, quản trị BM, thêm thanh toán, target, đọc chỉ số và scale ngân sách quảng cáo Facebook.",
+          "Lập kế hoạch, quản trị BM, thêm thanh toán, target, đọc chỉ số, xử lý lead kém chất lượng và scale ngân sách quảng cáo Facebook.",
         order: 3,
         lessons: [
           {
@@ -313,33 +313,33 @@ export const courses: Course[] = [
     ],
     instructor: {
       name: "The Anh",
-      title: "Founder The Anh Marketing",
-      bio: "Tập trung đào tạo Marketing & Kinh doanh Online theo hướng dễ hiểu, thực chiến và có khả năng áp dụng vào công việc thật.",
+      title: "AI Growth Operator, Founder The Anh Marketing",
+      bio: "Tập trung xây hệ thống tăng trưởng bằng AI, Performance Ads, Funnel và Automation cho SME/Solopreneur theo hướng thực chiến.",
     },
     reviews: [
       {
         name: "Minh Anh",
         role: "Chủ shop mỹ phẩm",
         quote:
-          "Mình hiểu rõ hơn vì sao quảng cáo không hiệu quả và biết cách sửa từng phần thay vì chỉ tăng ngân sách.",
+          "Mình hiểu rõ hơn vì sao quảng cáo không hiệu quả: vấn đề không chỉ ở ads mà còn ở offer, funnel và tệp khách.",
       },
       {
         name: "Quốc Huy",
         role: "Freelance marketer",
         quote:
-          "Nội dung dễ hiểu, đi thẳng vào việc cần làm. Phù hợp với người mới nhưng vẫn có tính thực chiến.",
+          "Nội dung đi thẳng vào việc cần làm, giúp mình biết đọc dữ liệu và tối ưu thay vì chạy theo mẹo.",
       },
     ],
     relatedSlugs: ["marketing-online-nen-tang"],
   },
   {
     slug: "marketing-online-nen-tang",
-    title: "Marketing Online Nền Tảng",
+    title: "AI Growth System Foundation",
     eyebrow: "Sắp ra mắt",
     description:
-      "Lộ trình nền tảng giúp người mới hiểu khách hàng, kênh bán hàng, nội dung và cách đo lường hiệu quả marketing.",
+      "Lộ trình nền tảng giúp người mới hiểu thị trường, khách hàng, định vị, offer, funnel, content engine và cách đo lường hiệu quả marketing.",
     shortDescription:
-      "Nền tảng marketing cho người mới: khách hàng, offer, kênh bán hàng, nội dung và đo lường.",
+      "Nền tảng AI Growth System cho người mới: khách hàng, offer, content, funnel và đo lường.",
     price: "Đang cập nhật",
     originalPrice: "",
     status: "coming-soon",
@@ -348,7 +348,7 @@ export const courses: Course[] = [
     duration: "6 giờ",
     level: "Người mới",
     updatedAt: "2026",
-    format: "Video bài học + workbook",
+    format: "Video bài học + workbook + checklist hệ thống",
     bannerImageUrl: "",
     thumbnailImageUrl: "",
     videoPreviewUrl: "",
@@ -356,16 +356,16 @@ export const courses: Course[] = [
     thumbnailLabel: "Preview khóa Marketing Online Nền Tảng",
     previewNote:
       "Khu vực thumbnail/video preview sẽ được thay bằng media thật khi khóa học ra mắt.",
-    topics: ["Marketing Online", "Kinh doanh Online"],
+    topics: ["AI Growth System", "Positioning", "Funnel"],
     audience: [
-      "Người mới chưa biết bắt đầu học marketing từ đâu.",
-      "Chủ shop muốn tự xây hệ thống marketing cơ bản.",
-      "Người đang làm nội dung/quảng cáo nhưng thiếu nền tảng.",
+      "Người mới chưa biết bắt đầu xây Growth System từ đâu.",
+      "Chủ shop/SME owner muốn tự xây hệ thống marketing cơ bản.",
+      "Người đang làm content/quảng cáo nhưng thiếu nền tảng funnel và đo lường.",
     ],
     outcomes: [
       "Hiểu cách xây hệ thống marketing đơn giản cho sản phẩm nhỏ.",
-      "Biết chọn kênh phù hợp thay vì làm dàn trải.",
-      "Có khung đo lường cơ bản để theo dõi hiệu quả.",
+      "Biết chọn kênh, thông điệp và funnel phù hợp thay vì làm dàn trải.",
+      "Có khung đo lường cơ bản để theo dõi hiệu quả và ra quyết định.",
     ],
     benefits: [
       "Có lộ trình nhập môn rõ ràng.",
@@ -375,7 +375,7 @@ export const courses: Course[] = [
     includes: [
       "Workbook định vị khách hàng và offer.",
       "Checklist chọn kênh marketing phù hợp.",
-      "Khung đo lường hiệu quả cơ bản.",
+      "Khung đo lường và chẩn đoán Growth System cơ bản.",
     ],
     requirements: [
       "Phù hợp với người mới.",

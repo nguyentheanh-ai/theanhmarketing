@@ -17,10 +17,10 @@ import { toYouTubeEmbedUrl, toYouTubeThumbnailUrl } from "@/lib/youtube";
 import type { OfferSettings } from "@/services/offerService";
 
 const navItems = [
-  { label: "Khóa học", href: "#hero" },
-  { label: "Nội dung học", href: "#lo-trinh" },
-  { label: "Kết quả đầu ra", href: "#dau-ra" },
-  { label: "Học phí", href: "#hoc-phi" },
+  { label: "Growth Engine", href: "#hero" },
+  { label: "Workflow", href: "#lo-trinh" },
+  { label: "Đầu ra", href: "#dau-ra" },
+  { label: "Đăng ký", href: "#hoc-phi" },
   { label: "FAQ", href: "#faq" },
 ];
 
@@ -50,7 +50,7 @@ type LandingContent = {
 
 const aiLessons: LessonPlan[] = [
   {
-    title: "Buổi 1: AI trong marketing hiện đại",
+    title: "Buổi 1: AI trong Growth System hiện đại",
     description:
       "Hiểu vai trò của AI trong quy trình marketing, những giới hạn cần biết và cách đặt mục tiêu học đúng.",
     result: "Có bản đồ năng lực AI Marketing cá nhân.",
@@ -109,12 +109,12 @@ const aiLessons: LessonPlan[] = [
 
 const defaultAudiences: [string, string][] = [
   [
-    "Người mới muốn học bài bản",
-    "Cần một lộ trình rõ ràng để hiểu nền tảng, biết phải làm gì trước và tránh học theo các mẹo rời rạc.",
+    "SME/Solopreneur muốn có hệ thống",
+    "Cần một lộ trình rõ ràng để biết đang kẹt ở content, ads, funnel, automation hay CRM trước khi mua thêm tool.",
   ],
   [
     "Chủ doanh nghiệp nhỏ",
-    "Muốn tự nắm cách triển khai để kiểm soát chất lượng marketing, chi phí và hiệu quả thực tế.",
+    "Muốn tự nắm cách triển khai để kiểm soát chất lượng marketing, chi phí, lead và hiệu quả thực tế.",
   ],
   [
     "Marketer muốn tăng tốc",
@@ -129,8 +129,8 @@ const defaultAudiences: [string, string][] = [
 const defaultDifferences = [
   "Học theo tình huống thực tế, không học mẹo rời rạc.",
   "Có framework để tự làm, không phụ thuộc template có sẵn.",
-  "Tập trung vào đầu ra dùng được trong công việc.",
-  "Phù hợp với người không biết kỹ thuật hoặc chưa có nền tảng sâu.",
+  "Tập trung vào đầu ra dùng được trong Growth System.",
+  "Phù hợp với người không biết kỹ thuật nhưng cần workflow rõ.",
 ];
 
 const defaultBenefits = [
@@ -242,16 +242,16 @@ function buildLandingContent(course: Course): LandingContent {
       ];
 
   return {
-    badge: isAiCourse ? "Khóa học AI Marketing 2026" : course.eyebrow || "Khóa học thực chiến 2026",
+    badge: isAiCourse ? "AI Growth System 2026" : course.eyebrow || "AI Growth System 2026",
     headline: isAiCourse
       ? "Dùng AI để nghiên cứu khách hàng, viết quảng cáo và xây workflow marketing."
       : `${course.title}: học theo quy trình thực chiến, làm được việc ngay sau từng buổi.`,
     subheadline:
       course.description ||
-      "Khóa học được thiết kế để bạn không chỉ hiểu lý thuyết, mà còn biết biến kiến thức thành kế hoạch, checklist và đầu ra dùng được trong công việc thật.",
+      "Chương trình được thiết kế để bạn không chỉ hiểu lý thuyết, mà còn biết biến kiến thức thành workflow, checklist và đầu ra dùng được trong hệ thống thật.",
     quickInfo: [
       `${lessons.length} bài học`,
-      course.modules.length ? `${course.modules.length} module` : course.duration || "Lộ trình thực chiến",
+      course.modules.length ? `${course.modules.length} module` : course.duration || "Lộ trình Growth System",
       course.format || "Video hoặc live tùy lớp",
       course.level || "Người mới đến thực chiến",
     ],
@@ -264,7 +264,7 @@ function buildLandingContent(course: Course): LandingContent {
     outcomes: compactList(course.outcomes, outcomesFallback, 5),
     benefits: compactList([...course.benefits, ...course.includes], defaultBenefits, 6),
     faqs: [
-      ["Người mới có học được không?", "Có. Nội dung đi từ nền tảng đến thực hành, phù hợp nếu bạn sẵn sàng làm bài tập theo dự án thật."],
+      ["Người mới có học được không?", "Có. Nội dung đi từ nền tảng đến thực hành, phù hợp nếu bạn sẵn sàng làm bài tập theo sản phẩm hoặc dự án thật."],
       ["Có cần biết kỹ thuật không?", "Không. Những phần kỹ thuật nếu có sẽ được giải thích theo quy trình dễ làm, ưu tiên ứng dụng thay vì thuật ngữ."],
       [
         `Khóa ${course.title} khác gì học miễn phí?`,
@@ -273,12 +273,12 @@ function buildLandingContent(course: Course): LandingContent {
       ["Có bài tập thực hành không?", "Có. Mỗi phần học đều hướng về một bài thực hành hoặc bản nháp triển khai để bạn không học xong rồi để đó."],
       ["Có được cập nhật nội dung không?", "Có. Nội dung có thể được cập nhật khi công cụ, nền tảng hoặc cách triển khai trên thị trường thay đổi."],
       ["Học xong có ứng dụng được ngay không?", "Có, nếu bạn làm theo bài tập trên sản phẩm, dự án hoặc công việc thật của mình trong quá trình học."],
-      ["Có phù hợp cho chủ doanh nghiệp không?", "Phù hợp, đặc biệt nếu bạn muốn hiểu quy trình để tự kiểm soát marketing và phối hợp tốt hơn với nhân sự hoặc agency."],
+      ["Có phù hợp cho chủ doanh nghiệp không?", "Phù hợp, đặc biệt nếu bạn muốn hiểu quy trình để tự kiểm soát Growth System và phối hợp tốt hơn với nhân sự hoặc agency."],
       ["Học online hay offline?", `Hình thức hiện tại: ${course.format || "video bài giảng hoặc live tùy cấu hình lớp"}.`],
     ],
     instructorCopy:
       course.instructor?.bio ||
-      "The Anh Marketing tập trung vào đào tạo marketing theo hướng thực chiến: dễ hiểu, có quy trình, có ví dụ gần với công việc thật. Khóa học được thiết kế để người học biến kiến thức thành hệ thống làm việc có thể lặp lại.",
+      "The Anh Marketing tập trung vào AI Performance Marketing System: dễ hiểu, có quy trình, có ví dụ gần với công việc thật. Chương trình được thiết kế để người học biến kiến thức thành hệ thống làm việc có thể lặp lại.",
   };
 }
 
@@ -310,7 +310,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
             <ButtonLink href="/gio-hang" variant="secondary">
               Giỏ hàng
             </ButtonLink>
-            <ButtonLink href="/dang-ky">Tạo tài khoản</ButtonLink>
+            <ButtonLink href="/dang-ky">Đăng ký Growth Hub</ButtonLink>
           </div>
           <button
             className="grid size-12 place-items-center rounded-full border-2 border-black bg-white text-2xl font-black shadow-[4px_4px_0_#111] lg:hidden"
@@ -338,7 +338,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
               Giỏ hàng
             </ButtonLink>
             <ButtonLink href="/dang-ky" className="mt-2">
-              Tạo tài khoản
+              Đăng ký Growth Hub
             </ButtonLink>
           </nav>
         ) : null}
@@ -431,7 +431,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
                 slug={course.slug}
                 title={course.title}
                 price={course.price}
-                label="🔓 Nâng cấp"
+                label="Nâng cấp"
                 className="w-full border-[#4fb37a] text-[#379965]"
               />
             </div>
@@ -439,10 +439,10 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
         </div>
       </section>
 
-      <Section id="proof" eyebrow="Social proof" title="Những con số vừa đủ để bạn hình dung năng lực triển khai.">
+      <Section id="proof" eyebrow="Social proof" title="Những con số để bạn hình dung năng lực triển khai Growth System.">
         <div className="grid gap-4 md:grid-cols-4">
           {[
-            { value: 2000, suffix: "+", label: "học viên đã học cùng hệ sinh thái" },
+            { value: 2000, suffix: "+", label: "học viên và khách hàng đã theo dõi hệ sinh thái" },
             { value: 120, suffix: "+", label: "buổi đào tạo và workshop thực chiến" },
             { value: 80, suffix: "+", label: "dự án marketing từng triển khai hoặc tư vấn" },
             { value: 4.8, suffix: "/5", label: "mức độ hài lòng từ học viên và khách hàng", decimals: 1 },
@@ -457,7 +457,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
         </div>
       </Section>
 
-      <Section id="doi-tuong" eyebrow="Phù hợp với ai" title="Khóa học này dành cho người muốn học gọn, hiểu đúng và làm được việc thật.">
+      <Section id="doi-tuong" eyebrow="Phù hợp với ai" title="Chương trình này dành cho người muốn học gọn, hiểu đúng và đưa vào hệ thống thật.">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {content.audiences.map(([title, desc]) => (
             <Card key={title} title={title}>
@@ -467,7 +467,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
         </div>
       </Section>
 
-      <Section id="noi-dung" eyebrow="Bạn sẽ học được gì" title="Học theo nhóm năng lực, không chỉ học theo danh sách công cụ.">
+      <Section id="noi-dung" eyebrow="Bạn sẽ học được gì" title="Học theo nhóm năng lực trong Growth System, không chỉ học theo danh sách công cụ.">
         <div className="grid gap-3 md:grid-cols-2">
           {content.skillGroups.map((item, index) => (
             <div key={item} className="motion-card flex gap-4 rounded-2xl border-2 border-black bg-white p-5">
@@ -480,7 +480,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
         </div>
       </Section>
 
-      <Section id="lo-trinh" eyebrow="Lộ trình" title={`${content.lessons.length} bài học, đi từ nền tảng đến kế hoạch triển khai.`}>
+      <Section id="lo-trinh" eyebrow="Lộ trình" title={`${content.lessons.length} bài học, đi từ nền tảng đến workflow triển khai.`}>
         <div className="overflow-hidden rounded-2xl bg-white shadow-[0_24px_90px_rgba(19,31,55,0.08)] ring-1 ring-black/5">
           {content.lessons.map((lesson, index) => {
             const thumbnailUrl = toYouTubeThumbnailUrl(lesson.youtubeUrl ?? "");
@@ -540,7 +540,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
                       </div>
                     ) : null}
                     <p>
-                      <strong className="text-black">Kết quả:</strong> {lesson.result}
+                      <strong className="text-black">Đầu ra:</strong> {lesson.result}
                     </p>
                     <p>
                       <strong className="text-black">Thực hành:</strong> {lesson.practice}
@@ -553,7 +553,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
         </div>
       </Section>
 
-      <Section id="khac-biet" eyebrow="Khác biệt" title="Không dạy mẹo rời rạc, mà dạy tư duy và quy trình ứng dụng.">
+      <Section id="khac-biet" eyebrow="Khác biệt" title="Không dạy mẹo rời rạc, mà dạy tư duy hệ thống và quy trình ứng dụng.">
         <div className="grid gap-4 md:grid-cols-4">
           {content.differences.map((item) => (
             <Card key={item}>{item}</Card>
@@ -561,7 +561,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
         </div>
       </Section>
 
-      <Section id="dau-ra" eyebrow="Sau khóa học" title="Bạn có thể biến kiến thức thành hệ thống làm việc rõ ràng hơn.">
+      <Section id="dau-ra" eyebrow="Sau chương trình" title="Bạn có thể biến kiến thức thành hệ thống làm việc rõ ràng hơn.">
         <div className="grid gap-3 md:grid-cols-2">
           {content.outcomes.map((item) => (
             <div key={item} className="motion-card rounded-2xl border-2 border-black bg-[#e7f3df] p-5 font-bold leading-7">
@@ -571,7 +571,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
         </div>
       </Section>
 
-      <Section id="quyen-loi" eyebrow="Quyền lợi học viên" title="Những gì đi cùng khóa học.">
+      <Section id="quyen-loi" eyebrow="Quyền lợi học viên" title="Những gì đi cùng chương trình.">
         <div className="grid gap-4 md:grid-cols-3">
           {content.benefits.map((item) => (
             <Card key={item}>{item}</Card>
@@ -579,7 +579,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
         </div>
       </Section>
 
-      <Section id="hoc-phi" eyebrow="Học phí" title="Một gói học rõ ràng, không dùng countdown ảo.">
+      <Section id="hoc-phi" eyebrow="Đăng ký" title="Một gói học rõ ràng, gắn với dashboard và quyền học hiện có.">
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <Card>
             <p className="text-sm font-black uppercase tracking-[0.12em] text-[#2f8f62]">{course.title}</p>
@@ -593,7 +593,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
               )}
             </div>
             <ButtonLink href="/dang-ky" className="mt-8 w-full">
-              Tạo tài khoản
+              Đăng ký Growth Hub
             </ButtonLink>
             <AddToCartButton
               slug={course.slug}
@@ -619,11 +619,11 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
       <footer className="border-t-2 border-black bg-[#111111] px-5 py-10 text-white sm:px-8">
         <div className="mx-auto flex max-w-[1440px] flex-col gap-5 text-sm font-bold text-white/68 md:flex-row md:items-center md:justify-between">
           <p>
-            <span className="text-white">The Anh Marketing.</span> Học marketing thực chiến, ứng dụng công cụ có quy trình.
+            <span className="text-white">The Anh Marketing.</span> Xây AI Growth System bằng content, ads, funnel, automation và CRM/Data.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link className="hover:text-[#85d49b]" href="/khoa-hoc">
-              Khóa học
+              Chương trình
             </Link>
             <Link className="hover:text-[#85d49b]" href="/lien-he">
               Liên hệ
@@ -723,7 +723,7 @@ function TrialAccessModal({
         name: fullName,
         phone,
         email,
-        message: `Đăng ký học thử: ${course.title}`,
+        message: `Đăng ký học thử Growth System: ${course.title}`,
         source: "trial",
       });
 
@@ -780,7 +780,7 @@ function TrialAccessModal({
             <p className="text-sm font-black uppercase tracking-[0.14em] text-[#4fb37a]">Học thử miễn phí</p>
             <h2 className="mt-2 text-3xl font-black tracking-[-0.04em]">{course.title}</h2>
             <p className="mt-2 text-sm leading-6 text-black/58">
-              Đăng ký hoặc đăng nhập để vào dashboard học viên và tiếp tục bài học thử.
+              Đăng ký hoặc đăng nhập để vào Growth Hub và tiếp tục bài học thử.
             </p>
           </div>
           <button className="grid size-10 shrink-0 place-items-center rounded-full bg-[#f1f5f9] text-xl font-black" type="button" onClick={onClose}>
@@ -819,7 +819,7 @@ function TrialAccessModal({
           <input className="min-h-12 rounded-2xl border border-black/10 px-4" minLength={6} name="password" placeholder="Mật khẩu" required type="password" />
           {message ? <p className="rounded-2xl bg-[#f2eadf] p-4 text-sm font-bold text-black/68">{message}</p> : null}
           <Button isLoading={isSubmitting} loadingLabel="Đang xử lý..." type="submit">
-            Vào dashboard học viên
+            Vào Growth Hub
           </Button>
         </form>
       </div>

@@ -103,14 +103,14 @@ export function LoginForm() {
           </p>
         ) : null}
         <Button isLoading={isSubmitting} loadingLabel="Đang đăng nhập..." type="submit">
-          Vào dashboard học viên
+          Vào Growth Hub
         </Button>
       </form>
       <div className="mt-6 grid gap-3 rounded-xl bg-white/8 p-4 text-sm leading-6 text-white/60">
         <p>
           Chưa có tài khoản?{" "}
           <Link className="font-bold text-white" href="/dang-ky">
-            Đăng ký học
+            Đăng ký Growth Hub
           </Link>
         </p>
       </div>

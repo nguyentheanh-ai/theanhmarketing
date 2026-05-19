@@ -1,71 +1,71 @@
 export const publicPages = {
   courses: {
     eyebrow: "Khóa học",
-    title: "Khóa học Marketing & AI thực chiến",
+    title: "Khóa học trong AI Growth System",
     description:
-      "Chọn khóa học theo nhu cầu triển khai: Facebook Ads, content, AI workflow, data và hệ thống marketing cho cá nhân hoặc team nhỏ.",
-    structureTitle: "Cấu trúc học",
+      "Bắt đầu từ AI Ads Engine, Marketing nền tảng và các workflow triển khai để xây hệ thống tăng trưởng thay vì học từng mẹo rời rạc.",
+    structureTitle: "Cấu trúc triển khai",
     structureDescription:
-      "Mỗi khóa học có module, bài học, tài liệu đi kèm, quyền truy cập học viên và trạng thái quản lý trong admin.",
-    filters: ["Tất cả", "Facebook Ads", "Marketing Online", "AI Marketing", "Người mới"],
+      "Mỗi khóa học gắn với module, bài học, tài liệu, dashboard học viên và CRM/admin để giữ nguyên quyền học cho học viên cũ.",
+    filters: ["Tất cả", "AI Ads Engine", "Funnel-driven Ads", "AI Marketing", "Người mới"],
   },
   blog: {
-    eyebrow: "Blog & Tài liệu",
-    title: "Blog & Tài liệu Marketing thực chiến",
+    eyebrow: "AI Growth Knowledge Hub",
+    title: "Blog, tài liệu và workflow cho Growth System",
     description:
-      "Đọc bài viết, tải tài liệu và lưu workflow để áp dụng vào khóa học hoặc công việc đang triển khai.",
-    directionTitle: "Định hướng nội dung",
+      "Đọc bài phân tích, tải toolkit và lưu workflow để biến content, ads, funnel, automation và CRM thành một hệ thống vận hành.",
+    directionTitle: "Content pillar",
     directionDescription:
-      "Mỗi bài viết giải quyết một vấn đề cụ thể của người học: bắt đầu từ đâu, đọc số liệu thế nào, dùng AI ra sao hoặc tối ưu chiến dịch như thế nào.",
-    categories: ["Facebook Ads", "Marketing Online", "AI Marketing", "Case Study", "Công cụ"],
+      "Nội dung đi theo 5 trụ cột: AI Growth System, AI Automation, Performance Ads, Funnel Psychology và Solopreneur Scale.",
+    categories: ["AI Growth System", "Performance Ads", "AI Automation", "Funnel Psychology", "Case Study"],
   },
   resources: {
     eyebrow: "Tài liệu",
-    title: "Tài liệu & Workflow",
+    title: "AI Growth Toolkit & Workflow",
     description:
-      "Thư viện dành cho ebook, checklist, template, prompt và file mẫu để người học triển khai nhanh hơn.",
+      "Thư viện lead magnet gồm AI Growth Toolkit, Funnel Template, AI Workflow Blueprint, checklist và prompt để triển khai nhanh hơn.",
     noteTitle: "Lead magnet",
     noteDescription:
-      "Tài liệu có thể dùng để tạo lead, nuôi dưỡng người học và kết nối với khóa học phù hợp trong hệ sinh thái.",
+      "Tài liệu dùng để tạo lead, nuôi dưỡng niềm tin và kết nối người đọc với khóa học, workshop hoặc chẩn đoán Growth System phù hợp.",
   },
   about: {
-    eyebrow: "Giới thiệu",
-    title: "The Anh Marketing xây hệ sinh thái học Marketing thực chiến",
+    eyebrow: "Marketing OS",
+    title: "AI Performance Marketing System cho SME và Solopreneur",
     description:
-      "Trọng tâm là giúp người học hiểu hệ thống, triển khai được và dùng AI đúng chỗ trong công việc thật.",
-    mediaLabel: "Founder, lớp học và cộng đồng",
+      "Trọng tâm là thiết kế hệ thống tăng trưởng bằng AI: từ research, content, ads, funnel, automation đến CRM/Data.",
+    mediaLabel: "AI Growth Operating System",
     mediaNote:
-      "Khu vực này dùng cho hình ảnh The Anh, lớp học, workshop hoặc cộng đồng học viên khi có tư liệu thật.",
-    principlesEyebrow: "Triết lý đào tạo",
-    principlesTitle: "Thực dụng, rõ ràng, có hệ thống.",
+      "Khu vực này trình bày bản đồ vận hành thay cho trang giới thiệu cá nhân, đúng định vị AI Growth Operator.",
+    principlesEyebrow: "Triết lý hệ thống",
+    principlesTitle: "Không random tips. Không hack ngắn hạn. Tập trung vào hệ thống.",
     principles: [
-      "Dạy từ bản chất trước công cụ.",
-      "Ưu tiên ví dụ thực tế và thao tác có thể áp dụng.",
-      "Xây lộ trình học dài hạn thay vì học từng mẹo rời rạc.",
+      "Dạy từ chiến lược tăng trưởng trước công cụ.",
+      "Biến AI thành workflow vận hành, không chỉ prompt rời rạc.",
+      "Xây tài sản dài hạn: owned audience, CRM, community, content engine và offer ladder.",
     ],
   },
   students: {
     eyebrow: "Học viên",
-    title: "Khu học viên để học, lưu tài liệu và theo dõi tiến độ",
+    title: "AI Operator Hub cho học viên và khách hàng",
     description:
-      "Sau khi đăng nhập, học viên xem khóa đã sở hữu, mở bài học, tải tài liệu và nhận hỗ trợ trong cùng một dashboard.",
-    mediaLabel: "Dashboard học viên",
+      "Sau khi đăng nhập, học viên xem khóa đã sở hữu, mở bài học, tải tài liệu, lưu workflow và nhận hỗ trợ trong cùng một dashboard.",
+    mediaLabel: "Student Growth Hub",
     mediaNote:
-      "Khu vực này mô tả trải nghiệm học: khóa đã sở hữu, tài liệu, tiến độ và hỗ trợ.",
-    caseStudyTitle: "Từ học đến áp dụng",
+      "Khu vực này mô tả trải nghiệm học theo hệ thống: khóa, tài liệu, tiến độ, hỗ trợ, workshop và lộ trình nâng cấp.",
+    caseStudyTitle: "Từ học đến vận hành",
     caseStudyDescription:
-      "Khi có dữ liệu thật, phần này có thể hiển thị tình trạng ban đầu, cách học viên áp dụng và kết quả sau khi triển khai.",
+      "Khi có dữ liệu thật, phần này có thể hiển thị tình trạng ban đầu, module đã học, workflow đã áp dụng và kết quả sau khi triển khai.",
   },
   contact: {
     eyebrow: "Liên hệ",
-    title: "Liên hệ để chọn lộ trình học phù hợp",
+    title: "Nhận chẩn đoán Growth System phù hợp",
     description:
-      "Gửi thông tin hoặc nhắn Zalo để được tư vấn khóa học, tài liệu và cách bắt đầu theo tình huống hiện tại của bạn.",
+      "Gửi thông tin hoặc nhắn Zalo để được tư vấn bạn nên bắt đầu bằng toolkit, workshop, khóa Facebook Ads 2026 hay triển khai hệ thống đầy đủ.",
     phoneDescription:
-      "Phù hợp nếu bạn muốn được tư vấn nhanh về khóa học hoặc lộ trình.",
+      "Phù hợp nếu bạn muốn được tư vấn nhanh về lộ trình học, khóa học hoặc hệ thống đang mắc kẹt.",
     emailDescription:
-      "Phù hợp cho hợp tác, câu hỏi chi tiết hoặc yêu cầu hỗ trợ.",
+      "Phù hợp cho hợp tác, câu hỏi chi tiết, yêu cầu training hoặc triển khai AI Growth System.",
     leadFormEyebrow: "Form tư vấn",
-    leadFormTitle: "Để lại nhu cầu học.",
+    leadFormTitle: "Để lại tình trạng hiện tại của hệ thống.",
   },
 };

@@ -15,18 +15,18 @@ const beVietnamPro = Be_Vietnam_Pro({
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: "The Anh Marketing | Nền tảng học Marketing thực chiến",
+    default: "The Anh Marketing | AI Performance Marketing System",
     template: "%s | The Anh Marketing",
   },
   description:
-    "Nền tảng đào tạo Marketing, Facebook Ads và Kinh doanh Online thực chiến cho người mới, chủ shop và marketer.",
+    "AI Performance Marketing System giúp SME và Solopreneur xây hệ thống tăng trưởng bằng AI Marketing, Performance Ads, Funnel, Automation và CRM/Data.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "The Anh Marketing",
     description:
-      "Nền tảng học Marketing, Facebook Ads và Kinh doanh Online thực chiến.",
+      "AI Performance Marketing System cho SME và Solopreneur.",
     url: siteConfig.url,
     siteName: siteConfig.name,
     locale: "vi_VN",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "The Anh Marketing",
     description:
-      "Nền tảng học Marketing, Facebook Ads và Kinh doanh Online thực chiến.",
+      "AI Performance Marketing System cho SME và Solopreneur.",
   },
   robots: {
     index: true,

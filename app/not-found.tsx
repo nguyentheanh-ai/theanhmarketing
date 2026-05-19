@@ -12,7 +12,7 @@ export default function NotFound() {
             Signal lost in the operating system.
           </h1>
           <p className="ai-muted mx-auto mt-6 max-w-2xl text-lg leading-8">
-            Đường dẫn này chưa tồn tại hoặc nội dung đang được xây dựng trong platform The Anh Marketing.
+            Đường dẫn này chưa tồn tại hoặc nội dung đang được xây dựng trong AI Growth System của The Anh Marketing.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <ButtonLink href="/">Về trang chủ</ButtonLink>

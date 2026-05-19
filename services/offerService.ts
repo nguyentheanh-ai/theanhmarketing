@@ -18,16 +18,16 @@ type DbSetting = {
 
 export const fallbackOfferSettings: OfferSettings = {
   enabled: true,
-  title: "Ưu đãi dành cho bạn",
-  description: "Nhận tư vấn lộ trình, tài liệu thực hành và mã giảm giá khi đăng ký khóa học.",
+  title: "Nhận AI Growth Toolkit",
+  description: "Đăng ký để nhận toolkit, chẩn đoán lộ trình và ưu đãi khi bắt đầu với AI Ads Engine hoặc workshop.",
   couponCode: "THEANH200",
-  discountLabel: "Giảm 200.000đ",
+  discountLabel: "Ưu đãi 200.000đ",
   items: [
-    "Tặng checklist triển khai sau khóa học",
-    "Tặng template kế hoạch 30 ngày",
-    "Tư vấn chọn lộ trình phù hợp",
+    "Tặng AI Growth System Audit Checklist",
+    "Tặng Funnel Template 7 ngày",
+    "Tư vấn chọn lộ trình Growth System phù hợp",
   ],
-  ctaLabel: "Nhận ưu đãi",
+  ctaLabel: "Nhận toolkit",
   ctaHref: "/dang-ky",
 };
 

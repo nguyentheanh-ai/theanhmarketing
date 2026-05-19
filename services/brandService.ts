@@ -28,7 +28,7 @@ export const fallbackBrandSettings: BrandSettings = {
   tagline: siteConfig.tagline,
   phone: siteConfig.phone,
   email: siteConfig.email,
-  primaryCtaLabel: "Khám phá hệ sinh thái",
+  primaryCtaLabel: "Khám phá Growth System",
   primaryCtaHref: "/dang-ky",
   heroImageUrl: "",
   heroVideoUrl: "",

@@ -3,7 +3,7 @@ export const siteConfig = {
   shortName: "The Anh",
   logoMark: "TA",
   logoImage: "/brand/ta-mark.svg",
-  tagline: "Marketing & AI Learning OS.",
+  tagline: "AI Performance Marketing System.",
   url: "https://www.theanhmarketing.com",
   phone: "0367 928 921",
   phoneHref: "tel:0367928921",
@@ -12,7 +12,7 @@ export const siteConfig = {
 };
 
 export const mainNav = [
-  { label: "Hệ sinh thái", href: "/he-sinh-thai" },
+  { label: "Hệ thống", href: "/he-sinh-thai" },
   { label: "Khóa học", href: "/khoa-hoc" },
   { label: "Học viên", href: "/hoc-vien" },
   { label: "Workshop", href: "/workshop" },
@@ -20,30 +20,30 @@ export const mainNav = [
 ];
 
 export const platformStats = [
-  { value: "10.000+", label: "Học viên đã theo dõi nội dung" },
-  { value: "500+", label: "Feedback và case thực tế" },
-  { value: "100%", label: "Quyền học theo tài khoản" },
+  { value: "A.G.S", label: "Framework tăng trưởng bằng AI" },
+  { value: "5", label: "Engine: Content, Ads, Funnel, Automation, CRM" },
+  { value: "2026", label: "AI Performance Marketing System cho SME" },
 ];
 
 export const faqs = [
   {
     question: "The Anh Marketing phù hợp với ai?",
     answer:
-      "Phù hợp với người mới, chủ shop, chủ doanh nghiệp nhỏ, marketer nội bộ và người muốn học Marketing & AI theo hướng thực chiến, có lộ trình và có dashboard theo dõi.",
+      "Phù hợp với SME owner, Solopreneur, chủ shop, seller, creator và marketer muốn xây hệ thống tăng trưởng bằng AI thay vì làm content, ads và automation rời rạc.",
   },
   {
-    question: "Tôi chưa từng chạy quảng cáo có học được không?",
+    question: "Tôi chưa từng xây funnel hay CRM có bắt đầu được không?",
     answer:
-      "Có. Lộ trình bắt đầu từ nền tảng: tư duy marketing, khách hàng, offer, content, đo lường. Sau đó mới đi vào thiết lập chiến dịch, đọc chỉ số và tối ưu thực tế.",
+      "Có. Lộ trình bắt đầu từ chẩn đoán thị trường, khách hàng, offer và hành trình mua. Sau đó mới kết nối Content Engine, Ads Engine, Funnel, Automation và CRM theo từng bước.",
   },
   {
-    question: "Khóa học có được cập nhật không?",
+    question: "Facebook Ads 2026 nằm ở đâu trong hệ thống?",
     answer:
-      "Các khóa học được tổ chức theo phiên bản và có thể cập nhật nội dung mới khi nền tảng, hành vi người dùng hoặc workflow AI thay đổi.",
+      "Facebook Ads 2026 là phần AI Ads Engine: giúp bạn chạy ads theo funnel, đọc dữ liệu, lọc lead kém chất lượng và tối ưu theo mục tiêu kinh doanh chứ không chỉ thao tác trong trình quảng cáo.",
   },
   {
-    question: "Tôi cần hỗ trợ thì liên hệ ở đâu?",
+    question: "Tôi muốn được chẩn đoán hệ thống hiện tại thì làm sao?",
     answer:
-      "Bạn có thể liên hệ qua hotline/Zalo hoặc email của The Anh Marketing để được tư vấn lộ trình, hỗ trợ tài khoản hoặc xử lý vấn đề trong quá trình học.",
+      "Bạn có thể để lại thông tin ở trang liên hệ hoặc đăng ký. Team sẽ dùng CRM hiện có để ghi nhận nhu cầu và tư vấn lộ trình phù hợp: toolkit, workshop, khóa học hay triển khai hệ thống.",
   },
 ];

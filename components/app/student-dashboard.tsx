@@ -94,11 +94,11 @@ function CourseTile({
               isOwned ? "bg-[#49b77a] text-white" : "bg-[#e6c672] text-[#30250c]"
             }`}
           >
-            {isOwned ? "Đã sở hữu" : "Chưa sở hữu"}
+            {isOwned ? "Đã sở hữu" : "Chưa mở quyền"}
           </span>
           {!isOwned && studentOfferPrice ? (
             <span className="rounded-full bg-white/92 px-3 py-1 text-[11px] font-black text-[#1f5e41]">
-              Ưu đãi học viên -5%
+              Ưu đãi Growth Hub -5%
             </span>
           ) : null}
         </div>
@@ -107,7 +107,7 @@ function CourseTile({
       <div className="p-5">
         <div className="flex items-center justify-between gap-3 text-xs font-bold">
           <span className={isDark ? "text-white/54" : "text-black/48"}>
-            {moduleCount} module · {lessonCount} bài học
+            {moduleCount} module - {lessonCount} bài học
           </span>
           {discountPercent > 0 ? (
             <span className="rounded-full bg-[#e8f7ec] px-2.5 py-1 text-[#208253]">
@@ -128,10 +128,10 @@ function CourseTile({
         <div className="mt-4 flex items-end justify-between gap-3">
           <div>
             <p className={`text-xs font-bold uppercase ${isDark ? "text-white/45" : "text-black/42"}`}>
-              {isOwned ? "Quyền học" : "Giá học viên"}
+              {isOwned ? "Quyền học" : "Giá Growth Hub"}
             </p>
             <p className={`mt-1 text-lg font-black ${isDark ? "text-white" : "text-black"}`}>
-              {isOwned ? "Trọn khóa" : studentOfferPrice || course.price}
+              {isOwned ? "Đã mở" : studentOfferPrice || course.price}
             </p>
             {!isOwned && course.price && studentOfferPrice ? (
               <p className={`text-xs line-through ${isDark ? "text-white/36" : "text-black/36"}`}>
@@ -145,7 +145,7 @@ function CourseTile({
               href={getFirstLessonHref(course)}
               className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#49b77a] px-5 text-sm font-black text-white transition-colors hover:bg-[#3aa86c]"
             >
-              Vào học
+              Vào workflow
             </Link>
           ) : course.status === "open" ? (
             <AddToCartButton
@@ -162,7 +162,7 @@ function CourseTile({
                 isDark ? "bg-white/10 text-white" : "bg-white text-black"
               }`}
             >
-              Xem khóa
+              Xem chương trình
             </Link>
           )}
         </div>
@@ -201,15 +201,15 @@ export function StudentDashboard({
           <BrandMark className="grid size-10 place-items-center overflow-hidden rounded-md bg-white p-1 ring-1 ring-black/8" />
           <span>
             <span className="block text-sm font-black leading-tight">{siteConfig.shortName}</span>
-            <span className="block text-[11px] font-bold text-black/48">Khu học viên</span>
+            <span className="block text-[11px] font-bold text-black/48">Growth Hub</span>
           </span>
         </Link>
 
         <nav className="mt-8 grid gap-1 text-sm font-bold">
           {[
             ["Tổng quan", "/dashboard"],
-            ["Các khóa học", "#khoa-hoc"],
-            ["Tài liệu", "#tai-lieu"],
+            ["Chương trình", "#khoa-hoc"],
+            ["Toolkit", "#tai-lieu"],
             ["Hỗ trợ", "#ho-tro"],
           ].map(([label, href]) => (
             <Link
@@ -245,12 +245,12 @@ export function StudentDashboard({
         <header className={`mb-5 flex flex-col gap-3 rounded-[18px] p-4 ring-1 md:flex-row md:items-center md:justify-between ${panelClass}`}>
           <div>
             <p className={`text-xs font-black uppercase tracking-[0.16em] ${isDark ? "text-[#b79cff]" : "text-[#7a4ad8]"}`}>
-              Dashboard học viên
+              AI Operator Dashboard
             </p>
             <h1 className="mt-1 text-2xl font-black tracking-[-0.03em]">
               Chào {studentName || "học viên"}
             </h1>
-            <p className={`mt-1 text-sm ${mutedText}`}>{studentEmail || "Theo dõi khóa học, tài liệu và hỗ trợ tại đây."}</p>
+            <p className={`mt-1 text-sm ${mutedText}`}>{studentEmail || "Theo dõi chương trình, toolkit và hỗ trợ tại đây."}</p>
           </div>
           <div className="flex gap-2">
             <button
@@ -285,8 +285,8 @@ export function StudentDashboard({
                 <div className="h-full w-full bg-[#26252c]" />
               )}
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/88 to-transparent p-5 text-white">
-                <p className="text-xs font-black uppercase tracking-[0.14em] text-white/68">Khóa đang học</p>
-                <h2 className="mt-2 text-2xl font-black tracking-[-0.03em]">{activeCourse?.title ?? "Chưa có khóa học"}</h2>
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-white/68">Engine đang học</p>
+                <h2 className="mt-2 text-2xl font-black tracking-[-0.03em]">{activeCourse?.title ?? "Chưa có chương trình"}</h2>
                 <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/20">
                   <div className="h-full rounded-full bg-[#49b77a]" style={{ width: `${completion}%` }} />
                 </div>
@@ -295,7 +295,7 @@ export function StudentDashboard({
             <div className="grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-center">
               <div>
                 <p className={`text-sm leading-6 ${mutedText}`}>
-                  {activeCourse?.shortDescription || activeCourse?.description || "Khi sở hữu khóa học, bài học sẽ xuất hiện tại đây."}
+                  {activeCourse?.shortDescription || activeCourse?.description || "Khi sở hữu chương trình, bài học và workflow sẽ xuất hiện tại đây."}
                 </p>
                 <p className={`mt-2 text-sm font-bold ${isDark ? "text-white/78" : "text-black/68"}`}>
                   Tiến độ hiện tại: {completion}%
@@ -315,9 +315,9 @@ export function StudentDashboard({
               <p className={`text-xs font-black uppercase tracking-[0.14em] ${isDark ? "text-[#b79cff]" : "text-[#7a4ad8]"}`}>
                 Hỗ trợ
               </p>
-              <h2 className="mt-2 text-xl font-black">Cần hỗ trợ trong lúc học?</h2>
+              <h2 className="mt-2 text-xl font-black">Cần hỗ trợ khi triển khai?</h2>
               <p className={`mt-2 text-sm leading-6 ${mutedText}`}>
-                Gửi câu hỏi về bài học, tài khoản hoặc thanh toán. Đội ngũ sẽ phản hồi theo kênh bạn chọn.
+                Gửi câu hỏi về bài học, tài khoản, thanh toán hoặc điểm nghẽn trong Growth System. Đội ngũ sẽ phản hồi theo kênh bạn chọn.
               </p>
               <div className="mt-4 grid gap-2">
                 <Link href={siteConfig.emailHref} className="rounded-full bg-[#49b77a] px-4 py-3 text-center text-sm font-black text-white">
@@ -336,12 +336,12 @@ export function StudentDashboard({
           <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
               <p className={`text-xs font-black uppercase tracking-[0.16em] ${isDark ? "text-[#b79cff]" : "text-[#7a4ad8]"}`}>
-                Các khóa học
+                Chương trình
               </p>
-              <h2 className="mt-2 text-3xl font-black tracking-[-0.04em]">Khóa đã sở hữu và khóa có thể nâng cấp</h2>
+              <h2 className="mt-2 text-3xl font-black tracking-[-0.04em]">Engine đã sở hữu và chương trình có thể nâng cấp</h2>
             </div>
             <p className={`max-w-xl text-sm leading-6 ${mutedText}`}>
-              Khóa chưa sở hữu được làm tối hơn và áp dụng ưu đãi riêng 5% cho học viên đang có tài khoản.
+              Chương trình chưa mở quyền được làm tối hơn và áp dụng ưu đãi riêng 5% cho học viên đang có tài khoản.
             </p>
           </div>
 
@@ -371,9 +371,9 @@ export function StudentDashboard({
         <section id="tai-lieu" className="mt-6 grid gap-5 lg:grid-cols-2">
           <div className={`rounded-[18px] p-5 ring-1 ${panelClass}`}>
             <p className={`text-xs font-black uppercase tracking-[0.14em] ${isDark ? "text-[#b79cff]" : "text-[#7a4ad8]"}`}>
-              Tài liệu
+              Toolkit
             </p>
-            <h2 className="mt-2 text-2xl font-black">Tài liệu học viên</h2>
+            <h2 className="mt-2 text-2xl font-black">Toolkit học viên</h2>
             <div className="mt-4 grid gap-3">
               {resources.slice(0, 4).map((item) => (
                 <Link
@@ -392,12 +392,12 @@ export function StudentDashboard({
             <p className={`text-xs font-black uppercase tracking-[0.14em] ${isDark ? "text-[#b79cff]" : "text-[#7a4ad8]"}`}>
               Hồ sơ
             </p>
-            <h2 className="mt-2 text-2xl font-black">Thông tin học viên</h2>
+            <h2 className="mt-2 text-2xl font-black">Thông tin Growth Hub</h2>
             <div className={`mt-4 grid gap-3 text-sm ${mutedText}`}>
               <p>Họ tên: {studentName || "Học viên"}</p>
               <p>Email: {studentEmail || "Chưa đăng nhập email"}</p>
-              <p>Khóa đã sở hữu: {ownedCourses.length}</p>
-              <p>Khóa có thể nâng cấp: {suggestedCourses.length}</p>
+              <p>Chương trình đã mở quyền: {ownedCourses.length}</p>
+              <p>Chương trình có thể nâng cấp: {suggestedCourses.length}</p>
             </div>
           </div>
         </section>

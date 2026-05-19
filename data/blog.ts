@@ -10,36 +10,36 @@ export type BlogPost = {
 
 export const blogPosts: BlogPost[] = [
   {
-    slug: "cach-hoc-facebook-ads-cho-nguoi-moi",
-    title: "Cách học Facebook Ads cho người mới mà không bị lan man",
-    category: "Facebook Ads",
+    slug: "sme-khong-thieu-tool-thieu-growth-system",
+    title: "SME không thiếu tool. SME thiếu Growth System.",
+    category: "AI Growth System",
     readTime: "6 phút đọc",
     author: "The Anh Marketing",
     excerpt:
-      "Một lộ trình ngắn gọn để bắt đầu từ tư duy marketing, cấu trúc chiến dịch và cách đọc số liệu.",
+      "Vì sao content nhiều, ads vẫn chạy, AI vẫn dùng nhưng doanh thu không ổn định nếu thiếu hệ thống phía sau.",
     content:
-      "Người mới thường bắt đầu bằng thao tác trong trình quản lý quảng cáo, nhưng phần quan trọng hơn là hiểu khách hàng, offer, dữ liệu và cách ra quyết định. Bài viết này là khung định hướng để học có thứ tự.",
+      "Khi content, ads, AI và CRM hoạt động rời rạc, founder rất dễ nghĩ rằng mình thiếu tool hoặc thiếu người. Thực tế vấn đề thường nằm ở hệ thống: chưa có hành trình lead, chưa có nurture, chưa có dữ liệu ra quyết định và chưa có workflow lặp lại. Growth System giúp nối các mảnh đó thành một cơ chế vận hành.",
   },
   {
-    slug: "ung-dung-ai-trong-marketing-online",
-    title: "Ứng dụng AI trong Marketing Online sao cho thực tế",
-    category: "AI Marketing",
+    slug: "ags-framework-attract-grow-scale",
+    title: "A.G.S Framework: Attract, Grow, Scale",
+    category: "AI Growth System",
     readTime: "5 phút đọc",
     author: "The Anh Marketing",
     excerpt:
-      "AI hữu ích nhất khi bạn có quy trình rõ: nghiên cứu khách hàng, viết angle, tạo biến thể và đo hiệu quả.",
+      "Khung 3 bước để biến AI, content, ads, funnel, automation và CRM thành một hệ thống tăng trưởng.",
     content:
-      "AI không thay thế tư duy marketing, nhưng có thể tăng tốc các bước nghiên cứu, viết nháp, tạo biến thể và tổng hợp dữ liệu. Điều cần có là một quy trình rõ để đầu ra không bị lan man.",
+      "ATTRACT tạo traffic bằng content, AI workflow và paid media. GROW chuyển người quan tâm thành lead có niềm tin bằng funnel, nurture và authority. SCALE chuẩn hóa bằng automation, dashboard, SOP và tối ưu theo dữ liệu. Đây là cách dùng AI như hạ tầng vận hành thay vì chỉ là công cụ viết prompt.",
   },
   {
-    slug: "doc-chi-so-quang-cao-facebook",
-    title: "Đọc chỉ số quảng cáo Facebook: nên nhìn gì trước?",
-    category: "Hướng dẫn",
+    slug: "facebook-ads-2026-trong-ai-ads-engine",
+    title: "Facebook Ads 2026 trong AI Ads Engine nên nhìn gì trước?",
+    category: "Performance Ads",
     readTime: "7 phút đọc",
     author: "The Anh Marketing",
     excerpt:
-      "Không phải chỉ số nào cũng quan trọng như nhau. Hãy bắt đầu từ mục tiêu kinh doanh và tín hiệu chuyển đổi.",
+      "Không phải chỉ số nào cũng quan trọng như nhau. Hãy bắt đầu từ chất lượng lead, hành trình funnel và tín hiệu chuyển đổi.",
     content:
-      "Một chiến dịch không nên được đánh giá chỉ bằng CPM hay CPC. Cần nhìn theo chuỗi tín hiệu: phân phối, tương tác, hành động, chuyển đổi và lợi nhuận kỳ vọng.",
+      "Một chiến dịch Facebook Ads không nên được đánh giá chỉ bằng CPM hay CPC. Cần nhìn theo chuỗi tín hiệu: traffic có đúng tệp không, content có tạo ý định không, lead có được nurture không, CRM có ghi nhận hành vi không và conversion có đủ lợi nhuận kỳ vọng không.",
   },
 ];

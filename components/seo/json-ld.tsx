@@ -12,7 +12,7 @@ export async function OrganizationJsonLd() {
     email: siteConfig.email,
     telephone: siteConfig.phone,
     description:
-      "Nền tảng đào tạo Marketing, Facebook Ads và Kinh doanh Online thực chiến.",
+      "AI Performance Marketing System giúp SME và Solopreneur xây hệ thống tăng trưởng bằng AI Marketing, Performance Ads, Funnel, Automation và CRM/Data.",
     sameAs: [],
   };
 

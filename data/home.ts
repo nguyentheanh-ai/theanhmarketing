@@ -1,68 +1,68 @@
 export const homePage = {
   hero: {
-    badge: "Nền tảng học Marketing thực chiến cho người làm thật",
-    titleLines: ["Học Marketing", "& AI ứng dụng", "Có hệ thống"],
+    badge: "AI Performance Marketing System cho SME và Solopreneur",
+    titleLines: ["Xây Growth System", "bằng AI", "có dữ liệu"],
     description:
-      "The Anh Marketing là platform đào tạo Marketing thực chiến: khóa học, tài liệu, blog, khu học viên và hệ thống quản trị nội dung để học, triển khai và cập nhật lâu dài.",
+      "The Anh Marketing giúp SME và Solopreneur kết nối content, ads, funnel, automation và CRM/Data thành một hệ thống tăng trưởng có thể vận hành lặp lại.",
     primaryCta: {
-      label: "Khám Phá Khóa Học",
+      label: "Khám phá Growth System",
       href: "/khoa-hoc",
     },
     secondaryCta: {
-      label: "Xem Tài Liệu Miễn Phí",
+      label: "Tải AI Growth Toolkit",
       href: "/blog#tai-lieu",
     },
   },
   problem: {
     eyebrow: "Vấn đề",
-    title: "Học marketing rời rạc khiến bạn khó biến kiến thức thành kết quả.",
+    title: "SME không thiếu tool. Họ thiếu Growth System.",
     description:
-      "Website được xây như một education platform: có lộ trình, khóa học, thư viện tài liệu, blog chuyên môn, dashboard học viên và CMS để đội ngũ vận hành lâu dài.",
+      "Website được xây như một cổng vào AI Growth System: có khóa học, toolkit, blog chuyên môn, dashboard học viên, CRM/admin và CMS để vận hành lâu dài.",
     items: [
-      "Người mới không biết bắt đầu từ tư duy, kênh, dữ liệu hay công cụ.",
-      "Chủ shop và đội marketing cần hệ thống học gọn, dễ áp dụng vào công việc.",
-      "Người đi làm muốn dùng AI nhưng cần quy trình rõ thay vì mẹo rời rạc.",
+      "Content nhiều nhưng không ra lead vì thiếu hành trình chuyển đổi.",
+      "Ads ngày càng đắt khi offer, funnel và CRM chưa nối với nhau.",
+      "AI dùng rời rạc nên founder vẫn quá tải thay vì giảm thao tác lặp lại.",
     ],
   },
   ecosystem: {
     eyebrow: "The Anh Marketing",
-    title: "Một hệ sinh thái học Marketing hiện đại.",
+    title: "Một AI Growth Operating System.",
     description:
-      "Trọng tâm không phải một landing page bán một khóa duy nhất. Đây là nền tảng gồm public website, course catalog, mini LMS, tài nguyên, nội dung chuyên môn và admin CMS để cập nhật khóa học, thương hiệu, media và dữ liệu vận hành.",
+      "Trọng tâm không phải một landing page bán một khóa duy nhất. Đây là nền tảng gồm public website, course catalog, mini LMS, toolkit, nội dung chuyên môn và admin CRM/CMS để cập nhật khóa học, media và dữ liệu vận hành.",
   },
   featuredCourses: {
     eyebrow: "Khóa học",
-    title: "Các chương trình học đang mở.",
+    title: "Các engine đang mở.",
     cta: {
-      label: "Xem tất cả khóa học",
+      label: "Xem chương trình",
       href: "/khoa-hoc",
     },
   },
   learningPath: {
     eyebrow: "Lộ trình",
-    title: "Đi từ nền tảng đến triển khai có đo lường.",
+    title: "Đi từ chẩn đoán đến triển khai có đo lường.",
     items: [
-      "Nắm tư duy Marketing, khách hàng, offer và hành trình mua",
-      "Chọn kênh triển khai phù hợp: nội dung, quảng cáo, dữ liệu, AI",
-      "Thực hành qua module, bài học, checklist và case áp dụng",
-      "Theo dõi tiến độ trong khu học viên và cập nhật nội dung mới",
+      "Nắm thị trường, khách hàng, offer và hành trình mua",
+      "Chọn engine phù hợp: content, ads, funnel, automation, CRM",
+      "Thực hành qua module, bài học, checklist, prompt và case áp dụng",
+      "Theo dõi tiến độ trong Growth Hub và cập nhật dữ liệu vận hành",
     ],
   },
   resources: {
     eyebrow: "Tài liệu",
-    title: "Thư viện giúp bạn bắt đầu nhanh hơn.",
+    title: "Thư viện toolkit giúp bạn bắt đầu nhanh hơn.",
     cta: {
-      label: "Xem thư viện",
+      label: "Xem toolkit",
       href: "/blog#tai-lieu",
     },
   },
   testimonials: {
     eyebrow: "Học viên",
-    title: "Tập trung vào khả năng áp dụng thực tế.",
+    title: "Tập trung vào khả năng vận hành thực tế.",
   },
   blog: {
     eyebrow: "Blog",
-    title: "Góc nhìn, hướng dẫn và cập nhật mới.",
+    title: "Framework, chẩn đoán và workflow mới.",
     cta: {
       label: "Xem blog",
       href: "/blog",
@@ -73,12 +73,12 @@ export const homePage = {
     title: "Câu hỏi thường gặp.",
   },
   finalCta: {
-    eyebrow: "Bắt đầu học có hệ thống",
-    titlePrefix: "Khám phá",
+    eyebrow: "Bắt đầu bằng chẩn đoán",
+    titlePrefix: "Xây",
     description:
-      "Chọn khóa học phù hợp, tải tài liệu miễn phí hoặc đăng ký để được tư vấn lộ trình học Marketing thực chiến.",
+      "Chọn toolkit, khóa học hoặc workshop phù hợp để bắt đầu xây hệ thống tăng trưởng bằng AI.",
     cta: {
-      label: "Xem danh sách khóa học",
+      label: "Xem chương trình",
       href: "/khoa-hoc",
     },
   },

@@ -6,22 +6,22 @@ import { SoftCard } from "@/components/ui/soft-card";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Marketing OS",
+  title: "AI Performance Marketing System",
   description:
-    "Marketing OS kết nối khóa học, tài liệu, workflow, dashboard học viên và admin CRM trong hệ sinh thái The Anh Marketing.",
+    "AI Performance Marketing System kết nối Content Engine, Ads Engine, Funnel, Automation, CRM/Data và học viên trong hệ sinh thái The Anh Marketing.",
 };
 
 const operatingLayers = [
-  ["Learning layer", "Khóa học được chia theo module, bài học, tài liệu và quyền truy cập để học viên biết nên học gì tiếp theo."],
-  ["Workflow layer", "Prompt, checklist, template và SOP giúp biến kiến thức thành quy trình có thể áp dụng lại."],
-  ["CRM layer", "Lead, đơn hàng, học viên và quyền học được gom về admin để vận hành như một hệ thống thật."],
+  ["Attract layer", "AI Content Engine và Performance Ads tạo traffic có chủ đích, không chạy theo lượt xem hay ngân sách cảm tính."],
+  ["Grow layer", "Lead magnet, funnel, nurture và authority biến người quan tâm thành lead có niềm tin và có ngữ cảnh mua."],
+  ["Scale layer", "Automation, SOP, CRM/Data và dashboard giúp founder giảm thao tác lặp lại, chuẩn hóa team và tối ưu theo tín hiệu thật."],
 ];
 
 const osMetrics = [
-  ["Course", "Module, lesson, access"],
-  ["Docs", "Prompt, checklist, SOP"],
-  ["Student", "Progress, support, upgrade"],
-  ["Admin", "Lead, order, CRM"],
+  ["Content", "Insight, angle, distribution"],
+  ["Ads", "Traffic, lead quality, conversion"],
+  ["Funnel", "Lead magnet, nurture, offer"],
+  ["CRM", "Pipeline, behavior, dashboard"],
 ];
 
 export default function MarketingOsPage() {
@@ -31,12 +31,12 @@ export default function MarketingOsPage() {
         <div>
           <SectionHeading
             eyebrow="Marketing OS"
-            title="Một hệ điều hành để học, triển khai và vận hành Marketing."
-            description="Trang này tập trung vào cấu trúc Marketing OS: khóa học, tài liệu, workflow, dashboard học viên và admin CRM kết nối với nhau để người học không bị rời rạc."
+            title="AI Performance Marketing System: biến AI thành hạ tầng tăng trưởng."
+            description="Trang này trình bày cấu trúc hệ thống: Content Engine, Ads Engine, Funnel Engine, Automation Engine và CRM/Data Layer kết nối với nhau để business không còn làm marketing rời rạc."
           />
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href="/dang-ky">Khám phá hệ sinh thái</ButtonLink>
-            <ButtonLink href="/khoa-hoc" variant="secondary">Xem khóa học</ButtonLink>
+            <ButtonLink href="/dang-ky">Chẩn đoán hệ thống</ButtonLink>
+            <ButtonLink href="/khoa-hoc" variant="secondary">Xem chương trình</ButtonLink>
           </div>
         </div>
         <ContentOsDashboardMockup compact />
@@ -57,8 +57,8 @@ export default function MarketingOsPage() {
         <div className="ai-panel-strong p-8 sm:p-10">
           <SectionHeading
             eyebrow="Operating layers"
-            title="Không phải trang giới thiệu. Đây là bản đồ vận hành."
-            description="Mỗi lớp trong OS có nhiệm vụ riêng: học kiến thức, lấy tài liệu, áp dụng workflow, theo dõi tiến độ và chăm sóc học viên qua CRM."
+            title="Không phải trang giới thiệu cá nhân. Đây là bản đồ vận hành tăng trưởng."
+            description="Mỗi lớp trong OS có nhiệm vụ riêng: tạo nhu cầu, nuôi lead, chuyển đổi, tự động hóa, đo lường và giữ dữ liệu khách hàng trong CRM."
           />
           <div className="mt-8 grid gap-5 md:grid-cols-3">
             {operatingLayers.map(([title, description]) => (

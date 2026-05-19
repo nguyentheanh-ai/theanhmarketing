@@ -1,19 +1,19 @@
 export const testimonials = [
   {
     quote:
-      "Mình hiểu rõ hơn vì sao quảng cáo không hiệu quả và biết cách sửa từng phần thay vì chỉ tăng ngân sách.",
+      "Mình hiểu vì sao quảng cáo không hiệu quả: không chỉ do ads mà còn do offer, funnel và cách lọc lead.",
     name: "Minh Anh",
-    title: "Chủ shop mỹ phẩm",
+    title: "SME owner",
   },
   {
     quote:
-      "Nội dung dễ hiểu, đi thẳng vào việc cần làm. Phù hợp với người mới nhưng vẫn có tính thực chiến.",
+      "Khung A.G.S giúp mình biết phần nào cần làm trước, không còn mở quá nhiều tool AI rồi bỏ dở.",
     name: "Quốc Huy",
-    title: "Freelance marketer",
+    title: "Solopreneur",
   },
   {
     quote:
-      "Phần đọc dữ liệu giúp mình tự tin hơn khi quyết định tắt, sửa hoặc scale chiến dịch.",
+      "Phần đọc dữ liệu và workflow giúp team dễ thống nhất hơn khi quyết định tắt, sửa hoặc scale chiến dịch.",
     name: "Thu Trang",
     title: "Founder local brand",
   },

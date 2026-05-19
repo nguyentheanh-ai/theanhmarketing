@@ -7,16 +7,16 @@ export async function SiteFooter() {
   const phoneHref = `tel:${brand.phone.replace(/\D/g, "")}`;
   const emailHref = `mailto:${brand.email}`;
   const featuredLinks = [
-    { label: "The Anh OS", href: "/he-sinh-thai" },
-    { label: "Khóa học", href: "/khoa-hoc" },
-    { label: "AI Workflow", href: "/blog#tai-lieu" },
-    { label: "Workshop live", href: "/workshop" },
+    { label: "AI Growth System", href: "/he-sinh-thai" },
+    { label: "AI Ads Engine", href: "/khoa-hoc" },
+    { label: "AI Growth Toolkit", href: "/blog#tai-lieu" },
+    { label: "Workshop chẩn đoán", href: "/workshop" },
   ];
   const usefulLinks = [
     { label: "Blog", href: "/blog" },
-    { label: "Hệ sinh thái", href: "/he-sinh-thai" },
-    { label: "Học viên", href: "/hoc-vien" },
-    { label: "Đối tác", href: "/doi-tac" },
+    { label: "Hệ thống", href: "/he-sinh-thai" },
+    { label: "AI Operator Hub", href: "/hoc-vien" },
+    { label: "Triển khai cho team", href: "/doi-tac" },
     { label: "Đăng ký", href: "/dang-ky" },
   ];
   const helpLinks = [
@@ -38,11 +38,11 @@ export async function SiteFooter() {
             </span>
           </Link>
           <p className="ai-muted mt-6 max-w-xl text-sm font-medium leading-7">
-            Hệ sinh thái giúp người học xây nền tảng marketing, dùng AI workflow để sản xuất nội dung,
-            quản lý tài liệu, học theo khóa và được chăm sóc qua CRM/admin.
+            AI Performance Marketing System giúp SME và Solopreneur biến content, ads, funnel,
+            automation và CRM/Data thành một hệ thống tăng trưởng có thể vận hành lặp lại.
           </p>
           <div className="mt-10">
-            <p className="text-lg font-black text-[#8bdcff]">Đăng ký nhận bản tin</p>
+            <p className="text-lg font-black text-[#8bdcff]">Nhận AI Growth Toolkit</p>
             <form
               className="mt-5 flex max-w-full items-center gap-2 rounded-xl border border-[#77d7ff]/18 bg-white/7 p-1.5 shadow-[0_0_34px_rgba(56,189,248,0.12)] sm:max-w-sm"
               action={emailHref}
@@ -50,13 +50,13 @@ export async function SiteFooter() {
               <input
                 className="min-h-10 min-w-0 flex-1 bg-transparent px-4 text-sm text-white outline-none placeholder:text-white/38"
                 name="subject"
-                placeholder="Nhập email của bạn"
+                placeholder="Nhập email để nhận toolkit"
                 type="email"
               />
               <button
                 className="grid size-10 shrink-0 place-items-center rounded-lg bg-[#159cfb] text-lg font-black text-white transition-colors hover:bg-[#38bdf8]"
                 type="submit"
-                aria-label="Đăng ký nhận bản tin"
+                aria-label="Nhận AI Growth Toolkit"
               >
                 -&gt;
               </button>
@@ -64,7 +64,7 @@ export async function SiteFooter() {
           </div>
         </div>
 
-        <FooterColumn title="Hệ sinh thái" links={featuredLinks} />
+        <FooterColumn title="Growth System" links={featuredLinks} />
         <FooterColumn title="Liên kết" links={usefulLinks} />
         <div>
           <FooterColumn title="Trợ giúp" links={helpLinks} />

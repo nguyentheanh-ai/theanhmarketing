@@ -1,13 +1,13 @@
 import type { Course } from "@/data/courses";
 
 const courseNames = [
-  "AI Fullstack Marketing System",
-  "Performance Marketing & Growth Ads",
-  "Content Traffic Engine",
-  "Marketing Data Analytics",
-  "Brandformance Foundation",
-  "Founder Marketing Blueprint",
-  "AI Content & Automation Workflow",
+  "AI Growth System Program",
+  "AI Ads Engine",
+  "AI Content Engine",
+  "CRM & Data Layer",
+  "Funnel Psychology Foundation",
+  "AI Solopreneur OS",
+  "AI Automation Workflow",
   "Full Funnel Campaign Strategy",
   "Marketing Operation Management",
 ];
@@ -27,46 +27,46 @@ function createMarketingCourse(title: string, index: number): Course {
   return {
     slug,
     title,
-    eyebrow: "Marketing & AI ứng dụng",
+    eyebrow: "AI Growth System",
     description:
-      `Khóa học giúp bạn xây hệ thống ${focus} theo hướng thực chiến: hiểu chiến lược, biết cách triển khai, dùng AI đúng chỗ và đo lường hiệu quả trong công việc marketing thật.`,
+      `Chương trình giúp bạn xây ${focus} trong AI Growth System: hiểu chiến lược, biết cách triển khai, dùng AI đúng chỗ và đo lường hiệu quả trong công việc marketing thật.`,
     shortDescription:
-      `Học ${focus} có hệ thống, có workflow, có tài liệu áp dụng và phù hợp cho đội ngũ marketing hiện đại.`,
+      `${focus} có workflow, toolkit, dashboard học viên và phù hợp cho SME, Solopreneur hoặc team marketing nhỏ.`,
     price: index < 3 ? "1.490.000đ" : "990.000đ",
     originalPrice: index < 3 ? "3.990.000đ" : "2.490.000đ",
     status: "open",
     statusLabel: "Đang mở đăng ký",
-    ctaText: "Tạo tài khoản",
+    ctaText: "Vào chương trình",
     duration: index < 3 ? "6 giờ" : "4 giờ",
     level: "Cơ bản đến thực chiến",
     updatedAt: "13/05/2026",
-    format: "Video bài học + tài liệu + workflow + cộng đồng hỏi đáp",
+    format: "Video bài học + toolkit + workflow + cộng đồng hỏi đáp",
     bannerImageUrl: "",
     thumbnailImageUrl: "",
     videoPreviewUrl: "",
     videoPreviewEmbedUrl: "",
-    thumbnailLabel: `Preview khóa ${title}`,
+    thumbnailLabel: `Preview chương trình ${title}`,
     previewNote:
       "Bạn có thể bổ sung thumbnail, banner hoặc video preview từ CMS khóa học.",
-    topics: ["Marketing System", "AI ứng dụng", "Growth", "Data"],
+    topics: ["AI Growth System", "Automation", "Funnel", "CRM/Data"],
     audience: [
-      "Chủ doanh nghiệp nhỏ muốn tự hiểu hệ thống marketing.",
+      "SME owner muốn tự hiểu hệ thống marketing và điểm nghẽn tăng trưởng.",
       "Marketer cần lộ trình thực chiến để triển khai công việc tốt hơn.",
       "Founder hoặc team nhỏ muốn ứng dụng AI vào vận hành marketing.",
     ],
     outcomes: [
-      "Biết cách nhìn marketing như một hệ thống gồm chiến lược, nội dung, traffic, dữ liệu và vận hành.",
+      "Biết cách nhìn marketing như một hệ thống gồm content, ads, funnel, automation, CRM và dữ liệu.",
       "Có workflow triển khai thực tế để áp dụng vào công việc hoặc doanh nghiệp đang làm.",
       "Biết dùng AI để tăng tốc nghiên cứu, sản xuất nội dung, phân tích và tối ưu.",
     ],
     benefits: [
       "Học theo module ngắn, dễ xem lại và dễ áp dụng.",
-      "Có tài liệu, checklist và workflow đi kèm từng bài học.",
+      "Có toolkit, checklist và workflow đi kèm từng bài học.",
       "Có khu vực hỏi đáp để học viên đặt câu hỏi theo bài.",
     ],
     includes: [
       "Quyền học trọn đời theo tài khoản học viên.",
-      "Tài liệu cập nhật khi khóa học được bổ sung nội dung mới.",
+      "Toolkit cập nhật khi khóa học được bổ sung nội dung mới.",
       "Dashboard học viên để xem bài học, tài liệu và tiến độ.",
     ],
     requirements: [
@@ -77,9 +77,9 @@ function createMarketingCourse(title: string, index: number): Course {
     modules: [
       {
         id: `${slug}-foundation`,
-        title: "Nền tảng hệ thống",
+        title: "Nền tảng Growth System",
         description:
-          "Hiểu vai trò của khóa học trong bức tranh Marketing & AI ứng dụng.",
+          "Hiểu vai trò của chương trình trong bức tranh AI Performance Marketing System.",
         order: 1,
         lessons: [
           {
@@ -92,7 +92,7 @@ function createMarketingCourse(title: string, index: number): Course {
             access: "free",
             resources: [
               {
-                title: "Workbook định hướng",
+                title: "AI Growth Workbook",
                 url: "/blog#tai-lieu",
               },
             ],
@@ -108,7 +108,7 @@ function createMarketingCourse(title: string, index: number): Course {
             access: "paid",
             resources: [
               {
-                title: "Checklist triển khai",
+                title: "Growth System Checklist",
                 url: "/blog#tai-lieu",
               },
             ],
@@ -118,14 +118,14 @@ function createMarketingCourse(title: string, index: number): Course {
       },
       {
         id: `${slug}-workflow`,
-        title: "Workflow thực hành",
+        title: "Workflow vận hành",
         description:
           "Biến kiến thức thành quy trình có thể lặp lại cho cá nhân hoặc team.",
         order: 2,
         lessons: [
           {
             id: `${slug}-lesson-3`,
-            title: "Ứng dụng AI vào nghiên cứu và sản xuất",
+            title: "Ứng dụng AI vào research, content và funnel",
             duration: "26 phút",
             order: 1,
             youtubeUrl: "",
@@ -141,7 +141,7 @@ function createMarketingCourse(title: string, index: number): Course {
           },
           {
             id: `${slug}-lesson-4`,
-            title: "Đo lường, tối ưu và cập nhật hệ thống",
+            title: "Đo lường, tối ưu và cập nhật Growth System",
             duration: "22 phút",
             order: 2,
             youtubeUrl: "",
@@ -155,8 +155,8 @@ function createMarketingCourse(title: string, index: number): Course {
     ],
     instructor: {
       name: "The Anh",
-      title: "Founder The Anh Marketing",
-      bio: "Đào tạo Marketing & Kinh doanh Online theo hướng thực chiến, dễ hiểu và có thể áp dụng.",
+      title: "AI Growth Operator, Founder The Anh Marketing",
+      bio: "Xây hệ thống tăng trưởng bằng AI, Performance Ads, Funnel, Automation và CRM/Data cho SME và Solopreneur.",
     },
     reviews: [
       {

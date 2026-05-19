@@ -75,7 +75,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
       name: fullName,
       phone,
       email,
-      message: `Đăng ký học: ${interestedCourse}`,
+      message: `Đăng ký Growth Hub: ${interestedCourse}`,
       source: "signup",
     });
 
@@ -201,12 +201,12 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
 
         {cartItems.length > 0 ? (
           <div className="rounded-xl bg-white/8 p-4 text-sm leading-6 text-white/65">
-            <p className="font-bold text-white">Giỏ hàng của bạn</p>
+            <p className="font-bold text-white">Chương trình bạn chọn</p>
             <p className="mt-1">{cartItems.map((item) => item.title).join(", ")}</p>
           </div>
         ) : (
           <div className="grid gap-2">
-            <label className="text-sm font-semibold text-white/60">Khóa học quan tâm</label>
+            <label className="text-sm font-semibold text-white/60">Chương trình quan tâm</label>
             <select
               className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none transition focus:border-[#77d7ff]/35"
               name="course"
@@ -222,7 +222,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
 
         <label className="flex gap-3 text-sm leading-6 text-white/60">
           <input className="mt-1" required type="checkbox" />
-          Tôi đồng ý để The Anh Marketing liên hệ tư vấn và tạo hồ sơ học viên cho khóa học đã chọn.
+          Tôi đồng ý để The Anh Marketing liên hệ tư vấn và tạo hồ sơ Growth Hub cho chương trình đã chọn.
         </label>
         {message ? (
           <p className="rounded-xl bg-red-500/12 p-4 text-sm font-semibold text-red-100">
@@ -230,7 +230,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
           </p>
         ) : null}
         <Button isLoading={isSubmitting} loadingLabel="Đang tạo đơn thanh toán..." type="submit">
-          Tạo tài khoản
+          Tạo Growth Hub
         </Button>
       </form>
       <p className="mt-6 text-center text-sm text-white/55">

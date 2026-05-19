@@ -10,40 +10,40 @@ type StudentHubInteractiveProps = {
 
 const segments = [
   {
-    id: "newbie",
-    label: "Người mới",
-    title: "Bắt đầu từ lộ trình rõ ràng",
-    description: "Xem khóa nên học trước, mở bài đầu tiên và lưu tài liệu nền tảng để không bị rối khi mới bắt đầu.",
-    actions: ["Mở bài học đầu", "Lưu checklist nền tảng", "Hỏi lộ trình học"],
+    id: "sme-owner",
+    label: "SME Owner",
+    title: "Nhìn marketing như hệ thống tạo doanh thu",
+    description: "Xác định phần đang kẹt trong Growth System: traffic, funnel, lead nurture, CRM hay automation để biết nên xử lý trước ở đâu.",
+    actions: ["Chẩn đoán Growth System", "Xem AI Ads Engine", "Đặt lịch tư vấn"],
   },
   {
-    id: "shop",
-    label: "Chủ shop",
-    title: "Tập trung vào quảng cáo, content và đơn hàng",
-    description: "Ưu tiên các bài học Facebook Ads, content bán hàng, đo chỉ số và tài liệu triển khai nhanh cho sản phẩm thật.",
-    actions: ["Xem Facebook Ads 2026", "Tải checklist quảng cáo", "Theo dõi tiến độ"],
+    id: "solopreneur",
+    label: "Solopreneur",
+    title: "Dùng AI như một đội marketing gọn nhẹ",
+    description: "Lưu prompt, checklist và workflow để research, viết content, chạy ads, chăm lead và đo dữ liệu mà không cần team cồng kềnh.",
+    actions: ["Tải AI Growth Toolkit", "Lưu AI Workflow Blueprint", "Mở dashboard"],
+  },
+  {
+    id: "seller",
+    label: "Seller",
+    title: "Kết nối content, ads và đơn hàng vào cùng một funnel",
+    description: "Ưu tiên Facebook Ads 2026, content bán hàng, lead magnet và checklist lọc tệp khách để giảm tiền đốt vào traffic kém chất lượng.",
+    actions: ["Xem Facebook Ads 2026", "Tải checklist lọc lead", "Theo dõi tiến độ"],
   },
   {
     id: "marketer",
     label: "Marketer",
-    title: "Biến kiến thức thành workflow cho team",
-    description: "Dùng tài liệu, SOP và prompt để chuẩn hóa cách làm content, ads, báo cáo và tối ưu theo tuần.",
-    actions: ["Lưu workflow AI", "Mở tài liệu SOP", "Nâng cấp khóa học"],
-  },
-  {
-    id: "founder",
-    label: "Founder",
-    title: "Nhìn Marketing như một hệ thống vận hành",
-    description: "Theo dõi khóa học, tài liệu và hỗ trợ để biết phần nào đang thiếu trong hệ thống tăng trưởng của doanh nghiệp.",
-    actions: ["Xem hệ sinh thái", "Đặt lịch tư vấn", "Mở dashboard"],
+    title: "Biến kiến thức thành SOP và dashboard cho team",
+    description: "Dùng tài liệu, SOP và prompt để chuẩn hóa content, ads, báo cáo, nurture và tối ưu theo tuần.",
+    actions: ["Lưu workflow AI", "Mở SOP Automation", "Nâng cấp chương trình"],
   },
 ];
 
 const quickLinks = [
-  { label: "Dashboard học viên", href: "/dashboard", tags: "dashboard học khóa tiến độ" },
+  { label: "AI Operator Dashboard", href: "/dashboard", tags: "dashboard học khóa tiến độ growth system" },
   { label: "Khóa Facebook Ads 2026", href: "/khoa-hoc/facebook-ads-2026", tags: "facebook ads quảng cáo khóa học" },
-  { label: "Tài liệu & Workflow", href: "/blog#tai-lieu", tags: "tài liệu workflow checklist prompt sop" },
-  { label: "Hỗ trợ học viên", href: "/lien-he", tags: "hỗ trợ zalo email liên hệ" },
+  { label: "AI Growth Toolkit", href: "/blog#tai-lieu", tags: "tài liệu workflow checklist prompt sop toolkit" },
+  { label: "Chẩn đoán Growth System", href: "/lien-he", tags: "hỗ trợ zalo email liên hệ tư vấn" },
 ];
 
 export function StudentHubInteractive({ testimonials }: StudentHubInteractiveProps) {
@@ -66,8 +66,8 @@ export function StudentHubInteractive({ testimonials }: StudentHubInteractivePro
   return (
     <div className="community-hub">
       <aside>
-        <strong>Student OS</strong>
-        <p>Chọn nhóm học viên</p>
+        <strong>Operator Hub</strong>
+        <p>Chọn vai trò</p>
         {segments.map((item) => (
           <button
             key={item.id}
@@ -78,18 +78,18 @@ export function StudentHubInteractive({ testimonials }: StudentHubInteractivePro
             {item.label}
           </button>
         ))}
-        <ButtonLink href="/dang-nhap" className="mt-auto">Đăng nhập học viên</ButtonLink>
+        <ButtonLink href="/dang-nhap" className="mt-auto">Đăng nhập Growth Hub</ButtonLink>
       </aside>
 
       <main>
         <header>
-          <h1>Khu học viên để học, lưu tài liệu và theo dõi tiến độ</h1>
+          <h1>AI Operator Hub để học, lưu workflow và theo dõi tiến độ</h1>
           <label>
             <span className="sr-only">Tìm hành động học viên</span>
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Tìm khóa học, tài liệu, hỗ trợ..."
+              placeholder="Tìm khóa học, toolkit, workflow, hỗ trợ..."
             />
           </label>
         </header>
@@ -105,7 +105,7 @@ export function StudentHubInteractive({ testimonials }: StudentHubInteractivePro
                   <i>{index + 1}</i>
                   <div>
                     <strong>{action}</strong>
-                    <p>{index === 0 ? "Hành động ưu tiên cho nhóm hiện tại." : "Có thể mở từ dashboard hoặc thư viện tài liệu."}</p>
+                    <p>{index === 0 ? "Hành động ưu tiên cho vai trò hiện tại." : "Có thể mở từ dashboard hoặc thư viện toolkit."}</p>
                   </div>
                 </article>
               ))}
@@ -115,11 +115,11 @@ export function StudentHubInteractive({ testimonials }: StudentHubInteractivePro
           <section className="community-map">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="ai-kicker">Hành động nhanh</p>
+                <p className="ai-kicker">Growth actions</p>
                 <h2>{filteredLinks.length} mục phù hợp</h2>
               </div>
               <div className="flex gap-2">
-                {["Khóa học", "Tài liệu", "Hỗ trợ"].map((item) => (
+                {["Khóa học", "Toolkit", "Tư vấn"].map((item) => (
                   <span key={item}>{item}</span>
                 ))}
               </div>
@@ -128,17 +128,17 @@ export function StudentHubInteractive({ testimonials }: StudentHubInteractivePro
               {filteredLinks.map((item) => (
                 <a key={item.href} href={item.href}>
                   <strong>{item.label}</strong>
-                  <span>Mở ngay</span>
+                  <span>Mở</span>
                 </a>
               ))}
               {filteredLinks.length === 0 ? (
-                <p className="ai-muted">Không tìm thấy mục phù hợp. Thử “ads”, “tài liệu” hoặc “hỗ trợ”.</p>
+                <p className="ai-muted">Không tìm thấy mục phù hợp. Thử “ads”, “toolkit” hoặc “tư vấn”.</p>
               ) : null}
             </div>
           </section>
 
           <section className="community-events">
-            <h2>Feedback học viên</h2>
+            <h2>Feedback triển khai</h2>
             {testimonials.slice(0, 2).map((item) => (
               <div key={`${item.name}-${item.title}`}>
                 <span>{item.quote}</span>

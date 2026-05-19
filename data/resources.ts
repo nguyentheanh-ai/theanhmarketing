@@ -1,26 +1,26 @@
 export const resources = [
   {
-    slug: "checklist-audit-tai-khoan-quang-cao",
-    title: "Checklist audit tài khoản quảng cáo",
+    slug: "ai-growth-system-audit",
+    title: "AI Growth System Audit Checklist",
     type: "Checklist",
     access: "Miễn phí",
     description:
-      "Danh sách câu hỏi giúp rà soát nhanh tài khoản, chiến dịch, tracking và creative trước khi tăng ngân sách.",
+      "Danh sách câu hỏi giúp rà soát nhanh Content Engine, Ads Engine, Funnel, Automation và CRM/Data trước khi tăng ngân sách.",
   },
   {
-    slug: "template-plan-test-creative-7-ngay",
-    title: "Template plan test creative 7 ngày",
+    slug: "funnel-template-7-ngay",
+    title: "Funnel Template 7 ngày",
     type: "Template",
     access: "Miễn phí",
     description:
-      "Khung lập kế hoạch test angle, hook và format quảng cáo trong 7 ngày để giảm quyết định cảm tính.",
+      "Khung lập kế hoạch lead magnet, hook, angle, nurture và offer trong 7 ngày để giảm quyết định cảm tính.",
   },
   {
-    slug: "mini-guide-ai-noi-dung-ads",
-    title: "Mini guide ứng dụng AI vào nội dung ads",
+    slug: "ai-workflow-blueprint",
+    title: "AI Workflow Blueprint",
     type: "Mini guide",
     access: "Miễn phí",
     description:
-      "Cách dùng AI để nghiên cứu khách hàng, tạo angle nội dung và biến thể quảng cáo có kiểm soát.",
+      "Cách dùng AI để nghiên cứu khách hàng, tạo content angle, viết biến thể ads, gom dữ liệu và tạo SOP triển khai lặp lại.",
   },
 ];
