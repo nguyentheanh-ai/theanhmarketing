@@ -2638,6 +2638,11 @@ body {
 }
 
 .admin-crm-shell .ai-muted {
+  color: var(--ai-text-muted) !important;
+}
+
+.admin-crm-shell .ai-panel .ai-muted,
+.admin-crm-shell .ai-panel-strong .ai-muted {
   color: rgb(71 85 105) !important;
 }
 

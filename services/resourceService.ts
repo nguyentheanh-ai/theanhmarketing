@@ -1,4 +1,5 @@
 import { resources as fallbackResources } from "@/data/resources";
+import { unstable_cache } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type ResourceItem = (typeof fallbackResources)[number] & {
@@ -44,7 +45,7 @@ function mapDbResource(resource: DbResource): ResourceItem {
   };
 }
 
-export async function getResources() {
+async function fetchResources() {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
@@ -62,3 +63,8 @@ export async function getResources() {
 
   return (data as DbResource[]).map(mapDbResource);
 }
+
+export const getResources = unstable_cache(fetchResources, ["resources"], {
+  revalidate: 120,
+  tags: ["content", "resources"],
+});

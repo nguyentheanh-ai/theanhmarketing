@@ -1,4 +1,5 @@
 import { siteConfig } from "@/data/site";
+import { unstable_cache } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type BrandSettings = {
@@ -34,7 +35,7 @@ export const fallbackBrandSettings: BrandSettings = {
   heroVideoUrl: "",
 };
 
-export async function getBrandSettings(): Promise<BrandSettings> {
+async function fetchBrandSettings(): Promise<BrandSettings> {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
@@ -62,3 +63,8 @@ export async function getBrandSettings(): Promise<BrandSettings> {
     logoMark: value.logoMark || fallbackBrandSettings.logoMark,
   };
 }
+
+export const getBrandSettings = unstable_cache(fetchBrandSettings, ["site-settings-brand"], {
+  revalidate: 300,
+  tags: ["site-settings", "site-settings:brand"],
+});

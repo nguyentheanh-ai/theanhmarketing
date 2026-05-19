@@ -1,5 +1,6 @@
 import { courses as baseFallbackCourses, type Course, type CourseLesson, type CourseModule, type CourseStatus, type LessonAccess } from "@/data/courses";
 import { marketingCourses } from "@/data/marketing-courses";
+import { unstable_cache } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { toYouTubeEmbedUrl } from "@/lib/youtube";
 
@@ -376,7 +377,7 @@ function getFallbackCourses() {
   return fallbackCourses.map((course) => normalizeCourseText(normalizeCourseTiming(course)));
 }
 
-export async function getCourses() {
+async function fetchCourses() {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
@@ -434,6 +435,11 @@ export async function getCourses() {
 
   return [...dbCourses, ...missingFallbackCourses];
 }
+
+export const getCourses = unstable_cache(fetchCourses, ["courses-with-modules"], {
+  revalidate: 120,
+  tags: ["content", "courses"],
+});
 
 export async function getCourseBySlug(slug: string) {
   const courses = await getCourses();

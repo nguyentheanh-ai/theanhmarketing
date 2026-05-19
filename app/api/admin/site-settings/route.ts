@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { createSupabaseAuthServerClient, getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
 import { normalizeMarketingSettings } from "@/lib/marketing-settings";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -80,6 +81,9 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
+
+  revalidateTag("site-settings", "max");
+  revalidateTag(`site-settings:${key}`, "max");
 
   return NextResponse.json({ ok: true });
 }

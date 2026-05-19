@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   fallbackMarketingSettings,
@@ -10,7 +11,7 @@ type DbSetting = {
   value: Partial<MarketingSettings> | null;
 };
 
-export async function getMarketingSettings(): Promise<MarketingSettings> {
+async function fetchMarketingSettings(): Promise<MarketingSettings> {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
@@ -30,6 +31,11 @@ export async function getMarketingSettings(): Promise<MarketingSettings> {
   const setting = data as DbSetting;
   return normalizeMarketingSettings(setting.value);
 }
+
+export const getMarketingSettings = unstable_cache(fetchMarketingSettings, ["site-settings-marketing"], {
+  revalidate: 300,
+  tags: ["site-settings", "site-settings:marketing"],
+});
 
 export type { MarketingSettings } from "@/lib/marketing-settings";
 export { fallbackMarketingSettings, getAbsoluteSocialImage, normalizeMarketingSettings } from "@/lib/marketing-settings";

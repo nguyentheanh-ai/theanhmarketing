@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type OfferSettings = {
@@ -31,7 +32,7 @@ export const fallbackOfferSettings: OfferSettings = {
   ctaHref: "/dang-ky",
 };
 
-export async function getOfferSettings(): Promise<OfferSettings> {
+async function fetchOfferSettings(): Promise<OfferSettings> {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
@@ -57,3 +58,8 @@ export async function getOfferSettings(): Promise<OfferSettings> {
     items: Array.isArray(value.items) && value.items.length > 0 ? value.items : fallbackOfferSettings.items,
   };
 }
+
+export const getOfferSettings = unstable_cache(fetchOfferSettings, ["site-settings-offer"], {
+  revalidate: 300,
+  tags: ["site-settings", "site-settings:offer"],
+});

@@ -1,4 +1,5 @@
 import { blogPosts as fallbackBlogPosts, type BlogPost } from "@/data/blog";
+import { unstable_cache } from "next/cache";
 import { sanitizeCmsHtml } from "@/lib/security/html";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -36,7 +37,7 @@ function mapDbBlogPost(post: DbBlogPost): BlogPostItem {
   };
 }
 
-export async function getBlogPosts(): Promise<BlogPostItem[]> {
+async function fetchBlogPosts(): Promise<BlogPostItem[]> {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
@@ -54,6 +55,11 @@ export async function getBlogPosts(): Promise<BlogPostItem[]> {
 
   return (data as DbBlogPost[]).map(mapDbBlogPost);
 }
+
+export const getBlogPosts = unstable_cache(fetchBlogPosts, ["blog-posts"], {
+  revalidate: 120,
+  tags: ["content", "blog-posts"],
+});
 
 export async function getBlogPostBySlug(slug: string) {
   const posts = await getBlogPosts();

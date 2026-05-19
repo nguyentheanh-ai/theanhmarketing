@@ -1,4 +1,5 @@
 import { testimonials as fallbackTestimonials } from "@/data/testimonials";
+import { unstable_cache } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type TestimonialItem = (typeof fallbackTestimonials)[number] & {
@@ -37,7 +38,7 @@ function mapDbTestimonial(testimonial: DbTestimonial): TestimonialItem {
   };
 }
 
-export async function getTestimonials(): Promise<TestimonialItem[]> {
+async function fetchTestimonials(): Promise<TestimonialItem[]> {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
@@ -55,3 +56,8 @@ export async function getTestimonials(): Promise<TestimonialItem[]> {
 
   return (data as DbTestimonial[]).map(mapDbTestimonial);
 }
+
+export const getTestimonials = unstable_cache(fetchTestimonials, ["testimonials"], {
+  revalidate: 120,
+  tags: ["content", "testimonials"],
+});
