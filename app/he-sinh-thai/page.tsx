@@ -34,14 +34,14 @@ export default async function EcosystemPage() {
           <div>
             <p className="ai-kicker">The Anh OS</p>
             <h1 className="ai-glow-text mt-5 text-5xl font-black leading-[0.98] tracking-[-0.05em] sm:text-7xl">
-              Hệ sinh thái AI Marketing vận hành như một CRM mini.
+              Một hệ sinh thái học Marketing vận hành như CRM mini.
             </h1>
             <p className="ai-muted mt-6 max-w-2xl text-lg leading-8">
-              Một bản đồ thống nhất cho khóa học, tài liệu, workflow, cộng đồng, học viên và admin. Mỗi phần có nhiệm vụ rõ để người học đi từ kiến thức đến triển khai.
+              Khóa học, tài liệu, workflow, học viên và admin được nối thành một đường đi rõ ràng: học nền tảng, áp dụng vào việc thật, theo dõi tiến độ và được hỗ trợ khi cần.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/khoa-hoc">Chọn khóa học</ButtonLink>
-              <ButtonLink href="/dashboard" variant="secondary">Vào dashboard học viên</ButtonLink>
+              <ButtonLink href="/dang-ky">Đăng ký tư vấn</ButtonLink>
+              <ButtonLink href="/khoa-hoc" variant="secondary">Xem khóa học</ButtonLink>
             </div>
           </div>
           <ContentOsDashboardMockup compact />
@@ -94,4 +94,3 @@ export default async function EcosystemPage() {
     </PageShell>
   );
 }
-

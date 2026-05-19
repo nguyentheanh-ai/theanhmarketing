@@ -26,10 +26,10 @@ export default async function AdminDashboardPage() {
     <ProtectedAdminShell nextPath="/admin/dashboard">
       <div className="mx-auto max-w-[1440px]">
         <AdminPageHeader
-          eyebrow="Command center"
-          title="Dashboard vận hành CRM"
-          description="Theo dõi lead, đơn thanh toán, quyền học và các việc cần xử lý trong một màn hình gọn hơn cho admin."
-          action={<ButtonLink href="/admin/leads">Thêm lead</ButtonLink>}
+          eyebrow="Admin CRM"
+          title="Tổng quan vận hành"
+          description="Theo dõi lead mới, đơn hàng, học viên, khóa học và các việc cần xử lý trong một màn hình gọn hơn cho admin."
+          action={<ButtonLink href="/admin/leads">Thêm lead mới</ButtonLink>}
         />
 
         <section className="mt-6">

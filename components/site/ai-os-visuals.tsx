@@ -6,44 +6,44 @@ import { getCourseLessonCount, getCourseModuleCount } from "@/data/courses";
 import { toYouTubeThumbnailUrl } from "@/lib/youtube";
 
 const moduleTitles = [
-  "AI Fullstack Marketing System",
-  "Marketing Data Analytics",
-  "Content Traffic Engine",
-  "Founder Marketing Blueprint",
-  "AI Content & Automation Workflow",
-  "Marketing Operation Management",
+  "Hệ thống Marketing nền tảng",
+  "Dữ liệu & đo lường hiệu quả",
+  "Content traffic engine",
+  "Blueprint cho founder",
+  "AI content & automation workflow",
+  "Quản trị vận hành Marketing",
 ];
 
 const moduleMetrics = [
-  "X5 Efficiency",
-  "10X Insights",
-  "5X Traffic Growth",
-  "3X Brand Reach",
-  "8X Content Output",
-  "4X Team Productivity",
+  "Tăng tốc triển khai",
+  "Rõ chỉ số cần đọc",
+  "Tạo nội dung đều hơn",
+  "Có khung ra quyết định",
+  "Giảm thao tác lặp lại",
+  "Dễ bàn giao cho team",
 ];
 
 const moduleTimelines = [
-  ["Foundation Setup (2 weeks)", "AI Integration (5 weeks)", "Deployment & Scaling"],
-  ["Data Collection (2 weeks)", "Analysis & Visualization", "Predictive Models"],
-  ["Keyword Research", "Automated Content Creation", "Distribution Strategy"],
-  ["Brand Strategy", "Content Calendar", "Community Building"],
-  ["Tool Selection", "Workflow Design", "Automation Setup"],
-  ["Process Audit", "SOP Development", "Team Training"],
+  ["Nền tảng & mục tiêu", "Workflow triển khai", "Đo lường và tối ưu"],
+  ["Thu thập dữ liệu", "Đọc chỉ số", "Ra quyết định"],
+  ["Nghiên cứu insight", "Sản xuất nội dung", "Phân phối và đo lường"],
+  ["Định vị thương hiệu", "Lịch nội dung", "Cộng đồng và niềm tin"],
+  ["Chọn công cụ", "Thiết kế workflow", "Tự động hóa"],
+  ["Audit quy trình", "Viết SOP", "Huấn luyện team"],
 ];
 
 const ecosystemNodes = [
-  { label: "AI MARKETING", detail: "Automated campaigns & analytics.", side: "left top" },
-  { label: "TEMPLATES", detail: "Premium playbooks.", side: "left bottom" },
-  { label: "CRM", detail: "Pipeline & customer access.", side: "right top" },
-  { label: "COMMUNITY", detail: "Students, proof and support.", side: "right bottom" },
+  { label: "KHÓA HỌC", detail: "Lộ trình học có module, bài học và quyền truy cập.", side: "left top", href: "/khoa-hoc" },
+  { label: "TÀI LIỆU", detail: "Checklist, template và workflow đi kèm.", side: "left bottom", href: "/blog#tai-lieu" },
+  { label: "CRM", detail: "Lead, đơn hàng, học viên và quyền học.", side: "right top", href: "/admin/dashboard" },
+  { label: "HỌC VIÊN", detail: "Dashboard học, tiến độ và hỗ trợ.", side: "right bottom", href: "/hoc-vien" },
 ];
 
 function MiniLineChart({ compact = false }: { compact?: boolean }) {
   return (
     <div className={compact ? "os-mini-chart compact" : "os-mini-chart"}>
       <div className="os-chart-grid" />
-      <svg viewBox="0 0 220 120" role="img" aria-label="Content performance chart">
+      <svg viewBox="0 0 220 120" role="img" aria-label="Biểu đồ hiệu quả nội dung">
         <defs>
           <linearGradient id={compact ? "lineFillCompact" : "lineFill"} x1="0" x2="0" y1="0" y2="1">
             <stop offset="0%" stopColor="#30c7ff" stopOpacity="0.52" />
@@ -61,7 +61,7 @@ function MiniLineChart({ compact = false }: { compact?: boolean }) {
 
 function MiniBarChart() {
   return (
-    <div className="os-bar-chart" aria-label="Audience engagement chart">
+    <div className="os-bar-chart" aria-label="Biểu đồ tương tác học viên">
       {[36, 58, 42, 74, 48, 68, 80, 62, 86, 76].map((height, index) => (
         <span key={`${height}-${index}`} style={{ height: `${height}%`, animationDelay: `${index * 70}ms` }} />
       ))}
@@ -94,7 +94,7 @@ function WorkflowPreview({ variant }: { variant: number }) {
 
   return (
     <div className="module-preview">
-      <span className="module-preview-pill">Workflow Preview</span>
+      <span className="module-preview-pill">Workflow preview</span>
       <svg viewBox="0 0 180 126" aria-hidden="true">
         {nodes.slice(0, -1).map((node, index) => {
           const next = nodes[index + 1];
@@ -148,48 +148,48 @@ function CoursePreview({ course, variant }: { course: Course; variant: number })
 }
 
 export function HeroDashboardMockup() {
-  const workflow = ["Market Trends", "AI Ideation", "Content Creation", "Automated Outreach", "Performance"];
+  const workflow = ["Nghiên cứu thị trường", "AI lên ý tưởng", "Sản xuất nội dung", "Phân phối", "Đo lường"];
 
   return (
-    <div className="hero-os-card" aria-label="AI Content Engine dashboard mockup">
+    <div className="hero-os-card" aria-label="Dashboard học Marketing và AI workflow">
       <div className="hero-os-rail">
-        {["A", "01", "02", "03", "04"].map((item) => (
+        {["TA", "01", "02", "03", "04"].map((item) => (
           <span key={item}>{item}</span>
         ))}
       </div>
       <div className="hero-os-main">
         <div className="hero-os-topbar">
           <div>
-            <p>AI Content Engine & Workflows</p>
+            <p>The Anh Marketing OS</p>
             <nav>
-              <span>Analytics</span>
+              <span>Học viên</span>
               <span>Workflow</span>
-              <span>Research</span>
-              <span>Settings</span>
+              <span>Tài liệu</span>
+              <span>CRM</span>
             </nav>
           </div>
-          <button type="button">AI Seeded</button>
+          <button type="button">Đang học</button>
         </div>
 
         <div className="hero-os-grid">
           <section>
             <header>
-              <span>Content Performance</span>
-              <strong>+ growth</strong>
+              <span>Tiến độ học</span>
+              <strong>+ đều</strong>
             </header>
             <MiniLineChart compact />
           </section>
           <section>
             <header>
-              <span>Audience Engagement</span>
-              <strong>...</strong>
+              <span>Tương tác nội dung</span>
+              <strong>live</strong>
             </header>
             <MiniBarChart />
           </section>
         </div>
 
         <section className="hero-os-workflow">
-          <header>Node Based</header>
+          <header>Workflow triển khai</header>
           <div>
             {workflow.map((item, index) => (
               <span key={item} className={index === 3 ? "active" : ""}>
@@ -205,12 +205,12 @@ export function HeroDashboardMockup() {
 }
 
 export function ContentOsDashboardMockup({ compact = false }: { compact?: boolean }) {
-  const cards = ["Topic Research", "Script Generation", "Evamet Research", "Video Creation", "Auto-Posting"];
+  const cards = ["Nghiên cứu chủ đề", "AI viết khung", "Kiểm tra insight", "Tạo video", "Đăng đa kênh"];
 
   return (
     <div className={compact ? "content-os-frame compact" : "content-os-frame"}>
       <aside className="content-os-sidebar">
-        <strong>Content OS</strong>
+        <strong>Marketing OS</strong>
         {["Research", "Content", "Automation", "Analytics", "Settings"].map((item, index) => (
           <span key={item} className={index === 0 ? "active" : ""}>{item}</span>
         ))}
@@ -219,9 +219,9 @@ export function ContentOsDashboardMockup({ compact = false }: { compact?: boolea
         <div className="content-os-titlebar">
           <div>
             <span>Main Stage</span>
-            <h3>AI Content Engine - Automated Video Scripting & Posting</h3>
+            <h3>AI content engine - từ nghiên cứu đến phân phối</h3>
           </div>
-          <button type="button">+ Editor Editor</button>
+          <button type="button">+ Thêm workflow</button>
         </div>
 
         <section className="content-os-canvas">
@@ -236,37 +236,37 @@ export function ContentOsDashboardMockup({ compact = false }: { compact?: boolea
             <div key={item} className={`content-node node-${index + 1}`}>
               <i>{index === 0 ? "Q" : index === 1 ? "AI" : index === 2 ? "R" : index === 3 ? "V" : "P"}</i>
               <strong>{item}</strong>
-              <span>{index === 1 ? "(GPT-4)" : index === 3 ? "(AI)" : index === 4 ? "(Multi-Platform)" : ""}</span>
+              <span>{index === 1 ? "(AI)" : index === 3 ? "(Video)" : index === 4 ? "(Multi-platform)" : ""}</span>
             </div>
           ))}
           <div className="content-platforms">
-            {["Facebook", "Instagram", "YouTube", "Multi-Platform"].map((item) => (
+            {["Facebook", "Instagram", "YouTube", "Multi-platform"].map((item) => (
               <span key={item}>{item}</span>
             ))}
           </div>
         </section>
 
         <section className="content-os-recent">
-          <h4>Recent Generations</h4>
+          <h4>Nội dung vừa tạo</h4>
           <div>
             {[1, 2, 3, 4].map((item) => (
               <article key={item}>
                 <span className="play">▶</span>
-                <strong>Product Launch<br />Video - v{item === 3 ? 1 : item}</strong>
-                <small>{item === 1 ? "16 May 2023" : "13 May 2024"}</small>
+                <strong>Video bán hàng<br />phiên bản {item === 3 ? 1 : item}</strong>
+                <small>{item === 1 ? "16 May 2026" : "13 May 2026"}</small>
               </article>
             ))}
           </div>
         </section>
       </main>
       <aside className="content-os-predictions">
-        <h3>Engagement Predictions</h3>
+        <h3>Dự báo hiệu quả</h3>
         <section>
-          <header><span>Projected Reach</span><strong>Real-time</strong></header>
+          <header><span>Reach dự kiến</span><strong>real-time</strong></header>
           <MiniLineChart compact />
         </section>
         <section>
-          <header><span>Engagement Rate</span><strong>Real-time</strong></header>
+          <header><span>Tỷ lệ tương tác</span><strong>real-time</strong></header>
           <MiniLineChart compact />
         </section>
       </aside>
@@ -280,7 +280,7 @@ export function EcosystemMapExact() {
       <div className="ecosystem-rays" />
       <div className="ecosystem-core">THE ANH<br />OS</div>
       {ecosystemNodes.map((node) => (
-        <Link key={node.label} href="/khoa-hoc" className={`ecosystem-node ${node.side.replace(" ", "-")}`}>
+        <Link key={node.label} href={node.href} className={`ecosystem-node ${node.side.replace(" ", "-")}`}>
           <i />
           <strong>{node.label}</strong>
           <span>{node.detail}</span>
@@ -292,18 +292,18 @@ export function EcosystemMapExact() {
 
 export function EcosystemFeatureGrid() {
   const items = [
-    "AI-DRIVEN INSIGHTS",
-    "CRM INTEGRATION",
-    "PREMIUM TEMPLATES",
-    "COMMUNITY HUB",
-    "WORKFLOW AUTOMATION",
-    "DATA ANALYTICS",
+    ["LỘ TRÌNH HỌC", "/khoa-hoc"],
+    ["CRM HỌC VIÊN", "/hoc-vien"],
+    ["TÀI LIỆU & TEMPLATE", "/blog#tai-lieu"],
+    ["CỘNG ĐỒNG", "/hoc-vien"],
+    ["WORKFLOW AI", "/workshop"],
+    ["DỮ LIỆU VẬN HÀNH", "/admin/dashboard"],
   ];
 
   return (
     <div className="ecosystem-feature-grid">
-      {items.map((item, index) => (
-        <Link key={item} href="/khoa-hoc">
+      {items.map(([item, href], index) => (
+        <Link key={item} href={href}>
           <span>{String(index + 1).padStart(2, "0")}</span>
           <strong>{item}</strong>
         </Link>
@@ -318,7 +318,7 @@ export function ModuleCatalogGrid({ courses, limit }: { courses: Course[]; limit
   return (
     <div className="module-catalog-grid">
       {visibleCourses.map((course, index) => {
-        const moduleLabel = moduleTitles[index % moduleTitles.length] ?? "AI Marketing Module";
+        const moduleLabel = moduleTitles[index % moduleTitles.length] ?? "Marketing module";
         const timeline = course.modules.length > 0
           ? course.modules.slice(0, 3).map((module) => module.title)
           : (moduleTimelines[index % moduleTimelines.length] ?? moduleTimelines[0]);

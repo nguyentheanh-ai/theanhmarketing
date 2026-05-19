@@ -1,41 +1,41 @@
 export const publicPages = {
   courses: {
     eyebrow: "Khóa học",
-    title: "Lộ trình học Marketing & Ứng dụng AI x5 hiệu suất công việc.",
+    title: "Khóa học Marketing & AI thực chiến",
     description:
-      "Danh sách khóa học được tổ chức theo chủ đề, cấp độ và trạng thái để sau này dễ mở rộng thành hệ thống quản lý đầy đủ.",
+      "Chọn khóa học theo nhu cầu triển khai: Facebook Ads, content, AI workflow, data và hệ thống marketing cho cá nhân hoặc team nhỏ.",
     structureTitle: "Cấu trúc học",
     structureDescription:
-      "Mỗi khóa học sẽ có module, bài học, tài liệu đi kèm, quyền truy cập học viên và trạng thái quản lý trong admin.",
+      "Mỗi khóa học có module, bài học, tài liệu đi kèm, quyền truy cập học viên và trạng thái quản lý trong admin.",
     filters: ["Tất cả", "Facebook Ads", "Marketing Online", "AI Marketing", "Người mới"],
   },
   blog: {
-    eyebrow: "Blog",
-    title: "Nội dung về Facebook Ads, AI Marketing và kinh doanh online.",
+    eyebrow: "Blog & Tài liệu",
+    title: "Blog & Tài liệu Marketing thực chiến",
     description:
-      "Content hub giúp xây dựng niềm tin, hỗ trợ SEO và dẫn người đọc đến khóa học hoặc tài liệu phù hợp.",
-    directionTitle: "Định hướng",
+      "Đọc bài viết, tải tài liệu và lưu workflow để áp dụng vào khóa học hoặc công việc đang triển khai.",
+    directionTitle: "Định hướng nội dung",
     directionDescription:
-      "Mỗi bài viết nên giải quyết một vấn đề cụ thể của người học: bắt đầu từ đâu, đọc số liệu thế nào, dùng AI ra sao, hoặc tối ưu chiến dịch như thế nào.",
+      "Mỗi bài viết giải quyết một vấn đề cụ thể của người học: bắt đầu từ đâu, đọc số liệu thế nào, dùng AI ra sao hoặc tối ưu chiến dịch như thế nào.",
     categories: ["Facebook Ads", "Marketing Online", "AI Marketing", "Case Study", "Công cụ"],
   },
   resources: {
     eyebrow: "Tài liệu",
-    title: "Thư viện tài liệu Marketing thực chiến.",
+    title: "Tài liệu & Workflow",
     description:
-      "Khu vực dành cho ebook, checklist, template, prompt và file mẫu. Đây là nền cho hệ thống tài liệu miễn phí, trả phí và tài liệu chỉ dành cho học viên.",
+      "Thư viện dành cho ebook, checklist, template, prompt và file mẫu để người học triển khai nhanh hơn.",
     noteTitle: "Lead magnet",
     noteDescription:
-      "Các tài liệu có thể được dùng để tạo lead, nuôi dưỡng người học và kết nối với khóa học phù hợp trong hệ sinh thái.",
+      "Tài liệu có thể dùng để tạo lead, nuôi dưỡng người học và kết nối với khóa học phù hợp trong hệ sinh thái.",
   },
   about: {
     eyebrow: "Giới thiệu",
-    title: "The Anh Marketing được xây để học marketing dễ hiểu hơn.",
+    title: "The Anh Marketing xây hệ sinh thái học Marketing thực chiến",
     description:
-      "Nền tảng tập trung vào cách học thực chiến, có lộ trình, có tài liệu và có khả năng áp dụng vào kinh doanh thật.",
-    mediaLabel: "Ảnh founder / lớp học",
+      "Trọng tâm là giúp người học hiểu hệ thống, triển khai được và dùng AI đúng chỗ trong công việc thật.",
+    mediaLabel: "Founder, lớp học và cộng đồng",
     mediaNote:
-      "Bạn có thể bổ sung ảnh The Anh, ảnh lớp học hoặc hình ảnh cộng đồng tại đây.",
+      "Khu vực này dùng cho hình ảnh The Anh, lớp học, workshop hoặc cộng đồng học viên khi có tư liệu thật.",
     principlesEyebrow: "Triết lý đào tạo",
     principlesTitle: "Thực dụng, rõ ràng, có hệ thống.",
     principles: [
@@ -46,26 +46,26 @@ export const publicPages = {
   },
   students: {
     eyebrow: "Học viên",
-    title: "Feedback và case study của học viên.",
+    title: "Khu học viên để học, lưu tài liệu và theo dõi tiến độ",
     description:
-      "Khu vực này sẽ phát triển thành nơi lưu feedback, kết quả trước/sau, video review và câu chuyện học viên.",
-    mediaLabel: "Video review học viên",
+      "Sau khi đăng nhập, học viên xem khóa đã sở hữu, mở bài học, tải tài liệu và nhận hỗ trợ trong cùng một dashboard.",
+    mediaLabel: "Dashboard học viên",
     mediaNote:
-      "Khu vực dành cho video hoặc ảnh feedback khi bạn bổ sung tư liệu thật.",
-    caseStudyTitle: "Kết quả trước / sau",
+      "Khu vực này mô tả trải nghiệm học: khóa đã sở hữu, tài liệu, tiến độ và hỗ trợ.",
+    caseStudyTitle: "Từ học đến áp dụng",
     caseStudyDescription:
       "Khi có dữ liệu thật, phần này có thể hiển thị tình trạng ban đầu, cách học viên áp dụng và kết quả sau khi triển khai.",
   },
   contact: {
     eyebrow: "Liên hệ",
-    title: "Cần tư vấn lộ trình học phù hợp?",
+    title: "Liên hệ để chọn lộ trình học phù hợp",
     description:
-      "Liên hệ The Anh Marketing qua Zalo, hotline hoặc email để được định hướng khóa học, tài liệu và lộ trình phù hợp.",
+      "Gửi thông tin hoặc nhắn Zalo để được tư vấn khóa học, tài liệu và cách bắt đầu theo tình huống hiện tại của bạn.",
     phoneDescription:
       "Phù hợp nếu bạn muốn được tư vấn nhanh về khóa học hoặc lộ trình.",
     emailDescription:
       "Phù hợp cho hợp tác, câu hỏi chi tiết hoặc yêu cầu hỗ trợ.",
-    leadFormEyebrow: "Form lead",
+    leadFormEyebrow: "Form tư vấn",
     leadFormTitle: "Để lại nhu cầu học.",
   },
 };

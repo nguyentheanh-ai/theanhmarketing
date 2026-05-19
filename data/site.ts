@@ -3,7 +3,7 @@ export const siteConfig = {
   shortName: "The Anh",
   logoMark: "TA",
   logoImage: "/brand/ta-mark.svg",
-  tagline: "Solopreneur Operating System.",
+  tagline: "Marketing & AI Learning OS.",
   url: "https://www.theanhmarketing.com",
   phone: "0367 928 921",
   phoneHref: "tel:0367928921",
@@ -21,30 +21,30 @@ export const mainNav = [
 ];
 
 export const platformStats = [
-  { value: "10.000+", label: "Học viên" },
-  { value: "500+", label: "Feedback thực tế" },
-  { value: "100%", label: "Học trọn đời" },
+  { value: "10.000+", label: "Học viên đã theo dõi nội dung" },
+  { value: "500+", label: "Feedback và case thực tế" },
+  { value: "100%", label: "Quyền học theo tài khoản" },
 ];
 
 export const faqs = [
   {
     question: "The Anh Marketing phù hợp với ai?",
     answer:
-      "Phù hợp với người mới, chủ shop, chủ doanh nghiệp nhỏ, marketer nội bộ và người muốn học marketing theo hướng thực chiến.",
+      "Phù hợp với người mới, chủ shop, chủ doanh nghiệp nhỏ, marketer nội bộ và người muốn học Marketing & AI theo hướng thực chiến, có lộ trình và có dashboard theo dõi.",
   },
   {
     question: "Tôi chưa từng chạy quảng cáo có học được không?",
     answer:
-      "Có. Lộ trình bắt đầu từ nền tảng, sau đó đi vào thiết lập chiến dịch, đọc chỉ số và tối ưu thực tế.",
+      "Có. Lộ trình bắt đầu từ nền tảng: tư duy marketing, khách hàng, offer, content, đo lường. Sau đó mới đi vào thiết lập chiến dịch, đọc chỉ số và tối ưu thực tế.",
   },
   {
     question: "Khóa học có được cập nhật không?",
     answer:
-      "Các khóa học được tổ chức theo phiên bản, có cập nhật nội dung mới theo thay đổi của nền tảng và hành vi thị trường.",
+      "Các khóa học được tổ chức theo phiên bản và có thể cập nhật nội dung mới khi nền tảng, hành vi người dùng hoặc workflow AI thay đổi.",
   },
   {
     question: "Tôi cần hỗ trợ thì liên hệ ở đâu?",
     answer:
-      "Bạn có thể liên hệ hotline/Zalo hoặc email của The Anh Marketing để được tư vấn lộ trình phù hợp.",
+      "Bạn có thể liên hệ qua hotline/Zalo hoặc email của The Anh Marketing để được tư vấn lộ trình, hỗ trợ tài khoản hoặc xử lý vấn đề trong quá trình học.",
   },
 ];

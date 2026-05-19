@@ -91,7 +91,7 @@ export default async function BlogPostPage({
           <SectionHeading
             eyebrow="CTA"
             title="Muốn học có lộ trình hơn?"
-            description="Xem khóa Facebook Ads 2026 hoặc tải tài liệu miễn phí để bắt đầu từ nền tảng."
+            description="Xem khóa Facebook Ads 2026 hoặc mở thư viện tài liệu để bắt đầu từ nền tảng."
           />
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <ButtonLink href="/khoa-hoc/facebook-ads-2026">Xem khóa học</ButtonLink>
@@ -103,7 +103,7 @@ export default async function BlogPostPage({
       </article>
 
       <section className="mx-auto max-w-4xl px-5 py-20 sm:px-8">
-        <SectionHeading eyebrow="Liên quan" title="Bài viết tiếp theo." />
+        <SectionHeading eyebrow="Liên quan" title="Bài viết liên quan" />
         <div className="mt-10 grid gap-5 md:grid-cols-2">
           {relatedPosts.map((item) => (
             <SoftCard key={item.slug}>
@@ -120,4 +120,3 @@ export default async function BlogPostPage({
     </PageShell>
   );
 }
-

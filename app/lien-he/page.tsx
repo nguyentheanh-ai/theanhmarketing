@@ -9,7 +9,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Liên hệ tư vấn",
   description:
-    "Liên hệ The Anh Marketing để được tư vấn khóa học, tài liệu, workshop hoặc hợp tác triển khai AI Marketing.",
+    "Liên hệ The Anh Marketing để được tư vấn khóa học, tài liệu, workshop hoặc hợp tác triển khai Marketing & AI.",
 };
 
 export default function ContactPage() {
@@ -18,8 +18,8 @@ export default function ContactPage() {
       <section className="ai-shell pb-16 pt-28 sm:pt-32">
         <SectionHeading
           eyebrow="Liên hệ"
-          title="Chọn đúng lộ trình học hoặc hợp tác với The Anh Marketing."
-          description="Bạn có thể hỏi về khóa học, quyền truy cập học viên, tài liệu, workshop, thanh toán hoặc hợp tác phân phối. Form bên dưới đi thẳng vào hệ lead/admin CRM."
+          title="Liên hệ để chọn lộ trình học phù hợp"
+          description="Gửi thông tin hoặc nhắn Zalo để được tư vấn khóa học, tài liệu và cách bắt đầu theo tình huống hiện tại của bạn."
         />
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           <SoftCard>
@@ -38,7 +38,7 @@ export default function ContactPage() {
               {siteConfig.email}
             </h2>
             <p className="ai-muted mt-4 leading-8">
-              Phù hợp cho yêu cầu chi tiết, hợp tác, tài liệu hoặc hỗ trợ học viên.
+              Phù hợp cho hợp tác, câu hỏi chi tiết, tài liệu hoặc hỗ trợ học viên.
             </p>
             <ButtonLink href={siteConfig.emailHref} variant="secondary" className="mt-6">Gửi email</ButtonLink>
           </SoftCard>
@@ -60,7 +60,7 @@ export default function ContactPage() {
 
       <section className="ai-shell pb-20">
         <div className="ai-panel-strong p-8 sm:p-12">
-          <p className="ai-kicker">Form lead</p>
+          <p className="ai-kicker">Form tư vấn</p>
           <h2 className="mt-4 text-4xl font-black tracking-[-0.05em] sm:text-6xl">
             Để lại nhu cầu, hệ thống sẽ đưa vào CRM.
           </h2>

@@ -28,15 +28,15 @@ export default async function Home() {
 
   return (
     <PageShell>
-      <section className="ai-shell pt-28 pb-20 sm:pt-32">
+      <section className="ai-shell pb-20 pt-28 sm:pt-32">
         <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
           <div>
-            <p className="ai-kicker">AI Operating System</p>
+            <p className="ai-kicker">THE ANH MARKETING OS</p>
             <h1 className="ai-glow-text mt-6 max-w-4xl text-5xl font-black leading-[0.98] tracking-[-0.05em] sm:text-7xl">
-              The Operating System for Modern Marketers
+              Học Marketing & AI như một hệ điều hành vận hành thật.
             </h1>
             <p className="ai-muted mt-6 max-w-2xl text-lg leading-8">
-              Build, automate, and scale your AI-powered business with The Anh&apos;s integrated marketing ecosystem.
+              Một hệ sinh thái gồm khóa học, tài liệu, workflow, dashboard học viên và admin CRM để bạn học, triển khai, đo lường và cập nhật lâu dài.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <ButtonLink href="/dang-ky">Khám phá hệ sinh thái</ButtonLink>
@@ -53,9 +53,9 @@ export default async function Home() {
 
       <section className="py-16">
         <div className="ai-shell text-center">
-          <p className="ai-kicker">AI Operating System</p>
+          <p className="ai-kicker">Bản đồ vận hành</p>
           <h2 className="ai-glow-text mx-auto mt-4 max-w-5xl text-4xl font-black tracking-[-0.04em] sm:text-6xl">
-            Interactive Ecosystem Infrastructure Map
+            Hệ sinh thái kết nối khóa học, tài liệu và CRM.
           </h2>
         </div>
         <div className="mt-10">
@@ -70,10 +70,10 @@ export default async function Home() {
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <SectionHeading
             eyebrow="Product modules"
-            title="Transformation & Product Modules"
-            description="Khám phá hệ sinh thái các module AI tự động hóa để tăng hiệu suất làm việc."
+            title="Các module học và workflow đang mở"
+            description="Khóa học, tài liệu và dashboard được kết nối để người học không chỉ xem video mà còn có checklist, workflow và lộ trình áp dụng."
           />
-          <ButtonLink href="/khoa-hoc" variant="secondary">Xem tất cả</ButtonLink>
+          <ButtonLink href="/khoa-hoc" variant="secondary">Xem tất cả khóa học</ButtonLink>
         </div>
         <div className="mt-10">
           <ModuleCatalogGrid courses={featuredCourses} />
@@ -85,8 +85,8 @@ export default async function Home() {
           <div>
             <SectionHeading
               eyebrow="Proof content hub"
-              title="Social Proof & Media Ecosystem"
-              description="Niềm tin, nội dung, case study và tài nguyên được đóng gói thành một proof hub."
+              title="Nội dung, case study và tài nguyên học tập"
+              description="Blog và tài liệu được gom lại thành một thư viện để học viên tra cứu nhanh khi triển khai."
             />
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               {featuredTestimonials.map((item) => (
@@ -100,7 +100,7 @@ export default async function Home() {
           </div>
           <div className="ai-panel-strong p-5">
             <p className="ai-kicker">Media hub</p>
-            <h3 className="mt-3 text-3xl font-black">AI Workflows in Action</h3>
+            <h3 className="mt-3 text-3xl font-black">Workflow đang dùng trong thực tế</h3>
             <div className="mt-6 grid gap-4 sm:grid-cols-3">
               {featuredResources.map((item) => (
                 <Link key={item.slug} href="/blog#tai-lieu" className="rounded-xl border border-white/10 bg-white/7 p-4 transition hover:border-[#77d7ff]/35">
@@ -119,18 +119,17 @@ export default async function Home() {
       <section className="ai-shell pb-20 pt-10">
         <div className="ai-panel-strong overflow-hidden p-8 sm:p-12 lg:grid lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
-            <p className="ai-kicker">Final CTA</p>
+            <p className="ai-kicker">Bắt đầu</p>
             <h2 className="mt-4 max-w-4xl text-4xl font-black leading-tight tracking-[-0.04em] sm:text-6xl">
-              Build your AI marketing operating system.
+              Tạo tài khoản và chọn lộ trình phù hợp.
             </h2>
             <p className="ai-muted mt-5 max-w-2xl leading-8">
               Bắt đầu bằng khóa học, tài liệu hoặc dashboard học viên hiện có. Logic tài khoản và quyền học vẫn được giữ nguyên.
             </p>
           </div>
-          <ButtonLink href="/dang-ky" className="mt-8 lg:mt-0">Bắt đầu</ButtonLink>
+          <ButtonLink href="/dang-ky" className="mt-8 lg:mt-0">Đăng ký học</ButtonLink>
         </div>
       </section>
     </PageShell>
   );
 }
-

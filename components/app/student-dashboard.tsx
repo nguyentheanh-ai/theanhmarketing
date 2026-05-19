@@ -201,7 +201,7 @@ export function StudentDashboard({
           <BrandMark className="grid size-10 place-items-center overflow-hidden rounded-md bg-white p-1 ring-1 ring-black/8" />
           <span>
             <span className="block text-sm font-black leading-tight">{siteConfig.shortName}</span>
-            <span className="block text-[11px] font-bold text-black/48">The Anh Academy</span>
+            <span className="block text-[11px] font-bold text-black/48">Khu học viên</span>
           </span>
         </Link>
 
@@ -232,9 +232,9 @@ export function StudentDashboard({
               isDark ? "bg-[#7c3aed] text-white" : "bg-[#111114] text-white"
             }`}
           >
-            <span>Dark Mode</span>
+            <span>Giao diện tối</span>
             <span className="grid size-6 place-items-center rounded-full bg-white text-xs text-black">
-              {isDark ? "On" : "Off"}
+              {isDark ? "Bật" : "Tắt"}
             </span>
           </button>
           <SignOutButton className={`rounded-full px-4 py-3 text-left text-sm font-bold transition-colors ${isDark ? "bg-white/8 text-white/72 hover:bg-white/12 hover:text-white" : "bg-black/5 text-black/62 hover:bg-black/10 hover:text-black"}`} />
@@ -258,7 +258,7 @@ export function StudentDashboard({
               onClick={() => setIsDark((value) => !value)}
               className={`min-h-11 rounded-full px-4 text-sm font-black lg:hidden ${isDark ? "bg-white text-black" : "bg-black text-white"}`}
             >
-              {isDark ? "Light" : "Dark"}
+              {isDark ? "Sáng" : "Tối"}
             </button>
             <Link
               href={nextLessonHref}

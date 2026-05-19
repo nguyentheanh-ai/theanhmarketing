@@ -7,11 +7,11 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Về The Anh",
   description:
-    "The Anh Marketing xây hệ sinh thái học marketing thực chiến, AI workflow, tài liệu và CRM học viên.",
+    "The Anh Marketing xây hệ sinh thái học Marketing thực chiến, AI workflow, tài liệu và CRM học viên.",
 };
 
 const principles = [
-  ["Học theo hệ thống", "Từ nền tảng marketing, hành vi khách hàng, offer đến quảng cáo và đo lường."],
+  ["Học theo hệ thống", "Đi từ nền tảng marketing, hành vi khách hàng, offer đến quảng cáo, nội dung và đo lường."],
   ["Có tài liệu để triển khai", "Prompt, checklist, template và SOP giúp người học áp dụng lại sau mỗi bài."],
   ["Gắn với vận hành thật", "Khóa học, học viên, đơn hàng và admin CRM được nối với nhau để quản lý lâu dài."],
 ];
@@ -23,8 +23,8 @@ export default function AboutPage() {
         <div>
           <SectionHeading
             eyebrow="Về The Anh"
-            title="The Anh Marketing là hệ sinh thái học và triển khai AI Marketing."
-            description="Website này không chỉ là landing page. Đây là nền cho khóa học, thư viện tài liệu, workshop, cộng đồng học viên, checkout, dashboard học viên và admin CRM."
+            title="The Anh Marketing xây hệ sinh thái học Marketing thực chiến"
+            description="Trọng tâm là giúp người học hiểu hệ thống, triển khai được và dùng AI đúng chỗ trong công việc thật."
           />
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <ButtonLink href="/he-sinh-thai">Xem hệ sinh thái</ButtonLink>
@@ -34,7 +34,7 @@ export default function AboutPage() {
         <div className="content-os-frame compact">
           <aside className="content-os-sidebar">
             <strong>The Anh OS</strong>
-            {["Courses", "Docs", "Students", "Admin"].map((item, index) => (
+            {["Khóa học", "Tài liệu", "Học viên", "Admin"].map((item, index) => (
               <span key={item} className={index === 0 ? "active" : ""}>{item}</span>
             ))}
           </aside>
@@ -42,11 +42,11 @@ export default function AboutPage() {
             <div className="content-os-titlebar">
               <div>
                 <span>Main Stage</span>
-                <h3>Learning Journey & Marketing Operations</h3>
+                <h3>Lộ trình học và vận hành Marketing</h3>
               </div>
             </div>
             <section className="content-os-canvas">
-              {["Marketing Foundation", "AI Workflow", "Course Access", "CRM Follow-up"].map((item, index) => (
+              {["Nền tảng Marketing", "AI Workflow", "Quyền học", "CRM chăm sóc"].map((item, index) => (
                 <div key={item} className={`content-node node-${index + 1}`}>
                   <i>{index + 1}</i>
                   <strong>{item}</strong>

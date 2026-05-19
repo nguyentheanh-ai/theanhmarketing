@@ -8,9 +8,9 @@ import { getResources } from "@/services/resourceService";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Blog",
+  title: "Blog & Tài liệu",
   description:
-    "Bài viết về Facebook Ads, AI Marketing, Marketing Online và kinh doanh thực chiến.",
+    "Bài viết, tài liệu, checklist và workflow Marketing thực chiến của The Anh Marketing.",
 };
 
 export const dynamic = "force-dynamic";
@@ -52,7 +52,7 @@ export default async function BlogPage() {
           </div>
         </div>
 
-        <p className="workflow-section-label">Resource Library</p>
+        <p className="workflow-section-label">Resource library</p>
         <div className="workflow-resource-grid">
           {resources.map((resource, index) => {
             const resourceHref =
@@ -61,32 +61,32 @@ export default async function BlogPage() {
                 : `/blog#${resource.slug}`;
 
             return (
-            <a
-              key={resource.slug}
-              href={resourceHref}
-              className="workflow-resource-card"
-            >
-              <div className="workflow-card-top">
-                <span>{resource.type}</span>
-                <small>{String(index + 1).padStart(2, "0")}</small>
-              </div>
-              <h3>{resource.title}</h3>
-              <div className="workflow-mini-diagram" aria-hidden="true">
-                <i />
-                <i />
-                <i />
-              </div>
-              <p>{resource.description}</p>
-              <div className="workflow-stack-row">
-                {["Prompt", "Checklist", "AI Workflow"].map((item) => (
-                  <span key={item}>{item}</span>
-                ))}
-              </div>
-              <div className="workflow-card-score">
-                <span>{resource.access}</span>
-                <strong>{[98, 95, 92, 90][index % 4]}/100</strong>
-              </div>
-            </a>
+              <a
+                key={resource.slug}
+                href={resourceHref}
+                className="workflow-resource-card"
+              >
+                <div className="workflow-card-top">
+                  <span>{resource.type}</span>
+                  <small>{String(index + 1).padStart(2, "0")}</small>
+                </div>
+                <h3>{resource.title}</h3>
+                <div className="workflow-mini-diagram" aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                </div>
+                <p>{resource.description}</p>
+                <div className="workflow-stack-row">
+                  {["Prompt", "Checklist", "AI Workflow"].map((item) => (
+                    <span key={item}>{item}</span>
+                  ))}
+                </div>
+                <div className="workflow-card-score">
+                  <span>{resource.access}</span>
+                  <strong>Xem tài liệu</strong>
+                </div>
+              </a>
             );
           })}
         </div>

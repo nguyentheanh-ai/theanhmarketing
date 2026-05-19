@@ -61,9 +61,13 @@ function toDisplayDuration(value: string | null | undefined) {
     return "";
   }
 
+  const brokenHour = new RegExp(`gi${String.fromCodePoint(0x00e1, 0x00bb, 0x009d)}`, "gi");
+  const brokenMinute = new RegExp(`ph${String.fromCodePoint(0x00c3, 0x00ba)}t`, "gi");
+
   return text
-    .replace(/gi\?|giá»/gi, "giờ")
-    .replace(/phÃºt/gi, "phút");
+    .replace(/gi\?/gi, "giờ")
+    .replace(brokenHour, "giờ")
+    .replace(brokenMinute, "phút");
 }
 
 function toDisplayLevel(value: string | null | undefined) {
@@ -75,13 +79,12 @@ function toDisplayLevel(value: string | null | undefined) {
 
   if (
     text.includes("C? b?n") ||
-    text.includes("CÆ¡ báº£n") ||
     text.toLowerCase().includes("co ban")
   ) {
     return "Cơ bản đến thực chiến";
   }
 
-  if (text.includes("NgÆ°á»i má»›i")) {
+  if (text.toLowerCase().includes("nguoi moi")) {
     return "Người mới";
   }
 
@@ -119,7 +122,17 @@ const windows1252Bytes: Record<string, number> = {
 };
 
 function looksMojibake(value: string) {
-  return /[ÃÂÄÆÅâ]|á[º»]/.test(value);
+  const c3 = String.fromCodePoint(0x00c3);
+  const c2 = String.fromCodePoint(0x00c2);
+  const c4 = String.fromCodePoint(0x00c4);
+  const c6 = String.fromCodePoint(0x00c6);
+  const c5 = String.fromCodePoint(0x00c5);
+  const e2 = String.fromCodePoint(0x00e2);
+  const a1 = String.fromCodePoint(0x00e1);
+  const ba = String.fromCodePoint(0x00ba);
+  const bb = String.fromCodePoint(0x00bb);
+
+  return new RegExp(`[${c3}${c2}${c4}${c6}${c5}${e2}]|${a1}[${ba}${bb}]`).test(value);
 }
 
 function decodeMojibake(value: string) {

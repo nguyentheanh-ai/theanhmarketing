@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Khóa học",
   description:
-    "Danh sách khóa học Marketing, AI ứng dụng, Growth, Content, Data và vận hành Marketing thực chiến của The Anh Marketing.",
+    "Danh sách khóa học Marketing, AI ứng dụng, Facebook Ads, Content, Data và vận hành Marketing thực chiến của The Anh Marketing.",
 };
 
 export const dynamic = "force-dynamic";
@@ -21,10 +21,10 @@ export default async function CoursesPage() {
       <section className="ai-shell pb-16 pt-24 text-center sm:pt-28">
         <p className="ai-kicker">{page.eyebrow}</p>
         <h1 className="ai-glow-text mx-auto mt-5 max-w-5xl text-5xl font-black leading-[1.02] tracking-[-0.04em] sm:text-7xl">
-          Transformation & Product Modules
+          {page.title}
         </h1>
         <p className="ai-muted mx-auto mt-5 max-w-3xl text-lg leading-8">
-          Khám phá hệ sinh thái các module AI tự động hóa để tăng hiệu suất làm việc.
+          {page.description}
         </p>
       </section>
 
