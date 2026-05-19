@@ -26,6 +26,22 @@ export async function generateMetadata({
   return {
     title: course.title,
     description: course.description,
+    alternates: {
+      canonical: `/khoa-hoc/${course.slug}`,
+    },
+    openGraph: {
+      title: course.title,
+      description: course.description,
+      type: "website",
+      url: `/khoa-hoc/${course.slug}`,
+      images: course.thumbnailImageUrl || course.bannerImageUrl ? [{ url: course.thumbnailImageUrl || course.bannerImageUrl }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: course.title,
+      description: course.description,
+      images: course.thumbnailImageUrl || course.bannerImageUrl ? [course.thumbnailImageUrl || course.bannerImageUrl] : undefined,
+    },
   };
 }
 

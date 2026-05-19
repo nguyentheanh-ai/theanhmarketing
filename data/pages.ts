@@ -3,7 +3,7 @@ export const publicPages = {
     eyebrow: "Khóa học",
     title: "Khóa học trong AI Growth System",
     description:
-      "Bắt đầu từ AI Ads Engine, Marketing nền tảng và các workflow triển khai để xây hệ thống tăng trưởng thay vì học từng mẹo rời rạc.",
+      "Bắt đầu từ AI Ads Engine, Marketing nền tảng và các workflow triển khai để xây hệ thống tăng trưởng thay vì gom thêm tool rời rạc.",
     structureTitle: "Cấu trúc triển khai",
     structureDescription:
       "Mỗi khóa học gắn với module, bài học, tài liệu, dashboard học viên và CRM/admin để giữ nguyên quyền học cho học viên cũ.",
@@ -62,7 +62,7 @@ export const publicPages = {
     description:
       "Gửi thông tin hoặc nhắn Zalo để được tư vấn bạn nên bắt đầu bằng toolkit, workshop, khóa Facebook Ads 2026 hay triển khai hệ thống đầy đủ.",
     phoneDescription:
-      "Phù hợp nếu bạn muốn được tư vấn nhanh về lộ trình học, khóa học hoặc hệ thống đang mắc kẹt.",
+      "Phù hợp nếu bạn muốn được tư vấn nhanh về chương trình, toolkit hoặc hệ thống đang mắc kẹt.",
     emailDescription:
       "Phù hợp cho hợp tác, câu hỏi chi tiết, yêu cầu training hoặc triển khai AI Growth System.",
     leadFormEyebrow: "Form tư vấn",

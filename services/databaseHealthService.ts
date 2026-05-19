@@ -4,7 +4,7 @@ export type DatabaseTableHealth = {
   table: string;
   ok: boolean;
   count: number | null;
-  sampleRows: number;
+  checkedRows: number;
   error: string | null;
 };
 
@@ -38,7 +38,7 @@ export async function getDatabaseHealth(): Promise<DatabaseHealth> {
         table,
         ok: false,
         count: null,
-        sampleRows: 0,
+        checkedRows: 0,
         error: "Missing Supabase environment variables",
       })),
     };
@@ -55,7 +55,7 @@ export async function getDatabaseHealth(): Promise<DatabaseHealth> {
         table,
         ok: !error,
         count: count ?? null,
-        sampleRows: data?.length ?? 0,
+        checkedRows: data?.length ?? 0,
         error: error?.message ?? null,
       };
     }),

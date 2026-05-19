@@ -318,14 +318,14 @@ export const courses: Course[] = [
     },
     reviews: [
       {
-        name: "Minh Anh",
-        role: "Chủ shop mỹ phẩm",
+        name: "Case SME ngành bán lẻ",
+        role: "AI Ads Engine",
         quote:
           "Mình hiểu rõ hơn vì sao quảng cáo không hiệu quả: vấn đề không chỉ ở ads mà còn ở offer, funnel và tệp khách.",
       },
       {
-        name: "Quốc Huy",
-        role: "Freelance marketer",
+        name: "Case Solopreneur",
+        role: "Facebook Ads 2026",
         quote:
           "Nội dung đi thẳng vào việc cần làm, giúp mình biết đọc dữ liệu và tối ưu thay vì chạy theo mẹo.",
       },
@@ -353,9 +353,9 @@ export const courses: Course[] = [
     thumbnailImageUrl: "",
     videoPreviewUrl: "",
     videoPreviewEmbedUrl: "",
-    thumbnailLabel: "Preview khóa Marketing Online Nền Tảng",
+    thumbnailLabel: "Preview chương trình AI Growth System Foundation",
     previewNote:
-      "Khu vực thumbnail/video preview sẽ được thay bằng media thật khi khóa học ra mắt.",
+      "Media preview sẽ được lấy từ CMS khi chương trình mở đăng ký chính thức.",
     topics: ["AI Growth System", "Positioning", "Funnel"],
     audience: [
       "Người mới chưa biết bắt đầu xây Growth System từ đâu.",
@@ -441,12 +441,12 @@ export const courses: Course[] = [
     instructor: {
       name: "The Anh",
       title: "Founder The Anh Marketing",
-      bio: "Xây nội dung đào tạo theo hướng thực dụng: dễ hiểu, có thứ tự và áp dụng được cho kinh doanh nhỏ.",
+      bio: "Xây chương trình theo hướng AI Growth System: dễ hiểu, có thứ tự và áp dụng được cho SME/Solopreneur.",
     },
     reviews: [
       {
-        name: "Thu Trang",
-        role: "Founder local brand",
+        name: "Case founder local brand",
+        role: "AI Growth System Foundation",
         quote:
           "Phần nền tảng giúp mình biết nên ưu tiên gì trước thay vì làm rất nhiều việc cùng lúc.",
       },

@@ -1,4 +1,4 @@
-import { sampleLeads } from "@/data/platform";
+import { fallbackLeads } from "@/data/platform";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -58,7 +58,7 @@ export async function getLeads(options: { includeFallback?: boolean } = {}): Pro
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
-    return includeFallback ? sampleLeads : [];
+    return includeFallback ? fallbackLeads : [];
   }
 
   const { data, error } = await supabase
@@ -71,7 +71,7 @@ export async function getLeads(options: { includeFallback?: boolean } = {}): Pro
       return [];
     }
 
-    return sampleLeads;
+    return fallbackLeads;
   }
 
   return (data as DbLead[]).map((lead) => ({

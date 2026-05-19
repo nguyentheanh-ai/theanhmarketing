@@ -160,8 +160,8 @@ function createMarketingCourse(title: string, index: number): Course {
     },
     reviews: [
       {
-        name: "Học viên The Anh Marketing",
-        role: "Marketing team",
+        name: "Case team marketing nhỏ",
+        role: "AI Growth System",
         quote:
           "Cách học theo hệ thống giúp mình biết nên bắt đầu từ đâu và áp dụng AI vào việc thật rõ hơn.",
       },

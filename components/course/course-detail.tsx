@@ -17,7 +17,7 @@ export function CourseDetail({ course }: { course: Course }) {
         <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:items-start">
           <div>
             <p className="ai-kicker">
-              {course.eyebrow} · {course.statusLabel}
+              {course.eyebrow} - {course.statusLabel}
             </p>
             <h1 className="ai-glow-text mt-5 text-5xl font-black leading-[1.02] tracking-[-0.04em] sm:text-7xl">
               {course.title}
@@ -26,10 +26,10 @@ export function CourseDetail({ course }: { course: Course }) {
               {course.shortDescription}
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="#giao-trinh">Học thử miễn phí</ButtonLink>
+              <ButtonLink href="#giao-trinh">Xem workflow mẫu</ButtonLink>
               <AddToCartButton slug={course.slug} title={course.title} price={course.price} />
               <ButtonLink href="/dang-ky" variant="secondary">
-                Tạo tài khoản
+                Tạo Growth Hub
               </ButtonLink>
             </div>
             <div className="mt-10 grid gap-4 sm:grid-cols-4">
@@ -67,7 +67,7 @@ export function CourseDetail({ course }: { course: Course }) {
       <section id="tong-quan" className="ai-shell scroll-mt-40 py-20">
         <SectionHeading
           eyebrow="Tổng quan"
-          title="Khóa học này giúp bạn học có hệ thống, không học mẹo rời rạc."
+          title="Chương trình này giúp bạn học theo workflow, không gom thêm tool rời rạc."
           description={course.description}
         />
         <div className="mt-10 grid gap-5 md:grid-cols-3">
@@ -80,7 +80,7 @@ export function CourseDetail({ course }: { course: Course }) {
       </section>
 
       <section id="quyen-loi" className="ai-shell scroll-mt-40 py-20">
-        <SectionHeading eyebrow="Quyền lợi" title="Những gì học viên nhận được." />
+        <SectionHeading eyebrow="Quyền lợi" title="Những gì học viên nhận được trong Growth Hub." />
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {[...course.benefits, ...course.includes].map((item) => (
             <SoftCard key={item} className="leading-8 text-white/65">
@@ -91,7 +91,7 @@ export function CourseDetail({ course }: { course: Course }) {
       </section>
 
       <section id="giao-trinh" className="ai-shell scroll-mt-40 py-20">
-        <SectionHeading eyebrow="Giáo trình" title="Curriculum dạng module/bài học." />
+        <SectionHeading eyebrow="Workflow" title="Nội dung dạng module, bài học và checklist triển khai." />
         <div className="mt-10">
           <Curriculum course={course} />
         </div>
@@ -112,7 +112,7 @@ export function CourseDetail({ course }: { course: Course }) {
       </section>
 
       <section id="danh-gia" className="ai-shell scroll-mt-40 py-20">
-        <SectionHeading eyebrow="Đánh giá" title="Feedback từ học viên." align="center" />
+        <SectionHeading eyebrow="Đánh giá" title="Case/feedback triển khai." align="center" />
         <div className="mt-10 grid gap-5 md:grid-cols-2">
           {course.reviews.map((review) => (
             <SoftCard key={review.name}>

@@ -85,7 +85,7 @@ export function BlogPostManager({ posts }: { posts: BlogPostItem[] }) {
 
   async function handleDelete() {
     if (!selectedPost.id) {
-      setMessage("Bài viết fallback từ file tĩnh chưa có id Supabase để xóa.");
+      setMessage("Bài viết dự phòng trong code chưa có id Supabase để xóa.");
       return;
     }
 

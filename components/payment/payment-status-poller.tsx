@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { trackMarketingEvent } from "@/lib/tracking/events";
 import type { PaymentOrder } from "@/services/orderService";
 
 function formatCountdown(totalSeconds: number) {
@@ -19,6 +20,7 @@ export function PaymentStatusPoller({ initialOrder }: { initialOrder: PaymentOrd
   const router = useRouter();
   const [order, setOrder] = useState(initialOrder);
   const [secondsLeft, setSecondsLeft] = useState(0);
+  const purchaseTrackedRef = useRef(false);
 
   const countdownTarget = useMemo(() => {
     const createdTime = Date.parse(order.createdAt);
@@ -39,6 +41,15 @@ export function PaymentStatusPoller({ initialOrder }: { initialOrder: PaymentOrd
 
   useEffect(() => {
     if (order.status === "paid") {
+      if (!purchaseTrackedRef.current) {
+        purchaseTrackedRef.current = true;
+        trackMarketingEvent("Purchase", {
+          content_name: order.courseTitle,
+          currency: "VND",
+          transaction_id: order.orderCode,
+          value: order.amount,
+        });
+      }
       const redirectTimer = window.setTimeout(() => {
         router.push("/dashboard");
       }, 1200);
@@ -64,7 +75,7 @@ export function PaymentStatusPoller({ initialOrder }: { initialOrder: PaymentOrd
     }, 3000);
 
     return () => window.clearInterval(timer);
-  }, [order.orderCode, order.status, router]);
+  }, [order.amount, order.courseTitle, order.orderCode, order.status, router]);
 
   const paid = order.status === "paid";
 

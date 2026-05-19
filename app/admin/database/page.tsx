@@ -14,7 +14,8 @@ export default async function AdminDatabasePage() {
         </h1>
         <p className="mt-4 max-w-3xl text-lg leading-8 text-black/60">
           Trang này kiểm tra kết nối Supabase và các bảng cần có cho website.
-          Nếu bảng chưa tồn tại, public website vẫn fallback về mock data.
+          Nếu bảng chưa tồn tại, public website vẫn dùng bộ nội dung dự phòng
+          trong code để không bị trắng dữ liệu.
         </p>
 
         <SoftCard className="mt-10">

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { clearCart, readCart, removeFromCart, subscribeCart, type CartItem } from "@/lib/cart";
 import { formatVnd, parseVndAmount } from "@/lib/payments/sepay";
+import { trackMarketingEvent } from "@/lib/tracking/events";
 
 type CartPageClientProps = {
   auth: {
@@ -46,6 +47,12 @@ export function CartPageClient({ auth }: CartPageClientProps) {
 
     setMessage("");
     setIsCreatingOrder(true);
+    trackMarketingEvent("InitiateCheckout", {
+      content_ids: items.map((item) => item.slug),
+      content_name: items.map((item) => item.title).join(", "),
+      currency: "VND",
+      value: total,
+    });
 
     const response = await fetch("/api/orders/from-session", {
       method: "POST",

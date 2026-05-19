@@ -320,6 +320,18 @@ export function LearningRoom({
           </aside>
         </div>
       </section>
+
+      <nav className="learning-mobile-action" aria-label="Hành động học nhanh trên điện thoại">
+        <Link href="/dashboard">Dashboard</Link>
+        {previousLesson ? (
+          <Link href={getLessonHref(course.slug, previousLesson.id)}>Bài trước</Link>
+        ) : null}
+        {nextLesson ? (
+          <Link href={getLessonHref(course.slug, nextLesson.id)}>Bài tiếp</Link>
+        ) : (
+          <Link href="/dashboard">Hoàn thành</Link>
+        )}
+      </nav>
     </main>
   );
 }

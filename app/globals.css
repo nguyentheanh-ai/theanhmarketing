@@ -2690,6 +2690,239 @@ body {
   display: none;
 }
 
+@media (min-width: 768px) {
+  .mobile-site-action,
+  .course-mobile-action,
+  .student-mobile-action,
+  .learning-mobile-action {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  body {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+
+  h1,
+  h2,
+  h3,
+  .hero-title,
+  .card-title,
+  .ai-glow-text {
+    overflow-wrap: anywhere;
+  }
+
+  .site-header-motion {
+    background: rgb(5 8 13 / 0.94);
+  }
+
+  .mobile-nav-scroll {
+    gap: 0.5rem;
+    padding-inline: 0.75rem;
+    padding-bottom: 0.7rem;
+    scroll-padding-inline: 0.75rem;
+    scroll-snap-type: x proximity;
+  }
+
+  .mobile-nav-scroll a,
+  .mobile-nav-scroll button {
+    align-items: center;
+    display: flex;
+    min-height: 42px;
+    scroll-snap-align: start;
+    white-space: nowrap;
+  }
+
+  .mobile-site-action,
+  .course-mobile-action,
+  .student-mobile-action,
+  .learning-mobile-action {
+    background: rgb(5 8 13 / 0.9);
+    border: 1px solid rgb(119 215 255 / 0.18);
+    border-radius: 18px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    box-shadow: 0 18px 52px rgb(0 0 0 / 0.34);
+    display: grid;
+    gap: 8px;
+    left: 10px;
+    padding: 8px;
+    position: fixed;
+    right: 10px;
+    z-index: 60;
+  }
+
+  .mobile-site-action,
+  .course-mobile-action {
+    grid-template-columns: 1.08fr 0.92fr;
+  }
+
+  .student-mobile-action {
+    grid-template-columns: 1.1fr 0.95fr 0.95fr;
+  }
+
+  .learning-mobile-action {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  }
+
+  .mobile-site-action a,
+  .course-mobile-action a,
+  .course-mobile-action button,
+  .student-mobile-action a,
+  .learning-mobile-action a {
+    align-items: center;
+    border-radius: 13px;
+    display: inline-flex;
+    font-size: 0.82rem;
+    font-weight: 950;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 10px;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .mobile-site-action a:first-child,
+  .course-mobile-action button,
+  .student-mobile-action a:first-child,
+  .learning-mobile-action a:last-child {
+    background: #8bdcff;
+    color: #061018;
+  }
+
+  .mobile-site-action a:last-child,
+  .course-mobile-action a,
+  .student-mobile-action a:not(:first-child),
+  .learning-mobile-action a:not(:last-child) {
+    background: rgb(255 255 255 / 0.1);
+    color: white;
+  }
+
+  .student-mobile-action--dark {
+    background: rgb(24 24 31 / 0.92);
+  }
+
+  .hero-title {
+    font-size: clamp(2.35rem, 12vw, 3.45rem);
+    line-height: 1.02;
+  }
+
+  .hero-copy {
+    font-size: 1rem;
+    line-height: 1.75rem;
+  }
+
+  .hero-actions > *,
+  .content-os-titlebar button,
+  .docs-main-card a,
+  .event-ticket a {
+    width: 100%;
+  }
+
+  .hero-stats .motion-card {
+    min-height: 72px;
+  }
+
+  .ai-shell {
+    padding-inline: 1rem;
+  }
+
+  .ai-panel,
+  .ai-panel-strong,
+  .motion-card {
+    border-radius: 18px;
+  }
+
+  .content-os-canvas {
+    height: 330px;
+    overflow: hidden;
+  }
+
+  .content-node {
+    min-height: 72px;
+    padding: 12px;
+  }
+
+  .module-card-exact {
+    padding: 14px;
+  }
+
+  .module-preview {
+    min-height: 210px;
+    width: 100%;
+  }
+
+  .module-card-bottom {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .module-card-bottom button {
+    min-height: 46px;
+    width: 100%;
+  }
+
+  .ecosystem-exact {
+    border-radius: 22px;
+    min-height: 620px;
+    overflow: hidden;
+  }
+
+  .ecosystem-core {
+    font-size: 1rem;
+    height: 116px;
+    width: 116px;
+  }
+
+  .ecosystem-node {
+    height: 112px;
+    padding: 14px;
+    width: 112px;
+  }
+
+  .ecosystem-node span {
+    max-width: 84px;
+  }
+
+  .ecosystem-feature-grid a {
+    align-items: flex-start;
+    min-height: 84px;
+    padding: 14px;
+  }
+
+  .workflow-library-head,
+  .community-grid,
+  .partner-dashboard > header,
+  .partner-grid {
+    padding: 16px;
+  }
+
+  .community-hub aside {
+    overflow-x: auto;
+  }
+
+  .community-hub aside button,
+  .docs-sidebar span,
+  .content-os-sidebar span {
+    min-height: 42px;
+    white-space: nowrap;
+  }
+
+  .blog-content {
+    font-size: 1rem;
+    line-height: 1.75rem;
+  }
+
+  .blog-content h2 {
+    font-size: 1.75rem;
+  }
+
+  .cart-toast,
+  [class*="fixed bottom-5 right-5"] {
+    bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+}
+
 html[data-route-pending="true"] .page-motion {
   opacity: 0.72;
   transform: translateY(4px) scale(0.998);

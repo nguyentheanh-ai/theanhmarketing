@@ -1,7 +1,7 @@
-import { testimonials as mockTestimonials } from "@/data/testimonials";
+import { testimonials as fallbackTestimonials } from "@/data/testimonials";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export type TestimonialItem = (typeof mockTestimonials)[number] & {
+export type TestimonialItem = (typeof fallbackTestimonials)[number] & {
   id?: string;
   avatar?: string;
   rating?: number;
@@ -17,12 +17,20 @@ type DbTestimonial = {
   created_at: string | null;
 };
 
+const demoNameToCaseLabel: Record<string, string> = {
+  "Minh Anh": "Case SME ngành bán lẻ",
+  "Quốc Huy": "Case Solopreneur",
+  "Thu Trang": "Case team nội bộ",
+};
+
 function mapDbTestimonial(testimonial: DbTestimonial): TestimonialItem {
+  const displayName = demoNameToCaseLabel[testimonial.student_name] ?? testimonial.student_name;
+
   return {
     id: testimonial.id,
     quote: testimonial.content ?? "",
-    name: testimonial.student_name,
-    title: testimonial.rating ? `${testimonial.rating}/5 sao` : "Học viên",
+    name: displayName,
+    title: testimonial.rating ? `${testimonial.rating}/5 sao` : "Case triển khai",
     avatar: testimonial.avatar ?? "",
     rating: testimonial.rating ?? undefined,
     createdAt: testimonial.created_at ?? undefined,
@@ -33,7 +41,7 @@ export async function getTestimonials(): Promise<TestimonialItem[]> {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
-    return mockTestimonials;
+    return fallbackTestimonials;
   }
 
   const { data, error } = await supabase
@@ -42,7 +50,7 @@ export async function getTestimonials(): Promise<TestimonialItem[]> {
     .order("created_at", { ascending: false });
 
   if (error || !data || data.length === 0) {
-    return mockTestimonials;
+    return fallbackTestimonials;
   }
 
   return (data as DbTestimonial[]).map(mapDbTestimonial);

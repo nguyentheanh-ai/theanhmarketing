@@ -16,13 +16,13 @@ import { getTestimonials } from "@/services/testimonialService";
 
 const cmsModules = [
   {
-    label: "Khóa học",
-    description: "Tạo/sửa/xóa khóa học, module, bài học, giá, ảnh và video.",
+    label: "Chương trình",
+    description: "Tạo/sửa/xóa chương trình, module, bài học, giá, ảnh và video.",
     href: "/admin/khoa-hoc",
   },
   {
-    label: "Tài liệu",
-    description: "Tạo/sửa/xóa tài liệu và link file public.",
+    label: "Toolkit",
+    description: "Tạo/sửa/xóa toolkit, checklist, blueprint và link file public.",
     href: "/admin/tai-lieu",
   },
   {
@@ -37,8 +37,13 @@ const cmsModules = [
   },
   {
     label: "Feedback",
-    description: "Tạo/sửa/xóa feedback học viên hiển thị ở trang public.",
+    description: "Tạo/sửa/xóa case/feedback thật hiển thị ở trang public.",
     href: "/admin/feedback",
+  },
+  {
+    label: "SEO/Tracking",
+    description: "Gắn Facebook Pixel, GA4, GTM, Search Console và OpenGraph mặc định.",
+    href: "/admin/seo",
   },
   {
     label: "Database",
@@ -61,9 +66,9 @@ export default async function AdminCmsPage() {
   const issues = validateCmsContent();
 
   const stats = [
-    ["Khóa học", courses.length],
+    ["Chương trình", courses.length],
     ["Bài viết", posts.length],
-    ["Tài liệu", resources.length],
+    ["Toolkit", resources.length],
     ["Feedback", testimonials.length],
     ["Leads", leads.length],
     ["Bảng OK", health.tables.filter((table) => table.ok).length],
@@ -77,9 +82,9 @@ export default async function AdminCmsPage() {
           Website builder cơ bản.
         </h1>
         <p className="mt-4 max-w-3xl text-lg leading-8 text-black/60">
-          Trang này không còn là form mẫu. Các nhóm bên dưới dẫn tới màn quản
-          trị có hành động thật: khóa học, tài liệu và bài viết ghi vào
-          Supabase khi bảng đã được setup.
+          Trang này là trung tâm quản trị nội dung thật: chương trình, toolkit,
+          bài viết, lead, feedback và cấu hình thương hiệu đều ghi vào Supabase
+          khi bảng đã được setup.
         </p>
 
         <section className="mt-10 grid gap-5 md:grid-cols-3 xl:grid-cols-6">
@@ -136,8 +141,8 @@ export default async function AdminCmsPage() {
           </h2>
           <p className="mt-3 max-w-3xl leading-8 text-black/60">
             Cập nhật nhận diện thương hiệu dùng ở header, footer và media hero
-            trang chủ. Nếu Supabase chưa có bảng site_settings, website vẫn
-            fallback về cấu hình trong file.
+            trang chủ. Nếu Supabase chưa có bảng site_settings, website vẫn dùng
+            cấu hình dự phòng trong file.
           </p>
           <BrandSettingsManager settings={brand} />
         </SoftCard>
@@ -150,7 +155,7 @@ export default async function AdminCmsPage() {
           <p className="mt-3 max-w-3xl leading-8 text-black/60">
             Cập nhật nội dung popup trên trang khóa học: tiêu đề, mô tả, quyền lợi,
             mã giảm giá và link CTA. Nếu chưa có dữ liệu trong Supabase, website sẽ
-            dùng cấu hình mặc định.
+            dùng cấu hình dự phòng đã viết theo AI Growth System.
           </p>
           <OfferSettingsManager settings={offer} />
         </SoftCard>
@@ -167,7 +172,7 @@ export default async function AdminCmsPage() {
                   {module.description}
                 </p>
                 <p className="mt-6 text-sm font-bold text-black/50">
-                  Mở quản trị →
+                  Mở quản trị -&gt;
                 </p>
               </SoftCard>
             </Link>

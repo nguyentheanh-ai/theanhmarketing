@@ -1,4 +1,4 @@
-import { sampleOrders } from "@/data/platform";
+import { fallbackOrders } from "@/data/platform";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import {
   createOrderCode,
@@ -110,7 +110,7 @@ function mapDbOrder(row: DbOrder): PaymentOrder {
 }
 
 function getFallbackOrders(): PaymentOrder[] {
-  return sampleOrders.map((order) => ({
+  return fallbackOrders.map((order) => ({
     id: order.id,
     orderCode: order.id,
     studentName: order.student,

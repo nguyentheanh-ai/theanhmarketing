@@ -47,7 +47,7 @@ export function SiteOfferPopup({
   if (!isOpen) {
     return (
       <button
-        className="fixed bottom-6 left-5 z-50 rounded-full border-2 border-[#061018] bg-[#8bdcff] px-5 py-3 text-sm font-black text-[#061018] shadow-[6px_6px_0_#111] transition hover:bg-[#b7ecff]"
+        className="fixed bottom-24 left-5 z-50 rounded-full border-2 border-[#061018] bg-[#8bdcff] px-5 py-3 text-sm font-black text-[#061018] shadow-[6px_6px_0_#111] transition hover:bg-[#b7ecff] sm:bottom-6"
         type="button"
         onClick={() => setIsOpen(true)}
       >
@@ -57,7 +57,7 @@ export function SiteOfferPopup({
   }
 
   return (
-    <aside className="fixed bottom-5 left-5 z-50 w-[min(390px,calc(100vw-2.5rem))] rounded-3xl border-2 border-[#061018] bg-[#f8fcff] p-4 text-[#07111f] shadow-[8px_8px_0_#111]">
+    <aside className="fixed bottom-24 left-5 z-50 w-[min(390px,calc(100vw-2.5rem))] rounded-3xl border-2 border-[#061018] bg-[#f8fcff] p-4 text-[#07111f] shadow-[8px_8px_0_#111] sm:bottom-5">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xl font-black tracking-[-0.04em] text-[#07111f]">{offer.title}</p>

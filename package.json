@@ -9,7 +9,8 @@
     "lint": "eslint",
     "verify:security": "node scripts/verify-security-env.mjs",
     "verify:security:production": "node scripts/verify-security-env.mjs --production",
-    "verify:routes": "node scripts/verify-routes.mjs"
+    "verify:routes": "node scripts/verify-routes.mjs",
+    "verify:tracking": "node scripts/verify-tracking.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import type { Course } from "@/data/courses";
 import { cleanLessonTitle } from "@/lib/lesson-title";
 import { formatCurrency, getDiscountPercent, parsePrice } from "@/lib/price";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { trackMarketingEvent } from "@/lib/tracking/events";
 import { toYouTubeEmbedUrl, toYouTubeThumbnailUrl } from "@/lib/youtube";
 import type { OfferSettings } from "@/services/offerService";
 
@@ -267,8 +268,8 @@ function buildLandingContent(course: Course): LandingContent {
       ["Người mới có học được không?", "Có. Nội dung đi từ nền tảng đến thực hành, phù hợp nếu bạn sẵn sàng làm bài tập theo sản phẩm hoặc dự án thật."],
       ["Có cần biết kỹ thuật không?", "Không. Những phần kỹ thuật nếu có sẽ được giải thích theo quy trình dễ làm, ưu tiên ứng dụng thay vì thuật ngữ."],
       [
-        `Khóa ${course.title} khác gì học miễn phí?`,
-        "Điểm khác biệt là lộ trình có thứ tự, có bài thực hành, có checklist và tập trung vào đầu ra dùng được trong công việc.",
+        `Chương trình ${course.title} khác gì nội dung miễn phí?`,
+        "Điểm khác biệt là workflow có thứ tự, có bài thực hành, có checklist và tập trung vào đầu ra dùng được trong Growth System.",
       ],
       ["Có bài tập thực hành không?", "Có. Mỗi phần học đều hướng về một bài thực hành hoặc bản nháp triển khai để bạn không học xong rồi để đó."],
       ["Có được cập nhật nội dung không?", "Có. Nội dung có thể được cập nhật khi công cụ, nền tảng hoặc cách triển khai trên thị trường thay đổi."],
@@ -291,6 +292,16 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
   const previewThumbnailUrl = toYouTubeThumbnailUrl(course.videoPreviewUrl);
   const discountPercent = getDiscountPercent(course.price, course.originalPrice);
   const nextPrice = formatCurrency(parsePrice(course.price) + 190000);
+
+  useEffect(() => {
+    trackMarketingEvent("ViewContent", {
+      content_ids: [course.slug],
+      content_name: course.title,
+      content_type: "course",
+      currency: "VND",
+      value: parsePrice(course.price),
+    });
+  }, [course.price, course.slug, course.title]);
 
   return (
     <main className="min-h-screen bg-[#fbfaf7] text-[#111111]">
@@ -344,6 +355,13 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
         ) : null}
       </header>
 
+      <nav className="course-mobile-action" aria-label="Hành động khóa học trên điện thoại">
+        <button type="button" onClick={() => setIsTrialFormOpen(true)}>
+          Học thử
+        </button>
+        <a href="#hoc-phi">Đăng ký</a>
+      </nav>
+
       <section
         id="hero"
         className="mx-auto grid max-w-[1440px] gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-24"
@@ -365,7 +383,7 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
               ▶ Học thử
             </button>
             <ButtonLink href="#lo-trinh" variant="secondary">
-              Xem lộ trình học
+              Xem workflow triển khai
             </ButtonLink>
           </div>
           <div className="hero-stats mt-10 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -647,6 +665,11 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
         isOpen={isTrialFormOpen}
         onClose={() => setIsTrialFormOpen(false)}
         onSuccess={() => {
+          trackMarketingEvent("Lead", {
+            content_ids: [course.slug],
+            content_name: course.title,
+            source: "trial",
+          });
           setIsTrialFormOpen(false);
           router.push("/dashboard");
           router.refresh();

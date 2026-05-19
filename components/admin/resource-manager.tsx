@@ -21,7 +21,7 @@ function toAccessType(value: string) {
 const emptyResource: ResourceItem = {
   slug: "",
   title: "",
-  type: "Tài liệu",
+  type: "Toolkit",
   access: "Miễn phí",
   description: "",
   thumbnail: "",
@@ -62,13 +62,13 @@ export function ResourceManager({ resources }: { resources: ResourceItem[] }) {
     const thumbnail = String(formData.get("thumbnail") ?? "").trim();
 
     if (!supabase) {
-      setMessage("Chưa cấu hình Supabase. Tài liệu chưa được lưu.");
+      setMessage("Chưa cấu hình Supabase. Toolkit chưa được lưu.");
       setIsSaving(false);
       return;
     }
 
     if (!title) {
-      setMessage("Vui lòng nhập tên tài liệu.");
+      setMessage("Vui lòng nhập tên toolkit.");
       setIsSaving(false);
       return;
     }
@@ -95,17 +95,17 @@ export function ResourceManager({ resources }: { resources: ResourceItem[] }) {
     setIsSaving(false);
 
     if (error) {
-      setMessage(`Chưa lưu được tài liệu: ${error.message}`);
+      setMessage(`Chưa lưu được toolkit: ${error.message}`);
       return;
     }
 
-    setMessage("Đã lưu tài liệu vào Supabase.");
+    setMessage("Đã lưu toolkit vào Supabase.");
     router.refresh();
   }
 
   async function handleDelete() {
     if (!selectedResource.id) {
-      setMessage("Tài liệu fallback từ file tĩnh chưa có id Supabase để xóa.");
+      setMessage("Toolkit dự phòng trong code chưa có id Supabase để xóa.");
       return;
     }
 
@@ -122,12 +122,12 @@ export function ResourceManager({ resources }: { resources: ResourceItem[] }) {
       .eq("id", selectedResource.id);
 
     if (error) {
-      setMessage(`Chưa xóa được tài liệu: ${error.message}`);
+      setMessage(`Chưa xóa được toolkit: ${error.message}`);
       return;
     }
 
     setSelectedSlug("new");
-    setMessage("Đã xóa tài liệu.");
+    setMessage("Đã xóa toolkit.");
     router.refresh();
   }
 
@@ -143,7 +143,7 @@ export function ResourceManager({ resources }: { resources: ResourceItem[] }) {
           type="button"
           onClick={() => setSelectedSlug("new")}
         >
-          + Đăng tài liệu miễn phí mới
+          + Đăng toolkit mới
         </button>
         {resources.map((resource) => (
           <button
@@ -166,22 +166,22 @@ export function ResourceManager({ resources }: { resources: ResourceItem[] }) {
 
       <form className="grid gap-5" onSubmit={handleSubmit}>
         <div className="rounded-2xl border border-black/10 bg-[#fbfaf7] p-4">
-          <p className="text-sm font-black text-black">Thông tin tài liệu</p>
+          <p className="text-sm font-black text-black">Thông tin toolkit</p>
           <p className="mt-2 text-sm leading-6 text-black/55">
-            Với tài liệu miễn phí, admin chỉ cần nhập rõ tên tài liệu, link tải và bài viết giới thiệu.
-            Nội dung này sẽ hiển thị ở trang tài liệu public và dashboard học viên.
+            Với AI Growth Toolkit, admin nhập rõ tên, link tải, thumbnail và mô tả tình huống sử dụng.
+            Nội dung này sẽ hiển thị ở Knowledge Hub và dashboard học viên.
           </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <label className="grid gap-2">
-            <span className="text-sm font-bold text-black/62">Tên tài liệu</span>
+            <span className="text-sm font-bold text-black/62">Tên toolkit</span>
             <input
               className="min-h-12 rounded-2xl border border-black/10 px-4"
               defaultValue={selectedResource.title}
               key={`title-${selectedSlug}`}
               name="title"
-              placeholder="Ví dụ: Checklist xây AI workflow cho Solopreneur"
+              placeholder="Ví dụ: AI Growth System Audit Checklist"
               required
             />
           </label>
@@ -219,19 +219,19 @@ export function ResourceManager({ resources }: { resources: ResourceItem[] }) {
               defaultValue={selectedResource.thumbnail}
               key={`thumb-${selectedSlug}`}
               name="thumbnail"
-              placeholder="https://... ảnh minh họa tài liệu"
+              placeholder="https://... ảnh minh họa toolkit"
             />
           </label>
         </div>
 
         <label className="grid gap-2">
-          <span className="text-sm font-bold text-black/62">Bài viết về tài liệu</span>
+          <span className="text-sm font-bold text-black/62">Mô tả toolkit</span>
           <textarea
             className="min-h-44 w-full rounded-2xl border border-black/10 p-4"
             defaultValue={selectedResource.description}
             key={`description-${selectedSlug}`}
             name="description"
-            placeholder="Viết nội dung giới thiệu: tài liệu này giúp ai, dùng trong tình huống nào, sau khi tải về nên làm bước gì..."
+            placeholder="Viết nội dung giới thiệu: toolkit này giúp ai, dùng trong tình huống nào, sau khi tải về nên làm bước gì..."
           />
         </label>
 
@@ -248,11 +248,11 @@ export function ResourceManager({ resources }: { resources: ResourceItem[] }) {
 
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button className="w-fit" isLoading={isSaving} loadingLabel="Đang lưu..." type="submit">
-            Lưu tài liệu
+            Lưu toolkit
           </Button>
           {selectedResource.id ? (
             <Button className="w-fit" variant="danger" type="button" onClick={handleDelete}>
-              Xóa tài liệu
+              Xóa toolkit
             </Button>
           ) : null}
         </div>

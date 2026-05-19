@@ -14,16 +14,16 @@ export default async function AdminResourcesPage() {
           Quản lý tài liệu.
         </h1>
         <p className="mt-4 max-w-3xl text-lg leading-8 text-black/60">
-          Tài liệu đọc từ Supabase trước, fallback về file tĩnh nếu database
-          chưa có dữ liệu. Form bên dưới tạo/sửa/xóa trực tiếp trong bảng
-          resources. Tài liệu miễn phí cần tối thiểu tên tài liệu, link tải và
-          bài viết giới thiệu để hiển thị mượt trên website.
+          Toolkit đọc từ Supabase trước, sau đó dùng bộ nội dung dự phòng trong
+          code nếu database chưa có dữ liệu. Form bên dưới tạo/sửa/xóa trực tiếp
+          trong bảng resources. Mỗi toolkit nên có tên rõ, link tải, thumbnail và
+          mô tả ngắn để hiển thị mượt trên website.
         </p>
 
         <SoftCard className="mt-10">
           <p className="text-sm font-semibold text-[#c77b20]">Resource CMS</p>
           <h2 className="mt-3 text-3xl font-black tracking-[-0.05em]">
-            Đăng tài liệu miễn phí.
+            Đăng AI Growth Toolkit.
           </h2>
           <ResourceManager resources={resources} />
         </SoftCard>

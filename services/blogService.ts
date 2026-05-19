@@ -1,4 +1,4 @@
-import { blogPosts as mockBlogPosts, type BlogPost } from "@/data/blog";
+import { blogPosts as fallbackBlogPosts, type BlogPost } from "@/data/blog";
 import { sanitizeCmsHtml } from "@/lib/security/html";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -40,7 +40,7 @@ export async function getBlogPosts(): Promise<BlogPostItem[]> {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
-    return mockBlogPosts;
+    return fallbackBlogPosts;
   }
 
   const { data, error } = await supabase
@@ -49,7 +49,7 @@ export async function getBlogPosts(): Promise<BlogPostItem[]> {
     .order("created_at", { ascending: false });
 
   if (error || !data || data.length === 0) {
-    return mockBlogPosts;
+    return fallbackBlogPosts;
   }
 
   return (data as DbBlogPost[]).map(mapDbBlogPost);

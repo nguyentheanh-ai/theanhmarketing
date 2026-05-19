@@ -9,6 +9,7 @@ import type { Course } from "@/data/courses";
 import { clearCart, readCart, subscribeCart, type CartItem } from "@/lib/cart";
 import { getSafeNextPath } from "@/lib/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { trackMarketingEvent } from "@/lib/tracking/events";
 
 export function RegisterForm({ courses }: { courses: Course[] }) {
   const router = useRouter();
@@ -78,6 +79,11 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
       message: `Đăng ký Growth Hub: ${interestedCourse}`,
       source: "signup",
     });
+    trackMarketingEvent("Lead", {
+      content_name: interestedCourse,
+      method: "email",
+      source: "signup",
+    });
 
     try {
       await fetch("/api/notifications/registration", {
@@ -124,6 +130,11 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
     }
 
     clearCart();
+    trackMarketingEvent("CompleteRegistration", {
+      content_ids: orderCourseSlugs,
+      content_name: interestedCourse,
+      method: "email",
+    });
     router.push(`/thanh-toan/${orderData.order.orderCode}`);
   }
 
@@ -145,6 +156,11 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
 
     if (error) {
       setMessage(error.message);
+    } else {
+      trackMarketingEvent("Lead", {
+        method: "google",
+        source: "google_auth",
+      });
     }
   }
 
@@ -240,7 +256,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
         </Link>
       </p>
       <div className="mt-6 rounded-xl bg-white/8 p-4 text-sm leading-6 text-white/60">
-        Demo quản trị:{" "}
+        Khu quản trị nội dung:{" "}
         <ButtonLink href="/admin" variant="ghost" className="min-h-0 px-0">
           vào admin
         </ButtonLink>

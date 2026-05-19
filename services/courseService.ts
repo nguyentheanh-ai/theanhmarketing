@@ -1,4 +1,4 @@
-import { courses as baseMockCourses, type Course, type CourseLesson, type CourseModule, type CourseStatus, type LessonAccess } from "@/data/courses";
+import { courses as baseFallbackCourses, type Course, type CourseLesson, type CourseModule, type CourseStatus, type LessonAccess } from "@/data/courses";
 import { marketingCourses } from "@/data/marketing-courses";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { toYouTubeEmbedUrl } from "@/lib/youtube";
@@ -268,9 +268,9 @@ type DbLessonResource = {
   url: string;
 };
 
-const baseSlugs = new Set(baseMockCourses.map((course) => course.slug));
-const mockCourses = [
-  ...baseMockCourses,
+const baseSlugs = new Set(baseFallbackCourses.map((course) => course.slug));
+const fallbackCourses = [
+  ...baseFallbackCourses,
   ...marketingCourses.filter((course) => !baseSlugs.has(course.slug)),
 ];
 
@@ -373,7 +373,7 @@ export function mapDbCourseToCourse(course: DbCourse): Course {
 }
 
 function getFallbackCourses() {
-  return mockCourses.map((course) => normalizeCourseText(normalizeCourseTiming(course)));
+  return fallbackCourses.map((course) => normalizeCourseText(normalizeCourseTiming(course)));
 }
 
 export async function getCourses() {
@@ -428,40 +428,40 @@ export async function getCourses() {
     }
   }
   const dbSlugs = new Set(dbCourses.map((course) => course.slug));
-  const missingMockCourses = mockCourses
+  const missingFallbackCourses = fallbackCourses
     .filter((course) => !dbSlugs.has(course.slug))
     .map(normalizeCourseTiming);
 
-  return [...dbCourses, ...missingMockCourses];
+  return [...dbCourses, ...missingFallbackCourses];
 }
 
 export async function getCourseBySlug(slug: string) {
   const courses = await getCourses();
   const course = courses.find((course) => course.slug === slug);
-  const mockCourse = mockCourses.find((item) => item.slug === slug);
-  const normalizedMockCourse = mockCourse
-    ? normalizeCourseText(normalizeCourseTiming(mockCourse))
+  const fallbackCourse = fallbackCourses.find((item) => item.slug === slug);
+  const normalizedFallbackCourse = fallbackCourse
+    ? normalizeCourseText(normalizeCourseTiming(fallbackCourse))
     : null;
 
   if (!course) {
-    return normalizedMockCourse;
+    return normalizedFallbackCourse;
   }
 
-  if (course.modules.length === 0 && normalizedMockCourse?.modules.length) {
+  if (course.modules.length === 0 && normalizedFallbackCourse?.modules.length) {
     return {
       ...course,
-      modules: normalizedMockCourse.modules,
-      topics: course.topics.length > 0 ? course.topics : normalizedMockCourse.topics,
-      audience: course.audience.length > 0 ? course.audience : normalizedMockCourse.audience,
-      outcomes: course.outcomes.length > 0 ? course.outcomes : normalizedMockCourse.outcomes,
-      benefits: course.benefits.length > 0 ? course.benefits : normalizedMockCourse.benefits,
-      includes: course.includes.length > 0 ? course.includes : normalizedMockCourse.includes,
+      modules: normalizedFallbackCourse.modules,
+      topics: course.topics.length > 0 ? course.topics : normalizedFallbackCourse.topics,
+      audience: course.audience.length > 0 ? course.audience : normalizedFallbackCourse.audience,
+      outcomes: course.outcomes.length > 0 ? course.outcomes : normalizedFallbackCourse.outcomes,
+      benefits: course.benefits.length > 0 ? course.benefits : normalizedFallbackCourse.benefits,
+      includes: course.includes.length > 0 ? course.includes : normalizedFallbackCourse.includes,
       requirements:
-        course.requirements.length > 0 ? course.requirements : normalizedMockCourse.requirements,
-      instructor: course.instructor.name ? course.instructor : normalizedMockCourse.instructor,
-      reviews: course.reviews.length > 0 ? course.reviews : normalizedMockCourse.reviews,
+        course.requirements.length > 0 ? course.requirements : normalizedFallbackCourse.requirements,
+      instructor: course.instructor.name ? course.instructor : normalizedFallbackCourse.instructor,
+      reviews: course.reviews.length > 0 ? course.reviews : normalizedFallbackCourse.reviews,
       relatedSlugs:
-        course.relatedSlugs.length > 0 ? course.relatedSlugs : normalizedMockCourse.relatedSlugs,
+        course.relatedSlugs.length > 0 ? course.relatedSlugs : normalizedFallbackCourse.relatedSlugs,
     };
   }
 

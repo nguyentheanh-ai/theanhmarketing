@@ -28,6 +28,7 @@ const routes = [
   "/admin/bai-viet",
   "/admin/tai-lieu",
   "/admin/feedback",
+  "/admin/seo",
   "/admin/leads",
   "/admin/don-hang",
   "/admin/cms",

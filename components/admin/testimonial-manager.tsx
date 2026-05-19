@@ -9,7 +9,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 const emptyTestimonial: TestimonialItem = {
   quote: "",
   name: "",
-  title: "Học viên",
+  title: "Case triển khai",
   avatar: "",
   rating: 5,
 };
@@ -81,7 +81,7 @@ export function TestimonialManager({
 
   async function handleDelete() {
     if (!selectedTestimonial.id) {
-      setMessage("Feedback fallback từ file tĩnh chưa có id Supabase để xóa.");
+      setMessage("Feedback dự phòng trong code chưa có id Supabase để xóa.");
       return;
     }
 
@@ -153,7 +153,7 @@ export function TestimonialManager({
             defaultValue={selectedTestimonial.name}
             key={`name-${selectedKey}`}
             name="name"
-            placeholder="Tên học viên"
+            placeholder="Tên case hoặc khách hàng thật"
             required
           />
           <input

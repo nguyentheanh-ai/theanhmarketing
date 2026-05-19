@@ -14,8 +14,9 @@ export default async function AdminFeedbackPage() {
           Quản lý feedback.
         </h1>
         <p className="mt-4 max-w-3xl text-lg leading-8 text-black/60">
-          Feedback đọc từ Supabase trước, fallback về file tĩnh nếu bảng chưa có
-          dữ liệu. Form bên dưới tạo/sửa/xóa trực tiếp trong bảng testimonials.
+          Feedback đọc từ Supabase trước, sau đó dùng các case dự phòng trong code
+          nếu bảng chưa có dữ liệu. Form bên dưới tạo/sửa/xóa trực tiếp trong bảng
+          testimonials để website không phải hiển thị feedback giả tên người.
         </p>
 
         <SoftCard className="mt-10">
@@ -23,7 +24,7 @@ export default async function AdminFeedbackPage() {
             Testimonial CMS
           </p>
           <h2 className="mt-3 text-3xl font-black tracking-[-0.05em]">
-            Tạo, sửa, xóa feedback học viên.
+            Tạo, sửa, xóa case/feedback thật.
           </h2>
           <TestimonialManager testimonials={testimonials} />
         </SoftCard>

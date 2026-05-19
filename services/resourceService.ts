@@ -1,7 +1,7 @@
-import { resources as mockResources } from "@/data/resources";
+import { resources as fallbackResources } from "@/data/resources";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export type ResourceItem = (typeof mockResources)[number] & {
+export type ResourceItem = (typeof fallbackResources)[number] & {
   id?: string;
   thumbnail?: string;
   fileUrl?: string;
@@ -48,7 +48,7 @@ export async function getResources() {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
-    return mockResources;
+    return fallbackResources;
   }
 
   const { data, error } = await supabase
@@ -57,7 +57,7 @@ export async function getResources() {
     .order("created_at", { ascending: false });
 
   if (error || !data || data.length === 0) {
-    return mockResources;
+    return fallbackResources;
   }
 
   return (data as DbResource[]).map(mapDbResource);

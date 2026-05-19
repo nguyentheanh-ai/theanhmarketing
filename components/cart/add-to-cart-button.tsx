@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { addToCart, readCart, subscribeCart } from "@/lib/cart";
+import { trackMarketingEvent } from "@/lib/tracking/events";
 
 type AddToCartButtonProps = {
   slug: string;
@@ -28,6 +29,13 @@ export function AddToCartButton({ slug, title, price, className = "", label = "T
       size="md"
       variant={exists ? "secondary" : "secondary"}
       onClick={() => {
+        if (!exists) {
+          trackMarketingEvent("AddToCart", {
+            content_ids: [slug],
+            content_name: title,
+            currency: "VND",
+          });
+        }
         addToCart({ slug, title, price });
         setExists(true);
       }}

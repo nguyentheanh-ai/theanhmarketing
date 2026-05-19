@@ -402,6 +402,15 @@ export function StudentDashboard({
           </div>
         </section>
       </section>
+
+      <nav
+        className={`student-mobile-action ${isDark ? "student-mobile-action--dark" : ""}`}
+        aria-label="Hành động học nhanh trên điện thoại"
+      >
+        <Link href={nextLessonHref}>Học tiếp</Link>
+        <Link href="#khoa-hoc">Khóa học</Link>
+        <Link href="#tai-lieu">Toolkit</Link>
+      </nav>
     </main>
   );
 }

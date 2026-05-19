@@ -212,6 +212,31 @@ create index if not exists lesson_comments_lesson_id_idx on public.lesson_commen
 create index if not exists blog_posts_slug_idx on public.blog_posts(slug);
 ```
 
+### SEO/Tracking Settings
+
+The admin page `/admin/seo` stores Facebook Pixel, GA4, GTM, Search Console and Facebook domain verification in the existing `site_settings` table under key `marketing`.
+
+```sql
+insert into public.site_settings (key, value)
+values (
+  'marketing',
+  '{
+    "trackingEnabled": false,
+    "facebookPixelEnabled": false,
+    "facebookPixelId": "",
+    "gaEnabled": false,
+    "gaMeasurementId": "",
+    "gtmEnabled": false,
+    "gtmId": "",
+    "googleSiteVerification": "",
+    "facebookDomainVerification": ""
+  }'::jsonb
+)
+on conflict (key) do update
+set value = excluded.value,
+    updated_at = now();
+```
+
 ## RLS Policies For Current Demo Admin
 
 The current admin does not have real authentication yet. These policies allow

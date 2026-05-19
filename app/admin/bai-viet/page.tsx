@@ -14,14 +14,15 @@ export default async function AdminPostsPage() {
           Quản lý bài viết.
         </h1>
         <p className="mt-4 max-w-3xl text-lg leading-8 text-black/60">
-          Bài viết đọc từ Supabase trước, fallback về file tĩnh nếu bảng chưa có
-          dữ liệu. Form bên dưới lưu/xóa trực tiếp vào bảng blog_posts.
+          Bài viết đọc từ Supabase trước, sau đó dùng bộ nội dung dự phòng trong
+          code nếu bảng chưa có dữ liệu. Form bên dưới lưu/xóa trực tiếp vào bảng
+          blog_posts để public blog và Knowledge Hub đồng bộ cùng một nguồn.
         </p>
 
         <SoftCard className="mt-10">
           <p className="text-sm font-semibold text-[#c77b20]">Blog CMS</p>
           <h2 className="mt-3 text-3xl font-black tracking-[-0.05em]">
-            Tạo, sửa, xóa bài viết.
+            Tạo, sửa, xóa bài viết Growth System.
           </h2>
           <BlogPostManager posts={posts} />
         </SoftCard>

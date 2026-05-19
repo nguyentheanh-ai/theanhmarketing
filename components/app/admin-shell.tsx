@@ -27,7 +27,10 @@ const adminNavGroups = [
   },
   {
     label: "Hệ thống",
-    items: [{ label: "Database", href: "/admin/database", shortcut: "10" }],
+    items: [
+      { label: "SEO/Tracking", href: "/admin/seo", shortcut: "10" },
+      { label: "Database", href: "/admin/database", shortcut: "11" },
+    ],
   },
 ];
 
@@ -96,7 +99,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         <Link href="/admin/dashboard" className="font-black tracking-[-0.03em]">
           CRM Admin · The Anh
         </Link>
-        <nav className="mt-4 flex gap-2 overflow-x-auto">
+        <nav className="mobile-nav-scroll mt-4 flex gap-2 overflow-x-auto">
           {adminNav.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
