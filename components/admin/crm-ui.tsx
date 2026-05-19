@@ -4,11 +4,11 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 type Tone = "success" | "warning" | "danger" | "neutral" | "info";
 
 const toneStyles: Record<Tone, string> = {
-  success: "bg-emerald-300/10 text-emerald-100 border-emerald-300/25",
-  warning: "bg-amber-300/10 text-amber-100 border-amber-300/25",
-  danger: "bg-red-300/10 text-red-100 border-red-300/25",
-  neutral: "bg-white/8 text-white/55 border-white/10",
-  info: "bg-[#159cfb]/15 text-sky-100 border-[#77d7ff]/25",
+  success: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  warning: "bg-amber-50 text-amber-700 border-amber-200",
+  danger: "bg-red-50 text-red-700 border-red-200",
+  neutral: "bg-slate-100 text-slate-600 border-slate-200",
+  info: "bg-sky-50 text-sky-700 border-sky-200",
 };
 
 export function AdminPanel({
@@ -19,7 +19,7 @@ export function AdminPanel({
   return (
     <div
       {...props}
-      className={`ai-panel ${className}`}
+      className={`rounded-xl border border-slate-200 bg-white text-slate-950 shadow-[0_18px_45px_rgba(15,23,42,0.06)] ${className}`}
     >
       {children}
     </div>
@@ -63,16 +63,16 @@ export function AdminPageHeader({
 
 export function EmptyState({ title, description }: { title: string; description: string }) {
   return (
-    <div className="rounded-lg border border-dashed border-[#77d7ff]/20 bg-white/5 p-5 text-sm">
-      <p className="font-black text-white/75">{title}</p>
-      <p className="mt-2 leading-6 text-white/50">{description}</p>
+    <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-5 text-sm">
+      <p className="font-black text-slate-800">{title}</p>
+      <p className="mt-2 leading-6 text-slate-500">{description}</p>
     </div>
   );
 }
 
 export function TextLink({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <Link href={href} className="text-sm font-black text-white/60 transition hover:text-white">
+    <Link href={href} className="text-sm font-black text-[#159cfb] transition hover:text-[#0f6fb4]">
       {children}
     </Link>
   );

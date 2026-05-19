@@ -17,14 +17,14 @@ type DbTestimonial = {
   created_at: string | null;
 };
 
-const demoNameToCaseLabel: Record<string, string> = {
+const legacyNameToCaseLabel: Record<string, string> = {
   "Minh Anh": "Case SME ngành bán lẻ",
   "Quốc Huy": "Case Solopreneur",
   "Thu Trang": "Case team nội bộ",
 };
 
 function mapDbTestimonial(testimonial: DbTestimonial): TestimonialItem {
-  const displayName = demoNameToCaseLabel[testimonial.student_name] ?? testimonial.student_name;
+  const displayName = legacyNameToCaseLabel[testimonial.student_name] ?? testimonial.student_name;
 
   return {
     id: testimonial.id,

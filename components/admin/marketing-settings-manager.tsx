@@ -4,7 +4,6 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { normalizeMarketingSettings, type MarketingSettings } from "@/lib/marketing-settings";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export function MarketingSettingsManager({ settings }: { settings: MarketingSettings }) {
   const router = useRouter();
@@ -31,24 +30,19 @@ export function MarketingSettingsManager({ settings }: { settings: MarketingSett
       gtmEnabled: formData.get("gtmEnabled") === "on",
       gtmId: String(formData.get("gtmId") ?? ""),
     });
-    const supabase = createSupabaseBrowserClient();
-
-    if (!supabase) {
-      setMessage("Chưa cấu hình Supabase. SEO/Tracking chưa được lưu.");
-      setIsSaving(false);
-      return;
-    }
-
-    const { error } = await supabase.from("site_settings").upsert({
-      key: "marketing",
-      value,
-      updated_at: new Date().toISOString(),
+    const response = await fetch("/api/admin/site-settings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ key: "marketing", value }),
     });
+    const payload = (await response.json().catch(() => ({}))) as { message?: string };
 
     setIsSaving(false);
 
-    if (error) {
-      setMessage(`Chưa lưu được SEO/Tracking: ${error.message}. Kiểm tra bảng site_settings và quyền admin trước khi lưu lại.`);
+    if (!response.ok) {
+      setMessage(`Chưa lưu được SEO/Tracking: ${payload.message ?? "Lỗi không xác định."}`);
       return;
     }
 

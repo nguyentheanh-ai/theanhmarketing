@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { AdminPageHeader, AdminPanel, EmptyState, StatusBadge, TextLink } from "@/components/admin/crm-ui";
 import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
-import { ContentOsDashboardMockup } from "@/components/site/ai-os-visuals";
 import { ButtonLink } from "@/components/ui/button-link";
 import {
   buildAdminDashboardModel,
@@ -31,10 +30,6 @@ export default async function AdminDashboardPage() {
           description="Theo dõi lead mới, đơn hàng, học viên, khóa học và các việc cần xử lý trong một màn hình gọn hơn cho admin."
           action={<ButtonLink href="/admin/leads">Thêm lead mới</ButtonLink>}
         />
-
-        <section className="mt-6">
-          <ContentOsDashboardMockup compact />
-        </section>
 
         <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {model.kpis.map((item) => (

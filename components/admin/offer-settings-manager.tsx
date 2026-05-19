@@ -3,7 +3,6 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { OfferSettings } from "@/services/offerService";
 
 export function OfferSettingsManager({ settings }: { settings: OfferSettings }) {
@@ -30,24 +29,18 @@ export function OfferSettingsManager({ settings }: { settings: OfferSettings }) 
       ctaLabel: String(formData.get("ctaLabel") ?? "").trim(),
       ctaHref: String(formData.get("ctaHref") ?? "").trim() || "/dang-ky",
     };
-    const supabase = createSupabaseBrowserClient();
 
-    if (!supabase) {
-      setMessage("Chưa cấu hình Supabase. Ưu đãi chưa được lưu.");
-      setIsSaving(false);
-      return;
-    }
-
-    const { error } = await supabase.from("site_settings").upsert({
-      key: "offer",
-      value,
-      updated_at: new Date().toISOString(),
+    const response = await fetch("/api/admin/site-settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: "offer", value }),
     });
+    const payload = (await response.json().catch(() => ({}))) as { message?: string };
 
     setIsSaving(false);
 
-    if (error) {
-      setMessage(`Chưa lưu được ưu đãi: ${error.message}. Kiểm tra bảng site_settings và policy trước khi lưu lại.`);
+    if (!response.ok) {
+      setMessage(`Chưa lưu được ưu đãi: ${payload.message ?? "Lỗi không xác định."}`);
       return;
     }
 
@@ -57,51 +50,51 @@ export function OfferSettingsManager({ settings }: { settings: OfferSettings }) 
 
   return (
     <form className="mt-6 grid gap-4" onSubmit={handleSubmit}>
-      <label className="flex w-fit items-center gap-3 rounded-2xl border border-black/10 bg-[#e7f3df] px-4 py-3 text-sm font-bold">
+      <label className="flex w-fit items-center gap-3 rounded-2xl border border-black/10 bg-[#e7f3df] px-4 py-3 text-sm font-bold text-slate-900">
         <input defaultChecked={settings.enabled} name="enabled" type="checkbox" />
         Hiển thị popup ưu đãi trên trang khóa học
       </label>
       <div className="grid gap-4 md:grid-cols-2">
         <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4"
+          className="min-h-12 rounded-2xl border border-black/10 px-4 text-slate-900"
           defaultValue={settings.title}
           name="title"
           placeholder="Tiêu đề popup"
           required
         />
         <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4"
+          className="min-h-12 rounded-2xl border border-black/10 px-4 text-slate-900"
           defaultValue={settings.discountLabel}
           name="discountLabel"
           placeholder="Nhãn ưu đãi, ví dụ: Giảm 200.000đ"
         />
         <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4 font-black uppercase tracking-[0.08em]"
+          className="min-h-12 rounded-2xl border border-black/10 px-4 font-black uppercase tracking-[0.08em] text-slate-900"
           defaultValue={settings.couponCode}
           name="couponCode"
           placeholder="Mã giảm giá"
         />
         <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4"
+          className="min-h-12 rounded-2xl border border-black/10 px-4 text-slate-900"
           defaultValue={settings.ctaLabel}
           name="ctaLabel"
           placeholder="Nút CTA"
         />
         <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4 md:col-span-2"
+          className="min-h-12 rounded-2xl border border-black/10 px-4 text-slate-900 md:col-span-2"
           defaultValue={settings.ctaHref}
           name="ctaHref"
           placeholder="Link CTA"
         />
       </div>
       <textarea
-        className="min-h-24 rounded-2xl border border-black/10 p-4"
+        className="min-h-24 rounded-2xl border border-black/10 p-4 text-slate-900"
         defaultValue={settings.description}
         name="description"
         placeholder="Mô tả ngắn của ưu đãi"
       />
       <textarea
-        className="min-h-32 rounded-2xl border border-black/10 p-4"
+        className="min-h-32 rounded-2xl border border-black/10 p-4 text-slate-900"
         defaultValue={settings.items.join("\n")}
         name="items"
         placeholder="Mỗi dòng là một quyền lợi/quà tặng"
@@ -109,7 +102,7 @@ export function OfferSettingsManager({ settings }: { settings: OfferSettings }) 
       <Button className="w-fit" isLoading={isSaving} loadingLabel="Đang lưu..." type="submit">
         Lưu ưu đãi
       </Button>
-      {message ? <p className="rounded-2xl bg-[#f2eadf] px-4 py-3 text-sm font-semibold text-black/65">{message}</p> : null}
+      {message ? <p className="rounded-2xl bg-[#f2eadf] px-4 py-3 text-sm font-semibold text-slate-800">{message}</p> : null}
     </form>
   );
 }

@@ -2607,6 +2607,40 @@ body {
   border-color: rgb(144 205 255 / 0.12);
 }
 
+.admin-crm-shell .ai-panel,
+.admin-crm-shell .ai-panel-strong {
+  background: #ffffff !important;
+  border-color: rgb(226 232 240) !important;
+  color: rgb(15 23 42) !important;
+  box-shadow: 0 18px 45px rgb(15 23 42 / 0.06) !important;
+}
+
+.admin-crm-shell .ai-panel [class*="text-black"],
+.admin-crm-shell .ai-panel-strong [class*="text-black"] {
+  color: inherit !important;
+}
+
+.admin-crm-shell .ai-panel [class*="border-black"],
+.admin-crm-shell .ai-panel-strong [class*="border-black"] {
+  border-color: rgb(226 232 240) !important;
+}
+
+.admin-crm-shell .ai-panel [class*="bg-white"],
+.admin-crm-shell .ai-panel-strong [class*="bg-white"] {
+  background-color: #ffffff !important;
+}
+
+.admin-crm-shell .ai-panel :is(input, textarea, select),
+.admin-crm-shell .ai-panel-strong :is(input, textarea, select) {
+  background-color: #ffffff !important;
+  border-color: rgb(203 213 225) !important;
+  color: rgb(15 23 42) !important;
+}
+
+.admin-crm-shell .ai-muted {
+  color: rgb(71 85 105) !important;
+}
+
 button,
 a,
 input,

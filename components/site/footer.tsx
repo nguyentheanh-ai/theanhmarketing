@@ -24,7 +24,6 @@ export async function SiteFooter() {
     { label: "Marketing OS", href: "/gioi-thieu" },
     { label: "Đăng nhập học viên", href: "/dang-nhap" },
     { label: "Dashboard học viên", href: "/dashboard" },
-    { label: "Admin CRM", href: "/admin/dashboard" },
   ];
 
   return (

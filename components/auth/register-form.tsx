@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { ButtonLink } from "@/components/ui/button-link";
 import type { Course } from "@/data/courses";
 import { clearCart, readCart, subscribeCart, type CartItem } from "@/lib/cart";
 import { getSafeNextPath } from "@/lib/navigation";
@@ -256,10 +255,10 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
         </Link>
       </p>
       <div className="mt-6 rounded-xl bg-white/8 p-4 text-sm leading-6 text-white/60">
-        Khu quản trị nội dung:{" "}
-        <ButtonLink href="/admin" variant="ghost" className="min-h-0 px-0">
-          vào admin
-        </ButtonLink>
+        Học viên đã có tài khoản:{" "}
+        <Link href="/dang-nhap" className="font-bold text-white">
+          đăng nhập
+        </Link>
       </div>
     </>
   );

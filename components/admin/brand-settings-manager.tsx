@@ -67,26 +67,18 @@ export function BrandSettingsManager({ settings }: { settings: BrandSettings }) 
       heroImageUrl: form.heroImageUrl,
       heroVideoUrl: String(formData.get("heroVideoUrl") ?? ""),
     };
-    const supabase = createSupabaseBrowserClient();
 
-    if (!supabase) {
-      setMessage("Chưa cấu hình Supabase. Brand settings chưa được lưu.");
-      setIsSaving(false);
-      return;
-    }
-
-    const { error } = await supabase.from("site_settings").upsert({
-      key: "brand",
-      value,
-      updated_at: new Date().toISOString(),
+    const response = await fetch("/api/admin/site-settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: "brand", value }),
     });
+    const payload = (await response.json().catch(() => ({}))) as { message?: string };
 
     setIsSaving(false);
 
-    if (error) {
-      setMessage(
-        `Chưa lưu được brand settings: ${error.message}. Nếu bảng site_settings chưa có, chạy SQL trong docs/DATABASE_SETUP.md.`,
-      );
+    if (!response.ok) {
+      setMessage(`Chưa lưu được thương hiệu: ${payload.message ?? "Lỗi không xác định."}`);
       return;
     }
 
@@ -98,52 +90,52 @@ export function BrandSettingsManager({ settings }: { settings: BrandSettings }) 
     <form className="mt-6 grid gap-4" onSubmit={handleSubmit}>
       <div className="grid gap-4 md:grid-cols-2">
         <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4"
+          className="min-h-12 rounded-2xl border border-black/10 px-4 text-slate-900"
           defaultValue={form.name}
           name="name"
           placeholder="Tên thương hiệu"
           required
         />
         <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4"
+          className="min-h-12 rounded-2xl border border-black/10 px-4 text-slate-900"
           defaultValue={form.shortName}
           name="shortName"
           placeholder="Tên ngắn"
           required
         />
         <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4"
+          className="min-h-12 rounded-2xl border border-black/10 px-4 text-slate-900"
           defaultValue={form.logoMark}
           name="logoMark"
           placeholder="Logo mark dạng chữ"
         />
         <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4"
+          className="min-h-12 rounded-2xl border border-black/10 px-4 text-slate-900"
           defaultValue={form.phone}
           name="phone"
           placeholder="Hotline/Zalo"
         />
         <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4"
+          className="min-h-12 rounded-2xl border border-black/10 px-4 text-slate-900"
           defaultValue={form.email}
           name="email"
           placeholder="Email"
           type="email"
         />
         <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4"
+          className="min-h-12 rounded-2xl border border-black/10 px-4 text-slate-900"
           defaultValue={form.primaryCtaLabel}
           name="primaryCtaLabel"
           placeholder="Header CTA label"
         />
         <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4"
+          className="min-h-12 rounded-2xl border border-black/10 px-4 text-slate-900"
           defaultValue={form.primaryCtaHref}
           name="primaryCtaHref"
           placeholder="Header CTA href"
         />
         <input
-          className="min-h-12 rounded-2xl border border-black/10 px-4"
+          className="min-h-12 rounded-2xl border border-black/10 px-4 text-slate-900"
           defaultValue={form.heroVideoUrl}
           name="heroVideoUrl"
           placeholder="Homepage hero video URL"
@@ -170,7 +162,7 @@ export function BrandSettingsManager({ settings }: { settings: BrandSettings }) 
         />
       </div>
       <textarea
-        className="min-h-24 rounded-2xl border border-black/10 p-4"
+        className="min-h-24 rounded-2xl border border-black/10 p-4 text-slate-900"
         defaultValue={form.tagline}
         name="tagline"
         placeholder="Tagline thương hiệu"
@@ -179,7 +171,7 @@ export function BrandSettingsManager({ settings }: { settings: BrandSettings }) 
         Lưu thương hiệu
       </Button>
       {message ? (
-        <p className="rounded-2xl bg-[#f2eadf] px-4 py-3 text-sm font-semibold text-black/65">
+        <p className="rounded-2xl bg-[#f2eadf] px-4 py-3 text-sm font-semibold text-slate-800">
           {message}
         </p>
       ) : null}

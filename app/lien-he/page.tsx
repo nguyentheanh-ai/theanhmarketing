@@ -43,16 +43,16 @@ export default function ContactPage() {
             <ButtonLink href={siteConfig.emailHref} variant="secondary" className="mt-6">Gửi email</ButtonLink>
           </SoftCard>
           <SoftCard>
-            <p className="ai-kicker">Dashboard</p>
+            <p className="ai-kicker">Học viên</p>
             <h2 className="mt-4 text-3xl font-black tracking-[-0.05em]">
-              Growth Hub & Admin
+              Growth Hub học tập
             </h2>
             <p className="ai-muted mt-4 leading-8">
-              Học viên vào dashboard để học tiếp. Admin vào CRM để xử lý lead, đơn hàng, quyền học và dữ liệu vận hành.
+              Học viên dùng dashboard để học tiếp, xem khóa đã mở quyền và gửi câu hỏi hỗ trợ.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               <ButtonLink href="/dashboard" variant="secondary">Học viên</ButtonLink>
-              <ButtonLink href="/admin/dashboard" variant="secondary">Admin</ButtonLink>
+              <ButtonLink href="/dang-ky" variant="secondary">Đăng ký tư vấn</ButtonLink>
             </div>
           </SoftCard>
         </div>

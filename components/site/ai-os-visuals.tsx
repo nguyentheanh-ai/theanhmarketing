@@ -36,7 +36,7 @@ const ecosystemNodes = [
   { label: "ATTRACT", detail: "Content, AI workflow và paid traffic tạo nhu cầu.", side: "left top", href: "/blog" },
   { label: "GROW", detail: "Lead magnet, funnel, nurture và authority.", side: "left bottom", href: "/blog#tai-lieu" },
   { label: "SCALE", detail: "Automation, SOP, dashboard và tối ưu dữ liệu.", side: "right top", href: "/gioi-thieu" },
-  { label: "CRM/DATA", detail: "Lead, đơn hàng, học viên và tín hiệu hành vi.", side: "right bottom", href: "/admin/dashboard" },
+  { label: "CRM/DATA", detail: "Lead, đơn hàng, học viên và tín hiệu hành vi.", side: "right bottom", href: "/lien-he" },
 ];
 
 function MiniLineChart({ compact = false }: { compact?: boolean }) {
@@ -319,7 +319,7 @@ export function EcosystemFeatureGrid() {
     ["AI ADS ENGINE", "/khoa-hoc"],
     ["AI FUNNEL ENGINE", "/blog#tai-lieu"],
     ["AI AUTOMATION ENGINE", "/workshop"],
-    ["CRM/DATA LAYER", "/admin/dashboard"],
+    ["CRM/DATA LAYER", "/lien-he"],
     ["AI SOLOPRENEUR OS", "/hoc-vien"],
   ];
 

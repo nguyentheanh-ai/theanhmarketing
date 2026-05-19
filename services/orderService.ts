@@ -332,8 +332,10 @@ export async function getPaymentOrder(orderCode: string) {
 }
 
 export async function getPaymentOrders(options: { includeFallback?: boolean } = {}) {
-  const includeFallback = options.includeFallback ?? true;
-  const supabase = createSupabaseAdminClient();
+  const includeFallback = options.includeFallback ?? false;
+  const supabase = process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? createSupabaseAdminClient()
+    : await (await import("@/lib/auth/session")).createSupabaseAuthServerClient();
 
   if (!supabase) {
     return includeFallback ? getFallbackOrders() : [];

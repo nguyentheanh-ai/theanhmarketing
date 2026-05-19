@@ -26,11 +26,8 @@ const adminNavGroups = [
     ],
   },
   {
-    label: "Hệ thống",
-    items: [
-      { label: "SEO/Tracking", href: "/admin/seo", shortcut: "10" },
-      { label: "Database", href: "/admin/database", shortcut: "11" },
-    ],
+    label: "Cấu hình",
+    items: [{ label: "SEO/Tracking", href: "/admin/seo", shortcut: "10" }],
   },
 ];
 
@@ -46,7 +43,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <main className="ai-os-bg min-h-screen text-white">
+    <main className="admin-crm-shell ai-os-bg min-h-screen text-white">
       <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-[#77d7ff]/15 bg-[#05080d]/88 p-5 text-white backdrop-blur-2xl lg:block">
         <Link href="/admin/dashboard" className="block rounded-lg border border-[#77d7ff]/18 bg-white/[0.04] p-4">
           <span className="text-xs font-bold uppercase tracking-[0.18em] text-white/40">

@@ -4,7 +4,7 @@ import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { getLeads } from "@/services/leadService";
 
 export default async function AdminLeadsPage() {
-  const leads = await getLeads();
+  const leads = await getLeads({ includeFallback: false });
 
   return (
     <ProtectedAdminShell nextPath="/admin/leads">

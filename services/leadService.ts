@@ -1,6 +1,6 @@
 import { fallbackLeads } from "@/data/platform";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export type LeadInput = {
   name: string;
@@ -54,8 +54,8 @@ export async function createLead(input: LeadInput) {
 }
 
 export async function getLeads(options: { includeFallback?: boolean } = {}): Promise<LeadItem[]> {
-  const includeFallback = options.includeFallback ?? true;
-  const supabase = createSupabaseServerClient();
+  const includeFallback = options.includeFallback ?? false;
+  const supabase = createSupabaseAdminClient();
 
   if (!supabase) {
     return includeFallback ? fallbackLeads : [];

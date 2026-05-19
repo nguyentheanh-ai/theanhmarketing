@@ -65,7 +65,7 @@ export default async function EcosystemPage() {
                 ["AI Ads Engine", `${courses.length} chương trình đang lấy từ course service`, "/khoa-hoc"],
                 ["AI Growth Toolkit", `${resources.length} tài nguyên trong thư viện`, "/blog#tai-lieu"],
                 ["AI Operator Hub", "Dashboard dùng đơn paid để cấp quyền học và lưu tiến độ", "/dashboard"],
-                ["CRM/Data Layer", "Admin quản lý lead, đơn hàng, học viên và CMS", "/admin/dashboard"],
+                ["CRM/Data Layer", "Kết nối lead, đơn hàng, học viên và CMS trong hệ thống vận hành", "/lien-he"],
               ].map(([label, detail, href]) => (
                 <Link key={label} href={href} className="rounded-lg border border-white/10 bg-white/7 p-4 transition hover:border-[#77d7ff]/35">
                   <p className="font-black">{label}</p>

@@ -12,7 +12,7 @@ function formatVnd(amount: number) {
 }
 
 export default async function AdminOrdersPage() {
-  const orders = await getPaymentOrders();
+  const orders = await getPaymentOrders({ includeFallback: false });
   const paidOrders = orders.filter((order) => order.status === "paid");
   const pendingOrders = orders.filter((order) => order.status === "pending");
   const revenue = paidOrders.reduce((sum, order) => sum + order.amount, 0);
