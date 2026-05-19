@@ -704,6 +704,43 @@ body {
   position: absolute;
 }
 
+.ecosystem-wires {
+  filter: drop-shadow(0 0 18px rgb(119 215 255 / 0.28));
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.ecosystem-wires path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wire-orbit {
+  filter: url("#ecosystemWireGlow");
+  opacity: 0.72;
+  stroke: url("#ecosystemWire");
+  stroke-dasharray: 1.4 2.4;
+  stroke-width: 0.42;
+}
+
+.wire-main {
+  filter: url("#ecosystemWireGlow");
+  opacity: 0.95;
+  stroke: url("#ecosystemWire");
+  stroke-width: 0.46;
+}
+
+.wire-thread {
+  opacity: 0.42;
+  stroke: rgb(119 215 255 / 0.54);
+  stroke-dasharray: 0.4 2.1;
+  stroke-width: 0.24;
+}
+
 .ecosystem-core {
   background:
     radial-gradient(circle at 40% 34%, rgb(255 255 255 / 0.28), transparent 34%),
@@ -731,46 +768,88 @@ body {
 
 .ecosystem-node {
   align-items: center;
+  aspect-ratio: 1;
+  background:
+    radial-gradient(circle at 34% 24%, rgb(255 255 255 / 0.42), transparent 28%),
+    radial-gradient(circle at 68% 72%, rgb(119 215 255 / 0.2), transparent 36%),
+    linear-gradient(145deg, rgb(70 92 130 / 0.92), rgb(17 25 38 / 0.96));
+  border: 1px solid rgb(180 231 255 / 0.5);
+  border-radius: 999px;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.28),
+    inset 0 -22px 42px rgb(0 0 0 / 0.22),
+    0 0 0 8px rgb(119 215 255 / 0.07),
+    0 0 44px rgb(56 189 248 / 0.32);
   color: white;
-  display: grid;
-  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  height: 156px;
+  justify-content: center;
+  padding: 22px;
   position: absolute;
+  text-align: center;
   text-decoration: none;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  width: 156px;
   z-index: 3;
 }
 
 .ecosystem-node i {
-  background:
-    radial-gradient(circle at 35% 30%, rgb(255 255 255 / 0.5), transparent 38%),
-    rgb(42 61 85 / 0.92);
-  border: 1px solid rgb(155 211 255 / 0.35);
-  border-radius: 999px;
-  box-shadow: 0 0 42px rgb(56 189 248 / 0.36);
+  background: radial-gradient(circle at 34% 25%, rgb(255 255 255 / 0.34), transparent 0 22%, rgb(255 255 255 / 0.08) 23%, transparent 42%);
+  border: 0;
+  border-radius: inherit;
+  box-shadow: none;
   display: block;
-  height: 72px;
-  width: 72px;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.ecosystem-node::after {
+  background:
+    linear-gradient(90deg, transparent, rgb(119 215 255 / 0.28), transparent),
+    radial-gradient(circle, transparent 52%, rgb(180 231 255 / 0.2) 53%, transparent 58%);
+  border-radius: inherit;
+  content: "";
+  inset: 10px;
+  pointer-events: none;
+  position: absolute;
 }
 
 .ecosystem-node strong {
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 950;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  position: relative;
+  z-index: 1;
 }
 
 .ecosystem-node span {
-  background: linear-gradient(145deg, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.05));
-  border: 1px solid rgb(155 211 255 / 0.22);
-  border-radius: 7px;
-  color: rgb(226 238 255 / 0.75);
-  font-size: 0.78rem;
-  line-height: 1.35;
-  max-width: 190px;
-  padding: 10px;
+  color: rgb(226 238 255 / 0.76);
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-top: 7px;
+  max-width: 112px;
+  position: relative;
+  z-index: 1;
 }
 
-.ecosystem-node.left-top { left: 10%; top: 23%; }
-.ecosystem-node.left-bottom { left: 12%; bottom: 19%; }
-.ecosystem-node.right-top { right: 13%; top: 24%; }
-.ecosystem-node.right-bottom { right: 10%; bottom: 18%; }
+.ecosystem-node:hover {
+  border-color: rgb(180 231 255 / 0.82);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.34),
+    inset 0 -22px 42px rgb(0 0 0 / 0.18),
+    0 0 0 10px rgb(119 215 255 / 0.09),
+    0 0 68px rgb(56 189 248 / 0.48);
+  transform: translateY(-3px);
+}
+
+.ecosystem-node.left-top { left: 12%; top: 13%; }
+.ecosystem-node.left-bottom { left: 15%; bottom: 12%; }
+.ecosystem-node.right-top { right: 14%; top: 14%; }
+.ecosystem-node.right-bottom { right: 12%; bottom: 12%; }
 
 .ecosystem-feature-grid {
   display: grid;
@@ -1988,7 +2067,15 @@ body {
     animation: ecosystem-spin 46s linear infinite;
   }
 
-  .ecosystem-node i {
+  .wire-main {
+    animation: ecosystem-wire-flow 3.6s ease-in-out infinite;
+  }
+
+  .wire-orbit {
+    animation: ecosystem-orbit-flow 6s linear infinite;
+  }
+
+  .ecosystem-node {
     animation: node-pulse 4.2s ease-in-out infinite;
   }
 
@@ -2194,13 +2281,24 @@ body {
   }
 
   .ecosystem-node {
-    transform: scale(0.9);
+    height: 122px;
+    padding: 16px;
+    width: 122px;
   }
 
-  .ecosystem-node.left-top { left: 4%; top: 12%; }
-  .ecosystem-node.left-bottom { left: 4%; bottom: 10%; }
-  .ecosystem-node.right-top { right: 3%; top: 14%; }
-  .ecosystem-node.right-bottom { right: 3%; bottom: 10%; }
+  .ecosystem-node strong {
+    font-size: 0.72rem;
+  }
+
+  .ecosystem-node span {
+    font-size: 0.56rem;
+    max-width: 86px;
+  }
+
+  .ecosystem-node.left-top { left: 4%; top: 11%; }
+  .ecosystem-node.left-bottom { left: 5%; bottom: 8%; }
+  .ecosystem-node.right-top { right: 4%; top: 11%; }
+  .ecosystem-node.right-bottom { right: 4%; bottom: 8%; }
 
   .docs-hub-shell {
     display: block;
@@ -2344,8 +2442,24 @@ body {
 
 @keyframes node-pulse {
   50% {
-    box-shadow: 0 0 58px rgb(56 189 248 / 0.58);
-    transform: scale(1.05);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.34),
+      inset 0 -22px 42px rgb(0 0 0 / 0.18),
+      0 0 0 11px rgb(119 215 255 / 0.1),
+      0 0 64px rgb(56 189 248 / 0.5);
+  }
+}
+
+@keyframes ecosystem-wire-flow {
+  50% {
+    opacity: 0.58;
+    stroke-width: 0.62;
+  }
+}
+
+@keyframes ecosystem-orbit-flow {
+  to {
+    stroke-dashoffset: -18;
   }
 }
 

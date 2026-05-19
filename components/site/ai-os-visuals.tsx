@@ -278,6 +278,29 @@ export function EcosystemMapExact() {
   return (
     <div className="ecosystem-exact">
       <div className="ecosystem-rays" />
+      <svg className="ecosystem-wires" viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <linearGradient id="ecosystemWire" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stopColor="#77d7ff" stopOpacity="0.12" />
+            <stop offset="45%" stopColor="#9d7cff" stopOpacity="0.78" />
+            <stop offset="100%" stopColor="#77d7ff" stopOpacity="0.18" />
+          </linearGradient>
+          <filter id="ecosystemWireGlow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="1.25" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <path className="wire-orbit" d="M22 27 C38 11 62 11 78 27 C92 42 92 58 76 73 C61 88 39 88 24 73 C8 58 8 42 22 27Z" />
+        <path className="wire-main" d="M50 50 C42 42 34 33 22 27" />
+        <path className="wire-main" d="M50 50 C42 58 35 67 24 73" />
+        <path className="wire-main" d="M50 50 C58 42 66 33 78 27" />
+        <path className="wire-main" d="M50 50 C58 58 66 67 76 73" />
+        <path className="wire-thread" d="M22 27 C38 30 62 30 78 27" />
+        <path className="wire-thread" d="M24 73 C39 67 61 67 76 73" />
+      </svg>
       <div className="ecosystem-core">THE ANH<br />OS</div>
       {ecosystemNodes.map((node) => (
         <Link key={node.label} href={node.href} className={`ecosystem-node ${node.side.replace(" ", "-")}`}>
