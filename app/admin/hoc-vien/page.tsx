@@ -1,138 +1,126 @@
 import { StudentIntakeForm } from "@/components/admin/student-intake-form";
+import { AdminPageHeader, AdminPanel, EmptyState, StatusBadge } from "@/components/admin/crm-ui";
 import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
-import { SoftCard } from "@/components/ui/soft-card";
+import { formatAdminDate, getAccessStatusMeta } from "@/lib/admin/crm-dashboard";
 import { getCourses } from "@/services/courseService";
 import { getStudentAccessRecords } from "@/services/studentAccessService";
 
 export default async function AdminStudentsPage() {
   const [courses, students] = await Promise.all([getCourses(), getStudentAccessRecords()]);
-  const grantedCount = students.filter((student) => student.accessStatus === "Có quyền học").length;
+  const grantedCount = students.filter((student) => getAccessStatusMeta(student.accessStatus).tone === "success").length;
   const pendingCount = students.length - grantedCount;
 
   return (
     <ProtectedAdminShell nextPath="/admin/hoc-vien">
       <div className="mx-auto max-w-7xl">
-        <p className="text-sm font-semibold text-[#c77b20]">Admin</p>
-        <h1 className="mt-4 text-5xl font-black tracking-[-0.04em]">
-          Quản lý học viên.
-        </h1>
-        <p className="mt-4 max-w-3xl text-lg leading-8 text-black/60">
-          Dữ liệu học viên được tổng hợp từ đơn hàng thật và hồ sơ tư vấn. Đơn đã thanh toán
-          sẽ tự trở thành quyền học, cùng email đăng nhập của học viên trong dashboard.
-        </p>
+        <AdminPageHeader
+          eyebrow="Student success"
+          title="Quản lý học viên"
+          description="Tổng hợp học viên từ đơn hàng thật và hồ sơ tư vấn, giúp admin kiểm tra quyền học, khóa đã mua và trạng thái thanh toán."
+        />
 
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
-          <SoftCard>
-            <p className="text-sm font-semibold text-black/45">Tổng hồ sơ</p>
-            <p className="mt-3 text-4xl font-black">{students.length}</p>
-          </SoftCard>
-          <SoftCard>
-            <p className="text-sm font-semibold text-black/45">Có quyền học</p>
-            <p className="mt-3 text-4xl font-black text-[#2f8f62]">{grantedCount}</p>
-          </SoftCard>
-          <SoftCard>
-            <p className="text-sm font-semibold text-black/45">Chờ xử lý</p>
-            <p className="mt-3 text-4xl font-black text-[#c77b20]">{pendingCount}</p>
-          </SoftCard>
-        </div>
+        <section className="mt-6 grid gap-3 md:grid-cols-3">
+          <AdminPanel className="p-4">
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-black/38">Tổng hồ sơ</p>
+            <p className="mt-2 text-3xl font-black">{students.length}</p>
+          </AdminPanel>
+          <AdminPanel className="p-4">
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-black/38">Có quyền học</p>
+            <p className="mt-2 text-3xl font-black text-[#1f7a4d]">{grantedCount}</p>
+          </AdminPanel>
+          <AdminPanel className="p-4">
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-black/38">Chờ xử lý</p>
+            <p className="mt-2 text-3xl font-black text-[#9a6418]">{pendingCount}</p>
+          </AdminPanel>
+        </section>
 
-        <SoftCard className="mt-10">
-          <p className="text-sm font-semibold text-[#c77b20]">
+        <AdminPanel className="mt-5 p-5">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-[#8f6124]">
             Tạo hồ sơ và cấp quyền
           </p>
-          <h2 className="mt-3 text-3xl font-black tracking-[-0.05em]">
-            Lưu học viên từ Facebook/Zalo vào hệ thống.
+          <h2 className="mt-2 text-xl font-black tracking-[-0.025em]">
+            Lưu học viên từ Facebook/Zalo vào hệ thống
           </h2>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-black/55">
-            Chọn “Đã thanh toán” để hệ thống tạo đơn thủ công trạng thái paid. Email trong
-            form chính là email được dùng để mở khóa học trong dashboard.
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-black/55">
+            Chọn trạng thái đã thanh toán để hệ thống tạo đơn thủ công trạng thái paid. Email trong form là email dùng để mở khóa học trong dashboard học viên.
           </p>
           <StudentIntakeForm courses={courses} />
-        </SoftCard>
+        </AdminPanel>
 
-        <SoftCard className="mt-10">
-          <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+        <AdminPanel className="mt-5 p-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-sm font-semibold text-[#c77b20]">Quyền học viên</p>
-              <h2 className="mt-3 text-3xl font-black tracking-[-0.05em]">
-                Danh sách học viên thật.
-              </h2>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#8f6124]">Access queue</p>
+              <h2 className="mt-2 text-xl font-black tracking-[-0.025em]">Danh sách học viên</h2>
             </div>
-            <p className="max-w-xl text-sm leading-6 text-black/55">
-              Dashboard học viên đọc cùng nguồn đơn hàng này, nên học viên đã thanh toán sẽ thấy
-              khóa học trong mục đã sở hữu.
-            </p>
+            <div className="flex flex-wrap gap-2">
+              <StatusBadge tone="success">Có quyền học</StatusBadge>
+              <StatusBadge tone="warning">Chờ cấp quyền</StatusBadge>
+            </div>
           </div>
 
-          <div className="mt-6 overflow-x-auto">
-            <table className="w-full min-w-[1080px] text-left text-sm">
-              <thead className="text-black/45">
-                <tr>
-                  <th className="py-3">Học viên</th>
-                  <th>Liên hệ</th>
-                  <th>Vai trò</th>
-                  <th>Quyền học</th>
-                  <th>Khóa học</th>
-                  <th>Đơn hàng</th>
-                  <th>Nguồn / ghi chú</th>
-                </tr>
-              </thead>
-              <tbody>
-                {students.length > 0 ? (
-                  students.map((student) => (
-                    <tr key={student.id} className="border-t border-black/10 align-top">
-                      <td className="py-4 font-semibold">{student.name || "Chưa có tên"}</td>
-                      <td>
-                        {student.email || "Chưa có email"}
-                        <br />
-                        <span className="text-black/50">{student.phone || "Chưa có SĐT"}</span>
-                      </td>
-                      <td>{student.role}</td>
-                      <td>
-                        <span
-                          className={`inline-flex rounded-full px-3 py-1 text-xs font-black ${
-                            student.accessStatus === "Có quyền học"
-                              ? "bg-[#e8f7ec] text-[#237a4f]"
-                              : "bg-[#f7edda] text-[#a36216]"
-                          }`}
-                        >
-                          {student.accessStatus}
-                        </span>
-                        <p className="mt-2 text-xs text-black/45">{student.paymentStatus}</p>
-                      </td>
-                      <td className="max-w-xs">
-                        {student.courseTitles.length > 0 ? student.courseTitles.join(", ") : "Chưa chọn khóa"}
-                      </td>
-                      <td>
-                        {student.paidOrderCodes.length > 0 ? (
-                          <p>Paid: {student.paidOrderCodes.join(", ")}</p>
-                        ) : null}
-                        {student.pendingOrderCodes.length > 0 ? (
-                          <p className="text-black/50">Pending: {student.pendingOrderCodes.join(", ")}</p>
-                        ) : null}
-                      </td>
-                      <td className="max-w-xs whitespace-pre-line">
-                        <span className="font-semibold">{student.source || "Admin"}</span>
-                        {student.note ? (
-                          <>
-                            <br />
-                            <span className="text-black/55">{student.note}</span>
-                          </>
-                        ) : null}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr className="border-t border-black/10">
-                    <td className="py-8 text-black/55" colSpan={7}>
-                      Chưa có đơn hàng hoặc hồ sơ học viên thật trong Supabase.
-                    </td>
+          <div className="mt-5 overflow-x-auto">
+            {students.length > 0 ? (
+              <table className="w-full min-w-[1100px] text-left text-sm">
+                <thead className="text-xs uppercase tracking-[0.12em] text-black/38">
+                  <tr>
+                    <th className="py-3">Học viên</th>
+                    <th>Liên hệ</th>
+                    <th>Vai trò</th>
+                    <th>Quyền học</th>
+                    <th>Khóa học</th>
+                    <th>Đơn hàng</th>
+                    <th>Nguồn / ghi chú</th>
+                    <th>Cập nhật</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {students.map((student) => {
+                    const status = getAccessStatusMeta(student.accessStatus);
+
+                    return (
+                      <tr key={student.id} className="border-t border-black/10 align-top">
+                        <td className="py-4 font-black">{student.name || "Chưa có tên"}</td>
+                        <td>
+                          {student.email || "Chưa có email"}
+                          <p className="mt-1 text-xs text-black/45">{student.phone || "Chưa có SĐT"}</p>
+                        </td>
+                        <td>{student.role}</td>
+                        <td>
+                          <StatusBadge tone={status.tone}>{status.label}</StatusBadge>
+                          <p className="mt-2 text-xs text-black/45">{student.paymentStatus}</p>
+                        </td>
+                        <td className="max-w-xs text-black/65">
+                          {student.courseTitles.length > 0 ? student.courseTitles.join(", ") : "Chưa chọn khóa"}
+                        </td>
+                        <td className="text-black/55">
+                          {student.paidOrderCodes.length > 0 ? <p>Paid: {student.paidOrderCodes.join(", ")}</p> : null}
+                          {student.pendingOrderCodes.length > 0 ? <p>Pending: {student.pendingOrderCodes.join(", ")}</p> : null}
+                          {student.paidOrderCodes.length === 0 && student.pendingOrderCodes.length === 0 ? "Chưa có đơn" : null}
+                        </td>
+                        <td className="max-w-xs whitespace-pre-line">
+                          <span className="font-semibold">{student.source || "Admin"}</span>
+                          {student.note ? (
+                            <>
+                              <br />
+                              <span className="text-black/55">{student.note}</span>
+                            </>
+                          ) : null}
+                        </td>
+                        <td className="text-black/50">{formatAdminDate(student.updatedAt)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            ) : (
+              <EmptyState
+                title="Chưa có hồ sơ học viên"
+                description="Khi có đơn hàng hoặc hồ sơ tạo thủ công, học viên sẽ xuất hiện trong access queue này."
+              />
+            )}
           </div>
-        </SoftCard>
+        </AdminPanel>
       </div>
     </ProtectedAdminShell>
   );

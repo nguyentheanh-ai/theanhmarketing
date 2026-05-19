@@ -19,6 +19,7 @@ export async function OrganizationJsonLd() {
   return (
     <script
       nonce={nonce}
+      suppressHydrationWarning
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
     />
@@ -43,6 +44,7 @@ export async function WebsiteJsonLd() {
   return (
     <script
       nonce={nonce}
+      suppressHydrationWarning
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
     />
@@ -77,6 +79,7 @@ export async function CourseJsonLd({ course }: { course: Course }) {
   return (
     <script
       nonce={nonce}
+      suppressHydrationWarning
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
     />
@@ -115,6 +118,7 @@ export async function ArticleJsonLd({
   return (
     <script
       nonce={nonce}
+      suppressHydrationWarning
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
     />
