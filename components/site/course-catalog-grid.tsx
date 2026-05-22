@@ -157,7 +157,7 @@ export function CourseCatalogGrid({
 
               return (
                 <article key={course.slug} className="course-catalog-card">
-                  <Link href={`/khoa-hoc/${course.slug}`} className="course-catalog-image" aria-label={course.title}>
+                  <Link href={`/khoa-hoc/${course.slug}`} className="course-catalog-image thumbnail-shine" aria-label={course.title}>
                     <span className="course-catalog-badge">{course.statusLabel || course.eyebrow}</span>
                     {imageUrl ? (
                       <Image

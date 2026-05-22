@@ -1,7 +1,9 @@
 import { BlogList } from "@/components/content/blog-list";
+import Image from "next/image";
 import { PageShell } from "@/components/site/page-shell";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { SoftCard } from "@/components/ui/soft-card";
+import { getAgentThumbnail } from "@/data/agent-thumbnails";
 import { publicPages } from "@/data/pages";
 import { getBlogPosts } from "@/services/blogService";
 import { getResources } from "@/services/resourceService";
@@ -59,6 +61,10 @@ export default async function BlogPage() {
               "fileUrl" in resource && typeof resource.fileUrl === "string" && resource.fileUrl
                 ? resource.fileUrl
                 : `/blog#${resource.slug}`;
+            const resourceThumbnail =
+              "thumbnail" in resource && typeof resource.thumbnail === "string" && resource.thumbnail
+                ? resource.thumbnail
+                : getAgentThumbnail(index + 3);
 
             return (
               <a
@@ -71,10 +77,14 @@ export default async function BlogPage() {
                   <small>{String(index + 1).padStart(2, "0")}</small>
                 </div>
                 <h3>{resource.title}</h3>
-                <div className="workflow-mini-diagram" aria-hidden="true">
-                  <i />
-                  <i />
-                  <i />
+                <div className="workflow-resource-thumbnail thumbnail-shine">
+                  <Image
+                    src={resourceThumbnail}
+                    alt={`Thumbnail ${resource.title}`}
+                    fill
+                    sizes="(min-width: 768px) 30vw, 92vw"
+                    unoptimized
+                  />
                 </div>
                 <p>{resource.description}</p>
                 <div className="workflow-stack-row">
