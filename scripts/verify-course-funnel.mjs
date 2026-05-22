@@ -7,6 +7,7 @@ const coursesSource = await readFile(path.join(root, "data/courses.ts"), "utf8")
 const marketingSource = await readFile(path.join(root, "data/marketing-courses.ts"), "utf8");
 const coursesPageSource = await readFile(path.join(root, "app", "khoa-hoc", "page.tsx"), "utf8");
 const visualsSource = await readFile(path.join(root, "components", "site", "ai-os-visuals.tsx"), "utf8");
+const catalogSource = await readFile(path.join(root, "components", "site", "course-catalog-grid.tsx"), "utf8");
 
 const expectedCourses = [
   ["facebook-ads-2026", "Quảng cáo Facebook Master 2026", "99K", "quang-cao-facebook-master-2026.webp"],
@@ -61,7 +62,19 @@ if (!coursesPageSource.includes('variant="catalog"')) {
 }
 
 for (const token of ["course-catalog-image", "course-catalog-price-row", "course-catalog-actions"]) {
-  if (!visualsSource.includes(token)) failures.push(`Missing catalog UI token: ${token}`);
+  if (!catalogSource.includes(token)) failures.push(`Missing catalog UI token: ${token}`);
+}
+
+for (const token of ["useState", "filteredCourses", "priceRanges", "setFilter"]) {
+  if (!catalogSource.includes(token)) failures.push(`Missing interactive filter token: ${token}`);
+}
+
+if (!visualsSource.includes("CourseCatalogGrid")) {
+  failures.push("Module catalog is not using the interactive catalog component");
+}
+
+if (catalogSource.includes("Sắp xếp theo")) {
+  failures.push("Course catalog still shows the right-side sort label");
 }
 
 if (failures.length > 0) {
