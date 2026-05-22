@@ -18,18 +18,20 @@ export default async function CoursesPage() {
 
   return (
     <PageShell>
-      <section className="ai-shell pb-16 pt-24 text-center sm:pt-28">
-        <p className="ai-kicker">{page.eyebrow}</p>
-        <h1 className="ai-glow-text mx-auto mt-5 max-w-5xl text-5xl font-black leading-[1.02] tracking-[-0.04em] sm:text-7xl">
-          {page.title}
-        </h1>
-        <p className="ai-muted mx-auto mt-5 max-w-3xl text-lg leading-8">
+      <section className="ai-shell grid gap-5 pb-8 pt-12 text-left sm:pt-14 md:grid-cols-[minmax(0,1fr)_420px] md:items-end">
+        <div>
+          <p className="ai-kicker">{page.eyebrow}</p>
+          <h1 className="ai-glow-text mt-4 max-w-4xl text-4xl font-black leading-[1.04] tracking-[-0.04em] sm:text-5xl">
+            {page.title}
+          </h1>
+        </div>
+        <p className="ai-muted max-w-3xl text-base leading-7 md:pb-2">
           {page.description}
         </p>
       </section>
 
       <section className="ai-shell pb-20">
-        <ModuleCatalogGrid courses={courses} />
+        <ModuleCatalogGrid courses={courses} variant="catalog" />
       </section>
     </PageShell>
   );

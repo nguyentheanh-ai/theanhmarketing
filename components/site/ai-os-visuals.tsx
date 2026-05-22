@@ -338,8 +338,93 @@ export function EcosystemFeatureGrid() {
   );
 }
 
-export function ModuleCatalogGrid({ courses, limit }: { courses: Course[]; limit?: number }) {
+export function ModuleCatalogGrid({
+  courses,
+  limit,
+  variant = "os",
+}: {
+  courses: Course[];
+  limit?: number;
+  variant?: "os" | "catalog";
+}) {
   const visibleCourses = typeof limit === "number" ? courses.slice(0, limit) : courses;
+
+  if (variant === "catalog") {
+    return (
+      <div className="course-catalog-shell">
+        <aside className="course-catalog-filters" aria-label="Bộ lọc khóa học">
+          <div className="course-catalog-filter-head">
+            <span>⚙</span>
+            <strong>Bộ lọc</strong>
+          </div>
+          {["Cấp độ", "Loại sản phẩm", "Học phí"].map((item) => (
+            <button key={item} type="button" className="course-catalog-filter-row">
+              <span>{item}</span>
+              <span aria-hidden="true">⌄</span>
+            </button>
+          ))}
+        </aside>
+
+        <div className="course-catalog-main">
+          <div className="course-catalog-toolbar">
+            <span>{visibleCourses.length} chương trình trong AI Growth Course Funnel</span>
+            <strong>Sắp xếp theo: Ngày, từ mới đến cũ</strong>
+          </div>
+
+          <div className="course-catalog-grid">
+            {visibleCourses.map((course, index) => {
+              const imageUrl = getCourseImage(course);
+              const lessonCount = getCourseLessonCount(course);
+
+              return (
+                <article key={course.slug} className="course-catalog-card">
+                  <Link href={`/khoa-hoc/${course.slug}`} className="course-catalog-image" aria-label={course.title}>
+                    <span className="course-catalog-badge">{course.statusLabel || course.eyebrow}</span>
+                    {imageUrl ? (
+                      <Image
+                        src={imageUrl}
+                        alt={course.thumbnailLabel || course.title}
+                        fill
+                        sizes="(min-width: 1280px) 390px, (min-width: 768px) 45vw, 92vw"
+                        priority={index < 3}
+                        unoptimized
+                      />
+                    ) : (
+                      <WorkflowPreview variant={index} />
+                    )}
+                  </Link>
+
+                  <div className="course-catalog-content">
+                    <Link href={`/khoa-hoc/${course.slug}`} className="course-catalog-title">
+                      {course.title}
+                    </Link>
+                    <div className="course-catalog-meta">
+                      <span>{course.level}</span>
+                      <span>{lessonCount} bài học</span>
+                    </div>
+                    <div className="course-catalog-price-row">
+                      <strong>{course.price}</strong>
+                      {course.originalPrice ? <span>{course.originalPrice}</span> : null}
+                    </div>
+                    <div className="course-catalog-actions">
+                      <AddToCartButton
+                        slug={course.slug}
+                        title={course.title}
+                        price={course.price}
+                        label="Thêm giỏ"
+                        className="course-catalog-cart"
+                      />
+                      <Link href={`/khoa-hoc/${course.slug}`}>Chi tiết</Link>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="module-catalog-grid">
