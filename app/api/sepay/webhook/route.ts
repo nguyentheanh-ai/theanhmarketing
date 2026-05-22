@@ -44,9 +44,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    const order = await confirmOrderFromSepay(payload);
+    await confirmOrderFromSepay(payload);
 
-    return NextResponse.json({ success: true, orderCode: order.orderCode });
+    return NextResponse.json({ success: true });
   } catch (error) {
     logSecurityEvent({
       action: "sepay_webhook_rejected",

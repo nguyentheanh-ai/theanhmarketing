@@ -27,7 +27,7 @@ SEPAY_WEBHOOK_API_KEY=your-sepay-webhook-api-key
 Configure this URL in Sepay:
 
 ```txt
-https://www.your-domain.com/api/sepay/webhook
+https://www.theanhmarketing.com/api/sepay/webhook
 ```
 
 Important: avoid a URL that redirects (3xx).  

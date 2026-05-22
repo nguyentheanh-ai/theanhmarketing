@@ -130,8 +130,20 @@ export function parseVndAmount(value: string | number | null | undefined) {
     return Math.max(0, Math.round(value));
   }
 
-  const digits = String(value ?? "").replace(/[^\d]/g, "");
-  return digits ? Number(digits) : 0;
+  const rawValue = String(value ?? "").trim();
+  const digits = rawValue.replace(/[^\d]/g, "");
+
+  if (!digits) {
+    return 0;
+  }
+
+  const amount = Number(digits);
+
+  if (/[kK]/.test(rawValue)) {
+    return amount * 1000;
+  }
+
+  return amount;
 }
 
 export function formatVnd(value: string | number | null | undefined) {
@@ -157,8 +169,15 @@ export function verifySepayApiKey(headers: Headers) {
     return process.env.NODE_ENV === "development";
   }
 
-  const authorization = headers.get("authorization") ?? "";
-  return safeEqual(authorization, `Apikey ${webhookApiKey}`);
+  const authorization = headers.get("authorization")?.trim() ?? "";
+  const [scheme, ...rest] = authorization.split(/\s+/);
+  const receivedKey = rest.join(" ");
+
+  if (scheme.toLowerCase() !== "apikey" || !receivedKey) {
+    return false;
+  }
+
+  return safeEqual(receivedKey, webhookApiKey);
 }
 
 export function isSepayAccountMatched(payload: SepayWebhookPayload) {
