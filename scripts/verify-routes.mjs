@@ -7,6 +7,8 @@ const routes = [
   "/khoa-hoc",
   "/workshop",
   "/doi-tac",
+  "/academy",
+  "/academy/facebook-ads-master-2026",
   "/khoa-hoc/facebook-ads-2026",
   "/khoa-hoc/ai-agent-master-2026",
   "/blog",

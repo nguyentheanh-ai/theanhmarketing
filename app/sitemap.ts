@@ -13,6 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/workshop",
     "/doi-tac",
     "/blog",
+    "/academy/facebook-ads-master-2026",
     "/hoc-vien",
     "/lien-he",
   ];
@@ -24,6 +25,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${siteConfig.url}${route}`,
     lastModified: new Date(),
     changeFrequency: route === "" ? "weekly" : "monthly",
-    priority: route === "" ? 1 : route.startsWith("/khoa-hoc") ? 0.9 : 0.7,
+    priority: route === "" ? 1 : route.startsWith("/academy") || route.startsWith("/khoa-hoc") ? 0.9 : 0.7,
   }));
 }
