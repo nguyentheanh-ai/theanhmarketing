@@ -11,6 +11,12 @@ export const agentThumbnails = [
   "/blog-thumbnails/agent-10.webp",
 ];
 
+export const agentThumbnailCards = agentThumbnails.map((thumbnail, index) => ({
+  id: `agent-thumbnail-${String(index + 1).padStart(2, "0")}`,
+  thumbnail,
+  label: `Agent workflow ${String(index + 1).padStart(2, "0")}`,
+}));
+
 export function getAgentThumbnail(index: number) {
   return agentThumbnails[index % agentThumbnails.length] ?? agentThumbnails[0];
 }

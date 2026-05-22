@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AgentThumbnailGallery } from "@/components/content/agent-thumbnail-gallery";
 import { PageShell } from "@/components/site/page-shell";
 import {
   ContentOsDashboardMockup,
@@ -11,19 +11,16 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { SoftCard } from "@/components/ui/soft-card";
 import { getCourses } from "@/services/courseService";
-import { getResources } from "@/services/resourceService";
 import { getTestimonials } from "@/services/testimonialService";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [courses, resources, testimonials] = await Promise.all([
+  const [courses, testimonials] = await Promise.all([
     getCourses(),
-    getResources(),
     getTestimonials(),
   ]);
   const featuredCourses = courses.slice(0, 6);
-  const featuredResources = resources.slice(0, 3);
   const featuredTestimonials = testimonials.slice(0, 4);
 
   return (
@@ -81,37 +78,42 @@ export default async function Home() {
       </section>
 
       <section className="ai-shell py-16">
-        <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <div>
-            <SectionHeading
-              eyebrow="Proof content hub"
-              title="AI Growth Knowledge Hub"
-              description="Blog và tài liệu được gom lại thành một thư viện để bạn chẩn đoán vấn đề, học framework và lấy workflow triển khai nhanh."
-            />
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              {featuredTestimonials.map((item) => (
-                <SoftCard key={`${item.name}-${item.quote}`} className="p-5">
-                  <p className="text-sm leading-6 text-white/70">&ldquo;{item.quote}&rdquo;</p>
-                  <p className="mt-4 font-black">{item.name}</p>
-                  <p className="text-xs text-white/45">{item.title}</p>
-                </SoftCard>
-              ))}
+        <div className="grid gap-6">
+          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+            <div>
+              <SectionHeading
+                eyebrow="Proof content hub"
+                title="AI Growth Knowledge Hub"
+                description="Blog và tài liệu được gom lại thành một thư viện để bạn chẩn đoán vấn đề, học framework và lấy workflow triển khai nhanh."
+              />
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                {featuredTestimonials.map((item) => (
+                  <SoftCard key={`${item.name}-${item.quote}`} className="p-5">
+                    <p className="text-sm leading-6 text-white/70">&ldquo;{item.quote}&rdquo;</p>
+                    <p className="mt-4 font-black">{item.name}</p>
+                    <p className="text-xs text-white/45">{item.title}</p>
+                  </SoftCard>
+                ))}
+              </div>
             </div>
+            <SoftCard>
+              <p className="ai-kicker">Content pillar</p>
+              <p className="ai-muted mt-4 text-lg leading-8">
+                Nội dung đi theo 5 trụ cột: AI Growth System, AI Automation, Performance Ads, Funnel Psychology và Solopreneur Scale.
+              </p>
+            </SoftCard>
           </div>
-          <div className="ai-panel-strong p-5">
+
+          <div className="ai-panel-strong min-w-0 overflow-hidden p-6 sm:p-8">
             <p className="ai-kicker">Media hub</p>
             <h3 className="mt-3 text-3xl font-black">Toolkit đang dùng trong thực tế</h3>
-            <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              {featuredResources.map((item) => (
-                <Link key={item.slug} href="/blog#tai-lieu" className="rounded-xl border border-white/10 bg-white/7 p-4 transition hover:border-[#77d7ff]/35">
-                  <div className="grid aspect-[9/13] place-items-center rounded-lg bg-black/35">
-                    <span className="grid size-12 place-items-center rounded-full bg-[#159cfb] text-xl">▶</span>
-                  </div>
-                  <p className="mt-4 font-black">{item.title}</p>
-                  <p className="mt-1 text-xs text-white/45">{item.type}</p>
-                </Link>
-              ))}
-            </div>
+            <p className="ai-muted mt-3 max-w-2xl leading-7">
+              Các agent workflow được đóng gói để đội nhóm marketing triển khai nhanh: nghiên cứu, lập kịch bản, phân tích đối thủ và tối ưu ads.
+            </p>
+            <AgentThumbnailGallery
+              className="mt-8"
+              source="home-media-hub"
+            />
           </div>
         </div>
       </section>

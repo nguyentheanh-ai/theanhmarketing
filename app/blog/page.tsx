@@ -1,11 +1,10 @@
-import { BlogList } from "@/components/content/blog-list";
 import Image from "next/image";
+import { BlogList } from "@/components/content/blog-list";
 import { PageShell } from "@/components/site/page-shell";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { SoftCard } from "@/components/ui/soft-card";
 import { getAgentThumbnail } from "@/data/agent-thumbnails";
 import { publicPages } from "@/data/pages";
-import { getBlogPosts } from "@/services/blogService";
 import { getResources } from "@/services/resourceService";
 import type { Metadata } from "next";
 
@@ -19,10 +18,7 @@ export const dynamic = "force-dynamic";
 
 export default async function BlogPage() {
   const page = publicPages.blog;
-  const [posts, resources] = await Promise.all([getBlogPosts(), getResources()]);
-  const categories = Array.from(
-    new Set([page.categories[0] ?? "Tất cả", ...posts.map((post) => post.category)]),
-  );
+  const resources = await getResources();
 
   return (
     <PageShell>
@@ -41,7 +37,8 @@ export default async function BlogPage() {
           </SoftCard>
         </div>
       </section>
-      <BlogList posts={posts} categories={categories} />
+
+      <BlogList />
 
       <section id="tai-lieu" className="ai-shell scroll-mt-28 pb-20">
         <div className="workflow-library-head">
@@ -49,7 +46,9 @@ export default async function BlogPage() {
           <h2>Toolkit, template và blueprint triển khai</h2>
           <div>
             {["Toolkit", "Checklist", "Template", "SOP"].map((item, index) => (
-              <span key={item} className={index === 0 ? "active" : ""}>{item}</span>
+              <span key={item} className={index === 0 ? "active" : ""}>
+                {item}
+              </span>
             ))}
           </div>
         </div>
