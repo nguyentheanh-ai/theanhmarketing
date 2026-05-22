@@ -6,6 +6,7 @@ export function toPublicPaymentOrder(order: PaymentOrder): PaymentOrder {
     email: "",
     phone: "",
     studentName: "",
+    paymentQrUrl: "",
     sepayReferenceCode: null,
   };
 }

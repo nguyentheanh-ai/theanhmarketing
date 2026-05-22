@@ -5,7 +5,7 @@ import { TransferDetails } from "@/components/payment/transfer-details";
 import { PageShell } from "@/components/site/page-shell";
 import { SoftCard } from "@/components/ui/soft-card";
 import {
-  createVietQrUrl,
+  createSepayQrUrl,
   getBankDisplayName,
   getSepayConfig,
   isSepayConfigured,
@@ -38,13 +38,7 @@ export default async function PaymentPage({
   const configured = isSepayConfigured();
   const transferContent = (order.sepayReferenceCode || order.orderCode).toUpperCase();
   const bankName = getBankDisplayName(sepay.bankCode);
-  const qrUrl = configured
-    ? createVietQrUrl({
-        amount: order.amount,
-        orderCode: transferContent,
-        accountName: sepay.bankAccountName,
-      })
-    : "";
+  const qrUrl = configured ? createSepayQrUrl({ amount: order.amount, orderCode: transferContent }) : "";
 
   return (
     <PageShell>
