@@ -11,34 +11,66 @@ type AcademySalesPageProps = {
   product: AcademyProduct;
 };
 
-const feedbackCards = [
+const proofImages = [
   {
-    name: "Người mới chạy ads",
-    text: "Có checklist trước khi bấm chạy, biết mình cần test gì trong 7 ngày đầu.",
-    time: "09:42",
+    src: "/course-thumbnails/quang-cao-facebook-master-2026.webp",
+    alt: "Thumbnail khóa Quảng cáo Facebook Master 2026",
   },
   {
-    name: "Tình huống chủ shop",
-    text: "Không boost bài theo cảm tính nữa, mà tách rõ hook, offer và inbox để sửa.",
-    time: "14:18",
+    src: "/blog-thumbnails/agent-03.webp",
+    alt: "Agent nghiên cứu đối thủ",
   },
   {
-    name: "Tình huống freelancer",
-    text: "Nhìn CTR, CPC, CPL là biết nên tắt, sửa hay test tiếp mẫu quảng cáo nào.",
-    time: "20:07",
+    src: "/blog-thumbnails/agent-04.webp",
+    alt: "Agent phân tích website doanh nghiệp",
+  },
+  {
+    src: "/blog-thumbnails/agent-08.webp",
+    alt: "Agent tối ưu nội dung marketing",
   },
 ];
 
-const metricCards = [
-  { label: "Creative test", value: "3 mẫu", note: "Hook, pain, CTA" },
-  { label: "Test window", value: "7 ngày", note: "Theo dõi tín hiệu" },
-  { label: "Core metrics", value: "CTR/CPL", note: "Đọc để ra quyết định" },
+const feedbackImages = [
+  "/academy/feedback/feedback-facebook-ads-01.webp",
+  "/academy/feedback/feedback-facebook-ads-02.webp",
+  "/academy/feedback/feedback-facebook-ads-03.webp",
+  "/academy/feedback/feedback-facebook-ads-04.webp",
+  "/academy/feedback/feedback-facebook-ads-05.webp",
+  "/academy/feedback/feedback-facebook-ads-06.webp",
+];
+
+const resultCards = [
+  { label: "Bài test đầu tiên", value: "3 mẫu ads", note: "Hook, pain, CTA rõ ràng" },
+  { label: "Thời gian theo dõi", value: "3-7 ngày", note: "Không đổi lung tung mỗi ngày" },
+  { label: "Chỉ số nền tảng", value: "CTR / CPC / CPL", note: "Biết nên giữ, sửa hay tắt" },
+];
+
+const oldNewRows = [
+  {
+    old: "Boost bài theo cảm tính, thấy bài nào đẹp thì bấm chạy.",
+    current: "Chuẩn bị offer, insight, hook và checklist trước khi chạy.",
+  },
+  {
+    old: "Đổi target, đổi ngân sách liên tục nhưng không biết lỗi ở đâu.",
+    current: "Test 3 mẫu quảng cáo trong một khung 3-7 ngày rồi đọc tín hiệu.",
+  },
+  {
+    old: "Có tin nhắn nhưng khách hỏi rồi im, không biết sửa content hay inbox.",
+    current: "Tách rõ vấn đề ở content, offer, campaign hoặc bước tư vấn.",
+  },
+];
+
+const guaranteeBullets = [
+  "Thanh toán xong hệ thống tạo đơn và mã QR tự động.",
+  "Email dùng khi mua là email nhận quyền học.",
+  "Nếu gặp lỗi kích hoạt, The Anh Marketing kiểm tra đơn và hỗ trợ thủ công.",
 ];
 
 export function AcademySalesPage({ product }: AcademySalesPageProps) {
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [openFaq, setOpenFaq] = useState(0);
 
   useEffect(() => {
     trackMarketingEvent("ViewContent", {
@@ -110,123 +142,168 @@ export function AcademySalesPage({ product }: AcademySalesPageProps) {
       content_name: product.title,
       source: "academy_cta",
     });
-    document.getElementById("academy-checkout")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("academy-checkout")?.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   return (
-    <main className="academy-page">
-      <header className="academy-header">
-        <Link href="/" className="academy-brand" aria-label="The Anh Marketing">
+    <main className="academy-ldp">
+      <section className="academy-ldp-hero">
+        <Link href="/" className="academy-ldp-logo" aria-label="The Anh Marketing">
           TA<span>.</span>
         </Link>
-        <nav aria-label="Landing page">
-          <a href="#mechanism">Cơ chế</a>
-          <a href="#curriculum">Nội dung</a>
-          <a href="#offer">Học phí</a>
-        </nav>
-        <button type="button" onClick={scrollToCheckout}>
-          {product.price}
-        </button>
-      </header>
+        <p className="academy-ldp-topline">
+          Dành cho chủ shop nhỏ, người mới chạy ads, freelancer và marketer junior muốn bắt đầu đúng hệ thống.
+        </p>
+        <h1>
+          <span>Quảng cáo Facebook Master 2026:</span> từ chạy ads mò mẫm thành
+          <mark> AI Ads Engine có dữ liệu</mark>
+        </h1>
+        <p className="academy-ldp-subtitle">
+          Lấy lại sự rõ ràng trước khi đổ ngân sách: biết chuẩn bị offer, viết content ads, setup chiến dịch cơ bản và đọc chỉ số để ra quyết định.
+        </p>
+      </section>
 
-      <section className="academy-hero">
-        <div className="academy-hero-copy">
-          <p className="academy-kicker">{product.eyebrow}</p>
-          <p className="academy-badge">{product.badge}</p>
-          <h1>{product.headline}</h1>
-          <p className="academy-lead">{product.subheadline}</p>
-          <div className="academy-actions">
-            <button type="button" onClick={scrollToCheckout}>
-              {product.primaryCta}
-            </button>
-            <a href="#curriculum">{product.secondaryCta}</a>
+      <section className="academy-ldp-abovefold">
+        <div className="academy-ldp-video-card">
+          <p className="academy-ldp-card-label">Bật âm thanh và xem demo</p>
+          <div className="academy-ldp-video-frame">
+            <div className="academy-ldp-screen">
+              <Image src={product.thumbnail} alt={product.title} fill sizes="(min-width: 1024px) 48vw, 94vw" priority unoptimized />
+              <button type="button" onClick={scrollToCheckout} aria-label="Đăng ký khóa học">
+                <span />
+              </button>
+            </div>
+            <div className="academy-ldp-presenter">
+              <Image src="/academy/the-anh-cutout.webp" alt="The Anh Marketing" fill sizes="180px" priority unoptimized />
+            </div>
           </div>
-          <div className="academy-trust-row">
-            {product.trust.map((item) => (
+          <button className="academy-ldp-main-cta" type="button" onClick={scrollToCheckout}>
+            Nhận Facebook Ads Master 2026 ngay
+          </button>
+        </div>
+
+        <aside className="academy-ldp-offer-card" id="offer">
+          <span className="academy-ldp-pill">{product.title}</span>
+          <div className="academy-ldp-proof-box">
+            <p>Kết quả sau khóa học:</p>
+            <div className="academy-ldp-mini-dashboard">
+              {resultCards.map((item) => (
+                <article key={item.label}>
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                  <small>{item.note}</small>
+                </article>
+              ))}
+            </div>
+          </div>
+          <p className="academy-ldp-copy">
+            Một khóa nhập môn để các bạn hiểu Facebook Ads theo hệ thống: insight, offer, content, campaign và data.
+          </p>
+          <div className="academy-ldp-price-row">
+            <span>{product.originalPrice}</span>
+            <strong>{product.price}</strong>
+          </div>
+          <p className="academy-ldp-price-note">Giá mở khóa cho sản phẩm tripwire trong AI Growth Course Funnel.</p>
+          <div className="academy-ldp-included">
+            <p>Bạn sẽ nhận được:</p>
+            {product.offerItems.map((item) => (
               <span key={item}>{item}</span>
             ))}
           </div>
-        </div>
-
-        <div className="academy-hero-visual">
-          <div className="academy-product-card">
-            <Image src={product.thumbnail} alt={product.title} fill sizes="(min-width: 1024px) 38vw, 92vw" priority unoptimized />
-          </div>
-          <div className="academy-dashboard-card" aria-label="Facebook Ads mini dashboard">
-            <div>
-              <span>Ads Signal</span>
-              <strong>AI Ads Engine</strong>
-            </div>
-            <div className="academy-chart-bars">
-              <i />
-              <i />
-              <i />
-              <i />
-              <i />
-            </div>
-            <p>Giữ mẫu thắng · tắt mẫu đốt tiền · sửa điểm nghẽn</p>
-          </div>
-          <div className="academy-founder-card">
-            <Image src="/academy/the-anh-cutout.webp" alt="The Anh Marketing" fill sizes="220px" priority unoptimized />
-          </div>
-        </div>
+          <CheckoutForm
+            isSubmitting={isSubmitting}
+            message={message}
+            onSubmit={handleCheckout}
+            product={product}
+          />
+        </aside>
       </section>
 
-      <section className="academy-section academy-stats">
-        {product.trust.map((item, index) => (
-          <article key={item}>
-            <strong>{String(index + 1).padStart(2, "0")}</strong>
-            <span>{item}</span>
-          </article>
-        ))}
-      </section>
-
-      <section className="academy-section academy-visual-strip">
-        <div className="academy-mini-creative">
-          <Image src={product.thumbnail} alt="Thumbnail khóa Quảng cáo Facebook Master 2026" fill sizes="320px" unoptimized />
-        </div>
-        <div className="academy-metric-grid">
-          {metricCards.map((item) => (
-            <article key={item.label}>
-              <span>{item.label}</span>
-              <strong>{item.value}</strong>
-              <p>{item.note}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="academy-section academy-split" id="pain">
+      <section className="academy-ldp-trust">
+        <p>Học nhanh, có checklist, có mẫu content ads và lộ trình học tiếp rõ ràng.</p>
         <div>
-          <p className="academy-kicker">Vấn đề</p>
-          <h2>Ads không hỏng vì thiếu nút bấm.</h2>
-          <p>{product.audience}</p>
-        </div>
-        <div className="academy-card-grid">
-          {product.pains.map((pain) => (
-            <article key={pain} className="academy-card">
-              {pain}
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="academy-section academy-opportunity">
-        <p className="academy-kicker">Opportunity</p>
-        <h2>{product.opportunity}</h2>
-        <div className="academy-flow">
-          {["Insight", "Offer", "Content", "Campaign", "Data"].map((item) => (
+          {product.trust.map((item) => (
             <span key={item}>{item}</span>
           ))}
         </div>
       </section>
 
-      <section className="academy-section" id="mechanism">
-        <div className="academy-section-head">
-          <p className="academy-kicker">Mechanism</p>
+      <section className="academy-ldp-feedback">
+        <p className="academy-ldp-kicker">Mock feedback minh họa</p>
+        <h2>Đây là kiểu vấn đề học viên thường gặp trước khi có hệ ads rõ ràng.</h2>
+        <div className="academy-ldp-feedback-grid">
+          {feedbackImages.map((src, index) => (
+            <figure key={src}>
+              <Image
+                src={src}
+                alt={`Mock feedback minh họa Facebook Ads ${index + 1}`}
+                fill
+                sizes="(min-width: 1024px) 30vw, 82vw"
+                unoptimized
+              />
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      <section className="academy-ldp-proof-wall">
+        <div>
+          <p className="academy-ldp-kicker">Proof content hub</p>
+          <h2>Không chỉ học lý thuyết. Các bạn cần nhìn được ads đang hỏng ở đâu.</h2>
+          <p>
+            Phần hình ảnh bên cạnh dùng chính asset trong hệ The Anh Marketing để minh họa cách gom creative, agent và dashboard thành một hệ vận hành.
+          </p>
+        </div>
+        <div className="academy-ldp-collage">
+          {proofImages.map((image) => (
+            <figure key={image.src}>
+              <Image src={image.src} alt={image.alt} fill sizes="(min-width: 1024px) 20vw, 44vw" unoptimized />
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      <CtaBand onClick={scrollToCheckout} text="Đăng ký ngay - chỉ 99K" />
+
+      <section className="academy-ldp-story">
+        <h2>Cách người mới chạy ads thoát khỏi vòng lặp đốt tiền.</h2>
+        <div className="academy-ldp-story-grid">
+          <p>
+            Trước đây, nhiều bạn chạy Facebook Ads bằng cảm giác: thấy người khác dùng mẫu nào thì làm theo, thấy quảng cáo không ra đơn thì đổi target, tăng giảm ngân sách hoặc tắt chiến dịch quá sớm.
+          </p>
+          <p>
+            Vấn đề không nằm ở một nút bấm. Vấn đề là các bạn chưa có một hệ nhỏ để biết: khách là ai, offer có đủ rõ không, nội dung có kéo đúng người không, campaign đang lấy tín hiệu gì và chỉ số nào nói rằng nên giữ hay nên sửa.
+          </p>
+        </div>
+      </section>
+
+      <section className="academy-ldp-compare">
+        <div className="academy-ldp-section-head">
+          <p className="academy-ldp-kicker">Before / After</p>
+          <h2>Cách làm cũ so với AI Ads Engine.</h2>
+        </div>
+        <div className="academy-ldp-compare-grid">
+          {oldNewRows.map((row) => (
+            <article key={row.old}>
+              <div>
+                <h3>Cách làm cũ:</h3>
+                <p>{row.old}</p>
+              </div>
+              <div>
+                <h3>Với AI Ads Engine:</h3>
+                <p>{row.current}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="academy-ldp-engine" id="mechanism">
+        <div className="academy-ldp-section-head">
+          <p className="academy-ldp-kicker">Mechanism</p>
           <h2>{product.mechanismTitle}</h2>
         </div>
-        <div className="academy-mechanism">
+        <div className="academy-ldp-engine-grid">
           {product.mechanism.map((item) => (
             <article key={item.step}>
               <span>{item.step}</span>
@@ -237,27 +314,15 @@ export function AcademySalesPage({ product }: AcademySalesPageProps) {
         </div>
       </section>
 
-      <section className="academy-section academy-split">
-        <div>
-          <p className="academy-kicker">Output</p>
-          <h2>Học xong phải có đầu ra.</h2>
+      <section className="academy-ldp-curriculum" id="curriculum">
+        <div className="academy-ldp-section-head">
+          <p className="academy-ldp-kicker">Lộ trình khóa học</p>
+          <h2>6 module ngắn, mỗi module có một đầu ra rõ.</h2>
         </div>
-        <div className="academy-output-list">
-          {product.outputs.map((item) => (
-            <p key={item}>{item}</p>
-          ))}
-        </div>
-      </section>
-
-      <section className="academy-section" id="curriculum">
-        <div className="academy-section-head">
-          <p className="academy-kicker">Nội dung</p>
-          <h2>6 module ngắn, học để làm ngay.</h2>
-        </div>
-        <div className="academy-curriculum">
+        <div className="academy-ldp-curriculum-list">
           {product.curriculum.map((item, index) => (
             <article key={item.title}>
-              <span>{index + 1}</span>
+              <span>Module {index + 1}</span>
               <h3>{item.title}</h3>
               <p>{item.benefit}</p>
               <strong>{item.output}</strong>
@@ -266,115 +331,125 @@ export function AcademySalesPage({ product }: AcademySalesPageProps) {
         </div>
       </section>
 
-      <section className="academy-section academy-bonus">
-        <div className="academy-section-head">
-          <p className="academy-kicker">Bonus stack</p>
-          <h2>Bonus giúp bắt tay vào chạy nhanh hơn.</h2>
+      <section className="academy-ldp-bonus">
+        <div className="academy-ldp-section-head">
+          <p className="academy-ldp-kicker">Bonus</p>
+          <h2>Và các bạn còn nhận thêm bộ tài liệu triển khai.</h2>
         </div>
-        <div className="academy-bonus-grid">
-          {product.bonuses.map((item, index) => (
-            <article key={item} className="academy-bonus-card">
+        <div className="academy-ldp-bonus-grid">
+          {product.bonuses.map((bonus, index) => (
+            <article key={bonus}>
               <span>{String(index + 1).padStart(2, "0")}</span>
-              <p>{item}</p>
+              <p>{bonus}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="academy-section academy-proof">
-        <div>
-          <p className="academy-kicker">Người thật, bối cảnh thật</p>
-          <h2>Khóa nhập môn để chạy ads có quy trình.</h2>
-          <p>
-            Các tình huống bên cạnh giúp các bạn tự soi mình đang thiếu offer, content, campaign hay dữ liệu.
-          </p>
-        </div>
-        <div className="academy-zalo-stack">
-          {feedbackCards.map((item) => (
-            <article key={item.name} className="academy-zalo-card">
-              <span>{item.time}</span>
-              <h3>{item.name}</h3>
-              <p>{item.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+      <CtaBand onClick={scrollToCheckout} text="Sở hữu Facebook Ads Master 2026 ngay" />
 
-      <section className="academy-section academy-fit">
+      <section className="academy-ldp-fit">
         <div>
-          <h2>Ai nên học / không nên học?</h2>
-          <p className="academy-kicker">Phù hợp nếu</p>
+          <p className="academy-ldp-kicker">Phù hợp nếu</p>
           {product.fit.map((item) => (
             <p key={item}>{item}</p>
           ))}
         </div>
         <div>
-          <h2>Tự lọc kỳ vọng trước khi mua.</h2>
-          <p className="academy-kicker">Không phù hợp nếu</p>
+          <p className="academy-ldp-kicker">Không phù hợp nếu</p>
           {product.notFit.map((item) => (
             <p key={item}>{item}</p>
           ))}
         </div>
       </section>
 
-      <section className="academy-section academy-offer" id="offer">
+      <section className="academy-ldp-guarantee">
+        <div className="academy-ldp-guarantee-badge">100%</div>
+        <h2>Cam kết kích hoạt quyền học sau thanh toán.</h2>
+        <p>
+          Mình không hứa các bạn chỉ cần mua là ads tự có kết quả. Điều mình cam kết là hệ thống thanh toán, tạo đơn và kích hoạt quyền học phải rõ ràng.
+        </p>
         <div>
-          <p className="academy-kicker">Offer</p>
-          <h2>{product.title}</h2>
-          <p className="academy-price">{product.price}</p>
-          <p className="academy-old-price">{product.originalPrice}</p>
-          <div className="academy-offer-list">
-            {product.offerItems.map((item) => (
-              <span key={item}>{item}</span>
-            ))}
-          </div>
-          <p className="academy-next-offer">Sau mua: {product.nextOffer}</p>
-        </div>
-        <form id="academy-checkout" className="academy-checkout" onSubmit={handleCheckout}>
-          <p className="academy-kicker">Thanh toán tự động</p>
-          <h3>Nhập thông tin để tạo mã QR SePay</h3>
-          <input name="name" placeholder="Họ và tên" required />
-          <input name="phone" placeholder="Số điện thoại/Zalo" required />
-          <input name="email" placeholder="Email nhận quyền học" required type="email" />
-          <label>
-            <input required type="checkbox" />
-            Tôi đồng ý để The Anh Marketing tạo đơn thanh toán và liên hệ hỗ trợ chương trình này.
-          </label>
-          {message ? <p className="academy-error">{message}</p> : null}
-          <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Đang tạo đơn..." : product.primaryCta}
-          </button>
-        </form>
-      </section>
-
-      <section className="academy-section">
-        <div className="academy-section-head">
-          <p className="academy-kicker">FAQ</p>
-          <h2>Câu hỏi thường gặp.</h2>
-        </div>
-        <div className="academy-faq">
-          {product.faqs.map((faq) => (
-            <article key={faq.question}>
-              <h3>{faq.question}</h3>
-              <p>{faq.answer}</p>
-            </article>
+          {guaranteeBullets.map((item) => (
+            <span key={item}>{item}</span>
           ))}
         </div>
       </section>
 
-      <section className="academy-final">
-        <h2>Bắt đầu bằng một hệ thống nhỏ, rõ và có thể đo được.</h2>
+      <section className="academy-ldp-faq">
+        <div className="academy-ldp-section-head">
+          <p className="academy-ldp-kicker">FAQ</p>
+          <h2>Câu hỏi thường gặp.</h2>
+        </div>
+        <div className="academy-ldp-faq-list">
+          {product.faqs.map((faq, index) => {
+            const isOpen = openFaq === index;
+            return (
+              <article key={faq.question}>
+                <button type="button" onClick={() => setOpenFaq(isOpen ? -1 : index)}>
+                  <span>{index + 1}. {faq.question}</span>
+                  <strong>{isOpen ? "-" : "+"}</strong>
+                </button>
+                {isOpen ? <p>{faq.answer}</p> : null}
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="academy-ldp-final">
+        <h2>Bắt đầu chạy Facebook Ads có hệ thống từ hôm nay.</h2>
         <button type="button" onClick={scrollToCheckout}>
-          {product.primaryCta}
+          Đăng ký ngay - 99K
         </button>
       </section>
 
-      <div className="academy-sticky-cta">
+      <div className="academy-ldp-sticky">
         <span>{product.shortTitle} · {product.price}</span>
         <button type="button" onClick={scrollToCheckout}>
           Đăng ký
         </button>
       </div>
     </main>
+  );
+}
+
+function CheckoutForm({
+  isSubmitting,
+  message,
+  onSubmit,
+  product,
+}: {
+  isSubmitting: boolean;
+  message: string;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  product: AcademyProduct;
+}) {
+  return (
+    <form id="academy-checkout" className="academy-ldp-checkout" onSubmit={onSubmit}>
+      <h3>Điền thông tin để sở hữu ngay</h3>
+      <p className="academy-ldp-checkout-note">Sản phẩm sẽ được kích hoạt theo email này</p>
+      <input name="name" placeholder="Tên của bạn" required />
+      <input name="email" placeholder="Email nhận quyền học" required type="email" />
+      <input name="phone" placeholder="Số điện thoại/Zalo" required />
+      <label>
+        <input required type="checkbox" />
+        Tôi đồng ý để The Anh Marketing tạo đơn thanh toán và liên hệ hỗ trợ chương trình này.
+      </label>
+      {message ? <p className="academy-ldp-error">{message}</p> : null}
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Đang tạo đơn..." : product.primaryCta}
+      </button>
+    </form>
+  );
+}
+
+function CtaBand({ onClick, text }: { onClick: () => void; text: string }) {
+  return (
+    <section className="academy-ldp-cta-band">
+      <button type="button" onClick={onClick}>
+        {text}
+      </button>
+    </section>
   );
 }
