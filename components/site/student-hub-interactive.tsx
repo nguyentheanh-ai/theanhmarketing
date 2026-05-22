@@ -41,7 +41,7 @@ const segments = [
 
 const quickLinks = [
   { label: "AI Operator Dashboard", href: "/dashboard", tags: "dashboard học khóa tiến độ growth system" },
-  { label: "Khóa Facebook Ads 2026", href: "/khoa-hoc/facebook-ads-2026", tags: "facebook ads quảng cáo khóa học" },
+  { label: "Khóa Facebook Ads 2026", href: "/hoc-chay-quang-cao-facebook-tu-so-0-tu-chay-ra-don-2026", tags: "facebook ads quảng cáo khóa học" },
   { label: "AI Growth Toolkit", href: "/blog#tai-lieu", tags: "tài liệu workflow checklist prompt sop toolkit" },
   { label: "Chẩn đoán Growth System", href: "/lien-he", tags: "hỗ trợ zalo email liên hệ tư vấn" },
 ];

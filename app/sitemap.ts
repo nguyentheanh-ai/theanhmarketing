@@ -13,18 +13,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/workshop",
     "/doi-tac",
     "/blog",
-    "/academy/facebook-ads-master-2026",
+    "/hoc-chay-quang-cao-facebook-tu-so-0-tu-chay-ra-don-2026",
     "/hoc-vien",
     "/lien-he",
   ];
 
-  const courseRoutes = courses.map((course) => `/khoa-hoc/${course.slug}`);
+  const courseRoutes = courses
+    .filter((course) => course.slug !== "facebook-ads-2026")
+    .map((course) => `/khoa-hoc/${course.slug}`);
   const blogRoutes = blogPosts.map((post) => `/blog/${post.slug}`);
 
   return [...staticRoutes, ...courseRoutes, ...blogRoutes].map((route) => ({
     url: `${siteConfig.url}${route}`,
     lastModified: new Date(),
     changeFrequency: route === "" ? "weekly" : "monthly",
-    priority: route === "" ? 1 : route.startsWith("/academy") || route.startsWith("/khoa-hoc") ? 0.9 : 0.7,
+    priority:
+      route === "" ? 1 : route.startsWith("/hoc-chay-quang-cao") || route.startsWith("/khoa-hoc") ? 0.9 : 0.7,
   }));
 }

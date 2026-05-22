@@ -17,8 +17,10 @@ const emptyFilters: ActiveFilters = {
   price: "",
 };
 
+const facebookAdsLandingPath = "/hoc-chay-quang-cao-facebook-tu-so-0-tu-chay-ra-don-2026";
+
 const priceRanges = [
-  { label: "Dưới 200K", min: 0, max: 199_000 },
+  { label: "Dưới 500K", min: 0, max: 499_000 },
   { label: "799K - 1.299K", min: 799_000, max: 1_299_000 },
   { label: "Từ 2 triệu", min: 2_000_000, max: Number.POSITIVE_INFINITY },
 ];
@@ -34,6 +36,10 @@ function parseVndPrice(price: string) {
 
 function unique(values: string[]) {
   return [...new Set(values.filter(Boolean))];
+}
+
+function getCourseHref(course: Course) {
+  return course.slug === "facebook-ads-2026" ? facebookAdsLandingPath : `/khoa-hoc/${course.slug}`;
 }
 
 export function CourseCatalogGrid({
@@ -154,10 +160,11 @@ export function CourseCatalogGrid({
             {filteredCourses.map((course, index) => {
               const imageUrl = getCourseImage(course);
               const lessonCount = getCourseLessonCount(course);
+              const courseHref = getCourseHref(course);
 
               return (
                 <article key={course.slug} className="course-catalog-card">
-                  <Link href={`/khoa-hoc/${course.slug}`} className="course-catalog-image thumbnail-shine" aria-label={course.title}>
+                  <Link href={courseHref} className="course-catalog-image thumbnail-shine" aria-label={course.title}>
                     <span className="course-catalog-badge">{course.statusLabel || course.eyebrow}</span>
                     {imageUrl ? (
                       <Image
@@ -172,7 +179,7 @@ export function CourseCatalogGrid({
                   </Link>
 
                   <div className="course-catalog-content">
-                    <Link href={`/khoa-hoc/${course.slug}`} className="course-catalog-title">
+                    <Link href={courseHref} className="course-catalog-title">
                       {course.title}
                     </Link>
                     <div className="course-catalog-meta">
@@ -184,14 +191,20 @@ export function CourseCatalogGrid({
                       {course.originalPrice ? <span>{course.originalPrice}</span> : null}
                     </div>
                     <div className="course-catalog-actions">
-                      <AddToCartButton
-                        slug={course.slug}
-                        title={course.title}
-                        price={course.price}
-                        label="Thêm giỏ"
-                        className="course-catalog-cart"
-                      />
-                      <Link href={`/khoa-hoc/${course.slug}`}>Chi tiết</Link>
+                      {course.slug === "facebook-ads-2026" ? (
+                        <Link href={courseHref} className="course-catalog-cart">
+                          Đăng ký
+                        </Link>
+                      ) : (
+                        <AddToCartButton
+                          slug={course.slug}
+                          title={course.title}
+                          price={course.price}
+                          label="Thêm giỏ"
+                          className="course-catalog-cart"
+                        />
+                      )}
+                      <Link href={courseHref}>Chi tiết</Link>
                     </div>
                   </div>
                 </article>

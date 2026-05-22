@@ -98,7 +98,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     role: "Sản phẩm mồi, kéo khách mới, dễ chốt qua quảng cáo/livestream/inbox",
     slug: "facebook-ads-2026",
     title: "Quảng cáo Facebook Master 2026",
-    price: "99K",
+    price: "399K",
     originalPrice: "799K",
     thumbnailImageUrl: "/course-thumbnails/quang-cao-facebook-master-2026.webp",
     eyebrow: "Facebook Ads",

@@ -11,7 +11,7 @@ const visualsSource = await readFile(path.join(root, "components", "site", "ai-o
 const catalogSource = await readFile(path.join(root, "components", "site", "course-catalog-grid.tsx"), "utf8");
 
 const expectedCourses = [
-  ["facebook-ads-2026", "Quảng cáo Facebook Master 2026", "99K", "quang-cao-facebook-master-2026.webp"],
+  ["facebook-ads-2026", "Quảng cáo Facebook Master 2026", "399K", "quang-cao-facebook-master-2026.webp"],
   ["tao-ai-agent-ca-nhan-x10-hieu-suat", "Tạo AI Agent cá nhân X10 hiệu suất", "99K", "tao-ai-agent-ca-nhan-x10-hieu-suat.webp"],
   ["ai-marketing-x5-hieu-suat-cong-viec", "AI Marketing x5 hiệu suất công việc", "199K", "ai-marketing-x5-hieu-suat-cong-viec.webp"],
   ["ai-agent-master-2026", "AI Agent Master 2026", "799K", "ai-agent-master-2026.webp"],
