@@ -10,7 +10,8 @@
     "verify:security": "node scripts/verify-security-env.mjs",
     "verify:security:production": "node scripts/verify-security-env.mjs --production",
     "verify:routes": "node scripts/verify-routes.mjs",
-    "verify:tracking": "node scripts/verify-tracking.mjs"
+    "verify:tracking": "node scripts/verify-tracking.mjs",
+    "verify:courses": "node scripts/verify-course-funnel.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",

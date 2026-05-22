@@ -6,12 +6,15 @@ import { getCourseLessonCount, getCourseModuleCount } from "@/data/courses";
 import { toYouTubeThumbnailUrl } from "@/lib/youtube";
 
 const moduleTitles = [
-  "AI Ads Engine",
-  "Funnel-driven Ads",
-  "AI Content Engine",
-  "AI Growth Blueprint",
-  "AI Automation Workflow",
-  "CRM/Data Operating Layer",
+  "Facebook Ads",
+  "AI Agent cá nhân",
+  "AI Marketing",
+  "AI Agent Master",
+  "Performance Marketing",
+  "Agent Kit",
+  "Knowledge Business",
+  "AI Master",
+  "Revenue Marketing",
 ];
 
 const moduleMetrics = [

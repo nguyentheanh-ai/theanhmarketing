@@ -8,7 +8,7 @@ const routes = [
   "/workshop",
   "/doi-tac",
   "/khoa-hoc/facebook-ads-2026",
-  "/khoa-hoc/marketing-online-nen-tang",
+  "/khoa-hoc/ai-agent-master-2026",
   "/blog",
   "/blog/sme-khong-thieu-tool-thieu-growth-system",
   "/tai-lieu",

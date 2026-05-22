@@ -274,6 +274,27 @@ const fallbackCourses = [
   ...baseFallbackCourses,
   ...marketingCourses.filter((course) => !baseSlugs.has(course.slug)),
 ];
+const officialFallbackBySlug = new Map(fallbackCourses.map((course) => [course.slug, course]));
+const demoCourseSlugs = new Set([
+  "marketing-online-nen-tang",
+  "ai-growth-system-program",
+  "ai-ads-engine",
+  "ai-content-engine",
+  "crm-and-data-layer",
+  "funnel-psychology-foundation",
+  "ai-solopreneur-os",
+  "ai-automation-workflow",
+  "full-funnel-campaign-strategy",
+  "marketing-operation-management",
+]);
+const demoCourseTitles = [
+  "AI Growth System Foundation",
+  "AI Growth System Program",
+  "AI Content Engine",
+  "CRM & Data Layer",
+  "Funnel Psychology Foundation",
+  "AI Solopreneur OS",
+];
 
 function toCourseStatus(status: string | null): CourseStatus {
   if (status === "coming-soon" || status === "closed" || status === "open") {
@@ -377,6 +398,48 @@ function getFallbackCourses() {
   return fallbackCourses.map((course) => normalizeCourseText(normalizeCourseTiming(course)));
 }
 
+function isDemoCourse(course: Course) {
+  return demoCourseSlugs.has(course.slug) || demoCourseTitles.some((title) => course.title.includes(title));
+}
+
+function mergeOfficialCourseMetadata(course: Course) {
+  const official = officialFallbackBySlug.get(course.slug);
+
+  if (!official) {
+    return course;
+  }
+
+  return {
+    ...course,
+    title: official.title,
+    eyebrow: official.eyebrow,
+    description: official.description,
+    shortDescription: official.shortDescription,
+    price: official.price,
+    originalPrice: official.originalPrice,
+    status: official.status,
+    statusLabel: official.statusLabel,
+    ctaText: official.ctaText,
+    duration: official.duration,
+    level: official.level,
+    format: official.format,
+    bannerImageUrl: official.bannerImageUrl,
+    thumbnailImageUrl: official.thumbnailImageUrl,
+    thumbnailLabel: official.thumbnailLabel,
+    previewNote: official.previewNote,
+    topics: official.topics,
+    audience: official.audience,
+    outcomes: official.outcomes,
+    benefits: official.benefits,
+    includes: official.includes,
+    requirements: official.requirements,
+    instructor: official.instructor,
+    reviews: official.reviews,
+    relatedSlugs: official.relatedSlugs,
+    modules: course.modules.length > 0 ? course.modules : official.modules,
+  };
+}
+
 async function fetchCourses() {
   const supabase = createSupabaseServerClient();
 
@@ -396,7 +459,10 @@ async function fetchCourses() {
     return getFallbackCourses();
   }
 
-  let dbCourses = (data as DbCourse[]).map((course) => normalizeCourseText(normalizeCourseTiming(mapDbCourseToCourse(course))));
+  let dbCourses = (data as DbCourse[])
+    .map((course) => normalizeCourseText(normalizeCourseTiming(mapDbCourseToCourse(course))))
+    .filter((course) => !isDemoCourse(course))
+    .map(mergeOfficialCourseMetadata);
   const lessonIds = dbCourses.flatMap((course) =>
     course.modules.flatMap((module) => module.lessons.map((lesson) => lesson.id)),
   );
