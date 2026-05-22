@@ -11,6 +11,13 @@ function isLocalHost(host: string) {
   );
 }
 
+function isLadiPageRoute(pathname: string) {
+  return (
+    pathname === "/hoc-chay-quang-cao-facebook-tu-so-0-tu-chay-ra-don-2026" ||
+    pathname.startsWith("/ladipage/")
+  );
+}
+
 function buildContentSecurityPolicy(nonce: string) {
   const isDev = process.env.NODE_ENV !== "production";
   const scriptSrc = [
@@ -36,6 +43,25 @@ function buildContentSecurityPolicy(nonce: string) {
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self' mailto:",
+    "frame-ancestors 'self'",
+    "upgrade-insecure-requests",
+    "report-uri /api/security/csp-report",
+  ].join("; ");
+}
+
+function buildLadiPageContentSecurityPolicy() {
+  return [
+    "default-src 'self' https:",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://w.ladicdn.com https://s.ladicdn.com https://a.ladipage.com https://*.ladipage.com https://connect.facebook.net https://www.googletagmanager.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://w.ladicdn.com https://s.ladicdn.com",
+    "img-src 'self' data: blob: https: https://w.ladicdn.com https://s.ladicdn.com https://www.facebook.com",
+    "font-src 'self' data: https://fonts.gstatic.com https://w.ladicdn.com https://s.ladicdn.com",
+    "connect-src 'self' https: https://api1.ldpform.com https://api.sales.ldpform.net https://a.ladipage.com https://*.ladipage.com https://w.ladicdn.com https://s.ladicdn.com https://connect.facebook.net https://www.facebook.com",
+    "media-src 'self' https: blob:",
+    "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://www.facebook.com https://www.googletagmanager.com",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self' https://api1.ldpform.com https://api.sales.ldpform.net",
     "frame-ancestors 'self'",
     "upgrade-insecure-requests",
     "report-uri /api/security/csp-report",
@@ -68,7 +94,12 @@ export function proxy(request: NextRequest) {
     },
   });
 
-  response.headers.set("Content-Security-Policy", buildContentSecurityPolicy(nonce));
+  response.headers.set(
+    "Content-Security-Policy",
+    isLadiPageRoute(request.nextUrl.pathname)
+      ? buildLadiPageContentSecurityPolicy()
+      : buildContentSecurityPolicy(nonce),
+  );
 
   return response;
 }
