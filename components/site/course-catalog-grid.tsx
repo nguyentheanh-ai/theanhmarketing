@@ -45,7 +45,7 @@ export function CourseCatalogGrid({
   showFilters?: boolean;
   showToolbar?: boolean;
 }) {
-  const [openGroup, setOpenGroup] = useState<FilterKey | "">("level");
+  const [openGroup, setOpenGroup] = useState<FilterKey | "">("");
   const [filters, setFilters] = useState<ActiveFilters>(emptyFilters);
 
   const groups = useMemo(

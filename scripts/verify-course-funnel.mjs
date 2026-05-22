@@ -58,6 +58,18 @@ for (const term of demoTerms) {
   }
 }
 
+for (const oldTier of ["Giá rẻ", "Giá trung", "Giá cao"]) {
+  if (coursesSource.includes(oldTier) || catalogSource.includes(oldTier)) {
+    failures.push(`Old funnel price tier is still public: ${oldTier}`);
+  }
+}
+
+for (const learningLevel of ["Cơ bản", "Nâng cao", "Chuyên sâu"]) {
+  if (!coursesSource.includes(`tier: "${learningLevel}"`)) {
+    failures.push(`Missing learning level: ${learningLevel}`);
+  }
+}
+
 if (!coursesPageSource.includes('variant="catalog"')) {
   failures.push("Public course page is not using the catalog card layout");
 }

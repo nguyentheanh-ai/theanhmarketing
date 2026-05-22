@@ -18,7 +18,7 @@ export default async function CoursesPage() {
 
   return (
     <PageShell>
-      <section className="ai-shell pb-8 pt-12 text-left sm:pt-14">
+      <section className="ai-shell pb-8 pt-44 text-left sm:pt-14">
         <p className="ai-kicker">{page.eyebrow}</p>
         <h1 className="ai-glow-text mt-4 max-w-4xl text-4xl font-black leading-[1.04] tracking-[-0.04em] sm:text-5xl">
           {page.title}

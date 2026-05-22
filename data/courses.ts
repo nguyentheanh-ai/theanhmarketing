@@ -69,7 +69,7 @@ export type Course = {
   relatedSlugs: string[];
 };
 
-type FunnelTier = "Giá rẻ" | "Giá trung" | "Giá cao";
+type FunnelTier = "Cơ bản" | "Nâng cao" | "Chuyên sâu";
 
 type FunnelCourseConfig = {
   tier: FunnelTier;
@@ -94,7 +94,7 @@ const commonInstructor: CourseInstructor = {
 
 const courseFunnel: FunnelCourseConfig[] = [
   {
-    tier: "Giá rẻ",
+    tier: "Cơ bản",
     role: "Sản phẩm mồi, kéo khách mới, dễ chốt qua quảng cáo/livestream/inbox",
     slug: "facebook-ads-2026",
     title: "Quảng cáo Facebook Master 2026",
@@ -113,7 +113,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     ],
   },
   {
-    tier: "Giá rẻ",
+    tier: "Cơ bản",
     role: "Sản phẩm mồi nhóm AI",
     slug: "tao-ai-agent-ca-nhan-x10-hieu-suat",
     title: "Tạo AI Agent cá nhân X10 hiệu suất",
@@ -132,7 +132,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     ],
   },
   {
-    tier: "Giá rẻ",
+    tier: "Cơ bản",
     role: "Bước đệm lên sản phẩm AI cao hơn",
     slug: "ai-marketing-x5-hieu-suat-cong-viec",
     title: "AI Marketing x5 hiệu suất công việc",
@@ -151,7 +151,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     ],
   },
   {
-    tier: "Giá trung",
+    tier: "Nâng cao",
     role: "Sản phẩm chính để tạo doanh thu",
     slug: "ai-agent-master-2026",
     title: "AI Agent Master 2026",
@@ -170,7 +170,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     ],
   },
   {
-    tier: "Giá trung",
+    tier: "Nâng cao",
     role: "Sản phẩm chính nhóm ads/performance",
     slug: "performance-marketing-with-ai",
     title: "Performance Marketing With AI",
@@ -189,7 +189,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     ],
   },
   {
-    tier: "Giá trung",
+    tier: "Nâng cao",
     role: "Bộ công cụ/agent kit để upsell",
     slug: "bo-agent-kit-x10-hieu-suat-cong-viec",
     title: "Bộ Agent Kit X10 hiệu suất công việc",
@@ -208,7 +208,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     ],
   },
   {
-    tier: "Giá trung",
+    tier: "Nâng cao",
     role: "Sản phẩm nâng cấp, giá trị cao hơn",
     slug: "bien-tri-thuc-thanh-tien",
     title: "Biến tri thức thành tiền",
@@ -227,7 +227,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     ],
   },
   {
-    tier: "Giá trung",
+    tier: "Nâng cao",
     role: "Sản phẩm nâng cấp nhóm AI tổng quát",
     slug: "ai-master-x10-hieu-suat",
     title: "AI Master x10 hiệu suất",
@@ -246,7 +246,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     ],
   },
   {
-    tier: "Giá cao",
+    tier: "Chuyên sâu",
     role: "Flagship, bán cho người muốn kiếm tiền thật từ marketing",
     slug: "marketing-gioi-phai-kiem-duoc-tien",
     title: "Marketing giỏi phải kiếm được tiền",
