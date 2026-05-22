@@ -76,7 +76,7 @@ export default async function Home() {
           <ButtonLink href="/khoa-hoc" variant="secondary">Xem chương trình</ButtonLink>
         </div>
         <div className="mt-10">
-          <ModuleCatalogGrid courses={featuredCourses} />
+          <ModuleCatalogGrid courses={featuredCourses} variant="catalog" showFilters={false} showToolbar={false} />
         </div>
       </section>
 

@@ -1088,6 +1088,15 @@ body {
   z-index: -1;
 }
 
+.course-catalog-shell-simple {
+  grid-template-columns: 1fr;
+}
+
+.course-catalog-shell-simple::before {
+  inset: -48px -80px -72px;
+  opacity: 0.58;
+}
+
 @keyframes course-rope-flow {
   from {
     background-position: 0 0, 0 0, 0 0;

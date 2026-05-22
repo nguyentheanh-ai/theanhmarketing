@@ -36,7 +36,15 @@ function unique(values: string[]) {
   return [...new Set(values.filter(Boolean))];
 }
 
-export function CourseCatalogGrid({ courses }: { courses: Course[] }) {
+export function CourseCatalogGrid({
+  courses,
+  showFilters = true,
+  showToolbar = true,
+}: {
+  courses: Course[];
+  showFilters?: boolean;
+  showToolbar?: boolean;
+}) {
   const [openGroup, setOpenGroup] = useState<FilterKey | "">("level");
   const [filters, setFilters] = useState<ActiveFilters>(emptyFilters);
 
@@ -75,67 +83,71 @@ export function CourseCatalogGrid({ courses }: { courses: Course[] }) {
   }
 
   return (
-    <div className="course-catalog-shell">
-      <aside className="course-catalog-filters" aria-label="Bộ lọc khóa học">
-        <div className="course-catalog-filter-head">
-          <span className="course-catalog-filter-icon" aria-hidden="true" />
-          <strong>Bộ lọc</strong>
-        </div>
+    <div className={showFilters ? "course-catalog-shell" : "course-catalog-shell course-catalog-shell-simple"}>
+      {showFilters ? (
+        <aside className="course-catalog-filters" aria-label="Bộ lọc khóa học">
+          <div className="course-catalog-filter-head">
+            <span className="course-catalog-filter-icon" aria-hidden="true" />
+            <strong>Bộ lọc</strong>
+          </div>
 
-        {groups.map((group) => {
-          const isOpen = openGroup === group.key;
+          {groups.map((group) => {
+            const isOpen = openGroup === group.key;
 
-          return (
-            <div key={group.key} className="course-catalog-filter-group" data-open={isOpen}>
-              <button
-                type="button"
-                className="course-catalog-filter-row"
-                aria-expanded={isOpen}
-                onClick={() => setOpenGroup(isOpen ? "" : group.key)}
-              >
-                <span>
-                  {group.label}
-                  {filters[group.key] ? <small>{filters[group.key]}</small> : null}
-                </span>
-                <span className="course-catalog-chevron" aria-hidden="true" />
-              </button>
-
-              <div className="course-catalog-filter-options">
+            return (
+              <div key={group.key} className="course-catalog-filter-group" data-open={isOpen}>
                 <button
                   type="button"
-                  className={!filters[group.key] ? "is-active" : ""}
-                  onClick={() => setFilters((current) => ({ ...current, [group.key]: "" }))}
+                  className="course-catalog-filter-row"
+                  aria-expanded={isOpen}
+                  onClick={() => setOpenGroup(isOpen ? "" : group.key)}
                 >
-                  Tất cả
+                  <span>
+                    {group.label}
+                    {filters[group.key] ? <small>{filters[group.key]}</small> : null}
+                  </span>
+                  <span className="course-catalog-chevron" aria-hidden="true" />
                 </button>
-                {group.values.map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    className={filters[group.key] === value ? "is-active" : ""}
-                    onClick={() => setFilter(group.key, value)}
-                  >
-                    {value}
-                  </button>
-                ))}
-              </div>
-            </div>
-          );
-        })}
 
-        {hasActiveFilters ? (
-          <button type="button" className="course-catalog-clear" onClick={() => setFilters(emptyFilters)}>
-            Xóa bộ lọc
-          </button>
-        ) : null}
-      </aside>
+                <div className="course-catalog-filter-options">
+                  <button
+                    type="button"
+                    className={!filters[group.key] ? "is-active" : ""}
+                    onClick={() => setFilters((current) => ({ ...current, [group.key]: "" }))}
+                  >
+                    Tất cả
+                  </button>
+                  {group.values.map((value) => (
+                    <button
+                      key={value}
+                      type="button"
+                      className={filters[group.key] === value ? "is-active" : ""}
+                      onClick={() => setFilter(group.key, value)}
+                    >
+                      {value}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+
+          {hasActiveFilters ? (
+            <button type="button" className="course-catalog-clear" onClick={() => setFilters(emptyFilters)}>
+              Xóa bộ lọc
+            </button>
+          ) : null}
+        </aside>
+      ) : null}
 
       <div className="course-catalog-main">
-        <div className="course-catalog-toolbar">
-          <span>
-            {filteredCourses.length}/{courses.length} chương trình phù hợp
-          </span>
-        </div>
+        {showToolbar ? (
+          <div className="course-catalog-toolbar">
+            <span>
+              {filteredCourses.length}/{courses.length} chương trình phù hợp
+            </span>
+          </div>
+        ) : null}
 
         {filteredCourses.length > 0 ? (
           <div className="course-catalog-grid">

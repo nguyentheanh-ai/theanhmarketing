@@ -343,15 +343,19 @@ export function ModuleCatalogGrid({
   courses,
   limit,
   variant = "os",
+  showFilters = true,
+  showToolbar = true,
 }: {
   courses: Course[];
   limit?: number;
   variant?: "os" | "catalog";
+  showFilters?: boolean;
+  showToolbar?: boolean;
 }) {
   const visibleCourses = typeof limit === "number" ? courses.slice(0, limit) : courses;
 
   if (variant === "catalog") {
-    return <CourseCatalogGrid courses={visibleCourses} />;
+    return <CourseCatalogGrid courses={visibleCourses} showFilters={showFilters} showToolbar={showToolbar} />;
   }
 
   return (

@@ -5,6 +5,7 @@ import path from "node:path";
 const root = process.cwd();
 const coursesSource = await readFile(path.join(root, "data/courses.ts"), "utf8");
 const marketingSource = await readFile(path.join(root, "data/marketing-courses.ts"), "utf8");
+const homePageSource = await readFile(path.join(root, "app", "page.tsx"), "utf8");
 const coursesPageSource = await readFile(path.join(root, "app", "khoa-hoc", "page.tsx"), "utf8");
 const visualsSource = await readFile(path.join(root, "components", "site", "ai-os-visuals.tsx"), "utf8");
 const catalogSource = await readFile(path.join(root, "components", "site", "course-catalog-grid.tsx"), "utf8");
@@ -61,11 +62,15 @@ if (!coursesPageSource.includes('variant="catalog"')) {
   failures.push("Public course page is not using the catalog card layout");
 }
 
+if (!homePageSource.includes('variant="catalog" showFilters={false}')) {
+  failures.push("Homepage course section is not using the compact catalog layout");
+}
+
 for (const token of ["course-catalog-image", "course-catalog-price-row", "course-catalog-actions"]) {
   if (!catalogSource.includes(token)) failures.push(`Missing catalog UI token: ${token}`);
 }
 
-for (const token of ["useState", "filteredCourses", "priceRanges", "setFilter"]) {
+for (const token of ["showFilters", "showToolbar", "useState", "filteredCourses", "priceRanges", "setFilter"]) {
   if (!catalogSource.includes(token)) failures.push(`Missing interactive filter token: ${token}`);
 }
 
