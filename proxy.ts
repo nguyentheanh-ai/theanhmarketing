@@ -12,10 +12,7 @@ function isLocalHost(host: string) {
 }
 
 function isLadiPageRoute(pathname: string) {
-  return (
-    pathname === "/hoc-chay-quang-cao-facebook-tu-so-0-tu-chay-ra-don-2026" ||
-    pathname.startsWith("/ladipage/")
-  );
+  return pathname.startsWith("/ladipage/");
 }
 
 function buildContentSecurityPolicy(nonce: string) {

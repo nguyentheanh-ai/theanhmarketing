@@ -17,8 +17,6 @@ const emptyFilters: ActiveFilters = {
   price: "",
 };
 
-const facebookAdsLandingPath = "/hoc-chay-quang-cao-facebook-tu-so-0-tu-chay-ra-don-2026";
-
 const priceRanges = [
   { label: "Dưới 500K", min: 0, max: 499_000 },
   { label: "799K - 1.299K", min: 799_000, max: 1_299_000 },
@@ -39,7 +37,7 @@ function unique(values: string[]) {
 }
 
 function getCourseHref(course: Course) {
-  return course.slug === "facebook-ads-2026" ? facebookAdsLandingPath : `/khoa-hoc/${course.slug}`;
+  return `/khoa-hoc/${course.slug}`;
 }
 
 export function CourseCatalogGrid({
@@ -191,19 +189,13 @@ export function CourseCatalogGrid({
                       {course.originalPrice ? <span>{course.originalPrice}</span> : null}
                     </div>
                     <div className="course-catalog-actions">
-                      {course.slug === "facebook-ads-2026" ? (
-                        <Link href={courseHref} className="course-catalog-cart">
-                          Đăng ký
-                        </Link>
-                      ) : (
-                        <AddToCartButton
-                          slug={course.slug}
-                          title={course.title}
-                          price={course.price}
-                          label="Thêm giỏ"
-                          className="course-catalog-cart"
-                        />
-                      )}
+                      <AddToCartButton
+                        slug={course.slug}
+                        title={course.title}
+                        price={course.price}
+                        label="Thêm giỏ"
+                        className="course-catalog-cart"
+                      />
                       <Link href={courseHref}>Chi tiết</Link>
                     </div>
                   </div>

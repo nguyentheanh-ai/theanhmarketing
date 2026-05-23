@@ -108,7 +108,7 @@ export default async function BlogPostPage({
             description="Xem Facebook Ads 2026 trong AI Ads Engine hoặc mở thư viện toolkit để bắt đầu từ Growth System."
           />
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href="/hoc-chay-quang-cao-facebook-tu-so-0-tu-chay-ra-don-2026">Xem AI Ads Engine</ButtonLink>
+            <ButtonLink href="/khoa-hoc/facebook-ads-2026">Xem AI Ads Engine</ButtonLink>
             <ButtonLink href="/blog#tai-lieu" variant="secondary">
               Xem toolkit
             </ButtonLink>
