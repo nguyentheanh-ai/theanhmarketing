@@ -7,8 +7,10 @@ export function parsePrice(value: string | number | null | undefined) {
     return 0;
   }
 
+  const hasKUnit = /k/i.test(value);
   const numericValue = Number(value.replace(/[^\d]/g, ""));
-  return Number.isFinite(numericValue) && numericValue > 0 ? numericValue : 0;
+  const normalizedValue = hasKUnit ? numericValue * 1000 : numericValue;
+  return Number.isFinite(normalizedValue) && normalizedValue > 0 ? normalizedValue : 0;
 }
 
 export function formatCurrency(value: string | number | null | undefined) {
