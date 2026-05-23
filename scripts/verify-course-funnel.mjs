@@ -18,7 +18,7 @@ const expectedCourses = [
   ["performance-marketing-with-ai", "Performance Marketing With AI", "799K", "performance-marketing-with-ai.webp"],
   ["bo-agent-kit-x10-hieu-suat-cong-viec", "Bộ Agent Kit X10 hiệu suất công việc", "799K", "bo-agent-kit-x10-hieu-suat-cong-viec.webp"],
   ["bien-tri-thuc-thanh-tien", "Biến tri thức thành tiền", "1.299K", "bien-tri-thuc-thanh-tien.webp"],
-  ["ai-master-x10-hieu-suat", "AI Master x10 hiệu suất", "1.299K", "ai-master-x10-hieu-suat.webp"],
+  ["ai-master-x10-hieu-suat", "AI Master X10 hiệu suất - Biến tri thức thành tiền", "1.299K", "ai-master-x10-hieu-suat.webp"],
   ["marketing-gioi-phai-kiem-duoc-tien", "Marketing giỏi phải kiếm được tiền", "2.199K", "marketing-gioi-phai-kiem-duoc-tien.webp"],
 ];
 

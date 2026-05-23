@@ -79,6 +79,10 @@ const nextConfig: NextConfig = {
         source: "/academy/facebook-ads-master-2026",
         destination: "/academy/facebook-ads-master-2026.html",
       },
+      {
+        source: "/academy/ai-master-x10-hieu-suat",
+        destination: "/academy/ai-master-x10-hieu-suat.html",
+      },
     ];
   },
 };

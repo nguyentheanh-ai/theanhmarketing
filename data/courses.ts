@@ -228,21 +228,21 @@ const courseFunnel: FunnelCourseConfig[] = [
   },
   {
     tier: "Nâng cao",
-    role: "Sản phẩm nâng cấp nhóm AI tổng quát",
+    role: "Sản phẩm chính nhóm AI productivity và knowledge business",
     slug: "ai-master-x10-hieu-suat",
-    title: "AI Master x10 hiệu suất",
+    title: "AI Master X10 hiệu suất - Biến tri thức thành tiền",
     price: "1.299K",
     originalPrice: "3.999K",
     thumbnailImageUrl: "/course-thumbnails/ai-master-x10-hieu-suat.webp",
     eyebrow: "AI Mastery",
-    shortDescription: "Làm chủ AI để tăng hiệu suất tổng thể: tư duy, workflow, công cụ, agent và ứng dụng vào công việc thật.",
+    shortDescription: "Làm chủ AI để đóng gói tri thức, tăng tốc content, dựng landing page, tự động hóa bán hàng và biến chuyên môn thành tài sản có thể bán.",
     description:
-      "AI Master x10 hiệu suất là chương trình nâng cấp giúp bạn dùng AI như một hệ điều hành công việc: lập kế hoạch, nghiên cứu, sản xuất, phân tích, tự động hóa và quản trị tri thức.",
-    topics: ["AI Productivity", "Workflow", "Agent"],
+      "AI Master X10 hiệu suất giúp bạn dùng AI như một hệ điều hành công việc: nghiên cứu insight, đóng gói offer, sản xuất nội dung, dựng trang bán hàng, tạo workflow tự động và thương mại hóa tri thức cá nhân.",
+    topics: ["AI Productivity", "Knowledge Business", "Automation"],
     outcomes: [
-      "Thiết kế hệ điều hành AI cá nhân cho công việc.",
-      "Biết chọn công cụ và workflow theo mục tiêu thay vì chạy theo trend.",
-      "Tăng tốc nghiên cứu, sản xuất nội dung, phân tích và ra quyết định.",
+      "Thiết kế hệ điều hành AI cá nhân cho công việc và kinh doanh tri thức.",
+      "Biết biến kinh nghiệm thành offer, content, landing page và sản phẩm số có thể bán.",
+      "Tăng tốc nghiên cứu, sản xuất nội dung, tự động hóa và ra quyết định bằng workflow rõ ràng.",
     ],
   },
   {
@@ -316,6 +316,135 @@ function makeLessons(slug: string, title: string): CourseLesson[] {
   ];
 }
 
+function makeAiMasterModules(slug: string): CourseModule[] {
+  return [
+    {
+      id: `${slug}-mindset`,
+      title: "Tư duy làm chủ AI",
+      description: "Xây nền tảng dùng AI như một hệ điều hành công việc, không dùng rời rạc theo trend.",
+      order: 1,
+      lessons: [
+        {
+          id: "lesson-1",
+          title: "Bản đồ AI Master X10 và tư duy biến tri thức thành tiền",
+          duration: "Video bài học",
+          order: 1,
+          youtubeUrl: "",
+          embedUrl: "",
+          access: "free",
+          allowComments: true,
+        },
+        {
+          id: "lesson-2",
+          title: "Chọn việc cần giao cho AI và tiêu chuẩn kiểm tra đầu ra",
+          duration: "Video bài học",
+          order: 2,
+          youtubeUrl: "",
+          embedUrl: "",
+          access: "paid",
+          allowComments: true,
+        },
+      ],
+    },
+    {
+      id: `${slug}-offer-content`,
+      title: "Insight, offer và content bán hàng",
+      description: "Dùng AI nghiên cứu khách hàng, đóng gói chuyên môn và tạo nội dung đúng điểm chạm.",
+      order: 2,
+      lessons: [
+        {
+          id: "lesson-3",
+          title: "Tìm insight và nỗi đau khách hàng bằng AI",
+          duration: "Video bài học",
+          order: 1,
+          youtubeUrl: "",
+          embedUrl: "",
+          access: "paid",
+          allowComments: true,
+        },
+        {
+          id: "lesson-4",
+          title: "Đóng gói offer từ kinh nghiệm và chuyên môn cá nhân",
+          duration: "Video bài học",
+          order: 2,
+          youtubeUrl: "",
+          embedUrl: "",
+          access: "paid",
+          allowComments: true,
+        },
+        {
+          id: "lesson-5",
+          title: "Tạo hệ thống content 30 ngày đúng giọng thương hiệu",
+          duration: "Video bài học",
+          order: 3,
+          youtubeUrl: "",
+          embedUrl: "",
+          access: "paid",
+          allowComments: true,
+        },
+      ],
+    },
+    {
+      id: `${slug}-sales-system`,
+      title: "Landing page và hệ thống bán hàng",
+      description: "Biến nội dung thành trang bán hàng, kịch bản tư vấn và phễu chuyển đổi gọn nhẹ.",
+      order: 3,
+      lessons: [
+        {
+          id: "lesson-6",
+          title: "Dựng landing page bán sản phẩm tri thức với AI",
+          duration: "Video bài học",
+          order: 1,
+          youtubeUrl: "",
+          embedUrl: "",
+          access: "paid",
+          allowComments: true,
+        },
+        {
+          id: "lesson-7",
+          title: "Tạo kịch bản tư vấn, email và chăm sóc khách hàng tự động",
+          duration: "Video bài học",
+          order: 2,
+          youtubeUrl: "",
+          embedUrl: "",
+          access: "paid",
+          allowComments: true,
+        },
+      ],
+    },
+    {
+      id: `${slug}-automation`,
+      title: "Workflow, agent và tối ưu vận hành",
+      description: "Tạo prompt, checklist và agent nhỏ để lặp lại quy trình sản xuất, bán hàng và báo cáo.",
+      order: 4,
+      lessons: [
+        {
+          id: "lesson-8",
+          title: "Xây bộ prompt và workflow AI dùng lại hằng ngày",
+          duration: "Tài liệu thực hành",
+          order: 1,
+          youtubeUrl: "",
+          embedUrl: "",
+          access: "paid",
+          resources: [{ title: "AI Growth Toolkit", url: "/blog#tai-lieu" }],
+          allowComments: true,
+        },
+        {
+          id: "lesson-9",
+          title: "Checklist triển khai hệ thống AI cá nhân trong 7 ngày",
+          duration: "Tài liệu thực hành",
+          order: 2,
+          youtubeUrl: "",
+          embedUrl: "",
+          access: "paid",
+          resources: [{ title: "AI Growth Toolkit", url: "/blog#tai-lieu" }],
+          allowComments: true,
+        },
+      ],
+    },
+  ];
+}
+
 function createCourse(config: FunnelCourseConfig, index: number): Course {
   const relatedSlugs = courseFunnel
     .filter((item) => item.slug !== config.slug)
@@ -333,7 +462,7 @@ function createCourse(config: FunnelCourseConfig, index: number): Course {
     status: "open",
     statusLabel: "Đang mở đăng ký",
     ctaText: "Vào khóa học",
-    duration: "2 module",
+    duration: config.slug === "ai-master-x10-hieu-suat" ? "4 module" : "2 module",
     level: config.tier,
     updatedAt: "22/05/2026",
     format: "Video bài học + checklist + AI workflow + dashboard học viên",
@@ -365,7 +494,7 @@ function createCourse(config: FunnelCourseConfig, index: number): Course {
       "Không cần nền tảng kỹ thuật sâu.",
       "Nên hoàn thành bài học theo đúng thứ tự trong phễu.",
     ],
-    modules: [
+    modules: config.slug === "ai-master-x10-hieu-suat" ? makeAiMasterModules(config.slug) : [
       {
         id: `${config.slug}-foundation`,
         title: "Nền tảng và bản đồ triển khai",

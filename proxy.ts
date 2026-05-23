@@ -15,7 +15,9 @@ function isLadiPageRoute(pathname: string) {
   return (
     pathname.startsWith("/ladipage/") ||
     pathname === "/academy/facebook-ads-master-2026" ||
-    pathname === "/academy/facebook-ads-master-2026.html"
+    pathname === "/academy/facebook-ads-master-2026.html" ||
+    pathname === "/academy/ai-master-x10-hieu-suat" ||
+    pathname === "/academy/ai-master-x10-hieu-suat.html"
   );
 }
 

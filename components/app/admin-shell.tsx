@@ -44,9 +44,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <main className="admin-crm-shell ai-os-bg min-h-screen text-white">
-      <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-[#77d7ff]/15 bg-[#05080d]/88 p-5 text-white backdrop-blur-2xl lg:block">
-        <Link href="/admin/dashboard" className="block rounded-lg border border-[#77d7ff]/18 bg-white/[0.04] p-4">
+    <main className="min-h-screen bg-[#f5f7fb] text-slate-950">
+      <aside className="fixed inset-y-0 left-0 hidden w-72 flex-col border-r border-white/10 bg-[#080b12] p-5 text-white shadow-[18px_0_55px_rgba(15,23,42,0.18)] lg:flex">
+        <Link href="/admin/dashboard" className="block rounded-2xl border border-white/12 bg-white/[0.05] p-4">
           <span className="text-xs font-bold uppercase tracking-[0.18em] text-white/40">
             CRM Admin
           </span>
@@ -54,7 +54,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
             The Anh Marketing
           </span>
         </Link>
-        <nav className="mt-6 grid gap-6">
+
+        <nav className="mt-6 grid min-h-0 flex-1 gap-6 overflow-y-auto pr-1">
           {adminNavGroups.map((group) => (
             <div key={group.label}>
               <p className="px-3 text-xs font-bold uppercase tracking-[0.16em] text-white/35">
@@ -69,14 +70,14 @@ export function AdminShell({ children }: { children: ReactNode }) {
                       key={item.href}
                       href={item.href}
                       aria-current={isActive ? "page" : undefined}
-                      className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold transition ${
+                      className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
                         isActive
-                          ? "bg-white text-black shadow-[0_10px_30px_rgba(255,255,255,0.12)]"
+                          ? "bg-white text-slate-950 shadow-[0_12px_32px_rgba(255,255,255,0.14)]"
                           : "text-white/62 hover:bg-white/10 hover:text-white"
                       }`}
                     >
                       <span>{item.label}</span>
-                      <span className={`text-[11px] font-black ${isActive ? "text-black/35" : "text-white/25"}`}>
+                      <span className={`text-[11px] font-black ${isActive ? "text-slate-500" : "text-white/25"}`}>
                         {item.shortcut}
                       </span>
                     </Link>
@@ -86,14 +87,16 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </div>
           ))}
         </nav>
-        <div className="absolute inset-x-5 bottom-5 rounded-lg border border-[#77d7ff]/15 bg-white/[0.04] p-3">
+
+        <div className="mt-5 rounded-2xl border border-white/12 bg-white/[0.05] p-3">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/35">
             Phiên làm việc
           </p>
-          <SignOutButton mode="admin" className="mt-3 w-full rounded-md border border-white/15 px-3 py-2 text-left text-sm font-semibold text-white/65 transition hover:bg-white hover:text-black disabled:opacity-50" />
+          <SignOutButton mode="admin" className="mt-3 w-full rounded-xl border border-white/15 px-3 py-2 text-left text-sm font-semibold text-white/65 transition hover:bg-white hover:text-slate-950 disabled:opacity-50" />
         </div>
       </aside>
-      <header className="sticky top-0 z-40 border-b border-[#77d7ff]/15 bg-[#05080d]/88 px-5 py-4 backdrop-blur-xl lg:hidden">
+
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 px-5 py-4 text-slate-950 backdrop-blur-xl lg:hidden">
         <Link href="/admin/dashboard" className="font-black tracking-[-0.03em]">
           CRM Admin · The Anh
         </Link>
@@ -106,25 +109,26 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 key={item.href}
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`shrink-0 rounded-md px-4 py-2 text-sm font-semibold ${
-                  isActive ? "bg-[#159cfb] text-white" : "bg-white/8 text-white/60"
+                className={`shrink-0 rounded-xl px-4 py-2 text-sm font-semibold ${
+                  isActive ? "bg-slate-950 text-white" : "bg-slate-100 text-slate-600"
                 }`}
               >
                 {item.label}
               </Link>
             );
           })}
-          <SignOutButton mode="admin" className="shrink-0 rounded-md bg-white/8 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50" />
+          <SignOutButton mode="admin" className="shrink-0 rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 disabled:opacity-50" />
         </nav>
       </header>
+
       <section className="lg:ml-72">
-        <div className="sticky top-0 z-30 hidden border-b border-[#77d7ff]/15 bg-[#05080d]/72 px-8 py-3 backdrop-blur-xl lg:block">
+        <div className="sticky top-0 z-30 hidden border-b border-slate-200 bg-white/78 px-8 py-3 backdrop-blur-xl lg:block">
           <div className="flex items-center justify-between gap-5">
             <div className="flex min-w-0 flex-1 items-center gap-3">
-              <div className="flex h-10 w-full max-w-xl items-center rounded-lg border border-[#77d7ff]/15 bg-white/8 px-4 text-sm font-medium text-white/45">
+              <div className="flex h-10 w-full max-w-xl items-center rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-medium text-slate-400">
                 Tìm lead, đơn hàng, học viên hoặc khóa học
               </div>
-              <span className="shrink-0 rounded-lg border border-[#77d7ff]/15 bg-white/8 px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] text-white/45">
+              <span className="shrink-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-400">
                 30 ngày
               </span>
             </div>
@@ -133,7 +137,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-md border border-[#77d7ff]/15 bg-white/8 px-3 py-2 text-sm font-bold text-white/65 transition hover:border-[#77d7ff]/35 hover:text-white"
+                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 transition hover:border-slate-300 hover:text-slate-950"
                 >
                   {item.label}
                 </Link>
