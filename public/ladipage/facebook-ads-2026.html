@@ -1568,107 +1568,6 @@
         gap: 14px;
       }
 
-      .refund-section {
-        border-block: 1px solid rgba(255, 255, 255, 0.08);
-        background:
-          radial-gradient(circle at 82% 0%, rgba(246, 102, 40, 0.16), transparent 28rem),
-          rgba(8, 10, 14, 0.78);
-      }
-
-      .refund-hero {
-        max-width: 900px;
-        margin: 0 auto 24px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 28px;
-        background: rgba(24, 26, 32, 0.86);
-        padding: 42px;
-        text-align: center;
-        box-shadow: var(--shadow);
-      }
-
-      .refund-icon {
-        display: grid;
-        width: 58px;
-        height: 58px;
-        margin: 0 auto 20px;
-        place-items: center;
-        border-radius: 50%;
-        background: rgba(246, 102, 40, 0.16);
-        color: var(--primary-2);
-        font-size: 26px;
-      }
-
-      .refund-hero h2 {
-        font-size: clamp(32px, 4vw, 48px);
-      }
-
-      .refund-pills {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 26px;
-      }
-
-      .refund-pills span {
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 999px;
-        padding: 8px 12px;
-        color: var(--muted-2);
-        font-size: 13px;
-        font-weight: 800;
-      }
-
-      .refund-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 20px;
-        max-width: 900px;
-        margin: 0 auto;
-      }
-
-      .refund-card {
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 22px;
-        background: rgba(24, 26, 32, 0.78);
-        padding: 28px;
-      }
-
-      .refund-card h3 {
-        font-size: 22px;
-        font-weight: 900;
-      }
-
-      .refund-card ul {
-        display: grid;
-        gap: 13px;
-        margin: 22px 0 0;
-        padding: 0;
-        list-style: none;
-      }
-
-      .refund-card li {
-        position: relative;
-        color: var(--muted-2);
-        font-weight: 800;
-        line-height: 1.45;
-        padding-left: 28px;
-      }
-
-      .refund-card li::before {
-        position: absolute;
-        left: 0;
-        top: 1px;
-        color: var(--primary-2);
-        content: "✓";
-        font-weight: 900;
-      }
-
-      .refund-card.is-no li::before {
-        color: var(--danger);
-        content: "✕";
-      }
-
       .faq-list details p {
         padding-left: 22px;
       }
@@ -1915,8 +1814,7 @@
         .authority-grid,
         .metric-grid,
         .bonus-grid,
-        .included,
-        .refund-grid {
+        .included {
           grid-template-columns: 1fr;
         }
 
@@ -1979,8 +1877,6 @@
         }
 
         .plan-card,
-        .refund-card,
-        .refund-hero,
         .price-card,
         .form-card {
           padding: 24px;
@@ -2580,43 +2476,6 @@
                 <span>Thông tin dùng để tạo tài khoản học và hỗ trợ triển khai.</span>
               </div>
             </aside>
-          </div>
-        </section>
-
-        <section class="section refund-section" id="hoan-tien">
-          <div class="container">
-            <div class="refund-hero">
-              <div class="refund-icon" aria-hidden="true">♢</div>
-              <p class="section-kicker">Cam kết</p>
-              <h2>Hoàn tiền 100% trong 7 ngày</h2>
-              <p class="section-copy">
-                Nếu sau 7 ngày bạn cảm thấy khóa học không phù hợp, Thế Anh Marketing hoàn tiền 100% theo chính sách bên dưới.
-              </p>
-              <div class="refund-pills" aria-label="Cam kết hoàn tiền">
-                <span>Không rủi ro</span>
-                <span>Hoàn tiền nhanh trong 24h</span>
-                <span>Không cần giải thích dài dòng</span>
-              </div>
-            </div>
-            <div class="refund-grid">
-              <article class="refund-card">
-                <h3>Chính sách hoàn tiền</h3>
-                <ul>
-                  <li>Mở tài liệu và xem ít nhất 3 bài học</li>
-                  <li>Thực hiện đúng theo hướng dẫn trong khóa học</li>
-                  <li>Đã thử nghiệm ít nhất 72 giờ</li>
-                  <li>Thấy không phù hợp thì hoàn tiền 100%</li>
-                </ul>
-              </article>
-              <article class="refund-card is-no">
-                <h3>Không hoàn tiền nếu</h3>
-                <ul>
-                  <li>Mua vì tò mò, không có ý định học nghiêm túc</li>
-                  <li>Mua rồi không mở tài liệu, không thực hành</li>
-                  <li>Yêu cầu hoàn tiền sau 7 ngày hoặc thiếu thông tin đơn hàng</li>
-                </ul>
-              </article>
-            </div>
           </div>
         </section>
 
