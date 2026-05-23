@@ -69,6 +69,7 @@ export type CreatePaymentOrderInput = {
   phone: string;
   courseSlug?: string;
   courseSlugs?: string[];
+  paymentPlan?: string;
 };
 
 export type CreateManualPaidOrderInput = CreatePaymentOrderInput & {
@@ -149,6 +150,59 @@ async function resolveCourses(input: CreatePaymentOrderInput) {
   return course ? [course] : [];
 }
 
+const facebookAdsPaymentPlans: Record<string, { title: string; amount: number }> = {
+  video: {
+    title: "Gói Video 399K",
+    amount: 399000,
+  },
+  "zoom-kit": {
+    title: "Gói Hỗ Trợ 799K - Zoom lên ads + Agent kit",
+    amount: 799000,
+  },
+};
+
+function buildOrderPackage(
+  selectedCourses: Awaited<ReturnType<typeof resolveCourses>>,
+  paymentPlan?: string,
+) {
+  if (paymentPlan) {
+    const selectedCourse = selectedCourses[0];
+    const plan = facebookAdsPaymentPlans[paymentPlan];
+
+    if (selectedCourses.length !== 1 || selectedCourse?.slug !== "facebook-ads-2026" || !plan) {
+      throw new Error("Gói thanh toán không hợp lệ.");
+    }
+
+    const title = `${selectedCourse.title} - ${plan.title}`;
+
+    return {
+      amount: plan.amount,
+      courseSlug: selectedCourse.slug,
+      courseTitle: title,
+      orderItems: [
+        {
+          slug: selectedCourse.slug,
+          title,
+          price: plan.amount,
+        },
+      ],
+    };
+  }
+
+  const amount = selectedCourses.reduce((sum, course) => sum + parseVndAmount(course.price), 0);
+
+  return {
+    amount,
+    courseSlug: selectedCourses.map((course) => course.slug).join(","),
+    courseTitle: selectedCourses.map((course) => course.title).join(" | "),
+    orderItems: selectedCourses.map((course) => ({
+      slug: course.slug,
+      title: course.title,
+      price: parseVndAmount(course.price),
+    })),
+  };
+}
+
 export async function createPaymentOrder(input: CreatePaymentOrderInput) {
   const supabase = createSupabaseAdminClient();
 
@@ -162,7 +216,8 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
     throw new Error("Không tìm thấy khóa học đã chọn.");
   }
 
-  const amount = selectedCourses.reduce((sum, course) => sum + parseVndAmount(course.price), 0);
+  const orderPackage = buildOrderPackage(selectedCourses, input.paymentPlan);
+  const { amount, courseSlug, courseTitle, orderItems } = orderPackage;
 
   if (amount <= 0) {
     throw new Error("Giỏ hàng chưa có giá thanh toán hợp lệ.");
@@ -171,13 +226,6 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
   const orderCode = createOrderCode();
   const paymentQrUrl = isSepayConfigured() ? createSepayQrUrl({ amount, orderCode }) : "";
   const expiresAt = new Date(Date.now() + 20 * 60 * 1000).toISOString();
-  const courseSlug = selectedCourses.map((course) => course.slug).join(",");
-  const courseTitle = selectedCourses.map((course) => course.title).join(" | ");
-  const orderItems: OrderItem[] = selectedCourses.map((course) => ({
-    slug: course.slug,
-    title: course.title,
-    price: parseVndAmount(course.price),
-  }));
 
   const firstInsert = await supabase
     .from("orders")
@@ -245,15 +293,9 @@ export async function createManualPaidOrder(input: CreateManualPaidOrderInput) {
     throw new Error("Không tìm thấy khóa học đã chọn.");
   }
 
-  const amount = selectedCourses.reduce((sum, course) => sum + parseVndAmount(course.price), 0);
+  const orderPackage = buildOrderPackage(selectedCourses, input.paymentPlan);
+  const { amount, courseSlug, courseTitle, orderItems } = orderPackage;
   const orderCode = createOrderCode();
-  const courseSlug = selectedCourses.map((course) => course.slug).join(",");
-  const courseTitle = selectedCourses.map((course) => course.title).join(" | ");
-  const orderItems: OrderItem[] = selectedCourses.map((course) => ({
-    slug: course.slug,
-    title: course.title,
-    price: parseVndAmount(course.price),
-  }));
   const paidAt = new Date().toISOString();
 
   const firstInsert = await supabase

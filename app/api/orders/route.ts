@@ -30,12 +30,14 @@ export async function POST(request: Request) {
       phone?: string;
       courseSlug?: string;
       courseSlugs?: string[];
+      paymentPlan?: string;
     };
     const studentName = cleanText(body.studentName, 120);
     const email = cleanEmail(body.email);
     const phone = cleanPhone(body.phone);
     const courseSlug = cleanSlug(body.courseSlug);
     const courseSlugs = cleanSlugList(body.courseSlugs);
+    const paymentPlan = cleanText(body.paymentPlan, 40);
 
     if (!studentName || !email || !phone || !isValidEmail(email) || !isValidPhone(phone)) {
       return NextResponse.json(
@@ -57,6 +59,7 @@ export async function POST(request: Request) {
       phone,
       courseSlug,
       courseSlugs,
+      paymentPlan,
     });
 
     return NextResponse.json({ ok: true, order });

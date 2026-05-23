@@ -187,7 +187,9 @@
       }
 
       .btn {
+        position: relative;
         display: inline-flex;
+        overflow: hidden;
         min-height: 46px;
         align-items: center;
         justify-content: center;
@@ -204,6 +206,17 @@
           border-color 160ms ease;
       }
 
+      .btn::after {
+        position: absolute;
+        inset: -80% auto -80% -40%;
+        width: 34%;
+        pointer-events: none;
+        content: "";
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.68), transparent);
+        transform: translateX(-160%) skewX(-18deg);
+        animation: button-shine 3.8s ease-in-out infinite;
+      }
+
       .btn:hover {
         transform: translateY(-2px);
       }
@@ -218,6 +231,18 @@
         border: 1px solid rgba(255, 255, 255, 0.14);
         background: rgba(255, 255, 255, 0.05);
         color: var(--text);
+      }
+
+      @keyframes button-shine {
+        0%,
+        42% {
+          transform: translateX(-160%) skewX(-18deg);
+        }
+
+        58%,
+        100% {
+          transform: translateX(520%) skewX(-18deg);
+        }
       }
 
       .mobile-break {
@@ -543,6 +568,11 @@
         line-height: 1.65;
       }
 
+      .section-head h2:not(.gold-title) span {
+        display: block;
+        margin-top: 8px;
+      }
+
       .method-grid,
       .bonus-grid {
         display: grid;
@@ -769,6 +799,12 @@
 
       .gold-title span {
         color: var(--primary-2);
+      }
+
+      .gold-title .system-flow {
+        display: block;
+        margin-top: 10px;
+        text-align: center;
       }
 
       .deliverable-grid {
@@ -1017,24 +1053,27 @@
 
       .fit-grid {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: minmax(0, 1fr) minmax(280px, 0.86fr);
         gap: 22px;
+        max-width: 1040px;
+        margin: 0 auto;
+        align-items: start;
       }
 
       .fit-card {
         border: 1px solid rgba(255, 255, 255, 0.12);
         border-radius: 26px;
         background: rgba(24, 26, 32, 0.82);
-        padding: 28px;
+        padding: 24px;
       }
 
       .fit-card.is-no {
-        border-color: rgba(148, 155, 168, 0.28);
-        opacity: 0.9;
+        border-color: rgba(239, 68, 68, 0.24);
+        background: rgba(18, 20, 27, 0.72);
       }
 
       .fit-card h3 {
-        font-size: 30px;
+        font-size: clamp(22px, 2.2vw, 28px);
         font-weight: 900;
       }
 
@@ -1051,6 +1090,7 @@
       .authority-list li {
         position: relative;
         color: var(--muted-2);
+        font-size: 15px;
         font-weight: 800;
         line-height: 1.5;
         padding-left: 30px;
@@ -1067,8 +1107,8 @@
       }
 
       .fit-card.is-no li::before {
-        color: var(--muted);
-        content: "×";
+        color: var(--danger);
+        content: "✕";
       }
 
       .authority-grid {
@@ -1203,9 +1243,118 @@
 
       .pricing-grid {
         display: grid;
-        grid-template-columns: minmax(0, 0.9fr) minmax(360px, 0.7fr);
+        grid-template-columns: minmax(0, 1.04fr) minmax(360px, 0.66fr);
         gap: 24px;
         align-items: stretch;
+      }
+
+      .plan-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 0.78fr) minmax(0, 1fr);
+        gap: 24px;
+        align-items: stretch;
+      }
+
+      .plan-card {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 26px;
+        background: rgba(24, 26, 32, 0.82);
+        padding: 28px;
+        box-shadow: 0 18px 52px rgba(0, 0, 0, 0.22);
+      }
+
+      .plan-card.is-featured {
+        border-color: rgba(246, 102, 40, 0.36);
+        background:
+          radial-gradient(circle at 85% 8%, rgba(246, 102, 40, 0.22), transparent 18rem),
+          rgba(35, 24, 22, 0.88);
+      }
+
+      .plan-ribbon {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-2));
+        color: #170905;
+        padding: 8px 12px;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .plan-name {
+        display: block;
+        margin-top: 18px;
+        color: var(--primary-2);
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+      }
+
+      .plan-price {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      .plan-price strong {
+        color: var(--text);
+        font-size: clamp(52px, 7vw, 86px);
+        font-weight: 900;
+        line-height: 0.9;
+      }
+
+      .plan-price span {
+        color: var(--muted);
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      .plan-card p {
+        margin-top: 12px;
+        color: var(--muted-2);
+        line-height: 1.58;
+      }
+
+      .plan-features {
+        display: grid;
+        gap: 12px;
+        margin: 24px 0 0;
+        padding: 22px 0 0;
+        border-top: 1px solid var(--line);
+        list-style: none;
+      }
+
+      .plan-features li {
+        position: relative;
+        color: var(--muted-2);
+        font-size: 15px;
+        font-weight: 800;
+        line-height: 1.45;
+        padding-left: 28px;
+      }
+
+      .plan-features li::before {
+        position: absolute;
+        left: 0;
+        top: 1px;
+        color: var(--primary-2);
+        content: "✓";
+        font-weight: 900;
+      }
+
+      .plan-card .btn {
+        width: 100%;
+        margin-top: 26px;
+      }
+
+      .plan-card.is-selected {
+        box-shadow:
+          0 0 0 2px rgba(246, 102, 40, 0.5),
+          0 22px 64px rgba(246, 102, 40, 0.16);
       }
 
       .price-card {
@@ -1285,6 +1434,17 @@
         margin-top: 22px;
       }
 
+      .selected-plan-note {
+        border: 1px solid rgba(246, 102, 40, 0.18);
+        border-radius: 16px;
+        background: rgba(246, 102, 40, 0.09);
+        color: #2c160b;
+        padding: 13px 14px;
+        font-size: 14px;
+        font-weight: 900;
+        line-height: 1.4;
+      }
+
       .field {
         display: grid;
         gap: 7px;
@@ -1331,6 +1491,107 @@
       .faq-list {
         display: grid;
         gap: 14px;
+      }
+
+      .refund-section {
+        border-block: 1px solid rgba(255, 255, 255, 0.08);
+        background:
+          radial-gradient(circle at 82% 0%, rgba(246, 102, 40, 0.16), transparent 28rem),
+          rgba(8, 10, 14, 0.78);
+      }
+
+      .refund-hero {
+        max-width: 900px;
+        margin: 0 auto 24px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 28px;
+        background: rgba(24, 26, 32, 0.86);
+        padding: 42px;
+        text-align: center;
+        box-shadow: var(--shadow);
+      }
+
+      .refund-icon {
+        display: grid;
+        width: 58px;
+        height: 58px;
+        margin: 0 auto 20px;
+        place-items: center;
+        border-radius: 50%;
+        background: rgba(246, 102, 40, 0.16);
+        color: var(--primary-2);
+        font-size: 26px;
+      }
+
+      .refund-hero h2 {
+        font-size: clamp(32px, 4vw, 48px);
+      }
+
+      .refund-pills {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 26px;
+      }
+
+      .refund-pills span {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 999px;
+        padding: 8px 12px;
+        color: var(--muted-2);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .refund-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .refund-card {
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 22px;
+        background: rgba(24, 26, 32, 0.78);
+        padding: 28px;
+      }
+
+      .refund-card h3 {
+        font-size: 22px;
+        font-weight: 900;
+      }
+
+      .refund-card ul {
+        display: grid;
+        gap: 13px;
+        margin: 22px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .refund-card li {
+        position: relative;
+        color: var(--muted-2);
+        font-weight: 800;
+        line-height: 1.45;
+        padding-left: 28px;
+      }
+
+      .refund-card li::before {
+        position: absolute;
+        left: 0;
+        top: 1px;
+        color: var(--primary-2);
+        content: "✓";
+        font-weight: 900;
+      }
+
+      .refund-card.is-no li::before {
+        color: var(--danger);
+        content: "✕";
       }
 
       .faq-list details p {
@@ -1416,6 +1677,7 @@
         .timeline,
         .method-grid,
         .sales-grid,
+        .plan-grid,
         .fit-grid,
         .authority-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1491,11 +1753,13 @@
         .method-grid,
         .sales-grid,
         .mechanism-steps,
+        .plan-grid,
         .fit-grid,
         .authority-grid,
         .metric-grid,
         .bonus-grid,
-        .included {
+        .included,
+        .refund-grid {
           grid-template-columns: 1fr;
         }
 
@@ -1557,6 +1821,9 @@
           height: 42px;
         }
 
+        .plan-card,
+        .refund-card,
+        .refund-hero,
         .price-card,
         .form-card {
           padding: 24px;
@@ -1613,9 +1880,9 @@
               </div>
               <div class="hero-proof" aria-label="Điểm nổi bật khóa học">
                 <div class="stat"><strong>20+</strong><span>video bài giảng và tài liệu thực hành</span></div>
-                <div class="stat"><strong>1 buổi</strong><span>Zoom sửa ads và gỡ vướng triển khai</span></div>
+                <div class="stat"><strong>799K</strong><span>có gói kèm Zoom lên ads và Agent kit</span></div>
                 <div class="stat"><strong>2026</strong><span>cập nhật thuật toán, tracking và cách đọc số</span></div>
-                <div class="stat"><strong>399K</strong><span>học phí duy nhất để bắt đầu có hệ thống</span></div>
+                <div class="stat"><strong>399K</strong><span>gói video để bắt đầu có hệ thống</span></div>
               </div>
             </div>
 
@@ -1628,9 +1895,9 @@
               </div>
               <div class="exclusive-card">
                 <p class="eyebrow">Duy nhất chỉ có tại Thế Anh Marketing</p>
-                <h2>Bộ quà tặng đi kèm khi đăng ký khóa học</h2>
+                <h2>Quyền lợi theo từng gói học</h2>
                 <ul>
-                  <li>Tặng bộ Agent kit lên kế hoạch quảng cáo</li>
+                  <li>Gói hỗ trợ tặng bộ Agent kit lên kế hoạch quảng cáo</li>
                   <li>Tặng 7 ngày dùng thử Adsplan lên quảng cáo và đăng bài tự động</li>
                   <li>Ưu đãi giảm 5% các khóa AI Master</li>
                 </ul>
@@ -1757,7 +2024,7 @@
           <div class="container">
             <div class="section-head">
               <p class="section-kicker">Chi phí nếu không sửa</p>
-              <h2>Mất tiền ads chỉ là phần nhìn thấy. Phần nguy hiểm hơn là mất dữ liệu, mất khách và mất niềm tin vào kênh bán hàng.</h2>
+              <h2>Không chỉ mất tiền Ads <span>Mà còn mất dữ liệu - Mất cơ hội bán hàng - Mất niềm tin khách hàng</span></h2>
               <p class="section-copy">
                 Khi Facebook Ads không có hệ thống, mỗi chiến dịch thất bại không để lại bài học rõ ràng. Anh/chị không biết nên sửa offer, content, tài khoản, tệp khách hay quy trình tư vấn.
               </p>
@@ -1820,7 +2087,7 @@
           <div class="container">
             <div class="section-head">
               <p class="gold-kicker">Cơ chế học khác biệt</p>
-              <h2 class="gold-title">Không học mẹo chạy ads. Học một hệ thống <span>Offer - Content - Ads - Auto Inbox - Dashboard</span></h2>
+              <h2 class="gold-title">Không học mẹo chạy ads.<br />Học một hệ thống <span class="system-flow">Offer - Content - Ads - Auto Inbox - Dashboard</span></h2>
               <p class="section-copy">
                 Khóa này giúp anh/chị nhìn Facebook như một kênh bán hàng có quy trình. Mỗi bước đều có đầu vào, đầu ra và chỉ số để biết nên tối ưu ở đâu.
               </p>
@@ -1859,7 +2126,7 @@
           <div class="container proof-layout">
             <div class="proof-copy">
               <p class="section-kicker">Đọc số để tối ưu</p>
-              <h2>Không học quảng cáo bằng cảm giác. Học cách nhìn dữ liệu thật để biết nên sửa ở đâu.</h2>
+              <h2>Học thật - hiểu thật - Tối ưu thật</h2>
               <p class="section-copy">
                 Thay vì nghe chung chung “tối ưu quảng cáo”, anh/chị sẽ học cách nối từng chỉ số với hành động cụ thể: lỗi nằm ở offer, content, tệp khách, landing page hay quy trình tư vấn.
               </p>
@@ -2013,8 +2280,8 @@
               </article>
               <article class="panel">
                 <div class="panel-icon">✓</div>
-                <h3>1 buổi Zoom sửa ads</h3>
-                <p>Gỡ vướng thực tế để anh/chị không bị kẹt ở bước setup, đọc số hoặc ra quyết định tối ưu.</p>
+                <h3>Gói hỗ trợ Zoom lên ads</h3>
+                <p>Gỡ vướng thực tế cho anh/chị chọn gói 799.000đ: setup, đọc số và quyết định tối ưu.</p>
               </article>
             </div>
           </div>
@@ -2024,7 +2291,7 @@
           <div class="container">
             <div class="section-head">
               <p class="section-kicker">Ai nên học khóa này</p>
-              <h2>Khóa này phù hợp nhất với người muốn tự hiểu hệ thống, không chỉ giao phó tiền ads cho người khác.</h2>
+              <h2>Khóa học này phù hợp với ai</h2>
             </div>
             <div class="fit-grid">
               <article class="fit-card">
@@ -2053,13 +2320,13 @@
           <div class="container authority-grid">
             <article class="authority-panel">
               <p class="section-kicker">Vì sao học với Thế Anh Marketing</p>
-              <h2>Không chỉ học bấm nút. Anh/chị học cách xây một hệ thống bán hàng có dữ liệu.</h2>
+              <h2>Học cách xây một hệ thống bán hàng có dữ liệu.</h2>
               <p class="section-copy">
                 Điểm khác biệt của khóa nằm ở cách nối quảng cáo với Attract, Grow, Scale và CRM/Data. Facebook Ads chỉ là một phần của hệ thống, nhưng là phần rất quan trọng để kéo khách mới và tạo dữ liệu tăng trưởng.
               </p>
               <ul class="authority-list">
                 <li>Tư duy dành cho chủ doanh nghiệp: hiểu để tự triển khai hoặc quản lý người chạy ads tốt hơn.</li>
-                <li>Có checklist, prompt, dashboard và buổi Zoom sửa ads để đưa kiến thức vào triển khai thật.</li>
+                <li>Có checklist, prompt, dashboard; gói 799.000đ có thêm Zoom lên ads và Agent kit.</li>
                 <li>Nội dung cập nhật theo bối cảnh 2026: AI, tracking, tài khoản, content, inbox và dữ liệu.</li>
                 <li>Có lộ trình nâng cấp lên Performance Marketing With AI khi anh/chị muốn scale sâu hơn.</li>
               </ul>
@@ -2070,12 +2337,12 @@
                 <span>Không dùng lời hứa mơ hồ. Landing page này thể hiện rõ đầu ra: hệ thống ads, fix lỗi, skill stack và dashboard.</span>
               </div>
               <div class="proof-item">
-                <strong>Học phí entry dễ bắt đầu</strong>
-                <span>399.000đ để anh/chị nắm nền tảng trước khi đầu tư ngân sách quảng cáo hoặc thuê đội triển khai lớn hơn.</span>
+                <strong>Gói video dễ bắt đầu</strong>
+                <span>399.000đ để anh/chị học nền tảng qua video trước khi đầu tư ngân sách quảng cáo lớn hơn.</span>
               </div>
               <div class="proof-item">
-                <strong>Hỗ trợ đúng điểm kẹt</strong>
-                <span>Buổi Zoom sửa ads tập trung vào lỗi setup, lỗi đọc số và quyết định tối ưu, không chỉ học video một chiều.</span>
+                <strong>Gói 799 có hỗ trợ sâu hơn</strong>
+                <span>Thêm 1 buổi Zoom lên ads và bộ Agent kit để anh/chị triển khai nhanh hơn trên case thực tế.</span>
               </div>
               <div class="guarantee-box">
                 <strong>Cam kết học tập rõ ràng:</strong> nếu anh/chị học đúng lộ trình, hoàn thành checklist và chuẩn bị case thực tế, đội ngũ sẽ hỗ trợ gỡ vướng trong phạm vi khóa để anh/chị biết bước tiếp theo cần làm gì.
@@ -2086,27 +2353,49 @@
 
         <section id="hoc-phi" class="section pricing">
           <div class="container pricing-grid">
-            <article class="price-card">
-              <p class="eyebrow">Ưu đãi mở khóa</p>
-              <h2>Vào học hôm nay, tự dựng chiến dịch đầu tiên theo checklist.</h2>
-              <div class="big-price">399K</div>
-              <p class="price-note">
-                Học phí duy nhất: <strong>399.000đ</strong>. Tổng giá trị tài nguyên và buổi sửa ads: 3.995.000đ.
-              </p>
-              <div class="included">
-                <div>20+ video bài giảng</div>
-                <div>Checklist chạy ads 2026</div>
-                <div>Prompt AI viết content</div>
-                <div>1 buổi Zoom sửa ads</div>
-                <div>Hỗ trợ triển khai trọn đời</div>
-                <div>Upsell path lên Performance Marketing With AI</div>
-              </div>
-            </article>
+            <div class="plan-grid" aria-label="Chọn gói học Facebook Ads Master 2026">
+              <article class="plan-card is-selected" data-plan-card="video">
+                <span class="plan-name">Gói Video</span>
+                <div class="plan-price">
+                  <strong>399K</strong>
+                  <span>thanh toán 1 lần</span>
+                </div>
+                <p>Học qua video, phù hợp nếu anh/chị muốn tự học nền tảng và triển khai theo checklist.</p>
+                <ul class="plan-features">
+                  <li>20+ video bài giảng</li>
+                  <li>Checklist chạy ads 2026</li>
+                  <li>Prompt AI viết content</li>
+                  <li>Dashboard đọc chỉ số cơ bản</li>
+                  <li>Không gồm Zoom và Agent kit</li>
+                </ul>
+                <button class="btn btn-secondary" type="button" data-plan-select="video">Chọn gói 399K</button>
+              </article>
+
+              <article class="plan-card is-featured" data-plan-card="zoom-kit">
+                <span class="plan-ribbon">Gói khuyên chọn</span>
+                <span class="plan-name">Gói Hỗ Trợ</span>
+                <div class="plan-price">
+                  <strong>799K</strong>
+                  <span>video + hỗ trợ</span>
+                </div>
+                <p>Khóa 799.000đ gồm học qua video, hỗ trợ thêm 1 buổi Zoom lên ads và tặng bộ Agent kit.</p>
+                <ul class="plan-features">
+                  <li>Toàn bộ nội dung gói 399K</li>
+                  <li>1 buổi Zoom lên ads trên case thực tế</li>
+                  <li>Tặng bộ Agent kit lên kế hoạch quảng cáo</li>
+                  <li>Gợi ý hướng tối ưu sau khi xem chỉ số</li>
+                  <li>Phù hợp nếu muốn triển khai nhanh hơn</li>
+                </ul>
+                <button class="btn btn-primary" type="button" data-plan-select="zoom-kit">Chọn gói 799K</button>
+              </article>
+            </div>
 
             <aside class="form-card">
               <h3>Đăng ký và tạo QR thanh toán</h3>
-              <p>Điền thông tin, hệ thống sẽ tạo đơn 399.000đ và chuyển anh/chị sang trang thanh toán SePay.</p>
+              <p id="payment-plan-summary">Đang chọn gói Video 399.000đ. Điền thông tin, hệ thống sẽ tạo đơn và chuyển anh/chị sang trang thanh toán SePay.</p>
               <form id="payment-form" class="form">
+                <input type="hidden" name="paymentPlan" value="video" />
+                <div class="selected-plan-note" id="selected-plan-note">Gói đang chọn: Video 399.000đ - học qua video.</div>
                 <div class="field">
                   <label for="name">Họ tên</label>
                   <input id="name" name="name" type="text" autocomplete="name" required placeholder="Ví dụ: Nguyễn Văn Anh" />
@@ -2119,13 +2408,50 @@
                   <label for="phone">Số điện thoại / Zalo</label>
                   <input id="phone" name="phone" type="tel" autocomplete="tel" required placeholder="09..." />
                 </div>
-                <button class="btn btn-primary" type="submit">Đăng ký ngay - 399.000đ</button>
+                <button class="btn btn-primary" type="submit" id="payment-submit">Thanh toán gói Video - 399.000đ</button>
               </form>
               <div class="secure-note">
                 <span>Thanh toán qua QR ngân hàng, hệ thống đối soát tự động.</span>
                 <span>Thông tin dùng để tạo tài khoản học và hỗ trợ triển khai.</span>
               </div>
             </aside>
+          </div>
+        </section>
+
+        <section class="section refund-section" id="hoan-tien">
+          <div class="container">
+            <div class="refund-hero">
+              <div class="refund-icon" aria-hidden="true">♢</div>
+              <p class="section-kicker">Cam kết</p>
+              <h2>Hoàn tiền 100% trong 7 ngày</h2>
+              <p class="section-copy">
+                Nếu sau 7 ngày anh/chị cảm thấy khóa học không phù hợp, Thế Anh Marketing hoàn tiền 100% theo chính sách bên dưới.
+              </p>
+              <div class="refund-pills" aria-label="Cam kết hoàn tiền">
+                <span>Không rủi ro</span>
+                <span>Hoàn tiền nhanh trong 24h</span>
+                <span>Không cần giải thích dài dòng</span>
+              </div>
+            </div>
+            <div class="refund-grid">
+              <article class="refund-card">
+                <h3>Chính sách hoàn tiền</h3>
+                <ul>
+                  <li>Mở tài liệu và xem ít nhất 3 bài học</li>
+                  <li>Thực hiện đúng theo hướng dẫn trong khóa học</li>
+                  <li>Đã thử nghiệm ít nhất 72 giờ</li>
+                  <li>Thấy không phù hợp thì hoàn tiền 100%</li>
+                </ul>
+              </article>
+              <article class="refund-card is-no">
+                <h3>Không hoàn tiền nếu</h3>
+                <ul>
+                  <li>Mua vì tò mò, không có ý định học nghiêm túc</li>
+                  <li>Mua rồi không mở tài liệu, không thực hành</li>
+                  <li>Yêu cầu hoàn tiền sau 7 ngày hoặc thiếu thông tin đơn hàng</li>
+                </ul>
+              </article>
+            </div>
           </div>
         </section>
 
@@ -2183,7 +2509,7 @@
                   <span class="number">?</span>
                   <h3>Học xong có được hỗ trợ sửa quảng cáo không?</h3>
                 </summary>
-                <p>Có 1 buổi Zoom sửa ads và gỡ vướng triển khai. Anh/chị nên chuẩn bị case thật, ảnh setup, chỉ số hoặc câu hỏi cụ thể để buổi hỗ trợ xử lý đúng vấn đề.</p>
+                <p>Có nếu anh/chị chọn gói 799.000đ. Buổi Zoom tập trung vào case thật, ảnh setup, chỉ số hoặc câu hỏi cụ thể để xử lý đúng điểm kẹt.</p>
               </details>
               <details>
                 <summary>
@@ -2197,7 +2523,7 @@
                   <span class="number">?</span>
                   <h3>Thanh toán xong nhận quyền học thế nào?</h3>
                 </summary>
-                <p>Sau khi thanh toán 399.000đ, thông tin đăng ký dùng để tạo quyền học và hỗ trợ triển khai. Anh/chị nên điền đúng email, số điện thoại hoặc Zalo để nhận hướng dẫn.</p>
+                <p>Sau khi thanh toán, thông tin đăng ký dùng để tạo quyền học và hỗ trợ triển khai theo đúng gói đã chọn. Anh/chị nên điền đúng email, số điện thoại hoặc Zalo để nhận hướng dẫn.</p>
               </details>
             </div>
           </div>
@@ -2208,17 +2534,17 @@
             <p class="eyebrow">Facebook Ads Master 2026</p>
             <h2>Bắt đầu bằng một hệ thống nhỏ, rõ và đo được.</h2>
             <p>
-              399.000đ để anh/chị không phải mò từng video rời rạc, copy camp cảm tính và mất tiền vì không biết nhìn chỉ số nào.
+              Bắt đầu từ 399.000đ để anh/chị không phải mò từng video rời rạc, copy camp cảm tính và mất tiền vì không biết nhìn chỉ số nào.
             </p>
             <div class="hero-actions" style="justify-content: center">
-              <a class="btn btn-primary" href="#hoc-phi" data-cta>Đăng ký ngay - 399.000đ</a>
+              <a class="btn btn-primary" href="#hoc-phi" data-cta>Chọn gói học phù hợp</a>
             </div>
           </div>
         </section>
       </main>
 
       <div class="sticky-cta">
-        <a class="btn btn-primary" href="#hoc-phi" data-cta>Facebook Ads Master 2026 - 399K</a>
+        <a class="btn btn-primary" href="#hoc-phi" data-cta>Facebook Ads Master 2026 - từ 399K</a>
       </div>
       <div id="toast" class="toast" role="status" aria-live="polite"></div>
     </div>
@@ -2228,11 +2554,35 @@
         var course = {
           slug: "facebook-ads-2026",
           title: "Quảng cáo Facebook Master 2026",
-          price: "399K",
         };
+        var plans = {
+          video: {
+            id: "video",
+            label: "Gói Video",
+            price: "399K",
+            amount: 399000,
+            summary: "Đang chọn gói Video 399.000đ. Điền thông tin, hệ thống sẽ tạo đơn và chuyển anh/chị sang trang thanh toán SePay.",
+            note: "Gói đang chọn: Video 399.000đ - học qua video.",
+            submitText: "Thanh toán gói Video - 399.000đ",
+          },
+          "zoom-kit": {
+            id: "zoom-kit",
+            label: "Gói Hỗ Trợ",
+            price: "799K",
+            amount: 799000,
+            summary: "Đang chọn gói Hỗ Trợ 799.000đ: video + 1 buổi Zoom lên ads + bộ Agent kit.",
+            note: "Gói đang chọn: Hỗ Trợ 799.000đ - video, Zoom lên ads và Agent kit.",
+            submitText: "Thanh toán gói Hỗ Trợ - 799.000đ",
+          },
+        };
+        var selectedPlan = plans.video;
         var cartKey = "tam-cart-courses";
         var form = document.getElementById("payment-form");
         var toast = document.getElementById("toast");
+        var planInput = form.querySelector('[name="paymentPlan"]');
+        var planSummary = document.getElementById("payment-plan-summary");
+        var planNote = document.getElementById("selected-plan-note");
+        var submitButton = document.getElementById("payment-submit");
 
         function track(eventName, payload) {
           if (typeof window.fbq === "function") {
@@ -2244,12 +2594,31 @@
           try {
             var current = JSON.parse(localStorage.getItem(cartKey) || "[]");
             if (!Array.isArray(current)) current = [];
-            if (!current.some(function (item) { return item && item.slug === course.slug; })) {
-              current.push(course);
+            var cartItem = {
+              slug: course.slug,
+              title: course.title + " - " + selectedPlan.label,
+              price: selectedPlan.price,
+            };
+            var existingIndex = current.findIndex(function (item) { return item && item.slug === course.slug; });
+            if (existingIndex >= 0) {
+              current[existingIndex] = cartItem;
+            } else {
+              current.push(cartItem);
             }
             localStorage.setItem(cartKey, JSON.stringify(current));
             window.dispatchEvent(new CustomEvent("tam:cart-updated", { detail: "add" }));
           } catch (error) {}
+        }
+
+        function setSelectedPlan(planId) {
+          selectedPlan = plans[planId] || plans.video;
+          planInput.value = selectedPlan.id;
+          planSummary.textContent = selectedPlan.summary;
+          planNote.textContent = selectedPlan.note;
+          submitButton.textContent = selectedPlan.submitText;
+          document.querySelectorAll("[data-plan-card]").forEach(function (card) {
+            card.classList.toggle("is-selected", card.getAttribute("data-plan-card") === selectedPlan.id);
+          });
         }
 
         function showToast(message, isDanger) {
@@ -2274,8 +2643,15 @@
               content_name: course.title,
               content_category: "Facebook Ads",
               currency: "VND",
-              value: 399000,
+              value: selectedPlan.amount,
             });
+          });
+        });
+
+        document.querySelectorAll("[data-plan-select]").forEach(function (button) {
+          button.addEventListener("click", function () {
+            setSelectedPlan(button.getAttribute("data-plan-select"));
+            showToast("Đã chọn " + selectedPlan.label + " - " + selectedPlan.price + ".");
           });
         });
 
@@ -2293,19 +2669,25 @@
 
           button.disabled = true;
           button.textContent = "Đang tạo mã thanh toán...";
-          showToast("Đang tạo đơn thanh toán 399.000đ...");
+          showToast("Đang tạo đơn thanh toán " + new Intl.NumberFormat("vi-VN").format(selectedPlan.amount) + "đ...");
           track("InitiateCheckout", {
             content_ids: [course.slug],
-            content_name: course.title,
+            content_name: course.title + " - " + selectedPlan.label,
             currency: "VND",
-            value: 399000,
+            value: selectedPlan.amount,
           });
 
           try {
             var response = await fetch("/api/orders", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ studentName: studentName, email: email, phone: phone, courseSlug: course.slug }),
+              body: JSON.stringify({
+                studentName: studentName,
+                email: email,
+                phone: phone,
+                courseSlug: course.slug,
+                paymentPlan: selectedPlan.id,
+              }),
             });
             var payload = await response.json();
             if (!response.ok || !payload.order || !payload.order.orderCode) {
@@ -2318,6 +2700,8 @@
             showToast(error && error.message ? error.message : "Chưa tạo được đơn thanh toán, anh/chị thử lại giúp em.", true);
           }
         });
+
+        setSelectedPlan("video");
       })();
     </script>
   </body>
