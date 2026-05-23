@@ -766,13 +766,14 @@ export function CourseEditor({ initialCourses }: CourseEditorProps) {
         <textarea className="mt-4 min-h-28 w-full rounded-2xl border border-black/10 p-4" value={selectedCourse.description} onChange={(e) => updateCourse("description", e.target.value)} />
         {selectedCourse.thumbnailImageUrl || selectedCourse.bannerImageUrl ? (
           <div className="mt-5 grid gap-3 md:grid-cols-[220px_1fr] md:items-center">
-            <div
-              className="min-h-32 rounded-2xl bg-[#f2eadf] bg-cover bg-center"
-              style={{
-                backgroundImage: `url(${selectedCourse.thumbnailImageUrl || selectedCourse.bannerImageUrl})`,
-              }}
-              aria-label="Thumbnail khóa học đang chọn"
-            />
+            <div className="flex min-h-32 items-center justify-center overflow-hidden rounded-2xl bg-[#f2eadf] ring-1 ring-black/5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                alt="Thumbnail khóa học đang chọn"
+                className="h-full w-full object-contain"
+                src={selectedCourse.thumbnailImageUrl || selectedCourse.bannerImageUrl}
+              />
+            </div>
             <div>
               <p className="text-sm font-bold text-black">Thumbnail đang chọn</p>
               <p className="mt-2 text-sm leading-6 text-black/55">

@@ -9,6 +9,8 @@ Sepay flow in this project:
 5. The page displays a VietQR image from `https://qr.sepay.vn/img`.
 6. Sepay posts the bank transaction webhook to `/api/sepay/webhook`.
 7. The app matches the Sepay `code` or transfer content with `orders.order_code` and marks the order as paid.
+8. When an order changes from `pending` to `paid`, the app creates a student account if needed.
+9. The app sends one payment confirmation email to the customer.
 
 ## Environment
 
@@ -18,9 +20,26 @@ SEPAY_BANK_CODE=VPB
 SEPAY_BANK_ACCOUNT_NUMBER=0367928921
 SEPAY_BANK_ACCOUNT_NAME=NGUYEN THE ANH
 SEPAY_WEBHOOK_API_KEY=your-sepay-webhook-api-key
+RESEND_API_KEY=your-resend-api-key
+PAYMENT_SUCCESS_EMAIL_FROM=The Anh Marketing <onboarding@resend.dev>
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` is recommended for webhook updates. Keep it server-only.
+`PAYMENT_SUCCESS_EMAIL_FROM` is optional; if empty, the app falls back to `REGISTRATION_NOTIFICATION_FROM`.
+For real customer delivery, verify a sending domain in Resend and use a `from` address on that domain.
+Resend test mode only sends to the account owner email.
+
+## Student Account After Payment
+
+After Sepay confirms a paid order, the webhook attempts to create a Supabase Auth account:
+
+- Username: the customer's order email.
+- Temporary password: last word in the customer name, with the first letter capitalized and Vietnamese marks removed, plus phone digits.
+- Example: `Nguyễn Thế Anh` + `0901234567` becomes `Anh0901234567`.
+- The account is created with `must_change_password=true`.
+- On first login, the student is redirected to `/doi-mat-khau`; after changing password, they continue to `/dashboard`.
+
+If the account already exists, the webhook skips account creation and still keeps the payment/email flow working.
 
 ## Webhook URL
 
@@ -64,6 +83,8 @@ create table if not exists public.orders (
   sepay_reference_code text,
   sepay_payload jsonb,
   order_items jsonb not null default '[]'::jsonb,
+  payment_email_sent_at timestamptz,
+  payment_email_last_error text,
   paid_at timestamptz,
   expires_at timestamptz,
   created_at timestamptz not null default now(),
@@ -75,6 +96,8 @@ create index if not exists orders_status_idx on public.orders(status);
 create index if not exists orders_created_at_idx on public.orders(created_at desc);
 
 alter table public.orders add column if not exists order_items jsonb not null default '[]'::jsonb;
+alter table public.orders add column if not exists payment_email_sent_at timestamptz;
+alter table public.orders add column if not exists payment_email_last_error text;
 
 alter table public.orders enable row level security;
 

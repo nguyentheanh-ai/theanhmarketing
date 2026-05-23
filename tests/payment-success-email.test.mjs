@@ -1,0 +1,111 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import test from "node:test";
+import ts from "typescript";
+
+function loadTsModule(relativePath) {
+  const fullPath = path.resolve(relativePath);
+  const source = fs.readFileSync(fullPath, "utf8");
+  const compiled = ts.transpileModule(source, {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2020,
+      esModuleInterop: true,
+    },
+  }).outputText;
+  const cjsModule = { exports: {} };
+  const runner = new Function("exports", "module", compiled);
+  runner(cjsModule.exports, cjsModule);
+  return cjsModule.exports;
+}
+
+const {
+  buildPaymentSuccessEmailPayload,
+  sendPaymentSuccessEmail,
+  shouldSendPaymentSuccessEmail,
+} = loadTsModule("lib/notifications/payment-success-email.ts");
+
+const paidOrder = {
+  id: "order-1",
+  orderCode: "TAM123",
+  studentName: "Nguyen Van A",
+  email: "student@example.com",
+  phone: "0900000000",
+  courseSlug: "facebook-ads-2026",
+  courseTitle: "Quảng cáo Facebook Master 2026 - Gói Video 399K",
+  amount: 399000,
+  amountLabel: "399.000đ",
+  currency: "VND",
+  status: "paid",
+  paymentMethod: "sepay",
+  paymentQrUrl: "",
+  paidAt: "2026-05-23T10:00:00.000Z",
+  expiresAt: null,
+  createdAt: "2026-05-23T09:55:00.000Z",
+  sepayReferenceCode: null,
+  orderItems: [],
+  paymentEmailSentAt: null,
+  paymentEmailLastError: null,
+};
+
+test("builds a customer payment success email with course, Zalo, and dashboard links", () => {
+  const payload = buildPaymentSuccessEmailPayload(paidOrder, {
+    siteUrl: "https://www.theanhmarketing.com",
+    from: "The Anh Marketing <hoc@theanhmarketing.com>",
+  });
+
+  assert.equal(payload.to, "student@example.com");
+  assert.equal(payload.from, "The Anh Marketing <hoc@theanhmarketing.com>");
+  assert.match(payload.subject, /Thanh toán thành công/);
+  assert.match(payload.subject, /TAM123/);
+  assert.match(payload.html, /Quảng cáo Facebook Master 2026/);
+  assert.match(payload.html, /399\.000đ/);
+  assert.match(payload.html, /https:\/\/zalo\.me\/g\/ye0dcyowbepyhnrtyacr/);
+  assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/dang-nhap\?next=%2Fdashboard/);
+  assert.match(payload.text, /dùng đúng email student@example.com/);
+  assert.match(payload.text, /https:\/\/zalo\.me\/g\/ye0dcyowbepyhnrtyacr/);
+});
+
+test("includes temporary login credentials when an account is auto-created", () => {
+  const payload = buildPaymentSuccessEmailPayload(paidOrder, {
+    siteUrl: "https://www.theanhmarketing.com",
+    account: {
+      email: "student@example.com",
+      temporaryPassword: "Anh0900000000",
+      created: true,
+      mustChangePassword: true,
+    },
+  });
+
+  assert.match(payload.html, /Tài khoản học/);
+  assert.match(payload.html, /Anh0900000000/);
+  assert.match(payload.html, /đổi mật khẩu/);
+  assert.match(payload.text, /Mật khẩu tạm: Anh0900000000/);
+});
+
+test("sends payment success email only for paid orders without a prior sent timestamp", () => {
+  assert.equal(shouldSendPaymentSuccessEmail(paidOrder), true);
+  assert.equal(
+    shouldSendPaymentSuccessEmail({ ...paidOrder, paymentEmailSentAt: "2026-05-23T10:01:00.000Z" }),
+    false,
+  );
+  assert.equal(shouldSendPaymentSuccessEmail({ ...paidOrder, status: "pending" }), false);
+  assert.equal(shouldSendPaymentSuccessEmail({ ...paidOrder, email: "" }), false);
+});
+
+test("skips sending without a Resend API key without throwing", async () => {
+  const previousKey = process.env.RESEND_API_KEY;
+  delete process.env.RESEND_API_KEY;
+
+  try {
+    const result = await sendPaymentSuccessEmail(paidOrder);
+    assert.equal(result.ok, true);
+    assert.equal(result.skipped, true);
+    assert.equal(result.reason, "Missing RESEND_API_KEY");
+  } finally {
+    if (previousKey) {
+      process.env.RESEND_API_KEY = previousKey;
+    }
+  }
+});

@@ -53,6 +53,28 @@ export async function createLead(input: LeadInput) {
   return { ok: true, fallback: false, error: null };
 }
 
+export async function createLeadAdmin(input: LeadInput) {
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    return { ok: false, fallback: true, error: "Supabase env is missing" };
+  }
+
+  const { error } = await supabase.from("leads").insert({
+    name: input.name,
+    phone: input.phone ?? "",
+    email: input.email ?? "",
+    message: input.message ?? "",
+    source: input.source ?? "Website",
+  });
+
+  if (error) {
+    return { ok: false, fallback: true, error: error.message };
+  }
+
+  return { ok: true, fallback: false, error: null };
+}
+
 export async function getLeads(options: { includeFallback?: boolean } = {}): Promise<LeadItem[]> {
   const includeFallback = options.includeFallback ?? false;
   const supabase = createSupabaseAdminClient();

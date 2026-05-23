@@ -41,6 +41,8 @@ export type PaymentOrder = {
   createdAt: string;
   sepayReferenceCode: string | null;
   orderItems: OrderItem[];
+  paymentEmailSentAt: string | null;
+  paymentEmailLastError: string | null;
 };
 
 type DbOrder = {
@@ -61,6 +63,13 @@ type DbOrder = {
   created_at: string | null;
   sepay_reference_code: string | null;
   order_items: OrderItem[] | null;
+  payment_email_sent_at?: string | null;
+  payment_email_last_error?: string | null;
+};
+
+export type PaymentConfirmationResult = {
+  order: PaymentOrder;
+  wasAlreadyPaid: boolean;
 };
 
 export type CreatePaymentOrderInput = {
@@ -106,6 +115,8 @@ function mapDbOrder(row: DbOrder): PaymentOrder {
     createdAt: row.created_at ?? "",
     sepayReferenceCode: row.sepay_reference_code,
     orderItems: row.order_items ?? [],
+    paymentEmailSentAt: row.payment_email_sent_at ?? null,
+    paymentEmailLastError: row.payment_email_last_error ?? null,
   };
 }
 
@@ -129,6 +140,8 @@ function getFallbackOrders(): PaymentOrder[] {
     createdAt: order.date,
     sepayReferenceCode: null,
     orderItems: [],
+    paymentEmailSentAt: null,
+    paymentEmailLastError: null,
   }));
 }
 
@@ -396,7 +409,7 @@ export async function getPaymentOrders(options: { includeFallback?: boolean } = 
   return (data as DbOrder[]).map(mapDbOrder);
 }
 
-export async function confirmOrderFromSepay(payload: SepayWebhookPayload) {
+export async function confirmOrderFromSepay(payload: SepayWebhookPayload): Promise<PaymentConfirmationResult> {
   const transferType = String(payload.transferType ?? payload.transfer_type ?? "").toLowerCase();
 
   if (transferType && transferType !== "in") {
@@ -421,7 +434,7 @@ export async function confirmOrderFromSepay(payload: SepayWebhookPayload) {
   }
 
   if (order.status === "paid") {
-    return order;
+    return { order, wasAlreadyPaid: true };
   }
 
   if (receivedAmount < order.amount) {
@@ -452,5 +465,42 @@ export async function confirmOrderFromSepay(payload: SepayWebhookPayload) {
     throw new Error(error?.message ?? "Không cập nhật được đơn hàng.");
   }
 
-  return mapDbOrder(data as DbOrder);
+  return { order: mapDbOrder(data as DbOrder), wasAlreadyPaid: false };
+}
+
+export async function markPaymentEmailSent(orderCode: string, sentAt = new Date().toISOString()) {
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    return { ok: false, error: "Missing Supabase admin client" };
+  }
+
+  const { error } = await supabase
+    .from("orders")
+    .update({
+      payment_email_sent_at: sentAt,
+      payment_email_last_error: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("order_code", orderCode.toUpperCase());
+
+  return error ? { ok: false, error: error.message } : { ok: true, error: null };
+}
+
+export async function markPaymentEmailError(orderCode: string, reason: string) {
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    return { ok: false, error: "Missing Supabase admin client" };
+  }
+
+  const { error } = await supabase
+    .from("orders")
+    .update({
+      payment_email_last_error: reason.slice(0, 1000),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("order_code", orderCode.toUpperCase());
+
+  return error ? { ok: false, error: error.message } : { ok: true, error: null };
 }

@@ -44,6 +44,7 @@
         s.parentNode.insertBefore(t, s);
       })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
       fbq("init", "1315653423712065");
+      fbq("init", "1966683547571929");
       fbq("track", "PageView");
       fbq("track", "ViewContent", {
         content_ids: ["facebook-ads-2026"],
@@ -59,6 +60,13 @@
         width="1"
         style="display: none"
         src="https://www.facebook.com/tr?id=1315653423712065&ev=PageView&noscript=1"
+        alt=""
+      />
+      <img
+        height="1"
+        width="1"
+        style="display: none"
+        src="https://www.facebook.com/tr?id=1966683547571929&ev=PageView&noscript=1"
         alt=""
       />
     </noscript>
@@ -1705,6 +1713,253 @@
         background: #7f1d1d;
       }
 
+      body::before {
+        animation: grid-drift 42s linear infinite;
+      }
+
+      .topbar::after,
+      .section::after {
+        position: absolute;
+        left: 50%;
+        pointer-events: none;
+        content: "";
+        transform: translateX(-50%);
+      }
+
+      .topbar::after {
+        bottom: -1px;
+        width: min(760px, 78vw);
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(246, 102, 40, 0.6), transparent);
+        opacity: 0.8;
+      }
+
+      .section::after {
+        top: 0;
+        width: min(820px, 82vw);
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(246, 102, 40, 0.32), rgba(255, 255, 255, 0.18), transparent);
+        opacity: 0.52;
+      }
+
+      .section-kicker,
+      .eyebrow,
+      .plan-ribbon,
+      .deliverable-badge,
+      .sales-card strong {
+        position: relative;
+      }
+
+      .section-kicker::before,
+      .eyebrow::before {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        margin-right: 9px;
+        border-radius: 999px;
+        background: var(--primary);
+        box-shadow: 0 0 22px rgba(246, 102, 40, 0.72);
+        content: "";
+        vertical-align: 1px;
+        animation: signal-pulse 2.8s ease-in-out infinite;
+      }
+
+      .visualized-card {
+        position: relative;
+        isolation: isolate;
+        translate: 0 0;
+        scale: 1;
+        transition:
+          translate 240ms ease,
+          scale 240ms ease,
+          border-color 240ms ease,
+          box-shadow 240ms ease,
+          background 240ms ease;
+      }
+
+      .visualized-card::after {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        padding: 1px;
+        border-radius: inherit;
+        pointer-events: none;
+        content: "";
+        background: linear-gradient(
+          135deg,
+          rgba(246, 102, 40, 0),
+          rgba(246, 102, 40, 0.62),
+          rgba(255, 255, 255, 0.16),
+          rgba(255, 141, 77, 0.5),
+          rgba(246, 102, 40, 0)
+        );
+        background-size: 220% 220%;
+        opacity: 0;
+        -webkit-mask:
+          linear-gradient(#000 0 0) content-box,
+          linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        transition: opacity 240ms ease;
+      }
+
+      .visualized-card > :not(.visual-icon) {
+        position: relative;
+        z-index: 1;
+      }
+
+      .visualized-card:hover,
+      .visualized-card.is-selected {
+        border-color: rgba(246, 102, 40, 0.46);
+        box-shadow:
+          0 24px 70px rgba(0, 0, 0, 0.34),
+          0 0 0 1px rgba(246, 102, 40, 0.08);
+        translate: 0 -5px;
+        scale: 1.006;
+      }
+
+      .visualized-card:hover::after,
+      .visualized-card.is-selected::after {
+        opacity: 1;
+        animation: border-flow 8s linear infinite;
+      }
+
+      .visual-icon {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        z-index: 2;
+        display: inline-grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border: 1px solid rgba(246, 102, 40, 0.28);
+        border-radius: 15px;
+        background:
+          linear-gradient(135deg, rgba(246, 102, 40, 0.18), rgba(255, 255, 255, 0.04)),
+          rgba(14, 16, 22, 0.76);
+        color: var(--primary-2);
+        box-shadow: 0 16px 34px rgba(0, 0, 0, 0.24);
+        pointer-events: none;
+        animation: icon-float 4.8s ease-in-out infinite;
+      }
+
+      .visual-icon svg {
+        width: 21px;
+        height: 21px;
+        stroke: currentColor;
+        stroke-width: 2.1;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .form-card .visual-icon {
+        background: rgba(246, 102, 40, 0.1);
+        color: #d94f18;
+        box-shadow: none;
+      }
+
+      .fit-card h3,
+      .plan-ribbon,
+      .deliverable-badge,
+      .sticky-icon,
+      .number,
+      .panel-icon {
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.22),
+          0 14px 34px rgba(246, 102, 40, 0.13);
+      }
+
+      .metric-card strong,
+      .stat strong,
+      .big-price {
+        text-shadow: 0 0 34px rgba(246, 102, 40, 0.22);
+      }
+
+      .video-frame,
+      .dashboard-media,
+      .deliverable-visual {
+        transition:
+          translate 280ms ease,
+          scale 280ms ease,
+          filter 280ms ease,
+          box-shadow 280ms ease;
+      }
+
+      .video-frame:hover,
+      .dashboard-media:hover,
+      .deliverable-card:hover .deliverable-visual {
+        filter: saturate(1.08) contrast(1.04);
+        scale: 1.01;
+        translate: 0 -3px;
+      }
+
+      .js-reveal [data-reveal] {
+        opacity: 0;
+        transform: translateY(26px) scale(0.985);
+        transition:
+          opacity 760ms cubic-bezier(0.22, 1, 0.36, 1),
+          transform 760ms cubic-bezier(0.22, 1, 0.36, 1);
+        transition-delay: var(--reveal-delay, 0ms);
+      }
+
+      .js-reveal [data-reveal].is-visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      @keyframes grid-drift {
+        from {
+          background-position: 0 0, 0 0;
+        }
+        to {
+          background-position: 72px 72px, 72px 72px;
+        }
+      }
+
+      @keyframes border-flow {
+        from {
+          background-position: 0% 50%;
+        }
+        to {
+          background-position: 220% 50%;
+        }
+      }
+
+      @keyframes icon-float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+
+      @keyframes signal-pulse {
+        0%,
+        100% {
+          opacity: 0.62;
+          transform: scale(0.9);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.14);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          scroll-behavior: auto !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+
       @media (max-width: 980px) {
         .nav {
           display: none;
@@ -2669,6 +2924,11 @@
           return input && input.value ? input.value.trim() : "";
         }
 
+        function getCookie(name) {
+          var match = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
+          return match ? decodeURIComponent(match[1]) : "";
+        }
+
         document.querySelectorAll("[data-cta]").forEach(function (cta) {
           cta.addEventListener("click", function () {
             addCourseToCart();
@@ -2697,6 +2957,8 @@
           var studentName = getFormValue("name");
           var email = getFormValue("email");
           var phone = getFormValue("phone");
+          var urlParams = new URLSearchParams(window.location.search);
+          var leadId = "web." + Date.now() + "." + Math.random().toString(10).slice(2);
           var button = form.querySelector('button[type="submit"]');
           var oldText = button.textContent;
 
@@ -2720,6 +2982,17 @@
                 phone: phone,
                 courseSlug: course.slug,
                 paymentPlan: selectedPlan.id,
+                landingPage: "academy/facebook-ads-master-2026",
+                pageUrl: window.location.href,
+                referrer: document.referrer,
+                utmSource: urlParams.get("utm_source") || "",
+                utmMedium: urlParams.get("utm_medium") || "",
+                utmCampaign: urlParams.get("utm_campaign") || "",
+                utmContent: urlParams.get("utm_content") || "",
+                utmTerm: urlParams.get("utm_term") || "",
+                fbp: getCookie("_fbp"),
+                fbc: getCookie("_fbc"),
+                leadId: leadId,
               }),
             });
             var payload = await response.json();
@@ -2735,6 +3008,103 @@
         });
 
         setSelectedPlan("video");
+      })();
+    </script>
+    <script>
+      (function () {
+        var iconPaths = {
+          target: '<circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3"></path><path d="M12 19v3"></path><path d="M2 12h3"></path><path d="M19 12h3"></path>',
+          users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
+          trend: '<path d="M3 17l6-6 4 4 8-8"></path><path d="M14 7h7v7"></path>',
+          workflow: '<rect x="3" y="4" width="6" height="6" rx="2"></rect><rect x="15" y="4" width="6" height="6" rx="2"></rect><rect x="9" y="14" width="6" height="6" rx="2"></rect><path d="M9 7h6"></path><path d="M12 10v4"></path>',
+          shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-5"></path>',
+          network: '<circle cx="6" cy="7" r="3"></circle><circle cx="18" cy="7" r="3"></circle><circle cx="12" cy="18" r="3"></circle><path d="M8.5 9.5l2 5"></path><path d="M15.5 9.5l-2 5"></path><path d="M9 7h6"></path>',
+          chart: '<path d="M3 3v18h18"></path><path d="M7 16l4-5 4 3 5-8"></path>',
+          check: '<circle cx="12" cy="12" r="9"></circle><path d="M8 12l3 3 5-6"></path>',
+          xcircle: '<circle cx="12" cy="12" r="9"></circle><path d="M15 9l-6 6"></path><path d="M9 9l6 6"></path>',
+          play: '<circle cx="12" cy="12" r="9"></circle><path d="M10 8l6 4-6 4V8z"></path>',
+          qr: '<rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><path d="M14 14h3v3"></path><path d="M21 14v7h-7"></path><path d="M17 17h4"></path>',
+          rows: '<path d="M3 6h18"></path><path d="M3 12h18"></path><path d="M3 18h18"></path><path d="M7 6v12"></path>',
+          message: '<path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>',
+          wallet: '<path d="M20 7H5a2 2 0 0 0 0 4h15v8H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h15z"></path><path d="M16 13h.01"></path>'
+        };
+
+        function makeIcon(name) {
+          var span = document.createElement("span");
+          span.className = "visual-icon";
+          span.setAttribute("aria-hidden", "true");
+          span.innerHTML = '<svg viewBox="0 0 24 24">' + (iconPaths[name] || iconPaths.target) + "</svg>";
+          return span;
+        }
+
+        function decorate(selector, icons) {
+          document.querySelectorAll(selector).forEach(function (element, index) {
+            if (element.querySelector(":scope > .visual-icon")) return;
+            element.classList.add("visualized-card");
+            if (!icons) return;
+            var icon = Array.isArray(icons) ? icons[index % icons.length] : icons;
+            element.appendChild(makeIcon(icon));
+          });
+        }
+
+        decorate(".sales-card", ["target", "users", "trend"]);
+        decorate(".deliverable-card", ["workflow", "shield", "network", "chart"]);
+        decorate(".panel", ["check", "workflow", "trend"]);
+        decorate(".fit-card.is-yes", "check");
+        decorate(".fit-card.is-no", "xcircle");
+        decorate(".plan-card");
+        decorate(".form-card");
+        decorate(".metric-card");
+
+        document.documentElement.classList.add("js-reveal");
+
+        var revealSelectors = [
+          ".section-head",
+          ".hero-copy > *",
+          ".hero-card",
+          ".stat",
+          ".sales-card",
+          ".pain-list details",
+          ".metric-card",
+          ".deliverable-card",
+          ".mechanism-step",
+          ".module-card",
+          ".fit-card",
+          ".authority-grid > *",
+          ".panel",
+          ".plan-card",
+          ".form-card",
+          ".faq-list details",
+          ".final-cta .container"
+        ].join(",");
+
+        var revealItems = Array.prototype.slice.call(document.querySelectorAll(revealSelectors));
+        revealItems.forEach(function (element, index) {
+          element.setAttribute("data-reveal", "");
+          element.style.setProperty("--reveal-delay", Math.min(index % 8, 5) * 70 + "ms");
+        });
+
+        if (!("IntersectionObserver" in window)) {
+          revealItems.forEach(function (element) {
+            element.classList.add("is-visible");
+          });
+          return;
+        }
+
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            });
+          },
+          { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
+        );
+
+        revealItems.forEach(function (element) {
+          observer.observe(element);
+        });
       })();
     </script>
   </body>

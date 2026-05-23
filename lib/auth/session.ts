@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import type { User } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { shouldRequirePasswordChange } from "@/lib/auth/student-account";
 import { hasSupabaseEnv } from "@/lib/supabase/client";
 
 type AuthResult = {
@@ -85,6 +86,10 @@ export async function requireStudentAuth(nextPath: string) {
 
   if (!user) {
     redirect(`/dang-nhap?next=${encodeURIComponent(nextPath)}`);
+  }
+
+  if (shouldRequirePasswordChange(user) && nextPath !== "/doi-mat-khau") {
+    redirect(`/doi-mat-khau?next=${encodeURIComponent(nextPath)}`);
   }
 
   return user;

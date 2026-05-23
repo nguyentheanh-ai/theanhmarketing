@@ -75,7 +75,7 @@ function CourseTile({
             : "bg-[#f1eee8] opacity-88 ring-black/8"
       }`}
     >
-      <div className="relative aspect-video overflow-hidden bg-black">
+      <div className="relative aspect-video overflow-hidden bg-[#101116]">
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -83,7 +83,7 @@ function CourseTile({
             fill
             sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
             unoptimized
-            className={`h-full w-full object-cover ${isOwned ? "" : "brightness-[0.58] saturate-[0.72]"}`}
+            className={`h-full w-full object-contain ${isOwned ? "" : "brightness-[0.74] saturate-[0.82]"}`}
           />
         ) : (
           <div className={`h-full w-full ${isOwned ? "bg-[#2f8f62]" : "bg-[#222126]"}`} />
@@ -271,7 +271,7 @@ export function StudentDashboard({
 
         <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
           <div className={`overflow-hidden rounded-[18px] ring-1 ${panelClass}`}>
-            <div className="relative aspect-video bg-black">
+            <div className="relative aspect-video bg-[#101116]">
               {activeCourse && getCourseImage(activeCourse) ? (
                 <Image
                   src={getCourseImage(activeCourse)}
@@ -279,7 +279,7 @@ export function StudentDashboard({
                   fill
                   sizes="(min-width: 1280px) calc(100vw - 660px), 100vw"
                   unoptimized
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                 />
               ) : (
                 <div className="h-full w-full bg-[#26252c]" />

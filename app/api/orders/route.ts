@@ -10,6 +10,7 @@ import {
   isValidPhone,
   isValidSlug,
 } from "@/lib/security/validation";
+import { createLeadAdmin } from "@/services/leadService";
 import { createPaymentOrder } from "@/services/orderService";
 
 export async function POST(request: Request) {
@@ -31,6 +32,17 @@ export async function POST(request: Request) {
       courseSlug?: string;
       courseSlugs?: string[];
       paymentPlan?: string;
+      landingPage?: string;
+      pageUrl?: string;
+      referrer?: string;
+      utmSource?: string;
+      utmMedium?: string;
+      utmCampaign?: string;
+      utmContent?: string;
+      utmTerm?: string;
+      fbp?: string;
+      fbc?: string;
+      leadId?: string;
     };
     const studentName = cleanText(body.studentName, 120);
     const email = cleanEmail(body.email);
@@ -38,6 +50,9 @@ export async function POST(request: Request) {
     const courseSlug = cleanSlug(body.courseSlug);
     const courseSlugs = cleanSlugList(body.courseSlugs);
     const paymentPlan = cleanText(body.paymentPlan, 40);
+    const forwardedFor = request.headers.get("x-forwarded-for") ?? "";
+    const ipAddress =
+      request.headers.get("cf-connecting-ip") ?? forwardedFor.split(",")[0]?.trim() ?? "";
 
     if (!studentName || !email || !phone || !isValidEmail(email) || !isValidPhone(phone)) {
       return NextResponse.json(
@@ -62,7 +77,43 @@ export async function POST(request: Request) {
       paymentPlan,
     });
 
-    return NextResponse.json({ ok: true, order });
+    const remarketingNote = [
+      `Mã đơn: ${order.orderCode}`,
+      `Khóa: ${order.courseTitle}`,
+      `Gói: ${paymentPlan || "default"}`,
+      `Số tiền: ${order.amountLabel}`,
+      `Trạng thái: ${order.status}`,
+      `Landing: ${cleanText(body.landingPage, 120)}`,
+      `URL: ${cleanText(body.pageUrl, 500)}`,
+      `Referrer: ${cleanText(body.referrer, 500)}`,
+      `UTM source: ${cleanText(body.utmSource, 120)}`,
+      `UTM medium: ${cleanText(body.utmMedium, 120)}`,
+      `UTM campaign: ${cleanText(body.utmCampaign, 160)}`,
+      `UTM content: ${cleanText(body.utmContent, 160)}`,
+      `UTM term: ${cleanText(body.utmTerm, 160)}`,
+      `IP: ${cleanText(ipAddress, 80)}`,
+      `fbp: ${cleanText(body.fbp, 180)}`,
+      `fbc: ${cleanText(body.fbc, 220)}`,
+      `Lead ID: ${cleanText(body.leadId, 120)}`,
+    ].join("\n");
+
+    const leadSync = await createLeadAdmin({
+      name: studentName,
+      email,
+      phone,
+      message: remarketingNote,
+      source: "LDP Facebook Ads Master 2026",
+    });
+
+    if (!leadSync.ok) {
+      console.warn("[orders] Remarketing lead sync failed:", leadSync.error);
+    }
+
+    return NextResponse.json({
+      ok: true,
+      order,
+      ...(process.env.NODE_ENV === "development" ? { leadSync } : {}),
+    });
   } catch (error) {
     return NextResponse.json(
       {

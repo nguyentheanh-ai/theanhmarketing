@@ -1,6 +1,5 @@
 import { courses as baseFallbackCourses, type Course, type CourseLesson, type CourseModule, type CourseStatus, type LessonAccess } from "@/data/courses";
 import { marketingCourses } from "@/data/marketing-courses";
-import { unstable_cache } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { toYouTubeEmbedUrl } from "@/lib/youtube";
 
@@ -286,6 +285,13 @@ const demoCourseSlugs = new Set([
   "ai-automation-workflow",
   "full-funnel-campaign-strategy",
   "marketing-operation-management",
+  "ai-content-and-automation-workflow",
+  "ai-fullstack-marketing-system",
+  "brandformance-foundation",
+  "content-traffic-engine",
+  "founder-marketing-blueprint",
+  "marketing-data-analytics",
+  "performance-marketing-and-growth-ads",
 ]);
 const demoCourseTitles = [
   "AI Growth System Foundation",
@@ -398,8 +404,16 @@ function getFallbackCourses() {
   return fallbackCourses.map((course) => normalizeCourseText(normalizeCourseTiming(course)));
 }
 
+function hasCourseContent(course: Course) {
+  return course.modules.some((module) => module.lessons.length > 0);
+}
+
 function isDemoCourse(course: Course) {
-  return demoCourseSlugs.has(course.slug) || demoCourseTitles.some((title) => course.title.includes(title));
+  return (
+    demoCourseSlugs.has(course.slug) ||
+    demoCourseTitles.some((title) => course.title.includes(title)) ||
+    !hasCourseContent(course)
+  );
 }
 
 function mergeOfficialCourseMetadata(course: Course) {
@@ -444,6 +458,7 @@ async function fetchCourses() {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
+    console.warn("[courseService] Supabase env missing; using fallback courses.");
     return getFallbackCourses();
   }
 
@@ -452,10 +467,13 @@ async function fetchCourses() {
     .select(
       "*, course_modules(*, lessons(*))",
     )
-    .order("sort_order", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: false });
 
   if (error || !data || data.length === 0) {
+    console.warn("[courseService] Supabase courses query fell back.", {
+      error: error?.message,
+      rows: data?.length ?? 0,
+    });
     return getFallbackCourses();
   }
 
@@ -502,10 +520,9 @@ async function fetchCourses() {
   return [...dbCourses, ...missingFallbackCourses];
 }
 
-export const getCourses = unstable_cache(fetchCourses, ["courses-with-modules"], {
-  revalidate: 120,
-  tags: ["content", "courses"],
-});
+export async function getCourses() {
+  return fetchCourses();
+}
 
 export async function getCourseBySlug(slug: string) {
   const courses = await getCourses();

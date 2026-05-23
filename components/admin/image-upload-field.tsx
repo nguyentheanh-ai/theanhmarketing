@@ -30,7 +30,7 @@ export function ImageUploadField({
         <div className="flex min-h-28 items-center justify-center overflow-hidden rounded-2xl bg-[#f2eadf] ring-1 ring-black/5">
           {value ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img alt={label} className="h-full w-full object-cover" src={value} />
+            <img alt={label} className="h-full w-full object-contain" src={value} />
           ) : (
             <span className="px-4 text-center text-xs font-bold uppercase tracking-[0.12em] text-black/35">
               Chưa có ảnh

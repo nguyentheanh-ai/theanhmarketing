@@ -60,7 +60,7 @@ export default async function AdminOrdersPage() {
 
           <div className="mt-5 overflow-x-auto">
             {orders.length > 0 ? (
-              <table className="w-full min-w-[980px] text-left text-sm">
+              <table className="w-full min-w-[1080px] text-left text-sm">
                 <thead className="text-xs uppercase tracking-[0.12em] text-black/38">
                   <tr>
                     <th className="py-3">Mã đơn</th>
@@ -69,11 +69,20 @@ export default async function AdminOrdersPage() {
                     <th>Số tiền</th>
                     <th>Ngày tạo</th>
                     <th>Trạng thái</th>
+                    <th>Email thanh toán</th>
                   </tr>
                 </thead>
                 <tbody>
                   {orders.map((order) => {
                     const status = getOrderStatusMeta(order.status);
+                    const paymentEmailStatus =
+                      order.status !== "paid"
+                        ? ({ label: "Chưa thanh toán", tone: "neutral" } as const)
+                        : order.paymentEmailSentAt
+                          ? ({ label: "Đã gửi", tone: "success" } as const)
+                          : order.paymentEmailLastError
+                            ? ({ label: "Lỗi email", tone: "warning" } as const)
+                            : ({ label: "Chưa gửi", tone: "neutral" } as const);
 
                     return (
                       <tr key={order.id} className="border-t border-black/10 align-top">
@@ -99,6 +108,14 @@ export default async function AdminOrdersPage() {
                         <td className="text-black/50">{formatAdminDate(order.createdAt)}</td>
                         <td>
                           <StatusBadge tone={status.tone}>{status.label}</StatusBadge>
+                        </td>
+                        <td>
+                          <StatusBadge tone={paymentEmailStatus.tone}>{paymentEmailStatus.label}</StatusBadge>
+                          {order.paymentEmailLastError ? (
+                            <p className="mt-1 max-w-[220px] text-xs leading-5 text-black/45">
+                              {order.paymentEmailLastError}
+                            </p>
+                          ) : null}
                         </td>
                       </tr>
                     );

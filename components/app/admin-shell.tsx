@@ -12,22 +12,23 @@ const adminNavGroups = [
       { label: "Tổng quan", href: "/admin/dashboard", shortcut: "01" },
       { label: "Leads", href: "/admin/leads", shortcut: "02" },
       { label: "Đơn hàng", href: "/admin/don-hang", shortcut: "03" },
-      { label: "Học viên", href: "/admin/hoc-vien", shortcut: "04" },
+      { label: "Remarketing", href: "/admin/remarketing", shortcut: "04" },
+      { label: "Học viên", href: "/admin/hoc-vien", shortcut: "05" },
     ],
   },
   {
     label: "Nội dung",
     items: [
-      { label: "CMS", href: "/admin/cms", shortcut: "05" },
-      { label: "Khóa học", href: "/admin/khoa-hoc", shortcut: "06" },
-      { label: "Bài viết", href: "/admin/bai-viet", shortcut: "07" },
-      { label: "Tài liệu", href: "/admin/tai-lieu", shortcut: "08" },
-      { label: "Feedback", href: "/admin/feedback", shortcut: "09" },
+      { label: "CMS", href: "/admin/cms", shortcut: "06" },
+      { label: "Khóa học", href: "/admin/khoa-hoc", shortcut: "07" },
+      { label: "Bài viết", href: "/admin/bai-viet", shortcut: "08" },
+      { label: "Tài liệu", href: "/admin/tai-lieu", shortcut: "09" },
+      { label: "Feedback", href: "/admin/feedback", shortcut: "10" },
     ],
   },
   {
     label: "Cấu hình",
-    items: [{ label: "SEO/Tracking", href: "/admin/seo", shortcut: "10" }],
+    items: [{ label: "SEO/Tracking", href: "/admin/seo", shortcut: "11" }],
   },
 ];
 

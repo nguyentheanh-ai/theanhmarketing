@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { getPostLoginRedirect } from "@/lib/auth/student-account";
 import { getSafeNextPath } from "@/lib/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
@@ -30,7 +31,7 @@ export function LoginForm() {
       return;
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -41,7 +42,7 @@ export function LoginForm() {
       return;
     }
 
-    router.push(nextPath);
+    router.push(getPostLoginRedirect(data.user, nextPath));
     router.refresh();
   }
 
