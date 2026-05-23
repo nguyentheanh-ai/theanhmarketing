@@ -131,6 +131,7 @@
 
       .page {
         overflow: hidden;
+        padding-bottom: 86px;
       }
 
       .container {
@@ -336,6 +337,10 @@
         font-weight: 900;
         line-height: 0.98;
         overflow-wrap: break-word;
+      }
+
+      .hero-title-accent {
+        color: var(--primary-2);
       }
 
       .hero-copy {
@@ -589,6 +594,18 @@
         display: inline !important;
         margin-top: 0 !important;
         color: var(--primary-2);
+      }
+
+      .loss-section .section-head {
+        max-width: 1080px;
+      }
+
+      .loss-title .loss-subline {
+        display: block !important;
+        margin-top: 10px !important;
+        font-size: clamp(18px, 1.7vw, 24px);
+        line-height: 1.12;
+        white-space: nowrap;
       }
 
       .method-grid,
@@ -1078,11 +1095,26 @@
         align-items: start;
       }
 
+      .fit-grid.is-comparison {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 34px;
+        max-width: 1050px;
+        padding-top: 34px;
+      }
+
       .fit-card {
+        position: relative;
         border: 1px solid rgba(255, 255, 255, 0.12);
         border-radius: 26px;
         background: rgba(24, 26, 32, 0.82);
-        padding: 24px;
+        padding: 48px 28px 28px;
+      }
+
+      .fit-card.is-yes {
+        border-color: rgba(246, 102, 40, 0.34);
+        background:
+          radial-gradient(circle at 50% 0%, rgba(246, 102, 40, 0.12), transparent 18rem),
+          rgba(24, 26, 32, 0.82);
       }
 
       .fit-card.is-no {
@@ -1091,8 +1123,26 @@
       }
 
       .fit-card h3 {
-        font-size: clamp(22px, 2.2vw, 28px);
+        position: absolute;
+        left: 50%;
+        top: 0;
+        display: inline-flex;
+        min-width: 148px;
+        justify-content: center;
+        transform: translate(-50%, -50%);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        background: #252832;
+        color: var(--text);
+        padding: 12px 22px;
+        font-size: 17px;
         font-weight: 900;
+      }
+
+      .fit-card.is-yes h3 {
+        border-color: rgba(246, 102, 40, 0.42);
+        background: linear-gradient(135deg, var(--primary), var(--primary-2));
+        color: #170905;
       }
 
       .fit-card ul,
@@ -1314,6 +1364,7 @@
       .plan-price {
         display: flex;
         align-items: baseline;
+        flex-wrap: wrap;
         gap: 12px;
         margin-top: 20px;
       }
@@ -1326,9 +1377,15 @@
       }
 
       .plan-price span {
+        display: inline-flex;
+        max-width: 100%;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
         color: var(--muted);
+        padding: 7px 10px;
         font-size: 15px;
         font-weight: 800;
+        line-height: 1.2;
       }
 
       .plan-card p {
@@ -1639,10 +1696,84 @@
 
       .sticky-cta {
         position: fixed;
-        right: 18px;
-        bottom: 18px;
+        right: 0;
+        bottom: 0;
+        left: 0;
         z-index: 70;
-        display: none;
+        border-top: 1px solid rgba(246, 102, 40, 0.34);
+        background: rgba(9, 10, 14, 0.92);
+        box-shadow: 0 -22px 64px rgba(0, 0, 0, 0.38);
+        backdrop-filter: blur(18px);
+        padding: 12px 18px;
+      }
+
+      .sticky-cta-inner {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px;
+        width: min(1040px, 100%);
+        margin: 0 auto;
+        align-items: center;
+      }
+
+      .sticky-offer {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .sticky-icon {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        flex: 0 0 auto;
+        place-items: center;
+        border: 1px solid rgba(246, 102, 40, 0.42);
+        border-radius: 50%;
+        background: rgba(246, 102, 40, 0.12);
+        color: var(--primary-2);
+        font-size: 20px;
+        font-weight: 900;
+      }
+
+      .sticky-copy {
+        min-width: 0;
+      }
+
+      .sticky-copy strong {
+        display: block;
+        color: var(--text);
+        font-size: 15px;
+        font-weight: 900;
+        line-height: 1.25;
+      }
+
+      .sticky-copy span {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .sticky-copy del {
+        color: #6e7480;
+      }
+
+      .sticky-copy b {
+        color: var(--primary-2);
+      }
+
+      .sticky-discount {
+        border-radius: 999px;
+        background: rgba(246, 102, 40, 0.16);
+        color: var(--primary-2);
+        padding: 3px 8px;
+        font-size: 12px;
       }
 
       .toast {
@@ -1701,6 +1832,10 @@
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
+        .loss-title .loss-subline {
+          white-space: normal;
+        }
+
         .mechanism-steps {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
@@ -1713,6 +1848,10 @@
       @media (max-width: 680px) {
         .container {
           width: min(calc(100% - 28px), 1160px);
+        }
+
+        .page {
+          padding-bottom: 146px;
         }
 
         .topbar-inner {
@@ -1853,14 +1992,23 @@
         }
 
         .sticky-cta {
-          right: 12px;
-          bottom: 12px;
-          left: 12px;
-          display: block;
+          padding: 10px 12px;
+        }
+
+        .sticky-cta-inner {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+
+        .sticky-icon {
+          width: 38px;
+          height: 38px;
+          font-size: 17px;
         }
 
         .sticky-cta .btn {
           width: 100%;
+          min-height: 44px;
         }
       }
     </style>
@@ -1888,7 +2036,7 @@
           <div class="container hero-grid">
             <div>
               <p class="eyebrow">Facebook Ads Master 2026</p>
-              <h1>Khóa học Quảng cáo <br class="mobile-break" />Facebook Master <br class="mobile-break" />2026.</h1>
+              <h1>Khóa học <span class="hero-title-accent">Quảng cáo Facebook</span> Master 2026.</h1>
               <p class="hero-copy">
                 Học cách chạy Facebook Ads có hệ thống: chuẩn bị offer, content, tracking, ngân sách test và đọc chỉ số để tạo inbox, lọc lead và tối ưu đơn hàng thay vì đốt tiền theo cảm tính.
               </p>
@@ -1913,7 +2061,7 @@
               </div>
               <div class="exclusive-card">
                 <p class="eyebrow">Duy nhất chỉ có tại Thế Anh Marketing</p>
-                <h2>Quyền lợi theo từng gói học</h2>
+                <h2>Quà tặng</h2>
                 <ul>
                   <li>Gói hỗ trợ tặng bộ Agent kit lên kế hoạch quảng cáo</li>
                   <li>Tặng 7 ngày dùng thử Adsplan lên quảng cáo và đăng bài tự động</li>
@@ -1930,7 +2078,7 @@
               <p class="section-kicker">5 nút thắt khiến quảng cáo không ra đơn</p>
               <h2>Có sản phẩm tốt nhưng <span class="text-accent-inline">Facebook</span> vẫn chưa tạo ra đơn hàng ổn định.</h2>
               <p class="section-copy">
-                Vấn đề không nằm ở việc anh/chị chưa cố gắng. Phần lớn chủ doanh nghiệp đang chạy rời rạc: tài khoản thiếu ổn định, nội dung chưa đúng khách, inbox phản hồi chậm và dữ liệu không đủ rõ để biết cần sửa gì.
+                Vấn đề không nằm ở việc bạn chưa cố gắng. Phần lớn chủ doanh nghiệp đang chạy rời rạc: tài khoản thiếu ổn định, nội dung chưa đúng khách, inbox phản hồi chậm và dữ liệu không đủ rõ để biết cần sửa gì.
               </p>
             </div>
             <div class="pain-list">
@@ -1945,7 +2093,7 @@
                 </summary>
                 <div class="pain-detail">
                   <p>
-                    Anh/chị biết sản phẩm tốt, khách cũ hài lòng, nhưng quảng cáo lại không chuyển thành đơn. Thường không phải sản phẩm yếu, mà là thông điệp chưa đóng gói đúng nỗi đau, bằng chứng và lý do mua ngay.
+                    Bạn biết sản phẩm tốt, khách cũ hài lòng, nhưng quảng cáo lại không chuyển thành đơn. Thường không phải sản phẩm yếu, mà là thông điệp chưa đóng gói đúng nỗi đau, bằng chứng và lý do mua ngay.
                   </p>
                   <ul>
                     <li>Offer chưa làm rõ khách được gì sau khi mua</li>
@@ -2038,13 +2186,13 @@
           </div>
         </section>
 
-        <section class="section">
+        <section class="section loss-section">
           <div class="container">
             <div class="section-head">
               <p class="section-kicker">Chi phí nếu không sửa</p>
-              <h2>Không chỉ mất tiền Ads <span>Mà còn mất dữ liệu - Mất cơ hội bán hàng - Mất niềm tin khách hàng</span></h2>
+              <h2 class="loss-title">Không chỉ <span class="text-accent-inline">mất tiền Ads</span><span class="loss-subline">Mà còn mất dữ liệu - Mất cơ hội bán hàng - Mất niềm tin khách hàng</span></h2>
               <p class="section-copy">
-                Khi Facebook Ads không có hệ thống, mỗi chiến dịch thất bại không để lại bài học rõ ràng. Anh/chị không biết nên sửa offer, content, tài khoản, tệp khách hay quy trình tư vấn.
+                Khi Facebook Ads không có hệ thống, mỗi chiến dịch thất bại không để lại bài học rõ ràng. Bạn không biết nên sửa offer, content, tài khoản, tệp khách hay quy trình tư vấn.
               </p>
             </div>
             <div class="sales-grid">
@@ -2071,9 +2219,9 @@
           <div class="container">
             <div class="section-head">
               <p class="section-kicker">Giải pháp</p>
-              <h2>Facebook Ads cho chủ doanh nghiệp: học như một hệ thống bán hàng.</h2>
+              <h2><span class="text-accent-inline">Facebook Ads</span> cho chủ doanh nghiệp: học như một <span class="text-accent-inline">hệ thống bán hàng</span>.</h2>
               <p class="section-copy">
-                Khóa này không dạy mẹo vặt. Anh/chị sẽ có một workflow triển khai từ nền tảng tới tối ưu để biết vì sao quảng cáo thắng hoặc thua.
+                Khóa này không dạy mẹo vặt. Bạn sẽ có một workflow triển khai từ nền tảng tới tối ưu để biết vì sao quảng cáo thắng hoặc thua.
               </p>
             </div>
             <div class="method-grid">
@@ -2104,10 +2252,9 @@
         <section class="section gold-section" id="co-che">
           <div class="container">
             <div class="section-head">
-              <p class="gold-kicker">Cơ chế học khác biệt</p>
               <h2 class="gold-title">Không học mẹo chạy ads.<br />Học một hệ thống <span class="system-flow">Offer - Content - Ads - Auto Inbox - Dashboard</span></h2>
               <p class="section-copy">
-                Khóa này giúp anh/chị nhìn Facebook như một kênh bán hàng có quy trình. Mỗi bước đều có đầu vào, đầu ra và chỉ số để biết nên tối ưu ở đâu.
+                Khóa này giúp bạn nhìn Facebook như một kênh bán hàng có quy trình. Mỗi bước đều có đầu vào, đầu ra và chỉ số để biết nên tối ưu ở đâu.
               </p>
             </div>
             <div class="mechanism-steps">
@@ -2146,7 +2293,7 @@
               <p class="section-kicker">Đọc số để tối ưu</p>
               <h2>Học thật - hiểu thật - Tối ưu thật</h2>
               <p class="section-copy">
-                Thay vì nghe chung chung “tối ưu quảng cáo”, anh/chị sẽ học cách nối từng chỉ số với hành động cụ thể: lỗi nằm ở offer, content, tệp khách, landing page hay quy trình tư vấn.
+                Thay vì nghe chung chung “tối ưu quảng cáo”, bạn sẽ học cách nối từng chỉ số với hành động cụ thể: lỗi nằm ở offer, content, tệp khách, landing page hay quy trình tư vấn.
               </p>
             </div>
             <figure class="proof-visual">
@@ -2173,9 +2320,9 @@
           <div class="container">
             <div class="section-head">
               <p class="gold-kicker">Sản phẩm thực tế sau khóa học</p>
-              <h2 class="gold-title">4 đầu ra anh/chị có thể tự xây <span>sau khóa Facebook Ads Master 2026</span></h2>
+              <h2 class="gold-title">Sau khóa học <span>Facebook Ads Master</span> bạn sẽ làm được</h2>
               <p class="section-copy">
-                Tất cả thumbnail bên dưới được dựng cùng hệ màu cam/đen để thể hiện đúng các sản phẩm thực chiến trong khóa học.
+                Bạn không chỉ biết bấm nút chạy quảng cáo, mà có đủ khung triển khai, kiểm tra lỗi, kết nối content và đọc dashboard để tối ưu.
               </p>
             </div>
             <div class="deliverable-grid">
@@ -2231,9 +2378,9 @@
           <div class="container">
             <div class="section-head">
               <p class="gold-kicker">Module học</p>
-              <h2 class="gold-title">Lộ trình Facebook Ads Master 2026 <span>đúng module khóa học</span></h2>
+              <h2 class="gold-title">Lộ trình <span>Facebook Ads Master 2026</span></h2>
               <p class="section-copy">
-                Vẫn giữ layout card lớn theo cảm hứng mẫu, nhưng nội dung bên dưới là đúng các module học của khóa Facebook Ads Master 2026.
+                6 module đi từ nền tảng, chuẩn bị tài sản, dựng offer - content, lên chiến dịch test, đọc số và scale bền vững.
               </p>
             </div>
             <div class="timeline">
@@ -2277,14 +2424,14 @@
         <section class="section solution">
           <div class="container">
             <div class="section-head">
-              <p class="section-kicker">Anh/chị nhận được gì</p>
+              <p class="section-kicker">Bạn nhận được gì</p>
               <h2>Không chỉ là video, mà là bộ công cụ triển khai.</h2>
             </div>
             <div class="bonus-grid">
               <article class="panel">
                 <div class="panel-icon">✓</div>
                 <h3>Checklist setup chiến dịch</h3>
-                <p>Giúp anh/chị biết cần chuẩn bị gì trước khi bật quảng cáo để tránh mất tiền vì lỗi nền tảng.</p>
+                <p>Giúp bạn biết cần chuẩn bị gì trước khi bật quảng cáo để tránh mất tiền vì lỗi nền tảng.</p>
               </article>
               <article class="panel">
                 <div class="panel-icon">✓</div>
@@ -2299,7 +2446,7 @@
               <article class="panel">
                 <div class="panel-icon">✓</div>
                 <h3>Gói hỗ trợ Zoom lên ads</h3>
-                <p>Gỡ vướng thực tế cho anh/chị chọn gói 799.000đ: setup, đọc số và quyết định tối ưu.</p>
+                <p>Gỡ vướng thực tế cho bạn chọn gói 799.000đ: setup, đọc số và quyết định tối ưu.</p>
               </article>
             </div>
           </div>
@@ -2311,9 +2458,9 @@
               <p class="section-kicker">Ai nên học khóa này</p>
               <h2>Khóa học này phù hợp với ai</h2>
             </div>
-            <div class="fit-grid">
-              <article class="fit-card">
-                <h3>Phù hợp nếu anh/chị</h3>
+            <div class="fit-grid is-comparison">
+              <article class="fit-card is-yes">
+                <h3>Phù hợp</h3>
                 <ul>
                   <li>Là chủ doanh nghiệp, chủ shop, người bán dịch vụ muốn Facebook trở thành kênh kéo khách chủ động.</li>
                   <li>Đã từng chạy ads nhưng không biết vì sao có lúc ra đơn, có lúc đốt tiền không ra gì.</li>
@@ -2322,7 +2469,7 @@
                 </ul>
               </article>
               <article class="fit-card is-no">
-                <h3>Không phù hợp nếu anh/chị</h3>
+                <h3>Không phù hợp</h3>
                 <ul>
                   <li>Muốn cam kết chắc chắn ra đơn mà không cần kiểm tra sản phẩm, offer, ngân sách và quy trình sale.</li>
                   <li>Chỉ muốn copy nguyên chiến dịch của người khác rồi bật lên chạy ngay.</li>
@@ -2346,7 +2493,7 @@
                 <li>Tư duy dành cho chủ doanh nghiệp: hiểu để tự triển khai hoặc quản lý người chạy ads tốt hơn.</li>
                 <li>Có checklist, prompt, dashboard; gói 799.000đ có thêm Zoom lên ads và Agent kit.</li>
                 <li>Nội dung cập nhật theo bối cảnh 2026: AI, tracking, tài khoản, content, inbox và dữ liệu.</li>
-                <li>Có lộ trình nâng cấp lên Performance Marketing With AI khi anh/chị muốn scale sâu hơn.</li>
+                <li>Có lộ trình nâng cấp lên Performance Marketing With AI khi bạn muốn scale sâu hơn.</li>
               </ul>
             </article>
             <aside class="proof-stack" aria-label="Cam kết và minh chứng nội dung khóa học">
@@ -2356,14 +2503,14 @@
               </div>
               <div class="proof-item">
                 <strong>Gói video dễ bắt đầu</strong>
-                <span>399.000đ để anh/chị học nền tảng qua video trước khi đầu tư ngân sách quảng cáo lớn hơn.</span>
+                <span>399.000đ để bạn học nền tảng qua video trước khi đầu tư ngân sách quảng cáo lớn hơn.</span>
               </div>
               <div class="proof-item">
                 <strong>Gói 799 có hỗ trợ sâu hơn</strong>
-                <span>Thêm 1 buổi Zoom lên ads và bộ Agent kit để anh/chị triển khai nhanh hơn trên case thực tế.</span>
+                <span>Thêm 1 buổi Zoom lên ads và bộ Agent kit để bạn triển khai nhanh hơn trên case thực tế.</span>
               </div>
               <div class="guarantee-box">
-                <strong>Cam kết học tập rõ ràng:</strong> nếu anh/chị học đúng lộ trình, hoàn thành checklist và chuẩn bị case thực tế, đội ngũ sẽ hỗ trợ gỡ vướng trong phạm vi khóa để anh/chị biết bước tiếp theo cần làm gì.
+                <strong>Cam kết học tập rõ ràng:</strong> nếu bạn học đúng lộ trình, hoàn thành checklist và chuẩn bị case thực tế, đội ngũ sẽ hỗ trợ gỡ vướng trong phạm vi khóa để bạn biết bước tiếp theo cần làm gì.
               </div>
             </aside>
           </div>
@@ -2378,7 +2525,7 @@
                   <strong>399K</strong>
                   <span>thanh toán 1 lần</span>
                 </div>
-                <p>Học qua video, phù hợp nếu anh/chị muốn tự học nền tảng và triển khai theo checklist.</p>
+                <p>Học qua video, phù hợp nếu bạn muốn tự học nền tảng và triển khai theo checklist.</p>
                 <ul class="plan-features">
                   <li>20+ video bài giảng</li>
                   <li>Checklist chạy ads 2026</li>
@@ -2410,7 +2557,7 @@
 
             <aside class="form-card">
               <h3>Đăng ký và tạo QR thanh toán</h3>
-              <p id="payment-plan-summary">Đang chọn gói Video 399.000đ. Điền thông tin, hệ thống sẽ tạo đơn và chuyển anh/chị sang trang thanh toán SePay.</p>
+              <p id="payment-plan-summary">Đang chọn gói Video 399.000đ. Điền thông tin, hệ thống sẽ tạo đơn và chuyển bạn sang trang thanh toán SePay.</p>
               <form id="payment-form" class="form">
                 <input type="hidden" name="paymentPlan" value="video" />
                 <div class="selected-plan-note" id="selected-plan-note">Gói đang chọn: Video 399.000đ - học qua video.</div>
@@ -2443,7 +2590,7 @@
               <p class="section-kicker">Cam kết</p>
               <h2>Hoàn tiền 100% trong 7 ngày</h2>
               <p class="section-copy">
-                Nếu sau 7 ngày anh/chị cảm thấy khóa học không phù hợp, Thế Anh Marketing hoàn tiền 100% theo chính sách bên dưới.
+                Nếu sau 7 ngày bạn cảm thấy khóa học không phù hợp, Thế Anh Marketing hoàn tiền 100% theo chính sách bên dưới.
               </p>
               <div class="refund-pills" aria-label="Cam kết hoàn tiền">
                 <span>Không rủi ro</span>
@@ -2477,7 +2624,7 @@
           <div class="container">
             <div class="section-head">
               <p class="section-kicker">Câu hỏi thường gặp</p>
-              <h2>Trước khi anh/chị đăng ký.</h2>
+              <h2>Trước khi bạn đăng ký.</h2>
             </div>
             <div class="faq-list">
               <details open>
@@ -2492,21 +2639,21 @@
                   <span class="number">?</span>
                   <h3>Khóa này có cam kết ra đơn không?</h3>
                 </summary>
-                <p>Không cam kết kết quả ảo. Khóa giúp anh/chị có quy trình đúng để giảm sai lầm, biết đọc dữ liệu và tăng xác suất ra đơn.</p>
+                <p>Không cam kết kết quả ảo. Khóa giúp bạn có quy trình đúng để giảm sai lầm, biết đọc dữ liệu và tăng xác suất ra đơn.</p>
               </details>
               <details>
                 <summary>
                   <span class="number">?</span>
                   <h3>Tôi cần ngân sách quảng cáo bao nhiêu để thực hành?</h3>
                 </summary>
-                <p>Anh/chị có thể bắt đầu bằng ngân sách nhỏ để test dữ liệu. Quan trọng là test đúng cấu trúc, không đổ tiền lớn khi chưa có tín hiệu.</p>
+                <p>Bạn có thể bắt đầu bằng ngân sách nhỏ để test dữ liệu. Quan trọng là test đúng cấu trúc, không đổ tiền lớn khi chưa có tín hiệu.</p>
               </details>
               <details>
                 <summary>
                   <span class="number">?</span>
                   <h3>Sau khóa này học tiếp gì?</h3>
                 </summary>
-                <p>Khi đã nắm nền tảng, anh/chị có thể lên Performance Marketing With AI để học sâu hơn về funnel, creative testing, tracking và scale.</p>
+                <p>Khi đã nắm nền tảng, bạn có thể lên Performance Marketing With AI để học sâu hơn về funnel, creative testing, tracking và scale.</p>
               </details>
               <details>
                 <summary>
@@ -2527,21 +2674,21 @@
                   <span class="number">?</span>
                   <h3>Học xong có được hỗ trợ sửa quảng cáo không?</h3>
                 </summary>
-                <p>Có nếu anh/chị chọn gói 799.000đ. Buổi Zoom tập trung vào case thật, ảnh setup, chỉ số hoặc câu hỏi cụ thể để xử lý đúng điểm kẹt.</p>
+                <p>Có nếu bạn chọn gói 799.000đ. Buổi Zoom tập trung vào case thật, ảnh setup, chỉ số hoặc câu hỏi cụ thể để xử lý đúng điểm kẹt.</p>
               </details>
               <details>
                 <summary>
                   <span class="number">?</span>
                   <h3>Tôi là chủ doanh nghiệp bận, học thế nào cho hiệu quả?</h3>
                 </summary>
-                <p>Anh/chị nên học theo từng module, làm checklist ngay trên sản phẩm của mình và ưu tiên dựng một chiến dịch test nhỏ trước. Mục tiêu không phải xem thật nhanh, mà là có hệ thống đầu tiên đo được.</p>
+                <p>Bạn nên học theo từng module, làm checklist ngay trên sản phẩm của mình và ưu tiên dựng một chiến dịch test nhỏ trước. Mục tiêu không phải xem thật nhanh, mà là có hệ thống đầu tiên đo được.</p>
               </details>
               <details>
                 <summary>
                   <span class="number">?</span>
                   <h3>Thanh toán xong nhận quyền học thế nào?</h3>
                 </summary>
-                <p>Sau khi thanh toán, thông tin đăng ký dùng để tạo quyền học và hỗ trợ triển khai theo đúng gói đã chọn. Anh/chị nên điền đúng email, số điện thoại hoặc Zalo để nhận hướng dẫn.</p>
+                <p>Sau khi thanh toán, thông tin đăng ký dùng để tạo quyền học và hỗ trợ triển khai theo đúng gói đã chọn. Bạn nên điền đúng email, số điện thoại hoặc Zalo để nhận hướng dẫn.</p>
               </details>
             </div>
           </div>
@@ -2550,9 +2697,9 @@
         <section class="section final-cta">
           <div class="container">
             <p class="eyebrow">Facebook Ads Master 2026</p>
-            <h2>Bắt đầu bằng một hệ thống nhỏ, rõ và đo được.</h2>
+            <h2>Bắt đầu xây dựng hệ thống quảng cáo chuyên nghiệp ngay hôm nay</h2>
             <p>
-              Bắt đầu từ 399.000đ để anh/chị không phải mò từng video rời rạc, copy camp cảm tính và mất tiền vì không biết nhìn chỉ số nào.
+              Bắt đầu từ 399.000đ để bạn không phải mò từng video rời rạc, copy camp cảm tính và mất tiền vì không biết nhìn chỉ số nào.
             </p>
             <div class="hero-actions" style="justify-content: center">
               <a class="btn btn-primary" href="#hoc-phi" data-cta>Chọn gói học phù hợp</a>
@@ -2561,8 +2708,17 @@
         </section>
       </main>
 
-      <div class="sticky-cta">
-        <a class="btn btn-primary" href="#hoc-phi" data-cta>Facebook Ads Master 2026 - từ 399K</a>
+      <div class="sticky-cta" aria-label="Ưu đãi khóa Facebook Ads Master 2026">
+        <div class="sticky-cta-inner">
+          <div class="sticky-offer">
+            <span class="sticky-icon" aria-hidden="true">↯</span>
+            <div class="sticky-copy">
+              <strong>Facebook Ads Master 2026</strong>
+              <span><del>3.995.000đ</del> <b>từ 399.000đ</b> <em class="sticky-discount">-90%</em></span>
+            </div>
+          </div>
+          <a class="btn btn-primary" href="#hoc-phi" data-cta>Đăng ký ngay →</a>
+        </div>
       </div>
       <div id="toast" class="toast" role="status" aria-live="polite"></div>
     </div>
@@ -2579,7 +2735,7 @@
             label: "Gói Video",
             price: "399K",
             amount: 399000,
-            summary: "Đang chọn gói Video 399.000đ. Điền thông tin, hệ thống sẽ tạo đơn và chuyển anh/chị sang trang thanh toán SePay.",
+            summary: "Đang chọn gói Video 399.000đ. Điền thông tin, hệ thống sẽ tạo đơn và chuyển bạn sang trang thanh toán SePay.",
             note: "Gói đang chọn: Video 399.000đ - học qua video.",
             submitText: "Thanh toán gói Video - 399.000đ",
           },
@@ -2715,7 +2871,7 @@
           } catch (error) {
             button.disabled = false;
             button.textContent = oldText;
-            showToast(error && error.message ? error.message : "Chưa tạo được đơn thanh toán, anh/chị thử lại giúp em.", true);
+            showToast(error && error.message ? error.message : "Chưa tạo được đơn thanh toán, bạn thử lại giúp em.", true);
           }
         });
 
