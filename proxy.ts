@@ -12,7 +12,11 @@ function isLocalHost(host: string) {
 }
 
 function isLadiPageRoute(pathname: string) {
-  return pathname.startsWith("/ladipage/");
+  return (
+    pathname.startsWith("/ladipage/") ||
+    pathname === "/academy/facebook-ads-master-2026" ||
+    pathname === "/academy/facebook-ads-master-2026.html"
+  );
 }
 
 function buildContentSecurityPolicy(nonce: string) {

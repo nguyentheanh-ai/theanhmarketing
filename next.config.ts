@@ -71,10 +71,13 @@ const nextConfig: NextConfig = {
         destination: "/khoa-hoc",
         permanent: false,
       },
+    ];
+  },
+  async rewrites() {
+    return [
       {
         source: "/academy/facebook-ads-master-2026",
-        destination: "/khoa-hoc/facebook-ads-2026",
-        permanent: false,
+        destination: "/academy/facebook-ads-master-2026.html",
       },
     ];
   },

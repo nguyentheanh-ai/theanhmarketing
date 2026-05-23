@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Dashboard bao cao quang cao">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#24140f"/>
+      <stop offset=".6" stop-color="#11141b"/>
+      <stop offset="1" stop-color="#0e1016"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" x2="1">
+      <stop offset="0" stop-color="#f66628"/>
+      <stop offset="1" stop-color="#ff8d4d"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" rx="38" fill="url(#bg)"/>
+  <rect x="80" y="70" width="800" height="400" rx="30" fill="#181a20" stroke="#343945" stroke-width="3"/>
+  <text x="118" y="124" fill="#f3f5f7" font-family="Arial, sans-serif" font-size="28" font-weight="900">ADS PERFORMANCE DASHBOARD</text>
+  <rect x="118" y="160" width="170" height="88" rx="18" fill="#2a1712" stroke="#f66628"/>
+  <rect x="318" y="160" width="170" height="88" rx="18" fill="#11141b" stroke="#343945"/>
+  <rect x="518" y="160" width="170" height="88" rx="18" fill="#11141b" stroke="#343945"/>
+  <rect x="718" y="160" width="124" height="88" rx="18" fill="#11141b" stroke="#343945"/>
+  <g font-family="Arial, sans-serif" font-weight="900">
+    <text x="142" y="196" fill="#ff8d4d" font-size="18">CPA</text>
+    <text x="142" y="230" fill="#f3f5f7" font-size="30">82K</text>
+    <text x="342" y="196" fill="#949ba8" font-size="18">CTR</text>
+    <text x="342" y="230" fill="#f3f5f7" font-size="30">2.8%</text>
+    <text x="542" y="196" fill="#949ba8" font-size="18">CPC</text>
+    <text x="542" y="230" fill="#f3f5f7" font-size="30">1.9K</text>
+    <text x="742" y="196" fill="#949ba8" font-size="18">ROAS</text>
+    <text x="742" y="230" fill="#f3f5f7" font-size="30">3.2</text>
+  </g>
+  <rect x="118" y="286" width="456" height="138" rx="22" fill="#11141b" stroke="#343945"/>
+  <g fill="none" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M154 388 C214 330 260 366 310 318 S430 294 538 326" stroke="#f66628"/>
+    <path d="M154 352 C228 370 292 340 366 362 S470 382 538 344" stroke="#ff8d4d" opacity=".52"/>
+  </g>
+  <g fill="#f66628">
+    <circle cx="154" cy="388" r="7"/>
+    <circle cx="310" cy="318" r="7"/>
+    <circle cx="538" cy="326" r="7"/>
+  </g>
+  <rect x="612" y="286" width="230" height="138" rx="22" fill="#11141b" stroke="#343945"/>
+  <g transform="translate(650 318)" fill="url(#orange)">
+    <rect width="28" height="74" rx="8"/>
+    <rect x="50" y="32" width="28" height="42" rx="8"/>
+    <rect x="100" y="8" width="28" height="66" rx="8"/>
+    <rect x="150" y="22" width="28" height="52" rx="8"/>
+  </g>
+  <text x="650" y="414" fill="#949ba8" font-family="Arial, sans-serif" font-size="18" font-weight="800">Decision by data</text>
+</svg>
