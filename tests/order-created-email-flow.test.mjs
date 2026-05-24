@@ -18,6 +18,15 @@ test("order creation routes trigger lead and pending-payment emails without bloc
   }
 });
 
+test("public order route tags remarketing lead source by selected landing page", () => {
+  const publicOrderRoute = read("app/api/orders/route.ts");
+
+  assert.match(publicOrderRoute, /determineLeadSource/);
+  assert.match(publicOrderRoute, /ai-master-x10/);
+  assert.match(publicOrderRoute, /LDP AI Master X10/);
+  assert.doesNotMatch(publicOrderRoute, /source: "LDP Facebook Ads Master 2026"/);
+});
+
 test("email-based register form no longer sends a duplicate legacy registration email before order creation", () => {
   const registerForm = read("components/auth/register-form.tsx");
 

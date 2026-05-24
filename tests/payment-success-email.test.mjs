@@ -84,6 +84,29 @@ test("includes temporary login credentials when an account is auto-created", () 
   assert.match(payload.text, /Mật khẩu tạm: Anh0900000000/);
 });
 
+test("builds AI Master payment success benefits for the AI Master order", () => {
+  const payload = buildPaymentSuccessEmailPayload({
+    ...paidOrder,
+    courseSlug: "ai-master-x10-hieu-suat",
+    courseTitle: "AI Master X10 hiệu suất - Biến tri thức thành tiền",
+    amount: 1299000,
+    amountLabel: "1.299.000đ",
+    orderItems: [
+      {
+        slug: "ai-master-x10-hieu-suat",
+        title: "AI Master X10 hiệu suất - Biến tri thức thành tiền",
+        price: 1299000,
+      },
+    ],
+  });
+
+  assert.match(payload.subject, /AI Master X10/);
+  assert.match(payload.html, /Quyền truy cập khóa AI Master X10 hiệu suất/);
+  assert.match(payload.html, /Bộ agent, template và workflow triển khai landing, content, video, CRM/);
+  assert.doesNotMatch(payload.html, /Facebook Ads Master 2026/);
+  assert.match(payload.text, /biến tri thức thành sản phẩm bán được/);
+});
+
 test("sends payment success email only for paid orders without a prior sent timestamp", () => {
   assert.equal(shouldSendPaymentSuccessEmail(paidOrder), true);
   assert.equal(

@@ -66,7 +66,18 @@ function getProductTitle(order: PaymentOrder) {
 
 function getBenefitItems(order: PaymentOrder) {
   const productTitle = getProductTitle(order);
+  const courseIdentity = `${order.courseSlug} ${productTitle}`.toLowerCase();
+  const isAiMaster = courseIdentity.includes("ai-master-x10") || courseIdentity.includes("ai master x10");
   const isSupportPlan = /799|zoom|agent kit|hỗ trợ/i.test(productTitle);
+
+  if (isAiMaster) {
+    return [
+      "Quyền truy cập khóa AI Master X10 hiệu suất",
+      "Lộ trình biến tri thức thành sản phẩm bán được",
+      "Bộ agent, template và workflow triển khai landing, content, video, CRM",
+      "Dashboard học viên và tài nguyên thực hành đi kèm",
+    ];
+  }
 
   if (isSupportPlan) {
     return [

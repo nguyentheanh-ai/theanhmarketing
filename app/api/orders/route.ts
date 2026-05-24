@@ -12,7 +12,22 @@ import {
 } from "@/lib/security/validation";
 import { sendOrderCreatedEmails } from "@/lib/notifications/pending-payment-email";
 import { createLeadAdmin } from "@/services/leadService";
-import { createPaymentOrder } from "@/services/orderService";
+import { createPaymentOrder, type PaymentOrder } from "@/services/orderService";
+
+function determineLeadSource(order: PaymentOrder, landingPage?: string) {
+  const page = cleanText(landingPage, 120);
+  const courseIdentity = `${order.courseSlug} ${order.courseTitle}`.toLowerCase();
+
+  if (page.includes("ai-master-x10") || courseIdentity.includes("ai-master-x10")) {
+    return "LDP AI Master X10";
+  }
+
+  if (page.includes("facebook-ads-master-2026") || courseIdentity.includes("facebook-ads-2026")) {
+    return "LDP Facebook Ads Master 2026";
+  }
+
+  return page ? `LDP ${page}` : `LDP ${order.courseTitle || "Website"}`;
+}
 
 export async function POST(request: Request) {
   try {
@@ -103,7 +118,7 @@ export async function POST(request: Request) {
       email,
       phone,
       message: remarketingNote,
-      source: "LDP Facebook Ads Master 2026",
+      source: determineLeadSource(order, body.landingPage),
     });
 
     if (!leadSync.ok) {
