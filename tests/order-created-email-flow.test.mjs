@@ -27,6 +27,20 @@ test("public order route tags remarketing lead source by selected landing page",
   assert.doesNotMatch(publicOrderRoute, /source: "LDP Facebook Ads Master 2026"/);
 });
 
+test("payment page lets customers copy account, amount, content, and full transfer info", () => {
+  const paymentPage = read("app/thanh-toan/[code]/page.tsx");
+  const transferDetails = read("components/payment/transfer-details.tsx");
+
+  assert.match(paymentPage, /amount=\{order\.amount\}/);
+  assert.match(paymentPage, /amountLabel=\{order\.amountLabel\}/);
+  assert.match(transferDetails, /Copy STK/);
+  assert.match(transferDetails, /Copy số tiền/);
+  assert.match(transferDetails, /Copy nội dung/);
+  assert.match(transferDetails, /Copy tất cả/);
+  assert.match(transferDetails, /Số tài khoản:/);
+  assert.match(transferDetails, /Nội dung chuyển khoản:/);
+});
+
 test("email-based register form no longer sends a duplicate legacy registration email before order creation", () => {
   const registerForm = read("components/auth/register-form.tsx");
 

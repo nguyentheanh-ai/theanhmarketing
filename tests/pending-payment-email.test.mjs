@@ -72,19 +72,45 @@ test("builds an admin new lead email with student, phone, course, and payment st
 });
 
 test("builds a customer pending payment email with Sepay QR and payment page link", () => {
+  const previousBankCode = process.env.SEPAY_BANK_CODE;
+  const previousBankAccount = process.env.SEPAY_BANK_ACCOUNT_NUMBER;
+  const previousBankName = process.env.SEPAY_BANK_ACCOUNT_NAME;
+  process.env.SEPAY_BANK_CODE = "VPB";
+  process.env.SEPAY_BANK_ACCOUNT_NUMBER = "0367928921";
+  process.env.SEPAY_BANK_ACCOUNT_NAME = "THE ANH MARKETING";
+
   const payload = buildPendingPaymentEmailPayload(pendingOrder, {
     siteUrl: "https://www.theanhmarketing.com",
     from: "The Anh Marketing <hoc@theanhmarketing.com>",
   });
 
-  assert.equal(payload.to, "student@example.com");
-  assert.match(payload.subject, /Chưa thanh toán/);
-  assert.match(payload.html, /Chưa thanh toán/);
-  assert.match(payload.html, /399\.000đ/);
-  assert.match(payload.html, /https:\/\/qr\.sepay\.vn\/img\?bank=VPB&amp;acc=0367928921&amp;amount=399000&amp;des=TAMDEMO0524/);
-  assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/thanh-toan\/TAMDEMO0524/);
-  assert.match(payload.text, /QR Sepay: https:\/\/qr\.sepay\.vn\/img/);
-  assert.match(payload.text, /Trang thanh toán: https:\/\/www\.theanhmarketing\.com\/thanh-toan\/TAMDEMO0524/);
+  try {
+    assert.equal(payload.to, "student@example.com");
+    assert.match(payload.subject, /Chưa thanh toán/);
+    assert.match(payload.html, /Chưa thanh toán/);
+    assert.match(payload.html, /399\.000đ/);
+    assert.match(payload.html, /https:\/\/qr\.sepay\.vn\/img\?bank=VPB&amp;acc=0367928921&amp;amount=399000&amp;des=TAMDEMO0524/);
+    assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/thanh-toan\/TAMDEMO0524/);
+    assert.match(payload.html, /Thông tin chuyển khoản để copy/);
+    assert.match(payload.html, /Số tài khoản/);
+    assert.match(payload.html, /0367928921/);
+    assert.match(payload.html, /Nội dung chuyển khoản/);
+    assert.match(payload.html, /TAMDEMO0524/);
+    assert.match(payload.text, /QR Sepay: https:\/\/qr\.sepay\.vn\/img/);
+    assert.match(payload.text, /Thông tin chuyển khoản:/);
+    assert.match(payload.text, /Số tài khoản: 0367928921/);
+    assert.match(payload.text, /Nội dung chuyển khoản: TAMDEMO0524/);
+    assert.match(payload.text, /Trang thanh toán: https:\/\/www\.theanhmarketing\.com\/thanh-toan\/TAMDEMO0524/);
+  } finally {
+    if (previousBankCode === undefined) delete process.env.SEPAY_BANK_CODE;
+    else process.env.SEPAY_BANK_CODE = previousBankCode;
+
+    if (previousBankAccount === undefined) delete process.env.SEPAY_BANK_ACCOUNT_NUMBER;
+    else process.env.SEPAY_BANK_ACCOUNT_NUMBER = previousBankAccount;
+
+    if (previousBankName === undefined) delete process.env.SEPAY_BANK_ACCOUNT_NAME;
+    else process.env.SEPAY_BANK_ACCOUNT_NAME = previousBankName;
+  }
 });
 
 test("sends pending payment email only for pending orders with email", () => {

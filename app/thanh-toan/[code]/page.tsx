@@ -69,6 +69,8 @@ export default async function PaymentPage({
                 src={qrUrl}
               />
               <TransferDetails
+                amount={order.amount}
+                amountLabel={order.amountLabel}
                 bankAccountName={sepay.bankAccountName}
                 bankAccountNumber={sepay.bankAccountNumber}
                 bankName={bankName}

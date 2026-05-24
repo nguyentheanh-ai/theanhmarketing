@@ -24,6 +24,25 @@ const defaultSender = "The Anh Marketing <onboarding@resend.dev>";
 const defaultAdminRecipient = "12c1thdtheanh@gmail.com";
 const defaultSiteUrl = "https://www.theanhmarketing.com";
 
+const bankNameMap: Record<string, string> = {
+  VCB: "Vietcombank",
+  TCB: "Techcombank",
+  ACB: "ACB",
+  MBB: "MB Bank",
+  BIDV: "BIDV",
+  ICB: "VietinBank",
+  CTG: "VietinBank",
+  VPB: "VPBank",
+  TPB: "TPBank",
+  STB: "Sacombank",
+  VIB: "VIB",
+  HDB: "HDBank",
+  OCB: "OCB",
+  SHB: "SHB",
+  EIB: "Eximbank",
+  MSB: "MSB",
+};
+
 function escapeHtml(value: string) {
   return value
     .replaceAll("&", "&amp;")
@@ -42,6 +61,23 @@ function normalizeSiteUrl(value?: string) {
   } catch {
     return defaultSiteUrl;
   }
+}
+
+function getBankDisplayName(bankCode: string) {
+  const normalized = bankCode.trim().toUpperCase();
+  if (!normalized) {
+    return "";
+  }
+
+  return bankNameMap[normalized] ?? normalized;
+}
+
+function getPaymentBankConfig() {
+  return {
+    bankCode: process.env.SEPAY_BANK_CODE ?? "",
+    bankAccountNumber: process.env.SEPAY_BANK_ACCOUNT_NUMBER ?? "",
+    bankAccountName: process.env.SEPAY_BANK_ACCOUNT_NAME ?? "",
+  };
 }
 
 function getSender(options: PendingPaymentEmailOptions) {
@@ -88,6 +124,20 @@ function getPaymentStatusLabel(order: PaymentOrder) {
   }
 
   return "Chưa thanh toán";
+}
+
+function getTransferRows(order: PaymentOrder) {
+  const sepay = getPaymentBankConfig();
+  const transferContent = (order.sepayReferenceCode || order.orderCode).toUpperCase();
+  const bankName = getBankDisplayName(sepay.bankCode);
+
+  return [
+    ["Ngân hàng", bankName],
+    ["Số tài khoản", sepay.bankAccountNumber],
+    ["Chủ tài khoản", sepay.bankAccountName],
+    ["Số tiền", String(order.amount)],
+    ["Nội dung chuyển khoản", transferContent],
+  ].filter(([, value]) => Boolean(String(value ?? "").trim())) as Array<[string, string]>;
 }
 
 function buildRows(rows: Array<[string, string]>) {
@@ -235,6 +285,23 @@ export function buildPendingPaymentEmailPayload(
   const safeOrderCode = escapeHtml(order.orderCode);
   const safePaymentUrl = escapeHtml(paymentUrl);
   const safeQrUrl = escapeHtml(order.paymentQrUrl);
+  const transferRows = getTransferRows(order);
+  const transferBlock = transferRows.length
+    ? `
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;border:1px solid #3a3a3a;border-radius:14px;background:#202020">
+        <tr>
+          <td style="padding:22px 24px">
+            <p style="margin:0 0 18px;color:#f66628;font-size:13px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase">
+              Thông tin chuyển khoản để copy
+            </p>
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+              ${buildRows(transferRows)}
+            </table>
+          </td>
+        </tr>
+      </table>
+    `
+    : "";
   const qrBlock = order.paymentQrUrl
     ? `
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;border:1px solid #3a3a3a;border-radius:14px;background:#f6f1e7">
@@ -300,6 +367,7 @@ export function buildPendingPaymentEmailPayload(
                   </table>
 
                   ${qrBlock}
+                  ${transferBlock}
 
                   <div style="padding-top:28px;text-align:center">
                     <a href="${safePaymentUrl}" style="display:block;background:#f66628;color:#111111;text-decoration:none;border-radius:10px;padding:17px 20px;font-size:15px;font-weight:900;letter-spacing:0.02em;text-transform:uppercase">
@@ -333,6 +401,9 @@ export function buildPendingPaymentEmailPayload(
     `Khóa học: ${productTitle}`,
     `Số tiền: ${order.amountLabel}`,
     `Trạng thái thanh toán: ${statusLabel}`,
+    transferRows.length
+      ? ["", "Thông tin chuyển khoản:", ...transferRows.map(([label, value]) => `${label}: ${value}`)].join("\n")
+      : "",
     order.paymentQrUrl ? `QR Sepay: ${order.paymentQrUrl}` : "",
     `Trang thanh toán: ${paymentUrl}`,
   ]
