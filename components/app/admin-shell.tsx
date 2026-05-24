@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
@@ -10,7 +11,7 @@ const adminNavGroups = [
     label: "Vận hành",
     items: [
       { label: "Tổng quan", href: "/admin/dashboard", shortcut: "01" },
-      { label: "Leads", href: "/admin/leads", shortcut: "02" },
+      { label: "Lead CRM", href: "/admin/leads", shortcut: "02" },
       { label: "Đơn hàng", href: "/admin/don-hang", shortcut: "03" },
       { label: "Remarketing", href: "/admin/remarketing", shortcut: "04" },
       { label: "Học viên", href: "/admin/hoc-vien", shortcut: "05" },
@@ -44,23 +45,43 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <main className="min-h-screen bg-[#edf3f8] text-slate-950">
-      <aside className="fixed inset-y-0 left-0 hidden w-72 flex-col border-r border-white/10 bg-[#080b12] p-5 text-white shadow-[18px_0_55px_rgba(15,23,42,0.18)] lg:flex">
-        <Link href="/admin/dashboard" className="block rounded-2xl border border-white/12 bg-white/[0.05] p-4">
-          <span className="text-xs font-bold uppercase tracking-[0.18em] text-white/40">
-            CRM Admin
+    <main className="min-h-screen bg-[#0b0f19] text-slate-100">
+      <aside className="fixed inset-y-0 left-0 hidden w-72 flex-col border-r border-white/10 bg-[#080c14] p-4 text-white shadow-[18px_0_55px_rgba(0,0,0,0.24)] lg:flex">
+        <Link
+          href="/admin/dashboard"
+          className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-3 transition hover:border-sky-300/30 hover:bg-white/[0.07]"
+        >
+          <span className="grid size-11 place-items-center overflow-hidden rounded-md bg-white p-1.5">
+            <Image
+              alt="The Anh Marketing"
+              className="size-full object-contain"
+              height={72}
+              priority
+              src="/brand/ta-logo.svg"
+              unoptimized
+              width={72}
+            />
           </span>
-          <span className="mt-2 block text-lg font-black tracking-[-0.03em]">
-            The Anh Marketing
+          <span className="min-w-0">
+            <span className="block text-sm font-bold leading-4">The Anh Marketing</span>
+            <span className="mt-0.5 block text-xs font-medium text-slate-400">AI Growth OS</span>
           </span>
         </Link>
+
+        <label className="mt-4 flex min-h-10 items-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-3 text-sm text-slate-400">
+          <span aria-hidden="true">⌕</span>
+          <input
+            aria-label="Global search"
+            className="w-full bg-transparent outline-none placeholder:text-slate-500"
+            placeholder="Tìm module..."
+            type="search"
+          />
+        </label>
 
         <nav className="mt-6 grid min-h-0 flex-1 gap-6 overflow-y-auto pr-1">
           {adminNavGroups.map((group) => (
             <div key={group.label}>
-              <p className="px-3 text-xs font-bold uppercase tracking-[0.16em] text-white/35">
-                {group.label}
-              </p>
+              <p className="px-3 text-xs font-bold uppercase text-slate-500">{group.label}</p>
               <div className="mt-2 grid gap-1">
                 {group.items.map((item) => {
                   const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -70,14 +91,14 @@ export function AdminShell({ children }: { children: ReactNode }) {
                       key={item.href}
                       href={item.href}
                       aria-current={isActive ? "page" : undefined}
-                      className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+                      className={`flex items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold transition ${
                         isActive
-                          ? "bg-white text-slate-950 shadow-[0_12px_32px_rgba(255,255,255,0.14)]"
-                          : "text-white/62 hover:bg-white/10 hover:text-white"
+                          ? "border border-sky-300/22 bg-sky-400/12 text-white shadow-[0_0_28px_rgba(56,189,248,0.14)]"
+                          : "text-slate-400 hover:bg-white/[0.06] hover:text-white"
                       }`}
                     >
                       <span>{item.label}</span>
-                      <span className={`text-[11px] font-black ${isActive ? "text-slate-500" : "text-white/25"}`}>
+                      <span className={`text-[11px] font-bold ${isActive ? "text-sky-200" : "text-slate-600"}`}>
                         {item.shortcut}
                       </span>
                     </Link>
@@ -88,19 +109,35 @@ export function AdminShell({ children }: { children: ReactNode }) {
           ))}
         </nav>
 
-        <div className="mt-5 rounded-2xl border border-white/12 bg-white/[0.05] p-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/35">
-            Phiên làm việc
-          </p>
-          <SignOutButton mode="admin" className="mt-3 w-full rounded-xl border border-white/15 px-3 py-2 text-left text-sm font-semibold text-white/65 transition hover:bg-white hover:text-slate-950 disabled:opacity-50" />
+        <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.04] p-3">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs font-bold uppercase text-slate-500">Realtime</p>
+            <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_16px_rgba(52,211,153,0.75)]" />
+          </div>
+          <p className="mt-2 text-sm text-slate-400">Lead, thanh toán và quyền học đồng bộ từ hệ thống chính.</p>
+          <SignOutButton mode="admin" className="mt-3 w-full rounded-md border border-white/12 px-3 py-2 text-left text-sm font-semibold text-slate-300 transition hover:bg-white hover:text-slate-950 disabled:opacity-50" />
         </div>
       </aside>
 
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 px-5 py-4 text-slate-950 backdrop-blur-xl lg:hidden">
-        <Link href="/admin/dashboard" className="font-black tracking-[-0.03em]">
-          CRM Admin · The Anh
-        </Link>
-        <nav className="mobile-nav-scroll mt-4 flex gap-2 overflow-x-auto">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0b0f19]/92 px-4 py-3 text-white backdrop-blur-xl lg:hidden">
+        <div className="flex items-center justify-between gap-3">
+          <Link href="/admin/dashboard" className="flex items-center gap-2 font-bold">
+            <span className="grid size-9 place-items-center overflow-hidden rounded-md bg-white p-1">
+              <Image
+                alt="The Anh Marketing"
+                className="size-full object-contain"
+                height={64}
+                priority
+                src="/brand/ta-logo.svg"
+                unoptimized
+                width={64}
+              />
+            </span>
+            <span>AI Growth OS</span>
+          </Link>
+          <SignOutButton mode="admin" className="rounded-md border border-white/12 px-3 py-2 text-sm font-semibold text-slate-300 disabled:opacity-50" />
+        </div>
+        <nav className="mobile-nav-scroll mt-3 flex gap-2 overflow-x-auto">
           {adminNav.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
@@ -109,27 +146,32 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 key={item.href}
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`shrink-0 rounded-xl px-4 py-2 text-sm font-semibold ${
-                  isActive ? "bg-slate-950 text-white" : "bg-slate-100 text-slate-600"
+                className={`shrink-0 rounded-md px-3 py-2 text-sm font-semibold ${
+                  isActive ? "bg-sky-400 text-slate-950" : "bg-white/[0.07] text-slate-300"
                 }`}
               >
                 {item.label}
               </Link>
             );
           })}
-          <SignOutButton mode="admin" className="shrink-0 rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 disabled:opacity-50" />
         </nav>
       </header>
 
       <section className="lg:ml-72">
-        <div className="sticky top-0 z-30 hidden border-b border-slate-200/80 bg-white/82 px-12 py-4 backdrop-blur-xl xl:px-16 lg:block">
-          <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-5">
+        <div className="sticky top-0 z-30 hidden border-b border-white/10 bg-[#0b0f19]/88 px-8 py-4 backdrop-blur-xl xl:px-10 lg:block">
+          <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-5">
             <div className="flex min-w-0 flex-1 items-center gap-3">
-              <div className="flex h-10 w-full max-w-xl items-center rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-medium text-slate-400">
-                Tìm lead, đơn hàng, học viên hoặc khóa học
-              </div>
-              <span className="shrink-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-400">
-                30 ngày
+              <label className="flex h-10 w-full max-w-xl items-center gap-2 rounded-md border border-white/10 bg-white/[0.05] px-3 text-sm text-slate-400">
+                <span aria-hidden="true">⌕</span>
+                <input
+                  aria-label="Global search"
+                  className="w-full bg-transparent outline-none placeholder:text-slate-500"
+                  placeholder="Tìm lead, đơn hàng, học viên hoặc khóa học..."
+                  type="search"
+                />
+              </label>
+              <span className="shrink-0 rounded-md border border-amber-200/18 bg-amber-200/8 px-3 py-2 text-xs font-bold uppercase text-amber-100">
+                Realtime
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -137,7 +179,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 transition hover:border-slate-300 hover:text-slate-950"
+                  className="rounded-md border border-white/10 bg-white/[0.05] px-3 py-2 text-sm font-bold text-slate-200 transition hover:border-sky-300/30 hover:bg-sky-400/12 hover:text-white"
                 >
                   {item.label}
                 </Link>
@@ -145,7 +187,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </div>
           </div>
         </div>
-        <div className="px-5 py-8 sm:px-6 lg:px-12 lg:py-10 xl:px-16">{children}</div>
+        <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 xl:px-10">{children}</div>
       </section>
     </main>
   );

@@ -7,14 +7,16 @@ function read(relativePath) {
   return fs.readFileSync(path.resolve(relativePath), "utf8");
 }
 
-test("admin shell uses a light SaaS workspace and avoids fixed logout overlap", () => {
+test("admin shell uses the dark Growth OS workspace and avoids fixed logout overlap", () => {
   const source = read("components/app/admin-shell.tsx");
 
-  assert.match(source, /bg-\[#edf3f8\]/);
+  assert.match(source, /bg-\[#0b0f19\]/);
+  assert.match(source, /\/brand\/ta-logo\.svg/);
+  assert.match(source, /AI Growth OS/);
   assert.match(source, /lg:flex/);
-  assert.match(source, /lg:px-12/);
-  assert.match(source, /xl:px-16/);
-  assert.match(source, /lg:py-10/);
+  assert.match(source, /lg:px-8/);
+  assert.match(source, /xl:px-10/);
+  assert.match(source, /lg:py-8/);
   assert.doesNotMatch(source, /absolute inset-x-5 bottom-5/);
   assert.match(source, /Đơn hàng/);
 });
@@ -26,7 +28,7 @@ test("admin panels and orders page use roomy dashboard spacing", () => {
 
   assert.match(ui, /rounded-\[1\.35rem\]/);
   assert.match(ui, /shadow-\[0_22px_70px/);
-  assert.match(uiShell, /max-w-\[1440px\]/);
+  assert.match(uiShell, /max-w-\[1480px\]/);
   assert.match(ordersPage, /max-w-\[1440px\]/);
   assert.doesNotMatch(ordersPage, /max-w-\[1180px\]/);
   assert.match(ordersPage, /mt-8 grid gap-5/);
@@ -35,13 +37,13 @@ test("admin panels and orders page use roomy dashboard spacing", () => {
   assert.match(ordersPage, /\[\&_td\]:px-3/);
 });
 
-test("admin course page renders real official courses instead of empty demo blocks", () => {
+test("admin course page renders real official courses instead of empty blocks", () => {
   const source = read("app/admin/khoa-hoc/page.tsx");
 
   assert.match(source, /Nguồn dữ liệu/);
   assert.match(source, /CourseEditor initialCourses/);
   assert.doesNotMatch(source, /demo/i);
-  assert.doesNotMatch(source, /QuÃ|áº|Ã¡|Ä|Æ/i);
+  assert.doesNotMatch(source, /QuÃƒ|Ã¡Âº|ÃƒÂ¡|Ã„|Ã†/i);
 });
 
 test("admin orders page shows phone numbers with a copy action", () => {
