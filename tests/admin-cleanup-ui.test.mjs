@@ -21,11 +21,14 @@ test("admin shell uses a light SaaS workspace and avoids fixed logout overlap", 
 
 test("admin panels and orders page use roomy dashboard spacing", () => {
   const ui = read("components/admin/crm-ui.tsx");
+  const uiShell = read("components/app/admin-shell.tsx");
   const ordersPage = read("app/admin/don-hang/page.tsx");
 
   assert.match(ui, /rounded-\[1\.35rem\]/);
   assert.match(ui, /shadow-\[0_22px_70px/);
-  assert.match(ordersPage, /max-w-\[1180px\]/);
+  assert.match(uiShell, /max-w-\[1440px\]/);
+  assert.match(ordersPage, /max-w-\[1440px\]/);
+  assert.doesNotMatch(ordersPage, /max-w-\[1180px\]/);
   assert.match(ordersPage, /mt-8 grid gap-5/);
   assert.match(ordersPage, /mt-7 p-6/);
   assert.match(ordersPage, /\[\&_th\]:px-3/);

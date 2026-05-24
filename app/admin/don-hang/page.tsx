@@ -20,7 +20,7 @@ export default async function AdminOrdersPage() {
 
   return (
     <ProtectedAdminShell nextPath="/admin/don-hang">
-      <div className="mx-auto max-w-[1180px]">
+      <div className="mx-auto max-w-[1440px]">
         <AdminPageHeader
           eyebrow="Revenue operations"
           title="Quản lý đơn hàng"

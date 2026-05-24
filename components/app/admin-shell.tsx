@@ -123,7 +123,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
       <section className="lg:ml-72">
         <div className="sticky top-0 z-30 hidden border-b border-slate-200/80 bg-white/82 px-12 py-4 backdrop-blur-xl xl:px-16 lg:block">
-          <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-5">
+          <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-5">
             <div className="flex min-w-0 flex-1 items-center gap-3">
               <div className="flex h-10 w-full max-w-xl items-center rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-medium text-slate-400">
                 Tìm lead, đơn hàng, học viên hoặc khóa học
