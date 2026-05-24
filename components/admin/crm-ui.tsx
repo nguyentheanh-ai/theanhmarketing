@@ -19,7 +19,7 @@ export function AdminPanel({
   return (
     <div
       {...props}
-      className={`rounded-2xl border border-slate-200/80 bg-white text-slate-950 shadow-[0_20px_55px_rgba(15,23,42,0.07)] ${className}`}
+      className={`rounded-[1.35rem] border border-slate-200/75 bg-white/95 text-slate-950 shadow-[0_22px_70px_rgba(15,23,42,0.08)] ${className}`}
     >
       {children}
     </div>
@@ -46,10 +46,10 @@ export function AdminPageHeader({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-4 border-b border-slate-200 pb-6 md:flex-row md:items-end md:justify-between">
+    <div className="flex flex-col gap-4 border-b border-slate-200/85 pb-8 pt-1 md:flex-row md:items-end md:justify-between">
       <div>
         <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">{eyebrow}</p>
-        <h1 className="mt-3 text-3xl font-black tracking-[-0.035em] text-slate-950 md:text-4xl">
+        <h1 className="mt-3 text-[2.1rem] font-black leading-[1.05] tracking-[-0.035em] text-slate-950 md:text-[2.45rem]">
           {title}
         </h1>
         {description ? (

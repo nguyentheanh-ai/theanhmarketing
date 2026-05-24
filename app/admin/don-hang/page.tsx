@@ -20,33 +20,33 @@ export default async function AdminOrdersPage() {
 
   return (
     <ProtectedAdminShell nextPath="/admin/don-hang">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-[1180px]">
         <AdminPageHeader
           eyebrow="Revenue operations"
           title="Quản lý đơn hàng"
           description="Theo dõi trạng thái thanh toán, đối soát đơn chờ và doanh thu đã ghi nhận từ checkout hoặc tạo thủ công."
         />
 
-        <section className="mt-6 grid gap-3 md:grid-cols-4">
-          <AdminPanel className="p-4">
+        <section className="mt-8 grid gap-5 md:grid-cols-4">
+          <AdminPanel className="p-5">
             <p className="text-xs font-black uppercase tracking-[0.14em] text-black/38">Tổng đơn</p>
             <p className="mt-2 text-3xl font-black">{orders.length}</p>
           </AdminPanel>
-          <AdminPanel className="p-4">
+          <AdminPanel className="p-5">
             <p className="text-xs font-black uppercase tracking-[0.14em] text-black/38">Chờ thanh toán</p>
             <p className="mt-2 text-3xl font-black text-[#9a6418]">{pendingOrders.length}</p>
           </AdminPanel>
-          <AdminPanel className="p-4">
+          <AdminPanel className="p-5">
             <p className="text-xs font-black uppercase tracking-[0.14em] text-black/38">Đã thanh toán</p>
             <p className="mt-2 text-3xl font-black text-[#1f7a4d]">{paidOrders.length}</p>
           </AdminPanel>
-          <AdminPanel className="p-4">
+          <AdminPanel className="p-5">
             <p className="text-xs font-black uppercase tracking-[0.14em] text-black/38">Doanh thu</p>
             <p className="mt-2 text-2xl font-black">{formatVnd(revenue)}</p>
           </AdminPanel>
         </section>
 
-        <AdminPanel className="mt-5 p-5">
+        <AdminPanel className="mt-7 p-6">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.16em] text-[#8f6124]">Order queue</p>
@@ -59,9 +59,9 @@ export default async function AdminOrdersPage() {
             </div>
           </div>
 
-          <div className="mt-5 overflow-x-auto">
+          <div className="mt-6 overflow-x-auto">
             {orders.length > 0 ? (
-              <table className="w-full min-w-[1160px] text-left text-sm">
+              <table className="w-full min-w-[1040px] border-separate border-spacing-0 text-left text-sm [&_td]:px-3 [&_th]:px-3 [&_td:first-child]:pl-0 [&_th:first-child]:pl-0">
                 <thead className="text-xs uppercase tracking-[0.12em] text-black/38">
                   <tr>
                     <th className="py-3">Mã đơn</th>

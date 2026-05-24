@@ -44,7 +44,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <main className="min-h-screen bg-[#f5f7fb] text-slate-950">
+    <main className="min-h-screen bg-[#edf3f8] text-slate-950">
       <aside className="fixed inset-y-0 left-0 hidden w-72 flex-col border-r border-white/10 bg-[#080b12] p-5 text-white shadow-[18px_0_55px_rgba(15,23,42,0.18)] lg:flex">
         <Link href="/admin/dashboard" className="block rounded-2xl border border-white/12 bg-white/[0.05] p-4">
           <span className="text-xs font-bold uppercase tracking-[0.18em] text-white/40">
@@ -122,8 +122,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
       </header>
 
       <section className="lg:ml-72">
-        <div className="sticky top-0 z-30 hidden border-b border-slate-200 bg-white/78 px-8 py-3 backdrop-blur-xl lg:block">
-          <div className="flex items-center justify-between gap-5">
+        <div className="sticky top-0 z-30 hidden border-b border-slate-200/80 bg-white/82 px-12 py-4 backdrop-blur-xl xl:px-16 lg:block">
+          <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-5">
             <div className="flex min-w-0 flex-1 items-center gap-3">
               <div className="flex h-10 w-full max-w-xl items-center rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-medium text-slate-400">
                 Tìm lead, đơn hàng, học viên hoặc khóa học
@@ -145,7 +145,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </div>
           </div>
         </div>
-        <div className="px-5 py-6 lg:px-8">{children}</div>
+        <div className="px-5 py-8 sm:px-6 lg:px-12 lg:py-10 xl:px-16">{children}</div>
       </section>
     </main>
   );
