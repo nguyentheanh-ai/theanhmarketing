@@ -6,7 +6,7 @@
     <title>AI Master X10 hiệu suất - Biến tri thức thành tiền | The Anh Marketing</title>
     <meta
       name="description"
-      content="Khóa học AI Master X10 giúp bạn làm chủ AI để đóng gói tri thức, tạo content, dựng landing page, tự động hóa bán hàng và biến chuyên môn thành tài sản có thể bán."
+      content="Khóa học AI Master X10 giúp bạn dùng AI để research, tạo content, đóng gói sản phẩm tri thức, dựng website học viên, xây funnel và CRM mini."
     />
     <link rel="canonical" href="https://www.theanhmarketing.com/academy/ai-master-x10-hieu-suat" />
     <meta property="og:url" content="https://www.theanhmarketing.com/academy/ai-master-x10-hieu-suat" />
@@ -14,13 +14,13 @@
     <meta property="og:title" content="AI Master X10 hiệu suất - Biến tri thức thành tiền" />
     <meta
       property="og:description"
-      content="Làm chủ AI như một hệ điều hành công việc: insight, offer, content, landing page, automation và bán hàng."
+      content="Biến AI thành hệ điều hành công việc: research, create, publish, scale và bán thử sản phẩm tri thức trong 30 ngày."
     />
     <meta property="og:image" content="https://www.theanhmarketing.com/course-thumbnails/ai-master-x10-hieu-suat.webp" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <script>
@@ -43,18 +43,24 @@
     <style>
       :root {
         color-scheme: dark;
-        --bg: #08090d;
-        --panel: #14161d;
-        --panel-2: #1b1d25;
-        --text: #f7f7f3;
-        --muted: #b5b8c2;
-        --line: rgba(255, 255, 255, 0.12);
-        --orange: #f47a35;
-        --orange-2: #ff9b5a;
-        --green: #50e084;
-        --blue: #72b7ff;
-        --shadow: 0 28px 80px rgba(0, 0, 0, 0.35);
-        --radius: 24px;
+        --bg: #070706;
+        --bg-soft: #0b0b09;
+        --panel: #14130f;
+        --panel-2: #1b1912;
+        --panel-3: #211e16;
+        --text: #f7f1df;
+        --text-soft: #e8ddbd;
+        --muted: #b9ad92;
+        --muted-2: #81765e;
+        --gold: #D6A928;
+        --gold-bright: #FFE28A;
+        --gold-soft: rgba(214, 169, 40, 0.16);
+        --line: rgba(214, 169, 40, 0.22);
+        --line-soft: rgba(255, 226, 138, 0.12);
+        --danger: #ff6b5f;
+        --success: #5be28c;
+        --radius: 26px;
+        --shadow: 0 28px 100px rgba(0, 0, 0, 0.45);
       }
 
       * {
@@ -63,19 +69,34 @@
 
       html {
         scroll-behavior: smooth;
+        scroll-padding-top: 86px;
       }
 
       body {
         margin: 0;
+        overflow-x: hidden;
         background:
-          linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-          radial-gradient(circle at 70% 0%, rgba(244, 122, 53, 0.18), transparent 34%),
+          radial-gradient(circle at 78% 8%, rgba(214, 169, 40, 0.22), transparent 28%),
+          radial-gradient(circle at 8% 20%, rgba(255, 226, 138, 0.08), transparent 26%),
+          linear-gradient(rgba(255, 226, 138, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 226, 138, 0.035) 1px, transparent 1px),
           var(--bg);
-        background-size: 72px 72px, 72px 72px, auto, auto;
+        background-size: auto, auto, 76px 76px, 76px 76px, auto;
         color: var(--text);
-        font-family: "Be Vietnam Pro", system-ui, sans-serif;
-        line-height: 1.55;
+        font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+        line-height: 1.62;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          linear-gradient(180deg, rgba(7, 7, 6, 0.18), rgba(7, 7, 6, 0.92) 72%),
+          radial-gradient(circle at center, transparent, rgba(0, 0, 0, 0.64));
       }
 
       a {
@@ -88,29 +109,6 @@
         max-width: 100%;
       }
 
-      .page {
-        overflow: hidden;
-      }
-
-      .container {
-        width: min(1180px, calc(100% - 40px));
-        margin: 0 auto;
-      }
-
-      .section {
-        padding: 96px 0;
-        position: relative;
-      }
-
-      .kicker {
-        margin: 0 0 16px;
-        color: var(--orange-2);
-        font-size: 13px;
-        font-weight: 900;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-      }
-
       h1,
       h2,
       h3,
@@ -118,46 +116,139 @@
         margin-top: 0;
       }
 
-      h1 {
-        margin-bottom: 24px;
-        max-width: 760px;
-        font-size: clamp(52px, 8vw, 112px);
-        line-height: 0.92;
-        letter-spacing: -0.06em;
-        font-weight: 900;
-      }
-
-      h2 {
-        margin-bottom: 18px;
-        max-width: 900px;
-        font-size: clamp(36px, 5vw, 72px);
-        line-height: 0.98;
-        letter-spacing: -0.055em;
-        font-weight: 900;
-      }
-
-      h3 {
-        margin-bottom: 12px;
-        font-size: 24px;
-        line-height: 1.1;
-        letter-spacing: -0.03em;
-        font-weight: 900;
-      }
-
-      .serif {
+      h1,
+      h2,
+      .display {
         font-family: "Playfair Display", Georgia, serif;
         letter-spacing: -0.035em;
       }
 
-      .accent {
-        color: var(--orange-2);
+      h1 {
+        margin-bottom: 24px;
+        font-size: clamp(58px, 8.8vw, 124px);
+        line-height: 0.9;
+        font-weight: 800;
+        overflow-wrap: break-word;
+      }
+
+      h2 {
+        margin-bottom: 18px;
+        max-width: 970px;
+        font-size: clamp(38px, 5.5vw, 76px);
+        line-height: 0.98;
+        font-weight: 800;
+      }
+
+      h3 {
+        margin-bottom: 12px;
+        font-size: clamp(22px, 2.1vw, 30px);
+        line-height: 1.12;
+        letter-spacing: -0.02em;
+      }
+
+      .page {
+        max-width: 100%;
+        overflow: hidden;
+        padding-bottom: 92px;
+      }
+
+      .container {
+        width: min(1180px, calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        border-bottom: 1px solid rgba(214, 169, 40, 0.14);
+        background: rgba(7, 7, 6, 0.78);
+        backdrop-filter: blur(18px);
+      }
+
+      .nav-inner {
+        display: flex;
+        min-height: 72px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 22px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border: 1px solid rgba(255, 226, 138, 0.34);
+        border-radius: 14px;
+        background: linear-gradient(145deg, rgba(214, 169, 40, 0.2), rgba(255, 255, 255, 0.03));
+        color: var(--gold-bright);
+        font-family: "Playfair Display", Georgia, serif;
+        font-size: 20px;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .nav-links a:hover {
+        color: var(--gold-bright);
+      }
+
+      .section {
+        position: relative;
+        padding: 98px 0;
+      }
+
+      .section-tight {
+        padding-top: 48px;
+      }
+
+      .eyebrow,
+      .kicker {
+        margin: 0 0 16px;
+        color: var(--gold-bright);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
       }
 
       .lead {
-        max-width: 760px;
+        max-width: 780px;
         color: var(--muted);
-        font-size: clamp(18px, 2vw, 23px);
-        line-height: 1.65;
+        font-size: clamp(17px, 1.6vw, 21px);
+        line-height: 1.78;
+      }
+
+      .gold {
+        color: var(--gold-bright);
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .center {
+        text-align: center;
+      }
+
+      .center .lead,
+      .center h2 {
+        margin-left: auto;
+        margin-right: auto;
       }
 
       .btn {
@@ -168,21 +259,21 @@
         justify-content: center;
         gap: 10px;
         overflow: hidden;
+        border: 1px solid rgba(255, 226, 138, 0.2);
         border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.14);
         padding: 0 24px;
-        font-weight: 900;
-        transition: transform 0.2s ease, border-color 0.2s ease;
+        font-weight: 800;
+        transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
       }
 
       .btn::after {
         content: "";
         position: absolute;
-        inset: -40% auto -40% -30%;
-        width: 38%;
-        transform: skewX(-20deg);
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.44), transparent);
-        animation: shine 5.5s ease-in-out infinite;
+        inset: -50% auto -50% -36%;
+        width: 34%;
+        transform: skewX(-22deg);
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.58), transparent);
+        animation: shine 7.2s ease-in-out infinite;
       }
 
       .btn:hover {
@@ -190,34 +281,43 @@
       }
 
       .btn-primary {
-        border-color: rgba(244, 122, 53, 0.55);
-        background: linear-gradient(135deg, var(--orange), var(--orange-2));
-        color: #120906;
-        box-shadow: 0 18px 45px rgba(244, 122, 53, 0.22);
+        border-color: rgba(255, 226, 138, 0.52);
+        background: linear-gradient(135deg, var(--gold-bright), var(--gold), #a87918);
+        color: #120f06;
+        box-shadow: 0 18px 48px rgba(214, 169, 40, 0.2);
       }
 
       .btn-secondary {
-        background: rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.045);
         color: var(--text);
       }
 
-      .grid-2 {
-        display: grid;
-        grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
-        gap: 44px;
+      .hero {
+        min-height: calc(100svh - 72px);
+        display: flex;
         align-items: center;
+        padding: 70px 0 74px;
       }
 
-      .hero {
-        min-height: 100svh;
-        padding: 92px 0 56px;
-        display: flex;
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.02fr) minmax(340px, 0.82fr);
+        gap: 54px;
         align-items: center;
       }
 
       .hero-copy {
         position: relative;
-        z-index: 1;
+        z-index: 2;
+      }
+
+      .hero-copy,
+      .hero-visual,
+      .hero-grid > *,
+      .grid-2 > *,
+      .pricing-layout > *,
+      .compare > * {
+        min-width: 0;
       }
 
       .hero-actions,
@@ -226,77 +326,40 @@
         flex-wrap: wrap;
         gap: 14px;
         margin-top: 30px;
+        max-width: 100%;
       }
 
-      .hero-card {
-        border: 1px solid var(--line);
-        border-radius: 32px;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035));
-        padding: 20px;
-        box-shadow: var(--shadow);
-      }
-
-      .hero-thumb {
-        aspect-ratio: 16 / 10;
-        border-radius: 24px;
-        background: #11131a;
-        object-fit: contain;
-        width: 100%;
-      }
-
-      .benefit-list {
+      .hero-stats {
         display: grid;
-        gap: 12px;
-        margin-top: 18px;
-      }
-
-      .benefit-item {
-        display: grid;
-        grid-template-columns: 28px 1fr;
-        gap: 12px;
-        align-items: start;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        background: rgba(255, 255, 255, 0.06);
-        padding: 14px;
-        color: #e8e9ee;
-        font-weight: 800;
-      }
-
-      .check {
-        display: inline-grid;
-        width: 28px;
-        height: 28px;
-        place-items: center;
-        border-radius: 999px;
-        background: rgba(244, 122, 53, 0.16);
-        color: var(--orange-2);
-        font-weight: 900;
-      }
-
-      .stats {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 14px;
-        margin-top: 36px;
+        margin-top: 38px;
       }
 
       .stat,
-      .card {
+      .glass-card,
+      .card,
+      .asset-placeholder,
+      .pricing-card,
+      .form-card,
+      .faq details {
         border: 1px solid var(--line);
-        border-radius: var(--radius);
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.035));
-        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
+        background:
+          linear-gradient(180deg, rgba(255, 226, 138, 0.08), rgba(255, 255, 255, 0.025)),
+          rgba(20, 19, 15, 0.78);
+        box-shadow: 0 22px 70px rgba(0, 0, 0, 0.26);
       }
 
       .stat {
-        min-height: 122px;
+        min-height: 124px;
+        border-radius: 22px;
         padding: 20px;
       }
 
       .stat strong {
         display: block;
-        font-size: 26px;
+        color: var(--gold-bright);
+        font-size: 28px;
         letter-spacing: -0.04em;
       }
 
@@ -308,35 +371,310 @@
         font-weight: 700;
       }
 
-      .pain-grid,
-      .output-grid,
-      .bonus-grid {
+      .hero-visual {
+        position: relative;
+      }
+
+      .hero-visual::before {
+        content: "";
+        position: absolute;
+        inset: -24px -18px auto auto;
+        width: 62%;
+        height: 48%;
+        border-radius: 999px;
+        background: rgba(255, 226, 138, 0.17);
+        filter: blur(52px);
+      }
+
+      .course-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 34px;
+        padding: 20px;
+      }
+
+      .course-thumb {
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        object-fit: contain;
+        border: 1px solid rgba(255, 226, 138, 0.16);
+        border-radius: 24px;
+        background: #090806;
+      }
+
+      .course-card h3 {
+        margin-top: 24px;
+        font-family: "Playfair Display", Georgia, serif;
+        font-size: clamp(32px, 4vw, 52px);
+      }
+
+      .benefits {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .benefit {
+        display: grid;
+        grid-template-columns: 28px 1fr;
+        gap: 12px;
+        align-items: center;
+        border: 1px solid var(--line-soft);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.045);
+        padding: 12px;
+        color: var(--text-soft);
+        font-weight: 800;
+      }
+
+      .check,
+      .number,
+      .metric-dot {
+        display: inline-grid;
+        place-items: center;
+        border-radius: 999px;
+        background: rgba(214, 169, 40, 0.16);
+        color: var(--gold-bright);
+        font-weight: 900;
+      }
+
+      .check {
+        width: 28px;
+        height: 28px;
+      }
+
+      .x {
+        color: var(--danger);
+        font-weight: 900;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
+        gap: 34px;
+        align-items: start;
+      }
+
+      .grid-3,
+      .grid-4 {
+        display: grid;
         gap: 18px;
         margin-top: 38px;
       }
 
-      .card {
-        padding: 24px;
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
-      .card-number {
-        display: inline-grid;
-        width: 44px;
-        height: 44px;
-        margin-bottom: 18px;
-        place-items: center;
-        border-radius: 999px;
-        background: rgba(244, 122, 53, 0.18);
-        color: var(--orange-2);
-        font-weight: 900;
+      .grid-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .card {
+        min-height: 100%;
+        border-radius: var(--radius);
+        padding: 26px;
+      }
+
+      .number {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 22px;
+        border: 1px solid rgba(255, 226, 138, 0.22);
+        font-size: 16px;
       }
 
       .card p,
-      .module-card p,
-      .bonus-card p {
+      .glass-card p {
         color: var(--muted);
+      }
+
+      .accordion-list {
+        display: grid;
+        gap: 18px;
+      }
+
+      .accordion-item {
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: rgba(20, 19, 15, 0.74);
+        padding: 22px;
+      }
+
+      .accordion-item:first-child {
+        background:
+          radial-gradient(circle at 85% 20%, rgba(214, 169, 40, 0.14), transparent 34%),
+          rgba(20, 19, 15, 0.9);
+      }
+
+      .accordion-head {
+        display: grid;
+        grid-template-columns: 54px 1fr;
+        gap: 18px;
+        align-items: center;
+      }
+
+      .mechanism {
+        overflow: hidden;
+        border-top: 1px solid rgba(214, 169, 40, 0.18);
+        border-bottom: 1px solid rgba(214, 169, 40, 0.18);
+        background:
+          radial-gradient(circle at 50% -10%, rgba(214, 169, 40, 0.2), transparent 35%),
+          rgba(6, 6, 5, 0.46);
+      }
+
+      .framework-card {
+        min-height: 250px;
+      }
+
+      .framework-card h3 {
+        color: var(--gold-bright);
+      }
+
+      .terminal {
+        overflow: hidden;
+        border-radius: 26px;
+      }
+
+      .terminal-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid var(--line-soft);
+        padding: 14px 18px;
+        color: var(--muted);
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        font-size: 13px;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--gold);
+        opacity: 0.75;
+      }
+
+      .terminal-body {
+        display: grid;
+        gap: 16px;
+        padding: 24px;
+      }
+
+      .output-line {
+        display: grid;
+        grid-template-columns: 132px 1fr;
+        gap: 14px;
+        color: var(--muted);
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        font-size: 13px;
+      }
+
+      .output-line strong {
+        color: var(--gold-bright);
+      }
+
+      .radar-wrap {
+        display: grid;
+        grid-template-columns: 1fr 0.85fr;
+        gap: 24px;
+        align-items: center;
+      }
+
+      .radar-chart {
+        width: 100%;
+        max-width: 440px;
+        margin: 0 auto;
+      }
+
+      .chart-legend {
+        display: grid;
+        gap: 12px;
+      }
+
+      .legend-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        border-bottom: 1px solid var(--line-soft);
+        padding-bottom: 10px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .legend-row b {
+        color: var(--gold-bright);
+      }
+
+      .output-card {
+        overflow: hidden;
+        padding: 0;
+      }
+
+      .output-card .asset-placeholder,
+      .output-card img {
+        border-radius: 24px 24px 0 0;
+        border-width: 0 0 1px;
+      }
+
+      .output-card-body {
+        padding: 24px;
+      }
+
+      .asset-placeholder {
+        display: grid;
+        min-height: 210px;
+        place-items: center;
+        border-style: dashed;
+        border-radius: 24px;
+        padding: 28px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      .asset-placeholder strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--gold-bright);
+        font-size: 13px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .module-layout {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 42px;
+      }
+
+      .module-block {
+        border-radius: 30px;
+        padding: 28px;
+      }
+
+      .lesson-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .lesson-list div {
+        display: grid;
+        grid-template-columns: 54px 1fr;
+        gap: 14px;
+        align-items: start;
+        border-top: 1px solid var(--line-soft);
+        padding-top: 12px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .lesson-list b {
+        color: var(--gold-bright);
       }
 
       .compare {
@@ -347,19 +685,21 @@
       }
 
       .compare-panel {
-        border: 1px solid var(--line);
-        border-radius: 30px;
-        padding: 30px;
-        background: rgba(255, 255, 255, 0.045);
+        border-radius: 32px;
+        padding: 34px;
       }
 
       .compare-panel.after {
-        border-color: rgba(244, 122, 53, 0.42);
-        box-shadow: 0 24px 70px rgba(244, 122, 53, 0.11);
+        border-color: rgba(255, 226, 138, 0.38);
+        background:
+          radial-gradient(circle at 84% 0%, rgba(214, 169, 40, 0.2), transparent 34%),
+          rgba(4, 4, 3, 0.88);
+        box-shadow: 0 22px 80px rgba(214, 169, 40, 0.12);
       }
 
       .compare-panel ul,
-      .pricing-card ul {
+      .pricing-card ul,
+      .bonus-list {
         display: grid;
         gap: 14px;
         margin: 22px 0 0;
@@ -368,58 +708,34 @@
       }
 
       .compare-panel li,
-      .pricing-card li {
+      .pricing-card li,
+      .bonus-list li {
         display: grid;
-        grid-template-columns: 24px 1fr;
+        grid-template-columns: 28px 1fr;
         gap: 12px;
-        color: #e8e9ee;
+        align-items: start;
+        color: var(--text-soft);
         font-weight: 700;
-      }
-
-      .x {
-        color: #ff6b6b;
-      }
-
-      .modules {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 16px;
-        margin-top: 42px;
-      }
-
-      .module-card {
-        min-height: 260px;
-        border: 1px solid rgba(244, 122, 53, 0.23);
-        border-radius: 28px;
-        background: linear-gradient(180deg, rgba(244, 122, 53, 0.1), rgba(255, 255, 255, 0.035));
-        padding: 24px;
-      }
-
-      .module-card .card-number {
-        margin-bottom: 50px;
-      }
-
-      .bonus-card {
-        border: 1px solid rgba(80, 224, 132, 0.22);
-        border-radius: 24px;
-        background: rgba(80, 224, 132, 0.055);
-        padding: 22px;
       }
 
       .pricing-layout {
         display: grid;
-        grid-template-columns: minmax(0, 0.85fr) minmax(340px, 0.75fr);
+        grid-template-columns: minmax(0, 0.92fr) minmax(360px, 0.78fr);
         gap: 28px;
         align-items: start;
         margin-top: 42px;
       }
 
       .pricing-card {
-        border: 1px solid rgba(244, 122, 53, 0.42);
-        border-radius: 32px;
-        background: linear-gradient(180deg, rgba(244, 122, 53, 0.17), rgba(255, 255, 255, 0.05));
-        padding: 30px;
-        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+        border-color: rgba(255, 226, 138, 0.34);
+        border-radius: 34px;
+        padding: 34px;
+        background:
+          radial-gradient(circle at 84% 8%, rgba(255, 226, 138, 0.18), transparent 30%),
+          linear-gradient(180deg, rgba(214, 169, 40, 0.13), rgba(255, 255, 255, 0.035)),
+          rgba(20, 19, 15, 0.9);
       }
 
       .price-row {
@@ -431,62 +747,63 @@
       }
 
       .price {
-        font-size: clamp(54px, 7vw, 92px);
-        line-height: 0.9;
-        font-weight: 900;
-        letter-spacing: -0.06em;
+        color: var(--gold-bright);
+        font-family: "Playfair Display", Georgia, serif;
+        font-size: clamp(64px, 8vw, 112px);
+        line-height: 0.82;
+        font-weight: 800;
       }
 
       .old-price {
-        color: var(--muted);
+        color: var(--muted-2);
         font-size: 20px;
         text-decoration: line-through;
       }
 
       .form-card {
-        border-radius: 30px;
-        background: #f4f6f8;
-        color: #111827;
-        padding: 28px;
+        border-radius: 32px;
+        background: #f7f1df;
+        color: #15130d;
+        padding: 30px;
       }
 
       .form-card h3 {
-        color: #111827;
+        color: #15130d;
       }
 
       .form-card p {
-        color: #5c6472;
+        color: #5c5648;
       }
 
       .form-grid {
         display: grid;
         gap: 14px;
-        margin-top: 20px;
+        margin-top: 22px;
       }
 
       label {
         display: grid;
         gap: 7px;
-        color: #111827;
+        color: #15130d;
         font-size: 13px;
-        font-weight: 900;
+        font-weight: 800;
       }
 
       input {
         width: 100%;
         min-height: 52px;
-        border: 1px solid #d8dde6;
+        border: 1px solid #d8ceb1;
         border-radius: 16px;
         background: white;
-        color: #111827;
+        color: #15130d;
         padding: 0 16px;
         font: inherit;
         outline: none;
       }
 
       input:focus {
-        border-color: var(--orange);
-        box-shadow: 0 0 0 4px rgba(244, 122, 53, 0.12);
+        border-color: var(--gold);
+        box-shadow: 0 0 0 4px rgba(214, 169, 40, 0.16);
       }
 
       .form-card .btn {
@@ -500,8 +817,8 @@
         margin-top: 14px;
         border-radius: 16px;
         padding: 12px 14px;
-        background: #fff0e7;
-        color: #853b14;
+        background: #fff5d2;
+        color: #5f4300;
         font-size: 14px;
         font-weight: 800;
       }
@@ -512,16 +829,15 @@
         margin-top: 34px;
       }
 
-      details {
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        background: rgba(255, 255, 255, 0.045);
-        padding: 18px 20px;
+      .faq details {
+        border-radius: 20px;
+        padding: 20px 22px;
       }
 
       summary {
         cursor: pointer;
-        font-weight: 900;
+        color: var(--text);
+        font-weight: 800;
       }
 
       details p {
@@ -531,22 +847,25 @@
 
       .sticky-cta {
         position: fixed;
-        z-index: 20;
         right: 18px;
         bottom: 18px;
         left: 18px;
+        z-index: 25;
+        max-width: 920px;
+        margin: 0 auto;
+        border: 1px solid rgba(255, 226, 138, 0.26);
+        border-radius: 999px;
+        background: rgba(7, 7, 6, 0.88);
+        box-shadow: 0 22px 90px rgba(0, 0, 0, 0.56);
+        backdrop-filter: blur(18px);
+      }
+
+      .sticky-inner {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 18px;
-        max-width: 860px;
-        margin: 0 auto;
-        border: 1px solid rgba(244, 122, 53, 0.28);
-        border-radius: 999px;
-        background: rgba(8, 9, 13, 0.86);
         padding: 10px 12px 10px 18px;
-        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.38);
-        backdrop-filter: blur(16px);
       }
 
       .sticky-cta strong {
@@ -560,15 +879,15 @@
       }
 
       footer {
-        border-top: 1px solid var(--line);
-        padding: 42px 0 110px;
+        border-top: 1px solid rgba(214, 169, 40, 0.14);
+        padding: 42px 0 34px;
         color: var(--muted);
       }
 
       .reveal {
         opacity: 0;
         transform: translateY(18px);
-        transition: opacity 0.6s ease, transform 0.6s ease;
+        transition: opacity 0.7s ease, transform 0.7s ease;
       }
 
       .reveal.is-visible {
@@ -577,11 +896,11 @@
       }
 
       @keyframes shine {
-        0%, 68% {
-          left: -35%;
+        0%, 72% {
+          left: -36%;
         }
         100% {
-          left: 135%;
+          left: 140%;
         }
       }
 
@@ -596,62 +915,125 @@
         }
       }
 
-      @media (max-width: 980px) {
+      @media (max-width: 1020px) {
+        .hero-grid,
         .grid-2,
+        .radar-wrap,
         .pricing-layout,
         .compare {
           grid-template-columns: 1fr;
         }
 
-        .pain-grid,
-        .output-grid,
-        .bonus-grid,
-        .modules {
+        .grid-4 {
           grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .grid-3,
+        .module-layout {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .nav-links {
+          display: none;
         }
       }
 
-      @media (max-width: 640px) {
+      @media (max-width: 680px) {
         .container {
-          width: min(100% - 28px, 1180px);
+          width: calc(100% - 28px);
         }
 
         .section {
           padding: 68px 0;
         }
 
+        .nav-inner {
+          min-height: 64px;
+        }
+
+        .nav .btn {
+          display: none;
+        }
+
+        .brand {
+          font-size: 13px;
+        }
+
+        .brand-mark {
+          width: 38px;
+          height: 38px;
+        }
+
         .hero {
           min-height: auto;
-          padding-top: 64px;
+          padding: 48px 0 64px;
         }
 
         h1 {
-          font-size: 48px;
+          font-size: clamp(42px, 12.2vw, 48px);
+          line-height: 0.98;
+          letter-spacing: -0.025em;
         }
 
         h2 {
-          font-size: 38px;
+          font-size: 35px;
+          line-height: 1.05;
+          letter-spacing: -0.025em;
         }
 
-        .stats,
-        .pain-grid,
-        .output-grid,
-        .bonus-grid,
-        .modules {
+        .lead {
+          max-width: 100%;
+          font-size: 16px;
+          line-height: 1.7;
+        }
+
+        .eyebrow,
+        .kicker {
+          max-width: 100%;
+          letter-spacing: 0.12em;
+          line-height: 1.45;
+          overflow-wrap: anywhere;
+        }
+
+        .hero-actions .btn {
+          width: 100%;
+        }
+
+        .course-card h3 {
+          font-size: 36px;
+        }
+
+        .hero-stats,
+        .grid-3,
+        .grid-4,
+        .module-layout {
           grid-template-columns: 1fr;
         }
 
-        .module-card {
-          min-height: 0;
+        .card,
+        .pricing-card,
+        .form-card,
+        .compare-panel {
+          padding: 22px;
         }
 
-        .module-card .card-number {
-          margin-bottom: 22px;
+        .output-line {
+          grid-template-columns: 1fr;
+          gap: 4px;
+        }
+
+        .lesson-list div {
+          grid-template-columns: 46px 1fr;
         }
 
         .sticky-cta {
-          align-items: stretch;
+          right: 14px;
+          left: 14px;
           border-radius: 24px;
+        }
+
+        .sticky-inner {
+          align-items: stretch;
           flex-direction: column;
         }
 
@@ -662,153 +1044,387 @@
     </style>
   </head>
   <body>
-    <main class="page">
-      <section class="hero">
-        <div class="container grid-2">
-          <div class="hero-copy reveal">
-            <p class="kicker">AI Master X10 hiệu suất</p>
-            <h1>Biến <span class="accent">tri thức</span> thành tiền với AI.</h1>
+    <div class="page">
+      <header class="nav">
+        <div class="container nav-inner">
+          <a class="brand" href="#top" aria-label="AI Master X10">
+            <span class="brand-mark">AI</span>
+            <span>AI Master X10<br /><span class="muted">The Anh Marketing</span></span>
+          </a>
+          <nav class="nav-links" aria-label="Điều hướng landing page">
+            <a href="#ket-qua">Kết quả</a>
+            <a href="#lo-trinh">Lộ trình</a>
+            <a href="#qua-tang">Quà tặng</a>
+            <a href="#hoc-phi">Học phí</a>
+          </nav>
+          <a class="btn btn-primary" href="#hoc-phi" data-cta>Giữ chỗ học</a>
+        </div>
+      </header>
+
+      <main id="top">
+        <section class="hero">
+          <div class="container hero-grid">
+            <div class="hero-copy reveal">
+              <p class="eyebrow">Dành cho người muốn biến AI thành hệ thống kiếm tiền</p>
+              <h1>AI Master X10<br /><span class="gold">Biến tri thức<br />thành tiền.</span></h1>
+              <p class="lead">
+                Bạn sẽ xây một hệ thống làm việc với AI để research, lập kế hoạch content, tạo sản phẩm tri thức,
+                edit video, render ảnh hàng loạt, dựng website học viên, xây funnel và theo dõi lead bằng CRM mini.
+              </p>
+              <div class="hero-actions">
+                <a class="btn btn-primary" href="#hoc-phi" data-cta>Đăng ký học ngay - 1.299.000đ</a>
+                <a class="btn btn-secondary" href="#lo-trinh">Xem lộ trình học</a>
+              </div>
+              <div class="hero-stats">
+                <div class="stat"><strong>12 chương</strong><span>Từ tư duy, sản phẩm, content đến funnel và CRM</span></div>
+                <div class="stat"><strong>30 ngày</strong><span>Roadmap triển khai từng bước để bán thử</span></div>
+                <div class="stat"><strong>10+ output</strong><span>Prompt, ảnh, video, website, landing và dashboard</span></div>
+              </div>
+            </div>
+
+            <aside class="hero-visual reveal" aria-label="AI Master X10 visual">
+              <div class="glass-card course-card">
+                <img
+                  class="course-thumb"
+                  src="/course-thumbnails/ai-master-x10-hieu-suat.webp"
+                  alt="AI Master X10 hiệu suất"
+                  width="900"
+                  height="560"
+                  decoding="async"
+                />
+                <h3>Học AI theo hệ thống, không học tool rời rạc.</h3>
+                <div class="benefits">
+                  <div class="benefit"><span class="check">✓</span><span>Research khách hàng, đối thủ và insight bằng AI</span></div>
+                  <div class="benefit"><span class="check">✓</span><span>Biến chuyên môn thành offer, content và tài sản bán hàng</span></div>
+                  <div class="benefit"><span class="check">✓</span><span>Dựng website học viên, funnel và CRM mini để theo dõi doanh thu</span></div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="section section-tight" id="van-de">
+          <div class="container grid-2">
+            <div class="reveal">
+              <p class="kicker">Câu chuyện thật</p>
+              <h2>Có kiến thức, có AI, nhưng vẫn chưa tạo ra tài sản để bán.</h2>
+              <p class="lead">
+                AI bây giờ không thiếu tool. Cái thiếu là một hệ thống để biến tool thành việc làm cụ thể,
+                tài sản cụ thể và doanh thu cụ thể.
+              </p>
+              <div class="asset-placeholder" data-visual-slot="pain-story-photo">
+                <div>
+                  <strong>Đặt ảnh thật tại đây</strong>
+                  Ảnh bàn làm việc, lớp học, buổi quay bài hoặc màn hình workflow AI của The Anh Marketing.
+                </div>
+              </div>
+            </div>
+            <div class="accordion-list reveal">
+              <article class="accordion-item">
+                <div class="accordion-head"><span class="number">01</span><h3>Biết ChatGPT nhưng vẫn làm thủ công</h3></div>
+                <p>Mỗi lần viết content, research, làm slide, dựng video lại bắt đầu từ đầu.</p>
+              </article>
+              <article class="accordion-item">
+                <div class="accordion-head"><span class="number">02</span><h3>Có kiến thức nhưng chưa biết đóng gói</h3></div>
+                <p>Muốn bán khóa học, ebook, workshop hoặc coaching nhưng chưa có outline, offer và landing page.</p>
+              </article>
+              <article class="accordion-item">
+                <div class="accordion-head"><span class="number">03</span><h3>Làm marketing rời rạc</h3></div>
+                <p>Có đăng bài, có chạy thử ads, có dùng AI, nhưng không có phễu và dữ liệu để biết điểm nghẽn ở đâu.</p>
+              </article>
+              <article class="accordion-item">
+                <div class="accordion-head"><span class="number">04</span><h3>Sản xuất nội dung bị nghẽn</h3></div>
+                <p>Cần video, ảnh, bài viết đều đặn nhưng không có team designer/editor hỗ trợ mỗi ngày.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="container reveal center">
+            <p class="kicker">Vòng lặp kiệt sức</p>
+            <h2>Có phải bạn đang dùng AI nhiều hơn, nhưng kết quả vẫn chưa rõ ràng?</h2>
             <p class="lead">
-              Học cách dùng AI như một hệ điều hành công việc: nghiên cứu insight, đóng gói offer,
-              sản xuất content, dựng landing page và tạo workflow bán hàng tinh gọn.
+              Nếu chỉ thêm tool, bạn sẽ có thêm việc phải quản lý. Nếu đặt AI vào một hệ thống,
+              mỗi đầu ra sẽ trở thành tài sản có thể dùng lại.
             </p>
-            <div class="hero-actions">
-              <a class="btn btn-primary" href="#hoc-phi" data-cta>Đăng ký ngay - 1.299.000đ</a>
-              <a class="btn btn-secondary" href="#module">Xem lộ trình học</a>
+          </div>
+          <div class="container grid-3">
+            <article class="card reveal"><span class="number">1</span><h3>Output vẫn chung chung</h3><p>Prompt mỗi lần một kiểu, kết quả không nhất quán và phải sửa lại nhiều.</p></article>
+            <article class="card reveal"><span class="number">2</span><h3>Research không ra hành động</h3><p>Có thông tin nhưng chưa biến thành content calendar, offer hoặc funnel.</p></article>
+            <article class="card reveal"><span class="number">3</span><h3>Content không dẫn về sản phẩm</h3><p>Bài viết và video không nối với landing, form, inbox hoặc CRM.</p></article>
+            <article class="card reveal"><span class="number">4</span><h3>Chưa có tài sản hoàn chỉnh</h3><p>Thiếu outline, video, slide, workbook, trang học viên và trang bán.</p></article>
+            <article class="card reveal"><span class="number">5</span><h3>Không đo được tiền đến từ đâu</h3><p>Không biết content nào tạo lead, lead nào thành đơn, bước nào đang nghẽn.</p></article>
+            <article class="card reveal"><span class="number">6</span><h3>Mỗi ngày lại bắt đầu lại</h3><p>Không có prompt, agent, checklist và tiêu chuẩn đầu ra để tái sử dụng.</p></article>
+          </div>
+        </section>
+
+        <section class="section mechanism">
+          <div class="container reveal center">
+            <p class="kicker">Cơ chế mới</p>
+            <h2>80% kết quả đến từ việc đặt AI vào đúng hệ thống.</h2>
+            <p class="lead">
+              Khóa này không dạy bạn sưu tầm thêm prompt. Bạn sẽ xây một hệ vận hành gồm 4 lớp:
+              <span class="gold">Research</span>, <span class="gold">Create</span>, <span class="gold">Publish</span>, <span class="gold">Scale</span>.
+            </p>
+          </div>
+          <div class="container grid-4">
+            <article class="card framework-card reveal"><span class="number">01</span><h3>Research</h3><p>AI chuyên nghiên cứu khách hàng, đối thủ, thị trường, insight và kế hoạch content.</p></article>
+            <article class="card framework-card reveal"><span class="number">02</span><h3>Create</h3><p>AI tạo bài viết, script, slide, video ngắn, ảnh hàng loạt và tài nguyên học tập.</p></article>
+            <article class="card framework-card reveal"><span class="number">03</span><h3>Publish</h3><p>Dựng website học viên, landing page, source, deploy hosting và gắn domain.</p></article>
+            <article class="card framework-card reveal"><span class="number">04</span><h3>Scale</h3><p>Tạo funnel, CRM mini, kịch bản bán hàng và vòng lặp tối ưu theo dữ liệu.</p></article>
+          </div>
+        </section>
+
+        <section class="section" id="ket-qua">
+          <div class="container grid-2">
+            <div class="glass-card terminal reveal">
+              <div class="terminal-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>ai-master-x10/system-output</span></div>
+              <div class="terminal-body">
+                <div class="output-line"><strong>Research agent</strong><span>market, customer, competitor, content plan</span></div>
+                <div class="output-line"><strong>Content engine</strong><span>post, script, email, ads angle, hook library</span></div>
+                <div class="output-line"><strong>Video workflow</strong><span>screen record, subtitle, thumbnail, edit 5 phút</span></div>
+                <div class="output-line"><strong>Image batch</strong><span>20 visual assets theo cùng brand</span></div>
+                <div class="output-line"><strong>Student website</strong><span>UI, demo, hosting, domain, GitHub</span></div>
+                <div class="output-line"><strong>Output</strong><span>một hệ thống AI có thể tạo tài sản số và bán thử</span></div>
+              </div>
             </div>
-            <div class="stats">
-              <div class="stat"><strong>14+</strong><span>bài học và checklist thực hành</span></div>
-              <div class="stat"><strong>X10</strong><span>hiệu suất nghiên cứu, content và triển khai</span></div>
-              <div class="stat"><strong>2026</strong><span>workflow AI cập nhật cho công việc thật</span></div>
-              <div class="stat"><strong>1.299K</strong><span>mở khóa toàn bộ hệ thống</span></div>
+            <div class="reveal">
+              <p class="kicker">Bằng chứng bằng đầu ra</p>
+              <h2>Học xong không chỉ biết AI. Bạn có hệ thống tạo tài sản thật.</h2>
+              <p class="lead">
+                Niềm tin của trang này đến từ output của khóa học: bản đồ sản phẩm, content plan,
+                video, ảnh, website học viên, landing page, CRM mini và roadmap triển khai.
+              </p>
+              <div class="grid-3" style="grid-template-columns: 1fr; margin-top: 24px;">
+                <article class="card"><h3>Có sản phẩm để bán thử</h3><p>Có outline, offer, nội dung, landing và tài sản đi kèm.</p></article>
+                <article class="card"><h3>Từ ý tưởng đến demo</h3><p>Rút ngắn thời gian research, tạo content, dựng visual, edit video và đưa website online.</p></article>
+              </div>
             </div>
           </div>
+        </section>
 
-          <aside class="hero-card reveal" aria-label="Quyền lợi khóa AI Master X10">
-            <img class="hero-thumb" src="/course-thumbnails/ai-master-x10-hieu-suat.webp" alt="AI Master X10 hiệu suất" />
-            <div class="benefit-list">
-              <div class="benefit-item"><span class="check">✓</span><span>Kho prompt và workflow AI dùng ngay cho công việc</span></div>
-              <div class="benefit-item"><span class="check">✓</span><span>Template content, offer và landing page để đóng gói tri thức</span></div>
-              <div class="benefit-item"><span class="check">✓</span><span>Dashboard học viên, email sau thanh toán và quyền học tự động</span></div>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <section class="section" id="van-de">
-        <div class="container reveal">
-          <p class="kicker">Vấn đề thật</p>
-          <h2>Có chuyên môn nhưng chưa có hệ thống để biến nó thành doanh thu.</h2>
-          <p class="lead">
-            AI không thiếu. Cái thiếu là cách biến kinh nghiệm của bạn thành offer, content, trang bán hàng
-            và quy trình chăm sóc khách hàng có thể lặp lại.
-          </p>
-          <div class="pain-grid">
-            <article class="card"><span class="card-number">1</span><h3>Tri thức nằm trong đầu</h3><p>Bạn có kinh nghiệm, nhưng chưa biết đóng gói thành sản phẩm, khóa học, workshop hoặc dịch vụ dễ bán.</p></article>
-            <article class="card"><span class="card-number">2</span><h3>Content làm mãi vẫn rời rạc</h3><p>Hôm nay viết một kiểu, mai viết một kiểu. Không có hệ thống insight, angle, hook và lịch nội dung nhất quán.</p></article>
-            <article class="card"><span class="card-number">3</span><h3>Dùng AI nhưng không ra kết quả</h3><p>ChatGPT trả lời chung chung vì đầu vào thiếu ngữ cảnh, thiếu tiêu chuẩn và thiếu workflow kiểm tra.</p></article>
-            <article class="card"><span class="card-number">4</span><h3>Trang bán hàng phụ thuộc người khác</h3><p>Mỗi lần muốn bán một offer mới lại phải chờ thiết kế, copy, kỹ thuật và chỉnh sửa nhiều vòng.</p></article>
-            <article class="card"><span class="card-number">5</span><h3>Không có tự động hóa sau đăng ký</h3><p>Lead về rồi vẫn phải nhắn tay, follow tay, gửi tài liệu tay, nên càng nhiều khách càng rối.</p></article>
-            <article class="card"><span class="card-number">6</span><h3>Làm nhiều nhưng không có tài sản</h3><p>Bạn bận hơn, nhưng hệ thống không tốt hơn. Mỗi ngày đều giống như bắt đầu lại từ đầu.</p></article>
+        <section class="section">
+          <div class="container reveal center">
+            <p class="kicker">Chỉ số năng lực sau khóa học</p>
+            <h2>Biểu đồ này giúp bạn nhìn AI như một hệ điều hành kinh doanh.</h2>
+            <p class="lead">
+              Mục tiêu không phải đẹp mắt trên giấy. Mục tiêu là biết mình đang yếu ở research, content,
+              tài sản bán hàng, website, funnel hay đo dữ liệu.
+            </p>
           </div>
-        </div>
-      </section>
+          <div class="container glass-card" style="border-radius: 34px; padding: 30px;">
+            <div class="radar-wrap">
+              <svg class="radar-chart" viewBox="0 0 520 460" role="img" aria-label="Radar chart năng lực AI Master X10">
+                <polygon points="260,70 425,165 425,315 260,410 95,315 95,165" fill="none" stroke="rgba(255,226,138,.16)" stroke-width="1" />
+                <polygon points="260,115 386,188 386,292 260,365 134,292 134,188" fill="none" stroke="rgba(255,226,138,.16)" stroke-width="1" />
+                <polygon points="260,160 347,210 347,270 260,320 173,270 173,210" fill="none" stroke="rgba(255,226,138,.16)" stroke-width="1" />
+                <line x1="260" y1="230" x2="260" y2="70" stroke="rgba(255,226,138,.14)" />
+                <line x1="260" y1="230" x2="425" y2="165" stroke="rgba(255,226,138,.14)" />
+                <line x1="260" y1="230" x2="425" y2="315" stroke="rgba(255,226,138,.14)" />
+                <line x1="260" y1="230" x2="260" y2="410" stroke="rgba(255,226,138,.14)" />
+                <line x1="260" y1="230" x2="95" y2="315" stroke="rgba(255,226,138,.14)" />
+                <line x1="260" y1="230" x2="95" y2="165" stroke="rgba(255,226,138,.14)" />
+                <polygon points="260,166 358,194 392,296 260,350 145,290 158,189" fill="rgba(214,169,40,.2)" stroke="#FFE28A" stroke-width="3" />
+                <polygon points="260,208 303,212 315,260 260,286 214,262 204,214" fill="rgba(129,118,94,.46)" stroke="#81765e" stroke-width="2" />
+                <g fill="#FFE28A">
+                  <circle cx="260" cy="166" r="5" /><circle cx="358" cy="194" r="5" /><circle cx="392" cy="296" r="5" />
+                  <circle cx="260" cy="350" r="5" /><circle cx="145" cy="290" r="5" /><circle cx="158" cy="189" r="5" />
+                </g>
+                <g fill="#f7f1df" font-size="13" font-weight="800" text-anchor="middle">
+                  <text x="260" y="44">Research</text>
+                  <text x="456" y="156">Content</text>
+                  <text x="462" y="326">Website</text>
+                  <text x="260" y="442">Funnel</text>
+                  <text x="58" y="326">CRM</text>
+                  <text x="60" y="156">Product</text>
+                </g>
+              </svg>
+              <div class="chart-legend">
+                <div class="legend-row"><span>Research insight</span><b>92</b></div>
+                <div class="legend-row"><span>Content engine</span><b>88</b></div>
+                <div class="legend-row"><span>Website học viên</span><b>84</b></div>
+                <div class="legend-row"><span>Funnel bán thử</span><b>80</b></div>
+                <div class="legend-row"><span>CRM mini</span><b>74</b></div>
+                <div class="legend-row"><span>Product map</span><b>86</b></div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-      <section class="section">
-        <div class="container reveal">
-          <p class="kicker">Trước và sau</p>
-          <h2>Sự khác biệt không nằm ở việc biết nhiều công cụ hơn, mà ở việc có một hệ thống AI rõ ràng.</h2>
-          <div class="compare">
-            <div class="compare-panel">
-              <h3>Trước khi có hệ thống AI</h3>
-              <ul>
-                <li><span class="x">×</span><span>Mỗi ngày vắt óc nghĩ content, viết một bài mất cả buổi.</span></li>
-                <li><span class="x">×</span><span>Đóng gói offer bằng cảm tính, không biết khách mua vì điều gì.</span></li>
-                <li><span class="x">×</span><span>Làm landing page phải chờ người khác, chi phí và thời gian đều cao.</span></li>
-                <li><span class="x">×</span><span>Dùng AI từng đoạn nhỏ, kết quả chắp vá và khó dùng lại.</span></li>
+        <section class="section">
+          <div class="container reveal center">
+            <p class="kicker">Sản phẩm thực tế sau khóa học</p>
+            <h2>Những tài sản bạn tự xây để biến tri thức thành sản phẩm có thể bán.</h2>
+          </div>
+          <div class="container grid-4">
+            <article class="card output-card reveal">
+              <div class="asset-placeholder" data-visual-slot="content-calendar">
+                <div><strong>Ảnh content plan</strong>Đặt ảnh Google Sheet / Notion lịch content 30 ngày tại đây.</div>
+              </div>
+              <div class="output-card-body"><h3>Content plan 30 ngày</h3><p>Research insight, pillar, hook, CTA và lịch đăng theo từng ngày.</p></div>
+            </article>
+            <article class="card output-card reveal">
+              <div class="asset-placeholder" data-visual-slot="student-website-demo">
+                <div><strong>Ảnh website học viên</strong>Đặt screenshot dashboard học viên hoặc trang bài học mẫu tại đây.</div>
+              </div>
+              <div class="output-card-body"><h3>Website học viên</h3><p>Demo flow học, xem bài, tải tài nguyên và theo dõi tiến độ.</p></div>
+            </article>
+            <article class="card output-card reveal">
+              <div class="asset-placeholder" data-visual-slot="landing-funnel-demo">
+                <div><strong>Ảnh landing/funnel</strong>Đặt ảnh landing page, form và thanh toán thử tại đây.</div>
+              </div>
+              <div class="output-card-body"><h3>Landing bán thử</h3><p>Hero, pain, mechanism, output, curriculum, bonus, pricing và form.</p></div>
+            </article>
+            <article class="card output-card reveal">
+              <div class="asset-placeholder" data-visual-slot="crm-dashboard-demo">
+                <div><strong>Ảnh CRM mini</strong>Đặt dashboard lead, đơn hàng, doanh thu hoặc tracking tại đây.</div>
+              </div>
+              <div class="output-card-body"><h3>CRM mini</h3><p>Theo dõi lead, đơn, doanh thu và điểm nghẽn sau khi bán thử.</p></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="lo-trinh">
+          <div class="container reveal center">
+            <p class="kicker">Toàn bộ lộ trình</p>
+            <h2>12 chương học theo kiểu làm tới đâu có sản phẩm tới đó.</h2>
+            <p class="lead">
+              Mỗi cụm học tạo một tài sản cụ thể: prompt, content plan, video, ảnh, website, landing page,
+              CRM mini hoặc funnel.
+            </p>
+          </div>
+          <div class="container module-layout">
+            <article class="glass-card module-block reveal">
+              <p class="kicker">Học phần 1</p>
+              <h3>Foundation & Research</h3>
+              <div class="lesson-list">
+                <div><b>01</b><span>Tư duy biến kiến thức thành tiền</span></div>
+                <div><b>02</b><span>Setup bộ công cụ AI cá nhân</span></div>
+                <div><b>03</b><span>AI chuyên research và lập kế hoạch content</span></div>
+              </div>
+            </article>
+            <article class="glass-card module-block reveal">
+              <p class="kicker">Học phần 2</p>
+              <h3>Content, Video, Image</h3>
+              <div class="lesson-list">
+                <div><b>04</b><span>Xây dựng sản phẩm tri thức</span></div>
+                <div><b>05</b><span>Edit video bằng AI chỉ 5 phút</span></div>
+                <div><b>06</b><span>AI chuyên render ảnh hàng loạt</span></div>
+              </div>
+            </article>
+            <article class="glass-card module-block reveal">
+              <p class="kicker">Học phần 3</p>
+              <h3>Website & Funnel</h3>
+              <div class="lesson-list">
+                <div><b>07</b><span>Tạo website học viên chuyên sâu</span></div>
+                <div><b>08</b><span>Đưa website lên online</span></div>
+                <div><b>09</b><span>Xây funnel bán khóa học hoặc sản phẩm số</span></div>
+              </div>
+            </article>
+            <article class="glass-card module-block reveal">
+              <p class="kicker">Học phần 4</p>
+              <h3>Sale, CRM & Scale</h3>
+              <div class="lesson-list">
+                <div><b>10</b><span>AI bán hàng và chăm sóc khách</span></div>
+                <div><b>11</b><span>Quảng cáo và kéo khách hàng</span></div>
+                <div><b>12</b><span>Hệ thống hóa và scale</span></div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="container grid-2">
+            <div class="asset-placeholder reveal" data-visual-slot="instructor-photo">
+              <div>
+                <strong>Đặt ảnh chân dung / ảnh giảng dạy</strong>
+                Ưu tiên ảnh thật của The Anh Marketing: đang quay bài, giảng, phân tích workflow hoặc làm việc với dashboard.
+              </div>
+            </div>
+            <div class="reveal">
+              <p class="kicker">Người đứng sau khóa học</p>
+              <h2>The Anh Marketing xây hệ AI Growth System cho người làm kinh doanh thực chiến.</h2>
+              <p class="lead">
+                Khóa học được thiết kế theo tư duy Attract, Grow, Scale và CRM/Data. Trọng tâm là giúp bạn tạo
+                tài sản số có thể triển khai, không phải sưu tầm prompt để xem cho vui.
+              </p>
+              <ul class="bonus-list">
+                <li><span class="check">✓</span><span>Đi từ ý tưởng đến offer, content, website, funnel và CRM mini.</span></li>
+                <li><span class="check">✓</span><span>Ưu tiên demo màn hình thật và bài tập tạo output cụ thể.</span></li>
+                <li><span class="check">✓</span><span>Dạy theo hướng làm ra tài sản số, không dạy tool rời rạc.</span></li>
               </ul>
             </div>
-            <div class="compare-panel after">
-              <h3>Sau khi làm chủ AI</h3>
+          </div>
+        </section>
+
+        <section class="section" id="qua-tang">
+          <div class="container reveal center">
+            <p class="kicker">Quà tặng</p>
+            <h2>Không chỉ có video, bạn nhận cả bộ tài nguyên để triển khai.</h2>
+          </div>
+          <div class="container grid-3">
+            <article class="card reveal"><span class="number">01</span><h3>Prompt Research Agent</h3><p>Bộ lệnh nghiên cứu khách hàng, đối thủ, insight và content angle.</p></article>
+            <article class="card reveal"><span class="number">02</span><h3>Content Calendar 30 ngày</h3><p>File mẫu lên lịch Facebook, TikTok, YouTube Shorts và Zalo.</p></article>
+            <article class="card reveal"><span class="number">03</span><h3>Website học viên mẫu</h3><p>Khung giao diện để biến thành demo và deploy lên hosting.</p></article>
+            <article class="card reveal"><span class="number">04</span><h3>Checklist AI Growth System</h3><p>Bảng kiểm research, content, landing, CRM và tracking.</p></article>
+            <article class="card reveal"><span class="number">05</span><h3>Script tư vấn và follow-up</h3><p>Kịch bản trả lời khách, xử lý phản đối và chăm sóc lead sau đăng ký.</p></article>
+            <article class="card reveal"><span class="number">06</span><h3>Template render ảnh hàng loạt</h3><p>Bộ prompt/style guide để tạo visual đồng bộ cho chiến dịch.</p></article>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="container reveal center">
+            <p class="kicker">Trước và sau</p>
+            <h2>Nếu chỉ học thêm công cụ, bạn sẽ mệt hơn. Nếu biết đặt AI vào hệ thống, bạn bắt đầu tạo tài sản.</h2>
+          </div>
+          <div class="container compare">
+            <div class="glass-card compare-panel reveal">
+              <h3>Trước khóa học</h3>
               <ul>
-                <li><span class="check">✓</span><span>Content đúng giọng của bạn, AI phác thảo, bạn duyệt và tối ưu.</span></li>
-                <li><span class="check">✓</span><span>Offer rõ vấn đề, rõ kết quả, rõ lý do khách nên mua ngay.</span></li>
-                <li><span class="check">✓</span><span>Tự dựng trang bán hàng và tài liệu triển khai trong một buổi.</span></li>
-                <li><span class="check">✓</span><span>Có prompt, checklist và workflow dùng lại cho nhiều sản phẩm.</span></li>
+                <li><span class="x">×</span><span>Nhiều ý tưởng, nhiều tool, nhiều prompt nhưng chưa có flow rõ.</span></li>
+                <li><span class="x">×</span><span>Content làm rời rạc, không dẫn về sản phẩm hay form đăng ký.</span></li>
+                <li><span class="x">×</span><span>Chưa có website học viên, landing page, funnel và CRM.</span></li>
+                <li><span class="x">×</span><span>Không biết đo lead, đơn, doanh thu và điểm nghẽn.</span></li>
+              </ul>
+            </div>
+            <div class="glass-card compare-panel after reveal">
+              <h3>Sau khóa học</h3>
+              <ul>
+                <li><span class="check">✓</span><span>Có quy trình research, sản phẩm, content, video/ảnh, website và funnel.</span></li>
+                <li><span class="check">✓</span><span>Có demo website học viên và bộ tài sản bán hàng.</span></li>
+                <li><span class="check">✓</span><span>Có prompt, agent, checklist và tiêu chuẩn đầu ra để dùng lại.</span></li>
+                <li><span class="check">✓</span><span>Có roadmap 30 ngày để triển khai bán thử sản phẩm tri thức.</span></li>
               </ul>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="section">
-        <div class="container reveal">
-          <p class="kicker">Sản phẩm sau khóa học</p>
-          <h2>Sau khóa học, bạn không chỉ biết dùng AI. Bạn có tài sản để bán và vận hành.</h2>
-          <div class="output-grid">
-            <article class="card"><span class="card-number">01</span><h3>Hệ thống content AI</h3><p>Bộ angle, hook, outline, caption, email và kịch bản video theo đúng giọng thương hiệu của bạn.</p></article>
-            <article class="card"><span class="card-number">02</span><h3>Offer tri thức rõ ràng</h3><p>Biến kinh nghiệm thành lời hứa bán hàng, module, bonus và lý do khách nên trả tiền.</p></article>
-            <article class="card"><span class="card-number">03</span><h3>Landing page bán hàng</h3><p>Khung trang bán hàng có hero, pain, solution, module, quà tặng, pricing và form thanh toán.</p></article>
-            <article class="card"><span class="card-number">04</span><h3>Kho prompt làm việc</h3><p>Prompt dùng lại cho nghiên cứu, viết, phân tích, tóm tắt, phản biện và tạo kế hoạch.</p></article>
-            <article class="card"><span class="card-number">05</span><h3>Workflow tự động hóa</h3><p>Quy trình từ lead, email, tài liệu, dashboard đến chăm sóc sau mua để giảm thao tác tay.</p></article>
-            <article class="card"><span class="card-number">06</span><h3>Bản đồ kiếm tiền từ tri thức</h3><p>Lộ trình biến chuyên môn thành sản phẩm số, workshop, khóa học hoặc dịch vụ tư vấn.</p></article>
+        <section class="section" id="hoc-phi">
+          <div class="container reveal center">
+            <p class="kicker">Ưu đãi mở bán beta</p>
+            <h2>AI Master X10 Hiệu Suất</h2>
+            <p class="lead">
+              Dành cho bạn muốn dùng AI để xây hệ thống làm việc, sản xuất tài sản số và bán thử sản phẩm tri thức trong 30 ngày.
+            </p>
           </div>
-        </div>
-      </section>
-
-      <section class="section" id="module">
-        <div class="container reveal">
-          <p class="kicker">Lộ trình học</p>
-          <h2>AI Master X10 hiệu suất được thiết kế như một hệ điều hành, học đến đâu triển khai đến đó.</h2>
-          <div class="modules">
-            <article class="module-card"><span class="card-number">1</span><h3>Tư duy làm chủ AI</h3><p>Hiểu AI nên làm gì, không nên làm gì và cách kiểm tra chất lượng đầu ra.</p></article>
-            <article class="module-card"><span class="card-number">2</span><h3>Insight khách hàng</h3><p>Dùng AI phân tích tệp khách, nỗi đau, động lực mua và ngôn ngữ thị trường.</p></article>
-            <article class="module-card"><span class="card-number">3</span><h3>Đóng gói offer</h3><p>Biến tri thức thành sản phẩm, module, bonus, cam kết triển khai và thông điệp bán hàng.</p></article>
-            <article class="module-card"><span class="card-number">4</span><h3>Content AI</h3><p>Xây lịch nội dung, bài bán hàng, kịch bản video, email và bài nuôi dưỡng niềm tin.</p></article>
-            <article class="module-card"><span class="card-number">5</span><h3>Media và tài sản bán hàng</h3><p>Tạo ảnh, slide, script, checklist và tài liệu học viên nhanh hơn mà vẫn giữ chất lượng.</p></article>
-            <article class="module-card"><span class="card-number">6</span><h3>Landing page</h3><p>Dựng khung trang bán hàng chuyển đổi cao cho khóa học, workshop hoặc dịch vụ tư vấn.</p></article>
-            <article class="module-card"><span class="card-number">7</span><h3>Automation bán hàng</h3><p>Kết nối form, email, tài liệu, dashboard và quy trình chăm sóc khách sau khi mua.</p></article>
-            <article class="module-card"><span class="card-number">8</span><h3>Tối ưu và nhân bản</h3><p>Đọc dữ liệu, cải thiện offer, tái sử dụng workflow và nhân bản sang sản phẩm tiếp theo.</p></article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container reveal">
-          <p class="kicker">Quà tặng</p>
-          <h2>Những tài sản đi kèm để bạn triển khai nhanh hơn sau khi học.</h2>
-          <div class="bonus-grid">
-            <article class="bonus-card"><h3>Kho prompt chuyên gia</h3><p>Prompt nghiên cứu, viết, phản biện, lên kế hoạch, tạo offer và sản xuất nội dung.</p></article>
-            <article class="bonus-card"><h3>Template content 30 ngày</h3><p>Khung nội dung nuôi dưỡng niềm tin, kéo lead và chuyển người theo dõi thành khách hàng.</p></article>
-            <article class="bonus-card"><h3>Checklist landing page</h3><p>Checklist các khối cần có để bán khóa học, workshop, tư vấn hoặc sản phẩm số.</p></article>
-            <article class="bonus-card"><h3>Workflow bán hàng AI</h3><p>Quy trình từ ý tưởng, offer, content, form đăng ký, thanh toán đến chăm sóc sau mua.</p></article>
-            <article class="bonus-card"><h3>Bản đồ sản phẩm tri thức</h3><p>Gợi ý cách biến chuyên môn thành ebook, mini course, workshop, gói tư vấn và chương trình chính.</p></article>
-            <article class="bonus-card"><h3>Cập nhật trong dashboard</h3><p>Nội dung được gom trong tài khoản học viên để bạn quay lại học và triển khai theo từng bước.</p></article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" id="hoc-phi">
-        <div class="container reveal">
-          <p class="kicker">Học phí</p>
-          <h2>Bắt đầu xây hệ thống AI biến tri thức thành tiền ngay hôm nay.</h2>
-          <div class="pricing-layout">
-            <div class="pricing-card">
-              <p class="kicker">Gói AI Master X10</p>
+          <div class="container pricing-layout">
+            <div class="pricing-card reveal">
+              <p class="kicker">Gói truy cập khóa học</p>
               <div class="price-row">
                 <div class="price">1.299K</div>
-                <div class="old-price">3.999K</div>
+                <div class="old-price">2.997.000đ</div>
               </div>
-              <p class="lead">Mở khóa toàn bộ khóa học, dashboard học viên và bộ tài sản triển khai đi kèm.</p>
+              <p class="lead">Mở khóa toàn bộ lộ trình, dashboard học viên và bộ tài sản triển khai đi kèm.</p>
               <ul>
-                <li><span class="check">✓</span><span>14+ bài học và checklist thực hành</span></li>
-                <li><span class="check">✓</span><span>Kho prompt, template content và workflow AI</span></li>
-                <li><span class="check">✓</span><span>Học cách đóng gói tri thức thành offer và landing page</span></li>
-                <li><span class="check">✓</span><span>Email xác nhận, tài khoản học viên và dashboard sau thanh toán</span></li>
+                <li><span class="check">✓</span><span>12 chương học theo output: prompt, content, video, ảnh, website, funnel, CRM.</span></li>
+                <li><span class="check">✓</span><span>Template content 30 ngày, checklist landing page và workflow bán hàng AI.</span></li>
+                <li><span class="check">✓</span><span>Học cách đóng gói chuyên môn thành sản phẩm tri thức có thể bán thử.</span></li>
+                <li><span class="check">✓</span><span>Email xác nhận, tài khoản học viên và dashboard sau thanh toán.</span></li>
               </ul>
             </div>
 
-            <form class="form-card" id="payment-form">
+            <form class="form-card reveal" id="payment-form">
               <h3>Đăng ký và tạo QR thanh toán</h3>
               <p>Điền thông tin, hệ thống sẽ tạo đơn SePay và chuyển bạn sang trang thanh toán.</p>
               <div class="form-grid">
@@ -823,21 +1439,37 @@
               </p>
             </form>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="section">
-        <div class="container reveal">
-          <p class="kicker">Câu hỏi thường gặp</p>
-          <h2>Trước khi đăng ký</h2>
-          <div class="faq">
-            <details open><summary>Khóa này dành cho ai?</summary><p>Dành cho người có chuyên môn, chủ doanh nghiệp nhỏ, marketer, creator hoặc người muốn biến kinh nghiệm thành sản phẩm tri thức và hệ thống bán hàng tinh gọn.</p></details>
-            <details><summary>Tôi chưa giỏi kỹ thuật có học được không?</summary><p>Có. Khóa tập trung vào tư duy, prompt, workflow và sản phẩm đầu ra. Bạn không cần biết code để bắt đầu.</p></details>
-            <details><summary>Sau khi thanh toán nhận khóa thế nào?</summary><p>Hệ thống tạo đơn thanh toán, sau khi SePay xác nhận paid sẽ gửi email xác nhận và tạo quyền học theo email bạn đăng ký.</p></details>
-            <details><summary>Khóa có phải chỉ là prompt ChatGPT không?</summary><p>Không. Prompt chỉ là một phần. Trọng tâm là hệ thống: insight, offer, content, landing page, automation và cách biến tri thức thành tài sản bán được.</p></details>
+        <section class="section">
+          <div class="container reveal">
+            <p class="kicker">Câu hỏi thường gặp</p>
+            <h2>Trước khi đăng ký</h2>
+            <div class="faq">
+              <details open>
+                <summary>Khóa này có cần biết code không?</summary>
+                <p>Không cần. Phần website học viên đi theo hướng dùng AI tạo giao diện, demo và triển khai từng bước.</p>
+              </details>
+              <details>
+                <summary>Học xong có bán được sản phẩm ngay không?</summary>
+                <p>Khóa học giúp bạn có hệ thống và tài sản để bán thử. Doanh thu phụ thuộc vào ngách, offer, traffic và follow-up.</p>
+              </details>
+              <details>
+                <summary>Khóa này khác gì các khóa prompt AI?</summary>
+                <p>Trọng tâm không phải sưu tầm prompt. Trọng tâm là workflow để tạo content, video, ảnh, website, funnel và CRM mini.</p>
+              </details>
+              <details>
+                <summary>Nên học trong bao lâu?</summary>
+                <p>Nên đi theo roadmap 30 ngày để mỗi tuần có một nhóm tài sản cụ thể.</p>
+              </details>
+              <details>
+                <summary>Ai không phù hợp?</summary>
+                <p>Người chỉ muốn xem tool cho vui, không làm bài tập, không có ý định tạo sản phẩm hoặc hệ thống thật.</p>
+              </details>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
       <footer>
         <div class="container">
@@ -847,13 +1479,15 @@
       </footer>
 
       <div class="sticky-cta">
-        <div>
-          <strong>AI Master X10 hiệu suất</strong>
-          <span><del>3.999.000đ</del> <b>1.299.000đ</b></span>
+        <div class="sticky-inner">
+          <div>
+            <strong>AI Master X10 - Giá beta 1.299K</strong>
+            <span><del>2.997.000đ</del> <b>1.299.000đ</b></span>
+          </div>
+          <a class="btn btn-primary" href="#hoc-phi" data-cta>Đăng ký ngay</a>
         </div>
-        <a class="btn btn-primary" href="#hoc-phi" data-cta>Đăng ký ngay</a>
       </div>
-    </main>
+    </div>
 
     <script>
       (function () {

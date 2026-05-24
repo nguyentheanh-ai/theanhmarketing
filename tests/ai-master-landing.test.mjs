@@ -34,6 +34,24 @@ test("AI Master X10 landing is rewritten for The Anh Marketing, not copied from 
   assert.doesNotMatch(html, /Hoàn tiền/i);
 });
 
+test("AI Master X10 landing follows the premium gold reference system with course-owned content", () => {
+  const html = read(sourcePath);
+
+  assert.match(html, /Plus\+Jakarta\+Sans/);
+  assert.match(html, /Playfair\+Display/);
+  assert.match(html, /--gold:\s*#D6A928/i);
+  assert.match(html, /asset-placeholder/);
+  assert.match(html, /data-visual-slot="instructor-photo"/);
+  assert.match(html, /radar-chart/);
+  assert.match(html, /Research/);
+  assert.match(html, /Create/);
+  assert.match(html, /Publish/);
+  assert.match(html, /Scale/);
+  assert.match(html, /12 chương học theo kiểu làm tới đâu có sản phẩm tới đó/);
+  assert.match(html, /2\.997\.000đ/);
+  assert.doesNotMatch(html, /--orange:/);
+});
+
 test("Next and CSP config expose the AI Master X10 academy route", () => {
   const nextConfig = read(path.resolve("next.config.ts"));
   const proxy = read(path.resolve("proxy.ts"));
