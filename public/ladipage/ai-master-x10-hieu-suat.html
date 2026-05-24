@@ -131,6 +131,30 @@
         overflow-wrap: break-word;
       }
 
+      .hero-title {
+        max-width: 940px;
+        margin-right: auto;
+        margin-left: auto;
+      }
+
+      .hero-title span {
+        display: block;
+      }
+
+      .hero-title-top {
+        color: var(--text);
+      }
+
+      .hero-title-bottom {
+        margin-top: 10px;
+        color: var(--text);
+      }
+
+      .hero-title mark {
+        color: var(--gold-bright);
+        background: transparent;
+      }
+
       h2 {
         margin-bottom: 18px;
         max-width: 970px;
@@ -246,6 +270,7 @@
       }
 
       .center .lead,
+      .hero-copy .lead,
       .center h2 {
         margin-left: auto;
         margin-right: auto;
@@ -301,18 +326,19 @@
 
       .hero-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1.02fr) minmax(340px, 0.82fr);
-        gap: 54px;
+        grid-template-columns: minmax(0, 940px);
+        justify-content: center;
+        gap: 34px;
         align-items: center;
       }
 
       .hero-copy {
         position: relative;
         z-index: 2;
+        text-align: center;
       }
 
       .hero-copy,
-      .hero-visual,
       .hero-grid > *,
       .grid-2 > *,
       .pricing-layout > *,
@@ -324,6 +350,7 @@
       .inline-actions {
         display: flex;
         flex-wrap: wrap;
+        justify-content: center;
         gap: 14px;
         margin-top: 30px;
         max-width: 100%;
@@ -334,6 +361,9 @@
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 14px;
         margin-top: 38px;
+        margin-right: auto;
+        margin-left: auto;
+        max-width: 780px;
       }
 
       .stat,
@@ -369,62 +399,6 @@
         color: var(--muted);
         font-size: 13px;
         font-weight: 700;
-      }
-
-      .hero-visual {
-        position: relative;
-      }
-
-      .hero-visual::before {
-        content: "";
-        position: absolute;
-        inset: -24px -18px auto auto;
-        width: 62%;
-        height: 48%;
-        border-radius: 999px;
-        background: rgba(255, 226, 138, 0.17);
-        filter: blur(52px);
-      }
-
-      .course-card {
-        position: relative;
-        overflow: hidden;
-        border-radius: 34px;
-        padding: 20px;
-      }
-
-      .course-thumb {
-        width: 100%;
-        aspect-ratio: 16 / 10;
-        object-fit: contain;
-        border: 1px solid rgba(255, 226, 138, 0.16);
-        border-radius: 24px;
-        background: #090806;
-      }
-
-      .course-card h3 {
-        margin-top: 24px;
-        font-family: "Playfair Display", Georgia, serif;
-        font-size: clamp(32px, 4vw, 52px);
-      }
-
-      .benefits {
-        display: grid;
-        gap: 12px;
-        margin-top: 18px;
-      }
-
-      .benefit {
-        display: grid;
-        grid-template-columns: 28px 1fr;
-        gap: 12px;
-        align-items: center;
-        border: 1px solid var(--line-soft);
-        border-radius: 18px;
-        background: rgba(255, 255, 255, 0.045);
-        padding: 12px;
-        color: var(--text-soft);
-        font-weight: 800;
       }
 
       .check,
@@ -858,6 +832,16 @@
         background: rgba(7, 7, 6, 0.88);
         box-shadow: 0 22px 90px rgba(0, 0, 0, 0.56);
         backdrop-filter: blur(18px);
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(130%);
+        transition: opacity 0.28s ease, transform 0.28s ease;
+      }
+
+      .sticky-cta.is-visible {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
       }
 
       .sticky-inner {
@@ -999,10 +983,6 @@
           width: 100%;
         }
 
-        .course-card h3 {
-          font-size: 36px;
-        }
-
         .hero-stats,
         .grid-3,
         .grid-4,
@@ -1066,7 +1046,10 @@
           <div class="container hero-grid">
             <div class="hero-copy reveal">
               <p class="eyebrow">Dành cho người muốn biến AI thành hệ thống kiếm tiền</p>
-              <h1>AI Master X10<br /><span class="gold">Biến tri thức<br />thành tiền.</span></h1>
+              <h1 class="hero-title">
+                <span class="hero-title-top">AI Master<br />X10</span>
+                <span class="hero-title-bottom">Biến <mark>tri thức</mark><br />thành <mark>tiền</mark>.</span>
+              </h1>
               <p class="lead">
                 Bạn sẽ xây một hệ thống làm việc với AI để research, lập kế hoạch content, tạo sản phẩm tri thức,
                 edit video, render ảnh hàng loạt, dựng website học viên, xây funnel và theo dõi lead bằng CRM mini.
@@ -1082,24 +1065,6 @@
               </div>
             </div>
 
-            <aside class="hero-visual reveal" aria-label="AI Master X10 visual">
-              <div class="glass-card course-card">
-                <img
-                  class="course-thumb"
-                  src="/course-thumbnails/ai-master-x10-hieu-suat.webp"
-                  alt="AI Master X10 hiệu suất"
-                  width="900"
-                  height="560"
-                  decoding="async"
-                />
-                <h3>Học AI theo hệ thống, không học tool rời rạc.</h3>
-                <div class="benefits">
-                  <div class="benefit"><span class="check">✓</span><span>Research khách hàng, đối thủ và insight bằng AI</span></div>
-                  <div class="benefit"><span class="check">✓</span><span>Biến chuyên môn thành offer, content và tài sản bán hàng</span></div>
-                  <div class="benefit"><span class="check">✓</span><span>Dựng website học viên, funnel và CRM mini để theo dõi doanh thu</span></div>
-                </div>
-              </div>
-            </aside>
           </div>
         </section>
 
@@ -1499,6 +1464,7 @@
         var form = document.getElementById("payment-form");
         var submit = document.getElementById("payment-submit");
         var message = document.getElementById("form-message");
+        var stickyCta = document.querySelector(".sticky-cta");
         var reveals = document.querySelectorAll(".reveal");
         var observer = "IntersectionObserver" in window
           ? new IntersectionObserver(function (entries) {
@@ -1515,6 +1481,14 @@
           if (observer) observer.observe(element);
           else element.classList.add("is-visible");
         });
+
+        function updateStickyCta() {
+          if (!stickyCta) return;
+          stickyCta.classList.toggle("is-visible", window.scrollY > 620);
+        }
+
+        updateStickyCta();
+        window.addEventListener("scroll", updateStickyCta, { passive: true });
 
         function getCookie(name) {
           return document.cookie.split("; ").find(function (row) {
