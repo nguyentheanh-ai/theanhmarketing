@@ -64,6 +64,10 @@ function getProductTitle(order: PaymentOrder) {
   return getCourseList(order)[0] || order.courseTitle || "Khóa học tại The Anh Marketing";
 }
 
+function getPaymentFailedTitle(order: PaymentOrder) {
+  return order.status === "expired" ? "Đơn thanh toán đã hết hạn" : "Thanh toán không thành công";
+}
+
 function getBenefitItems(order: PaymentOrder) {
   const productTitle = getProductTitle(order);
   const courseIdentity = `${order.courseSlug} ${productTitle}`.toLowerCase();
@@ -147,6 +151,10 @@ function renderAccountBlock(account: PaymentEmailOptions["account"]) {
 
 export function shouldSendPaymentSuccessEmail(order: PaymentOrder) {
   return order.status === "paid" && Boolean(order.email.trim()) && !order.paymentEmailSentAt;
+}
+
+export function shouldSendPaymentFailedEmail(order: PaymentOrder) {
+  return (order.status === "failed" || order.status === "expired") && Boolean(order.email.trim()) && !order.paymentEmailSentAt;
 }
 
 export function buildPaymentSuccessEmailPayload(
@@ -311,6 +319,112 @@ export function buildPaymentSuccessEmailPayload(
   };
 }
 
+export function buildPaymentFailedEmailPayload(
+  order: PaymentOrder,
+  options: PaymentEmailOptions = {},
+): ResendEmailPayload {
+  const siteUrl = normalizeSiteUrl(options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL);
+  const paymentUrl = `${siteUrl}/thanh-toan/${encodeURIComponent(order.orderCode)}`;
+  const productTitle = getProductTitle(order);
+  const statusTitle = getPaymentFailedTitle(order);
+  const safeName = escapeHtml(order.studentName || "bạn");
+  const safeOrderCode = escapeHtml(order.orderCode);
+  const safeAmount = escapeHtml(order.amountLabel);
+  const safeProductTitle = escapeHtml(productTitle);
+  const safePaymentUrl = escapeHtml(paymentUrl);
+
+  const html = `
+    <div style="margin:0;padding:0;background:#080808;font-family:Arial,Helvetica,sans-serif;color:#f6f1e7">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#080808;margin:0;padding:42px 14px">
+        <tr>
+          <td align="center">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;max-width:560px;background:#171717;border:1px solid #303030;border-radius:18px;overflow:hidden">
+              <tr>
+                <td align="center" style="padding:42px 34px 36px;background:#161616;border-bottom:1px solid #39352a">
+                  <div style="width:76px;height:76px;border-radius:50%;background:#f66628;color:#101010;font-size:42px;line-height:76px;font-weight:900;margin:0 auto 24px">
+                    !
+                  </div>
+                  <h1 style="margin:0;color:#f66628;font-size:26px;line-height:1.25;letter-spacing:0.08em;text-transform:uppercase;font-weight:900">
+                    ${escapeHtml(statusTitle)}
+                  </h1>
+                  <p style="margin:16px 0 0;color:#e9e3d5;font-size:15px;line-height:1.7">
+                    Đơn hàng của bạn chưa được ghi nhận thanh toán thành công
+                  </p>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:34px">
+                  <p style="margin:0 0 18px;color:#e9e3d5;font-size:16px;line-height:1.7">
+                    Xin chào <strong style="color:#f66628">${safeName}</strong>,
+                  </p>
+                  <p style="margin:0;color:#bdb7a9;font-size:15px;line-height:1.8">
+                    Hệ thống chưa xác nhận được thanh toán cho đơn
+                    <strong style="color:#f66628">${safeOrderCode}</strong>.
+                    Anh/chị có thể mở lại trang thanh toán bên dưới để kiểm tra QR, nội dung chuyển khoản hoặc thực hiện lại.
+                  </p>
+
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:30px;border:1px solid #3a3a3a;border-radius:14px;background:#202020">
+                    <tr>
+                      <td style="padding:22px 24px">
+                        <p style="margin:0 0 18px;color:#f66628;font-size:13px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase">
+                          Chi tiết đơn hàng
+                        </p>
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                          <tr>
+                            <td style="padding:13px 0;border-top:1px solid #343434;color:#9d978c;font-size:14px">Mã đơn hàng</td>
+                            <td align="right" style="padding:13px 0;border-top:1px solid #343434;color:#f66628;font-size:14px;font-weight:900">${safeOrderCode}</td>
+                          </tr>
+                          <tr>
+                            <td style="padding:13px 0;border-top:1px solid #343434;color:#9d978c;font-size:14px">Sản phẩm</td>
+                            <td align="right" style="padding:13px 0;border-top:1px solid #343434;color:#f6f1e7;font-size:14px;font-weight:800">${safeProductTitle}</td>
+                          </tr>
+                          <tr>
+                            <td style="padding:13px 0;border-top:1px solid #343434;color:#9d978c;font-size:14px">Số tiền</td>
+                            <td align="right" style="padding:13px 0;border-top:1px solid #343434;color:#f6f1e7;font-size:18px;font-weight:900">${safeAmount}</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <div style="padding-top:30px;text-align:center">
+                    <a href="${safePaymentUrl}" style="display:block;background:#f66628;color:#111111;text-decoration:none;border-radius:10px;padding:17px 20px;font-size:15px;font-weight:900;letter-spacing:0.02em;text-transform:uppercase">
+                      Mở lại trang thanh toán
+                    </a>
+                    <p style="margin:20px 0 0;color:#8f887c;font-size:13px;line-height:1.7">
+                      Nếu bạn đã chuyển khoản nhưng hệ thống chưa xác nhận, hãy chụp màn hình giao dịch và nhắn Fanpage The Anh Marketing để được kiểm tra thủ công.<br />
+                      Trang thanh toán: <a href="${safePaymentUrl}" style="color:#f66628">${safePaymentUrl}</a>
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  `;
+
+  const text = [
+    `${statusTitle} tại The Anh Marketing`,
+    `Chào ${order.studentName || "bạn"},`,
+    `Mã đơn: ${order.orderCode}`,
+    `Khóa học: ${productTitle}`,
+    `Số tiền: ${order.amountLabel}`,
+    "Hệ thống chưa xác nhận được thanh toán thành công cho đơn hàng này.",
+    `Trang thanh toán: ${paymentUrl}`,
+  ].join("\n");
+
+  return {
+    from: getSender(options),
+    to: order.email,
+    subject: `${productTitle} - ${statusTitle} - ${order.orderCode}`,
+    html,
+    text,
+  };
+}
+
 export async function sendPaymentSuccessEmail(
   order: PaymentOrder,
   options: PaymentEmailOptions = {},
@@ -345,6 +459,46 @@ export async function sendPaymentSuccessEmail(
       ok: false,
       skipped: false,
       reason: error instanceof Error ? error.message : "Could not send payment success email.",
+    };
+  }
+
+  return { ok: true, skipped: false, reason: null };
+}
+
+export async function sendPaymentFailedEmail(
+  order: PaymentOrder,
+  options: PaymentEmailOptions = {},
+) {
+  if (!shouldSendPaymentFailedEmail(order)) {
+    return { ok: true, skipped: true, reason: "Order is not eligible for payment failed email." };
+  }
+
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    return { ok: true, skipped: true, reason: "Missing RESEND_API_KEY" };
+  }
+
+  try {
+    const payload = buildPaymentFailedEmailPayload(order, options);
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return { ok: false, skipped: false, reason: errorText || response.statusText };
+    }
+  } catch (error) {
+    return {
+      ok: false,
+      skipped: false,
+      reason: error instanceof Error ? error.message : "Could not send payment failed email.",
     };
   }
 

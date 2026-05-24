@@ -21,8 +21,11 @@ function loadTsModule(relativePath) {
 }
 
 const {
+  buildPaymentFailedEmailPayload,
   buildPaymentSuccessEmailPayload,
+  sendPaymentFailedEmail,
   sendPaymentSuccessEmail,
+  shouldSendPaymentFailedEmail,
   shouldSendPaymentSuccessEmail,
 } = loadTsModule("lib/notifications/payment-success-email.ts");
 
@@ -117,12 +120,69 @@ test("sends payment success email only for paid orders without a prior sent time
   assert.equal(shouldSendPaymentSuccessEmail({ ...paidOrder, email: "" }), false);
 });
 
+test("builds a customer payment failed email with a retry payment link", () => {
+  const failedOrder = {
+    ...paidOrder,
+    orderCode: "TAMFAILED",
+    status: "failed",
+    paidAt: null,
+  };
+  const payload = buildPaymentFailedEmailPayload(failedOrder, {
+    siteUrl: "https://www.theanhmarketing.com",
+    from: "The Anh Marketing <hoc@theanhmarketing.com>",
+  });
+
+  assert.equal(payload.to, "student@example.com");
+  assert.equal(payload.from, "The Anh Marketing <hoc@theanhmarketing.com>");
+  assert.match(payload.subject, /Thanh toán không thành công/);
+  assert.match(payload.subject, /TAMFAILED/);
+  assert.match(payload.html, /Thanh toán không thành công/);
+  assert.match(payload.html, /Quảng cáo Facebook Master 2026/);
+  assert.match(payload.html, /399\.000đ/);
+  assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/thanh-toan\/TAMFAILED/);
+  assert.match(payload.text, /Thanh toán không thành công/);
+  assert.match(payload.text, /Trang thanh toán: https:\/\/www\.theanhmarketing\.com\/thanh-toan\/TAMFAILED/);
+});
+
+test("sends payment failed email only for failed or expired orders", async () => {
+  const failedOrder = {
+    ...paidOrder,
+    status: "failed",
+    paidAt: null,
+  };
+
+  assert.equal(shouldSendPaymentFailedEmail(failedOrder), true);
+  assert.equal(shouldSendPaymentFailedEmail({ ...failedOrder, status: "expired" }), true);
+  assert.equal(shouldSendPaymentFailedEmail({ ...failedOrder, status: "paid" }), false);
+  assert.equal(shouldSendPaymentFailedEmail({ ...failedOrder, email: "" }), false);
+  assert.equal(
+    shouldSendPaymentFailedEmail({ ...failedOrder, paymentEmailSentAt: "2026-05-23T10:01:00.000Z" }),
+    false,
+  );
+});
+
 test("skips sending without a Resend API key without throwing", async () => {
   const previousKey = process.env.RESEND_API_KEY;
   delete process.env.RESEND_API_KEY;
 
   try {
     const result = await sendPaymentSuccessEmail(paidOrder);
+    assert.equal(result.ok, true);
+    assert.equal(result.skipped, true);
+    assert.equal(result.reason, "Missing RESEND_API_KEY");
+  } finally {
+    if (previousKey) {
+      process.env.RESEND_API_KEY = previousKey;
+    }
+  }
+});
+
+test("skips failed payment email without a Resend API key without throwing", async () => {
+  const previousKey = process.env.RESEND_API_KEY;
+  delete process.env.RESEND_API_KEY;
+
+  try {
+    const result = await sendPaymentFailedEmail({ ...paidOrder, status: "failed", paidAt: null });
     assert.equal(result.ok, true);
     assert.equal(result.skipped, true);
     assert.equal(result.reason, "Missing RESEND_API_KEY");
