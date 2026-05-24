@@ -11,8 +11,9 @@ Sepay flow in this project:
 7. The app matches the Sepay `code` or transfer content with `orders.order_code` and marks the order as paid.
 8. When an order changes from `pending` to `paid`, the app creates a student account if needed.
 9. The app sends one payment confirmation email to the customer.
-10. A Vercel Cron job calls `/api/orders/expire` every 10 minutes to mark overdue pending orders as `expired`.
-11. Expired orders send the failed-payment email with a retry payment link, without blocking a later successful Sepay webhook.
+10. A Vercel Cron job calls `/api/orders/expire` daily to mark overdue pending orders as `expired`.
+11. Payment lookups also opportunistically expire an overdue pending order, so a returning customer sees the latest state immediately.
+12. Expired orders send the failed-payment email with a retry payment link, without blocking a later successful Sepay webhook.
 
 ## Environment
 
