@@ -617,6 +617,101 @@
         text-transform: uppercase;
       }
 
+      .visual-panel {
+        display: grid;
+        width: 100%;
+        gap: 14px;
+        text-align: left;
+      }
+
+      .visual-panel-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .visual-pill {
+        border: 1px solid rgba(255, 226, 138, 0.2);
+        border-radius: 999px;
+        padding: 5px 10px;
+        color: var(--gold-bright);
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .visual-lines,
+      .visual-steps,
+      .visual-calendar,
+      .visual-metrics {
+        display: grid;
+        gap: 10px;
+      }
+
+      .visual-line,
+      .visual-step,
+      .visual-metric {
+        border: 1px solid var(--line-soft);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.04);
+        padding: 10px 12px;
+        color: var(--text-soft);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .visual-step {
+        display: grid;
+        grid-template-columns: 34px 1fr;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .visual-step b {
+        display: inline-grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border-radius: 999px;
+        background: rgba(214, 169, 40, 0.18);
+        color: var(--gold-bright);
+      }
+
+      .visual-calendar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .visual-day {
+        min-height: 46px;
+        border: 1px solid var(--line-soft);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.04);
+        padding: 8px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .visual-day b {
+        display: block;
+        color: var(--gold-bright);
+      }
+
+      .visual-metric {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .visual-metric b {
+        color: var(--gold-bright);
+      }
+
       .module-layout {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1078,9 +1173,13 @@
                 tài sản cụ thể và doanh thu cụ thể.
               </p>
               <div class="asset-placeholder" data-visual-slot="pain-story-photo">
-                <div>
-                  <strong>Đặt ảnh thật tại đây</strong>
-                  Ảnh bàn làm việc, lớp học, buổi quay bài hoặc màn hình workflow AI của The Anh Marketing.
+                <div class="visual-panel">
+                  <div class="visual-panel-top"><span>AI Growth System</span><span class="visual-pill">Workflow</span></div>
+                  <div class="visual-steps">
+                    <div class="visual-step"><b>01</b><span>Research insight và chân dung khách hàng</span></div>
+                    <div class="visual-step"><b>02</b><span>Đóng gói offer, nội dung và tài sản bán hàng</span></div>
+                    <div class="visual-step"><b>03</b><span>Đưa landing, form, thanh toán và CRM vào một flow</span></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1225,25 +1324,56 @@
           <div class="container grid-4">
             <article class="card output-card reveal">
               <div class="asset-placeholder" data-visual-slot="content-calendar">
-                <div><strong>Ảnh content plan</strong>Đặt ảnh Google Sheet / Notion lịch content 30 ngày tại đây.</div>
+                <div class="visual-panel">
+                  <div class="visual-panel-top"><span>Content plan 30 ngày</span><span class="visual-pill">Attract</span></div>
+                  <div class="visual-calendar">
+                    <div class="visual-day"><b>01</b>Insight</div>
+                    <div class="visual-day"><b>07</b>Hook</div>
+                    <div class="visual-day"><b>14</b>Offer</div>
+                    <div class="visual-day"><b>21</b>CTA</div>
+                    <div class="visual-day"><b>28</b>Remarketing</div>
+                    <div class="visual-day"><b>30</b>Review</div>
+                  </div>
+                </div>
               </div>
               <div class="output-card-body"><h3>Content plan 30 ngày</h3><p>Research insight, pillar, hook, CTA và lịch đăng theo từng ngày.</p></div>
             </article>
             <article class="card output-card reveal">
               <div class="asset-placeholder" data-visual-slot="student-website-demo">
-                <div><strong>Ảnh website học viên</strong>Đặt screenshot dashboard học viên hoặc trang bài học mẫu tại đây.</div>
+                <div class="visual-panel">
+                  <div class="visual-panel-top"><span>Dashboard học viên</span><span class="visual-pill">Learn</span></div>
+                  <div class="visual-lines">
+                    <div class="visual-line">Module 01 - Product map</div>
+                    <div class="visual-line">Module 02 - Content engine</div>
+                    <div class="visual-line">Module 03 - Funnel và CRM</div>
+                  </div>
+                </div>
               </div>
               <div class="output-card-body"><h3>Website học viên</h3><p>Demo flow học, xem bài, tải tài nguyên và theo dõi tiến độ.</p></div>
             </article>
             <article class="card output-card reveal">
               <div class="asset-placeholder" data-visual-slot="landing-funnel-demo">
-                <div><strong>Ảnh landing/funnel</strong>Đặt ảnh landing page, form và thanh toán thử tại đây.</div>
+                <div class="visual-panel">
+                  <div class="visual-panel-top"><span>Landing bán thử</span><span class="visual-pill">Convert</span></div>
+                  <div class="visual-steps">
+                    <div class="visual-step"><b>01</b><span>Hero, pain, mechanism và offer</span></div>
+                    <div class="visual-step"><b>02</b><span>Form đăng ký nối với đơn hàng SePay</span></div>
+                    <div class="visual-step"><b>03</b><span>Email, tài khoản học viên và dashboard sau thanh toán</span></div>
+                  </div>
+                </div>
               </div>
               <div class="output-card-body"><h3>Landing bán thử</h3><p>Hero, pain, mechanism, output, curriculum, bonus, pricing và form.</p></div>
             </article>
             <article class="card output-card reveal">
               <div class="asset-placeholder" data-visual-slot="crm-dashboard-demo">
-                <div><strong>Ảnh CRM mini</strong>Đặt dashboard lead, đơn hàng, doanh thu hoặc tracking tại đây.</div>
+                <div class="visual-panel">
+                  <div class="visual-panel-top"><span>CRM mini</span><span class="visual-pill">Scale</span></div>
+                  <div class="visual-metrics">
+                    <div class="visual-metric"><span>Lead mới</span><b>128</b></div>
+                    <div class="visual-metric"><span>Đơn chờ thanh toán</span><b>36</b></div>
+                    <div class="visual-metric"><span>Tỉ lệ follow-up</span><b>74%</b></div>
+                  </div>
+                </div>
               </div>
               <div class="output-card-body"><h3>CRM mini</h3><p>Theo dõi lead, đơn, doanh thu và điểm nghẽn sau khi bán thử.</p></div>
             </article>
@@ -1302,9 +1432,13 @@
         <section class="section">
           <div class="container grid-2">
             <div class="asset-placeholder reveal" data-visual-slot="instructor-photo">
-              <div>
-                <strong>Đặt ảnh chân dung / ảnh giảng dạy</strong>
-                Ưu tiên ảnh thật của The Anh Marketing: đang quay bài, giảng, phân tích workflow hoặc làm việc với dashboard.
+              <div class="visual-panel">
+                <div class="visual-panel-top"><span>The Anh Marketing</span><span class="visual-pill">Mentor system</span></div>
+                <div class="visual-lines">
+                  <div class="visual-line">Attract: insight, content angle, traffic</div>
+                  <div class="visual-line">Grow: offer, landing, thanh toán, học viên</div>
+                  <div class="visual-line">Scale: CRM, remarketing, dữ liệu và tối ưu</div>
+                </div>
               </div>
             </div>
             <div class="reveal">
