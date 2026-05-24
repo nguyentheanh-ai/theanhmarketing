@@ -8,6 +8,7 @@ import { readCart, subscribeCart, type CartItem } from "@/lib/cart";
 export function CartToast() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [visible, setVisible] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     let timer: number | undefined;
@@ -15,7 +16,14 @@ export function CartToast() {
       const latest = readCart();
       setItems(latest);
 
+      if (latest.length === 0) {
+        setDismissed(false);
+        setVisible(false);
+        return;
+      }
+
       if (latest.length > 0 && showToast) {
+        setDismissed(false);
         setVisible(true);
         if (timer) {
           window.clearTimeout(timer);
@@ -41,16 +49,27 @@ export function CartToast() {
     [items],
   );
 
-  if (items.length === 0) {
+  if (items.length === 0 || dismissed) {
     return null;
   }
 
   return (
     <aside
-      className={`ai-panel fixed bottom-5 right-5 z-[70] w-[min(420px,calc(100vw-2.5rem))] p-4 transition duration-300 ${
+      className={`ai-panel fixed bottom-5 right-5 z-[70] w-[min(420px,calc(100vw-2.5rem))] p-4 pr-12 transition duration-300 ${
         visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-85"
       }`}
     >
+      <button
+        type="button"
+        aria-label="Tắt giỏ hàng nổi"
+        className="absolute right-3 top-3 grid size-7 place-items-center rounded-full border border-white/10 bg-white/10 text-sm font-black leading-none text-white/55 transition hover:border-white/25 hover:bg-white/15 hover:text-white focus:outline-none focus:ring-2 focus:ring-[#f7d36a]/70"
+        onClick={() => {
+          setDismissed(true);
+          setVisible(false);
+        }}
+      >
+        ×
+      </button>
       <p className="ai-kicker">Giỏ hàng</p>
       <p className="mt-2 text-base font-black text-white">Đã thêm {items.length} khóa học</p>
       <p className="mt-1 text-sm text-white/60">Tổng tạm tính: {formatVnd(total)}</p>
