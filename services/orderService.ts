@@ -409,6 +409,31 @@ export async function getPaymentOrders(options: { includeFallback?: boolean } = 
   return (data as DbOrder[]).map(mapDbOrder);
 }
 
+export async function expirePendingPaymentOrders(now = new Date()) {
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    throw new Error("Chưa cấu hình Supabase để cập nhật đơn hết hạn.");
+  }
+
+  const timestamp = now.toISOString();
+  const { data, error } = await supabase
+    .from("orders")
+    .update({
+      status: "expired",
+      updated_at: timestamp,
+    })
+    .eq("status", "pending")
+    .lt("expires_at", timestamp)
+    .select("*");
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return ((data ?? []) as DbOrder[]).map(mapDbOrder);
+}
+
 export async function confirmOrderFromSepay(payload: SepayWebhookPayload): Promise<PaymentConfirmationResult> {
   const transferType = String(payload.transferType ?? payload.transfer_type ?? "").toLowerCase();
 

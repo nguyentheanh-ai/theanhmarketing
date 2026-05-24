@@ -11,6 +11,8 @@ Sepay flow in this project:
 7. The app matches the Sepay `code` or transfer content with `orders.order_code` and marks the order as paid.
 8. When an order changes from `pending` to `paid`, the app creates a student account if needed.
 9. The app sends one payment confirmation email to the customer.
+10. A Vercel Cron job calls `/api/orders/expire` every 10 minutes to mark overdue pending orders as `expired`.
+11. Expired orders send the failed-payment email with a retry payment link, without blocking a later successful Sepay webhook.
 
 ## Environment
 
@@ -22,12 +24,14 @@ SEPAY_BANK_ACCOUNT_NAME=NGUYEN THE ANH
 SEPAY_WEBHOOK_API_KEY=your-sepay-webhook-api-key
 RESEND_API_KEY=your-resend-api-key
 PAYMENT_SUCCESS_EMAIL_FROM=The Anh Marketing <onboarding@resend.dev>
+CRON_SECRET=your-vercel-cron-secret
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` is recommended for webhook updates. Keep it server-only.
 `PAYMENT_SUCCESS_EMAIL_FROM` is optional; if empty, the app falls back to `REGISTRATION_NOTIFICATION_FROM`.
 For real customer delivery, verify a sending domain in Resend and use a `from` address on that domain.
 Resend test mode only sends to the account owner email.
+`CRON_SECRET` is required in production for the expired-order job. Vercel Cron sends it as `Authorization: Bearer CRON_SECRET`, and the route rejects requests without that header.
 
 ## Student Account After Payment
 
