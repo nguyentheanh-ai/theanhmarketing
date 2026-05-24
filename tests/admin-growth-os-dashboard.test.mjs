@@ -43,6 +43,19 @@ test("Growth OS dashboard exposes working tab targets and real admin data props"
   assert.doesNotMatch(source, /mock|sample|demo/i);
 });
 
+test("Click events tab renders tracking analytics instead of a placeholder", () => {
+  const source = readSource("components/admin/admin-growth-os-dashboard.tsx");
+
+  assert.match(source, /function buildClickEventAnalytics/);
+  assert.match(source, /topSources/);
+  assert.match(source, /landingPages/);
+  assert.match(source, /eventTimeline/);
+  assert.match(source, /Pixel Facebook/);
+  assert.match(source, /UTM source/);
+  assert.match(source, /Click → payment/);
+  assert.doesNotMatch(source, /Khi bảng click_events được bật/);
+});
+
 test("admin shell uses the website logo and Growth OS navigation shell", () => {
   const source = readSource("components/app/admin-shell.tsx");
 

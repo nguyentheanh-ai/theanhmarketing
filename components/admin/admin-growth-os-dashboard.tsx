@@ -39,6 +39,18 @@ type CrmRow = {
   source: string;
 };
 
+type ClickEventRow = {
+  id: string;
+  leadName: string;
+  source: string;
+  landingPage: string;
+  eventName: string;
+  orderCode: string;
+  paymentStatus: string;
+  pixelStatus: string;
+  createdAt: string;
+};
+
 const tabs: { id: AdminTabId; label: string }[] = [
   { id: "dashboard", label: "Dashboard" },
   { id: "crm", label: "CRM" },
@@ -70,6 +82,25 @@ function contactKeys(input: { email?: string; phone?: string; name?: string }) {
   ].filter(Boolean);
 
   return Array.from(new Set(keys));
+}
+
+function compactText(value: string, maxLength = 90) {
+  const text = value.replace(/\s+/g, " ").trim();
+
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  return `${text.slice(0, maxLength - 1).trim()}…`;
+}
+
+function getTrackingField(note: string, label: string) {
+  const prefix = `${label}:`;
+  const line = note
+    .split(/\r?\n/)
+    .find((item) => item.trim().toLowerCase().startsWith(prefix.toLowerCase()));
+
+  return line?.slice(prefix.length).trim() ?? "";
 }
 
 function newestFirst(a?: string | null, b?: string | null) {
@@ -147,6 +178,9 @@ function buildCrmRows(orders: PaymentOrder[], leads: LeadItem[]) {
 
   for (const lead of leads) {
     const keys = contactKeys({ email: lead.email, phone: lead.phone, name: lead.name });
+    const noteCourse = getTrackingField(lead.need, "Khóa");
+    const noteOrderCode = getTrackingField(lead.need, "Mã đơn");
+    const notePaymentStatus = getTrackingField(lead.need, "Trạng thái");
 
     if (keys.some((key) => contactIndex.has(key))) {
       continue;
@@ -154,12 +188,12 @@ function buildCrmRows(orders: PaymentOrder[], leads: LeadItem[]) {
 
     rows.push({
       id: `lead:${lead.id ?? `${lead.name}-${lead.phone}`}`,
-      orderCode: "Chưa có đơn",
+      orderCode: noteOrderCode || "Chưa có đơn",
       customerName: lead.name || "Chưa có tên",
       contact: lead.email || lead.phone || "Chưa có liên hệ",
-      courseTitle: lead.need || "Chưa chọn khóa học",
+      courseTitle: noteCourse || compactText(lead.need, 70) || "Chưa chọn khóa học",
       paymentStatus: "lead",
-      careStatus: lead.status || "Lead mới",
+      careStatus: notePaymentStatus || lead.status || "Lead mới",
       owner: "Sale",
       amountLabel: "0đ",
       createdAt: lead.createdAt ?? "",
@@ -214,6 +248,64 @@ function metricTrend(current: number, total: number) {
   return `${Math.round((current / total) * 100)}%`;
 }
 
+function topCounts(rows: ClickEventRow[], selector: (row: ClickEventRow) => string) {
+  const counts = new Map<string, number>();
+
+  for (const row of rows) {
+    const value = selector(row) || "Không rõ";
+    counts.set(value, (counts.get(value) ?? 0) + 1);
+  }
+
+  return [...counts.entries()]
+    .map(([label, count]) => ({ label, count }))
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+    .slice(0, 6);
+}
+
+function buildClickEventAnalytics(leads: LeadItem[], orders: PaymentOrder[]) {
+  const paidOrderCodes = new Set(
+    orders.filter((order) => order.status === "paid").map((order) => order.orderCode),
+  );
+  const eventTimeline: ClickEventRow[] = leads
+    .map((lead) => {
+      const note = lead.need || "";
+      const orderCode = getTrackingField(note, "Mã đơn");
+      const landingPage = getTrackingField(note, "Landing") || getTrackingField(note, "URL") || lead.source || "Website";
+      const utmSource = getTrackingField(note, "UTM source");
+      const utmCampaign = getTrackingField(note, "UTM campaign");
+      const fbp = getTrackingField(note, "fbp");
+      const fbc = getTrackingField(note, "fbc");
+      const paymentStatus = getTrackingField(note, "Trạng thái");
+      const hasPixel = Boolean(fbp || fbc);
+      const hasPaidOrder = orderCode ? paidOrderCodes.has(orderCode) : false;
+
+      return {
+        id: lead.id ?? `${lead.name}-${lead.phone}-${lead.createdAt ?? ""}`,
+        leadName: lead.name || "Chưa có tên",
+        source: utmSource || lead.source || "Website",
+        landingPage: compactText(landingPage, 56),
+        eventName: hasPaidOrder ? "Payment success" : paymentStatus ? "Start checkout" : "Submit form",
+        orderCode: orderCode || "Chưa có đơn",
+        paymentStatus: hasPaidOrder ? "paid" : paymentStatus || "lead",
+        pixelStatus: hasPixel ? "Pixel Facebook" : "Chưa có pixel",
+        createdAt: lead.createdAt ?? "",
+        utmCampaign,
+      };
+    })
+    .sort((a, b) => newestFirst(a.createdAt, b.createdAt));
+  const pixelReadyCount = eventTimeline.filter((row) => row.pixelStatus === "Pixel Facebook").length;
+  const paymentEventCount = eventTimeline.filter((row) => row.eventName === "Payment success").length;
+
+  return {
+    eventTimeline,
+    topSources: topCounts(eventTimeline, (row) => row.source),
+    landingPages: topCounts(eventTimeline, (row) => row.landingPage),
+    pixelReadyCount,
+    paymentEventCount,
+    clickToPaymentRate: metricTrend(paymentEventCount, eventTimeline.length),
+  };
+}
+
 function MetricCard({
   label,
   value,
@@ -252,6 +344,7 @@ export function AdminGrowthOsDashboard({ orders, leads, students, courses }: Das
   const [activeTab, setActiveTab] = useState<AdminTabId>("dashboard");
   const crmRows = useMemo(() => buildCrmRows(orders, leads), [orders, leads]);
   const revenueSeries = useMemo(() => buildDailyRevenue(orders), [orders]);
+  const clickAnalytics = useMemo(() => buildClickEventAnalytics(leads, orders), [leads, orders]);
   const paidOrders = orders.filter((order) => order.status === "paid");
   const pendingOrders = orders.filter((order) => order.status === "pending");
   const failedOrders = orders.filter((order) => order.status === "failed" || order.status === "expired");
@@ -538,14 +631,113 @@ export function AdminGrowthOsDashboard({ orders, leads, students, courses }: Das
       ) : null}
 
       {activeTab === "clicks" ? (
-        <Panel className="mt-4 p-5">
-          <p className="text-xs font-bold uppercase text-slate-500">Click events</p>
-          <h2 className="mt-2 text-xl font-black text-white">Tracking CTA và landing page</h2>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
-            Pixel Facebook, UTM và lead source vẫn giữ nguyên từ luồng cũ. Khi bảng click_events được bật trên Supabase,
-            khu vực này sẽ đọc trực tiếp thay vì tạo dữ liệu tạm.
-          </p>
-        </Panel>
+        <div className="mt-4 grid gap-4">
+          <div className="grid gap-3 md:grid-cols-4">
+            <MetricCard
+              label="Tracked events"
+              value={String(clickAnalytics.eventTimeline.length)}
+              detail="Submit form, checkout và payment từ CRM"
+              tone="sky"
+            />
+            <MetricCard
+              label="Pixel Facebook"
+              value={String(clickAnalytics.pixelReadyCount)}
+              detail="Lead có fbp/fbc để retarget"
+              tone="emerald"
+            />
+            <MetricCard
+              label="Click → payment"
+              value={clickAnalytics.clickToPaymentRate}
+              detail="Đơn paid trên tổng event có tracking"
+              tone="amber"
+            />
+            <MetricCard
+              label="UTM source"
+              value={String(clickAnalytics.topSources.length)}
+              detail="Nguồn traffic đang ghi nhận"
+              tone="rose"
+            />
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-[0.75fr_0.75fr_1.5fr]">
+            <Panel className="p-5">
+              <p className="text-xs font-bold uppercase text-slate-500">Top sources</p>
+              <h2 className="mt-2 text-xl font-black text-white">Nguồn traffic</h2>
+              <div className="mt-5 grid gap-3">
+                {clickAnalytics.topSources.length > 0 ? (
+                  clickAnalytics.topSources.map((item) => (
+                    <div key={item.label} className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-3">
+                      <span className="truncate text-sm font-bold text-slate-200">{item.label}</span>
+                      <span className="rounded-full border border-sky-300/20 bg-sky-400/12 px-2 py-1 text-xs font-black text-sky-200">
+                        {item.count}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-slate-400">Chưa có UTM source.</p>
+                )}
+              </div>
+            </Panel>
+
+            <Panel className="p-5">
+              <p className="text-xs font-bold uppercase text-slate-500">Landing pages</p>
+              <h2 className="mt-2 text-xl font-black text-white">Trang tạo chuyển đổi</h2>
+              <div className="mt-5 grid gap-3">
+                {clickAnalytics.landingPages.length > 0 ? (
+                  clickAnalytics.landingPages.map((item) => (
+                    <div key={item.label} className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-3">
+                      <span className="truncate text-sm font-bold text-slate-200">{item.label}</span>
+                      <span className="rounded-full border border-amber-200/20 bg-amber-200/10 px-2 py-1 text-xs font-black text-amber-100">
+                        {item.count}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-slate-400">Chưa có landing page.</p>
+                )}
+              </div>
+            </Panel>
+
+            <Panel className="overflow-hidden">
+              <div className="border-b border-white/10 p-4">
+                <p className="text-xs font-bold uppercase text-slate-500">Event timeline</p>
+                <h2 className="mt-2 text-xl font-black text-white">Click events từ lead/order hiện có</h2>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[980px] text-left text-sm">
+                  <thead className="bg-white/[0.035] text-xs uppercase text-sky-200/70">
+                    <tr>
+                      <th className="px-4 py-3">Lead</th>
+                      <th className="px-4 py-3">Event</th>
+                      <th className="px-4 py-3">Landing</th>
+                      <th className="px-4 py-3">Nguồn</th>
+                      <th className="px-4 py-3">Mã đơn</th>
+                      <th className="px-4 py-3">Pixel</th>
+                      <th className="px-4 py-3">Thời gian</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {clickAnalytics.eventTimeline.map((event) => (
+                      <tr key={event.id} className="border-t border-white/8 align-top transition hover:bg-white/[0.035]">
+                        <td className="px-4 py-4 font-bold text-white">{event.leadName}</td>
+                        <td className="px-4 py-4">
+                          <span className="rounded-full border border-sky-300/20 bg-sky-400/12 px-2 py-1 text-xs font-bold text-sky-200">
+                            {event.eventName}
+                          </span>
+                        </td>
+                        <td className="max-w-[220px] px-4 py-4 text-slate-300">{event.landingPage}</td>
+                        <td className="px-4 py-4 text-slate-300">{event.source}</td>
+                        <td className="px-4 py-4 font-mono text-xs text-sky-200">{event.orderCode}</td>
+                        <td className="px-4 py-4 text-slate-300">{event.pixelStatus}</td>
+                        <td className="px-4 py-4 text-slate-500">{formatAdminDate(event.createdAt)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Panel>
+          </div>
+        </div>
       ) : null}
 
       {activeTab === "payments" ? (
