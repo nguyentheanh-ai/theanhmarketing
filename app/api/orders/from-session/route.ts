@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentAuth } from "@/lib/auth/session";
+import { sendOrderCreatedEmails } from "@/lib/notifications/pending-payment-email";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import {
   cleanEmail,
@@ -75,6 +76,16 @@ export async function POST(request: Request) {
       courseSlug,
       courseSlugs,
     });
+
+    try {
+      const orderEmails = await sendOrderCreatedEmails(order);
+
+      if (!orderEmails.admin.ok || !orderEmails.customer.ok) {
+        console.warn("[orders] Order-created email failed:", orderEmails);
+      }
+    } catch (emailError) {
+      console.warn("[orders] Order-created email failed:", emailError);
+    }
 
     return NextResponse.json({ ok: true, order });
   } catch (error) {

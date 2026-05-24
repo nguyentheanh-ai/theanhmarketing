@@ -10,6 +10,7 @@ import {
   isValidPhone,
   isValidSlug,
 } from "@/lib/security/validation";
+import { sendOrderCreatedEmails } from "@/lib/notifications/pending-payment-email";
 import { createLeadAdmin } from "@/services/leadService";
 import { createPaymentOrder } from "@/services/orderService";
 
@@ -107,6 +108,16 @@ export async function POST(request: Request) {
 
     if (!leadSync.ok) {
       console.warn("[orders] Remarketing lead sync failed:", leadSync.error);
+    }
+
+    try {
+      const orderEmails = await sendOrderCreatedEmails(order);
+
+      if (!orderEmails.admin.ok || !orderEmails.customer.ok) {
+        console.warn("[orders] Order-created email failed:", orderEmails);
+      }
+    } catch (emailError) {
+      console.warn("[orders] Order-created email failed:", emailError);
     }
 
     return NextResponse.json({

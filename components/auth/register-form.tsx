@@ -84,25 +84,6 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
       source: "signup",
     });
 
-    try {
-      await fetch("/api/notifications/registration", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          studentName: fullName,
-          phone,
-          email,
-          courseTitle: interestedCourse,
-          registeredAt: new Date().toISOString(),
-          source: "signup",
-        }),
-      });
-    } catch (notificationError) {
-      console.error("Registration notification failed", notificationError);
-    }
-
     const orderResponse = await fetch("/api/orders", {
       method: "POST",
       headers: {
