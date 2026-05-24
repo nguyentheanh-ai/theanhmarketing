@@ -84,8 +84,10 @@ export function normalizeMarketingSettings(value: Partial<MarketingSettings> | n
   };
 
   const facebookPixelId = normalizePixelId(merged.facebookPixelId);
+  const envFacebookPixelId = normalizePixelId(process.env.NEXT_PUBLIC_META_PIXEL_ID);
   const gaMeasurementId = normalizeGaId(merged.gaMeasurementId);
   const gtmId = normalizeGtmId(merged.gtmId);
+  const effectiveFacebookPixelId = facebookPixelId || envFacebookPixelId;
 
   return {
     seoTitle: String(merged.seoTitle || fallbackMarketingSettings.seoTitle).trim().slice(0, 90),
@@ -93,9 +95,9 @@ export function normalizeMarketingSettings(value: Partial<MarketingSettings> | n
     socialImageUrl: normalizeUrl(merged.socialImageUrl),
     googleSiteVerification: normalizeVerification(merged.googleSiteVerification),
     facebookDomainVerification: normalizeVerification(merged.facebookDomainVerification),
-    trackingEnabled: Boolean(merged.trackingEnabled),
-    facebookPixelEnabled: Boolean(merged.facebookPixelEnabled && facebookPixelId),
-    facebookPixelId,
+    trackingEnabled: Boolean(merged.trackingEnabled || envFacebookPixelId),
+    facebookPixelEnabled: Boolean((merged.facebookPixelEnabled || envFacebookPixelId) && effectiveFacebookPixelId),
+    facebookPixelId: effectiveFacebookPixelId,
     gaEnabled: Boolean(merged.gaEnabled && gaMeasurementId),
     gaMeasurementId,
     gtmEnabled: Boolean(merged.gtmEnabled && gtmId),

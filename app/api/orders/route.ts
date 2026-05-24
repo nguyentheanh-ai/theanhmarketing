@@ -10,6 +10,7 @@ import {
   isValidPhone,
   isValidSlug,
 } from "@/lib/security/validation";
+import { sendMetaLeadEvent } from "@/lib/meta/conversions-api";
 import { sendOrderCreatedEmails } from "@/lib/notifications/pending-payment-email";
 import { createLeadAdmin } from "@/services/leadService";
 import { createPaymentOrder, type PaymentOrder } from "@/services/orderService";
@@ -69,6 +70,7 @@ export async function POST(request: Request) {
     const forwardedFor = request.headers.get("x-forwarded-for") ?? "";
     const ipAddress =
       request.headers.get("cf-connecting-ip") ?? forwardedFor.split(",")[0]?.trim() ?? "";
+    const userAgent = request.headers.get("user-agent") ?? "";
 
     if (!studentName || !email || !phone || !isValidEmail(email) || !isValidPhone(phone)) {
       return NextResponse.json(
@@ -125,6 +127,48 @@ export async function POST(request: Request) {
       console.warn("[orders] Remarketing lead sync failed:", leadSync.error);
     }
 
+    let metaLead: { ok: boolean; skipped: boolean; reason?: string; status?: number } = {
+      ok: true,
+      skipped: true,
+      reason: "not_sent",
+    };
+
+    try {
+      metaLead = await sendMetaLeadEvent({
+        orderCode: order.orderCode,
+        studentName,
+        email,
+        phone,
+        courseSlug: order.courseSlug,
+        courseTitle: order.courseTitle,
+        amount: order.amount,
+        currency: order.currency,
+        status: order.status,
+        landingPage: cleanText(body.landingPage, 120),
+        pageUrl: cleanText(body.pageUrl, 500),
+        referrer: cleanText(body.referrer, 500),
+        utmSource: cleanText(body.utmSource, 120),
+        utmMedium: cleanText(body.utmMedium, 120),
+        utmCampaign: cleanText(body.utmCampaign, 160),
+        utmContent: cleanText(body.utmContent, 160),
+        utmTerm: cleanText(body.utmTerm, 160),
+        fbp: cleanText(body.fbp, 180),
+        fbc: cleanText(body.fbc, 220),
+        leadId: cleanText(body.leadId, 120),
+        ipAddress,
+        userAgent,
+      });
+
+      if (!metaLead.ok && !metaLead.skipped) {
+        console.warn("[orders] Meta Lead event failed:", {
+          reason: metaLead.reason,
+          status: metaLead.status,
+        });
+      }
+    } catch (metaError) {
+      console.warn("[orders] Meta Lead event failed:", metaError);
+    }
+
     try {
       const orderEmails = await sendOrderCreatedEmails(order);
 
@@ -138,7 +182,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       order,
-      ...(process.env.NODE_ENV === "development" ? { leadSync } : {}),
+      ...(process.env.NODE_ENV === "development" ? { leadSync, metaLead } : {}),
     });
   } catch (error) {
     return NextResponse.json(

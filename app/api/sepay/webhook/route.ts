@@ -3,11 +3,13 @@ import {
   sendPaymentSuccessEmail,
   shouldSendPaymentSuccessEmail,
 } from "@/lib/notifications/payment-success-email";
+import { sendMetaPurchaseEvent } from "@/lib/meta/conversions-api";
 import { verifySepayApiKey, type SepayWebhookPayload } from "@/lib/payments/sepay";
 import { logSecurityEvent } from "@/lib/security/audit-log";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import { confirmOrderFromSepay, markPaymentEmailError, markPaymentEmailSent } from "@/services/orderService";
 import { ensureStudentAccountForPaidOrder } from "@/services/studentAccountService";
+import { siteConfig } from "@/data/site";
 
 export const runtime = "nodejs";
 
@@ -55,9 +57,42 @@ export async function POST(request: Request) {
       skipped: true,
       reason: "not_sent",
     };
+    let metaPurchase: { ok: boolean; skipped: boolean; reason?: string; status?: number } = {
+      ok: true,
+      skipped: true,
+      reason: "not_sent",
+    };
     let studentAccount:
       | Awaited<ReturnType<typeof ensureStudentAccountForPaidOrder>>
       | null = null;
+
+    if (!confirmation.wasAlreadyPaid) {
+      try {
+        metaPurchase = await sendMetaPurchaseEvent({
+          orderCode: confirmation.order.orderCode,
+          studentName: confirmation.order.studentName,
+          email: confirmation.order.email,
+          phone: confirmation.order.phone,
+          courseSlug: confirmation.order.courseSlug,
+          courseTitle: confirmation.order.courseTitle,
+          amount: confirmation.order.amount,
+          currency: confirmation.order.currency,
+          status: confirmation.order.status,
+          pageUrl: `${siteConfig.url}/thanh-toan/${encodeURIComponent(confirmation.order.orderCode)}`,
+          paidAt: confirmation.order.paidAt,
+          orderItems: confirmation.order.orderItems,
+        });
+
+        if (!metaPurchase.ok && !metaPurchase.skipped) {
+          console.warn("[sepay] Meta Purchase event failed:", {
+            reason: metaPurchase.reason,
+            status: metaPurchase.status,
+          });
+        }
+      } catch (metaError) {
+        console.warn("[sepay] Meta Purchase event failed:", metaError);
+      }
+    }
 
     if (!confirmation.wasAlreadyPaid && shouldSendPaymentSuccessEmail(confirmation.order)) {
       studentAccount = await ensureStudentAccountForPaidOrder(confirmation.order);
@@ -111,6 +146,7 @@ export async function POST(request: Request) {
       ...(process.env.NODE_ENV === "development"
         ? {
             paymentEmail,
+            metaPurchase,
             studentAccount: studentAccount
               ? {
                   ok: studentAccount.ok,

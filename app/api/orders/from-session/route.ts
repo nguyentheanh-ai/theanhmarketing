@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentAuth } from "@/lib/auth/session";
+import { sendMetaLeadEvent } from "@/lib/meta/conversions-api";
 import { sendOrderCreatedEmails } from "@/lib/notifications/pending-payment-email";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import {
@@ -13,6 +14,7 @@ import {
   isValidSlug,
 } from "@/lib/security/validation";
 import { createPaymentOrder } from "@/services/orderService";
+import { siteConfig } from "@/data/site";
 
 export async function POST(request: Request) {
   try {
@@ -47,6 +49,10 @@ export async function POST(request: Request) {
     const phone = cleanPhone(user.user_metadata?.phone);
     const courseSlug = cleanSlug(body.courseSlug);
     const courseSlugs = cleanSlugList(body.courseSlugs);
+    const forwardedFor = request.headers.get("x-forwarded-for") ?? "";
+    const ipAddress =
+      request.headers.get("cf-connecting-ip") ?? forwardedFor.split(",")[0]?.trim() ?? "";
+    const userAgent = request.headers.get("user-agent") ?? "";
 
     if (!email || !isValidEmail(email)) {
       return NextResponse.json(
@@ -77,6 +83,38 @@ export async function POST(request: Request) {
       courseSlugs,
     });
 
+    let metaLead: { ok: boolean; skipped: boolean; reason?: string; status?: number } = {
+      ok: true,
+      skipped: true,
+      reason: "not_sent",
+    };
+
+    try {
+      metaLead = await sendMetaLeadEvent({
+        orderCode: order.orderCode,
+        studentName,
+        email,
+        phone: phone || "",
+        courseSlug: order.courseSlug,
+        courseTitle: order.courseTitle,
+        amount: order.amount,
+        currency: order.currency,
+        status: order.status,
+        pageUrl: `${siteConfig.url}/gio-hang`,
+        ipAddress,
+        userAgent,
+      });
+
+      if (!metaLead.ok && !metaLead.skipped) {
+        console.warn("[orders] Meta Lead event failed:", {
+          reason: metaLead.reason,
+          status: metaLead.status,
+        });
+      }
+    } catch (metaError) {
+      console.warn("[orders] Meta Lead event failed:", metaError);
+    }
+
     try {
       const orderEmails = await sendOrderCreatedEmails(order);
 
@@ -87,7 +125,11 @@ export async function POST(request: Request) {
       console.warn("[orders] Order-created email failed:", emailError);
     }
 
-    return NextResponse.json({ ok: true, order });
+    return NextResponse.json({
+      ok: true,
+      order,
+      ...(process.env.NODE_ENV === "development" ? { metaLead } : {}),
+    });
   } catch (error) {
     return NextResponse.json(
       {

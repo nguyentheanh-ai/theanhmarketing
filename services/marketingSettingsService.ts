@@ -15,7 +15,7 @@ async function fetchMarketingSettings(): Promise<MarketingSettings> {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
-    return fallbackMarketingSettings;
+    return normalizeMarketingSettings(fallbackMarketingSettings);
   }
 
   const { data, error } = await supabase
@@ -25,7 +25,7 @@ async function fetchMarketingSettings(): Promise<MarketingSettings> {
     .maybeSingle();
 
   if (error || !data) {
-    return fallbackMarketingSettings;
+    return normalizeMarketingSettings(fallbackMarketingSettings);
   }
 
   const setting = data as DbSetting;
