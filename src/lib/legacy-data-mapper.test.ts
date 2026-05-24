@@ -60,6 +60,80 @@ describe("legacy data mapper", () => {
     expect(dataset.leads.some((lead) => lead.email.endsWith("@example.com"))).toBe(true);
   });
 
+  it("merges checkout orders with duplicate lead forms into one CRM row per contact", () => {
+    const dataset = buildAdminDatasetFromLegacy({
+      leads: [
+        {
+          id: "lead-checkout-1",
+          name: "Test",
+          phone: "+84367928921",
+          email: "test@example.com",
+          message: "Muốn học",
+          source: "LDP Facebook Ads Master 2026",
+          created_at: "2026-05-24T11:16:21.897607+00:00",
+        },
+        {
+          id: "lead-duplicated-older",
+          name: "Đỗ hảo",
+          phone: "0986124988",
+          email: "hdo091188@gmail.com",
+          message: "Trial cũ",
+          source: "trial",
+          created_at: "2026-05-15T08:04:10.144229+00:00",
+        },
+        {
+          id: "lead-duplicated-newer",
+          name: "Đỗ hảo",
+          phone: "0986124988",
+          email: "hdo091188@gmail.com",
+          message: "Trial mới",
+          source: "trial",
+          created_at: "2026-05-15T08:57:34.065323+00:00",
+        },
+        {
+          id: "lead-duplicated-same-note",
+          name: "Đỗ hảo",
+          phone: "0986124988",
+          email: "hdo091188@gmail.com",
+          message: "Trial mới",
+          source: "trial",
+          created_at: "2026-05-15T08:20:34.065323+00:00",
+        },
+      ],
+      orders: [
+        {
+          id: "order-checkout-1",
+          order_code: "TAMMPJOMDTUCWWSF",
+          student_name: "Test",
+          email: "test@example.com",
+          phone: "+84367928921",
+          course_slug: "facebook-ads-2026",
+          course_title: "Quảng cáo Facebook Master 2026",
+          amount: 399000,
+          status: "pending",
+          payment_method: "sepay",
+          created_at: "2026-05-24T11:16:21.620532+00:00",
+          paid_at: null,
+        },
+      ],
+    });
+
+    expect(dataset.leads).toHaveLength(2);
+    expect(dataset.leads.find((lead) => lead.email === "test@example.com")).toMatchObject({
+      id: "order:order-checkout-1",
+      orderCode: "TAMMPJOMDTUCWWSF",
+      courseName: "Quảng cáo Facebook Master 2026",
+      careStatus: "waiting_payment",
+    });
+    const duplicatedLead = dataset.leads.find((lead) => lead.email === "hdo091188@gmail.com");
+    expect(duplicatedLead).toMatchObject({
+      id: "lead:lead-duplicated-newer",
+    });
+    expect(duplicatedLead?.notes).toContain("Trial mới");
+    expect(duplicatedLead?.notes).toContain("Trial cũ");
+    expect(duplicatedLead?.notes.match(/Trial mới/g)).toHaveLength(1);
+  });
+
   it("returns empty arrays when there are no legacy rows", () => {
     const dataset = buildAdminDatasetFromLegacy({});
 

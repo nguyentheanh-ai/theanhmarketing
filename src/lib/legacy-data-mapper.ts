@@ -202,6 +202,120 @@ function getCourseStatus(status: string | null | undefined): Course["status"] {
   return "active";
 }
 
+function normalizeContactValue(value: string | null | undefined) {
+  return value?.trim().toLowerCase() ?? "";
+}
+
+function normalizePhoneValue(value: string | null | undefined) {
+  const digits = String(value ?? "").replace(/\D/g, "");
+
+  if (digits.startsWith("84") && digits.length >= 10) {
+    return `0${digits.slice(2)}`;
+  }
+
+  return digits;
+}
+
+function getLeadContactKey(lead: Lead) {
+  const email = normalizeContactValue(lead.email);
+  const phone = normalizePhoneValue(lead.phone);
+
+  if (email) {
+    return `email:${email}`;
+  }
+
+  if (phone) {
+    return `phone:${phone}`;
+  }
+
+  return `record:${lead.id}`;
+}
+
+function getLeadPriority(lead: Lead) {
+  const paymentRank = lead.paymentStatus === "paid" ? 3 : lead.paymentStatus === "partial" ? 2 : 1;
+  const orderRank = lead.orderCode ? 20 : 0;
+  const courseRank = lead.courseId || lead.courseName ? 5 : 0;
+
+  return orderRank + courseRank + paymentRank;
+}
+
+function isCheckoutSource(source: string) {
+  const normalized = source.toLowerCase();
+
+  return normalized === "checkout" || normalized === "sepay" || normalized === "manual-admin";
+}
+
+function mergeLeadNotes(...notes: Array<string | undefined>) {
+  const seen = new Set<string>();
+
+  return notes
+    .flatMap((note) => note?.split("\n") ?? [])
+    .map((line) => line.trim())
+    .filter((line) => {
+      if (!line) {
+        return false;
+      }
+
+      const key = line.toLowerCase();
+      if (seen.has(key)) {
+        return false;
+      }
+
+      seen.add(key);
+      return true;
+    })
+    .join("\n");
+}
+
+function mergeLeadRecord(primary: Lead, secondary: Lead): Lead {
+  return {
+    ...primary,
+    name: primary.name || secondary.name,
+    email: primary.email || secondary.email,
+    phone: primary.phone || secondary.phone,
+    landingPage: primary.landingPage || secondary.landingPage,
+    campaign: primary.campaign || secondary.campaign,
+    utmSource: isCheckoutSource(primary.utmSource) && secondary.utmSource ? secondary.utmSource : primary.utmSource || secondary.utmSource,
+    tags: Array.from(new Set([...primary.tags, ...secondary.tags].filter(Boolean))),
+    notes: mergeLeadNotes(primary.notes, secondary.notes),
+  };
+}
+
+function chooseLeadRecord(current: Lead, candidate: Lead) {
+  const currentPriority = getLeadPriority(current);
+  const candidatePriority = getLeadPriority(candidate);
+
+  if (candidatePriority > currentPriority) {
+    return mergeLeadRecord(candidate, current);
+  }
+
+  if (candidatePriority < currentPriority) {
+    return mergeLeadRecord(current, candidate);
+  }
+
+  const currentTime = Date.parse(current.registeredAt);
+  const candidateTime = Date.parse(candidate.registeredAt);
+
+  if ((Number.isFinite(candidateTime) ? candidateTime : 0) > (Number.isFinite(currentTime) ? currentTime : 0)) {
+    return mergeLeadRecord(candidate, current);
+  }
+
+  return mergeLeadRecord(current, candidate);
+}
+
+function mergeDuplicateLeadRecords(records: Lead[]) {
+  const sortedRecords = [...records].sort((a, b) => Date.parse(b.registeredAt) - Date.parse(a.registeredAt));
+  const byContact = new Map<string, Lead>();
+
+  for (const record of sortedRecords) {
+    const key = getLeadContactKey(record);
+    const existing = byContact.get(key);
+    byContact.set(key, existing ? chooseLeadRecord(existing, record) : record);
+  }
+
+  return Array.from(byContact.values()).sort((a, b) => Date.parse(b.registeredAt) - Date.parse(a.registeredAt));
+}
+
 function buildCourseStats(orders: LegacyOrderRow[]) {
   const stats = new Map<string, { revenue: number; students: Set<string> }>();
 
@@ -321,7 +435,7 @@ export function mapLegacyLeads(leads: LegacyLeadRow[] = [], orders: LegacyOrderR
     notes: lead.message ?? "",
   }));
 
-  return [...orderLeads, ...rawLeads].sort((a, b) => Date.parse(b.registeredAt) - Date.parse(a.registeredAt));
+  return mergeDuplicateLeadRecords([...orderLeads, ...rawLeads]);
 }
 
 export function mapLegacyClickEvents(rows: LegacyClickEventRow[] = []): ClickEvent[] {
