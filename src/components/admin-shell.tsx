@@ -15,17 +15,20 @@ import {
   Megaphone,
   Menu,
   MousePointerClick,
+  Plus,
   Search,
   Settings,
   ShieldCheck,
   Sparkles,
+  UserPlus,
   Users,
   Workflow,
   type LucideIcon,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState, type FormEvent } from "react";
 
 import { KpiCard } from "@/components/kpi-card";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -34,16 +37,38 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { buildDashboardSummary, calculateFunnelConversion, formatCurrencyVnd } from "@/lib/analytics";
+import {
+  addLeadRecord,
+  addStudentEnrollment,
+  buildLocalLeadRecord,
+  buildLocalStudentEnrollment,
+  deleteRecordFromDataset,
+  getStudentLeads,
+  isStudentLead,
+  type CreateLeadInput,
+  type CreateStudentInput,
+} from "@/lib/admin-records";
 import { emptyAdminDataset } from "@/lib/empty-dataset";
 import { legacyBrandAssets, legacyFacebookPixelContract } from "@/lib/legacy-contracts";
 import { useWorkspaceStore } from "@/lib/store";
-import type { AdminDataset } from "@/lib/types";
+import type { AdminDataset, Course, Lead } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { isWorkspaceTab, workspaceNavigation, workspaceTabs, type WorkspaceTab } from "@/lib/workspace-navigation";
 
@@ -269,6 +294,187 @@ function EmptyState({ message }: { message: string }) {
   );
 }
 
+function MutationNotice({ message }: { message: string }) {
+  return (
+    <div className="rounded-lg border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-100">
+      {message}
+    </div>
+  );
+}
+
+function CreateLeadDialog({ onCreate }: { onCreate: (input: CreateLeadInput) => void }) {
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState<CreateLeadInput>({
+    email: "",
+    name: "",
+    notes: "",
+    phone: "",
+    source: "admin-crm",
+  });
+
+  function updateForm<K extends keyof CreateLeadInput>(key: K, value: CreateLeadInput[K]) {
+    setForm((current) => ({ ...current, [key]: value }));
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    onCreate(form);
+    setOpen(false);
+    setForm({ email: "", name: "", notes: "", phone: "", source: "admin-crm" });
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" type="button">
+          <Plus className="size-4" />
+          Thêm lead
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="border-white/10 bg-[#0b0f19] sm:max-w-lg">
+        <form className="grid gap-4" onSubmit={handleSubmit}>
+          <DialogHeader>
+            <DialogTitle>Thêm lead</DialogTitle>
+            <DialogDescription>Tạo lead CRM mới, chưa cấp quyền khóa học.</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Input
+              onChange={(event) => updateForm("name", event.target.value)}
+              placeholder="Tên khách"
+              required
+              value={form.name}
+            />
+            <Input
+              onChange={(event) => updateForm("phone", event.target.value)}
+              placeholder="Số điện thoại"
+              required
+              value={form.phone}
+            />
+            <Input
+              onChange={(event) => updateForm("email", event.target.value)}
+              placeholder="Email"
+              type="email"
+              value={form.email}
+            />
+            <Input
+              onChange={(event) => updateForm("source", event.target.value)}
+              placeholder="Nguồn lead"
+              value={form.source}
+            />
+          </div>
+          <Textarea
+            onChange={(event) => updateForm("notes", event.target.value)}
+            placeholder="Ghi chú chăm sóc"
+            value={form.notes}
+          />
+          <DialogFooter className="border-white/10 bg-white/[0.03]">
+            <Button type="submit">
+              <Plus className="size-4" />
+              Lưu lead
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function CreateStudentDialog({
+  courses,
+  onCreate,
+}: {
+  courses: Course[];
+  onCreate: (input: CreateStudentInput) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState<CreateStudentInput>({
+    courseId: "",
+    email: "",
+    name: "",
+    notes: "",
+    phone: "",
+  });
+  const selectedCourseId = form.courseId || courses[0]?.id || "";
+
+  function updateForm<K extends keyof CreateStudentInput>(key: K, value: CreateStudentInput[K]) {
+    setForm((current) => ({ ...current, [key]: value }));
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!selectedCourseId) {
+      return;
+    }
+
+    onCreate({ ...form, courseId: selectedCourseId });
+    setOpen(false);
+    setForm({ courseId: "", email: "", name: "", notes: "", phone: "" });
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button disabled={courses.length === 0} size="sm" type="button">
+          <UserPlus className="size-4" />
+          Thêm học viên
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="border-white/10 bg-[#0b0f19] sm:max-w-lg">
+        <form className="grid gap-4" onSubmit={handleSubmit}>
+          <DialogHeader>
+            <DialogTitle>Thêm học viên</DialogTitle>
+            <DialogDescription>Cấp quyền khóa học bằng đơn manual-admin đã thanh toán.</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Input
+              onChange={(event) => updateForm("name", event.target.value)}
+              placeholder="Tên học viên"
+              required
+              value={form.name}
+            />
+            <Input
+              onChange={(event) => updateForm("phone", event.target.value)}
+              placeholder="Số điện thoại"
+              required
+              value={form.phone}
+            />
+            <Input
+              onChange={(event) => updateForm("email", event.target.value)}
+              placeholder="Email"
+              type="email"
+              value={form.email}
+            />
+            <Select onValueChange={(value) => updateForm("courseId", value)} value={selectedCourseId}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Chọn khóa học" />
+              </SelectTrigger>
+              <SelectContent>
+                {courses.map((course) => (
+                  <SelectItem key={course.id} value={course.id}>
+                    {course.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Textarea
+            onChange={(event) => updateForm("notes", event.target.value)}
+            placeholder="Ghi chú cấp quyền"
+            value={form.notes}
+          />
+          <DialogFooter className="border-white/10 bg-white/[0.03]">
+            <Button disabled={!selectedCourseId} type="submit">
+              <UserPlus className="size-4" />
+              Cấp quyền
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function KpiGrid({ dataset }: { dataset: AdminDataset }) {
   const summary = useMemo(() => buildDashboardSummary(dataset, new Date()), [dataset]);
   const clickConversion = calculateFunnelConversion({
@@ -357,7 +563,7 @@ function DashboardOverview({ dataset }: { dataset: AdminDataset }) {
     <div className="grid gap-4">
       <KpiGrid dataset={dataset} />
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(360px,0.8fr)]">
-        <Card className="border-white/10 bg-card/70">
+        <Card className="min-w-0 border-white/10 bg-card/70">
           <CardHeader className="flex flex-row items-center justify-between gap-3">
             <div>
               <CardTitle>Revenue chart</CardTitle>
@@ -395,7 +601,7 @@ function DashboardOverview({ dataset }: { dataset: AdminDataset }) {
             <CardTitle>Lead CRM</CardTitle>
             <p className="mt-1 text-sm text-muted-foreground">Lead mới, chăm sóc, thanh toán và phân bổ sale trong ngày</p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="min-w-0">
             <VirtualizedLeadsTable leads={dataset.leads} />
           </CardContent>
         </Card>
@@ -433,6 +639,59 @@ function RealtimePanel({ dataset }: { dataset: AdminDataset }) {
         )) : <EmptyState message="Chưa có click event thật. Sau khi gắn tracking, stream sẽ hiện ở đây." />}
       </CardContent>
     </Card>
+  );
+}
+
+function StudentsPanel({
+  dataset,
+  onCreateStudent,
+  onDeleteStudent,
+}: {
+  dataset: AdminDataset;
+  onCreateStudent: (input: CreateStudentInput) => void;
+  onDeleteStudent: (lead: Lead) => void;
+}) {
+  const students = getStudentLeads(dataset.leads);
+  const grantedStudents = students.filter((lead) => lead.careStatus === "access_granted" || lead.paymentStatus === "paid");
+  const pendingStudents = students.filter((lead) => lead.paymentStatus !== "paid");
+
+  return (
+    <div className="grid gap-4">
+      <div className="grid gap-3 md:grid-cols-3">
+        {[
+          ["Học viên", students.length.toLocaleString("vi-VN"), "Từ paid orders và admin-student leads"],
+          ["Đã cấp quyền", grantedStudents.length.toLocaleString("vi-VN"), "Giữ logic paid → access_granted"],
+          ["Chờ thanh toán", pendingStudents.length.toLocaleString("vi-VN"), "Chưa cấp quyền học"],
+        ].map(([label, value, description]) => (
+          <Card className="border-white/10 bg-card/70" key={label}>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground">{label}</p>
+              <p className="mt-2 text-2xl font-semibold text-white">{value}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card className="min-w-0 border-white/10 bg-card/70">
+        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <CardTitle>Student management</CardTitle>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Học viên được suy ra từ đơn đã thanh toán và lead admin-student cũ, không đổi logic cấp quyền hiện có.
+            </p>
+          </div>
+          <CreateStudentDialog courses={dataset.courses} onCreate={onCreateStudent} />
+        </CardHeader>
+        <CardContent className="min-w-0">
+          {students.length > 0 ? (
+            <VirtualizedLeadsTable deleteLabel="Xóa học viên" leads={students} onDeleteLead={onDeleteStudent} />
+          ) : (
+            <EmptyState message="Chưa có học viên thật từ paid orders hoặc admin-student leads." />
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -748,12 +1007,95 @@ function SettingsPanel() {
 }
 
 export function AdminShell({ dataset = emptyAdminDataset }: { dataset?: AdminDataset }) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("overview");
+  const [adminDataset, setAdminDataset] = useState<AdminDataset>(dataset);
+  const [mutationError, setMutationError] = useState<string | null>(null);
 
   function handleTabChange(value: string) {
     if (isWorkspaceTab(value)) {
       setActiveTab(value);
     }
+  }
+
+  async function persistAdminRecord(payload: object) {
+    const response = await fetch("/api/admin-records", {
+      body: JSON.stringify(payload),
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+    });
+    const result = (await response.json().catch(() => null)) as { message?: string; persisted?: boolean } | null;
+
+    if (!response.ok) {
+      throw new Error(result?.message ?? "Không lưu được thay đổi CRM.");
+    }
+
+    return Boolean(result?.persisted);
+  }
+
+  function handleCreateLead(input: CreateLeadInput) {
+    const lead = buildLocalLeadRecord(input);
+    const previousDataset = adminDataset;
+
+    setMutationError(null);
+    setAdminDataset((current) => addLeadRecord(current, lead));
+    void persistAdminRecord({ action: "create-lead", lead })
+      .then((persisted) => {
+        if (persisted) {
+          router.refresh();
+        }
+      })
+      .catch((error) => {
+        setAdminDataset(previousDataset);
+        setMutationError(error instanceof Error ? error.message : "Không lưu được lead mới.");
+      });
+  }
+
+  function handleCreateStudent(input: CreateStudentInput) {
+    const course = adminDataset.courses.find((item) => item.id === input.courseId);
+
+    if (!course) {
+      setMutationError("Chưa chọn được khóa học để cấp quyền.");
+      return;
+    }
+
+    const enrollment = buildLocalStudentEnrollment(input, course);
+    const previousDataset = adminDataset;
+
+    setMutationError(null);
+    setAdminDataset((current) => addStudentEnrollment(current, enrollment.lead, enrollment.order));
+    void persistAdminRecord({ action: "create-student", lead: enrollment.lead, order: enrollment.order })
+      .then((persisted) => {
+        if (persisted) {
+          router.refresh();
+        }
+      })
+      .catch((error) => {
+        setAdminDataset(previousDataset);
+        setMutationError(error instanceof Error ? error.message : "Không cấp quyền được học viên.");
+      });
+  }
+
+  function handleDeleteRecord(lead: Lead) {
+    const label = isStudentLead(lead) ? "học viên" : "lead";
+
+    if (!window.confirm(`Xóa ${label} "${lead.name}"?`)) {
+      return;
+    }
+
+    const previousDataset = adminDataset;
+    setMutationError(null);
+    setAdminDataset((current) => deleteRecordFromDataset(current, lead.id));
+    void persistAdminRecord({ action: "delete-record", leadId: lead.id })
+      .then((persisted) => {
+        if (persisted) {
+          router.refresh();
+        }
+      })
+      .catch((error) => {
+        setAdminDataset(previousDataset);
+        setMutationError(error instanceof Error ? error.message : `Không xóa được ${label}.`);
+      });
   }
 
   return (
@@ -762,7 +1104,7 @@ export function AdminShell({ dataset = emptyAdminDataset }: { dataset?: AdminDat
         <SidebarContent activeTab={activeTab} onTabChange={setActiveTab} />
         <div className="min-w-0 flex-1">
           <Topbar activeTab={activeTab} onTabChange={setActiveTab} />
-          <main className="mx-auto grid w-full max-w-[1720px] gap-5 px-4 py-5 sm:px-6">
+          <main className="mx-auto grid min-w-0 w-full max-w-[1720px] gap-5 px-4 py-5 sm:px-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
                 <div className="flex items-center gap-2">
@@ -792,7 +1134,9 @@ export function AdminShell({ dataset = emptyAdminDataset }: { dataset?: AdminDat
               </div>
             </div>
 
-            <Tabs className="grid gap-4" onValueChange={handleTabChange} value={activeTab}>
+            {mutationError ? <MutationNotice message={mutationError} /> : null}
+
+            <Tabs className="grid min-w-0 max-w-full gap-4" onValueChange={handleTabChange} value={activeTab}>
               <TabsList className="w-full justify-start overflow-x-auto">
                 {workspaceTabs.map((tab) => (
                   <TabsTrigger key={tab.value} value={tab.value}>
@@ -801,38 +1145,48 @@ export function AdminShell({ dataset = emptyAdminDataset }: { dataset?: AdminDat
                 ))}
               </TabsList>
               <TabsContent value="overview">
-                <DashboardOverview dataset={dataset} />
+                <DashboardOverview dataset={adminDataset} />
               </TabsContent>
               <TabsContent value="crm">
-                <Card className="border-white/10 bg-card/70">
-                  <CardHeader>
-                    <CardTitle>Lead CRM management</CardTitle>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {dataset.leads.length.toLocaleString("vi-VN")} lead thật từ Supabase và website cũ
-                    </p>
+                <Card className="min-w-0 border-white/10 bg-card/70">
+                  <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <CardTitle>Lead CRM management</CardTitle>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {adminDataset.leads.length.toLocaleString("vi-VN")} lead thật từ Supabase và website cũ
+                      </p>
+                    </div>
+                    <CreateLeadDialog onCreate={handleCreateLead} />
                   </CardHeader>
-                  <CardContent>
-                    <VirtualizedLeadsTable leads={dataset.leads} />
+                  <CardContent className="min-w-0">
+                    <VirtualizedLeadsTable deleteLabel="Xóa lead" leads={adminDataset.leads} onDeleteLead={handleDeleteRecord} />
                   </CardContent>
                 </Card>
               </TabsContent>
-              <TabsContent value="lms">
-                <CourseGrid dataset={dataset} />
+              <TabsContent value="students">
+                <StudentsPanel
+                  dataset={adminDataset}
+                  onCreateStudent={handleCreateStudent}
+                  onDeleteStudent={handleDeleteRecord}
+                />
+              </TabsContent>
+              <TabsContent value="courses">
+                <CourseGrid dataset={adminDataset} />
               </TabsContent>
               <TabsContent value="automation">
-                <AutomationBoard dataset={dataset} />
+                <AutomationBoard dataset={adminDataset} />
               </TabsContent>
               <TabsContent value="events">
-                <ClickEventsPanel dataset={dataset} />
+                <ClickEventsPanel dataset={adminDataset} />
               </TabsContent>
               <TabsContent value="payments">
-                <PaymentsPanel dataset={dataset} />
+                <PaymentsPanel dataset={adminDataset} />
               </TabsContent>
               <TabsContent value="reports">
-                <ReportsPanel dataset={dataset} />
+                <ReportsPanel dataset={adminDataset} />
               </TabsContent>
               <TabsContent value="logs">
-                <AuditLogs dataset={dataset} />
+                <AuditLogs dataset={adminDataset} />
               </TabsContent>
               <TabsContent value="settings">
                 <SettingsPanel />

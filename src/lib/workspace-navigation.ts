@@ -1,7 +1,8 @@
 export type WorkspaceTab =
   | "overview"
   | "crm"
-  | "lms"
+  | "students"
+  | "courses"
   | "automation"
   | "events"
   | "payments"
@@ -23,7 +24,8 @@ export type WorkspaceNavItem = {
 export const workspaceTabs: WorkspaceTabItem[] = [
   { value: "overview", label: "Dashboard" },
   { value: "crm", label: "CRM" },
-  { value: "lms", label: "LMS" },
+  { value: "students", label: "Học viên" },
+  { value: "courses", label: "Khóa học" },
   { value: "automation", label: "Automation" },
   { value: "events", label: "Click events" },
   { value: "payments", label: "Payments" },
@@ -35,8 +37,8 @@ export const workspaceTabs: WorkspaceTabItem[] = [
 export const workspaceNavigation: WorkspaceNavItem[] = [
   { id: "overview", label: "Tổng quan", tab: "overview" },
   { id: "crm", label: "Lead CRM", tab: "crm" },
-  { id: "students", label: "Học viên", tab: "lms" },
-  { id: "courses", label: "Khóa học", tab: "lms" },
+  { id: "students", label: "Học viên", tab: "students" },
+  { id: "courses", label: "Khóa học", tab: "courses" },
   { id: "automation", label: "Automation", tab: "automation" },
   { id: "events", label: "Click events", tab: "events" },
   { id: "payments", label: "Thanh toán", tab: "payments" },

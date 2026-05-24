@@ -11,8 +11,12 @@ describe("workspace navigation", () => {
     }
   });
 
-  it("keeps the old student and course menu inside the LMS workspace", () => {
-    expect(workspaceNavigation.find((item) => item.id === "students")?.tab).toBe("lms");
-    expect(workspaceNavigation.find((item) => item.id === "courses")?.tab).toBe("lms");
+  it("opens students and courses as separate workspaces", () => {
+    const students = workspaceNavigation.find((item) => item.id === "students");
+    const courses = workspaceNavigation.find((item) => item.id === "courses");
+
+    expect(students?.tab).toBe("students");
+    expect(courses?.tab).toBe("courses");
+    expect(students?.tab).not.toBe(courses?.tab);
   });
 });

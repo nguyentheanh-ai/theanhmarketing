@@ -7,8 +7,8 @@ import {
   type ColumnDef,
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Copy, Filter, Search } from "lucide-react";
-import { useDeferredValue, useMemo, useRef, useState } from "react";
+import { Copy, Filter, Search, Trash2 } from "lucide-react";
+import { useDeferredValue, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { calculateRemainingAmount, formatCurrencyVnd } from "@/lib/analytics";
+import { formatLeadRowCode } from "@/lib/admin-records";
 import { useWorkspaceStore } from "@/lib/store";
 import type { CareStatus, Lead, PaymentStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -44,6 +45,15 @@ const careLabels: Record<CareStatus, string> = {
   lost: "Lost",
 };
 
+function getLeadTableGridClass(hasActions: boolean) {
+  return cn(
+    "grid w-full",
+    hasActions
+      ? "grid-cols-[190px_220px_minmax(280px,1fr)_150px_150px_140px_140px_88px]"
+      : "grid-cols-[190px_220px_minmax(280px,1fr)_150px_150px_140px_140px]",
+  );
+}
+
 function PaymentBadge({ status }: { status: PaymentStatus }) {
   return (
     <Badge
@@ -61,11 +71,23 @@ function PaymentBadge({ status }: { status: PaymentStatus }) {
   );
 }
 
-export function VirtualizedLeadsTable({ leads }: { leads: Lead[] }) {
+export function VirtualizedLeadsTable({
+  deleteLabel = "Xóa",
+  leads,
+  onDeleteLead,
+  toolbarAction,
+}: {
+  deleteLabel?: string;
+  leads: Lead[];
+  onDeleteLead?: (lead: Lead) => void;
+  toolbarAction?: ReactNode;
+}) {
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query.toLowerCase());
   const scrollRef = useRef<HTMLDivElement>(null);
   const { selectedLead, setSelectedLead } = useWorkspaceStore();
+  const hasActions = Boolean(onDeleteLead);
+  const leadTableGridClass = getLeadTableGridClass(hasActions);
 
   const data = useMemo(() => {
     if (!deferredQuery) {
@@ -84,17 +106,25 @@ export function VirtualizedLeadsTable({ leads }: { leads: Lead[] }) {
     () => [
       {
         accessorKey: "orderCode",
-        header: "Mã đơn",
-        cell: ({ row }) => (
-          <span
-            className="inline-flex items-center gap-1 font-mono text-xs text-sky-300 transition hover:text-sky-200"
-            onDoubleClick={() => navigator.clipboard?.writeText(row.original.orderCode)}
-            title="Double click để copy mã đơn"
-          >
-            {row.original.orderCode}
-            <Copy className="size-3" />
-          </span>
-        ),
+        header: "STT - Mã đơn",
+        cell: ({ row }) => {
+          const displayCode = row.original.orderCode || row.original.code;
+
+          return (
+            <span
+              className="inline-flex max-w-full cursor-copy items-center gap-1 truncate font-mono text-xs text-sky-300 transition hover:text-sky-200"
+              onDoubleClick={(event) => {
+                event.stopPropagation();
+                navigator.clipboard?.writeText(displayCode);
+              }}
+              title="Double click để copy mã đơn"
+            >
+              <span className="shrink-0 text-muted-foreground">{row.index + 1} -</span>
+              <span className="truncate">{displayCode}</span>
+              <Copy className="size-3 shrink-0" />
+            </span>
+          );
+        },
       },
       {
         accessorKey: "name",
@@ -109,7 +139,11 @@ export function VirtualizedLeadsTable({ leads }: { leads: Lead[] }) {
       {
         accessorKey: "courseName",
         header: "Khóa học",
-        cell: ({ row }) => <span className="line-clamp-1 text-sm text-zinc-200">{row.original.courseName}</span>,
+        cell: ({ row }) => (
+          <span className="line-clamp-1 text-sm text-zinc-200">
+            {row.original.courseName || "Chưa chọn khóa học"}
+          </span>
+        ),
       },
       {
         accessorKey: "paymentStatus",
@@ -131,8 +165,31 @@ export function VirtualizedLeadsTable({ leads }: { leads: Lead[] }) {
         header: "Đã thu",
         cell: ({ row }) => <span className="font-mono text-xs">{formatCurrencyVnd(row.original.paidAmount)}</span>,
       },
+      ...(hasActions
+        ? ([
+            {
+              id: "actions",
+              header: "Thao tác",
+              cell: ({ row }) => (
+                <Button
+                  aria-label={`${deleteLabel} ${row.original.name}`}
+                  className="text-muted-foreground hover:border-red-400/20 hover:bg-red-400/10 hover:text-red-200"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onDeleteLead?.(row.original);
+                  }}
+                  size="icon-sm"
+                  type="button"
+                  variant="ghost"
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              ),
+            } satisfies ColumnDef<Lead>,
+          ] as ColumnDef<Lead>[])
+        : []),
     ],
-    [],
+    [deleteLabel, hasActions, onDeleteLead],
   );
 
   const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
@@ -145,7 +202,7 @@ export function VirtualizedLeadsTable({ leads }: { leads: Lead[] }) {
   });
 
   return (
-    <>
+    <div className="min-w-0 max-w-full">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="relative w-full md:max-w-sm">
           <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -156,7 +213,8 @@ export function VirtualizedLeadsTable({ leads }: { leads: Lead[] }) {
             value={query}
           />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {toolbarAction}
           <Button size="sm" variant="outline">
             <Filter />
             Bộ lọc
@@ -168,40 +226,50 @@ export function VirtualizedLeadsTable({ leads }: { leads: Lead[] }) {
         </div>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-lg border border-white/10 bg-card/64">
-        <div className="grid grid-cols-[120px_190px_minmax(220px,1fr)_150px_140px_120px_130px] border-b border-white/10 bg-white/[0.03] px-3 py-2 text-xs font-medium text-muted-foreground">
-          {table.getFlatHeaders().map((header) => (
-            <div key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</div>
-          ))}
-        </div>
-        <div ref={scrollRef} className="h-[386px] overflow-auto">
-          <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
-            {virtualizer.getVirtualItems().map((virtualRow) => {
-              const row = rows[virtualRow.index];
-              return (
-                <div
-                  aria-label={`Mở lead ${row.original.orderCode}`}
-                  className="absolute left-0 grid w-full grid-cols-[120px_190px_minmax(220px,1fr)_150px_140px_120px_130px] items-center border-b border-white/6 px-3 text-left transition hover:bg-sky-400/[0.06]"
-                  key={row.id}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      setSelectedLead(row.original);
-                    }
-                  }}
-                  onClick={() => setSelectedLead(row.original)}
-                  role="button"
-                  style={{ height: virtualRow.size, transform: `translateY(${virtualRow.start}px)` }}
-                  tabIndex={0}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <div className="min-w-0 pr-3" key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </div>
-                  ))}
+      <div className="mt-4 w-full min-w-0 max-w-full overflow-hidden rounded-lg border border-white/10 bg-card/64">
+        <div className="w-full min-w-0 max-w-full overflow-x-auto">
+          <div className={hasActions ? "min-w-[1280px]" : "min-w-[1180px]"}>
+            <div className={cn(leadTableGridClass, "border-b border-white/10 bg-white/[0.03] px-3 py-2 text-xs font-medium text-muted-foreground")}>
+              {table.getFlatHeaders().map((header) => (
+                <div className="truncate pr-3" key={header.id}>
+                  {flexRender(header.column.columnDef.header, header.getContext())}
                 </div>
-              );
-            })}
+              ))}
+            </div>
+            <div ref={scrollRef} className="h-[386px] overflow-y-auto overflow-x-hidden">
+              <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
+                {virtualizer.getVirtualItems().map((virtualRow) => {
+                  const row = rows[virtualRow.index];
+
+                  return (
+                    <div
+                      aria-label={`Mở lead ${formatLeadRowCode(row.original, row.index)}`}
+                      className={cn(
+                        leadTableGridClass,
+                        "absolute left-0 right-0 items-center border-b border-white/6 px-3 text-left transition hover:bg-sky-400/[0.06]",
+                      )}
+                      key={row.id}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          setSelectedLead(row.original);
+                        }
+                      }}
+                      onClick={() => setSelectedLead(row.original)}
+                      role="button"
+                      style={{ height: virtualRow.size, transform: `translateY(${virtualRow.start}px)` }}
+                      tabIndex={0}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <div className="min-w-0 pr-3" key={cell.id}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -212,7 +280,9 @@ export function VirtualizedLeadsTable({ leads }: { leads: Lead[] }) {
             <>
               <SheetHeader>
                 <SheetTitle>{selectedLead.name}</SheetTitle>
-                <SheetDescription>{selectedLead.orderCode} · {selectedLead.courseName}</SheetDescription>
+                <SheetDescription>
+                  {selectedLead.orderCode || selectedLead.code} · {selectedLead.courseName || "Chưa chọn khóa học"}
+                </SheetDescription>
               </SheetHeader>
               <ScrollArea className="h-[calc(100vh-92px)] px-4 pb-4">
                 <div className="grid gap-4">
@@ -281,6 +351,6 @@ export function VirtualizedLeadsTable({ leads }: { leads: Lead[] }) {
           ) : null}
         </SheetContent>
       </Sheet>
-    </>
+    </div>
   );
 }
