@@ -53,11 +53,8 @@ export function LearningRoom({
   nextLesson,
   previousLesson,
 }: LearningRoomProps) {
-  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const moduleGroups = useMemo(() => getModuleGroups(lessons), [lessons]);
-  const currentIndex = lessons.findIndex((lesson) => lesson.id === currentLesson.id);
-  const progressPercent =
-    lessons.length > 0 ? Math.round(((currentIndex + 1) / lessons.length) * 100) : 0;
   const canWatchVideo = Boolean(currentLesson.embedUrl);
   const thumbnailUrl = toYouTubeThumbnailUrl(currentLesson.youtubeUrl);
   const shellClass = "ai-os-bg ai-grid text-white";
@@ -69,15 +66,13 @@ export function LearningRoom({
   return (
     <main className={`min-h-screen ${shellClass}`}>
       <aside
-        className={`fixed inset-y-0 left-0 z-30 hidden w-72 border-r p-5 transition-transform lg:flex lg:flex-col ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r p-5 transition-transform ${
           isSidebarVisible ? "translate-x-0" : "-translate-x-full"
         } border-[#77d7ff]/15 bg-[#05080d]/88 backdrop-blur-2xl`}
       >
         <button
-          aria-label="Ẩn thanh bên"
-          className={`absolute -right-4 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-sm font-black shadow-[0_12px_34px_rgba(0,0,0,0.22)] ${
-            "bg-white text-black hover:bg-white/90"
-          }`}
+          aria-label="Ẩn menu khóa học"
+          className="absolute -right-4 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full bg-white text-sm font-black text-black shadow-[0_12px_34px_rgba(0,0,0,0.22)] hover:bg-white/90"
           type="button"
           onClick={() => setIsSidebarVisible(false)}
         >
@@ -99,20 +94,10 @@ export function LearningRoom({
           >
             Khóa học của tôi
           </Link>
-          <a
-            className={`rounded-xl px-4 py-3 ${
-              "text-white/68 hover:bg-white/8 hover:text-white"
-            }`}
-            href="#support"
-          >
-            Hỗ trợ
-          </a>
         </nav>
 
         <div className="mt-auto grid gap-3">
-          <div
-            className="flex min-h-12 items-center justify-between rounded-xl border border-[#77d7ff]/18 bg-white/8 px-4 text-sm font-black text-white"
-          >
+          <div className="flex min-h-12 items-center justify-between rounded-xl border border-[#77d7ff]/18 bg-white/8 px-4 text-sm font-black text-white">
             <span>Content OS</span>
             <span className="grid size-7 place-items-center rounded-full bg-black text-white">
               AI
@@ -124,41 +109,36 @@ export function LearningRoom({
         </div>
       </aside>
 
-      {!isSidebarVisible ? (
+      {isSidebarVisible ? (
         <button
-          aria-label="Hiện thanh bên"
-          className={`fixed left-4 top-1/2 z-30 hidden size-8 -translate-y-1/2 place-items-center rounded-full text-sm font-black shadow-[0_12px_34px_rgba(0,0,0,0.22)] lg:grid ${
-            "bg-white text-black hover:bg-white/90"
-          }`}
+          aria-label="Đóng menu khóa học"
+          className="fixed inset-0 z-30 bg-black/48 backdrop-blur-sm"
           type="button"
-          onClick={() => setIsSidebarVisible(true)}
-        >
-          {">"}
-        </button>
+          onClick={() => setIsSidebarVisible(false)}
+        />
       ) : null}
 
-      <section className={isSidebarVisible ? "transition-[margin] lg:ml-72" : "transition-[margin]"}>
-        <header
-          className={`sticky top-0 z-20 flex min-h-16 items-center justify-between border-b px-5 backdrop-blur-xl lg:px-6 ${
-            "border-[#77d7ff]/15 bg-[#05080d]/78"
-          }`}
-        >
+      <button
+        aria-label="Mở menu khóa học"
+        className="fixed left-4 top-4 z-30 grid size-11 place-items-center rounded-full border border-white/10 bg-[#05080d]/88 text-2xl font-black text-white shadow-[0_12px_34px_rgba(0,0,0,0.28)] backdrop-blur-xl transition hover:bg-white hover:text-black"
+        type="button"
+        onClick={() => setIsSidebarVisible(true)}
+      >
+        ≡
+      </button>
+
+      <section className="transition-[margin]">
+        <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between border-b border-[#77d7ff]/15 bg-[#05080d]/78 px-5 pl-20 backdrop-blur-xl lg:px-6 lg:pl-20">
           <div>
             <p className={`text-xs font-black uppercase tracking-[0.14em] ${mutedText}`}>Đang học</p>
             <p className="font-bold">{course.title}</p>
           </div>
           <div className="flex items-center gap-3">
-            <span
-              className={`rounded-full px-4 py-2 text-sm font-black lg:hidden ${
-                "bg-[#159cfb] text-white"
-              }`}
-            >
+            <span className="rounded-full bg-[#159cfb] px-4 py-2 text-sm font-black text-white lg:hidden">
               OS
             </span>
             <Link
-              className={`rounded-full px-4 py-2 text-sm font-black ${
-                "bg-white text-black"
-              }`}
+              className="rounded-full bg-white px-4 py-2 text-sm font-black text-black"
               href="/dashboard"
             >
               Dashboard
@@ -168,9 +148,7 @@ export function LearningRoom({
 
         <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_390px] lg:p-6">
           <div className="min-w-0">
-            <div
-              className="overflow-hidden rounded-xl border border-[#77d7ff]/15 shadow-[0_24px_90px_rgba(0,0,0,0.35)]"
-            >
+            <div className="overflow-hidden rounded-xl border border-[#77d7ff]/15 shadow-[0_24px_90px_rgba(0,0,0,0.35)]">
               {canWatchVideo ? (
                 <iframe
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -199,21 +177,14 @@ export function LearningRoom({
               )}
             </div>
 
-            <div className="mt-4 grid gap-4 xl:grid-cols-[1fr_280px]">
+            <div className="mt-4 grid gap-4">
               <section className={`rounded-2xl p-4 ring-1 ${panelClass}`}>
                 <p className={`text-xs font-black uppercase tracking-[0.14em] ${mutedText}`}>
                   Module {currentLesson.moduleOrder}: {currentLesson.moduleTitle}
                 </p>
-                <h1 className="mt-2 text-2xl font-semibold leading-tight md:text-3xl">
+                <h1 className="mt-2 max-w-5xl text-xl font-semibold leading-snug md:text-2xl">
                   {cleanLessonTitle(currentLesson.title)}
                 </h1>
-                <div className={`mt-4 grid gap-2 text-xs font-semibold ${mutedText} sm:grid-cols-3`}>
-                  <span className={`rounded-lg px-3 py-2 ${subtlePanel}`}>
-                    {getAccessLabel(currentLesson.access)}
-                  </span>
-                  <span className={`rounded-lg px-3 py-2 ${subtlePanel}`}>{currentLesson.duration}</span>
-                  <span className={`rounded-lg px-3 py-2 ${subtlePanel}`}>Tiến độ {progressPercent}%</span>
-                </div>
                 <div className="mt-4 flex flex-col gap-2 sm:flex-row">
                   {previousLesson ? (
                     <Link
@@ -240,29 +211,6 @@ export function LearningRoom({
                   )}
                 </div>
               </section>
-
-              <aside className="grid gap-4">
-                <section id="support" className={`rounded-2xl p-5 ring-1 ${panelClass}`}>
-                  <p className="ai-kicker">Hỗ trợ học viên</p>
-                  <p className={`mt-3 text-sm leading-6 ${mutedText}`}>
-                    Cần hỏi về bài học, tài khoản hoặc chiến dịch đang chạy?
-                  </p>
-                  <div className="mt-4 grid gap-2">
-                    <a
-                      className="rounded-xl bg-[#159cfb] px-4 py-3 text-center text-sm font-black text-white"
-                      href={siteConfig.emailHref}
-                    >
-                      Gửi email hỗ trợ
-                    </a>
-                    <a
-                      className={`rounded-xl px-4 py-3 text-center text-sm font-black ${subtlePanel}`}
-                      href={siteConfig.phoneHref}
-                    >
-                      Zalo/Hotline {siteConfig.phone}
-                    </a>
-                  </div>
-                </section>
-              </aside>
             </div>
           </div>
 
@@ -307,7 +255,7 @@ export function LearningRoom({
                               {cleanLessonTitle(lesson.title)}
                             </span>
                             <span className={`mt-1 block text-xs font-semibold ${isActive ? "text-white/72" : mutedText}`}>
-                              {getAccessLabel(lesson.access)} · {lesson.duration}
+                              {getAccessLabel(lesson.access)}
                             </span>
                           </span>
                         </Link>
