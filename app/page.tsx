@@ -1,5 +1,5 @@
-import { AgentThumbnailGallery } from "@/components/content/agent-thumbnail-gallery";
 import { PageShell } from "@/components/site/page-shell";
+import { AgentKitWorkflow } from "@/components/site/agent-kit-workflow";
 import {
   ContentOsDashboardMockup,
   HeroDashboardMockup,
@@ -7,19 +7,13 @@ import {
 } from "@/components/site/ai-os-visuals";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { SoftCard } from "@/components/ui/soft-card";
 import { getCourses } from "@/services/courseService";
-import { getTestimonials } from "@/services/testimonialService";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [courses, testimonials] = await Promise.all([
-    getCourses(),
-    getTestimonials(),
-  ]);
+  const courses = await getCourses();
   const featuredCourses = courses.slice(0, 6);
-  const featuredTestimonials = testimonials.slice(0, 4);
 
   return (
     <PageShell>
@@ -60,46 +54,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="ai-shell py-16">
-        <div className="grid gap-6">
-          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-            <div>
-              <SectionHeading
-                eyebrow="Proof content hub"
-                title="AI Growth Knowledge Hub"
-                description="Blog và tài liệu được gom lại thành một thư viện để bạn chẩn đoán vấn đề, học framework và lấy workflow triển khai nhanh."
-              />
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                {featuredTestimonials.map((item) => (
-                  <SoftCard key={`${item.name}-${item.quote}`} className="p-5">
-                    <p className="text-sm leading-6 text-white/70">&ldquo;{item.quote}&rdquo;</p>
-                    <p className="mt-4 font-black">{item.name}</p>
-                    <p className="text-xs text-white/45">{item.title}</p>
-                  </SoftCard>
-                ))}
-              </div>
-            </div>
-            <SoftCard>
-              <p className="ai-kicker">Content pillar</p>
-              <p className="ai-muted mt-4 text-lg leading-8">
-                Nội dung đi theo 5 trụ cột: AI Growth System, AI Automation, Performance Ads, Funnel Psychology và Solopreneur Scale.
-              </p>
-            </SoftCard>
-          </div>
-
-          <div className="ai-panel-strong min-w-0 overflow-hidden p-6 sm:p-8">
-            <p className="ai-kicker">Media hub</p>
-            <h3 className="mt-3 text-3xl font-black">Toolkit đang dùng trong thực tế</h3>
-            <p className="ai-muted mt-3 max-w-2xl leading-7">
-              Các agent workflow được đóng gói để đội nhóm marketing triển khai nhanh: nghiên cứu, lập kịch bản, phân tích đối thủ và tối ưu ads.
-            </p>
-            <AgentThumbnailGallery
-              className="mt-8"
-              source="home-media-hub"
-            />
-          </div>
-        </div>
-      </section>
+      <AgentKitWorkflow />
 
       <section className="ai-shell pb-20 pt-10">
         <div className="ai-panel-strong overflow-hidden p-8 sm:p-12 lg:grid lg:grid-cols-[1fr_auto] lg:items-end">
