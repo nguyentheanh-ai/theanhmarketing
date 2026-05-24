@@ -2,8 +2,6 @@ import { AgentThumbnailGallery } from "@/components/content/agent-thumbnail-gall
 import { PageShell } from "@/components/site/page-shell";
 import {
   ContentOsDashboardMockup,
-  EcosystemFeatureGrid,
-  EcosystemMapExact,
   HeroDashboardMockup,
   ModuleCatalogGrid,
 } from "@/components/site/ai-os-visuals";
@@ -46,21 +44,6 @@ export default async function Home() {
 
       <section className="ai-shell py-12">
         <ContentOsDashboardMockup />
-      </section>
-
-      <section className="py-16">
-        <div className="ai-shell text-center">
-          <p className="ai-kicker">A.G.S Framework</p>
-          <h2 className="ai-glow-text mx-auto mt-4 max-w-5xl text-4xl font-black tracking-[-0.04em] sm:text-6xl">
-            Attract, Grow, Scale: từ traffic đến doanh thu có hệ thống.
-          </h2>
-        </div>
-        <div className="mt-10">
-          <EcosystemMapExact />
-        </div>
-        <div className="ai-shell mt-10">
-          <EcosystemFeatureGrid />
-        </div>
       </section>
 
       <section className="ai-shell py-16">

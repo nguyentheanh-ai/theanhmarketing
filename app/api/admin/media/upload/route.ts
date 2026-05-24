@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-import { getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
+import { canAccessAdminRole, getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
 import { logSecurityEvent } from "@/lib/security/audit-log";
 
 const mediaBucket = "media";
@@ -29,8 +29,8 @@ async function ensureAdminAccess() {
     return true;
   }
 
-  const { isAdmin } = await getCurrentAuth();
-  return isAdmin;
+  const { adminRole } = await getCurrentAuth();
+  return canAccessAdminRole(adminRole, ["owner", "editor"]);
 }
 
 function isAllowedImageType(type: string): type is (typeof allowedImageTypes)[number] {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
+import { canAccessAdminRole, getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import {
   cleanEmail,
@@ -26,9 +26,9 @@ export async function POST(request: Request) {
     }
 
     if (isAuthGuardEnabled() || process.env.NODE_ENV !== "development") {
-      const { isAdmin } = await getCurrentAuth();
+      const { adminRole } = await getCurrentAuth();
 
-      if (!isAdmin) {
+      if (!canAccessAdminRole(adminRole, ["owner"])) {
         return NextResponse.json(
           { ok: false, message: "Bạn không có quyền cấp quyền học viên." },
           { status: 403 },

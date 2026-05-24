@@ -5,50 +5,64 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import type { AdminRole } from "@/lib/auth/session";
 
 const adminNavGroups = [
   {
     label: "Vận hành",
     items: [
-      { label: "Tổng quan", href: "/admin/dashboard", shortcut: "01" },
-      { label: "Lead CRM", href: "/admin/leads", shortcut: "02" },
-      { label: "Đơn hàng", href: "/admin/don-hang", shortcut: "03" },
-      { label: "Remarketing", href: "/admin/remarketing", shortcut: "04" },
-      { label: "Học viên", href: "/admin/hoc-vien", shortcut: "05" },
+      { label: "Tổng quan", href: "/admin/dashboard", shortcut: "01", allowedRoles: ["owner"] },
+      { label: "Lead CRM", href: "/admin/leads", shortcut: "02", allowedRoles: ["owner"] },
+      { label: "Đơn hàng", href: "/admin/don-hang", shortcut: "03", allowedRoles: ["owner"] },
+      { label: "Remarketing", href: "/admin/remarketing", shortcut: "04", allowedRoles: ["owner"] },
+      { label: "Học viên", href: "/admin/hoc-vien", shortcut: "05", allowedRoles: ["owner"] },
     ],
   },
   {
     label: "Nội dung",
     items: [
-      { label: "CMS", href: "/admin/cms", shortcut: "06" },
-      { label: "Khóa học", href: "/admin/khoa-hoc", shortcut: "07" },
-      { label: "Bài viết", href: "/admin/bai-viet", shortcut: "08" },
-      { label: "Tài liệu", href: "/admin/tai-lieu", shortcut: "09" },
-      { label: "Feedback", href: "/admin/feedback", shortcut: "10" },
+      { label: "CMS", href: "/admin/cms", shortcut: "06", allowedRoles: ["owner", "editor"] },
+      { label: "Khóa học", href: "/admin/khoa-hoc", shortcut: "07", allowedRoles: ["owner", "editor"] },
+      { label: "Bài viết", href: "/admin/bai-viet", shortcut: "08", allowedRoles: ["owner", "editor"] },
+      { label: "Tài liệu", href: "/admin/tai-lieu", shortcut: "09", allowedRoles: ["owner", "editor"] },
+      { label: "Feedback", href: "/admin/feedback", shortcut: "10", allowedRoles: ["owner", "editor"] },
     ],
   },
   {
     label: "Cấu hình",
-    items: [{ label: "SEO/Tracking", href: "/admin/seo", shortcut: "11" }],
+    items: [{ label: "SEO/Tracking", href: "/admin/seo", shortcut: "11", allowedRoles: ["owner"] }],
   },
-];
+] satisfies Array<{
+  label: string;
+  items: Array<{ label: string; href: string; shortcut: string; allowedRoles: AdminRole[] }>;
+}>;
 
-const adminNav = adminNavGroups.flatMap((group) => group.items);
+function canShowItem(item: { allowedRoles?: AdminRole[] }, adminRole: AdminRole) {
+  return !item.allowedRoles || item.allowedRoles.includes(adminRole);
+}
 
 const quickActions = [
-  { label: "Thêm lead", href: "/admin/leads" },
-  { label: "Tạo học viên", href: "/admin/hoc-vien" },
-  { label: "Tạo khóa học", href: "/admin/khoa-hoc" },
-];
+  { label: "Thêm lead", href: "/admin/leads", allowedRoles: ["owner"] },
+  { label: "Tạo học viên", href: "/admin/hoc-vien", allowedRoles: ["owner"] },
+  { label: "Tạo khóa học", href: "/admin/khoa-hoc", allowedRoles: ["owner", "editor"] },
+] satisfies Array<{ label: string; href: string; allowedRoles: AdminRole[] }>;
 
-export function AdminShell({ children }: { children: ReactNode }) {
+export function AdminShell({ children, adminRole }: { children: ReactNode; adminRole: AdminRole }) {
   const pathname = usePathname();
+  const visibleNavGroups = adminNavGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => canShowItem(item, adminRole)),
+    }))
+    .filter((group) => group.items.length > 0);
+  const adminNav = visibleNavGroups.flatMap((group) => group.items);
+  const visibleQuickActions = quickActions.filter((item) => canShowItem(item, adminRole));
 
   return (
     <main className="min-h-screen bg-[#0b0f19] text-slate-100">
       <aside className="fixed inset-y-0 left-0 hidden w-72 flex-col border-r border-white/10 bg-[#080c14] p-4 text-white shadow-[18px_0_55px_rgba(0,0,0,0.24)] lg:flex">
         <Link
-          href="/admin/dashboard"
+          href={adminRole === "editor" ? "/admin/cms" : "/admin/dashboard"}
           className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-3 transition hover:border-sky-300/30 hover:bg-white/[0.07]"
         >
           <span className="grid size-11 place-items-center overflow-hidden rounded-md bg-white p-1.5">
@@ -64,7 +78,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </span>
           <span className="min-w-0">
             <span className="block text-sm font-bold leading-4">The Anh Marketing</span>
-            <span className="mt-0.5 block text-xs font-medium text-slate-400">AI Growth OS</span>
+            <span className="mt-0.5 block text-xs font-medium text-slate-400">
+              {adminRole === "editor" ? "Editor Workspace" : "AI Growth OS"}
+            </span>
           </span>
         </Link>
 
@@ -79,7 +95,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         </label>
 
         <nav className="mt-6 grid min-h-0 flex-1 gap-6 overflow-y-auto pr-1">
-          {adminNavGroups.map((group) => (
+          {visibleNavGroups.map((group) => (
             <div key={group.label}>
               <p className="px-3 text-xs font-bold uppercase text-slate-500">{group.label}</p>
               <div className="mt-2 grid gap-1">
@@ -114,14 +130,18 @@ export function AdminShell({ children }: { children: ReactNode }) {
             <p className="text-xs font-bold uppercase text-slate-500">Realtime</p>
             <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_16px_rgba(52,211,153,0.75)]" />
           </div>
-          <p className="mt-2 text-sm text-slate-400">Lead, thanh toán và quyền học đồng bộ từ hệ thống chính.</p>
+          <p className="mt-2 text-sm text-slate-400">
+            {adminRole === "editor"
+              ? "Biên tập nội dung website, khóa học, bài viết và tài liệu."
+              : "Lead, thanh toán và quyền học đồng bộ từ hệ thống chính."}
+          </p>
           <SignOutButton mode="admin" className="mt-3 w-full rounded-md border border-white/12 px-3 py-2 text-left text-sm font-semibold text-slate-300 transition hover:bg-white hover:text-slate-950 disabled:opacity-50" />
         </div>
       </aside>
 
       <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0b0f19]/92 px-4 py-3 text-white backdrop-blur-xl lg:hidden">
         <div className="flex items-center justify-between gap-3">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 font-bold">
+          <Link href={adminRole === "editor" ? "/admin/cms" : "/admin/dashboard"} className="flex items-center gap-2 font-bold">
             <span className="grid size-9 place-items-center overflow-hidden rounded-md bg-white p-1">
               <Image
                 alt="The Anh Marketing"
@@ -175,7 +195,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              {quickActions.map((item) => (
+              {visibleQuickActions.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}

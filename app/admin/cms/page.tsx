@@ -67,7 +67,7 @@ export default async function AdminCmsPage() {
   ];
 
   return (
-    <ProtectedAdminShell nextPath="/admin/cms">
+    <ProtectedAdminShell nextPath="/admin/cms" allowedRoles={["owner", "editor"]}>
       <div className="mx-auto max-w-7xl">
         <p className="text-sm font-semibold text-[#c77b20]">CMS</p>
         <h1 className="mt-4 text-5xl font-black tracking-[-0.04em]">

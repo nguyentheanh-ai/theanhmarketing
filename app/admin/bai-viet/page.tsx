@@ -7,7 +7,7 @@ export default async function AdminPostsPage() {
   const posts = await getBlogPosts();
 
   return (
-    <ProtectedAdminShell nextPath="/admin/bai-viet">
+    <ProtectedAdminShell nextPath="/admin/bai-viet" allowedRoles={["owner", "editor"]}>
       <div className="mx-auto max-w-7xl">
         <p className="text-sm font-semibold text-[#c77b20]">Admin</p>
         <h1 className="mt-4 text-5xl font-black tracking-[-0.04em]">

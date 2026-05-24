@@ -8,7 +8,10 @@ import { hasSupabaseEnv } from "@/lib/supabase/client";
 type AuthResult = {
   user: User | null;
   isAdmin: boolean;
+  adminRole: AdminRole | null;
 };
+
+export type AdminRole = "owner" | "editor";
 
 export function isAuthGuardEnabled() {
   return process.env.AUTH_GUARD_ENABLED === "true" || process.env.VERCEL_ENV === "production";
@@ -27,6 +30,22 @@ export function getAdminEmails() {
   }
 
   return [fallbackEmail];
+}
+
+export function getAdminRole(user: User | null, isAdminEmail = false): AdminRole | null {
+  if (!user) {
+    return null;
+  }
+
+  if (user.app_metadata?.admin_role === "editor" || user.app_metadata?.admin_role === "owner") {
+    return user.app_metadata.admin_role;
+  }
+
+  return isAdminEmail ? "owner" : null;
+}
+
+export function canAccessAdminRole(role: AdminRole | null, allowedRoles: AdminRole[] = ["owner"]) {
+  return Boolean(role && allowedRoles.includes(role));
 }
 
 export async function createSupabaseAuthServerClient() {
@@ -63,7 +82,7 @@ export async function getCurrentAuth(): Promise<AuthResult> {
   const supabase = await createSupabaseAuthServerClient();
 
   if (!supabase) {
-    return { user: null, isAdmin: false };
+    return { user: null, isAdmin: false, adminRole: null };
   }
 
   const {
@@ -72,9 +91,10 @@ export async function getCurrentAuth(): Promise<AuthResult> {
 
   const adminEmails = getAdminEmails();
   const userEmail = user?.email?.toLowerCase() ?? "";
-  const isAdmin = Boolean(user) && adminEmails.includes(userEmail);
+  const adminRole = getAdminRole(user, adminEmails.includes(userEmail));
+  const isAdmin = Boolean(adminRole);
 
-  return { user, isAdmin };
+  return { user, isAdmin, adminRole };
 }
 
 export async function requireStudentAuth(nextPath: string) {
@@ -95,20 +115,20 @@ export async function requireStudentAuth(nextPath: string) {
   return user;
 }
 
-export async function requireAdminAuth(nextPath: string) {
+export async function requireAdminAuth(nextPath: string, allowedRoles: AdminRole[] = ["owner"]) {
   if (!isAuthGuardEnabled()) {
     return null;
   }
 
-  const { user, isAdmin } = await getCurrentAuth();
+  const { user, isAdmin, adminRole } = await getCurrentAuth();
 
   if (!user) {
     redirect(`/admin/login?next=${encodeURIComponent(nextPath)}`);
   }
 
-  if (!isAdmin) {
+  if (!isAdmin || !canAccessAdminRole(adminRole, allowedRoles)) {
     redirect(`/admin/login?next=${encodeURIComponent(nextPath)}&error=admin`);
   }
 
-  return user;
+  return { user, adminRole };
 }

@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
-import { createSupabaseAuthServerClient, getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
+import {
+  canAccessAdminRole,
+  createSupabaseAuthServerClient,
+  getCurrentAuth,
+  isAuthGuardEnabled,
+} from "@/lib/auth/session";
 import { normalizeMarketingSettings } from "@/lib/marketing-settings";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
@@ -19,9 +24,9 @@ function cleanSettingsValue(key: string, value: unknown) {
 }
 
 export async function POST(request: Request) {
-  const { isAdmin } = await getCurrentAuth();
+  const { isAdmin, adminRole } = await getCurrentAuth();
 
-  if (isAuthGuardEnabled() && !isAdmin) {
+  if (isAuthGuardEnabled() && (!isAdmin || !canAccessAdminRole(adminRole, ["owner", "editor"]))) {
     return NextResponse.json(
       { ok: false, message: "Bạn cần đăng nhập admin để lưu cấu hình." },
       { status: 403 },
@@ -38,6 +43,13 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { ok: false, message: "Nhóm cấu hình không hợp lệ." },
       { status: 400 },
+    );
+  }
+
+  if (key === "marketing" && !canAccessAdminRole(adminRole, ["owner"])) {
+    return NextResponse.json(
+      { ok: false, message: "Bạn không có quyền sửa cấu hình tracking." },
+      { status: 403 },
     );
   }
 

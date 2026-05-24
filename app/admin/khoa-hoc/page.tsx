@@ -7,7 +7,7 @@ export default async function AdminCoursesPage() {
   const courses = await getCourses();
 
   return (
-    <ProtectedAdminShell nextPath="/admin/khoa-hoc">
+    <ProtectedAdminShell nextPath="/admin/khoa-hoc" allowedRoles={["owner", "editor"]}>
       <div className="mx-auto max-w-7xl">
         <AdminPageHeader
           eyebrow="Course CMS"

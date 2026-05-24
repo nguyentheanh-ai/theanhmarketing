@@ -7,7 +7,7 @@ export default async function AdminResourcesPage() {
   const resources = await getResources();
 
   return (
-    <ProtectedAdminShell nextPath="/admin/tai-lieu">
+    <ProtectedAdminShell nextPath="/admin/tai-lieu" allowedRoles={["owner", "editor"]}>
       <div className="mx-auto max-w-7xl">
         <p className="text-sm font-semibold text-[#c77b20]">Admin</p>
         <h1 className="mt-4 text-5xl font-black tracking-[-0.04em]">
