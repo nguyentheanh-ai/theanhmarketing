@@ -8,7 +8,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type AuthState = "guest" | "student";
 
-export function HeaderAuthActions() {
+function useHeaderAuthState() {
   const [state, setState] = useState<AuthState>("guest");
 
   useEffect(() => {
@@ -36,12 +36,17 @@ export function HeaderAuthActions() {
     };
   }, []);
 
+  return state;
+}
+
+export function HeaderAuthActions() {
+  const state = useHeaderAuthState();
   const isStudent = state === "student";
 
   return (
     <div className="flex items-center gap-2 sm:gap-3">
       <ButtonLink href={isStudent ? "/dashboard" : "/dang-ky"} className="!hidden sm:!inline-flex">
-        {isStudent ? "Growth Hub của tôi" : "Khám phá Growth System"}
+        {isStudent ? "Khóa học của tôi" : "Học thử ngay"}
         <span aria-hidden="true">-&gt;</span>
       </ButtonLink>
       {isStudent ? (
@@ -56,37 +61,12 @@ export function HeaderAuthActions() {
 }
 
 export function HeaderMobileActions() {
-  const [state, setState] = useState<AuthState>("guest");
-
-  useEffect(() => {
-    const supabase = createSupabaseBrowserClient();
-
-    if (!supabase) {
-      return;
-    }
-
-    let mounted = true;
-
-    supabase.auth.getSession().then(({ data }) => {
-      if (mounted) {
-        setState(data.session ? "student" : "guest");
-      }
-    });
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setState(session ? "student" : "guest");
-    });
-
-    return () => {
-      mounted = false;
-      listener.subscription.unsubscribe();
-    };
-  }, []);
+  const state = useHeaderAuthState();
 
   if (state === "student") {
     return (
       <>
-        <Link href="/dashboard">Học tiếp</Link>
+        <Link href="/dashboard">Khóa học của tôi</Link>
         <Link href="/khoa-hoc">Khóa học</Link>
       </>
     );
@@ -94,7 +74,7 @@ export function HeaderMobileActions() {
 
   return (
     <>
-      <Link href="/dang-ky">Đăng ký học</Link>
+      <Link href="/dang-ky">Học thử ngay</Link>
       <Link href="/khoa-hoc">Xem khóa học</Link>
     </>
   );
