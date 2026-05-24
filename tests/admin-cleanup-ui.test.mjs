@@ -25,6 +25,17 @@ test("admin course page renders real official courses instead of empty demo bloc
   assert.doesNotMatch(source, /QuÃ|áº|Ã¡|Ä|Æ/i);
 });
 
+test("admin orders page shows phone numbers with a copy action", () => {
+  const page = read("app/admin/don-hang/page.tsx");
+  const button = read("components/admin/copy-phone-button.tsx");
+
+  assert.match(page, /CopyPhoneButton/);
+  assert.match(page, /order\.phone/);
+  assert.match(page, /tel:\$\{order\.phone\}/);
+  assert.match(button, /navigator\.clipboard/);
+  assert.match(button, /Copy SĐT/);
+});
+
 test("AI Master X10 course data has real modules for dashboard access", () => {
   const source = read("data/courses.ts");
 

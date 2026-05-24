@@ -1,4 +1,5 @@
 import { AdminPageHeader, AdminPanel, EmptyState, StatusBadge } from "@/components/admin/crm-ui";
+import { CopyPhoneButton } from "@/components/admin/copy-phone-button";
 import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { formatAdminDate, getOrderStatusMeta } from "@/lib/admin/crm-dashboard";
 import { getPaymentOrders } from "@/services/orderService";
@@ -60,7 +61,7 @@ export default async function AdminOrdersPage() {
 
           <div className="mt-5 overflow-x-auto">
             {orders.length > 0 ? (
-              <table className="w-full min-w-[1080px] text-left text-sm">
+              <table className="w-full min-w-[1160px] text-left text-sm">
                 <thead className="text-xs uppercase tracking-[0.12em] text-black/38">
                   <tr>
                     <th className="py-3">Mã đơn</th>
@@ -89,9 +90,19 @@ export default async function AdminOrdersPage() {
                         <td className="py-4 font-black">{order.orderCode}</td>
                         <td>
                           <p className="font-semibold">{order.studentName || "Chưa có tên"}</p>
-                          {order.email || order.phone ? (
-                            <p className="mt-1 text-xs text-black/45">{order.email || order.phone}</p>
-                          ) : null}
+                          <div className="mt-1 grid gap-1 text-xs text-black/45">
+                            {order.email ? <p className="break-all">{order.email}</p> : null}
+                            {order.phone ? (
+                              <div className="flex flex-wrap items-center gap-2">
+                                <a className="font-semibold text-slate-700 hover:text-slate-950" href={`tel:${order.phone}`}>
+                                  {order.phone}
+                                </a>
+                                <CopyPhoneButton phone={order.phone} />
+                              </div>
+                            ) : (
+                              <p>Chưa có SĐT</p>
+                            )}
+                          </div>
                         </td>
                         <td className="max-w-sm text-black/65">
                           {order.orderItems.length > 0 ? (
