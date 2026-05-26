@@ -338,26 +338,26 @@ const MetricCard = memo(function MetricCard({
   tone?: "sky" | "emerald" | "amber" | "rose";
 }) {
   const toneClass = {
-    sky: "text-sky-200 bg-sky-400/12 border-sky-300/20",
-    emerald: "text-emerald-200 bg-emerald-400/12 border-emerald-300/20",
-    amber: "text-amber-100 bg-amber-300/10 border-amber-200/20",
-    rose: "text-red-200 bg-red-400/12 border-red-300/20",
+    sky: "text-blue-700 bg-blue-50 border-blue-100",
+    emerald: "text-emerald-700 bg-emerald-50 border-emerald-100",
+    amber: "text-amber-700 bg-amber-50 border-amber-100",
+    rose: "text-red-700 bg-red-50 border-red-100",
   }[tone];
 
   return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.045] p-4 shadow-[0_18px_48px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 hover:border-sky-300/24">
+    <div className="rounded-md border border-slate-200 bg-white p-4">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-semibold text-slate-400">{label}</p>
-        <span className={`rounded-full border px-2 py-1 text-[11px] font-bold ${toneClass}`}>Live</span>
+        <p className="text-sm font-semibold text-slate-500">{label}</p>
+        <span className={`rounded-md border px-2 py-1 text-[11px] font-bold ${toneClass}`}>Live</span>
       </div>
-      <p className="mt-4 text-3xl font-black text-white">{value}</p>
-      <p className="mt-2 text-sm leading-5 text-slate-400">{detail}</p>
+      <p className="mt-4 text-3xl font-black text-slate-950">{value}</p>
+      <p className="mt-2 text-sm leading-5 text-slate-500">{detail}</p>
     </div>
   );
 });
 
 const Panel = memo(function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <section className={`rounded-lg border border-white/10 bg-[#111827]/82 ${className}`}>{children}</section>;
+  return <section className={`rounded-md border border-slate-200 bg-white ${className}`}>{children}</section>;
 });
 
 export function AdminGrowthOsDashboard({ orders, leads, students, courses }: DashboardProps) {
@@ -441,17 +441,17 @@ export function AdminGrowthOsDashboard({ orders, leads, students, courses }: Das
         </div>
       </div>
 
-      <div className="mt-6 overflow-x-auto rounded-lg border border-white/10 bg-white/[0.04] p-1">
+      <div className="mt-6 overflow-x-auto rounded-md border border-slate-200 bg-white p-1">
         <div className="flex min-w-max gap-1">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => handleTabClick(tab.id)}
-              className={`min-h-9 rounded-md px-4 text-sm font-bold transition ${
+              className={`min-h-9 rounded-md px-4 text-sm font-bold ${
                 activeTab === tab.id
-                  ? "bg-white text-slate-950 shadow-[0_10px_30px_rgba(255,255,255,0.08)]"
-                  : "text-slate-400 hover:bg-white/[0.06] hover:text-white"
+                  ? "bg-blue-600 text-white"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
               }`}
             >
               {tab.label}
@@ -462,13 +462,23 @@ export function AdminGrowthOsDashboard({ orders, leads, students, courses }: Das
 
       {activeTab === "dashboard" ? (
         <div className="mt-4 grid gap-4">
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-            <MetricCard label="Tổng doanh thu" value={formatVnd(revenue)} detail={`${paidOrders.length} đơn đã thanh toán`} tone="emerald" />
-            <MetricCard label="Doanh thu hôm nay" value={formatVnd(todayRevenue)} detail="Tính theo đơn paid trong ngày" tone="sky" />
-            <MetricCard label="Tổng học viên" value={String(students.length)} detail={`${grantedStudents.length} hồ sơ đã có quyền học`} tone="amber" />
-            <MetricCard label="Tổng khóa học" value={String(courses.length)} detail="Giữ nguyên dữ liệu khóa học hiện có" tone="sky" />
-            <MetricCard label="Tổng leads" value={String(leads.length)} detail={`${crmRows.length} dòng CRM sau khi gộp trùng`} tone="rose" />
-          </div>
+          <Panel className="overflow-hidden">
+            <div className="grid divide-y divide-slate-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0 xl:grid-cols-5">
+              {[
+                ["Tổng doanh thu", formatVnd(revenue), `${paidOrders.length} đơn đã thanh toán`],
+                ["Doanh thu hôm nay", formatVnd(todayRevenue), "Tính theo đơn paid trong ngày"],
+                ["Học viên", String(students.length), `${grantedStudents.length} hồ sơ đã có quyền học`],
+                ["Khóa học", String(courses.length), "Dữ liệu khóa học hiện có"],
+                ["Leads", String(leads.length), `${crmRows.length} dòng CRM sau khi gộp trùng`],
+              ].map(([label, value, detail]) => (
+                <div key={label} className="p-4">
+                  <p className="text-xs font-black uppercase text-slate-500">{label}</p>
+                  <p className="mt-2 text-2xl font-black text-slate-950">{value}</p>
+                  <p className="mt-1 text-sm text-slate-500">{detail}</p>
+                </div>
+              ))}
+            </div>
+          </Panel>
 
           <div className="grid gap-4 xl:grid-cols-[1.25fr_0.75fr]">
             <Panel className="p-5">
@@ -481,11 +491,11 @@ export function AdminGrowthOsDashboard({ orders, leads, students, courses }: Das
                   Conversion {conversionRate}
                 </span>
               </div>
-              <div className="mt-6 flex h-64 items-end gap-3 rounded-lg border border-white/8 bg-[#0b0f19] p-4">
+              <div className="mt-6 flex h-64 items-end gap-3 rounded-md border border-slate-200 bg-slate-50 p-4">
                 {revenueSeries.map((day) => (
                   <div key={day.key} className="flex h-full flex-1 flex-col justify-end gap-2">
                     <div
-                      className="rounded-t-md bg-sky-400/78 shadow-[0_0_24px_rgba(56,189,248,0.18)]"
+                      className="rounded-t-md bg-blue-500"
                       style={{ height: `${day.height}%` }}
                       title={`${day.key}: ${formatVnd(day.value)}`}
                     />
@@ -498,21 +508,19 @@ export function AdminGrowthOsDashboard({ orders, leads, students, courses }: Das
             <Panel className="p-5">
               <p className="text-xs font-bold uppercase text-slate-500">Funnel conversion</p>
               <h2 className="mt-2 text-xl font-black text-white">Từ lead đến quyền học</h2>
-              <div className="mt-5 grid gap-3">
+              <div className="mt-5 divide-y divide-slate-100 rounded-md border border-slate-200">
                 {[
                   ["Lead mới", leads.length, "Cần chăm sóc"],
                   ["Chờ thanh toán", pendingOrders.length, "Đơn cần theo dõi"],
                   ["Đã thanh toán", paidOrders.length, "Doanh thu ghi nhận"],
                   ["Đã cấp quyền", grantedStudents.length, "Học viên có quyền học"],
                 ].map(([label, value, detail]) => (
-                  <div key={label} className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-                    <div className="flex items-center justify-between gap-4">
-                      <div>
-                        <p className="font-bold text-white">{label}</p>
-                        <p className="mt-1 text-sm text-slate-400">{detail}</p>
-                      </div>
-                      <span className="text-2xl font-black text-sky-200">{value}</span>
+                  <div key={label} className="flex items-center justify-between gap-4 p-4">
+                    <div>
+                      <p className="font-bold text-slate-950">{label}</p>
+                      <p className="mt-1 text-sm text-slate-500">{detail}</p>
                     </div>
+                    <span className="text-2xl font-black text-blue-700">{value}</span>
                   </div>
                 ))}
               </div>

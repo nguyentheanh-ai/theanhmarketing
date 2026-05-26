@@ -32,6 +32,111 @@ body {
   font-family: var(--font-be-vietnam-pro), Arial, Helvetica, sans-serif;
 }
 
+[data-admin-theme="light"] {
+  background: #f7f8fb;
+  color: #0f172a;
+  color-scheme: light;
+}
+
+[data-admin-theme="light"] * {
+  text-shadow: none !important;
+}
+
+[data-admin-theme="light"] [class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+}
+
+[data-admin-theme="light"] [class*="shadow-["] {
+  box-shadow: none !important;
+}
+
+[data-admin-theme="light"] [class*="bg-[#0b0f19"],
+[data-admin-theme="light"] [class*="bg-[#080c14"],
+[data-admin-theme="light"] [class*="bg-[#111827"] {
+  background: #ffffff !important;
+}
+
+[data-admin-theme="light"] [class*="bg-white/"] {
+  background: #ffffff !important;
+}
+
+[data-admin-theme="light"] [class*="border-white/"] {
+  border-color: #e2e8f0 !important;
+}
+
+[data-admin-theme="light"] .text-white,
+[data-admin-theme="light"] .text-slate-100,
+[data-admin-theme="light"] .text-slate-200,
+[data-admin-theme="light"] .text-slate-300 {
+  color: #0f172a !important;
+}
+
+[data-admin-theme="light"] .text-slate-400,
+[data-admin-theme="light"] .text-slate-500,
+[data-admin-theme="light"] [class*="text-sky-100"] {
+  color: #64748b !important;
+}
+
+[data-admin-theme="light"] .text-sky-200,
+[data-admin-theme="light"] [class*="text-sky-200"] {
+  color: #0369a1 !important;
+}
+
+[data-admin-theme="light"] .text-amber-100,
+[data-admin-theme="light"] [class*="text-amber-100"] {
+  color: #92400e !important;
+}
+
+[data-admin-theme="light"] .text-emerald-200,
+[data-admin-theme="light"] [class*="text-emerald-200"] {
+  color: #047857 !important;
+}
+
+[data-admin-theme="light"] .text-red-200,
+[data-admin-theme="light"] [class*="text-red-200"] {
+  color: #b91c1c !important;
+}
+
+[data-admin-theme="light"] .bg-blue-600,
+[data-admin-theme="light"] [class*="bg-[#159cfb"] {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+[data-admin-theme="light"] .bg-sky-400,
+[data-admin-theme="light"] [class*="bg-sky-400/"] {
+  background: #e0f2fe !important;
+}
+
+[data-admin-theme="light"] .bg-emerald-400,
+[data-admin-theme="light"] [class*="bg-emerald-400/"] {
+  background: #dcfce7 !important;
+}
+
+[data-admin-theme="light"] [class*="bg-amber-"],
+[data-admin-theme="light"] [class*="bg-red-"] {
+  background: #f8fafc !important;
+}
+
+[data-admin-theme="light"] table {
+  border-collapse: collapse;
+}
+
+[data-admin-theme="light"] thead {
+  background: #f8fafc !important;
+  color: #475569 !important;
+}
+
+[data-admin-theme="light"] tbody tr {
+  border-color: #e2e8f0 !important;
+}
+
+[data-admin-theme="light"] input,
+[data-admin-theme="light"] select,
+[data-admin-theme="light"] textarea {
+  color: #0f172a;
+}
+
 .ai-os-bg {
   background:
     radial-gradient(circle at 16% 8%, rgb(56 189 248 / 0.22), transparent 26rem),

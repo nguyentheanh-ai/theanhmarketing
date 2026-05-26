@@ -7,16 +7,19 @@ function read(relativePath) {
   return fs.readFileSync(path.resolve(relativePath), "utf8");
 }
 
-test("admin shell uses the dark Growth OS workspace and avoids fixed logout overlap", () => {
+test("admin shell uses the light management workspace and avoids fixed logout overlap", () => {
   const source = read("components/app/admin-shell.tsx");
 
-  assert.match(source, /bg-\[#0b0f19\]/);
+  assert.match(source, /data-admin-theme="light"/);
+  assert.match(source, /bg-\[#f7f8fb\]/);
   assert.match(source, /\/brand\/ta-logo\.svg/);
   assert.match(source, /AI Growth OS/);
   assert.match(source, /lg:flex/);
+  assert.match(source, /lg:ml-64/);
   assert.match(source, /lg:px-8/);
   assert.match(source, /xl:px-10/);
   assert.match(source, /lg:py-8/);
+  assert.doesNotMatch(source, /backdrop-blur/);
   assert.doesNotMatch(source, /absolute inset-x-5 bottom-5/);
   assert.match(source, /Đơn hàng/);
 });
