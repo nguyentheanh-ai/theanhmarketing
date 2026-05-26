@@ -28,6 +28,9 @@ export function sanitizeCmsHtml(html: string) {
     allowedTags,
     allowedAttributes: {
       a: ["href", "name", "target", "rel"],
+      h2: ["id"],
+      h3: ["id"],
+      h4: ["id"],
       img: ["src", "alt", "title", "width", "height", "loading"],
     },
     allowedSchemes: ["http", "https", "mailto", "tel"],

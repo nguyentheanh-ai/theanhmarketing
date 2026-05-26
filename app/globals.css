@@ -4455,6 +4455,23 @@ html[data-route-pending="true"] .page-motion {
   padding-left: 1.4rem;
 }
 
+.blog-content ul {
+  list-style: disc;
+}
+
+.blog-content ol {
+  list-style: decimal;
+}
+
+.blog-content li {
+  padding-left: 0.35rem;
+}
+
+.blog-content li::marker {
+  color: #38bdf8;
+  font-weight: 900;
+}
+
 .blog-content li + li {
   margin-top: 0.5rem;
 }

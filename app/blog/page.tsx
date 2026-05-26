@@ -5,6 +5,7 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { SoftCard } from "@/components/ui/soft-card";
 import { getAgentThumbnail } from "@/data/agent-thumbnails";
 import { publicPages } from "@/data/pages";
+import { getBlogPosts } from "@/services/blogService";
 import { getResources } from "@/services/resourceService";
 import type { Metadata } from "next";
 
@@ -18,7 +19,7 @@ export const dynamic = "force-dynamic";
 
 export default async function BlogPage() {
   const page = publicPages.blog;
-  const resources = await getResources();
+  const [posts, resources] = await Promise.all([getBlogPosts(), getResources()]);
 
   return (
     <PageShell>
@@ -38,7 +39,7 @@ export default async function BlogPage() {
         </div>
       </section>
 
-      <BlogList />
+      <BlogList posts={posts} />
 
       <section id="tai-lieu" className="ai-shell scroll-mt-28 pb-20">
         <div className="workflow-library-head">

@@ -445,6 +445,12 @@ Before changing these, run targeted tests and full build.
 - Homepage:
   - old A.G.S Framework section removed.
   - old Proof Content Hub/Content Pillar section replaced by animated Agent Kit workflow.
+- Blog:
+  - `/blog` now renders real posts from `getBlogPosts()` before the Agent Gallery.
+  - AI Leaders Digest batch lives in static fallback `data/blog.ts` so posts exist even without Supabase.
+  - `/blog/[slug]` has dynamic CTA mapping for the new AI Leaders Digest slugs.
+  - Blog posts can use optional `thumbnail` and `publishedAt`; AI Leaders thumbnails are under `public/blog-thumbnails/ai-leaders`.
+  - `/blog/[slug]` builds the table of contents from `h2`/`h3` content headings and renders a hero image when `thumbnail` exists.
 - Keep course/student/payment/pixel data logic stable when changing UI.
 
 ## 16. Quick Task Recipes
@@ -469,6 +475,15 @@ Before changing these, run targeted tests and full build.
 2. Fallback official content is in `data/courses.ts`.
 3. Learning page UI is `components/course/learning-room.tsx`.
 4. Run `tests/course-service-live-data.test.mjs` and `tests/learning-room-youtube-layout.test.mjs`.
+
+### Sua blog/content hub
+
+1. Prefer `/admin/bai-viet` when Supabase `blog_posts` is available.
+2. Use `data/blog.ts` as the static fallback and source for evergreen AI Leaders Digest posts.
+3. Public list rendering is `app/blog/page.tsx` -> `components/content/blog-list.tsx`.
+4. Detail CTA mapping is in `app/blog/[slug]/page.tsx`.
+5. Follow `docs/AI_LEADERS_DIGEST_PUBLISHING_CHECKLIST.md` for SkillsBridge-style article production.
+6. Run `npm.cmd run lint`, `npm.cmd run build`, and smoke-test `/blog`, `/blog/<slug>`, `/sitemap.xml`.
 
 ### Sua payment/email
 

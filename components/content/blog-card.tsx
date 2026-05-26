@@ -8,11 +8,12 @@ type BlogPost = {
   title: string;
   category: string;
   readTime: string;
+  thumbnail?: string;
   excerpt: string;
 };
 
 export function BlogCard({ post, index = 0 }: { post: BlogPost; index?: number }) {
-  const thumbnail = getAgentThumbnail(index);
+  const thumbnail = post.thumbnail || getAgentThumbnail(index);
 
   return (
     <SoftCard className="group flex h-full flex-col overflow-hidden !p-0 hover:border-[#77d7ff]/35">
@@ -30,12 +31,18 @@ export function BlogCard({ post, index = 0 }: { post: BlogPost; index?: number }
         <h2 className="mt-4 text-2xl font-black tracking-[-0.04em]">
           {post.title}
         </h2>
+        <p className="mt-4 line-clamp-4 text-sm leading-6 text-black/60">
+          {post.excerpt}
+        </p>
+        <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-black/35">
+          {post.readTime}
+        </p>
         <div className="mt-auto pt-7">
           <ButtonLink
-            href={`/dang-ky?source=agent-thumbnail&topic=${post.slug}`}
+            href={`/blog/${post.slug}`}
             className="w-full justify-center"
           >
-            Tìm hiểu thêm
+            Đọc bài viết
           </ButtonLink>
         </div>
       </div>
