@@ -99,6 +99,69 @@ const blogCtas: Record<
     secondaryHref: "/khoa-hoc/marketing-gioi-phai-kiem-duoc-tien",
     secondaryLabel: "Xem Growth System",
   },
+  "doanh-nghiep-di-truoc-dung-ai-sau-hon": {
+    title: "Muốn biến AI từ thói quen dùng tool thành hệ tăng trưởng?",
+    description:
+      "Bắt đầu từ workflow có dữ liệu, tiêu chuẩn duyệt và đầu ra gắn với content, lead, sales hoặc CRM.",
+    primaryHref: "/khoa-hoc/ai-master-x10-hieu-suat",
+    primaryLabel: "Xem AI Master X10",
+    secondaryHref: "/khoa-hoc/marketing-gioi-phai-kiem-duoc-tien",
+    secondaryLabel: "Xem Growth System",
+  },
+  "fde-trien-khai-ai-vao-workflow-that": {
+    title: "Muốn triển khai AI vào workflow thật thay vì demo rời rạc?",
+    description:
+      "Học cách chọn use case, chuẩn hóa dữ liệu, thiết kế điểm duyệt và biến AI thành quy trình vận hành được.",
+    primaryHref: "/khoa-hoc/ai-master-x10-hieu-suat",
+    primaryLabel: "Xem AI Master X10",
+    secondaryHref: "/khoa-hoc/ai-agent-master-2026",
+    secondaryLabel: "Xem AI Agent Master",
+  },
+  "codex-mobile-quan-ly-agent-tu-xa": {
+    title: "Muốn giao việc cho AI Agent như một trợ lý có trách nhiệm?",
+    description:
+      "Thiết kế task, quyền hạn, checkpoint và tiêu chuẩn duyệt để agent làm việc dài hơi mà vẫn kiểm soát được.",
+    primaryHref: "/khoa-hoc/tao-ai-agent-ca-nhan-x10-hieu-suat",
+    primaryLabel: "Tạo AI Agent cá nhân",
+    secondaryHref: "/khoa-hoc/ai-agent-master-2026",
+    secondaryLabel: "Xem AI Agent Master",
+  },
+  "claude-design-prototype-landing-page-nhanh": {
+    title: "Muốn test offer và landing page nhanh hơn bằng AI?",
+    description:
+      "Biến chuyên môn thành one-pager, lead magnet và landing flow có logic bán hàng rõ thay vì chỉ đẹp hình.",
+    primaryHref: "/khoa-hoc/bien-tri-thuc-thanh-tien",
+    primaryLabel: "Biến tri thức thành tiền",
+    secondaryHref: "/khoa-hoc/ai-marketing-x5-hieu-suat-cong-viec",
+    secondaryLabel: "Xem AI Marketing x5",
+  },
+  "project-glasswing-ai-security-supply-chain": {
+    title: "Muốn dùng AI Agent nhưng vẫn giữ dữ liệu và quyền hạn an toàn?",
+    description:
+      "Xây agent có phân quyền, log, bước duyệt và guardrail trước khi chạm tới khách hàng hoặc hệ thống production.",
+    primaryHref: "/khoa-hoc/ai-agent-master-2026",
+    primaryLabel: "Xem AI Agent Master",
+    secondaryHref: "/blog/bao-mat-ai-agent-marketing-du-lieu-khach-hang",
+    secondaryLabel: "Đọc bài bảo mật agent",
+  },
+  "81000-nguoi-muon-gi-tu-ai": {
+    title: "Muốn đóng gói tri thức thành offer AI dễ hiểu và dễ bán?",
+    description:
+      "Bắt đầu từ insight khách hàng thật: họ muốn kết quả, tự chủ, kỹ năng và sự an tâm, không chỉ danh sách tool.",
+    primaryHref: "/khoa-hoc/bien-tri-thuc-thanh-tien",
+    primaryLabel: "Biến tri thức thành tiền",
+    secondaryHref: "/khoa-hoc/marketing-gioi-phai-kiem-duoc-tien",
+    secondaryLabel: "Xem Growth System",
+  },
+  "gemini-robotics-ai-tu-man-hinh-ra-hanh-dong": {
+    title: "Muốn xây AI Agent biết hành động, kiểm tra và báo cáo?",
+    description:
+      "Thiết kế agent có môi trường, công cụ, success criteria và giới hạn rõ để phục vụ workflow hằng ngày.",
+    primaryHref: "/khoa-hoc/ai-agent-master-2026",
+    primaryLabel: "Xem AI Agent Master",
+    secondaryHref: "/khoa-hoc/bo-agent-kit-x10-hieu-suat-cong-viec",
+    secondaryLabel: "Xem Bộ Agent Kit",
+  },
 };
 
 function getBlogCta(slug: string, category: string) {
