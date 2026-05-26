@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { canAccessAdminRole, getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
+import { sendPaymentSuccessEmail } from "@/lib/notifications/payment-success-email";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import {
   cleanEmail,
@@ -11,7 +12,9 @@ import {
   isValidSlug,
 } from "@/lib/security/validation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createManualPaidOrder } from "@/services/orderService";
+import { invalidateAdminModules } from "@/services/adminDataService";
+import { createManualPaidOrder, markPaymentEmailError, markPaymentEmailSent } from "@/services/orderService";
+import { ensureStudentAccountForPaidOrder } from "@/services/studentAccountService";
 
 export async function POST(request: Request) {
   try {
@@ -41,15 +44,24 @@ export async function POST(request: Request) {
       phone?: string;
       email?: string;
       courseSlug?: string;
+      courseSlugs?: string[];
       paymentStatus?: string;
+      temporaryPassword?: string;
       source?: string;
       note?: string;
     };
     const name = cleanText(body.name, 120);
     const phone = cleanPhone(body.phone);
     const email = cleanEmail(body.email);
-    const courseSlug = cleanSlug(body.courseSlug);
+    const courseSlugs = Array.from(
+      new Set(
+        (Array.isArray(body.courseSlugs) && body.courseSlugs.length > 0 ? body.courseSlugs : [body.courseSlug ?? ""])
+          .map((courseSlug) => cleanSlug(String(courseSlug)))
+          .filter(Boolean),
+      ),
+    );
     const paymentStatus = cleanText(body.paymentStatus, 30);
+    const temporaryPassword = cleanText(body.temporaryPassword, 120);
     const source = cleanText(body.source, 80) || "Admin";
     const note = cleanText(body.note, 500);
 
@@ -57,10 +69,10 @@ export async function POST(request: Request) {
       !name ||
       !phone ||
       !email ||
-      !courseSlug ||
+      courseSlugs.length === 0 ||
       !isValidEmail(email) ||
       !isValidPhone(phone) ||
-      !isValidSlug(courseSlug)
+      courseSlugs.some((courseSlug) => !isValidSlug(courseSlug))
     ) {
       return NextResponse.json(
         { ok: false, message: "Thiếu tên, số điện thoại, email hoặc khóa học." },
@@ -82,7 +94,7 @@ export async function POST(request: Request) {
       phone,
       email,
       source: `admin-student:${source}`,
-      message: `Khóa học: ${courseSlug}\nTrạng thái: ${paymentStatus}\nGhi chú: ${note}`,
+      message: `Khóa học: ${courseSlugs.join(", ")}\nTrạng thái: ${paymentStatus}\nGhi chú: ${note}`,
     });
 
     if (leadError) {
@@ -97,16 +109,74 @@ export async function POST(request: Request) {
         studentName: name,
         email,
         phone,
-        courseSlugs: [courseSlug],
+        courseSlugs,
         note,
       });
+      const studentAccount = await ensureStudentAccountForPaidOrder(order, {
+        temporaryPassword,
+        forcePasswordUpdate: true,
+      });
+      let emailResult: { ok: boolean; skipped: boolean; reason?: string | null } = {
+        ok: true,
+        skipped: true,
+        reason: "not_sent",
+      };
+
+      if (!studentAccount.ok) {
+        return NextResponse.json(
+          {
+            ok: false,
+            message: `Đã tạo đơn ${order.orderCode}, nhưng chưa tạo được tài khoản học: ${studentAccount.reason}`,
+            order,
+            studentAccount: {
+              ok: studentAccount.ok,
+              skipped: studentAccount.skipped,
+              created: studentAccount.created,
+              reason: studentAccount.reason,
+            },
+          },
+          { status: 500 },
+        );
+      }
+
+      if (studentAccount.temporaryPassword) {
+        const result = await sendPaymentSuccessEmail(order, {
+          account: {
+            email: studentAccount.email,
+            temporaryPassword: studentAccount.temporaryPassword,
+            created: studentAccount.created,
+            mustChangePassword: true,
+          },
+        });
+        emailResult = { ok: result.ok, skipped: result.skipped, reason: result.reason };
+
+        if (result.ok && !result.skipped) {
+          await markPaymentEmailSent(order.orderCode);
+        } else {
+          await markPaymentEmailError(order.orderCode, result.reason ?? "Payment success email was skipped.");
+        }
+      }
+
+      invalidateAdminModules(["leads", "orders", "students"]);
 
       return NextResponse.json({
         ok: true,
-        message: `Đã lưu hồ sơ và cấp quyền học qua đơn ${order.orderCode}.`,
+        message:
+          emailResult.ok && !emailResult.skipped
+            ? `Đã lưu hồ sơ, cấp quyền học qua đơn ${order.orderCode}, tạo mật khẩu và gửi email cho học viên.`
+            : `Đã lưu hồ sơ và cấp quyền học qua đơn ${order.orderCode}. Tài khoản đã xử lý nhưng email chưa gửi: ${emailResult.reason ?? "không rõ lý do"}.`,
         order,
+        studentAccount: {
+          ok: studentAccount.ok,
+          skipped: studentAccount.skipped,
+          created: studentAccount.created,
+          reason: studentAccount.reason,
+        },
+        paymentEmail: emailResult,
       });
     }
+
+    invalidateAdminModules(["leads", "students"]);
 
     return NextResponse.json({
       ok: true,

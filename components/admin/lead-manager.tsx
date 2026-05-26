@@ -1,10 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState, type FormEvent } from "react";
+import { memo, useCallback, useMemo, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { formatAdminDate, getLeadStatusMeta } from "@/lib/admin/crm-dashboard";
-import { createLead, type LeadItem } from "@/services/leadService";
+import type { LeadItem } from "@/services/leadService";
 
 type LeadSummary = {
   orderCode: string;
@@ -12,6 +12,11 @@ type LeadSummary = {
   paymentStatus: string;
   shortNote: string;
   trackingBadges: string[];
+};
+
+type SummarizedLead = {
+  lead: LeadItem;
+  summary: LeadSummary;
 };
 
 function getLineValue(lines: string[], label: string) {
@@ -100,7 +105,7 @@ function statusClass(tone: string) {
   return "border-sky-300/20 bg-sky-400/12 text-sky-200";
 }
 
-function MetricCard({ label, value, detail }: { label: string; value: string; detail: string }) {
+const MetricCard = memo(function MetricCard({ label, value, detail }: { label: string; value: string; detail: string }) {
   return (
     <div className="rounded-lg border border-white/10 bg-white/[0.045] p-4 shadow-[0_18px_48px_rgba(0,0,0,0.16)]">
       <p className="text-xs font-black uppercase text-slate-500">{label}</p>
@@ -108,7 +113,47 @@ function MetricCard({ label, value, detail }: { label: string; value: string; de
       <p className="mt-2 text-sm text-slate-400">{detail}</p>
     </div>
   );
-}
+});
+
+const LeadTableRow = memo(function LeadTableRow({ lead, summary }: SummarizedLead) {
+  const status = getLeadStatusMeta(lead.status);
+
+  return (
+    <tr key={lead.id ?? `${lead.name}-${lead.phone}`} className="border-t border-white/8 align-top transition hover:bg-white/[0.035]">
+      <td className="px-4 py-4">
+        <p className="font-black text-white">{lead.name || "Chưa có tên"}</p>
+        {summary.paymentStatus ? (
+          <p className="mt-1 text-xs text-slate-500">Thanh toán: {summary.paymentStatus}</p>
+        ) : null}
+      </td>
+      <td className="px-4 py-4 text-slate-300">
+        <p>{lead.phone || "Chưa có SĐT"}</p>
+        {lead.email ? <p className="mt-1 text-xs text-slate-500">{lead.email}</p> : null}
+      </td>
+      <td className="px-4 py-4 font-mono text-xs text-sky-200">{summary.orderCode || "Chưa có đơn"}</td>
+      <td className="max-w-[260px] px-4 py-4 text-slate-300">{summary.courseTitle || "Chưa chọn khóa"}</td>
+      <td className="max-w-[320px] px-4 py-4">
+        <p className="text-slate-300">{summary.shortNote}</p>
+        {summary.trackingBadges.length > 0 ? (
+          <div className="mt-2 flex max-w-[300px] flex-wrap gap-1">
+            {summary.trackingBadges.map((badge) => (
+              <span key={badge} className="rounded-full border border-white/10 bg-white/[0.05] px-2 py-1 text-[11px] font-bold text-slate-400">
+                {badge}
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </td>
+      <td className="max-w-[190px] px-4 py-4 text-slate-300">{lead.source || "Website"}</td>
+      <td className="px-4 py-4 text-slate-500">{formatAdminDate(lead.createdAt)}</td>
+      <td className="px-4 py-4">
+        <span className={`rounded-full border px-2 py-1 text-xs font-bold ${statusClass(status.tone)}`}>
+          {status.label}
+        </span>
+      </td>
+    </tr>
+  );
+});
 
 export function LeadManager({ leads }: { leads: LeadItem[] }) {
   const router = useRouter();
@@ -121,31 +166,36 @@ export function LeadManager({ leads }: { leads: LeadItem[] }) {
   const openLeadCount = leads.filter((lead) => getLeadStatusMeta(lead.status).tone !== "success").length;
   const sourceCount = new Set(leads.map((lead) => lead.source).filter(Boolean)).size;
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  const handleSubmit = useCallback(async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessage("");
     setIsSaving(true);
 
     const formData = new FormData(event.currentTarget);
-    const result = await createLead({
-      name: String(formData.get("name") ?? ""),
-      phone: String(formData.get("phone") ?? ""),
-      email: String(formData.get("email") ?? ""),
-      message: String(formData.get("message") ?? ""),
-      source: String(formData.get("source") ?? "Admin"),
+    const response = await fetch("/api/admin/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: String(formData.get("name") ?? ""),
+        phone: String(formData.get("phone") ?? ""),
+        email: String(formData.get("email") ?? ""),
+        message: String(formData.get("message") ?? ""),
+        source: String(formData.get("source") ?? "Admin"),
+      }),
     });
+    const result = (await response.json()) as { ok: boolean; message?: string };
 
     setIsSaving(false);
 
     if (!result.ok) {
-      setMessage(`Chưa lưu được lead: ${result.error}`);
+      setMessage(result.message ?? "Chưa lưu được lead.");
       return;
     }
 
-    setMessage("Đã lưu lead vào Supabase.");
+    setMessage(result.message ?? "Đã lưu lead vào Supabase.");
     event.currentTarget.reset();
     router.refresh();
-  }
+  }, [router]);
 
   return (
     <div className="grid gap-5">
@@ -187,45 +237,9 @@ export function LeadManager({ leads }: { leads: LeadItem[] }) {
                 </tr>
               </thead>
               <tbody>
-                {summarizedLeads.map(({ lead, summary }) => {
-                  const status = getLeadStatusMeta(lead.status);
-
-                  return (
-                    <tr key={lead.id ?? `${lead.name}-${lead.phone}`} className="border-t border-white/8 align-top transition hover:bg-white/[0.035]">
-                      <td className="px-4 py-4">
-                        <p className="font-black text-white">{lead.name || "Chưa có tên"}</p>
-                        {summary.paymentStatus ? (
-                          <p className="mt-1 text-xs text-slate-500">Thanh toán: {summary.paymentStatus}</p>
-                        ) : null}
-                      </td>
-                      <td className="px-4 py-4 text-slate-300">
-                        <p>{lead.phone || "Chưa có SĐT"}</p>
-                        {lead.email ? <p className="mt-1 text-xs text-slate-500">{lead.email}</p> : null}
-                      </td>
-                      <td className="px-4 py-4 font-mono text-xs text-sky-200">{summary.orderCode || "Chưa có đơn"}</td>
-                      <td className="max-w-[260px] px-4 py-4 text-slate-300">{summary.courseTitle || "Chưa chọn khóa"}</td>
-                      <td className="max-w-[320px] px-4 py-4">
-                        <p className="text-slate-300">{summary.shortNote}</p>
-                        {summary.trackingBadges.length > 0 ? (
-                          <div className="mt-2 flex max-w-[300px] flex-wrap gap-1">
-                            {summary.trackingBadges.map((badge) => (
-                              <span key={badge} className="rounded-full border border-white/10 bg-white/[0.05] px-2 py-1 text-[11px] font-bold text-slate-400">
-                                {badge}
-                              </span>
-                            ))}
-                          </div>
-                        ) : null}
-                      </td>
-                      <td className="max-w-[190px] px-4 py-4 text-slate-300">{lead.source || "Website"}</td>
-                      <td className="px-4 py-4 text-slate-500">{formatAdminDate(lead.createdAt)}</td>
-                      <td className="px-4 py-4">
-                        <span className={`rounded-full border px-2 py-1 text-xs font-bold ${statusClass(status.tone)}`}>
-                          {status.label}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {summarizedLeads.map(({ lead, summary }) => (
+                  <LeadTableRow key={lead.id ?? `${lead.name}-${lead.phone}`} lead={lead} summary={summary} />
+                ))}
               </tbody>
             </table>
           </div>

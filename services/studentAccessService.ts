@@ -1,3 +1,4 @@
+import { getCourseAccessSlugs, getConfiguredAdminEmails, parseAccessOverrideSource } from "@/lib/course-access";
 import type { LeadItem } from "@/services/leadService";
 import { getLeads } from "@/services/leadService";
 import type { PaymentOrder } from "@/services/orderService";
@@ -118,6 +119,53 @@ function applyLead(record: StudentAccessRecord, lead: LeadItem) {
   record.updatedAt = record.updatedAt || lead.createdAt || "";
 }
 
+function getOverrideCourseTitle(lead: LeadItem) {
+  const title = /^Khóa học:\s*(.+)$/im.exec(lead.need)?.[1]?.trim();
+  return title || parseAccessOverrideSource(lead.source)?.courseSlug || "";
+}
+
+function applyAccessOverride(record: StudentAccessRecord, lead: LeadItem) {
+  const override = parseAccessOverrideSource(lead.source);
+
+  if (!override) {
+    return;
+  }
+
+  const title = getOverrideCourseTitle(lead);
+  record.name = record.name || lead.name;
+  record.email = record.email || lead.email || "";
+  record.phone = record.phone || lead.phone;
+  record.source = "Admin access";
+  record.note = lead.need || record.note;
+  record.updatedAt = lead.createdAt || record.updatedAt;
+
+  if (override.action === "grant") {
+    record.role = "Học viên";
+    record.accessStatus = "Có quyền học";
+    record.paymentStatus = "Đã thanh toán";
+    record.courseSlugs = mergeUnique(record.courseSlugs, [override.courseSlug]);
+    record.courseTitles = mergeUnique(record.courseTitles, [title]);
+    return;
+  }
+
+  record.courseSlugs = record.courseSlugs.filter((slug) => slug !== override.courseSlug);
+  record.courseTitles = record.courseTitles.filter((courseTitle) => courseTitle !== title);
+
+  if (record.courseSlugs.length === 0 && record.paidOrderCodes.length === 0) {
+    record.role = "Lead";
+    record.accessStatus = "Chưa cấp quyền";
+    record.paymentStatus = "Chờ thanh toán";
+  }
+}
+
+function markAdminRecord(record: StudentAccessRecord) {
+  record.role = "Học viên";
+  record.accessStatus = "Có quyền học";
+  record.paymentStatus = "Đã thanh toán";
+  record.source = record.source || "Admin";
+  record.note = record.note || "Admin luôn có toàn quyền học.";
+}
+
 export async function getStudentAccessRecords() {
   const [orders, leads] = await Promise.all([
     getPaymentOrders({ includeFallback: false }),
@@ -158,6 +206,42 @@ export async function getStudentAccessRecords() {
 
     applyLead(record, lead);
     records.set(key, record);
+  }
+
+  for (const lead of leads.filter((item) => parseAccessOverrideSource(item.source))) {
+    const key = getStudentKey(lead);
+    const record =
+      records.get(key) ??
+      emptyRecord({
+        id: key,
+        name: lead.name,
+        email: lead.email ?? "",
+        phone: lead.phone,
+        source: "Admin access",
+        note: lead.need,
+        updatedAt: lead.createdAt,
+      });
+
+    applyAccessOverride(record, lead);
+    const accessibleSlugs = getCourseAccessSlugs({
+      email: record.email,
+      leads,
+      orders,
+    });
+
+    if (accessibleSlugs.length === 0) {
+      record.accessStatus = "Chưa cấp quyền";
+      record.paymentStatus = "Chờ thanh toán";
+    }
+
+    records.set(key, record);
+  }
+
+  const adminEmails = new Set(getConfiguredAdminEmails());
+  for (const record of records.values()) {
+    if (adminEmails.has(record.email.trim().toLowerCase())) {
+      markAdminRecord(record);
+    }
   }
 
   return Array.from(records.values()).sort((a, b) => {

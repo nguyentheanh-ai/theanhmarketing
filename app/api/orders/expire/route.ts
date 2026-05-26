@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { sendPaymentFailedEmail } from "@/lib/notifications/payment-success-email";
 import { logSecurityEvent } from "@/lib/security/audit-log";
+import { invalidateAdminModules } from "@/services/adminDataService";
 import { expirePendingPaymentOrders, markPaymentEmailError } from "@/services/orderService";
 
 export const runtime = "nodejs";
@@ -23,6 +24,10 @@ export async function GET(request: Request) {
 
   try {
     const expiredOrders = await expirePendingPaymentOrders();
+    if (expiredOrders.length > 0) {
+      invalidateAdminModules(["orders"]);
+    }
+
     const emails = await Promise.all(
       expiredOrders.map(async (order) => {
         const result = await sendPaymentFailedEmail(order);

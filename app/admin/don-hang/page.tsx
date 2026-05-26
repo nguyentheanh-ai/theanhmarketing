@@ -2,7 +2,7 @@ import { AdminPageHeader, AdminPanel, EmptyState, StatusBadge } from "@/componen
 import { CopyPhoneButton } from "@/components/admin/copy-phone-button";
 import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { formatAdminDate, getOrderStatusMeta } from "@/lib/admin/crm-dashboard";
-import { getPaymentOrders } from "@/services/orderService";
+import { getAdminPaymentOrders } from "@/services/adminDataService";
 
 function formatVnd(amount: number) {
   return new Intl.NumberFormat("vi-VN", {
@@ -13,7 +13,7 @@ function formatVnd(amount: number) {
 }
 
 export default async function AdminOrdersPage() {
-  const orders = await getPaymentOrders({ includeFallback: false });
+  const orders = await getAdminPaymentOrders();
   const paidOrders = orders.filter((order) => order.status === "paid");
   const pendingOrders = orders.filter((order) => order.status === "pending");
   const revenue = paidOrders.reduce((sum, order) => sum + order.amount, 0);

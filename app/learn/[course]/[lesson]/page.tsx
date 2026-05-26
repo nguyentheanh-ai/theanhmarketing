@@ -2,7 +2,9 @@ import { notFound, redirect } from "next/navigation";
 import { LearningRoom, type LearningLesson } from "@/components/course/learning-room";
 import type { Course } from "@/data/courses";
 import { getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
+import { getCourseAccessSlugs } from "@/lib/course-access";
 import { getCourseBySlug } from "@/services/courseService";
+import { getLeads } from "@/services/leadService";
 import { getPaymentOrders } from "@/services/orderService";
 
 type LessonPageProps = {
@@ -28,27 +30,6 @@ function getLessons(course: Course) {
     );
 }
 
-function getPaidCourseSlugsFromOrders(
-  orders: Awaited<ReturnType<typeof getPaymentOrders>>,
-  email: string,
-) {
-  const normalizedEmail = email.trim().toLowerCase();
-
-  if (!normalizedEmail) {
-    return [];
-  }
-
-  return orders
-    .filter((order) => order.status === "paid" && order.email.trim().toLowerCase() === normalizedEmail)
-    .flatMap((order) => {
-      if (order.orderItems.length > 0) {
-        return order.orderItems.map((item) => item.slug);
-      }
-
-      return order.courseSlug.split(",").map((slug) => slug.trim()).filter(Boolean);
-    });
-}
-
 export default async function LessonPage({ params }: LessonPageProps) {
   const { course: courseSlug, lesson: lessonId } = await params;
   const course = await getCourseBySlug(courseSlug);
@@ -69,15 +50,22 @@ export default async function LessonPage({ params }: LessonPageProps) {
   }
 
   if (currentLesson.access === "paid") {
-    const { user } = await getCurrentAuth();
+    const { adminRole, user } = await getCurrentAuth();
 
     if (!user && isAuthGuardEnabled()) {
       redirect(`/dang-nhap?next=${encodeURIComponent(`/learn/${courseSlug}/${lessonId}`)}`);
     }
 
-    if (user?.email) {
-      const orders = await getPaymentOrders({ includeFallback: false });
-      const ownedSlugs = getPaidCourseSlugsFromOrders(orders, user.email);
+    if (!adminRole && user?.email) {
+      const [orders, leads] = await Promise.all([
+        getPaymentOrders({ includeFallback: false }),
+        getLeads({ includeFallback: false }),
+      ]);
+      const ownedSlugs = getCourseAccessSlugs({
+        email: user.email,
+        leads,
+        orders,
+      });
 
       if (!ownedSlugs.includes(course.slug)) {
         redirect("/dashboard?error=course-access");

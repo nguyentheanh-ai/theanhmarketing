@@ -7,8 +7,8 @@ export type RegistrationNotificationInput = {
   source?: string;
 };
 
-const defaultRecipient = "12c1thdtheanh@gmail.com";
-const defaultSender = "The Anh Marketing <onboarding@resend.dev>";
+const defaultRecipient = "theanhnguyen.marketing@gmail.com";
+const defaultSender = "The Anh Marketing <noreply@theanhmarketing.com>";
 
 function escapeHtml(value: string) {
   return value
@@ -17,6 +17,10 @@ function escapeHtml(value: string) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function withEmailDocument(html: string) {
+  return `<!doctype html><html><head><meta charset="UTF-8" /></head><body style="margin:0;padding:0">${html}</body></html>`;
 }
 
 function formatRegisteredAt(value?: string) {
@@ -75,8 +79,12 @@ function buildEmailText(input: RegistrationNotificationInput) {
   ].join("\n");
 }
 
+function getResendApiKey() {
+  return process.env.RESEND_API_KEY?.trim().replace(/^\uFEFF/, "") ?? "";
+}
+
 export async function sendRegistrationNotification(input: RegistrationNotificationInput) {
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = getResendApiKey();
   const to = process.env.REGISTRATION_NOTIFICATION_EMAIL || defaultRecipient;
   const from = process.env.REGISTRATION_NOTIFICATION_FROM || defaultSender;
 
@@ -94,7 +102,7 @@ export async function sendRegistrationNotification(input: RegistrationNotificati
       from,
       to,
       subject: `Học viên đăng ký mới: ${input.studentName || input.email}`,
-      html: buildEmailHtml(input),
+      html: withEmailDocument(buildEmailHtml(input)),
       text: buildEmailText(input),
     }),
   });

@@ -31,6 +31,8 @@ type DbLead = {
   created_at: string | null;
 };
 
+const leadSelectFields = "id,name,phone,email,message,source,created_at";
+
 export async function createLead(input: LeadInput) {
   const supabase = createSupabaseBrowserClient();
 
@@ -85,7 +87,7 @@ export async function getLeads(options: { includeFallback?: boolean } = {}): Pro
 
   const { data, error } = await supabase
     .from("leads")
-    .select("*")
+    .select(leadSelectFields)
     .order("created_at", { ascending: false });
 
   if (error || !data || data.length === 0) {

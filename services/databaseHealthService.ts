@@ -27,6 +27,10 @@ const requiredTables = [
   "site_settings",
 ];
 
+const healthProbeColumns: Record<string, string> = {
+  site_settings: "key",
+};
+
 export async function getDatabaseHealth(): Promise<DatabaseHealth> {
   const supabase = createSupabaseServerClient();
 
@@ -46,9 +50,10 @@ export async function getDatabaseHealth(): Promise<DatabaseHealth> {
 
   const tables = await Promise.all(
     requiredTables.map(async (table) => {
+      const probeColumn = healthProbeColumns[table] ?? "id";
       const { data, error, count } = await supabase
         .from(table)
-        .select("*", { count: "exact" })
+        .select(probeColumn, { count: "exact" })
         .limit(1);
 
       return {

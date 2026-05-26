@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import type { AdminRole } from "@/lib/auth/session";
 
@@ -49,14 +49,20 @@ const quickActions = [
 
 export function AdminShell({ children, adminRole }: { children: ReactNode; adminRole: AdminRole }) {
   const pathname = usePathname();
-  const visibleNavGroups = adminNavGroups
-    .map((group) => ({
-      ...group,
-      items: group.items.filter((item) => canShowItem(item, adminRole)),
-    }))
-    .filter((group) => group.items.length > 0);
-  const adminNav = visibleNavGroups.flatMap((group) => group.items);
-  const visibleQuickActions = quickActions.filter((item) => canShowItem(item, adminRole));
+  const { adminNav, visibleNavGroups, visibleQuickActions } = useMemo(() => {
+    const visibleNavGroups = adminNavGroups
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) => canShowItem(item, adminRole)),
+      }))
+      .filter((group) => group.items.length > 0);
+
+    return {
+      adminNav: visibleNavGroups.flatMap((group) => group.items),
+      visibleNavGroups,
+      visibleQuickActions: quickActions.filter((item) => canShowItem(item, adminRole)),
+    };
+  }, [adminRole]);
 
   return (
     <main className="min-h-screen bg-[#0b0f19] text-slate-100">

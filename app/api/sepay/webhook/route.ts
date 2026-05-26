@@ -7,6 +7,7 @@ import { sendMetaPurchaseEvent } from "@/lib/meta/conversions-api";
 import { verifySepayApiKey, type SepayWebhookPayload } from "@/lib/payments/sepay";
 import { logSecurityEvent } from "@/lib/security/audit-log";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
+import { invalidateAdminModules } from "@/services/adminDataService";
 import { confirmOrderFromSepay, markPaymentEmailError, markPaymentEmailSent } from "@/services/orderService";
 import { ensureStudentAccountForPaidOrder } from "@/services/studentAccountService";
 import { siteConfig } from "@/data/site";
@@ -140,6 +141,8 @@ export async function POST(request: Request) {
         }
       }
     }
+
+    invalidateAdminModules(["orders", "students", "leads"]);
 
     return NextResponse.json({
       success: true,

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, type ReactNode } from "react";
+import { memo, useCallback, useMemo, useState, type ReactNode } from "react";
 import type { Course } from "@/data/courses";
 import { formatAdminDate } from "@/lib/admin/crm-dashboard";
 import type { LeadItem } from "@/services/leadService";
@@ -51,6 +51,17 @@ type ClickEventRow = {
   createdAt: string;
 };
 
+type DashboardSummaryData = {
+  revenueSeries: Array<{ key: string; value: number; height: number }>;
+  paidOrders: PaymentOrder[];
+  pendingOrders: PaymentOrder[];
+  failedOrders: PaymentOrder[];
+  grantedStudents: StudentAccessRecord[];
+  revenue: number;
+  todayRevenue: number;
+  conversionRate: string;
+};
+
 const tabs: { id: AdminTabId; label: string }[] = [
   { id: "dashboard", label: "Dashboard" },
   { id: "crm", label: "CRM" },
@@ -61,6 +72,15 @@ const tabs: { id: AdminTabId; label: string }[] = [
   { id: "payments", label: "Payments" },
   { id: "reports", label: "Reports" },
 ];
+
+const emptyClickAnalytics: ReturnType<typeof buildClickEventAnalytics> = {
+  eventTimeline: [],
+  topSources: [],
+  landingPages: [],
+  paymentEventCount: 0,
+  pixelReadyCount: 0,
+  clickToPaymentRate: "0%",
+};
 
 function formatVnd(amount: number) {
   return new Intl.NumberFormat("vi-VN", {
@@ -306,7 +326,7 @@ function buildClickEventAnalytics(leads: LeadItem[], orders: PaymentOrder[]) {
   };
 }
 
-function MetricCard({
+const MetricCard = memo(function MetricCard({
   label,
   value,
   detail,
@@ -334,24 +354,57 @@ function MetricCard({
       <p className="mt-2 text-sm leading-5 text-slate-400">{detail}</p>
     </div>
   );
-}
+});
 
-function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
+const Panel = memo(function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <section className={`rounded-lg border border-white/10 bg-[#111827]/82 ${className}`}>{children}</section>;
-}
+});
 
 export function AdminGrowthOsDashboard({ orders, leads, students, courses }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<AdminTabId>("dashboard");
-  const crmRows = useMemo(() => buildCrmRows(orders, leads), [orders, leads]);
-  const revenueSeries = useMemo(() => buildDailyRevenue(orders), [orders]);
-  const clickAnalytics = useMemo(() => buildClickEventAnalytics(leads, orders), [leads, orders]);
-  const paidOrders = orders.filter((order) => order.status === "paid");
-  const pendingOrders = orders.filter((order) => order.status === "pending");
-  const failedOrders = orders.filter((order) => order.status === "failed" || order.status === "expired");
-  const grantedStudents = students.filter((student) => student.accessStatus.includes("Có") || student.accessStatus.includes("CÃ³"));
-  const revenue = getPaidTotal(orders);
-  const todayRevenue = getTodayPaidTotal(orders);
-  const conversionRate = metricTrend(paidOrders.length, orders.length);
+  const handleTabClick = useCallback((tabId: AdminTabId) => {
+    setActiveTab(tabId);
+  }, []);
+  const {
+    revenueSeries,
+    paidOrders,
+    pendingOrders,
+    failedOrders,
+    grantedStudents,
+    revenue,
+    todayRevenue,
+    conversionRate,
+  } = useMemo<DashboardSummaryData>(() => {
+    const paidOrders = orders.filter((order) => order.status === "paid");
+    const pendingOrders = orders.filter((order) => order.status === "pending");
+    const failedOrders = orders.filter((order) => order.status === "failed" || order.status === "expired");
+    const grantedStudents = students.filter((student) => student.paidOrderCodes.length > 0 || student.courseSlugs.length > 0);
+
+    return {
+      revenueSeries: buildDailyRevenue(orders),
+      paidOrders,
+      pendingOrders,
+      failedOrders,
+      grantedStudents,
+      revenue: getPaidTotal(orders),
+      todayRevenue: getTodayPaidTotal(orders),
+      conversionRate: metricTrend(paidOrders.length, orders.length),
+    };
+  }, [orders, students]);
+  const crmRows = useMemo(() => {
+    if (activeTab !== "dashboard" && activeTab !== "crm") {
+      return [];
+    }
+
+    return buildCrmRows(orders, leads);
+  }, [activeTab, leads, orders]);
+  const clickAnalytics = useMemo(() => {
+    if (activeTab !== "clicks") {
+      return emptyClickAnalytics;
+    }
+
+    return buildClickEventAnalytics(leads, orders);
+  }, [activeTab, leads, orders]);
 
   return (
     <div className="mx-auto max-w-[1480px]">
@@ -394,7 +447,7 @@ export function AdminGrowthOsDashboard({ orders, leads, students, courses }: Das
             <button
               key={tab.id}
               type="button"
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => handleTabClick(tab.id)}
               className={`min-h-9 rounded-md px-4 text-sm font-bold transition ${
                 activeTab === tab.id
                   ? "bg-white text-slate-950 shadow-[0_10px_30px_rgba(255,255,255,0.08)]"
@@ -560,7 +613,7 @@ export function AdminGrowthOsDashboard({ orders, leads, students, courses }: Das
               </thead>
               <tbody>
                 {students.map((student) => {
-                  const hasAccess = student.accessStatus.includes("Có") || student.accessStatus.includes("CÃ³");
+                  const hasAccess = student.paidOrderCodes.length > 0 || student.courseSlugs.length > 0;
 
                   return (
                     <tr key={student.id} className="border-t border-white/8 align-top">

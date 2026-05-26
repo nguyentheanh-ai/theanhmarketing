@@ -20,8 +20,8 @@ type SendEmailResult = {
   reason: string | null;
 };
 
-const defaultSender = "The Anh Marketing <onboarding@resend.dev>";
-const defaultAdminRecipient = "12c1thdtheanh@gmail.com";
+const defaultSender = "The Anh Marketing <noreply@theanhmarketing.com>";
+const defaultAdminRecipient = "theanhnguyen.marketing@gmail.com";
 const defaultSiteUrl = "https://www.theanhmarketing.com";
 
 const bankNameMap: Record<string, string> = {
@@ -50,6 +50,10 @@ function escapeHtml(value: string) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function withEmailDocument(html: string) {
+  return `<!doctype html><html><head><meta charset="UTF-8" /></head><body style="margin:0;padding:0">${html}</body></html>`;
 }
 
 function normalizeSiteUrl(value?: string) {
@@ -168,8 +172,12 @@ function buildResendRequest(payload: ResendEmailPayload, apiKey: string) {
   });
 }
 
+function getResendApiKey() {
+  return process.env.RESEND_API_KEY?.trim().replace(/^\uFEFF/, "") ?? "";
+}
+
 async function sendPayload(payload: ResendEmailPayload): Promise<SendEmailResult> {
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = getResendApiKey();
 
   if (!apiKey) {
     return { ok: true, skipped: true, reason: "Missing RESEND_API_KEY" };
@@ -268,7 +276,7 @@ export function buildAdminNewLeadEmailPayload(
     from: getSender(options),
     to: getAdminRecipient(options),
     subject: `Lead mới - ${order.studentName || order.email || order.orderCode} - ${statusLabel}`,
-    html,
+    html: withEmailDocument(html),
     text,
   };
 }
@@ -414,7 +422,7 @@ export function buildPendingPaymentEmailPayload(
     from: getSender(options),
     to: order.email,
     subject: `${productTitle} - Chưa thanh toán - ${order.orderCode}`,
-    html,
+    html: withEmailDocument(html),
     text,
   };
 }

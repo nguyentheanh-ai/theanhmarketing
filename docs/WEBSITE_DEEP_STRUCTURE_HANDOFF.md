@@ -178,6 +178,14 @@ Core services:
 - `services/marketingSettingsService.ts`: marketing pixel/settings.
 - `services/brandService.ts`, `services/offerService.ts`: site branding/offer popup.
 
+Admin performance read-model:
+
+- `services/adminDataCache.ts` keeps a short-lived in-process cache for admin module reads.
+- `services/adminDataService.ts` exposes cached getters for leads, orders, students, and courses.
+- Admin routes `/admin/dashboard`, `/admin/leads`, `/admin/don-hang`, and `/admin/hoc-vien` should prefer these cached getters.
+- Admin mutations that change leads/orders/student access should call `invalidateAdminModules(...)` before returning success.
+- `/api/admin/leads` is the admin-safe lead creation endpoint used by `components/admin/lead-manager.tsx`; it invalidates lead/student admin caches after insert.
+
 Fallback/static data:
 
 - `data/courses.ts`: official/fallback courses.

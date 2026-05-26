@@ -13,6 +13,7 @@ import {
   isValidPhone,
   isValidSlug,
 } from "@/lib/security/validation";
+import { invalidateAdminModules } from "@/services/adminDataService";
 import { createPaymentOrder } from "@/services/orderService";
 import { siteConfig } from "@/data/site";
 
@@ -82,6 +83,8 @@ export async function POST(request: Request) {
       courseSlug,
       courseSlugs,
     });
+
+    invalidateAdminModules(["orders", "students"]);
 
     let metaLead: { ok: boolean; skipped: boolean; reason?: string; status?: number } = {
       ok: true,

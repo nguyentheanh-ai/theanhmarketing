@@ -22,6 +22,8 @@ type DbBlogPost = {
   created_at: string | null;
 };
 
+const blogPostSelectFields = "id,slug,title,category,read_time,author,excerpt,content,status,created_at" as const;
+
 function mapDbBlogPost(post: DbBlogPost): BlogPostItem {
   return {
     id: post.id,
@@ -46,7 +48,7 @@ async function fetchBlogPosts(): Promise<BlogPostItem[]> {
 
   const { data, error } = await supabase
     .from("blog_posts")
-    .select("*")
+    .select(blogPostSelectFields)
     .order("created_at", { ascending: false });
 
   if (error || !data || data.length === 0) {

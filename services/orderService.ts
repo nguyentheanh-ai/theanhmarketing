@@ -67,6 +67,9 @@ type DbOrder = {
   payment_email_last_error?: string | null;
 };
 
+const orderSelectFields =
+  "id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items,payment_email_sent_at,payment_email_last_error" as const;
+
 export type PaymentConfirmationResult = {
   order: PaymentOrder;
   wasAlreadyPaid: boolean;
@@ -257,7 +260,7 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
       expires_at: expiresAt,
       order_items: orderItems,
     })
-    .select("*")
+    .select(orderSelectFields)
     .single();
 
   if (!firstInsert.error && firstInsert.data) {
@@ -281,7 +284,7 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
       payment_qr_url: paymentQrUrl,
       expires_at: expiresAt,
     })
-    .select("*")
+    .select(orderSelectFields)
     .single();
 
   if (fallbackInsert.error || !fallbackInsert.data) {
@@ -328,7 +331,7 @@ export async function createManualPaidOrder(input: CreateManualPaidOrderInput) {
       paid_at: paidAt,
       order_items: orderItems,
     })
-    .select("*")
+    .select(orderSelectFields)
     .single();
 
   if (!firstInsert.error && firstInsert.data) {
@@ -351,7 +354,7 @@ export async function createManualPaidOrder(input: CreateManualPaidOrderInput) {
       payment_qr_url: "",
       paid_at: paidAt,
     })
-    .select("*")
+    .select(orderSelectFields)
     .single();
 
   if (fallbackInsert.error || !fallbackInsert.data) {
@@ -372,7 +375,7 @@ export async function getPaymentOrder(orderCode: string) {
 
   const { data, error } = await supabase
     .from("orders")
-    .select("*")
+    .select(orderSelectFields)
     .eq("order_code", orderCode.toUpperCase())
     .maybeSingle();
 
@@ -395,7 +398,7 @@ export async function getPaymentOrders(options: { includeFallback?: boolean } = 
 
   const { data, error } = await supabase
     .from("orders")
-    .select("*")
+    .select(orderSelectFields)
     .order("created_at", { ascending: false });
 
   if (error || !data || data.length === 0) {
@@ -425,7 +428,7 @@ export async function expirePendingPaymentOrders(now = new Date()) {
     })
     .eq("status", "pending")
     .lt("expires_at", timestamp)
-    .select("*");
+    .select(orderSelectFields);
 
   if (error) {
     throw new Error(error.message);
@@ -451,7 +454,7 @@ export async function expirePaymentOrderIfOverdue(orderCode: string, now = new D
     .eq("order_code", orderCode.toUpperCase())
     .eq("status", "pending")
     .lt("expires_at", timestamp)
-    .select("*")
+    .select(orderSelectFields)
     .maybeSingle();
 
   if (error) {
@@ -510,7 +513,7 @@ export async function confirmOrderFromSepay(payload: SepayWebhookPayload): Promi
       updated_at: new Date().toISOString(),
     })
     .eq("order_code", orderCode)
-    .select("*")
+    .select(orderSelectFields)
     .single();
 
   if (error || !data) {

@@ -11,10 +11,10 @@ test("admin dashboard mounts Growth OS UI while preserving existing data service
   const source = readSource("app/admin/dashboard/page.tsx");
 
   assert.match(source, /AdminGrowthOsDashboard/);
-  assert.match(source, /getPaymentOrders\(\{\s*includeFallback:\s*false\s*\}\)/);
-  assert.match(source, /getLeads\(\{\s*includeFallback:\s*false\s*\}\)/);
-  assert.match(source, /getStudentAccessRecords\(\)/);
-  assert.match(source, /getCourses\(\)/);
+  assert.match(source, /getAdminPaymentOrders\(\)/);
+  assert.match(source, /getAdminLeads\(\)/);
+  assert.match(source, /getAdminStudentAccessRecords\(\)/);
+  assert.match(source, /getAdminCourses\(\)/);
   assert.doesNotMatch(source, /fallbackOrders|fallbackLeads|demo/i);
 });
 

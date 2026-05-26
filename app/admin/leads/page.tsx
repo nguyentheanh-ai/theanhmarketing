@@ -1,9 +1,9 @@
 import { LeadManager } from "@/components/admin/lead-manager";
 import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
-import { getLeads } from "@/services/leadService";
+import { getAdminLeads } from "@/services/adminDataService";
 
 export default async function AdminLeadsPage() {
-  const leads = await getLeads({ includeFallback: false });
+  const leads = await getAdminLeads();
 
   return (
     <ProtectedAdminShell nextPath="/admin/leads">

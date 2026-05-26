@@ -1,6 +1,8 @@
 import { StudentDashboard } from "@/components/app/student-dashboard";
 import { getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
+import { getCourseAccessSlugs } from "@/lib/course-access";
 import { getCourses } from "@/services/courseService";
+import { getLeads } from "@/services/leadService";
 import { getPaymentOrders } from "@/services/orderService";
 import { getResources } from "@/services/resourceService";
 
@@ -16,36 +18,23 @@ function getDisplayName(email: string, metadataName?: unknown) {
   return email.split("@")[0] || "học viên";
 }
 
-function getPaidCourseSlugsFromOrders(
-  orders: Awaited<ReturnType<typeof getPaymentOrders>>,
-  email: string,
-) {
-  const normalizedEmail = email.trim().toLowerCase();
-
-  if (!normalizedEmail) {
-    return [];
-  }
-
-  return orders
-    .filter((order) => order.status === "paid" && order.email.trim().toLowerCase() === normalizedEmail)
-    .flatMap((order) => {
-      if (order.orderItems.length > 0) {
-        return order.orderItems.map((item) => item.slug);
-      }
-
-      return order.courseSlug.split(",").map((slug) => slug.trim()).filter(Boolean);
-    });
-}
-
 export default async function DashboardPage() {
-  const [{ user }, courses, resources, orders] = await Promise.all([
+  const [{ adminRole, user }, courses, resources, orders, leads] = await Promise.all([
     getCurrentAuth(),
     getCourses(),
     getResources(),
     getPaymentOrders(),
+    getLeads({ includeFallback: false }),
   ]);
   const email = user?.email ?? "";
-  const paidSlugs = getPaidCourseSlugsFromOrders(orders, email);
+  const allCourseSlugs = courses.map((course) => course.slug);
+  const paidSlugs = getCourseAccessSlugs({
+    allCourseSlugs,
+    email,
+    isAdmin: Boolean(adminRole),
+    leads,
+    orders,
+  });
   const ownedSlugs =
     paidSlugs.length > 0 || isAuthGuardEnabled()
       ? Array.from(new Set(paidSlugs))

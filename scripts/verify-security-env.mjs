@@ -46,6 +46,12 @@ const requiredForProduction = [
   "SUPABASE_SERVICE_ROLE_KEY",
   "AUTH_GUARD_ENABLED",
   "ADMIN_EMAILS",
+  "RESEND_API_KEY",
+  "NEW_LEAD_NOTIFICATION_TO",
+  "REGISTRATION_NOTIFICATION_EMAIL",
+  "REGISTRATION_NOTIFICATION_FROM",
+  "PENDING_PAYMENT_EMAIL_FROM",
+  "PAYMENT_SUCCESS_EMAIL_FROM",
   "SEPAY_BANK_CODE",
   "SEPAY_BANK_ACCOUNT_NUMBER",
   "SEPAY_WEBHOOK_API_KEY",
@@ -65,6 +71,22 @@ if (isProductionCheck && env.SEPAY_WEBHOOK_API_KEY && env.SEPAY_WEBHOOK_API_KEY.
 
 if (env.ADMIN_EMAILS?.includes("owner@example.com")) {
   weak.push("ADMIN_EMAILS still contains the placeholder owner@example.com.");
+}
+
+const emailSenderKeys = [
+  "REGISTRATION_NOTIFICATION_FROM",
+  "PENDING_PAYMENT_EMAIL_FROM",
+  "PAYMENT_SUCCESS_EMAIL_FROM",
+];
+
+for (const key of emailSenderKeys) {
+  if (isProductionCheck && env[key]?.includes("onboarding@resend.dev")) {
+    weak.push(`${key} still uses the Resend sandbox sender onboarding@resend.dev.`);
+  }
+}
+
+if (isProductionCheck && env.REGISTRATION_NOTIFICATION_EMAIL?.includes("12c1thdtheanh@gmail.com")) {
+  weak.push("REGISTRATION_NOTIFICATION_EMAIL still points to the old test recipient.");
 }
 
 if (missing.length || weak.length) {

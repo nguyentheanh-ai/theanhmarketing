@@ -19,7 +19,7 @@ type ResendEmailPayload = {
   text: string;
 };
 
-const defaultSender = "The Anh Marketing <onboarding@resend.dev>";
+const defaultSender = "The Anh Marketing <noreply@theanhmarketing.com>";
 const defaultSiteUrl = "https://www.theanhmarketing.com";
 const zaloGroupUrl = "https://zalo.me/g/ye0dcyowbepyhnrtyacr";
 
@@ -30,6 +30,10 @@ function escapeHtml(value: string) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function withEmailDocument(html: string) {
+  return `<!doctype html><html><head><meta charset="UTF-8" /></head><body style="margin:0;padding:0">${html}</body></html>`;
 }
 
 function normalizeSiteUrl(value?: string) {
@@ -314,7 +318,7 @@ export function buildPaymentSuccessEmailPayload(
     from: getSender(options),
     to: order.email,
     subject: `${productTitle} - Thanh toán thành công - ${order.orderCode}`,
-    html,
+    html: withEmailDocument(html),
     text,
   };
 }
@@ -420,9 +424,13 @@ export function buildPaymentFailedEmailPayload(
     from: getSender(options),
     to: order.email,
     subject: `${productTitle} - ${statusTitle} - ${order.orderCode}`,
-    html,
+    html: withEmailDocument(html),
     text,
   };
+}
+
+function getResendApiKey() {
+  return process.env.RESEND_API_KEY?.trim().replace(/^\uFEFF/, "") ?? "";
 }
 
 export async function sendPaymentSuccessEmail(
@@ -433,7 +441,7 @@ export async function sendPaymentSuccessEmail(
     return { ok: true, skipped: true, reason: "Order is not eligible for payment success email." };
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = getResendApiKey();
 
   if (!apiKey) {
     return { ok: true, skipped: true, reason: "Missing RESEND_API_KEY" };
@@ -473,7 +481,7 @@ export async function sendPaymentFailedEmail(
     return { ok: true, skipped: true, reason: "Order is not eligible for payment failed email." };
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = getResendApiKey();
 
   if (!apiKey) {
     return { ok: true, skipped: true, reason: "Missing RESEND_API_KEY" };

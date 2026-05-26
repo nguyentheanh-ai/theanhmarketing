@@ -12,6 +12,7 @@ import {
 } from "@/lib/security/validation";
 import { sendMetaLeadEvent } from "@/lib/meta/conversions-api";
 import { sendOrderCreatedEmails } from "@/lib/notifications/pending-payment-email";
+import { invalidateAdminModules } from "@/services/adminDataService";
 import { createLeadAdmin } from "@/services/leadService";
 import { createPaymentOrder, type PaymentOrder } from "@/services/orderService";
 
@@ -126,6 +127,8 @@ export async function POST(request: Request) {
     if (!leadSync.ok) {
       console.warn("[orders] Remarketing lead sync failed:", leadSync.error);
     }
+
+    invalidateAdminModules(["orders", "leads", "students"]);
 
     let metaLead: { ok: boolean; skipped: boolean; reason?: string; status?: number } = {
       ok: true,

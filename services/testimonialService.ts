@@ -18,6 +18,8 @@ type DbTestimonial = {
   created_at: string | null;
 };
 
+const testimonialSelectFields = "id,student_name,content,avatar,rating,created_at" as const;
+
 const legacyNameToCaseLabel: Record<string, string> = {
   "Minh Anh": "Case SME ngành bán lẻ",
   "Quốc Huy": "Case Solopreneur",
@@ -47,7 +49,7 @@ async function fetchTestimonials(): Promise<TestimonialItem[]> {
 
   const { data, error } = await supabase
     .from("testimonials")
-    .select("*")
+    .select(testimonialSelectFields)
     .order("created_at", { ascending: false });
 
   if (error || !data || data.length === 0) {

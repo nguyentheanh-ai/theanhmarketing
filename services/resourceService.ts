@@ -18,6 +18,8 @@ type DbResource = {
   created_at: string | null;
 };
 
+const resourceSelectFields = "id,title,description,thumbnail,file_url,access_type,created_at" as const;
+
 function slugify(value: string) {
   return value
     .toLowerCase()
@@ -54,7 +56,7 @@ async function fetchResources() {
 
   const { data, error } = await supabase
     .from("resources")
-    .select("*")
+    .select(resourceSelectFields)
     .order("created_at", { ascending: false });
 
   if (error || !data || data.length === 0) {

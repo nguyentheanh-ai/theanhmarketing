@@ -23,6 +23,19 @@ npm.cmd run build
 
 Never print or persist secrets, access tokens, service-role keys, passwords, or Meta access tokens in docs, commits, or final replies.
 
+## Serena + GitNexus Code Intelligence
+
+This is a production webapp. Before coding, understand the current architecture and data flow, then make the smallest safe change.
+
+- Use Serena first for semantic code retrieval, symbol/component/function lookup, reference tracing, precise TypeScript/JavaScript edits, and preserving existing behavior.
+- Use GitNexus when repo-scale context helps: route/module relationships, dependency graph, execution flow, blast-radius analysis, stale-index checks, or merge/refactor planning.
+- Do not use both tools mechanically for every small task. Prefer Serena for exact edits; add GitNexus when graph context reduces risk.
+- If GitNexus has no index or appears stale, run `gitnexus analyze` from this repo root before relying on graph context.
+- Do not run `gitnexus publish` or send code graph data outside the local machine unless explicitly asked.
+- Do not rewrite working systems, duplicate components, duplicate data access logic, or bypass existing services.
+- Preserve existing business logic, Supabase schema, auth flow, payment/email/tracking flow, API contracts, and UI/design system unless the user explicitly approves a change.
+- For performance work, identify the actual rendering/data bottleneck first; prefer targeted fixes such as lazy loading heavy modules, limiting Supabase queries, memoizing stable views, or virtualizing large lists where the existing architecture supports it.
+
 <!-- BEGIN:nextjs-agent-rules -->
 # This is NOT the Next.js you know
 
