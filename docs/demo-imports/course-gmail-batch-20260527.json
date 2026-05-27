@@ -1,0 +1,8 @@
+{
+  "batchSource": "course-gmail-batch-20260527",
+  "csvPath": "E:\\300_khach_hang_khoa_hoc_gmail_random.csv",
+  "importedAt": "2026-05-27T14:41:44.427Z",
+  "importedCount": 300,
+  "deleteSql": "delete from public.leads where source = 'course-gmail-batch-20260527';",
+  "note": "Customer rows are intentionally not stored in git. Delete this batch by source marker."
+}
