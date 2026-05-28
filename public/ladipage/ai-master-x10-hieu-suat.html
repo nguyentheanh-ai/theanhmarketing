@@ -14,7 +14,7 @@
     <meta property="og:title" content="AI Master X10 hiệu suất - Biến tri thức thành tiền" />
     <meta
       property="og:description"
-      content="Biến AI thành hệ điều hành công việc: research, create, publish, scale và bán thử sản phẩm tri thức trong 30 ngày."
+      content="Biến AI thành hệ điều hành công việc: research, create, publish, scale và bán thử sản phẩm tri thức trong 7 ngày."
     />
     <meta property="og:image" content="https://www.theanhmarketing.com/course-thumbnails/ai-master-x10-hieu-suat.webp" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -120,7 +120,7 @@
       h2,
       .display {
         font-family: "Playfair Display", Georgia, serif;
-        letter-spacing: -0.035em;
+        letter-spacing: 0;
       }
 
       h1 {
@@ -155,11 +155,45 @@
         background: transparent;
       }
 
+      .hero-copy .lead {
+        max-width: 900px;
+        font-size: clamp(18px, 1.55vw, 22px);
+        line-height: 1.9;
+      }
+
+      .hero-offer {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 30px;
+      }
+
+      .hero-offer .btn {
+        min-width: min(356px, 100%);
+        min-height: 66px;
+        font-size: 17px;
+      }
+
+      .hero-price-note {
+        display: grid;
+        gap: 4px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 700;
+        text-align: left;
+      }
+
+      .hero-price-note strong {
+        color: var(--gold-bright);
+      }
+
       h2 {
         margin-bottom: 18px;
         max-width: 970px;
-        font-size: clamp(38px, 5.5vw, 76px);
-        line-height: 0.98;
+        font-size: clamp(36px, 4.8vw, 68px);
+        line-height: 1.02;
         font-weight: 800;
       }
 
@@ -167,7 +201,7 @@
         margin-bottom: 12px;
         font-size: clamp(22px, 2.1vw, 30px);
         line-height: 1.12;
-        letter-spacing: -0.02em;
+        letter-spacing: 0;
       }
 
       .page {
@@ -390,7 +424,7 @@
         display: block;
         color: var(--gold-bright);
         font-size: 28px;
-        letter-spacing: -0.04em;
+        letter-spacing: 0;
       }
 
       .stat span {
@@ -505,6 +539,25 @@
         color: var(--gold-bright);
       }
 
+      .framework-icon {
+        display: grid;
+        width: 58px;
+        height: 58px;
+        place-items: center;
+        margin-bottom: 18px;
+        border: 1px solid rgba(255, 226, 138, 0.24);
+        border-radius: 18px;
+        background:
+          radial-gradient(circle at 35% 25%, rgba(255, 226, 138, 0.34), transparent 46%),
+          rgba(255, 255, 255, 0.045);
+        color: var(--gold-bright);
+      }
+
+      .framework-icon svg {
+        width: 30px;
+        height: 30px;
+      }
+
       .terminal {
         overflow: hidden;
         border-radius: 26px;
@@ -548,40 +601,6 @@
         color: var(--gold-bright);
       }
 
-      .radar-wrap {
-        display: grid;
-        grid-template-columns: 1fr 0.85fr;
-        gap: 24px;
-        align-items: center;
-      }
-
-      .radar-chart {
-        width: 100%;
-        max-width: 440px;
-        margin: 0 auto;
-      }
-
-      .chart-legend {
-        display: grid;
-        gap: 12px;
-      }
-
-      .legend-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 14px;
-        border-bottom: 1px solid var(--line-soft);
-        padding-bottom: 10px;
-        color: var(--muted);
-        font-size: 14px;
-        font-weight: 700;
-      }
-
-      .legend-row b {
-        color: var(--gold-bright);
-      }
-
       .output-card {
         overflow: hidden;
         padding: 0;
@@ -593,8 +612,81 @@
         border-width: 0 0 1px;
       }
 
+      .output-card img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 14 / 9;
+        object-fit: cover;
+        border-bottom: 1px solid var(--line-soft);
+        cursor: zoom-in;
+      }
+
+      .zoomable-image {
+        cursor: zoom-in;
+      }
+
+      .agent-roster {
+        display: grid;
+        gap: 12px;
+      }
+
+      .agent-row {
+        display: grid;
+        grid-template-columns: 44px 1fr;
+        gap: 12px;
+        align-items: start;
+        border: 1px solid var(--line-soft);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.04);
+        padding: 12px;
+      }
+
+      .agent-row b {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        border-radius: 14px;
+        background: rgba(255, 226, 138, 0.16);
+        color: var(--gold-bright);
+      }
+
+      .agent-row strong {
+        display: block;
+        color: var(--text);
+        font-size: 14px;
+      }
+
+      .agent-row span {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .output-card.featured-output {
+        grid-column: span 2;
+      }
+
       .output-card-body {
         padding: 24px;
+      }
+
+      .resource-link-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .resource-link-list a {
+        border: 1px solid rgba(255, 226, 138, 0.24);
+        border-radius: 999px;
+        color: var(--gold-bright);
+        font-size: 12px;
+        font-weight: 800;
+        padding: 8px 10px;
       }
 
       .asset-placeholder {
@@ -719,9 +811,252 @@
         margin-top: 42px;
       }
 
+      .module-showcase {
+        display: grid;
+        gap: 28px;
+        margin-top: 42px;
+      }
+
+      .module-showcase-card {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 30px;
+        background: rgba(7, 7, 6, 0.86);
+      }
+
+      .module-showcase-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(320px, 0.95fr);
+        border-bottom: 1px solid var(--line-soft);
+      }
+
+      .module-copy,
+      .module-outcomes {
+        padding: 30px;
+      }
+
+      .module-outcomes {
+        border-left: 1px solid var(--line-soft);
+      }
+
+      .module-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 22px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .module-badge b {
+        border-radius: 999px;
+        background: #ffd400;
+        color: #11100a;
+        padding: 8px 16px;
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+
+      .module-showcase-card h3 {
+        font-family: "Playfair Display", Georgia, serif;
+        font-size: clamp(30px, 3.2vw, 46px);
+        line-height: 1.06;
+      }
+
+      .module-outcomes h4 {
+        margin: 0 0 18px;
+        color: var(--gold-bright);
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .module-outcomes ul {
+        display: grid;
+        gap: 14px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .module-outcomes li {
+        display: grid;
+        grid-template-columns: 28px 1fr;
+        gap: 12px;
+        color: var(--text-soft);
+        font-weight: 700;
+      }
+
+      .module-visual {
+        width: 100%;
+        aspect-ratio: 14 / 6.8;
+        object-fit: contain;
+        border-top: 1px solid var(--line-soft);
+        background:
+          radial-gradient(circle at 85% 10%, rgba(255, 226, 138, 0.16), transparent 32%),
+          #070706;
+      }
+
+      .module-video-wrap {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(260px, 0.52fr);
+        gap: 20px;
+        align-items: center;
+        border-top: 1px solid var(--line-soft);
+        background:
+          radial-gradient(circle at 18% 10%, rgba(255, 95, 138, 0.18), transparent 34%),
+          radial-gradient(circle at 90% 0%, rgba(255, 226, 138, 0.14), transparent 36%),
+          #090908;
+        padding: 26px;
+      }
+
+      .module-video-wrap video,
+      .module-video-gif,
+      .module-video-poster {
+        width: 100%;
+        border: 1px solid rgba(255, 226, 138, 0.2);
+        border-radius: 20px;
+        background: #070706;
+        object-fit: cover;
+        box-shadow: 0 20px 70px rgba(0, 0, 0, 0.38);
+      }
+
+      .module-video-wrap video {
+        aspect-ratio: 16 / 9;
+      }
+
+      .module-video-gif {
+        aspect-ratio: 16 / 9;
+      }
+
+      .module-video-poster {
+        aspect-ratio: 4 / 5;
+      }
+
+      .module-video-note {
+        display: grid;
+        gap: 14px;
+      }
+
+      .module-video-note h4 {
+        margin: 0;
+        color: var(--gold-bright);
+        font-size: 22px;
+      }
+
+      .module-video-note p {
+        margin: 0;
+        color: var(--muted);
+      }
+
       .module-block {
         border-radius: 30px;
         padding: 28px;
+      }
+
+      .instructor-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(320px, 0.82fr);
+        gap: 34px;
+        align-items: center;
+      }
+
+      .instructor-photo-wrap {
+        position: relative;
+        min-height: 600px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 226, 138, 0.28);
+        border-radius: 34px;
+        background:
+          radial-gradient(circle at 30% 10%, rgba(255, 226, 138, 0.22), transparent 34%),
+          rgba(20, 19, 15, 0.78);
+      }
+
+      .instructor-photo-wrap img {
+        width: 100%;
+        height: 100%;
+        max-height: 720px;
+        object-fit: contain;
+        object-position: center bottom;
+      }
+
+      .instructor-stat {
+        position: absolute;
+        right: 28px;
+        bottom: 28px;
+        border: 1px solid rgba(255, 226, 138, 0.42);
+        border-radius: 18px;
+        background: rgba(7, 7, 6, 0.92);
+        padding: 18px 22px;
+      }
+
+      .instructor-stat strong {
+        display: block;
+        color: var(--gold-bright);
+        font-size: 40px;
+        line-height: 1;
+      }
+
+      .credential-list {
+        display: grid;
+        gap: 20px;
+        margin: 26px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .credential-list li {
+        display: grid;
+        grid-template-columns: 30px 1fr;
+        gap: 14px;
+        color: var(--text-soft);
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .bonus-card {
+        position: relative;
+        overflow: hidden;
+        min-height: 360px;
+        padding: 0;
+      }
+
+      .bonus-card img {
+        width: 100%;
+        height: 170px;
+        object-fit: cover;
+        opacity: 0.92;
+      }
+
+      .bonus-card-body {
+        padding: 24px;
+      }
+
+      .bonus-tag {
+        display: inline-flex;
+        margin-bottom: 18px;
+        border: 1px solid rgba(255, 226, 138, 0.28);
+        border-radius: 999px;
+        color: var(--gold-bright);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        padding: 7px 11px;
+      }
+
+      .bonus-label {
+        display: block;
+        margin-top: 14px;
+        color: #ff7d6d;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .bonus-label.solution {
+        color: #5be28c;
       }
 
       .lesson-list {
@@ -818,8 +1153,8 @@
       .price {
         color: var(--gold-bright);
         font-family: "Playfair Display", Georgia, serif;
-        font-size: clamp(64px, 8vw, 112px);
-        line-height: 0.82;
+        font-size: clamp(48px, 5.4vw, 76px);
+        line-height: 0.95;
         font-weight: 800;
       }
 
@@ -877,8 +1212,17 @@
 
       .form-card .btn {
         width: 100%;
+        min-height: 66px;
         margin-top: 8px;
         border: 0;
+        font-size: 20px;
+        font-weight: 950;
+        letter-spacing: 0;
+        box-shadow: 0 18px 52px rgba(214, 169, 40, 0.32);
+      }
+
+      .form-card .btn::after {
+        opacity: 0.32;
       }
 
       .form-message {
@@ -912,6 +1256,58 @@
       details p {
         margin: 12px 0 0;
         color: var(--muted);
+      }
+
+      body.lightbox-open {
+        overflow: auto;
+      }
+
+      .image-lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 80;
+        display: grid;
+        place-items: center;
+        padding: 28px;
+        background: rgba(0, 0, 0, 0.82);
+        backdrop-filter: blur(18px);
+      }
+
+      .image-lightbox[hidden] {
+        display: none;
+      }
+
+      .lightbox-panel {
+        position: relative;
+        width: min(1180px, 96vw);
+        max-height: 88vh;
+      }
+
+      .lightbox-panel img {
+        display: block;
+        width: 100%;
+        max-height: 82vh;
+        object-fit: contain;
+        border: 1px solid rgba(255, 226, 138, 0.34);
+        border-radius: 24px;
+        background: #080706;
+        box-shadow: 0 34px 120px rgba(0, 0, 0, 0.72);
+      }
+
+      .lightbox-close {
+        position: absolute;
+        top: -18px;
+        right: -18px;
+        width: 44px;
+        height: 44px;
+        border: 1px solid rgba(255, 226, 138, 0.34);
+        border-radius: 999px;
+        background: var(--gold-bright);
+        color: #11100a;
+        cursor: pointer;
+        font-size: 24px;
+        font-weight: 900;
+        line-height: 1;
       }
 
       .sticky-cta {
@@ -949,12 +1345,37 @@
 
       .sticky-cta strong {
         display: block;
-        font-size: 14px;
+        color: var(--gold-bright);
+        font-size: 26px;
+        line-height: 1;
       }
 
       .sticky-cta span {
         color: var(--muted);
         font-size: 13px;
+      }
+
+      .sticky-price {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+      }
+
+      .sticky-price strong {
+        font-size: 30px;
+      }
+
+      .sticky-badge {
+        display: inline-flex;
+        width: fit-content;
+        margin-top: 6px;
+        border: 1px solid rgba(255, 226, 138, 0.22);
+        border-radius: 999px;
+        color: var(--gold-bright);
+        font-size: 12px;
+        font-weight: 900;
+        padding: 4px 8px;
       }
 
       footer {
@@ -997,10 +1418,17 @@
       @media (max-width: 1020px) {
         .hero-grid,
         .grid-2,
-        .radar-wrap,
         .pricing-layout,
-        .compare {
+        .compare,
+        .module-showcase-head,
+        .instructor-card,
+        .module-video-wrap {
           grid-template-columns: 1fr;
+        }
+
+        .module-outcomes {
+          border-top: 1px solid var(--line-soft);
+          border-left: 0;
         }
 
         .grid-4 {
@@ -1051,13 +1479,13 @@
         h1 {
           font-size: clamp(42px, 12.2vw, 48px);
           line-height: 0.98;
-          letter-spacing: -0.025em;
+          letter-spacing: 0;
         }
 
         h2 {
           font-size: 35px;
           line-height: 1.05;
-          letter-spacing: -0.025em;
+          letter-spacing: 0;
         }
 
         .lead {
@@ -1146,18 +1574,23 @@
                 <span class="hero-title-bottom">Biến <mark>tri thức</mark><br />thành <mark>tiền</mark>.</span>
               </h1>
               <p class="lead">
-                Bạn sẽ xây một hệ thống làm việc với AI để research, lập kế hoạch content, tạo sản phẩm tri thức,
-                tạo trang bán hàng trong 5 phút, edit video thương hiệu cá nhân trong 3 phút, render ảnh hàng loạt,
-                dựng website học viên, xây funnel và theo dõi lead bằng CRM mini.
+                Chỉ trong 7 ngày áp dụng, bạn có ngay một hệ thống sản phẩm tri thức: offer, cấu trúc sản phẩm,
+                content 30 ngày, video/visual bán hàng, landing page, form thanh toán, CRM mini và roadmap bán thử.
               </p>
+              <div class="hero-offer">
+                <a class="btn btn-primary" href="#hoc-phi" data-cta>Đăng ký ngay - 1.299.000đ</a>
+                <div class="hero-price-note">
+                  <span>Giá gốc: <del>2.997.000đ</del></span>
+                  <strong>Ưu đãi giới hạn</strong>
+                </div>
+              </div>
               <div class="hero-actions">
-                <a class="btn btn-primary" href="#hoc-phi" data-cta>Đăng ký học ngay - 1.299.000đ</a>
                 <a class="btn btn-secondary" href="#lo-trinh">Xem lộ trình học</a>
               </div>
               <div class="hero-stats">
                 <div class="stat"><strong>12 chương</strong><span>Từ tư duy, sản phẩm, content đến funnel và CRM</span></div>
-                <div class="stat"><strong>10 Agent</strong><span>Lên plan, làm landing page, viết content và theo dõi lead</span></div>
-                <div class="stat"><strong>5 Template</strong><span>Quy trình chuẩn, design, content, landing và CRM</span></div>
+                <div class="stat"><strong>6 Agent</strong><span>Research, offer, content, lesson, landing và CRM</span></div>
+                <div class="stat"><strong>6 SOP mẫu</strong><span>Workspace, content, landing, CRM, beta launch và scale</span></div>
               </div>
             </div>
 
@@ -1167,11 +1600,11 @@
         <section class="section section-tight" id="van-de">
           <div class="container grid-2">
             <div class="reveal">
-              <p class="kicker">Câu chuyện thật</p>
-              <h2>Có kiến thức, có AI, nhưng vẫn chưa tạo ra tài sản để bán.</h2>
+              <p class="kicker">Rào cản</p>
+              <h2>Vấn đề mà chuyên gia gặp khi tạo sản phẩm.</h2>
               <p class="lead">
-                AI bây giờ không thiếu tool. Cái thiếu là một hệ thống để biến tool thành việc làm cụ thể,
-                tài sản cụ thể và doanh thu cụ thể.
+                Bạn có chuyên môn, có kinh nghiệm và đã thử nhiều công cụ AI. Nhưng khi bắt tay đóng gói thành
+                khóa học, ebook, workshop hoặc coaching, mọi thứ thường bị kẹt ở cấu trúc, nội dung, kỹ thuật và cách bán.
               </p>
               <div class="asset-placeholder" data-visual-slot="pain-story-photo">
                 <div class="visual-panel">
@@ -1186,20 +1619,20 @@
             </div>
             <div class="accordion-list reveal">
               <article class="accordion-item">
-                <div class="accordion-head"><span class="number">01</span><h3>Biết ChatGPT, Gemini, Claude... nhưng vẫn làm thủ công</h3></div>
-                <p>Mỗi lần viết content, research, làm slide, dựng video lại bắt đầu từ đầu.</p>
+                <div class="accordion-head"><span class="number">01</span><h3>Chuyên môn chưa thành sản phẩm</h3></div>
+                <p>Có rất nhiều kiến thức trong đầu, nhưng chưa biết chọn phần nào để biến thành offer, outline và tài sản bán hàng.</p>
               </article>
               <article class="accordion-item">
-                <div class="accordion-head"><span class="number">02</span><h3>Có kiến thức nhưng chưa biết đóng gói</h3></div>
-                <p>Muốn bán khóa học, ebook, workshop hoặc coaching nhưng chưa có outline, offer và landing page.</p>
+                <div class="accordion-head"><span class="number">02</span><h3>Một mình phải làm mọi thứ</h3></div>
+                <p>Vừa nghĩ sản phẩm, viết content, làm slide, quay video, dựng landing, chăm lead và theo dõi đơn.</p>
               </article>
               <article class="accordion-item">
-                <div class="accordion-head"><span class="number">03</span><h3>Làm marketing rời rạc</h3></div>
-                <p>Có đăng bài, có chạy thử ads, có dùng AI, nhưng không có phễu và dữ liệu để biết điểm nghẽn ở đâu.</p>
+                <div class="accordion-head"><span class="number">03</span><h3>Dùng AI nhưng output chưa đúng ý</h3></div>
+                <p>Mua tool, thử prompt, đổi nền tảng liên tục nhưng kết quả vẫn chung chung, không bám giọng nói và offer của bạn.</p>
               </article>
               <article class="accordion-item">
-                <div class="accordion-head"><span class="number">04</span><h3>Mất nhiều thời gian cho khâu sản xuất nội dung</h3></div>
-                <p>Lên kịch bản, quay clip, dựng video, rồi viết content... mỗi bước đều tốn thời gian nếu không có hệ thống hỗ trợ.</p>
+                <div class="accordion-head"><span class="number">04</span><h3>Bán thử nhưng không ra khách</h3></div>
+                <p>Có đăng bài, có chạy quảng cáo, có trang bán, nhưng offer, nội dung, form và follow-up chưa nối thành một hệ thống.</p>
               </article>
             </div>
           </div>
@@ -1208,58 +1641,63 @@
         <section class="section">
           <div class="container reveal center">
             <p class="kicker">Vòng lặp kiệt sức</p>
-            <h2>Có ý tưởng, có công cụ nhưng vẫn không ra được sản phẩm cuối cùng, không đóng gói và bán được.</h2>
+            <h2>90% chuyên gia đang kẹt trong vòng lặp này.</h2>
             <p class="lead">
-              Nếu chỉ thêm tool, bạn sẽ có thêm việc phải quản lý. Nếu đặt AI vào một hệ thống,
-              mỗi đầu ra sẽ trở thành tài sản có thể dùng lại.
+              Không phải vì bạn thiếu năng lực. Vấn đề là chuyên môn chưa được đóng gói thành hệ thống có thể sản xuất,
+              bán thử, đo lường và lặp lại.
             </p>
           </div>
           <div class="container grid-3">
-            <article class="card reveal"><span class="number">1</span><h3>Output vẫn chung chung</h3><p>Prompt mỗi lần một kiểu, kết quả không nhất quán và phải sửa lại nhiều.</p></article>
-            <article class="card reveal"><span class="number">2</span><h3>Research không ra hành động</h3><p>Có thông tin nhưng chưa biến thành content calendar, offer hoặc funnel.</p></article>
-            <article class="card reveal"><span class="number">3</span><h3>Content không dẫn về sản phẩm</h3><p>Bài viết và video không nối với landing, form, inbox hoặc CRM.</p></article>
-            <article class="card reveal"><span class="number">4</span><h3>Chưa có tài sản hoàn chỉnh</h3><p>Thiếu outline, video, slide, workbook, trang học viên và trang bán.</p></article>
-            <article class="card reveal"><span class="number">5</span><h3>Không đo được tiền đến từ đâu</h3><p>Không biết content nào tạo lead, lead nào thành đơn, bước nào đang nghẽn.</p></article>
-            <article class="card reveal"><span class="number">6</span><h3>Mỗi ngày lại bắt đầu lại</h3><p>Không có prompt, agent, checklist và tiêu chuẩn đầu ra để tái sử dụng.</p></article>
+            <article class="card reveal"><span class="number">1</span><h3>Chưa biết đóng gói</h3><p>Có kinh nghiệm và kiến thức, nhưng khi biến thành khóa học, ebook hay workshop lại không biết bắt đầu từ đâu.</p></article>
+            <article class="card reveal"><span class="number">2</span><h3>Một mình làm mọi thứ</h3><p>Thời gian bị đốt vào việc lặp lại: nghĩ nội dung, làm slide, quay video, sửa landing, chăm khách và follow-up.</p></article>
+            <article class="card reveal"><span class="number">3</span><h3>Mua AI vẫn chưa ra ý</h3><p>Thử tool từ vài trăm đến cả triệu mỗi tháng, nhưng output vẫn lệch giọng, chung chung và phải sửa lại quá nhiều.</p></article>
+            <article class="card reveal"><span class="number">4</span><h3>Quảng cáo không ra khách</h3><p>Thấy người ta bán, mình cũng bán; nhưng offer, content và funnel chưa khớp nên chạy mãi vẫn không có đơn.</p></article>
+            <article class="card reveal"><span class="number">5</span><h3>Thiếu kỹ thuật triển khai</h3><p>Biết cần video đẹp, ảnh chuyên nghiệp, landing page, form thanh toán và CRM, nhưng mỗi phần lại là một kỹ năng khác.</p></article>
+            <article class="card reveal"><span class="number">6</span><h3>Học xong vẫn chung chung</h3><p>Nhiều khóa học cho thêm kiến thức, nhưng thiếu file mẫu, workflow và checklist để tự triển khai thành sản phẩm bán được.</p></article>
           </div>
         </section>
 
         <section class="section mechanism">
           <div class="container reveal center">
-            <p class="kicker">Cơ chế mới</p>
-            <h2>80% kết quả đến từ việc đặt AI vào đúng hệ thống.</h2>
+            <p class="kicker">Nguyên tắc Pareto cho chuyên gia</p>
+            <h2>80% kết quả đến từ 20% hành động đúng chỗ.</h2>
             <p class="lead">
-              Khóa này không dạy bạn sưu tầm thêm prompt. Bạn sẽ xây một hệ vận hành gồm 4 lớp:
-              <span class="gold">Research</span>, <span class="gold">Create</span>, <span class="gold">Publish</span>, <span class="gold">Scale</span>.
+              Bạn đã dành nhiều năm để học nghề, nâng cấp kỹ năng và xây dựng chuyên môn. Vấn đề không phải
+              bạn chưa đủ giỏi. Vấn đề là chuyên môn của bạn chưa được đóng gói thành hệ thống có thể tự tạo
+              khách hàng, tự vận hành và tự tăng trưởng.
             </p>
           </div>
           <div class="container grid-4">
-            <article class="card framework-card reveal"><span class="number">01</span><h3>Research</h3><p>AI chuyên nghiên cứu khách hàng, đối thủ, thị trường, insight và kế hoạch content.</p></article>
-            <article class="card framework-card reveal"><span class="number">02</span><h3>Create</h3><p>AI tạo bài viết, script, slide, video ngắn, ảnh hàng loạt và tài nguyên học tập.</p></article>
-            <article class="card framework-card reveal"><span class="number">03</span><h3>Publish</h3><p>Dựng website học viên, landing page, source, deploy hosting và gắn domain.</p></article>
-            <article class="card framework-card reveal"><span class="number">04</span><h3>Scale</h3><p>Tạo funnel, CRM mini, kịch bản bán hàng và vòng lặp tối ưu theo dữ liệu.</p></article>
+            <article class="card framework-card reveal"><span class="number">01</span><span class="framework-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path><path d="M8 11h6"></path><path d="M11 8v6"></path></svg></span><h3>Research</h3><p>AI chuyên nghiên cứu khách hàng, đối thủ, thị trường, insight và kế hoạch content.</p></article>
+            <article class="card framework-card reveal"><span class="number">02</span><span class="framework-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"></path><path d="M5 8h14"></path><path d="M7 16h10"></path><path d="M4 4h16v16H4z"></path></svg></span><h3>Create</h3><p>AI tạo bài viết, script, slide, video ngắn, ảnh hàng loạt và tài nguyên học tập.</p></article>
+            <article class="card framework-card reveal"><span class="number">03</span><span class="framework-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v11H4z"></path><path d="M8 21h8"></path><path d="M12 16v5"></path><path d="m15 9-3-3-3 3"></path></svg></span><h3>Publish</h3><p>Dựng website học viên, landing page, source, deploy hosting và gắn domain.</p></article>
+            <article class="card framework-card reveal"><span class="number">04</span><span class="framework-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5"></path><path d="M4 19h16"></path><path d="m7 15 4-4 3 3 5-7"></path><path d="M16 7h3v3"></path></svg></span><h3>Scale</h3><p>Tạo funnel, CRM mini, kịch bản bán hàng và vòng lặp tối ưu theo dữ liệu.</p></article>
           </div>
         </section>
 
         <section class="section" id="ket-qua">
           <div class="container grid-2">
             <div class="glass-card terminal reveal">
-              <div class="terminal-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>ai-master-x10/system-output</span></div>
+              <div class="terminal-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>ai-master-x10/agent-kit</span></div>
               <div class="terminal-body">
-                <div class="output-line"><strong>Research agent</strong><span>market, customer, competitor, content plan</span></div>
-                <div class="output-line"><strong>Content engine</strong><span>post, script, email, ads angle, hook library</span></div>
-                <div class="output-line"><strong>Video workflow</strong><span>screen record, subtitle, thumbnail, edit 5 phút</span></div>
-                <div class="output-line"><strong>Image batch</strong><span>20 visual assets theo cùng brand</span></div>
-                <div class="output-line"><strong>Student website</strong><span>UI, demo, hosting, domain, GitHub</span></div>
-                <div class="output-line"><strong>Output</strong><span>một hệ thống AI có thể tạo tài sản số và bán thử</span></div>
+                <p class="kicker">Không chỉ có kiến thức</p>
+                <h3>Bạn sở hữu 6 nhân sự Agent hỗ trợ.</h3>
+                <div class="agent-roster">
+                  <div class="agent-row"><b>01</b><span><strong>Research Agent</strong>Phân tích insight, đối thủ, thị trường và chân dung khách hàng.</span></div>
+                  <div class="agent-row"><b>02</b><span><strong>Offer Agent</strong>Viết lời hứa, bonus, FAQ, giảm rủi ro và thông điệp bán hàng.</span></div>
+                  <div class="agent-row"><b>03</b><span><strong>Content Agent</strong>Tạo pillar, hook, CTA, lịch đăng và angle cho từng kênh.</span></div>
+                  <div class="agent-row"><b>04</b><span><strong>Lesson Agent</strong>Viết script bài giảng, slide outline, workbook và FAQ học viên.</span></div>
+                  <div class="agent-row"><b>05</b><span><strong>Landing Agent</strong>Dựng outline landing, section copy, form và checklist test.</span></div>
+                  <div class="agent-row"><b>06</b><span><strong>CRM Agent</strong>Tạo pipeline, follow-up, xử lý phản đối và chăm lead.</span></div>
+                </div>
               </div>
             </div>
             <div class="reveal">
               <p class="kicker">Bằng chứng bằng đầu ra</p>
-              <h2>Học xong không chỉ biết AI. Bạn có hệ thống tạo tài sản thật.</h2>
+              <h2>Học xong có hệ thống tạo tài sản thật.</h2>
               <p class="lead">
-                Niềm tin của trang này đến từ output của khóa học: bản đồ sản phẩm, content plan,
-                video, ảnh, website học viên, landing page, CRM mini và roadmap triển khai.
+                Bạn không phải tin vào lời hứa chung chung. Ngay trong khóa học, bạn sẽ từng bước tạo ra
+                bản đồ sản phẩm, content plan, video, ảnh, website học viên, landing page, CRM mini và roadmap triển khai.
               </p>
               <div class="grid-3" style="grid-template-columns: 1fr; margin-top: 24px;">
                 <article class="card"><h3>Có sản phẩm để bán thử</h3><p>Có outline, offer, nội dung, landing và tài sản đi kèm.</p></article>
@@ -1271,111 +1709,47 @@
 
         <section class="section">
           <div class="container reveal center">
-            <p class="kicker">Chỉ số năng lực sau khóa học</p>
-            <h2>Biểu đồ này giúp bạn nhìn AI như một hệ điều hành kinh doanh.</h2>
+            <p class="kicker">Sản phẩm thực tế sau khóa học</p>
+            <h2>Những tài sản bạn tự xây, có file quy trình mẫu để triển khai lại.</h2>
             <p class="lead">
-              Mục tiêu không phải đẹp mắt trên giấy. Mục tiêu là biết mình đang yếu ở research, content,
-              tài sản bán hàng, website, funnel hay đo dữ liệu.
+              Bạn nhìn thấy trực tiếp những tài sản sẽ tự xây trong khóa học: workspace, lịch content, dashboard học viên,
+              landing page, CRM mini và bộ SOP bán hàng rút từ giáo trình.
             </p>
           </div>
-          <div class="container glass-card" style="border-radius: 34px; padding: 30px;">
-            <div class="radar-wrap">
-              <svg class="radar-chart" viewBox="0 0 520 460" role="img" aria-label="Radar chart năng lực AI Master X10">
-                <polygon points="260,70 425,165 425,315 260,410 95,315 95,165" fill="none" stroke="rgba(255,226,138,.16)" stroke-width="1" />
-                <polygon points="260,115 386,188 386,292 260,365 134,292 134,188" fill="none" stroke="rgba(255,226,138,.16)" stroke-width="1" />
-                <polygon points="260,160 347,210 347,270 260,320 173,270 173,210" fill="none" stroke="rgba(255,226,138,.16)" stroke-width="1" />
-                <line x1="260" y1="230" x2="260" y2="70" stroke="rgba(255,226,138,.14)" />
-                <line x1="260" y1="230" x2="425" y2="165" stroke="rgba(255,226,138,.14)" />
-                <line x1="260" y1="230" x2="425" y2="315" stroke="rgba(255,226,138,.14)" />
-                <line x1="260" y1="230" x2="260" y2="410" stroke="rgba(255,226,138,.14)" />
-                <line x1="260" y1="230" x2="95" y2="315" stroke="rgba(255,226,138,.14)" />
-                <line x1="260" y1="230" x2="95" y2="165" stroke="rgba(255,226,138,.14)" />
-                <polygon points="260,166 358,194 392,296 260,350 145,290 158,189" fill="rgba(214,169,40,.2)" stroke="#FFE28A" stroke-width="3" />
-                <polygon points="260,208 303,212 315,260 260,286 214,262 204,214" fill="rgba(129,118,94,.46)" stroke="#81765e" stroke-width="2" />
-                <g fill="#FFE28A">
-                  <circle cx="260" cy="166" r="5" /><circle cx="358" cy="194" r="5" /><circle cx="392" cy="296" r="5" />
-                  <circle cx="260" cy="350" r="5" /><circle cx="145" cy="290" r="5" /><circle cx="158" cy="189" r="5" />
-                </g>
-                <g fill="#f7f1df" font-size="13" font-weight="800" text-anchor="middle">
-                  <text x="260" y="44">Research</text>
-                  <text x="456" y="156">Content</text>
-                  <text x="462" y="326">Website</text>
-                  <text x="260" y="442">Funnel</text>
-                  <text x="58" y="326">CRM</text>
-                  <text x="60" y="156">Product</text>
-                </g>
-              </svg>
-              <div class="chart-legend">
-                <div class="legend-row"><span>Research insight</span><b>92</b></div>
-                <div class="legend-row"><span>Content engine</span><b>88</b></div>
-                <div class="legend-row"><span>Website học viên</span><b>84</b></div>
-                <div class="legend-row"><span>Funnel bán thử</span><b>80</b></div>
-                <div class="legend-row"><span>CRM mini</span><b>74</b></div>
-                <div class="legend-row"><span>Product map</span><b>86</b></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="section">
-          <div class="container reveal center">
-            <p class="kicker">Sản phẩm thực tế sau khóa học</p>
-            <h2>Những tài sản bạn tự xây để biến tri thức thành sản phẩm có thể bán.</h2>
-          </div>
           <div class="container grid-4">
-            <article class="card output-card reveal">
-              <div class="asset-placeholder" data-visual-slot="content-calendar">
-                <div class="visual-panel">
-                  <div class="visual-panel-top"><span>Content plan 30 ngày</span><span class="visual-pill">Attract</span></div>
-                  <div class="visual-calendar">
-                    <div class="visual-day"><b>01</b>Insight</div>
-                    <div class="visual-day"><b>07</b>Hook</div>
-                    <div class="visual-day"><b>14</b>Offer</div>
-                    <div class="visual-day"><b>21</b>CTA</div>
-                    <div class="visual-day"><b>28</b>Remarketing</div>
-                    <div class="visual-day"><b>30</b>Review</div>
-                  </div>
+            <article class="card output-card featured-output reveal">
+              <img src="../academy/ai-master-x10-assets/process-pack-output.webp" alt="Bộ file quy trình mẫu AI Master X10" loading="lazy" />
+              <div class="output-card-body">
+                <h3>Bộ 6 file quy trình mẫu</h3>
+                <p>Workspace, content calendar, landing checklist, CRM pipeline, beta launch và roadmap 30-90 ngày.</p>
+                <div class="resource-link-list" aria-label="Tải file quy trình mẫu">
+                  <a href="../academy/ai-master-x10-assets/sample-outputs/01-ai-workspace-setup.md">AI Workspace</a>
+                  <a href="../academy/ai-master-x10-assets/sample-outputs/02-content-calendar-30-ngay.md">Content 30 ngày</a>
+                  <a href="../academy/ai-master-x10-assets/sample-outputs/03-landing-page-checklist.md">Landing checklist</a>
+                  <a href="../academy/ai-master-x10-assets/sample-outputs/04-crm-mini-pipeline.md">CRM mini</a>
+                  <a href="../academy/ai-master-x10-assets/sample-outputs/05-beta-launch-7-14-ngay.md">Beta launch</a>
+                  <a href="../academy/ai-master-x10-assets/sample-outputs/06-roadmap-30-90-ngay.md">Roadmap scale</a>
                 </div>
               </div>
+            </article>
+            <article class="card output-card featured-output reveal">
+              <img src="../academy/ai-master-x10-assets/ai-workspace-output.webp" alt="AI Workspace có context cho sản phẩm tri thức" loading="lazy" />
+              <div class="output-card-body"><h3>AI Workspace có context</h3><p>Market insight, business map, offer, course structure, brand voice và 6 agent theo vai trò.</p></div>
+            </article>
+            <article class="card output-card reveal">
+              <img src="../academy/ai-master-x10-assets/content-calendar-output.webp" alt="Content Calendar 30 ngày cho sản phẩm tri thức" loading="lazy" />
               <div class="output-card-body"><h3>Content plan 30 ngày</h3><p>Research insight, pillar, hook, CTA và lịch đăng theo từng ngày.</p></div>
             </article>
             <article class="card output-card reveal">
-              <div class="asset-placeholder" data-visual-slot="student-website-demo">
-                <div class="visual-panel">
-                  <div class="visual-panel-top"><span>Dashboard học viên</span><span class="visual-pill">Learn</span></div>
-                  <div class="visual-lines">
-                    <div class="visual-line">Module 01 - Product map</div>
-                    <div class="visual-line">Module 02 - Content engine</div>
-                    <div class="visual-line">Module 03 - Funnel và CRM</div>
-                  </div>
-                </div>
-              </div>
+              <img src="../academy/ai-master-x10-assets/student-dashboard-output.webp" alt="Website học viên mẫu AI Master X10" loading="lazy" />
               <div class="output-card-body"><h3>Website học viên</h3><p>Demo flow học, xem bài, tải tài nguyên và theo dõi tiến độ.</p></div>
             </article>
             <article class="card output-card reveal">
-              <div class="asset-placeholder" data-visual-slot="landing-funnel-demo">
-                <div class="visual-panel">
-                  <div class="visual-panel-top"><span>Landing bán thử</span><span class="visual-pill">Convert</span></div>
-                  <div class="visual-steps">
-                    <div class="visual-step"><b>01</b><span>Hero, pain, mechanism và offer</span></div>
-                    <div class="visual-step"><b>02</b><span>Form đăng ký nối với đơn hàng SePay</span></div>
-                    <div class="visual-step"><b>03</b><span>Email, tài khoản học viên và dashboard sau thanh toán</span></div>
-                  </div>
-                </div>
-              </div>
+              <img src="../academy/ai-master-x10-assets/landing-page-output.webp" alt="Landing page bán thử cho sản phẩm tri thức" loading="lazy" />
               <div class="output-card-body"><h3>Landing bán thử</h3><p>Hero, pain, mechanism, output, curriculum, bonus, pricing và form.</p></div>
             </article>
             <article class="card output-card reveal">
-              <div class="asset-placeholder" data-visual-slot="crm-dashboard-demo">
-                <div class="visual-panel">
-                  <div class="visual-panel-top"><span>CRM mini</span><span class="visual-pill">Scale</span></div>
-                  <div class="visual-metrics">
-                    <div class="visual-metric"><span>Lead mới</span><b>128</b></div>
-                    <div class="visual-metric"><span>Đơn chờ thanh toán</span><b>36</b></div>
-                    <div class="visual-metric"><span>Tỉ lệ follow-up</span><b>74%</b></div>
-                  </div>
-                </div>
-              </div>
+              <img src="../academy/ai-master-x10-assets/crm-mini-output.webp" alt="CRM mini theo dõi lead và đơn hàng" loading="lazy" />
               <div class="output-card-body"><h3>CRM mini</h3><p>Theo dõi lead, đơn, doanh thu và điểm nghẽn sau khi bán thử.</p></div>
             </article>
           </div>
@@ -1386,73 +1760,88 @@
             <p class="kicker">Toàn bộ lộ trình</p>
             <h2>12 chương học theo kiểu làm tới đâu có sản phẩm tới đó.</h2>
             <p class="lead">
-              Mỗi cụm học tạo một tài sản cụ thể: prompt, content plan, video, ảnh, website, landing page,
-              CRM mini hoặc funnel.
+              Bạn đi theo đúng thứ tự xây một hệ thống bán thử: chọn thị trường, đóng gói offer, tạo sản phẩm,
+              dựng AI Workspace, sản xuất content/visual, làm landing, CRM, ads, beta launch và scale.
             </p>
           </div>
-          <div class="container module-layout">
-            <article class="glass-card module-block reveal">
-              <p class="kicker">Học phần 1</p>
-              <h3>Foundation & Research</h3>
-              <div class="lesson-list">
-                <div><b>01</b><span>Tư duy biến kiến thức thành tiền</span></div>
-                <div><b>02</b><span>Setup bộ công cụ AI cá nhân</span></div>
-                <div><b>03</b><span>AI chuyên research và lập kế hoạch content</span></div>
+          <div class="container module-showcase">
+            <article class="module-showcase-card reveal">
+              <div class="module-showcase-head">
+                <div class="module-copy">
+                  <div class="module-badge"><b>Phần 1</b><span>Module 1 - 6</span></div>
+                  <h3>AI tạo content cho chuyên gia.</h3>
+                  <p>Dùng AI để nghiên cứu insight, đóng gói offer, viết thông điệp, tạo lịch content và biến chuyên môn thành sản phẩm có thể bán thử.</p>
+                </div>
+                <div class="module-outcomes">
+                  <h4>Bạn sẽ học được</h4>
+                  <ul>
+                    <li><span class="check">✓</span><span>Phân tích insight, nỗi đau và hành vi khách hàng học viên.</span></li>
+                    <li><span class="check">✓</span><span>Viết offer, outline sản phẩm, script bài giảng và tài nguyên học.</span></li>
+                    <li><span class="check">✓</span><span>Lên lịch content 30 ngày để dẫn về landing và form đăng ký.</span></li>
+                  </ul>
+                </div>
               </div>
+              <img class="module-visual zoomable-image" src="../academy/ai-master-x10-assets/module-sheet-output.webp" alt="Sheet mẫu research, offer, content và CRM trong AI Master X10" loading="lazy" />
             </article>
-            <article class="glass-card module-block reveal">
-              <p class="kicker">Học phần 2</p>
-              <h3>Content, Video, Image</h3>
-              <div class="lesson-list">
-                <div><b>04</b><span>Xây dựng sản phẩm tri thức</span></div>
-                <div><b>05</b><span>Edit video bằng AI chỉ 5 phút</span></div>
-                <div><b>06</b><span>AI chuyên render ảnh hàng loạt</span></div>
+
+            <article class="module-showcase-card reveal">
+              <div class="module-showcase-head">
+                <div class="module-copy">
+                  <div class="module-badge"><b>Phần 2</b><span>Module 7 - 9</span></div>
+                  <h3>AI tạo hình ảnh và edit video.</h3>
+                  <p>Không phụ thuộc designer hay editor. Bạn học cách tạo visual đúng brand, dựng video ngắn, subtitle, resize và thumbnail cho các kênh bán hàng.</p>
+                </div>
+                <div class="module-outcomes">
+                  <h4>Bạn sẽ học được</h4>
+                  <ul>
+                    <li><span class="check">✓</span><span>Tạo hình ảnh minh họa, ảnh sản phẩm và visual đồng bộ thương hiệu.</span></li>
+                    <li><span class="check">✓</span><span>Cắt ghép video, chèn phụ đề, tạo thumbnail và tái sử dụng nội dung.</span></li>
+                    <li><span class="check">✓</span><span>Hệ thống hóa quy trình sản xuất media hàng loạt.</span></li>
+                  </ul>
+                </div>
               </div>
+              <img class="module-visual zoomable-image" src="../academy/ai-master-x10-assets/module-media-output.webp" alt="Nguồn media thật trong quy trình tạo hình ảnh và edit video" loading="lazy" />
             </article>
-            <article class="glass-card module-block reveal">
-              <p class="kicker">Học phần 3</p>
-              <h3>Website & Funnel</h3>
-              <div class="lesson-list">
-                <div><b>07</b><span>Tạo website học viên chuyên sâu</span></div>
-                <div><b>08</b><span>Đưa website lên online</span></div>
-                <div><b>09</b><span>Xây funnel bán khóa học hoặc sản phẩm số</span></div>
+
+            <article class="module-showcase-card reveal">
+              <div class="module-showcase-head">
+                <div class="module-copy">
+                  <div class="module-badge"><b>Phần 3</b><span>Module 10 - 14</span></div>
+                  <h3>AI tạo trang bán hàng và hệ thống tự động.</h3>
+                  <p>Tự dựng landing, form, thanh toán, email xác nhận, trang học viên và CRM mini để không rơi lead sau khi khách đăng ký.</p>
+                </div>
+                <div class="module-outcomes">
+                  <h4>Bạn sẽ học được</h4>
+                  <ul>
+                    <li><span class="check">✓</span><span>Dựng landing page bán thử có CTA, form và flow thanh toán.</span></li>
+                    <li><span class="check">✓</span><span>Tạo dashboard học viên, tài nguyên và email sau mua.</span></li>
+                    <li><span class="check">✓</span><span>Theo dõi lead, đơn, phản đối và follow-up bằng CRM mini.</span></li>
+                  </ul>
+                </div>
               </div>
-            </article>
-            <article class="glass-card module-block reveal">
-              <p class="kicker">Học phần 4</p>
-              <h3>Sale, CRM & Scale</h3>
-              <div class="lesson-list">
-                <div><b>10</b><span>AI bán hàng và chăm sóc khách</span></div>
-                <div><b>11</b><span>Quảng cáo và kéo khách hàng</span></div>
-                <div><b>12</b><span>Hệ thống hóa và scale</span></div>
-              </div>
+              <img class="module-visual zoomable-image" src="../academy/ai-master-x10-assets/module-sales-output.webp" alt="Landing page, thanh toán và CRM mini mẫu" loading="lazy" />
             </article>
           </div>
         </section>
 
         <section class="section">
-          <div class="container grid-2">
-            <div class="asset-placeholder reveal" data-visual-slot="instructor-photo">
-              <div class="visual-panel">
-                <div class="visual-panel-top"><span>The Anh Marketing</span><span class="visual-pill">Mentor system</span></div>
-                <div class="visual-lines">
-                  <div class="visual-line">Attract: insight, content angle, traffic</div>
-                  <div class="visual-line">Grow: offer, landing, thanh toán, học viên</div>
-                  <div class="visual-line">Scale: CRM, remarketing, dữ liệu và tối ưu</div>
-                </div>
-              </div>
-            </div>
+          <div class="container instructor-card">
             <div class="reveal">
-              <p class="kicker">Người đứng sau khóa học</p>
-              <h2>Thế Anh hỗ trợ xây dựng hệ thống tăng trưởng kinh doanh cho chuyên gia.</h2>
+              <p class="kicker">Giảng viên</p>
+              <h2>Nguyễn Thế Anh đồng hành xây hệ thống sản phẩm tri thức.</h2>
               <p class="lead">
-                Được thiết kế để ngay khi học xong, bạn có thể bắt tay vào làm ngay và tạo ra sản phẩm thật.
+                Khóa học được thiết kế để bạn không chỉ học thêm công cụ, mà có thể bắt tay vào đóng gói chuyên môn,
+                tạo tài sản thật và triển khai bán thử bằng AI.
               </p>
-              <ul class="bonus-list">
-                <li><span class="check">✓</span><span>Đi từ ý tưởng đến offer, content, website, funnel và CRM mini.</span></li>
-                <li><span class="check">✓</span><span>Ưu tiên demo màn hình thật và bài tập tạo output cụ thể.</span></li>
-                <li><span class="check">✓</span><span>Dạy theo hướng làm ra tài sản số, không dạy tool rời rạc.</span></li>
+              <ul class="credential-list">
+                <li><span class="check">✓</span><span>8 năm làm quảng cáo và triển khai marketing tăng trưởng.</span></li>
+                <li><span class="check">✓</span><span>Founder Greezhub Agency.</span></li>
+                <li><span class="check">✓</span><span>Hơn 3 năm làm trong mảng giáo dục và E-learning.</span></li>
               </ul>
+            </div>
+            <div class="instructor-photo-wrap reveal">
+              <img class="zoomable-image" src="../academy/ai-master-x10-assets/instructor-the-anh.webp" alt="Giảng viên Nguyễn Thế Anh" loading="lazy" />
+              <div class="instructor-stat"><strong>8+</strong><span>Kinh nghiệm Marketing giáo dục</span></div>
             </div>
           </div>
         </section>
@@ -1460,22 +1849,36 @@
         <section class="section" id="qua-tang">
           <div class="container reveal center">
             <p class="kicker">Quà tặng</p>
-            <h2>Không chỉ có video, bạn nhận cả bộ tài nguyên để triển khai.</h2>
+            <h2>Bộ tài nguyên giúp bạn triển khai nhanh hơn.</h2>
           </div>
           <div class="container grid-3">
-            <article class="card reveal"><span class="number">01</span><h3>AI edit video thương hiệu cá nhân</h3><p>Chỉ cần 1 câu lệnh, 3 phút có video đăng TikTok/Facebook.</p></article>
-            <article class="card reveal"><span class="number">02</span><h3>Content Calendar 30 ngày</h3><p>File mẫu lên lịch Facebook, TikTok, YouTube Shorts và Zalo.</p></article>
-            <article class="card reveal"><span class="number">03</span><h3>Website học viên mẫu</h3><p>Từ giao diện đến kỹ thuật phía sau để triển khai thành demo thật.</p></article>
-            <article class="card reveal"><span class="number">04</span><h3>Checklist AI Growth System</h3><p>Bảng kiểm research, content, landing, CRM và tracking.</p></article>
-            <article class="card reveal"><span class="number">05</span><h3>Script tư vấn và follow-up</h3><p>Kịch bản trả lời khách, xử lý phản đối và chăm sóc lead sau đăng ký.</p></article>
-            <article class="card reveal"><span class="number">06</span><h3>Template render ảnh hàng loạt</h3><p>Bộ prompt/style guide để tạo visual đồng bộ cho chiến dịch.</p></article>
+            <article class="card bonus-card reveal">
+              <img class="zoomable-image" src="../academy/ai-master-x10-assets/bonus-prompt.webp" alt="Kho prompt chuyên gia" loading="lazy" />
+              <div class="bonus-card-body"><span class="bonus-tag">Quà tặng #1</span><h3>Kho Prompt Chuyên Gia</h3><span class="bonus-label">Vấn đề của bạn</span><p>Không biết ra lệnh cho AI thế nào, tốn hàng giờ mà kết quả vẫn chung chung.</p><span class="bonus-label solution">Giải pháp bạn nhận được</span><p><strong>150+ prompt copy-paste</strong> cho research, offer, content, landing và CRM.</p></div>
+            </article>
+            <article class="card bonus-card reveal">
+              <img class="zoomable-image" src="../academy/ai-master-x10-assets/bonus-content.webp" alt="Template content 30 ngày" loading="lazy" />
+              <div class="bonus-card-body"><span class="bonus-tag">Quà tặng #2</span><h3>Template Content 30 Ngày</h3><span class="bonus-label">Vấn đề của bạn</span><p>Sáng thức dậy không biết đăng gì, nội dung rời rạc và thiếu chiến lược.</p><span class="bonus-label solution">Giải pháp bạn nhận được</span><p>Lịch hành động chi tiết 30 ngày để kéo người xem về offer và form đăng ký.</p></div>
+            </article>
+            <article class="card bonus-card reveal">
+              <img class="zoomable-image" src="../academy/ai-master-x10-assets/bonus-script.webp" alt="Script video viral chuẩn" loading="lazy" />
+              <div class="bonus-card-body"><span class="bonus-tag">Quà tặng #3</span><h3>Script Video Bán Hàng</h3><span class="bonus-label">Vấn đề của bạn</span><p>Quay video nói miên man, người xem lướt qua trước khi hiểu bạn bán gì.</p><span class="bonus-label solution">Giải pháp bạn nhận được</span><p>Cấu trúc hook, mở vấn đề, demo và CTA giúp video rõ ý hơn.</p></div>
+            </article>
+            <article class="card bonus-card reveal">
+              <img class="zoomable-image" src="../academy/ai-master-x10-assets/bonus-ads.webp" alt="Khóa học chạy quảng cáo Facebook cho chuyên gia" loading="lazy" />
+              <div class="bonus-card-body"><span class="bonus-tag">Quà tặng #4</span><h3>Facebook Ads Cho Chuyên Gia</h3><span class="bonus-label">Vấn đề của bạn</span><p>Chạy quảng cáo tốn tiền nhưng không rõ thông điệp, tệp và chỉ số cần nhìn.</p><span class="bonus-label solution">Giải pháp bạn nhận được</span><p>Hệ thống chạy quảng cáo đúng tệp, đúng thông điệp, đúng ngân sách.</p></div>
+            </article>
+            <article class="card bonus-card reveal">
+              <img class="zoomable-image" src="../academy/ai-master-x10-assets/bonus-community.webp" alt="Cộng đồng chuyên gia triển khai AI" loading="lazy" />
+              <div class="bonus-card-body"><span class="bonus-tag">Quà tặng #5</span><h3>Cộng Đồng Chuyên Gia</h3><span class="bonus-label">Vấn đề của bạn</span><p>Học xong không biết hỏi ai, thiếu môi trường để chia sẻ và nhận phản hồi.</p><span class="bonus-label solution">Giải pháp bạn nhận được</span><p>Gia nhập cộng đồng cùng tư duy, hỏi đáp và phản hồi trên case thực tế.</p></div>
+            </article>
           </div>
         </section>
 
         <section class="section">
           <div class="container reveal center">
             <p class="kicker">Trước và sau</p>
-            <h2>Nếu chỉ học thêm công cụ, bạn sẽ mệt hơn. Nếu biết đặt AI vào hệ thống, bạn bắt đầu tạo tài sản.</h2>
+            <h2>Sự thay đổi bạn sẽ nhận được.</h2>
           </div>
           <div class="container compare">
             <div class="glass-card compare-panel reveal">
@@ -1504,70 +1907,42 @@
             <p class="kicker">Ưu đãi mở bán beta</p>
             <h2>AI Master X10 Hiệu Suất</h2>
             <p class="lead">
-              Dành cho bạn muốn dùng AI để xây hệ thống làm việc, sản xuất tài sản số và bán thử sản phẩm tri thức trong 30 ngày.
+              Dành cho bạn muốn dùng AI để xây hệ thống làm việc, sản xuất tài sản số và bán thử sản phẩm tri thức trong 7 ngày.
             </p>
           </div>
           <div class="container pricing-layout">
             <div class="pricing-card reveal">
-              <p class="kicker">Gói truy cập khóa học</p>
+              <p class="kicker">Gói beta giới hạn</p>
               <div class="price-row">
-                <div class="price">1.299K</div>
+                <div class="price">1.299.000đ</div>
                 <div class="old-price">2.997.000đ</div>
               </div>
-              <p class="lead">Mở khóa toàn bộ lộ trình, dashboard học viên và bộ tài sản triển khai đi kèm.</p>
+              <p class="lead">Mở khóa toàn bộ khóa học, dashboard học viên, bộ SOP mẫu và tài sản triển khai đi kèm.</p>
               <ul>
-                <li><span class="check">✓</span><span>12 chương học theo output: prompt, content, video, ảnh, website, funnel, CRM.</span></li>
-                <li><span class="check">✓</span><span>Template content 30 ngày, checklist landing page và workflow bán hàng AI.</span></li>
-                <li><span class="check">✓</span><span>Học cách đóng gói chuyên môn thành sản phẩm tri thức có thể bán thử.</span></li>
-                <li><span class="check">✓</span><span>Email xác nhận, tài khoản học viên và dashboard sau thanh toán.</span></li>
+                <li><span class="check">✓</span><span>Roadmap 7 ngày để đóng gói offer, content, landing, thanh toán và CRM mini.</span></li>
+                <li><span class="check">✓</span><span>6 Agent hỗ trợ: Research, Offer, Content, Lesson, Landing và CRM.</span></li>
+                <li><span class="check">✓</span><span>Bộ file mẫu: content calendar, landing checklist, CRM pipeline, beta launch và roadmap scale.</span></li>
+                <li><span class="check">✓</span><span>Nhận email xác nhận, tài khoản học viên và quyền truy cập dashboard sau thanh toán.</span></li>
               </ul>
             </div>
 
             <form class="form-card reveal" id="payment-form">
-              <h3>Đăng ký và tạo QR thanh toán</h3>
-              <p>Điền thông tin, hệ thống sẽ tạo đơn SePay và chuyển bạn sang trang thanh toán.</p>
+              <h3>Bắt đầu xây hệ thống Marketing AI</h3>
+              <p>Để lại thông tin để giữ ưu đãi beta và bắt đầu xây offer, content, landing, CRM cho sản phẩm tri thức của bạn.</p>
               <div class="form-grid">
-                <label>Họ tên<input name="studentName" placeholder="Ví dụ: Nguyễn Văn Anh" required /></label>
-                <label>Email nhận quyền học<input name="email" type="email" placeholder="email@domain.com" required /></label>
-                <label>Số điện thoại / Zalo<input name="phone" placeholder="09..." required /></label>
-                <button class="btn btn-primary" type="submit" id="payment-submit">Thanh toán AI Master X10 - 1.299.000đ</button>
+                <label>Họ và tên<input name="studentName" placeholder="Ví dụ: Nguyễn Văn Anh" required /></label>
+                <label>Email nhận tài khoản học<input name="email" type="email" placeholder="nguyenvananh@gmail.com" required /></label>
+                <label>Số điện thoại / Zalo hỗ trợ<input name="phone" placeholder="09..." required /></label>
+                <button class="btn btn-primary" type="submit" id="payment-submit">Đăng ký ngay</button>
               </div>
               <div class="form-message" id="form-message"></div>
               <p style="margin-top: 14px; font-size: 12px;">
-                Sau khi thanh toán thành công, bạn dùng đúng email này để đăng nhập dashboard khóa học.
+                Sau khi thanh toán, hệ thống gửi email xác nhận và hướng dẫn truy cập dashboard khóa học.
               </p>
             </form>
           </div>
         </section>
 
-        <section class="section">
-          <div class="container reveal">
-            <p class="kicker">Câu hỏi thường gặp</p>
-            <h2>Trước khi đăng ký</h2>
-            <div class="faq">
-              <details open>
-                <summary>Khóa này có cần biết code không?</summary>
-                <p>Không cần. Phần website học viên đi theo hướng dùng AI tạo giao diện, demo và triển khai từng bước.</p>
-              </details>
-              <details>
-                <summary>Học xong có bán được sản phẩm ngay không?</summary>
-                <p>Khóa học giúp bạn có hệ thống và tài sản để bán thử. Doanh thu phụ thuộc vào ngách, offer, traffic và follow-up.</p>
-              </details>
-              <details>
-                <summary>Khóa này khác gì các khóa prompt AI?</summary>
-                <p>Trọng tâm không phải sưu tầm prompt. Trọng tâm là workflow để tạo content, video, ảnh, website, funnel và CRM mini.</p>
-              </details>
-              <details>
-                <summary>Nên học trong bao lâu?</summary>
-                <p>Nên đi theo roadmap 30 ngày để mỗi tuần có một nhóm tài sản cụ thể.</p>
-              </details>
-              <details>
-                <summary>Ai không phù hợp?</summary>
-                <p>Người chỉ muốn xem tool cho vui, không làm bài tập, không có ý định tạo sản phẩm hoặc hệ thống thật.</p>
-              </details>
-            </div>
-          </div>
-        </section>
       </main>
 
       <footer>
@@ -1579,11 +1954,17 @@
 
       <div class="sticky-cta">
         <div class="sticky-inner">
-          <div>
-            <strong>AI Master X10 - Giá beta 1.299K</strong>
-            <span><del>2.997.000đ</del> <b>1.299.000đ</b></span>
+          <div class="sticky-price">
+            <strong>1.299.000đ</strong>
+            <span>Ưu đãi beta · Giảm 57%</span>
           </div>
           <a class="btn btn-primary" href="#hoc-phi" data-cta>Đăng ký ngay</a>
+        </div>
+      </div>
+      <div class="image-lightbox" id="image-lightbox" hidden aria-hidden="true" role="dialog" aria-label="Xem ảnh phóng to">
+        <div class="lightbox-panel">
+          <button class="lightbox-close" type="button" aria-label="Đóng ảnh phóng to">×</button>
+          <img id="lightbox-image" alt="" />
         </div>
       </div>
     </div>
@@ -1599,7 +1980,13 @@
         var submit = document.getElementById("payment-submit");
         var message = document.getElementById("form-message");
         var stickyCta = document.querySelector(".sticky-cta");
+        var lightbox = document.getElementById("image-lightbox");
+        var lightboxImage = document.getElementById("lightbox-image");
+        var lightboxClose = lightbox?.querySelector(".lightbox-close");
         var reveals = document.querySelectorAll(".reveal");
+        if (lightbox?.hasAttribute("hidden")) {
+          document.body.classList.remove("lightbox-open");
+        }
         var observer = "IntersectionObserver" in window
           ? new IntersectionObserver(function (entries) {
               entries.forEach(function (entry) {
@@ -1650,6 +2037,33 @@
               });
             }
           });
+        });
+
+        function closeLightbox() {
+          if (!lightbox || !lightboxImage) return;
+          lightbox.hidden = true;
+          lightbox.setAttribute("aria-hidden", "true");
+          lightboxImage.removeAttribute("src");
+          document.body.classList.remove("lightbox-open");
+        }
+
+        document.querySelectorAll(".output-card img, .zoomable-image").forEach(function (image) {
+          image.addEventListener("click", function () {
+            if (!lightbox || !lightboxImage) return;
+            lightboxImage.src = image.currentSrc || image.src;
+            lightboxImage.alt = image.alt || "Ảnh output phóng to";
+            lightbox.hidden = false;
+            lightbox.setAttribute("aria-hidden", "false");
+            document.body.classList.add("lightbox-open");
+          });
+        });
+
+        lightbox?.addEventListener("click", function (event) {
+          if (event.target === lightbox) closeLightbox();
+        });
+        lightboxClose?.addEventListener("click", closeLightbox);
+        document.addEventListener("keydown", function (event) {
+          if (event.key === "Escape") closeLightbox();
         });
 
         form.addEventListener("submit", async function (event) {

@@ -38,7 +38,7 @@ function buildContentSecurityPolicy(nonce: string) {
     "default-src 'self'",
     `script-src ${scriptSrc.join(" ")}`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    `img-src 'self' data: blob: https://img.youtube.com https://i.ytimg.com https://qr.sepay.vn https://img.vietqr.io https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com https://${supabaseHost}`,
+    `img-src 'self' data: blob: https://img.youtube.com https://i.ytimg.com https://qr.sepay.vn https://img.vietqr.io https://thanhtoanai.topexpert.vn https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com https://${supabaseHost}`,
     "font-src 'self' data: https://fonts.gstatic.com",
     `connect-src 'self' https://${supabaseHost} https://*.supabase.co https://api.resend.com https://www.facebook.com https://connect.facebook.net https://www.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net`,
     `media-src 'self' https://${supabaseHost}`,

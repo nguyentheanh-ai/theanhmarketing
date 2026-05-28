@@ -16,7 +16,13 @@ function formatCountdown(totalSeconds: number) {
   return `${minutes}:${seconds}`;
 }
 
-export function PaymentStatusPoller({ initialOrder }: { initialOrder: PaymentOrder }) {
+export function PaymentStatusPoller({
+  initialOrder,
+  disablePolling = false,
+}: {
+  initialOrder: PaymentOrder;
+  disablePolling?: boolean;
+}) {
   const router = useRouter();
   const [order, setOrder] = useState(initialOrder);
   const [secondsLeft, setSecondsLeft] = useState(0);
@@ -40,6 +46,10 @@ export function PaymentStatusPoller({ initialOrder }: { initialOrder: PaymentOrd
   }, [countdownTarget]);
 
   useEffect(() => {
+    if (disablePolling) {
+      return;
+    }
+
     if (order.status === "paid") {
       if (!purchaseTrackedRef.current) {
         purchaseTrackedRef.current = true;
@@ -75,7 +85,7 @@ export function PaymentStatusPoller({ initialOrder }: { initialOrder: PaymentOrd
     }, 3000);
 
     return () => window.clearInterval(timer);
-  }, [order.amount, order.courseTitle, order.orderCode, order.status, router]);
+  }, [disablePolling, order.amount, order.courseTitle, order.orderCode, order.status, router]);
 
   const paid = order.status === "paid";
 
@@ -94,10 +104,12 @@ export function PaymentStatusPoller({ initialOrder }: { initialOrder: PaymentOrd
       <p className="mt-2 text-sm leading-6 text-white/60">
         {paid
           ? "SePay đã báo tiền vào. Đang chuyển bạn tới khu học viên..."
+          : disablePolling
+            ? "Đây là bản demo giao diện checkout. Khi tạo đơn thật từ form đăng ký, hệ thống sẽ tự đối soát SePay theo mã đơn mới."
           : "Trang này tự kiểm tra mỗi vài giây. Sau khi chuyển khoản thành công, trạng thái sẽ đổi tự động."}
       </p>
 
-      {!paid ? (
+      {!paid && !disablePolling ? (
         <div className="mt-3 inline-flex items-center rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-bold text-white/65">
           Thời gian giữ đơn: {formatCountdown(secondsLeft)}
         </div>

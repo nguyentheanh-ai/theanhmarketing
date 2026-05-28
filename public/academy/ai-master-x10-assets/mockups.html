@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Master X10 Output Mockups</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #090806;
+        --panel: #15120c;
+        --panel-2: #211b10;
+        --line: rgba(255, 226, 138, 0.18);
+        --line-strong: rgba(255, 226, 138, 0.34);
+        --gold: #ffe28a;
+        --gold-2: #d6a928;
+        --cream: #f8f0d2;
+        --muted: #bcb29b;
+        --green: #65e6a6;
+        --cyan: #78d8ff;
+        --rose: #ff8aa8;
+        --violet: #c4a0ff;
+        --orange: #ffb15d;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 12% 8%, rgba(255, 226, 138, 0.16), transparent 30%),
+          radial-gradient(circle at 92% 16%, rgba(120, 216, 255, 0.12), transparent 28%),
+          linear-gradient(135deg, #090806 0%, #151009 48%, #080705 100%);
+        color: var(--cream);
+        font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      }
+
+      .mockup {
+        display: none;
+        width: 1400px;
+        height: 900px;
+        padding: 54px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      body[data-view="ai-workspace"] #ai-workspace,
+      body[data-view="content-calendar"] #content-calendar,
+      body[data-view="student-dashboard"] #student-dashboard,
+      body[data-view="landing-page"] #landing-page,
+      body[data-view="crm-mini"] #crm-mini,
+      body[data-view="process-pack"] #process-pack {
+        display: block;
+      }
+
+      .grain {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.36;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+        background-size: 42px 42px;
+        mask-image: linear-gradient(to bottom, black, transparent 88%);
+      }
+
+      .frame {
+        position: relative;
+        z-index: 1;
+        height: 100%;
+        border: 1px solid var(--line-strong);
+        border-radius: 34px;
+        overflow: hidden;
+        background: linear-gradient(145deg, rgba(32, 26, 15, 0.96), rgba(10, 9, 7, 0.98));
+        box-shadow: 0 38px 120px rgba(0, 0, 0, 0.46), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+
+      .topbar {
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 28px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 226, 138, 0.04);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-weight: 800;
+      }
+
+      .mark {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--gold), #f2b93a);
+        color: #171006;
+        box-shadow: 0 14px 30px rgba(214, 169, 40, 0.26);
+      }
+
+      .pills {
+        display: flex;
+        gap: 10px;
+      }
+
+      .pill {
+        padding: 9px 13px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .hero-row {
+        display: grid;
+        grid-template-columns: 0.78fr 1.22fr;
+        gap: 24px;
+        padding: 30px;
+        height: calc(100% - 70px);
+      }
+
+      .title-panel {
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 26px;
+        background: rgba(255, 255, 255, 0.035);
+      }
+
+      .kicker {
+        margin: 0 0 14px;
+        color: var(--gold);
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      h1 {
+        margin: 0;
+        font-family: "Playfair Display", serif;
+        font-size: 58px;
+        line-height: 0.96;
+        letter-spacing: 0;
+      }
+
+      .sub {
+        margin: 20px 0 0;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.55;
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        margin-top: 26px;
+      }
+
+      .metric {
+        padding: 17px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: rgba(0, 0, 0, 0.22);
+      }
+
+      .metric b {
+        display: block;
+        color: var(--gold);
+        font-size: 26px;
+        line-height: 1;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: 270px 1fr;
+        gap: 18px;
+      }
+
+      .sidebar,
+      .main-panel,
+      .card,
+      .mini-panel {
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .sidebar {
+        padding: 18px;
+      }
+
+      .file {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 10px;
+        border-radius: 14px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .file.active {
+        color: #121008;
+        background: linear-gradient(135deg, var(--gold), #efbd48);
+      }
+
+      .main-panel {
+        min-height: 680px;
+        padding: 20px;
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+
+      .panel-head h2,
+      .card h2 {
+        margin: 0;
+        font-size: 24px;
+      }
+
+      .status {
+        color: var(--green);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .rows {
+        display: grid;
+        gap: 12px;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 150px 1fr 86px;
+        gap: 14px;
+        align-items: center;
+        padding: 11px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 16px;
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      .row b {
+        color: var(--cream);
+      }
+
+      .bar {
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+
+      .bar i {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--gold), var(--cyan));
+      }
+
+      .agent-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .agent {
+        min-height: 58px;
+        padding: 9px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 226, 138, 0.055);
+      }
+
+      .agent b {
+        display: block;
+        font-size: 12px;
+        line-height: 1.15;
+      }
+
+      .agent small {
+        color: var(--muted);
+        font-size: 10px;
+        line-height: 1.2;
+        font-weight: 700;
+      }
+
+      .calendar-board {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 13px;
+        height: 100%;
+      }
+
+      .day-card {
+        min-height: 154px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.042);
+      }
+
+      .day-card strong {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        color: var(--gold);
+        font-size: 12px;
+      }
+
+      .day-card h3 {
+        margin: 12px 0 8px;
+        font-size: 16px;
+        line-height: 1.2;
+      }
+
+      .day-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .tag {
+        display: inline-flex;
+        margin-top: 10px;
+        padding: 7px 10px;
+        border-radius: 999px;
+        color: #120f08;
+        background: var(--gold);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .app-shell {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        height: 100%;
+      }
+
+      .nav {
+        padding: 22px;
+        border-right: 1px solid var(--line);
+        background: rgba(0, 0, 0, 0.16);
+      }
+
+      .nav-item {
+        padding: 13px 14px;
+        margin-bottom: 9px;
+        border-radius: 14px;
+        color: var(--muted);
+        font-weight: 800;
+      }
+
+      .nav-item.active {
+        color: #141009;
+        background: var(--gold);
+      }
+
+      .content {
+        padding: 26px;
+      }
+
+      .lesson-grid {
+        display: grid;
+        grid-template-columns: 1.35fr 0.65fr;
+        gap: 18px;
+        margin-top: 22px;
+      }
+
+      .video-box {
+        min-height: 410px;
+        border-radius: 26px;
+        border: 1px solid var(--line);
+        background:
+          linear-gradient(145deg, rgba(255, 226, 138, 0.1), rgba(120, 216, 255, 0.06)),
+          #0f0d09;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .play {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        color: #120e07;
+        background: var(--gold);
+        font-size: 34px;
+        box-shadow: 0 0 0 18px rgba(255, 226, 138, 0.12);
+      }
+
+      .resource-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .resource {
+        padding: 16px;
+        border-radius: 17px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.045);
+      }
+
+      .landing-preview {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        height: 100%;
+      }
+
+      .landing-left {
+        padding: 34px;
+        background:
+          linear-gradient(140deg, rgba(255, 226, 138, 0.16), transparent 42%),
+          rgba(255, 255, 255, 0.035);
+      }
+
+      .landing-left h1 {
+        font-size: 66px;
+      }
+
+      .mock-cta {
+        display: inline-flex;
+        margin-top: 26px;
+        padding: 17px 24px;
+        border-radius: 999px;
+        color: #120e07;
+        background: var(--gold);
+        font-weight: 900;
+      }
+
+      .landing-right {
+        padding: 24px;
+        border-left: 1px solid var(--line);
+      }
+
+      .lp-section {
+        margin-bottom: 14px;
+        padding: 15px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(0, 0, 0, 0.18);
+      }
+
+      .pipeline {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+        margin-top: 20px;
+      }
+
+      .stage {
+        min-height: 520px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.035);
+      }
+
+      .stage h3 {
+        margin: 0 0 12px;
+        font-size: 15px;
+      }
+
+      .lead {
+        margin-bottom: 12px;
+        padding: 13px;
+        border-radius: 15px;
+        background: rgba(0, 0, 0, 0.24);
+        border: 1px solid rgba(255, 255, 255, 0.075);
+      }
+
+      .lead b {
+        display: block;
+        font-size: 13px;
+      }
+
+      .lead span {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .top-metrics {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+      }
+
+      .process-grid {
+        display: grid;
+        grid-template-columns: 0.72fr 1.28fr;
+        gap: 22px;
+        padding: 30px;
+        height: calc(100% - 70px);
+      }
+
+      .process-files {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+
+      .process-file {
+        min-height: 178px;
+        padding: 17px;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .process-file strong {
+        display: block;
+        color: var(--gold);
+        font-size: 13px;
+        margin-bottom: 12px;
+      }
+
+      .process-file h3 {
+        margin: 0 0 10px;
+        font-size: 21px;
+        line-height: 1.14;
+      }
+
+      .process-file p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.45;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="mockup" id="ai-workspace">
+      <div class="grain"></div>
+      <div class="frame">
+        <div class="topbar">
+          <div class="brand"><div class="mark">AI</div><span>AI Workspace cho sản phẩm tri thức</span></div>
+          <div class="pills"><span class="pill">Project Context</span><span class="pill">6 agent</span><span class="pill">Ready to build</span></div>
+        </div>
+        <div class="hero-row">
+          <div class="title-panel">
+            <p class="kicker">Output 01</p>
+            <h1>AI Workspace có context thật.</h1>
+            <p class="sub">Học viên gom insight, business map, offer, cấu trúc khóa học và giọng thương hiệu vào một hệ điều hành AI có thể dùng lại.</p>
+            <div class="metric-grid">
+              <div class="metric"><b>12</b><span>file nền dự án</span></div>
+              <div class="metric"><b>6</b><span>AI assistant theo vai trò</span></div>
+              <div class="metric"><b>30'</b><span>setup workspace mẫu</span></div>
+              <div class="metric"><b>1</b><span>context dùng xuyên suốt</span></div>
+            </div>
+          </div>
+          <div class="workspace">
+            <div class="sidebar">
+              <div class="file active">01 market-insight.md</div>
+              <div class="file">02 business-map.md</div>
+              <div class="file">03 product-ladder.md</div>
+              <div class="file">04 offer.md</div>
+              <div class="file">05 course-structure.md</div>
+              <div class="file">06 brand-voice.md</div>
+              <div class="file">07 sales-script.md</div>
+              <div class="file">08 objection-library.md</div>
+            </div>
+            <div class="main-panel">
+              <div class="panel-head"><h2>Project Memory</h2><span class="status">Context synced</span></div>
+              <div class="rows">
+                <div class="row"><b>Customer Pain</b><span>Biết nhiều tool AI nhưng chưa tạo tài sản bán được.</span><div class="bar"><i style="width:92%"></i></div></div>
+                <div class="row"><b>Promise</b><span>30 ngày tạo hệ thống research, content, landing, CRM và bán thử.</span><div class="bar"><i style="width:86%"></i></div></div>
+                <div class="row"><b>Mechanism</b><span>Research → Create → Publish → Scale.</span><div class="bar"><i style="width:94%"></i></div></div>
+                <div class="row"><b>Proof Asset</b><span>Calendar, landing, student dashboard, CRM mini, AI agent kit.</span><div class="bar"><i style="width:88%"></i></div></div>
+              </div>
+              <div class="agent-grid">
+                <div class="agent"><b>Research Agent</b><br /><small>Insight, đối thủ, ngách</small></div>
+                <div class="agent"><b>Offer Agent</b><br /><small>Lời hứa, bonus, FAQ</small></div>
+                <div class="agent"><b>Content Agent</b><br /><small>Hook, pillar, CTA</small></div>
+                <div class="agent"><b>Lesson Agent</b><br /><small>Script, slide, workbook</small></div>
+                <div class="agent"><b>Landing Agent</b><br /><small>Page, form, tracking</small></div>
+                <div class="agent"><b>CRM Agent</b><br /><small>Follow-up, objection</small></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mockup" id="content-calendar">
+      <div class="grain"></div>
+      <div class="frame">
+        <div class="topbar">
+          <div class="brand"><div class="mark">30</div><span>Content Calendar 30 ngày</span></div>
+          <div class="pills"><span class="pill">Attract</span><span class="pill">Educate</span><span class="pill">Convert</span></div>
+        </div>
+        <div class="hero-row" style="grid-template-columns: 0.7fr 1.3fr">
+          <div class="title-panel">
+            <p class="kicker">Output 02</p>
+            <h1>Content không còn đăng theo cảm hứng.</h1>
+            <p class="sub">Mỗi ngày có hook, mục tiêu funnel, format, CTA và kênh đăng. AI giúp biến offer thành lịch nội dung có đường dẫn mua hàng.</p>
+            <div class="metric-grid">
+              <div class="metric"><b>6</b><span>nhóm nội dung lõi</span></div>
+              <div class="metric"><b>30</b><span>ngày có CTA rõ</span></div>
+              <div class="metric"><b>18</b><span>video short ideas</span></div>
+              <div class="metric"><b>12</b><span>bài bán hàng mềm</span></div>
+            </div>
+          </div>
+          <div class="calendar-board">
+            <div class="day-card"><strong><span>D01</span><span>Pain</span></strong><h3>Vì sao biết nhiều AI vẫn chưa ra tiền?</h3><p>Hook nhận diện vấn đề và kéo về bài test nhu cầu.</p><span class="tag">Facebook</span></div>
+            <div class="day-card"><strong><span>D03</span><span>Education</span></strong><h3>Research không phải đọc thêm, mà là ra quyết định.</h3><p>Carousel 5 bước biến insight thành offer.</p><span class="tag">TikTok</span></div>
+            <div class="day-card"><strong><span>D06</span><span>POV</span></strong><h3>Prompt hay không cứu được context yếu.</h3><p>Quan điểm chuyên gia để tạo khác biệt.</p><span class="tag">LinkedIn</span></div>
+            <div class="day-card"><strong><span>D09</span><span>Demo</span></strong><h3>Biến 1 offer thành 10 angle content.</h3><p>Quay màn hình workflow AI thật.</p><span class="tag">Reels</span></div>
+            <div class="day-card"><strong><span>D12</span><span>Proof</span></strong><h3>Demo landing bán thử trong 5 phút.</h3><p>Cho xem output trước, giải thích sau.</p><span class="tag">Shorts</span></div>
+            <div class="day-card"><strong><span>D15</span><span>CTA</span></strong><h3>Nhận checklist AI Growth System.</h3><p>Lead magnet nối về form và inbox.</p><span class="tag">Zalo</span></div>
+            <div class="day-card"><strong><span>D18</span><span>Objection</span></strong><h3>Không biết code có làm website học viên được không?</h3><p>Gỡ rào cản kỹ thuật bằng demo.</p><span class="tag">FAQ</span></div>
+            <div class="day-card"><strong><span>D21</span><span>Case</span></strong><h3>Từ chuyên môn thành product ladder.</h3><p>Ví dụ coach, spa, giáo viên, freelancer.</p><span class="tag">Story</span></div>
+            <div class="day-card"><strong><span>D24</span><span>Sales</span></strong><h3>Offer beta: học tới đâu có tài sản tới đó.</h3><p>Post bán hàng mềm kèm deadline.</p><span class="tag">Ads</span></div>
+            <div class="day-card"><strong><span>D27</span><span>Follow-up</span></strong><h3>3 câu hỏi trước khi mua khóa AI.</h3><p>Lọc khách phù hợp và chuyển sang tư vấn.</p><span class="tag">Inbox</span></div>
+            <div class="day-card"><strong><span>D29</span><span>Remarketing</span></strong><h3>Bạn đang thiếu phần nào trong hệ AI?</h3><p>Chẩn đoán: research, content, landing, CRM.</p><span class="tag">Pixel</span></div>
+            <div class="day-card"><strong><span>D30</span><span>Review</span></strong><h3>Tổng kết 30 ngày tạo tài sản số.</h3><p>Nhắc offer, bonus và bước đăng ký.</p><span class="tag">Email</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mockup" id="student-dashboard">
+      <div class="grain"></div>
+      <div class="frame">
+        <div class="topbar">
+          <div class="brand"><div class="mark">UI</div><span>Website học viên mẫu</span></div>
+          <div class="pills"><span class="pill">12 modules</span><span class="pill">Resources</span><span class="pill">Progress 42%</span></div>
+        </div>
+        <div class="app-shell">
+          <aside class="nav">
+            <div class="nav-item active">Dashboard</div>
+            <div class="nav-item">Module 01: Product Map</div>
+            <div class="nav-item">Module 02: Offer</div>
+            <div class="nav-item">Module 03: Product Demo</div>
+            <div class="nav-item">Module 04: AI Workspace</div>
+            <div class="nav-item">Resources</div>
+            <div class="nav-item">Q&A</div>
+          </aside>
+          <main class="content">
+            <p class="kicker">Output 03</p>
+            <h1 style="font-size: 48px">Học viên có dashboard để học, tải tài nguyên và theo dõi tiến độ.</h1>
+            <div class="lesson-grid">
+              <div class="video-box">
+                <div style="position:absolute; left:28px; top:26px"><b>Lesson 4.1</b><br /><span style="color:var(--muted)">Xây AI Workspace cho sản phẩm số</span></div>
+                <div class="play">▶</div>
+                <div style="position:absolute; left:28px; right:28px; bottom:26px" class="bar"><i style="width:42%"></i></div>
+              </div>
+              <div class="resource-list">
+                <div class="resource"><b>course-structure-v1.md</b><br /><span style="color:var(--muted)">Khung khóa học chi tiết</span></div>
+                <div class="resource"><b>lesson-01-workbook.pdf</b><br /><span style="color:var(--muted)">Workbook điền trực tiếp</span></div>
+                <div class="resource"><b>AI Agent Kit</b><br /><span style="color:var(--muted)">6 trợ lý GPT/Gem theo vai trò</span></div>
+                <div class="resource"><b>Landing Checklist</b><br /><span style="color:var(--muted)">Pre-launch test trước chạy ads</span></div>
+                <div class="resource"><b>CRM Follow-up Sheet</b><br /><span style="color:var(--muted)">Lead, trạng thái, bước tiếp theo</span></div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </section>
+
+    <section class="mockup" id="landing-page">
+      <div class="grain"></div>
+      <div class="frame">
+        <div class="topbar">
+          <div class="brand"><div class="mark">LP</div><span>Landing page bán thử</span></div>
+          <div class="pills"><span class="pill">Hero</span><span class="pill">Offer</span><span class="pill">Payment</span></div>
+        </div>
+        <div class="landing-preview">
+          <div class="landing-left">
+            <p class="kicker">Output 04</p>
+            <h1>Biến chuyên môn thành sản phẩm có thể bán thử.</h1>
+            <p class="sub" style="max-width: 640px">Học viên tạo landing page có cấu trúc bán hàng: pain, mechanism, output, curriculum, bonus, pricing và form đăng ký thanh toán.</p>
+            <div class="mock-cta">Đăng ký beta - 1.299.000đ</div>
+            <div class="metric-grid" style="max-width: 650px">
+              <div class="metric"><b>8</b><span>section bán hàng</span></div>
+              <div class="metric"><b>1</b><span>form tạo đơn</span></div>
+              <div class="metric"><b>3</b><span>event tracking</span></div>
+              <div class="metric"><b>30'</b><span>test trước traffic</span></div>
+            </div>
+          </div>
+          <div class="landing-right">
+            <div class="lp-section"><b>Hero</b><br /><span style="color:var(--muted)">Lời hứa rõ trong 5 giây đầu</span></div>
+            <div class="lp-section"><b>Pain</b><br /><span style="color:var(--muted)">Khách đang mắc ở đâu</span></div>
+            <div class="lp-section"><b>Mechanism</b><br /><span style="color:var(--muted)">Research → Create → Publish → Scale</span></div>
+            <div class="lp-section"><b>Output</b><br /><span style="color:var(--muted)">Calendar, website, landing, CRM</span></div>
+            <div class="lp-section"><b>Curriculum</b><br /><span style="color:var(--muted)">12 chương theo tài sản tạo ra</span></div>
+            <div class="lp-section"><b>Pricing</b><br /><span style="color:var(--muted)">Beta offer + bonus + form</span></div>
+            <div class="lp-section"><b>Post-payment</b><br /><span style="color:var(--muted)">Email, tài khoản, dashboard</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mockup" id="crm-mini">
+      <div class="grain"></div>
+      <div class="frame">
+        <div class="topbar">
+          <div class="brand"><div class="mark">CRM</div><span>CRM mini sau khi bán thử</span></div>
+          <div class="pills"><span class="pill">Lead</span><span class="pill">Payment</span><span class="pill">Follow-up</span></div>
+        </div>
+        <div style="padding: 28px">
+          <p class="kicker">Output 05</p>
+          <div class="top-metrics">
+            <div class="metric"><b>128</b><span>lead mới</span></div>
+            <div class="metric"><b>36</b><span>đơn chờ thanh toán</span></div>
+            <div class="metric"><b>18</b><span>học viên đã mua</span></div>
+            <div class="metric"><b>74%</b><span>tỉ lệ follow-up đúng hẹn</span></div>
+          </div>
+          <div class="pipeline">
+            <div class="stage"><h3>Lead mới</h3><div class="lead"><b>Minh Anh</b><span>Quan tâm khóa AI, đến từ Facebook</span></div><div class="lead"><b>Hoàng Nam</b><span>Tải checklist AI Growth</span></div><div class="lead"><b>Lan Phương</b><span>Inbox hỏi học phí beta</span></div></div>
+            <div class="stage"><h3>Đã tư vấn</h3><div class="lead"><b>Chị Hạnh</b><span>Muốn đóng gói lớp yoga online</span></div><div class="lead"><b>Anh Khải</b><span>Cần landing cho workshop</span></div></div>
+            <div class="stage"><h3>Chờ thanh toán</h3><div class="lead"><b>Tuấn Anh</b><span>Order AMX10-2408, SePay pending</span></div><div class="lead"><b>Mai Linh</b><span>Hẹn chuyển khoản lúc 20:00</span></div></div>
+            <div class="stage"><h3>Đã mua</h3><div class="lead"><b>Ngọc Hà</b><span>Đã nhận tài khoản học viên</span></div><div class="lead"><b>Thành Đạt</b><span>Đã vào Module 01</span></div></div>
+            <div class="stage"><h3>Cần follow-up</h3><div class="lead"><b>Quốc Bảo</b><span>Chưa mở email xác nhận</span></div><div class="lead"><b>Thu Trang</b><span>Cần gửi lại link thanh toán</span></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mockup" id="process-pack">
+      <div class="grain"></div>
+      <div class="frame">
+        <div class="topbar">
+          <div class="brand"><div class="mark">MD</div><span>Bộ file quy trình mẫu</span></div>
+          <div class="pills"><span class="pill">Workflow</span><span class="pill">Checklist</span><span class="pill">Template</span></div>
+        </div>
+        <div class="process-grid">
+          <div class="title-panel">
+            <p class="kicker">Output 06</p>
+            <h1>Bộ SOP bán hàng từ bài giảng.</h1>
+            <p class="sub">Không chỉ xem video. Học viên có file quy trình để setup AI Workspace, lên content, dựng landing, quản lý CRM, launch beta và scale 30-90 ngày.</p>
+            <div class="metric-grid">
+              <div class="metric"><b>6</b><span>file Markdown mẫu</span></div>
+              <div class="metric"><b>84</b><span>mục checklist triển khai</span></div>
+              <div class="metric"><b>30</b><span>ngày content calendar</span></div>
+              <div class="metric"><b>90</b><span>ngày roadmap scale</span></div>
+            </div>
+          </div>
+          <div class="process-files">
+            <div class="process-file"><strong>01</strong><h3>AI Workspace Setup</h3><p>Context nền, GPT/Gem, Agent Kit, prompt vai trò và checklist setup.</p></div>
+            <div class="process-file"><strong>02</strong><h3>Content Calendar 30 ngày</h3><p>Pain, Education, POV, Demo, Objection, CTA theo mục tiêu funnel.</p></div>
+            <div class="process-file"><strong>03</strong><h3>Landing Page Checklist</h3><p>Hero, offer, form, payment, email, tracking và pre-launch test.</p></div>
+            <div class="process-file"><strong>04</strong><h3>CRM Mini Pipeline</h3><p>Trạng thái lead, script follow-up, objection library và dashboard mini.</p></div>
+            <div class="process-file"><strong>05</strong><h3>Beta Launch 7-14 ngày</h3><p>Mở bán beta, follow-up, feedback form và kế hoạch cải tiến V2.</p></div>
+            <div class="process-file"><strong>06</strong><h3>Roadmap 30-90 ngày</h3><p>SOP vận hành, AI assistant, dashboard và product ecosystem.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const view = new URLSearchParams(window.location.search).get("view") || "ai-workspace";
+      document.body.dataset.view = view;
+    </script>
+  </body>
+</html>
