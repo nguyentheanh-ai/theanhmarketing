@@ -17,6 +17,7 @@ export default function ContactPage() {
     <PageShell>
       <section className="ai-shell pb-16 pt-28 sm:pt-32">
         <SectionHeading
+          as="h1"
           eyebrow="Liên hệ"
           title="Nhận chẩn đoán Growth System phù hợp"
           description="Gửi thông tin hoặc nhắn Zalo để được tư vấn bạn nên bắt đầu bằng toolkit, workshop, khóa Facebook Ads 2026 hay triển khai hệ thống đầy đủ."

@@ -27,6 +27,7 @@ Doc theo task:
 - Sua khoa hoc/hoc vien: `services/courseService.ts`, `services/studentAccessService.ts`, `components/course/*`, `components/app/student-dashboard.tsx`.
 - Sua payment/email: `app/api/orders/*`, `app/api/sepay/webhook/route.ts`, `lib/notifications/*`, `services/orderService.ts`.
 - Sua tracking Meta Pixel/CAPI: `lib/meta/conversions-api.ts`, `lib/tracking/events.ts`, `components/site/marketing-scripts.tsx`, `components/site/tracking-page-view.tsx`.
+- Sua bao cao Meta Ads/CRM: `app/admin/facebook-ads/page.tsx`, `components/admin/product-ads-report-client.tsx`, `lib/admin/product-ads-report.ts`, `lib/meta/ads-api.ts`, `app/api/admin/meta/*`.
 
 ## 2. Thu Muc Tong Quan
 
@@ -82,20 +83,19 @@ Hien trang learning room:
 
 | Route | File | Role | Vai tro |
 | --- | --- | --- | --- |
-| `/admin` | `app/admin/page.tsx` | owner/editor redirect | Owner vao dashboard, editor vao CMS. |
+| `/admin` | `app/admin/page.tsx` | owner/editor redirect | Owner vao Ads & doanh thu, editor vao Khoa hoc. |
 | `/admin/login` | `app/admin/login/page.tsx` | public login | Admin login. |
-| `/admin/dashboard` | `app/admin/dashboard/page.tsx` | owner | Tong quan Growth OS/Admin CRM. |
-| `/admin/leads` | `app/admin/leads/page.tsx` | owner | Lead CRM. |
-| `/admin/don-hang` | `app/admin/don-hang/page.tsx` | owner | Orders/payment follow-up. |
-| `/admin/hoc-vien` | `app/admin/hoc-vien/page.tsx` | owner | Student management/grant access. |
-| `/admin/remarketing` | `app/admin/remarketing/page.tsx` | owner | Remarketing/tracking views. |
-| `/admin/seo` | `app/admin/seo/page.tsx` | owner | SEO/tracking/site settings. |
-| `/admin/database` | `app/admin/database/page.tsx` | owner | Database health/tools. |
-| `/admin/cms` | `app/admin/cms/page.tsx` | owner/editor | CMS hub. |
-| `/admin/khoa-hoc` | `app/admin/khoa-hoc/page.tsx` | owner/editor | Course editor. |
-| `/admin/bai-viet` | `app/admin/bai-viet/page.tsx` | owner/editor | Blog manager. |
-| `/admin/tai-lieu` | `app/admin/tai-lieu/page.tsx` | owner/editor | Resource manager. |
-| `/admin/feedback` | `app/admin/feedback/page.tsx` | owner/editor | Testimonials/feedback. |
+| `/admin/hoc-vien` | `app/admin/hoc-vien/page.tsx` | owner | Quan ly hoc vien/grant access. |
+| `/admin/leads` | `app/admin/leads/page.tsx` | owner | Quan ly lead CRM. |
+| `/admin/facebook-ads` | `app/admin/facebook-ads/page.tsx` | owner | Bao cao Ads theo san pham: spend, revenue, ME/RE, leads, CPL, click, CVR. |
+| `/admin/khoa-hoc` | `app/admin/khoa-hoc/page.tsx` | owner/editor | Quan ly khoa hoc, modules, lessons, videos/resources. |
+| `/admin/thanh-vien-admin` | `app/admin/thanh-vien-admin/page.tsx` | owner | Quan ly thanh vien admin va role owner/editor. |
+| `/admin/dashboard` | `app/admin/dashboard/page.tsx` | owner | Legacy Growth OS/Admin CRM route, khong nam trong nav chinh. |
+| `/admin/don-hang` | `app/admin/don-hang/page.tsx` | owner | Legacy orders/payment follow-up route, khong nam trong nav chinh. |
+| `/admin/remarketing` | `app/admin/remarketing/page.tsx` | owner | Legacy remarketing/tracking route, khong nam trong nav chinh. |
+| `/admin/seo` | `app/admin/seo/page.tsx` | owner | Legacy SEO/tracking/settings route, khong nam trong nav chinh. |
+| `/admin/database` | `app/admin/database/page.tsx` | owner | Legacy database health/tools route, khong nam trong nav chinh. |
+| `/admin/cms`, `/admin/bai-viet`, `/admin/tai-lieu`, `/admin/feedback` | `app/admin/*` | owner/editor | Legacy CMS routes, khong nam trong nav chinh. |
 
 Admin shell: `components/app/admin-shell.tsx`.
 
@@ -104,6 +104,16 @@ Admin auth wrapper: `components/app/protected-admin-shell.tsx`.
 Admin auth logic: `lib/auth/session.ts`.
 
 Editor role duoc doc tu `user.app_metadata.admin_role = "editor"`. Owner fallback den `ADMIN_EMAILS`/`ADMIN_LOGIN_EMAIL`. Dung `app_metadata`, khong dung `user_metadata` cho phan quyen.
+
+Admin nav chinh chi gom 5 module tap trung:
+
+1. Hoc vien.
+2. Lead.
+3. Ads & doanh thu.
+4. Khoa hoc.
+5. Thanh vien admin.
+
+Khong them lai nhieu card/dashboard lon vao nav chinh neu chua co yeu cau ro; cac route cu van giu de khong mat chuc nang cu.
 
 ## 4. UI Component Map
 
@@ -152,8 +162,11 @@ Agent Kit workflow:
 
 - `components/admin/admin-growth-os-dashboard.tsx`: dashboard CRM + LMS + automation tabs.
 - `components/admin/lead-manager.tsx`: Lead CRM table/actions.
+- `components/admin/product-ads-report-client.tsx`: dense table bao cao Ads theo san pham cho `/admin/facebook-ads`.
+- `components/admin/admin-members-client.tsx`: quan ly owner/editor cho `/admin/thanh-vien-admin`.
 - `components/admin/course-editor.tsx`: add/edit course, modules, lessons, videos/resources.
 - `components/admin/student-intake-form.tsx`: create student/grant course access.
+- `components/admin/student-access-actions.tsx`: per-student preview modal, grant/revoke access, and safe delete marker for `/admin/hoc-vien`.
 - `components/admin/blog-post-manager.tsx`: blog CMS.
 - `components/admin/resource-manager.tsx`: resources/docs.
 - `components/admin/marketing-settings-manager.tsx`: pixel/tracking/marketing settings.
@@ -174,7 +187,7 @@ Core services:
 - `services/testimonialService.ts`: testimonials.
 - `services/orderService.ts`: order/payment data.
 - `services/leadService.ts`: leads.
-- `services/studentAccessService.ts`: student course access.
+- `services/studentAccessService.ts`: student course access, admin delete markers, registration time, and current learning-progress placeholder.
 - `services/studentAccountService.ts`: auto-create student account.
 - `services/marketingSettingsService.ts`: marketing pixel/settings.
 - `services/brandService.ts`, `services/offerService.ts`: site branding/offer popup.
@@ -186,6 +199,28 @@ Admin performance read-model:
 - Admin routes `/admin/dashboard`, `/admin/leads`, `/admin/don-hang`, and `/admin/hoc-vien` should prefer these cached getters.
 - Admin mutations that change leads/orders/student access should call `invalidateAdminModules(...)` before returning success.
 - `/api/admin/leads` is the admin-safe lead creation endpoint used by `components/admin/lead-manager.tsx`; it invalidates lead/student admin caches after insert.
+- `/api/admin/students/delete` creates an `admin-student-delete` lead marker and invalidates lead/student caches; it hides the student from admin management without deleting paid order history.
+
+Product Ads report read-model:
+
+- UI: `/admin/facebook-ads` -> `components/admin/product-ads-report-client.tsx`.
+- `components/admin/product-ads-report-client.tsx` also renders the Recharts-based ads/revenue visual layer above the dense table: revenue vs ad spend, spend mix, lead/click trend, and CPL/ME-RE review. Keep this chart layer light and driven by the same filtered product rows; do not add CDN Chart.js scripts.
+- API: `GET /api/admin/meta/product-report?ad_account_id&start_date&end_date`.
+- KPI API: `PATCH /api/admin/meta/product-kpis`.
+- Core formulas and mapping logic: `lib/admin/product-ads-report.ts`.
+- Meta Graph helper: `lib/meta/ads-api.ts`, server-only, uses env token only.
+- Supabase config tables: `product_ads_mappings` and `product_ads_kpis`; setup SQL is `docs/SUPABASE_PRODUCT_ADS_REPORT.sql`.
+- Report combines Meta spend/click/leads with CRM paid orders/leads. `DT pheu` counts paid orders only. Unmapped campaigns/adsets/leads fall into `Chua phan loai`.
+- Table columns are fixed in this order: `#`, `San pham`, `Chi phi QC`, `DT pheu`, `ME/RE`, `Leads`, `Lead TB/ngay`, `KPI Lead/ngay`, `Gia Lead (KH)`, `Chi phi/Lead TT`, `Click`, `CVR LP`.
+- If Meta Ads env or Supabase config tables are missing, UI must degrade cleanly and show CRM/fallback data instead of breaking.
+
+Admin members read-model:
+
+- UI: `/admin/thanh-vien-admin` -> `components/admin/admin-members-client.tsx`.
+- API: `GET/PATCH /api/admin/members`.
+- Server helper: `lib/admin/admin-members.ts`.
+- Uses Supabase Auth admin API when `SUPABASE_SERVICE_ROLE_KEY` exists. Fallback reads owner emails from `ADMIN_EMAILS` / `ADMIN_LOGIN_EMAIL`.
+- Role is stored in `user.app_metadata.admin_role`. Env owner accounts cannot be demoted/removed from the UI.
 
 Fallback/static data:
 
@@ -236,8 +271,8 @@ Roles:
 When adding new admin route:
 
 1. Wrap with `<ProtectedAdminShell nextPath="/admin/..." allowedRoles={...}>`.
-2. Add nav item in `components/app/admin-shell.tsx` with correct `allowedRoles`.
-3. Add/adjust test in `tests/admin-editor-role.test.mjs`.
+2. Only add nav item in `components/app/admin-shell.tsx` if it belongs to the 5 core CRM modules.
+3. Add/adjust test in `tests/admin-editor-role.test.mjs` and `tests/admin-central-modules.test.mjs`.
 
 ## 7. Payment, Orders, Email
 
@@ -280,6 +315,13 @@ Server Meta CAPI:
 
 - `lib/meta/conversions-api.ts`
 - Integrated in order/payment APIs so core flow does not block if Meta fails.
+
+Meta Ads reporting:
+
+- `lib/meta/ads-api.ts` reads ad accounts and campaign insights from Graph API.
+- `/api/admin/meta/product-report` returns product-level report rows and summary for `/admin/facebook-ads`.
+- Lead action types included: `lead`, `onsite_conversion.lead_grouped`, `offsite_conversion.fb_pixel_lead`.
+- Keep Ads access token server-only. Do not expose it to client components, docs, logs, screenshots, or final replies.
 
 Current Pixel/CAPI knowledge:
 
@@ -350,6 +392,8 @@ npm.cmd run verify:security
 npm.cmd run verify:security:production
 npm.cmd run verify:routes
 npm.cmd run verify:tracking
+npm.cmd run verify:admin-quality
+npm.cmd run verify:site-quality
 npm.cmd run verify:courses
 npm.cmd run verify:blog-assets
 ```
@@ -414,6 +458,9 @@ Expected env categories:
   - SePay/webhook/bank variables documented in `docs/SEPAY_SETUP.md`.
 - Meta:
   - Pixel/dataset/access-token variables, never hard-code token.
+  - `META_ADS_ACCESS_TOKEN` for Ads reporting, server-only.
+  - `META_ADS_AD_ACCOUNT_ID` optional default ad account for local/admin report.
+  - `META_API_VERSION` optional Graph API version override.
 - Cron:
   - `CRON_SECRET`
 
@@ -427,7 +474,10 @@ Be careful when editing:
 - `services/courseService.ts`: affects public course pages, LMS, admin course editor.
 - `app/api/sepay/webhook/route.ts`: affects payment success, account creation, email, Meta purchase event.
 - `app/api/orders/*`: affects lead/order creation and email/tracking.
+- `app/api/admin/meta/*`: affects Ads/revenue reporting and KPI writes.
+- `app/api/admin/members/*`: affects admin role management.
 - `components/admin/course-editor.tsx`: writes modules/lessons/resources to Supabase.
+- `components/app/admin-shell.tsx`: primary admin IA; keep 5 core CRM modules unless owner asks otherwise.
 - `app/globals.css`: massive shared CSS, changes can affect many pages.
 
 Before changing these, run targeted tests and full build.
@@ -435,6 +485,12 @@ Before changing these, run targeted tests and full build.
 ## 15. Recent Important Decisions
 
 - Admin CRM/LMS redesign is under same repo, not a separate admin template.
+- Admin primary nav has been reduced to 5 focused modules: Hoc vien, Lead, Ads & doanh thu, Khoa hoc, Thanh vien admin.
+- `/admin` now routes owner to `/admin/facebook-ads` and editor to `/admin/khoa-hoc`.
+- `/admin/facebook-ads` is the central operating report, not a generic dashboard. Keep it as a dense product table with sticky header and horizontal scroll on mobile.
+- Product Ads report uses `product_ads_mappings` + `product_ads_kpis`; apply `docs/SUPABASE_PRODUCT_ADS_REPORT.sql` before expecting persistent KPI/mapping edits in production.
+- Meta Ads API is ported server-side from Adplan-style Graph reads through `lib/meta/ads-api.ts`; never print or client-expose access tokens.
+- `/admin/thanh-vien-admin` manages admin roles with `app_metadata.admin_role`; env owner remains protected.
 - New admin role `editor` exists for content-only work.
 - Header CTA:
   - logged in: `Khóa học của tôi`
@@ -468,8 +524,16 @@ Before changing these, run targeted tests and full build.
 
 1. Edit `lib/auth/session.ts` only if role model changes.
 2. Edit `components/app/protected-admin-shell.tsx` or page `allowedRoles`.
-3. Edit `components/app/admin-shell.tsx` nav visibility.
-4. Update `tests/admin-editor-role.test.mjs`.
+3. Edit `components/app/admin-shell.tsx` nav visibility only if the route belongs to the 5 core CRM modules.
+4. Update `tests/admin-editor-role.test.mjs` and `tests/admin-central-modules.test.mjs`.
+
+### Sua Ads/CRM report
+
+1. Formula/mapping changes go in `lib/admin/product-ads-report.ts`.
+2. Meta Graph changes go in `lib/meta/ads-api.ts`; keep tokens server-only.
+3. UI table changes go in `components/admin/product-ads-report-client.tsx`.
+4. KPI persistence uses `app/api/admin/meta/product-kpis/route.ts` and Supabase table `product_ads_kpis`.
+5. Run `tests/product-ads-report.test.mjs`, `tests/admin-central-modules.test.mjs`, `npm.cmd run verify:admin-quality`, `npm.cmd run verify:tracking`, and `npm.cmd run build`.
 
 ### Sua course/LMS content
 
@@ -500,3 +564,11 @@ Before changing these, run targeted tests and full build.
 2. Server CAPI: `lib/meta/conversions-api.ts`.
 3. Never expose token.
 4. Run `tests/meta-conversions-api.test.mjs`.
+
+### Sua Meta Ads API
+
+1. Server Ads reporting helper: `lib/meta/ads-api.ts`.
+2. Product report API: `app/api/admin/meta/product-report/route.ts`.
+3. KPI API: `app/api/admin/meta/product-kpis/route.ts`.
+4. Never expose `META_ADS_ACCESS_TOKEN`.
+5. Run `tests/product-ads-report.test.mjs` plus `npm.cmd run verify:tracking`.

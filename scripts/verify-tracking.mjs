@@ -52,8 +52,6 @@ expectIncludes("app/admin/seo/page.tsx", [
   "Pixel",
 ]);
 
-expectIncludes("components/app/admin-shell.tsx", ["/admin/seo"]);
-
 expectIncludes("app/layout.tsx", [
   "MarketingScripts",
   "getMarketingSettings",

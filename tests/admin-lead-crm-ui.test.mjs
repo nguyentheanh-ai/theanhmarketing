@@ -31,3 +31,18 @@ test("lead manager summarizes remarketing payloads instead of dumping raw tracki
   assert.match(source, /filteredLeads/);
   assert.doesNotMatch(source, /max-w-sm text-black\/65">\{lead\.need/);
 });
+
+test("lead table puts created date at the beginning and keeps name cell compact", () => {
+  const source = read("components/admin/lead-manager.tsx");
+  const headerStart = source.indexOf("<thead");
+  const headerEnd = source.indexOf("</thead>", headerStart);
+  const header = source.slice(headerStart, headerEnd);
+  const rowStart = source.indexOf("<tr className=\"border-t border-slate-100");
+  const rowEnd = source.indexOf("</tr>", rowStart);
+  const row = source.slice(rowStart, rowEnd);
+
+  assert.ok(header.indexOf("Ngày tạo") < header.indexOf("Họ tên"));
+  assert.ok(row.indexOf("formatAdminDate(lead.createdAt)") < row.indexOf("lead.name"));
+  assert.doesNotMatch(source, /Lead từ landing\/checkout; xem nhãn tracking bên dưới/);
+  assert.doesNotMatch(row, /summary\.shortNote/);
+});

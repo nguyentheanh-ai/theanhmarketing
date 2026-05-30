@@ -18,6 +18,9 @@ export type StudentAccessRecord = {
   pendingOrderCodes: string[];
   source: string;
   note: string;
+  registeredAt: string;
+  progressPercent: number;
+  progressNote: string;
   updatedAt: string;
 };
 
@@ -60,6 +63,18 @@ function getOrderCourseTitles(order: PaymentOrder) {
   return order.courseTitle.split("|").map((title) => title.trim()).filter(Boolean);
 }
 
+function getEarlierDate(current: string, next: string) {
+  if (!current) {
+    return next;
+  }
+
+  if (!next) {
+    return current;
+  }
+
+  return next.localeCompare(current) < 0 ? next : current;
+}
+
 function emptyRecord(seed: {
   id: string;
   name: string;
@@ -83,6 +98,9 @@ function emptyRecord(seed: {
     pendingOrderCodes: [],
     source: seed.source,
     note: seed.note ?? "",
+    registeredAt: seed.updatedAt ?? "",
+    progressPercent: 0,
+    progressNote: "Chưa có log học tập",
     updatedAt: seed.updatedAt ?? "",
   };
 }
@@ -97,6 +115,7 @@ function applyOrder(record: StudentAccessRecord, order: PaymentOrder) {
   record.phone = record.phone || order.phone;
   record.courseTitles = mergeUnique(record.courseTitles, getOrderCourseTitles(order));
   record.courseSlugs = mergeUnique(record.courseSlugs, getOrderCourseSlugs(order));
+  record.registeredAt = getEarlierDate(record.registeredAt, order.createdAt ?? "");
   record.updatedAt = order.paidAt ?? order.createdAt ?? record.updatedAt;
 
   if (order.status === "paid") {
@@ -116,6 +135,7 @@ function applyLead(record: StudentAccessRecord, lead: LeadItem) {
   record.phone = record.phone || lead.phone;
   record.source = record.source || lead.source;
   record.note = record.note || lead.need;
+  record.registeredAt = getEarlierDate(record.registeredAt, lead.createdAt || "");
   record.updatedAt = record.updatedAt || lead.createdAt || "";
 }
 
@@ -137,6 +157,7 @@ function applyAccessOverride(record: StudentAccessRecord, lead: LeadItem) {
   record.phone = record.phone || lead.phone;
   record.source = "Admin access";
   record.note = lead.need || record.note;
+  record.registeredAt = getEarlierDate(record.registeredAt, lead.createdAt || "");
   record.updatedAt = lead.createdAt || record.updatedAt;
 
   if (override.action === "grant") {
@@ -172,6 +193,9 @@ export async function getStudentAccessRecords() {
     getLeads({ includeFallback: false }),
   ]);
   const records = new Map<string, StudentAccessRecord>();
+  const deletedStudentKeys = new Set(
+    leads.filter((item) => item.source === "admin-student-delete").map((lead) => getStudentKey(lead)),
+  );
 
   for (const order of orders) {
     const key = getStudentKey(order);
@@ -242,6 +266,10 @@ export async function getStudentAccessRecords() {
     if (adminEmails.has(record.email.trim().toLowerCase())) {
       markAdminRecord(record);
     }
+  }
+
+  for (const key of deletedStudentKeys) {
+    records.delete(key);
   }
 
   return Array.from(records.values()).sort((a, b) => {

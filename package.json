@@ -11,6 +11,8 @@
     "verify:security:production": "node scripts/verify-security-env.mjs --production",
     "verify:routes": "node scripts/verify-routes.mjs",
     "verify:tracking": "node scripts/verify-tracking.mjs",
+    "verify:admin-quality": "node scripts/verify-admin-quality.mjs",
+    "verify:site-quality": "node scripts/verify-site-quality.mjs",
     "verify:courses": "node scripts/verify-course-funnel.mjs",
     "verify:blog-assets": "node scripts/verify-blog-assets.mjs"
   },

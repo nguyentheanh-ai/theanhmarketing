@@ -13,7 +13,9 @@ test("admin shell uses the light management workspace and avoids fixed logout ov
   assert.match(source, /data-admin-theme="light"/);
   assert.match(source, /bg-\[#f7f8fb\]/);
   assert.match(source, /\/brand\/ta-logo\.svg/);
-  assert.match(source, /AI Growth OS/);
+  assert.match(source, /Admin CRM/);
+  assert.match(source, /\/admin\/facebook-ads/);
+  assert.match(source, /\/admin\/thanh-vien-admin/);
   assert.match(source, /lg:flex/);
   assert.match(source, /lg:ml-64/);
   assert.match(source, /lg:px-8/);
@@ -21,7 +23,9 @@ test("admin shell uses the light management workspace and avoids fixed logout ov
   assert.match(source, /lg:py-8/);
   assert.doesNotMatch(source, /backdrop-blur/);
   assert.doesNotMatch(source, /absolute inset-x-5 bottom-5/);
-  assert.match(source, /Đơn hàng/);
+  assert.match(source, /Ads & doanh thu/);
+  assert.doesNotMatch(source, /Remarketing/);
+  assert.doesNotMatch(source, /SEO\/Tracking/);
 });
 
 test("admin panels and orders page use roomy dashboard spacing", () => {
@@ -46,7 +50,60 @@ test("admin course page renders real official courses instead of empty blocks", 
   assert.match(source, /Nguồn dữ liệu/);
   assert.match(source, /CourseEditor initialCourses/);
   assert.doesNotMatch(source, /demo/i);
-  assert.doesNotMatch(source, /QuÃƒ|Ã¡Âº|ÃƒÂ¡|Ã„|Ã†/i);
+  assert.doesNotMatch(source, /QuÃƒÆ’|ÃƒÂ¡Ã‚Âº|ÃƒÆ’Ã‚Â¡|Ãƒâ€ž|Ãƒâ€ /i);
+});
+
+test("course editor uses a focused two-pane workspace with lazy heavy panels", () => {
+  const page = read("app/admin/khoa-hoc/page.tsx");
+  const source = read("components/admin/course-editor.tsx");
+
+  assert.match(page, /getAdminCourses/);
+  assert.doesNotMatch(page, /getCourses/);
+  assert.doesNotMatch(page, /AdminPageHeader/);
+  assert.doesNotMatch(page, /AdminPanel/);
+  assert.match(source, /courseSearch/);
+  assert.match(source, /statusFilter/);
+  assert.match(source, /filteredCourses/);
+  assert.match(source, /activePanel/);
+  assert.match(source, /Tổng quan/);
+  assert.match(source, /Media/);
+  assert.match(source, /Nội dung/);
+  assert.match(source, /getCourseStats/);
+  assert.match(source, /Quản trị dữ liệu/);
+  assert.match(source, /activePanel === "media"/);
+  assert.match(source, /activePanel === "content"/);
+  assert.doesNotMatch(source, /<SoftCard/);
+  assert.doesNotMatch(source, /rounded-3xl/);
+});
+
+test("course editor follows LMS outline patterns instead of showing heavy lesson previews", () => {
+  const source = read("components/admin/course-editor.tsx");
+
+  assert.match(source, /useState<CourseEditorPanel>\("overview"\)/);
+  assert.match(source, /Course outline/);
+  assert.match(source, /Module title/);
+  assert.match(source, /Lesson title/);
+  assert.match(source, /Add item/);
+  assert.match(source, /Tutor LMS/);
+  assert.match(source, /Course Builder/);
+  assert.match(source, /Canvas/);
+  assert.match(source, /Open edX/);
+  assert.doesNotMatch(source, /toYouTubeThumbnailUrl/);
+  assert.doesNotMatch(source, /cleanLessonTitle/);
+  assert.doesNotMatch(source, /Preview đồng bộ ngoài website/);
+});
+
+test("course editor starts as a Tutor LMS style course list and opens editing on demand", () => {
+  const source = read("components/admin/course-editor.tsx");
+
+  assert.match(source, /editorMode/);
+  assert.match(source, /useState<"list" \| "edit">\("list"\)/);
+  assert.match(source, /editorMode === "list"/);
+  assert.match(source, /editorMode === "edit"/);
+  assert.match(source, /openCourseEditor/);
+  assert.match(source, /Mở phần sửa/);
+  assert.match(source, /Quay lại danh sách/);
+  assert.doesNotMatch(source, /xl:grid-cols-\[320px_minmax\(0,1fr\)\]/);
 });
 
 test("admin orders page shows phone numbers with a copy action", () => {

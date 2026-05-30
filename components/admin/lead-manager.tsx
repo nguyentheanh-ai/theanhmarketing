@@ -84,10 +84,7 @@ function summarizeLeadNeed(value: string): LeadSummary {
     orderCode,
     courseTitle,
     paymentStatus,
-    shortNote: compactText(
-      visibleNote || (orderCode || courseTitle || landing ? "Lead từ landing/checkout; xem nhãn tracking bên dưới." : value) || "Chưa có ghi chú",
-      140,
-    ),
+    shortNote: compactText(visibleNote || value || "", 140),
     trackingBadges,
   };
 }
@@ -134,6 +131,7 @@ const LeadTableRow = memo(function LeadTableRow({ item, index }: { item: Summari
           {index + 1}
         </span>
       </td>
+      <td className="px-3 py-4 font-semibold text-slate-600">{formatAdminDate(lead.createdAt)}</td>
       <td className="px-3 py-4">
         <div className="flex items-center gap-3">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-black text-blue-700">
@@ -141,7 +139,6 @@ const LeadTableRow = memo(function LeadTableRow({ item, index }: { item: Summari
           </span>
           <div className="min-w-0">
             <p className="truncate font-black text-slate-950">{lead.name || "Chưa có tên"}</p>
-            <p className="mt-1 truncate text-xs text-slate-500">{summary.shortNote}</p>
           </div>
         </div>
       </td>
@@ -154,7 +151,6 @@ const LeadTableRow = memo(function LeadTableRow({ item, index }: { item: Summari
         {summary.orderCode ? <p className="mt-1 font-mono text-xs text-blue-700">{summary.orderCode}</p> : null}
       </td>
       <td className="px-3 py-4 text-slate-600">{lead.source || "Website"}</td>
-      <td className="px-3 py-4 text-slate-600">{formatAdminDate(lead.createdAt)}</td>
       <td className="px-3 py-4">
         <span className={`inline-flex rounded-md px-2 py-1 text-[11px] font-black uppercase ${statusClass(status.tone)}`}>
           {status.label}
@@ -313,12 +309,12 @@ export function LeadManager({ leads }: { leads: LeadItem[] }) {
               <thead className="bg-slate-50 text-xs uppercase text-slate-500">
                 <tr>
                   <th className="w-10 px-3 py-3">#</th>
+                  <th className="px-3 py-3">Ngày tạo</th>
                   <th className="px-3 py-3">Họ tên</th>
                   <th className="px-3 py-3">Email</th>
                   <th className="px-3 py-3">Số điện thoại</th>
                   <th className="px-3 py-3">Khóa / mã đơn</th>
                   <th className="px-3 py-3">Nguồn</th>
-                  <th className="px-3 py-3">Ngày tạo</th>
                   <th className="px-3 py-3">Trạng thái</th>
                 </tr>
               </thead>

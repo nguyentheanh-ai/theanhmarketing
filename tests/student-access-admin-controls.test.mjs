@@ -57,13 +57,14 @@ test("admin student access controls can update multiple courses for one student"
 test("admin student page follows the compact student-management layout", () => {
   const page = read("app/admin/hoc-vien/page.tsx");
 
-  assert.match(page, /Total Students/);
-  assert.match(page, /Active Access/);
-  assert.match(page, /Pending/);
-  assert.match(page, /Add New Student/);
-  assert.match(page, /Student List/);
-  assert.match(page, /Name\/Contact/);
-  assert.match(page, /Actions/);
+  assert.match(page, /Tổng học viên/);
+  assert.match(page, /Đã cấp quyền/);
+  assert.match(page, /Đang chờ/);
+  assert.match(page, /Thêm học viên/);
+  assert.match(page, /Danh sách học viên/);
+  assert.match(page, /Tên\/liên hệ/);
+  assert.match(page, /Thao tác/);
+  assert.doesNotMatch(page, /Total Students|Active Access|Add New Student|Student List|Name\/Contact|>Actions</);
 });
 
 test("access overrides can grant and revoke a paid course without mutating orders", () => {

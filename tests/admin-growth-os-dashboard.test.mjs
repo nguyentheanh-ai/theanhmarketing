@@ -21,18 +21,20 @@ test("admin dashboard mounts Growth OS UI while preserving existing data service
 test("Growth OS dashboard exposes working tab targets and real admin data props", () => {
   const source = readSource("components/admin/admin-growth-os-dashboard.tsx");
 
-  for (const label of [
-    "Dashboard",
-    "CRM",
-    "Học viên",
-    "Khóa học",
-    "Automation",
-    "Click events",
-    "Payments",
-    "Reports",
+  for (const id of [
+    "dashboard",
+    "crm",
+    "students",
+    "courses",
+    "automation",
+    "clicks",
+    "payments",
+    "reports",
   ]) {
-    assert.match(source, new RegExp(label));
+    assert.match(source, new RegExp(id));
   }
+
+  assert.doesNotMatch(source, /label: "Dashboard"|label: "Automation"|label: "Click events"|label: "Payments"|label: "Reports"/);
 
   for (const prop of ["orders", "leads", "students", "courses"]) {
     assert.match(source, new RegExp(`${prop}:`));
@@ -56,11 +58,18 @@ test("Click events tab renders tracking analytics instead of a placeholder", () 
   assert.doesNotMatch(source, /Khi bảng click_events được bật/);
 });
 
-test("admin shell uses the website logo and Growth OS navigation shell", () => {
+test("admin shell uses the website logo and compact centralized admin navigation", () => {
   const source = readSource("components/app/admin-shell.tsx");
 
   assert.match(source, /\/brand\/ta-logo\.svg/);
-  assert.match(source, /AI Growth OS/);
-  assert.match(source, /Global search/);
+  assert.match(source, /Admin CRM/);
+  assert.match(source, /\/admin\/hoc-vien/);
+  assert.match(source, /\/admin\/leads/);
+  assert.match(source, /\/admin\/facebook-ads/);
+  assert.match(source, /\/admin\/khoa-hoc/);
+  assert.match(source, /\/admin\/thanh-vien-admin/);
+  assert.match(source, /Tìm module admin/);
+  assert.match(source, /moduleSearch/);
+  assert.doesNotMatch(source, /Global search/);
   assert.match(source, /Realtime/);
 });

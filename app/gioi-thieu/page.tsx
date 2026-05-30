@@ -30,6 +30,7 @@ export default function MarketingOsPage() {
       <section className="ai-shell grid gap-10 pb-16 pt-28 sm:pt-32 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
         <div>
           <SectionHeading
+            as="h1"
             eyebrow="Marketing OS"
             title="AI Performance Marketing System: biến AI thành hạ tầng tăng trưởng."
             description="Trang này trình bày cấu trúc hệ thống: Content Engine, Ads Engine, Funnel Engine, Automation Engine và CRM/Data Layer kết nối với nhau để business không còn làm marketing rời rạc."

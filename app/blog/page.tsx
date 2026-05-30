@@ -26,6 +26,7 @@ export default async function BlogPage() {
       <section className="ai-shell pb-16 pt-32 sm:pt-40">
         <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
           <SectionHeading
+            as="h1"
             eyebrow={page.eyebrow}
             title={page.title}
             description={page.description}

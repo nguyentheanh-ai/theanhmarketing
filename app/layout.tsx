@@ -25,9 +25,6 @@ export async function generateMetadata(): Promise<Metadata> {
       template: "%s | The Anh Marketing",
     },
     description: marketing.seoDescription,
-    alternates: {
-      canonical: "/",
-    },
     icons: {
       icon: [
         { url: "/favicon.ico", sizes: "any" },

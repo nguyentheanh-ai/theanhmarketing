@@ -8,6 +8,7 @@ import {
 import { ButtonLink } from "@/components/ui/button-link";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { getCourses } from "@/services/courseService";
+import { AgentThumbnailGallery } from "@/components/content/agent-thumbnail-gallery";
 
 export const dynamic = "force-dynamic";
 
@@ -55,6 +56,10 @@ export default async function Home() {
       </section>
 
       <AgentKitWorkflow />
+
+      <section className="ai-shell py-12">
+        <AgentThumbnailGallery source="home-media-hub" />
+      </section>
 
       <section className="ai-shell pb-20 pt-10">
         <div className="ai-panel-strong overflow-hidden p-8 sm:p-12 lg:grid lg:grid-cols-[1fr_auto] lg:items-end">

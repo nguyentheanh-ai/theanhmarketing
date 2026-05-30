@@ -52,11 +52,11 @@ export function StudentIntakeForm({ courses }: { courses: Course[] }) {
     <form className="mt-4 grid gap-4" onSubmit={handleSubmit}>
       <div className="grid gap-3 md:grid-cols-3">
         <label className="grid gap-1.5">
-          <span className={labelClass}>Full Name</span>
+          <span className={labelClass}>Họ tên</span>
           <input className={inputClass} name="name" required />
         </label>
         <label className="grid gap-1.5">
-          <span className={labelClass}>Phone Number</span>
+          <span className={labelClass}>Số điện thoại</span>
           <input className={inputClass} name="phone" required />
         </label>
         <label className="grid gap-1.5">
@@ -64,7 +64,7 @@ export function StudentIntakeForm({ courses }: { courses: Course[] }) {
           <input className={inputClass} name="email" required type="email" />
         </label>
         <div className="grid gap-1.5 md:col-span-2">
-          <span className={labelClass}>Course Selection</span>
+          <span className={labelClass}>Chọn khóa học</span>
           <div className="grid max-h-36 gap-2 overflow-y-auto rounded-md border border-slate-200 bg-white p-2 sm:grid-cols-2">
             {courses.map((course, index) => (
               <label
@@ -84,11 +84,11 @@ export function StudentIntakeForm({ courses }: { courses: Course[] }) {
           </div>
         </div>
         <label className="grid gap-1.5">
-          <span className={labelClass}>Access Status</span>
+          <span className={labelClass}>Trạng thái quyền học</span>
           <select className={inputClass} name="paymentStatus">
-            <option value="paid">Granted</option>
-            <option value="pending">Pending</option>
-            <option value="trial">Trial</option>
+            <option value="paid">Đã cấp quyền</option>
+            <option value="pending">Chờ xử lý</option>
+            <option value="trial">Học thử</option>
           </select>
         </label>
         <label className="grid gap-1.5">
@@ -96,7 +96,7 @@ export function StudentIntakeForm({ courses }: { courses: Course[] }) {
           <input className={inputClass} name="temporaryPassword" placeholder="Để trống sẽ tự tạo" type="text" />
         </label>
         <label className="grid gap-1.5 md:col-span-2">
-          <span className={labelClass}>Source / Note</span>
+          <span className={labelClass}>Nguồn / ghi chú</span>
           <input className={inputClass} name="source" placeholder="Facebook, Zalo, Referral..." />
         </label>
       </div>
@@ -104,10 +104,10 @@ export function StudentIntakeForm({ courses }: { courses: Course[] }) {
       <Button
         className="h-10 w-fit rounded-md px-5 text-sm shadow-none"
         isLoading={isSaving}
-        loadingLabel="Saving..."
+        loadingLabel="Đang lưu..."
         type="submit"
       >
-        Add Student
+        Thêm học viên
       </Button>
       {message ? <p className="rounded-md bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-600">{message}</p> : null}
     </form>

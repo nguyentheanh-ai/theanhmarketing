@@ -63,14 +63,14 @@ type DashboardSummaryData = {
 };
 
 const tabs: { id: AdminTabId; label: string }[] = [
-  { id: "dashboard", label: "Dashboard" },
+  { id: "dashboard", label: "Tổng quan" },
   { id: "crm", label: "CRM" },
   { id: "students", label: "Học viên" },
   { id: "courses", label: "Khóa học" },
-  { id: "automation", label: "Automation" },
-  { id: "clicks", label: "Click events" },
-  { id: "payments", label: "Payments" },
-  { id: "reports", label: "Reports" },
+  { id: "automation", label: "Tự động hóa" },
+  { id: "clicks", label: "Sự kiện click" },
+  { id: "payments", label: "Thanh toán" },
+  { id: "reports", label: "Báo cáo" },
 ];
 
 const emptyClickAnalytics: ReturnType<typeof buildClickEventAnalytics> = {
@@ -533,7 +533,7 @@ export function AdminGrowthOsDashboard({ orders, leads, students, courses }: Das
         <Panel className="mt-4 overflow-hidden">
           <div className="flex flex-col gap-3 border-b border-white/10 p-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 className="text-xl font-black text-white">Lead CRM management</h2>
+              <h2 className="text-xl font-black text-white">Quản lý Lead CRM</h2>
               <p className="mt-1 text-sm text-sky-100/72">{crmRows.length} dòng từ Supabase, đơn hàng và website cũ</p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -762,7 +762,7 @@ export function AdminGrowthOsDashboard({ orders, leads, students, courses }: Das
             <Panel className="overflow-hidden">
               <div className="border-b border-white/10 p-4">
                 <p className="text-xs font-bold uppercase text-slate-500">Event timeline</p>
-                <h2 className="mt-2 text-xl font-black text-white">Click events từ lead/order hiện có</h2>
+                <h2 className="mt-2 text-xl font-black text-white">Sự kiện click từ lead/order hiện có</h2>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[980px] text-left text-sm">
@@ -804,7 +804,7 @@ export function AdminGrowthOsDashboard({ orders, leads, students, courses }: Das
       {activeTab === "payments" ? (
         <Panel className="mt-4 overflow-hidden">
           <div className="border-b border-white/10 p-4">
-            <h2 className="text-xl font-black text-white">Payment management</h2>
+            <h2 className="text-xl font-black text-white">Quản lý thanh toán</h2>
             <p className="mt-1 text-sm text-slate-400">
               {paidOrders.length} thành công, {pendingOrders.length} chờ thanh toán, {failedOrders.length} không thành công hoặc hết hạn.
             </p>
