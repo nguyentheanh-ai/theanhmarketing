@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import {
   buildProductAdsPerformanceRows,
@@ -186,16 +186,16 @@ async function loadMetaData({
   adAccountId,
   startDate,
   endDate,
-  accessToken,
+  accessTokens,
 }: {
   adAccountId: string;
   startDate: string;
   endDate: string;
-  accessToken?: string;
+  accessTokens: string[];
 }) {
-  const token = accessToken || getMetaAdsAccessToken();
+  const tokenCandidates = Array.from(new Set([...accessTokens, getMetaAdsAccessToken()].filter(Boolean)));
 
-  if (!token) {
+  if (tokenCandidates.length === 0) {
     return {
       accounts: [] as MetaAdAccount[],
       campaigns: [],
@@ -205,7 +205,10 @@ async function loadMetaData({
     };
   }
 
-  try {
+  let lastError = "";
+
+  for (const token of tokenCandidates) {
+    try {
     const accounts = await getMetaAdAccounts(token);
     const selectedAdAccountId = chooseSelectedAdAccountId(accounts, adAccountId);
     const campaigns = selectedAdAccountId
@@ -219,22 +222,25 @@ async function loadMetaData({
       metaConfigured: true,
       metaError: null,
     };
-  } catch (error) {
-    return {
-      accounts: [] as MetaAdAccount[],
-      campaigns: [],
-      selectedAdAccountId: adAccountId,
-      metaConfigured: true,
-      metaError: error instanceof Error ? error.message : "Không đọc được Meta Ads.",
-    };
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : "Không đọc được Meta Ads.";
+    }
   }
+
+  return {
+    accounts: [] as MetaAdAccount[],
+    campaigns: [],
+    selectedAdAccountId: adAccountId,
+    metaConfigured: true,
+    metaError: lastError || "Không đọc được Meta Ads.",
+  };
 }
 
 export async function GET(request: Request) {
   const { isAdmin, adminRole } = await getCurrentAuth();
 
   if (isAuthGuardEnabled() && (!isAdmin || !canAccessAdminRole(adminRole, ["owner"]))) {
-    return NextResponse.json({ ok: false, message: "Bạn cần quyền owner để xem báo cáo Facebook Ads." }, { status: 403 });
+    return NextResponse.json({ ok: false, message: "Báº¡n cáº§n quyá»n owner Ä‘á»ƒ xem bÃ¡o cÃ¡o Facebook Ads." }, { status: 403 });
   }
 
   const url = new URL(request.url);
@@ -244,13 +250,18 @@ export async function GET(request: Request) {
   const adAccountId = url.searchParams.get("ad_account_id") ?? "";
   const cookieStore = await cookies();
   const connectedAccessToken = cookieStore.get(metaAdsTokenCookie)?.value;
-  const storedProviderToken = connectedAccessToken ? null : await getLatestStoredFacebookProviderToken();
+  const storedProviderToken = await getLatestStoredFacebookProviderToken();
 
   const [courses, orders, leads, meta] = await Promise.all([
     getCourses(),
     getPaymentOrders({ includeFallback: false }),
     getLeads({ includeFallback: false }),
-    loadMetaData({ adAccountId, startDate, endDate, accessToken: connectedAccessToken || storedProviderToken?.accessToken }),
+    loadMetaData({
+      adAccountId,
+      startDate,
+      endDate,
+      accessTokens: [connectedAccessToken ?? "", storedProviderToken?.accessToken ?? ""],
+    }),
   ]);
   const [mappingResult, kpiResult] = await Promise.all([loadProductAdsMappings(courses), loadProductAdsKpis()]);
   const rows = buildProductAdsPerformanceRows({
@@ -278,3 +289,4 @@ export async function GET(request: Request) {
     },
   });
 }
+

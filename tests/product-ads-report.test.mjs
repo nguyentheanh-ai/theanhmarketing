@@ -200,6 +200,8 @@ test("admin facebook ads route exposes the required dense product report table",
   assert.match(reportRoute, /buildProductAdsPerformanceRows/);
   assert.match(reportRoute, /metaAdsTokenCookie/);
   assert.match(reportRoute, /getLatestStoredFacebookProviderToken/);
+  assert.match(reportRoute, /tokenCandidates/);
+  assert.match(reportRoute, /lastError/);
   assert.match(reportRoute, /chooseSelectedAdAccountId/);
   assert.match(reportRoute, /configuredAccount/);
   assert.match(kpiRoute, /canAccessAdminRole\(adminRole, \["owner"\]\)/);
