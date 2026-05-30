@@ -32,7 +32,8 @@ test("payment page lets customers copy account, amount, content, and full transf
   const transferDetails = read("components/payment/transfer-details.tsx");
 
   assert.match(paymentPage, /amount=\{order\.amount\}/);
-  assert.match(paymentPage, /amountLabel=\{order\.amountLabel\}/);
+  assert.match(paymentPage, /const amountLabel = order\.amountLabel \|\| formatVnd\(order\.amount\)/);
+  assert.match(paymentPage, /amountLabel=\{amountLabel\}/);
   assert.match(transferDetails, /Copy STK/);
   assert.match(transferDetails, /Copy số tiền/);
   assert.match(transferDetails, /Copy nội dung/);

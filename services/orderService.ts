@@ -166,14 +166,22 @@ async function resolveCourses(input: CreatePaymentOrderInput) {
   return course ? [course] : [];
 }
 
-const facebookAdsPaymentPlans: Record<string, { title: string; amount: number }> = {
-  video: {
-    title: "Gói Video 399K",
-    amount: 399000,
+const coursePaymentPlans: Record<string, Record<string, { title: string; amount: number }>> = {
+  "facebook-ads-2026": {
+    video: {
+      title: "Gói Video 399K",
+      amount: 399000,
+    },
+    "zoom-kit": {
+      title: "Gói Hỗ Trợ 799K - Zoom lên ads + Agent kit",
+      amount: 799000,
+    },
   },
-  "zoom-kit": {
-    title: "Gói Hỗ Trợ 799K - Zoom lên ads + Agent kit",
-    amount: 799000,
+  "bo-agent-kit-x10-hieu-suat-cong-viec": {
+    "agent-kit-ads-359": {
+      title: "Gói private ads 359K",
+      amount: 359000,
+    },
   },
 };
 
@@ -183,9 +191,9 @@ function buildOrderPackage(
 ) {
   if (paymentPlan) {
     const selectedCourse = selectedCourses[0];
-    const plan = facebookAdsPaymentPlans[paymentPlan];
+    const plan = selectedCourse ? coursePaymentPlans[selectedCourse.slug]?.[paymentPlan] : undefined;
 
-    if (selectedCourses.length !== 1 || selectedCourse?.slug !== "facebook-ads-2026" || !plan) {
+    if (selectedCourses.length !== 1 || !selectedCourse || !plan) {
       throw new Error("Gói thanh toán không hợp lệ.");
     }
 

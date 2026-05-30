@@ -52,9 +52,10 @@ Quy tac quan trong: khong load full data mot lan neu co the query theo module/pa
 | `/` | `app/page.tsx` | Homepage AI Growth OS. Dang co hero, Content OS mockup, course modules, Agent Kit workflow, CTA cuoi trang. |
 | `/khoa-hoc` | `app/khoa-hoc/page.tsx` | Danh sach khoa hoc public. |
 | `/khoa-hoc/[slug]` | `app/khoa-hoc/[slug]/page.tsx` | Trang sales/detail tung khoa hoc. |
+| `/khoa-hoc/bo-kit-agent-doanh-nghiep` | `app/khoa-hoc/bo-kit-agent-doanh-nghiep/page.tsx` | Landing private/noindex cho ads ban Bo Agent Kit X10, checkout truc tiep qua `/api/orders`. |
 | `/dang-ky` | `app/dang-ky/page.tsx` | Form dang ky/lead/order entry. |
 | `/gio-hang` | `app/gio-hang/page.tsx` | Cart page client. |
-| `/thanh-toan/[code]` | `app/thanh-toan/[code]/page.tsx` | Huong dan thanh toan va polling trang thai. |
+| `/thanh-toan/[code]` | `app/thanh-toan/[code]/page.tsx` | Huong dan thanh toan va polling trang thai; co layout checkout sang cho AI Agent Business/Agent Kit, demo local `AGENTKITDEMO`, van dung `SEPAY_*`, QR SePay, `TransferDetails`, `PaymentStatusPoller`. |
 | `/blog`, `/blog/[slug]` | `app/blog/*` | Blog/content hub. |
 | `/tai-lieu` | `app/tai-lieu/page.tsx` | Resource/document hub. |
 | `/workshop`, `/gioi-thieu`, `/doi-tac`, `/lien-he`, `/he-sinh-thai`, `/ky-nang` | `app/*/page.tsx` | Static/public marketing pages. |
@@ -452,6 +453,7 @@ Before changing these, run targeted tests and full build.
   - Blog posts can use optional `thumbnail` and `publishedAt`; AI Leaders thumbnails are under `public/blog-thumbnails/ai-leaders`.
   - `/blog/[slug]` builds the table of contents from `h2`/`h3` content headings and renders a hero image when `thumbnail` exists.
 - Keep course/student/payment/pixel data logic stable when changing UI.
+- Private ads landing `app/khoa-hoc/bo-kit-agent-doanh-nghiep/page.tsx` uses source facts from `E:\TheAnh-Business-Workspace\05_AI_Growth_Kit_Product` and the route is `noindex`. The visible ads price is `359K` through payment plan `agent-kit-ads-359`; do not change the global course price `Bo Agent Kit X10` from `799K` unless the owner explicitly asks.
 
 ## 16. Quick Task Recipes
 

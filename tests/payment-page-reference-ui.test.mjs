@@ -7,20 +7,36 @@ function read(relativePath) {
   return fs.readFileSync(path.resolve(relativePath), "utf8");
 }
 
-test("payment page follows the reference checkout section structure", () => {
+test("payment page follows the agent kit checkout section structure", () => {
   const page = read("app/thanh-toan/[code]/page.tsx");
 
-  assert.match(page, /Ưu đãi kết thúc hôm nay lúc 23:59/);
+  assert.match(page, /AGENTKITDEMO/);
+  assert.match(page, /Bộ Kit AI Agent Business/);
+  assert.match(page, /Thông tin đơn hàng/);
+  assert.doesNotMatch(page, /Thanh toán 359K để nhận Bộ AI Agent thoát việc lặp/);
+  assert.match(page, /AI Agent Business/);
+  assert.match(page, /Thanh toán SePay/);
+  assert.match(page, /PaymentOfferCountdown/);
+  assert.match(page, /Ưu đãi đang được giữ theo mã đơn/);
+  assert.match(page, /Trước khi quay về giá cũ/);
+  assert.match(page, /Thông tin đơn hàng/);
+  assert.match(page, /Thanh toán ngay - 3 bước đơn giản/);
+  assert.match(page, /Quét QR hoặc chuyển khoản/);
+  assert.match(page, /Sau thanh toán/);
+  assert.match(page, /payment-focus-grid/);
+  assert.match(page, /grid-template-columns: minmax\(320px, 420px\) minmax\(360px, 1fr\)/);
+  assert.match(page, /prominent/);
+  assert.match(page, /payment-after-grid/);
+  assert.match(page, /payment-step-number grid size-8/);
+  assert.doesNotMatch(page, /mt-5 grid gap-3 sm:grid-cols-3/);
+  assert.match(page, /SePay tự đối soát/);
+  assert.match(page, /qr-payment-section/);
   assert.match(page, /AI Master X10/);
-  assert.match(page, /6 Agent/);
-  assert.match(page, /Chi Tiết Đơn Hàng/);
-  assert.match(page, /Thanh Toán Ngay/);
-  assert.match(page, /3 Bước/);
-  assert.match(page, /Ví dụ khách đăng ký/);
-  assert.doesNotMatch(page, /Kết Quả Thật Từ Học Viên/);
-  assert.match(page, /Sau Khi Thanh Toán/);
-  assert.match(page, /Câu Hỏi Thường Gặp/);
-  assert.match(page, /Tôi Muốn Bắt Đầu Học Ngay/);
+  assert.doesNotMatch(page, /Vì sao nên hoàn tất ngay/);
+  assert.doesNotMatch(page, /Sale checkpoint/);
+  assert.doesNotMatch(page, /Bạn nhận được/);
+  assert.doesNotMatch(page, /Ưu đãi kết thúc hôm nay lúc 23:59/);
+  assert.doesNotMatch(page, /Chỉ còn .* suất cuối/);
 });
 
 test("payment page keeps the existing SePay and polling integrations", () => {
@@ -30,8 +46,43 @@ test("payment page keeps the existing SePay and polling integrations", () => {
   assert.match(page, /getPaymentOrder/);
   assert.match(page, /PaymentStatusPoller/);
   assert.match(page, /TransferDetails/);
+  assert.match(page, /getSepayConfig/);
+  assert.match(page, /offerDeadline/);
   assert.doesNotMatch(page, /186129999/);
   assert.doesNotMatch(page, /CONG TY TNHH TOPEXPERT/);
+});
+
+test("payment helper components support the light checkout design while keeping copy actions", () => {
+  const transferDetails = read("components/payment/transfer-details.tsx");
+  const poller = read("components/payment/payment-status-poller.tsx");
+
+  assert.match(transferDetails, /variant\?: "dark" \| "light"/);
+  assert.match(transferDetails, /prominent\?: boolean/);
+  assert.match(transferDetails, /gridTemplateColumns: "clamp\(54px, 14vw, 84px\) minmax\(0, 1fr\) max-content"/);
+  assert.match(transferDetails, /Copy ngân hàng/);
+  assert.match(transferDetails, /Copy chủ tài khoản/);
+  assert.match(transferDetails, /!prominent/);
+  assert.match(transferDetails, /Copy STK/);
+  assert.match(transferDetails, /Copy số tiền/);
+  assert.match(transferDetails, /Copy nội dung/);
+  assert.match(transferDetails, /Copy tất cả/);
+  assert.match(poller, /variant\?: "dark" \| "light"/);
+  assert.match(poller, /Đang chờ chuyển khoản/);
+});
+
+test("payment offer countdown renders a live incentive timer", () => {
+  const countdown = read("components/payment/payment-offer-countdown.tsx");
+
+  assert.match(countdown, /Trước khi quay về giá cũ/);
+  assert.match(countdown, /Chỉ còn 4 suất ưu đãi/);
+  assert.match(countdown, /text-center/);
+  assert.match(countdown, /payment-countdown-timer mx-auto/);
+  assert.match(countdown, /setInterval/);
+  assert.match(countdown, /formatTimeParts/);
+  assert.match(countdown, /giờ/);
+  assert.match(countdown, /phút/);
+  assert.match(countdown, /giây/);
+  assert.match(countdown, /ưu đãi có thể quay về giá cũ/);
 });
 
 test("checkout result images are allowed by CSP", () => {

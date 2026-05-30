@@ -19,14 +19,17 @@ function formatCountdown(totalSeconds: number) {
 export function PaymentStatusPoller({
   initialOrder,
   disablePolling = false,
+  variant = "dark",
 }: {
   initialOrder: PaymentOrder;
   disablePolling?: boolean;
+  variant?: "dark" | "light";
 }) {
   const router = useRouter();
   const [order, setOrder] = useState(initialOrder);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const purchaseTrackedRef = useRef(false);
+  const isLight = variant === "light";
 
   const countdownTarget = useMemo(() => {
     const createdTime = Date.parse(order.createdAt);
@@ -92,25 +95,29 @@ export function PaymentStatusPoller({
   return (
     <div
       className={
-        paid
-          ? "rounded-xl border border-emerald-300/20 bg-emerald-300/10 p-4"
-          : "rounded-xl border border-white/10 bg-white/8 p-4"
+        isLight
+          ? paid
+            ? "rounded-3xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-950"
+            : "rounded-3xl border border-blue-100 bg-blue-50 p-4 text-slate-950"
+          : paid
+            ? "rounded-xl border border-emerald-300/20 bg-emerald-300/10 p-4"
+            : "rounded-xl border border-white/10 bg-white/8 p-4"
       }
     >
-      <p className="text-sm font-bold text-white/55">Trạng thái</p>
+      <p className={isLight ? "text-sm font-bold text-slate-500" : "text-sm font-bold text-white/55"}>Trạng thái</p>
       <p className="mt-1 text-2xl font-black tracking-[-0.03em]">
         {paid ? "Đã nhận thanh toán" : "Đang chờ chuyển khoản"}
       </p>
-      <p className="mt-2 text-sm leading-6 text-white/60">
+      <p className={isLight ? "mt-2 text-sm font-semibold leading-6 text-slate-600" : "mt-2 text-sm leading-6 text-white/60"}>
         {paid
           ? "SePay đã báo tiền vào. Đang chuyển bạn tới khu học viên..."
           : disablePolling
             ? "Đây là bản demo giao diện checkout. Khi tạo đơn thật từ form đăng ký, hệ thống sẽ tự đối soát SePay theo mã đơn mới."
-          : "Trang này tự kiểm tra mỗi vài giây. Sau khi chuyển khoản thành công, trạng thái sẽ đổi tự động."}
+            : "Trang này tự kiểm tra mỗi vài giây. Sau khi chuyển khoản thành công, trạng thái sẽ đổi tự động."}
       </p>
 
       {!paid && !disablePolling ? (
-        <div className="mt-3 inline-flex items-center rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-bold text-white/65">
+        <div className={isLight ? "mt-3 inline-flex items-center rounded-full border border-blue-100 bg-white px-3 py-1 text-xs font-black text-blue-600" : "mt-3 inline-flex items-center rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-bold text-white/65"}>
           Thời gian giữ đơn: {formatCountdown(secondsLeft)}
         </div>
       ) : null}
