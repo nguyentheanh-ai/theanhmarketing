@@ -190,11 +190,21 @@ test("admin facebook ads route exposes the required dense product report table",
   const nav = read("components/app/admin-shell.tsx");
   const reportRoute = read("app/api/admin/meta/product-report/route.ts");
   const kpiRoute = read("app/api/admin/meta/product-kpis/route.ts");
+  const connectStartRoute = read("app/api/admin/meta/connect/start/route.ts");
+  const connectCallbackRoute = read("app/api/admin/meta/connect/callback/route.ts");
+  const oauth = read("lib/meta/oauth.ts");
 
   assert.match(page, /allowedRoles=\{\["owner"\]\}/);
   assert.match(nav, /\/admin\/facebook-ads/);
   assert.match(reportRoute, /buildProductAdsPerformanceRows/);
+  assert.match(reportRoute, /metaAdsTokenCookie/);
   assert.match(kpiRoute, /canAccessAdminRole\(adminRole, \["owner"\]\)/);
+  assert.match(connectStartRoute, /buildMetaAdsOAuthUrl/);
+  assert.match(connectCallbackRoute, /exchangeMetaAdsOAuthCode/);
+  assert.match(oauth, /ads_read/);
+  assert.match(oauth, /read_insights/);
+  assert.match(client, /Kết nối Facebook/);
+  assert.match(client, /\/api\/admin\/meta\/connect\/start/);
 
   for (const column of [
     "#",

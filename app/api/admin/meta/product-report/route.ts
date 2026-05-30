@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import {
   buildProductAdsPerformanceRows,
   type ProductAdsKpi,
@@ -11,6 +12,7 @@ import {
   getMetaCampaignPerformance,
   type MetaAdAccount,
 } from "@/lib/meta/ads-api";
+import { metaAdsTokenCookie } from "@/lib/meta/oauth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getCourses } from "@/services/courseService";
 import { getLeads } from "@/services/leadService";
@@ -162,12 +164,14 @@ async function loadMetaData({
   adAccountId,
   startDate,
   endDate,
+  accessToken,
 }: {
   adAccountId: string;
   startDate: string;
   endDate: string;
+  accessToken?: string;
 }) {
-  const token = getMetaAdsAccessToken();
+  const token = accessToken || getMetaAdsAccessToken();
 
   if (!token) {
     return {
@@ -216,12 +220,14 @@ export async function GET(request: Request) {
   const startDate = toDateInput(url.searchParams.get("start_date"), defaults.start);
   const endDate = toDateInput(url.searchParams.get("end_date"), defaults.end);
   const adAccountId = url.searchParams.get("ad_account_id") ?? "";
+  const cookieStore = await cookies();
+  const connectedAccessToken = cookieStore.get(metaAdsTokenCookie)?.value;
 
   const [courses, orders, leads, meta] = await Promise.all([
     getCourses(),
     getPaymentOrders({ includeFallback: false }),
     getLeads({ includeFallback: false }),
-    loadMetaData({ adAccountId, startDate, endDate }),
+    loadMetaData({ adAccountId, startDate, endDate, accessToken: connectedAccessToken }),
   ]);
   const [mappingResult, kpiResult] = await Promise.all([loadProductAdsMappings(courses), loadProductAdsKpis()]);
   const rows = buildProductAdsPerformanceRows({

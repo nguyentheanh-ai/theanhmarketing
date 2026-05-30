@@ -413,7 +413,20 @@ export function ProductAdsReportClient() {
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [loading, setLoading] = useState(true);
   const [savingProduct, setSavingProduct] = useState("");
-  const [notice, setNotice] = useState("");
+  const [notice, setNotice] = useState(() => {
+    if (typeof window === "undefined") {
+      return "";
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const connectError = params.get("meta_error");
+
+    if (connectError) {
+      return connectError;
+    }
+
+    return params.get("connected") === "facebook" ? "Đã kết nối Facebook. Đang tải lại tài khoản quảng cáo thật." : "";
+  });
 
   const loadReport = useCallback(async () => {
     setNotice("");
@@ -446,16 +459,20 @@ export function ProductAdsReportClient() {
         return;
       }
 
-      setRows(payload.data.rows);
-      setSummary(payload.data.summary);
-      setAccounts(payload.data.accounts);
-      setSelectedAccount(payload.data.selectedAdAccountId || selectedAccount);
+      const reportData = payload.data;
 
-      if (!payload.data.metaConfigured) {
+      setRows(reportData.rows);
+      setSummary(reportData.summary);
+      setAccounts(reportData.accounts);
+      setSelectedAccount(reportData.selectedAdAccountId || selectedAccount);
+
+      if (!reportData.metaConfigured) {
         setNotice("Chưa cấu hình META_ADS_ACCESS_TOKEN nên bảng đang dùng doanh thu/lead CRM và KPI nội bộ.");
-      } else if (payload.data.metaError) {
-        setNotice(payload.data.metaError);
-      } else if (payload.data.kpiStorage === "missing_schema" || payload.data.mappingStorage === "missing_schema") {
+      } else if (reportData.metaError) {
+        setNotice(reportData.metaError);
+      } else if (reportData.accounts.some((account) => account.id === reportData.selectedAdAccountId && /sandbox/i.test(account.name ?? ""))) {
+        setNotice("Facebook đang trả về Sandbox Ad Account. Hãy bấm Kết nối Facebook bằng tài khoản có quyền trên tài khoản quảng cáo thật.");
+      } else if (reportData.kpiStorage === "missing_schema" || reportData.mappingStorage === "missing_schema") {
         setNotice("Cần chạy SQL product_ads_mappings/product_ads_kpis để lưu mapping và KPI lâu dài.");
       }
     } catch {
@@ -540,6 +557,12 @@ export function ProductAdsReportClient() {
         </div>
 
         <div className="flex flex-wrap items-end gap-2">
+          <a
+            className="grid h-10 place-items-center rounded-md bg-blue-600 px-4 text-sm font-black text-white transition hover:bg-blue-700"
+            href="/api/admin/meta/connect/start"
+          >
+            Kết nối Facebook
+          </a>
           <label className="grid gap-1 text-xs font-bold text-slate-500">
             Tài khoản quảng cáo
             <select

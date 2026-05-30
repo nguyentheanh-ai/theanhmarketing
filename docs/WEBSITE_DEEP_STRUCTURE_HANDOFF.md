@@ -207,6 +207,7 @@ Product Ads report read-model:
 - `components/admin/product-ads-report-client.tsx` also renders the Recharts-based ads/revenue visual layer above the dense table: revenue vs ad spend, spend mix, lead/click trend, and CPL/ME-RE review. Keep this chart layer light and driven by the same filtered product rows; do not add CDN Chart.js scripts.
 - API: `GET /api/admin/meta/product-report?ad_account_id&start_date&end_date`.
 - KPI API: `PATCH /api/admin/meta/product-kpis`.
+- Facebook OAuth connect for owner Ads report: `/api/admin/meta/connect/start` -> `/api/admin/meta/connect/callback`; stores the connected token in an httpOnly cookie and product report reads that token before env fallback.
 - Core formulas and mapping logic: `lib/admin/product-ads-report.ts`.
 - Meta Graph helper: `lib/meta/ads-api.ts`, server-only, uses env token only.
 - Supabase config tables: `product_ads_mappings` and `product_ads_kpis`; setup SQL is `docs/SUPABASE_PRODUCT_ADS_REPORT.sql`.
