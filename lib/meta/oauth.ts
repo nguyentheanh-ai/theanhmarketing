@@ -3,12 +3,16 @@ const facebookScopes = ["public_profile", "ads_read", "read_insights", "business
 export const metaAdsTokenCookie = "tam_meta_ads_token";
 export const metaAdsStateCookie = "tam_meta_ads_state";
 
+function cleanEnvValue(value: string | undefined) {
+  return (value ?? "").replace(/^\uFEFF/, "").trim();
+}
+
 function getMetaApiVersion() {
-  return process.env.META_API_VERSION || process.env.META_CAPI_API_VERSION || "v25.0";
+  return cleanEnvValue(process.env.META_API_VERSION) || cleanEnvValue(process.env.META_CAPI_API_VERSION) || "v25.0";
 }
 
 function getSiteUrl() {
-  return (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+  return (cleanEnvValue(process.env.NEXT_PUBLIC_SITE_URL) || "http://localhost:3000").replace(/\/$/, "");
 }
 
 function getCallbackUrl() {
@@ -16,8 +20,8 @@ function getCallbackUrl() {
 }
 
 function getFacebookAppConfig() {
-  const appId = process.env.META_APP_ID;
-  const appSecret = process.env.META_APP_SECRET;
+  const appId = cleanEnvValue(process.env.META_APP_ID);
+  const appSecret = cleanEnvValue(process.env.META_APP_SECRET);
 
   if (!appId || !appSecret) {
     throw new Error("Thiếu META_APP_ID hoặc META_APP_SECRET để kết nối Facebook.");
