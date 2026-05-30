@@ -6,6 +6,7 @@ const landingPage = readFileSync("app/khoa-hoc/bo-kit-agent-doanh-nghiep/page.ts
 const checkoutForm = readFileSync("app/khoa-hoc/bo-kit-agent-doanh-nghiep/agent-kit-checkout-form.tsx", "utf8");
 const calculator = readFileSync("app/khoa-hoc/bo-kit-agent-doanh-nghiep/agent-kit-calculator.tsx", "utf8");
 const orderService = readFileSync("services/orderService.ts", "utf8");
+const nextConfig = readFileSync("next.config.ts", "utf8");
 
 function assertIncludes(source, expected) {
   assert.match(source, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
@@ -108,6 +109,7 @@ test("agent kit calculator has a real range input that updates live results", ()
 test("agent kit checkout posts to orders API with the 359K payment plan", () => {
   assert.match(checkoutForm, /courseSlug:\s*COURSE_SLUG/);
   assert.match(checkoutForm, /paymentPlan:\s*PAYMENT_PLAN/);
+  assertIncludes(checkoutForm, 'landingPage: "academy/bo-kit-agent-doanh-nghiep"');
   assert.match(checkoutForm, /fetch\("\/api\/orders"/);
   assert.match(checkoutForm, /router\.push\(`\/thanh-toan\/\$\{encodeURIComponent\(result\.order\.orderCode\)\}`\)/);
   assertIncludes(checkoutForm, "Thanh toán SePay");
@@ -115,4 +117,11 @@ test("agent kit checkout posts to orders API with the 359K payment plan", () => 
   assert.match(orderService, /"bo-agent-kit-x10-hieu-suat-cong-viec"/);
   assert.match(orderService, /"agent-kit-ads-359"/);
   assert.match(orderService, /amount:\s*359000/);
+});
+
+test("agent kit private landing is exposed as an academy page, not a main website course URL", () => {
+  assert.match(nextConfig, /source:\s*"\/khoa-hoc\/bo-kit-agent-doanh-nghiep"/);
+  assert.match(nextConfig, /destination:\s*"\/academy\/bo-kit-agent-doanh-nghiep"/);
+  assert.match(nextConfig, /source:\s*"\/academy\/bo-kit-agent-doanh-nghiep"/);
+  assert.match(nextConfig, /destination:\s*"\/khoa-hoc\/bo-kit-agent-doanh-nghiep"/);
 });

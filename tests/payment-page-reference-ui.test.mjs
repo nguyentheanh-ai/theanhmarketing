@@ -66,6 +66,9 @@ test("payment helper components support the light checkout design while keeping 
   assert.match(transferDetails, /Copy nội dung/);
   assert.match(transferDetails, /Copy tất cả/);
   assert.match(poller, /variant\?: "dark" \| "light"/);
+  assert.match(poller, /checkoutTrackedRef/);
+  assert.match(poller, /InitiateCheckout/);
+  assert.match(poller, /Purchase/);
   assert.match(poller, /Đang chờ chuyển khoản/);
 });
 

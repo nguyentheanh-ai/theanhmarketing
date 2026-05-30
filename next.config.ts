@@ -67,6 +67,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/khoa-hoc/bo-kit-agent-doanh-nghiep",
+        destination: "/academy/bo-kit-agent-doanh-nghiep",
+        permanent: false,
+      },
+      {
         source: "/academy",
         destination: "/khoa-hoc",
         permanent: false,
@@ -82,6 +87,10 @@ const nextConfig: NextConfig = {
       {
         source: "/academy/ai-master-x10-hieu-suat",
         destination: "/academy/ai-master-x10-hieu-suat.html",
+      },
+      {
+        source: "/academy/bo-kit-agent-doanh-nghiep",
+        destination: "/khoa-hoc/bo-kit-agent-doanh-nghiep",
       },
     ];
   },

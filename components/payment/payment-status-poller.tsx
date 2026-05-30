@@ -16,6 +16,11 @@ function formatCountdown(totalSeconds: number) {
   return `${minutes}:${seconds}`;
 }
 
+function getContentIds(order: PaymentOrder) {
+  const itemSlugs = order.orderItems.map((item) => item.slug).filter(Boolean);
+  return itemSlugs.length ? itemSlugs : [order.courseSlug].filter(Boolean);
+}
+
 export function PaymentStatusPoller({
   initialOrder,
   disablePolling = false,
@@ -28,6 +33,7 @@ export function PaymentStatusPoller({
   const router = useRouter();
   const [order, setOrder] = useState(initialOrder);
   const [secondsLeft, setSecondsLeft] = useState(0);
+  const checkoutTrackedRef = useRef(false);
   const purchaseTrackedRef = useRef(false);
   const isLight = variant === "light";
 
@@ -53,12 +59,26 @@ export function PaymentStatusPoller({
       return;
     }
 
+    if (!checkoutTrackedRef.current) {
+      checkoutTrackedRef.current = true;
+      trackMarketingEvent("InitiateCheckout", {
+        content_ids: getContentIds(order),
+        content_name: order.courseTitle,
+        content_type: "product",
+        currency: order.currency || "VND",
+        transaction_id: order.orderCode,
+        value: order.amount,
+      });
+    }
+
     if (order.status === "paid") {
       if (!purchaseTrackedRef.current) {
         purchaseTrackedRef.current = true;
         trackMarketingEvent("Purchase", {
+          content_ids: getContentIds(order),
           content_name: order.courseTitle,
-          currency: "VND",
+          content_type: "product",
+          currency: order.currency || "VND",
           transaction_id: order.orderCode,
           value: order.amount,
         });
@@ -88,7 +108,7 @@ export function PaymentStatusPoller({
     }, 3000);
 
     return () => window.clearInterval(timer);
-  }, [disablePolling, order.amount, order.courseTitle, order.orderCode, order.status, router]);
+  }, [disablePolling, order, router]);
 
   const paid = order.status === "paid";
 

@@ -39,7 +39,7 @@ export function AgentKitCheckoutForm() {
       phone: String(formData.get("phone") || "").trim(),
       courseSlug: COURSE_SLUG,
       paymentPlan: PAYMENT_PLAN,
-      landingPage: "khoa-hoc/bo-kit-agent-doanh-nghiep",
+      landingPage: "academy/bo-kit-agent-doanh-nghiep",
       pageUrl: window.location.href,
       referrer: document.referrer,
       utmSource: new URLSearchParams(window.location.search).get("utm_source") || "",

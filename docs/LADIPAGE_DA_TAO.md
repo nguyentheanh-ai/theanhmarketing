@@ -10,13 +10,13 @@ Repo source: `E:\TheAnh-Business-Workspace\02_Website\landing-page`
 |---|---|---|---|---|
 | AI Master X10 hiệu suất | `https://www.theanhmarketing.com/academy/ai-master-x10-hieu-suat` | `public/ladipage/ai-master-x10-hieu-suat.html` | `public/academy/ai-master-x10-hieu-suat.html` | LadiPage HTML có assets riêng trong `public/academy/ai-master-x10-assets`. Route được rewrite trong `next.config.ts`. |
 | Facebook Ads Master 2026 | `https://www.theanhmarketing.com/academy/facebook-ads-master-2026` | `public/ladipage/facebook-ads-2026.html` | `public/academy/facebook-ads-master-2026.html` | LadiPage HTML có form tạo đơn `/api/orders`, gói video 399K và gói hỗ trợ 799K. Route được rewrite trong `next.config.ts`. |
-| AI Agent Business / Bộ Kit AI Agent cho chủ doanh nghiệp | `https://www.theanhmarketing.com/khoa-hoc/bo-kit-agent-doanh-nghiep` | `app/khoa-hoc/bo-kit-agent-doanh-nghiep/page.tsx` | Route Next.js trực tiếp | Landing private/noindex cho ads. Checkout dùng `courseSlug=bo-agent-kit-x10-hieu-suat-cong-viec`, `paymentPlan=agent-kit-ads-359`, giá 359K. |
+| AI Agent Business / Bộ Kit AI Agent cho chủ doanh nghiệp | `https://www.theanhmarketing.com/academy/bo-kit-agent-doanh-nghiep` | `app/khoa-hoc/bo-kit-agent-doanh-nghiep/page.tsx` | Route academy rewrite sang Next.js page | Landing private/noindex cho ads, không nối vào website chính. Checkout dùng `courseSlug=bo-agent-kit-x10-hieu-suat-cong-viec`, `paymentPlan=agent-kit-ads-359`, giá 359K. |
 
 ## Trang thanh toán liên quan
 
 | Trang | URL local/demo | Source | Ghi chú |
 |---|---|---|---|
-| Checkout SePay theo mã đơn | `http://localhost:3000/thanh-toan/AGENTKITDEMO` | `app/thanh-toan/[code]/page.tsx` | Có demo local `AGENTKITDEMO`, QR SePay, thông tin STK, countdown ưu đãi, trạng thái đơn, sau-thanh-toán. Đơn thật dùng `/thanh-toan/<orderCode>`. |
+| Checkout SePay theo mã đơn | `http://localhost:3000/thanh-toan/AGENTKITDEMO` | `app/thanh-toan/[code]/page.tsx` | Có demo local `AGENTKITDEMO`, QR SePay, thông tin STK, countdown ưu đãi, trạng thái đơn, sau-thanh-toán. Đơn thật dùng `/thanh-toan/<orderCode>`. Trang checkout có PageView, InitiateCheckout và Purchase browser Pixel; webhook SePay bắn Purchase qua CAPI. |
 | Countdown ưu đãi checkout | Dùng trong checkout | `components/payment/payment-offer-countdown.tsx` | Copy hiện tại đã rút gọn: `Chỉ còn hôm nay`, `Giữ giá 359K hôm nay`, `Tăng giá sau`. |
 | Chi tiết chuyển khoản | Dùng trong checkout | `components/payment/transfer-details.tsx` | QR/STK là trọng tâm, copy từng trường, không dùng copy tất cả ở layout prominent. |
 

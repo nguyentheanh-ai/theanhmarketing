@@ -351,7 +351,7 @@ export default async function PaymentPage({
 
       <header className="payment-header relative z-10 border-b border-slate-900/8 bg-white/88 px-5 py-4 backdrop-blur-2xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-          <Link className="flex items-center gap-3 font-black text-slate-950" href="/khoa-hoc/bo-kit-agent-doanh-nghiep">
+          <Link className="flex items-center gap-3 font-black text-slate-950" href="/academy/bo-kit-agent-doanh-nghiep">
             <span className="grid size-11 place-items-center overflow-hidden rounded-2xl bg-white shadow-[0_10px_28px_rgba(15,23,42,0.12)]">
               <Image src="/brand/ta-mark.svg" alt="The Anh Marketing" width={44} height={44} priority />
             </span>
