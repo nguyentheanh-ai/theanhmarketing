@@ -418,7 +418,7 @@ export default async function PaymentPage({
               </div>
 
               <div className="mt-5">
-                <PaymentOfferCountdown deadline={offerDeadline} label="Trước khi quay về giá cũ" />
+                <PaymentOfferCountdown deadline={offerDeadline} />
               </div>
 
               <div className="payment-focus-grid mt-7 grid justify-center gap-5 md:items-stretch">

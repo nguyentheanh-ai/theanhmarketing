@@ -4,7 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 
 function formatTimeParts(totalSeconds: number) {
   const safe = Math.max(0, totalSeconds);
-  const hours = Math.floor(safe / 3600)
+  const days = Math.floor(safe / 86400)
+    .toString()
+    .padStart(2, "0");
+  const hours = Math.floor((safe % 86400) / 3600)
     .toString()
     .padStart(2, "0");
   const minutes = Math.floor((safe % 3600) / 60)
@@ -15,6 +18,7 @@ function formatTimeParts(totalSeconds: number) {
     .padStart(2, "0");
 
   return [
+    ["ngày", days],
     ["giờ", hours],
     ["phút", minutes],
     ["giây", seconds],
@@ -23,7 +27,7 @@ function formatTimeParts(totalSeconds: number) {
 
 export function PaymentOfferCountdown({
   deadline,
-  label = "Trước khi quay về giá cũ",
+  label = "Tăng giá sau:",
 }: {
   deadline: string;
   label?: string;
@@ -45,21 +49,31 @@ export function PaymentOfferCountdown({
   const timeParts = formatTimeParts(secondsLeft);
 
   return (
-    <div className="payment-countdown-card rounded-[24px] border border-blue-100 bg-white/92 p-3 text-center shadow-[0_18px_60px_rgba(0,97,255,0.12)] backdrop-blur-2xl sm:rounded-[28px] sm:p-5">
-      <div className="mx-auto max-w-2xl">
-        <p className="mx-auto mb-3 inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-orange-600 sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.14em]">
-          Chỉ còn 4 suất ưu đãi
-        </p>
-        <p className="text-[11px] font-black uppercase tracking-[0.13em] text-blue-600 sm:text-xs sm:tracking-[0.16em]">{label}</p>
-        <p className="mt-1 text-xs font-bold leading-5 text-slate-600 sm:text-sm sm:leading-6">
-          Hoàn tất trước khi đồng hồ về 00:00:00 để giữ giá 359K. Sau thời gian này, ưu đãi có thể quay về giá cũ.
-        </p>
-      </div>
-      <div className="payment-countdown-timer mx-auto mt-4 grid w-full max-w-[224px] grid-cols-3 items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-400 px-3 py-3 text-white shadow-[0_14px_34px_rgba(0,97,255,0.22)] sm:max-w-[260px] sm:gap-3 sm:px-5">
+    <div className="payment-countdown-card rounded-[26px] border border-blue-100 bg-white/95 p-4 text-left shadow-[0_22px_70px_rgba(0,97,255,0.12)] backdrop-blur-2xl sm:rounded-[30px] sm:p-6">
+      <p className="inline-flex rounded-full bg-red-50 px-4 py-2 text-[11px] font-black uppercase tracking-[0.14em] text-red-500 sm:px-5 sm:text-xs">
+        Chỉ còn hôm nay
+      </p>
+
+      <h3 className="mt-5 max-w-2xl text-[1.8rem] font-black leading-[1.05] tracking-[-0.045em] text-slate-950 sm:text-4xl sm:tracking-[-0.055em]">
+        Giữ giá <span className="bg-gradient-to-r from-blue-600 to-cyan-400 bg-clip-text text-transparent">359K</span> hôm nay.
+      </h3>
+
+      <p className="mt-3 max-w-xl text-sm font-semibold leading-6 text-slate-600 sm:text-base sm:leading-7">
+        Sau thời gian này, ưu đãi có thể quay về <strong className="text-slate-950">799K</strong>.
+      </p>
+
+      <p className="mt-6 inline-flex rounded-full bg-orange-50 px-4 py-2 text-xs font-black text-orange-600 sm:px-5">
+        {label}
+      </p>
+
+      <div className="payment-countdown-grid mt-4 grid grid-cols-4 gap-2 sm:gap-4">
         {timeParts.map(([partLabel, value]) => (
-          <span className="grid min-w-0 justify-items-center" key={partLabel}>
-            <span className="font-mono text-2xl font-black leading-none tracking-[-0.04em] sm:text-3xl sm:tracking-[-0.06em]">{value}</span>
-            <span className="mt-1 text-[9px] font-black uppercase tracking-[0.08em] text-white/76 sm:text-[10px] sm:tracking-[0.12em]">{partLabel}</span>
+          <span
+            className="grid min-h-[76px] min-w-0 place-items-center rounded-2xl bg-white px-1 py-3 text-center shadow-[0_16px_46px_rgba(15,23,42,0.07)] ring-1 ring-blue-50 sm:min-h-[92px] sm:px-3"
+            key={partLabel}
+          >
+            <span className="font-mono text-2xl font-black leading-none tracking-[-0.05em] text-blue-500 sm:text-4xl sm:tracking-[-0.07em]">{value}</span>
+            <span className="mt-2 text-[9px] font-black uppercase tracking-[0.12em] text-slate-500 sm:text-[11px]">{partLabel}</span>
           </span>
         ))}
       </div>

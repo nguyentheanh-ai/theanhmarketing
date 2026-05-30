@@ -18,7 +18,6 @@ test("payment page follows the agent kit checkout section structure", () => {
   assert.match(page, /Thanh toán SePay/);
   assert.match(page, /PaymentOfferCountdown/);
   assert.match(page, /Ưu đãi đang được giữ theo mã đơn/);
-  assert.match(page, /Trước khi quay về giá cũ/);
   assert.match(page, /Thông tin đơn hàng/);
   assert.match(page, /Thanh toán ngay - 3 bước đơn giản/);
   assert.match(page, /Quét QR hoặc chuyển khoản/);
@@ -73,16 +72,19 @@ test("payment helper components support the light checkout design while keeping 
 test("payment offer countdown renders a live incentive timer", () => {
   const countdown = read("components/payment/payment-offer-countdown.tsx");
 
-  assert.match(countdown, /Trước khi quay về giá cũ/);
-  assert.match(countdown, /Chỉ còn 4 suất ưu đãi/);
-  assert.match(countdown, /text-center/);
-  assert.match(countdown, /payment-countdown-timer mx-auto/);
+  assert.match(countdown, /Tăng giá sau:/);
+  assert.match(countdown, /Chỉ còn hôm nay/);
+  assert.match(countdown, /Giữ giá/);
+  assert.match(countdown, /359K/);
+  assert.match(countdown, /799K/);
+  assert.match(countdown, /payment-countdown-grid/);
   assert.match(countdown, /setInterval/);
   assert.match(countdown, /formatTimeParts/);
+  assert.match(countdown, /ngày/);
   assert.match(countdown, /giờ/);
   assert.match(countdown, /phút/);
   assert.match(countdown, /giây/);
-  assert.match(countdown, /ưu đãi có thể quay về giá cũ/);
+  assert.match(countdown, /Sau thời gian này/);
 });
 
 test("checkout result images are allowed by CSP", () => {
