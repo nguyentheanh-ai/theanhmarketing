@@ -193,16 +193,23 @@ test("admin facebook ads route exposes the required dense product report table",
   const connectStartRoute = read("app/api/admin/meta/connect/start/route.ts");
   const connectCallbackRoute = read("app/api/admin/meta/connect/callback/route.ts");
   const oauth = read("lib/meta/oauth.ts");
+  const providerTokenStore = read("lib/facebook-provider-token-store.ts");
 
   assert.match(page, /allowedRoles=\{\["owner"\]\}/);
   assert.match(nav, /\/admin\/facebook-ads/);
   assert.match(reportRoute, /buildProductAdsPerformanceRows/);
   assert.match(reportRoute, /metaAdsTokenCookie/);
+  assert.match(reportRoute, /getLatestStoredFacebookProviderToken/);
+  assert.match(reportRoute, /chooseSelectedAdAccountId/);
+  assert.match(reportRoute, /configuredAccount/);
   assert.match(kpiRoute, /canAccessAdminRole\(adminRole, \["owner"\]\)/);
   assert.match(connectStartRoute, /buildMetaAdsOAuthUrl/);
   assert.match(connectCallbackRoute, /exchangeMetaAdsOAuthCode/);
   assert.match(oauth, /ads_read/);
   assert.match(oauth, /read_insights/);
+  assert.match(providerTokenStore, /facebook_provider_tokens/);
+  assert.match(providerTokenStore, /decryptStoredFacebookToken/);
+  assert.match(providerTokenStore, /grantedScopes\.includes\("ads_read"\)/);
   assert.match(client, /Kết nối Facebook/);
   assert.match(client, /\/api\/admin\/meta\/connect\/start/);
 

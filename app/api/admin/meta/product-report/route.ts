@@ -6,6 +6,7 @@ import {
   type ProductAdsMapping,
 } from "@/lib/admin/product-ads-report";
 import { canAccessAdminRole, getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
+import { getLatestStoredFacebookProviderToken } from "@/lib/facebook-provider-token-store";
 import {
   getMetaAdAccounts,
   getMetaAdsAccessToken,
@@ -160,6 +161,27 @@ function summarizeRows(rows: ReturnType<typeof buildProductAdsPerformanceRows>) 
   };
 }
 
+function chooseSelectedAdAccountId(accounts: MetaAdAccount[], requestedAdAccountId: string) {
+  if (requestedAdAccountId) {
+    return requestedAdAccountId;
+  }
+
+  const configuredAdAccountId = process.env.META_ADS_AD_ACCOUNT_ID;
+
+  if (configuredAdAccountId) {
+    const normalizedConfiguredId = configuredAdAccountId.startsWith("act_")
+      ? configuredAdAccountId
+      : `act_${configuredAdAccountId}`;
+    const configuredAccount = accounts.find((account) => account.id === normalizedConfiguredId);
+
+    if (configuredAccount) {
+      return configuredAccount.id;
+    }
+  }
+
+  return accounts[0]?.id || "";
+}
+
 async function loadMetaData({
   adAccountId,
   startDate,
@@ -185,7 +207,7 @@ async function loadMetaData({
 
   try {
     const accounts = await getMetaAdAccounts(token);
-    const selectedAdAccountId = adAccountId || process.env.META_ADS_AD_ACCOUNT_ID || accounts[0]?.id || "";
+    const selectedAdAccountId = chooseSelectedAdAccountId(accounts, adAccountId);
     const campaigns = selectedAdAccountId
       ? await getMetaCampaignPerformance({ adAccountId: selectedAdAccountId, startDate, endDate, accessToken: token })
       : [];
@@ -222,12 +244,13 @@ export async function GET(request: Request) {
   const adAccountId = url.searchParams.get("ad_account_id") ?? "";
   const cookieStore = await cookies();
   const connectedAccessToken = cookieStore.get(metaAdsTokenCookie)?.value;
+  const storedProviderToken = connectedAccessToken ? null : await getLatestStoredFacebookProviderToken();
 
   const [courses, orders, leads, meta] = await Promise.all([
     getCourses(),
     getPaymentOrders({ includeFallback: false }),
     getLeads({ includeFallback: false }),
-    loadMetaData({ adAccountId, startDate, endDate, accessToken: connectedAccessToken }),
+    loadMetaData({ adAccountId, startDate, endDate, accessToken: connectedAccessToken || storedProviderToken?.accessToken }),
   ]);
   const [mappingResult, kpiResult] = await Promise.all([loadProductAdsMappings(courses), loadProductAdsKpis()]);
   const rows = buildProductAdsPerformanceRows({
