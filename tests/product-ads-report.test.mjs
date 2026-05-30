@@ -207,6 +207,7 @@ test("admin facebook ads route exposes the required dense product report table",
   assert.match(connectCallbackRoute, /exchangeMetaAdsOAuthCode/);
   assert.match(oauth, /cleanEnvValue/);
   assert.match(oauth, /replace\(\/\^\\uFEFF\//);
+  assert.match(oauth, /https:\/\/www\.theanhmarketing\.com/);
   assert.match(oauth, /ads_read/);
   assert.match(oauth, /read_insights/);
   assert.match(providerTokenStore, /facebook_provider_tokens/);

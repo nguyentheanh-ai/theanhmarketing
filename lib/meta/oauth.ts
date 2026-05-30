@@ -12,7 +12,7 @@ function getMetaApiVersion() {
 }
 
 function getSiteUrl() {
-  return (cleanEnvValue(process.env.NEXT_PUBLIC_SITE_URL) || "http://localhost:3000").replace(/\/$/, "");
+  return (cleanEnvValue(process.env.NEXT_PUBLIC_SITE_URL) || "https://www.theanhmarketing.com").replace(/\/$/, "");
 }
 
 function getCallbackUrl() {
