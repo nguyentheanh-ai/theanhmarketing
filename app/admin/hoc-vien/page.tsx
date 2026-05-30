@@ -77,7 +77,7 @@ export default async function AdminStudentsPage() {
           <StatCard icon="C" label="Đang chờ" tone="amber" value={pendingCount} />
         </section>
 
-        <AdminPanel className="mt-4 max-w-4xl rounded-lg p-5 shadow-sm">
+        <AdminPanel className="mt-4 w-full rounded-lg p-5 shadow-sm">
           <h2 className="text-base font-black text-slate-950">Thêm học viên</h2>
           <StudentIntakeForm courses={courses} />
         </AdminPanel>

@@ -50,7 +50,7 @@ export function StudentIntakeForm({ courses }: { courses: Course[] }) {
 
   return (
     <form className="mt-4 grid gap-4" onSubmit={handleSubmit}>
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-3 lg:grid-cols-4">
         <label className="grid gap-1.5">
           <span className={labelClass}>Họ tên</span>
           <input className={inputClass} name="name" required />
@@ -63,9 +63,9 @@ export function StudentIntakeForm({ courses }: { courses: Course[] }) {
           <span className={labelClass}>Email</span>
           <input className={inputClass} name="email" required type="email" />
         </label>
-        <div className="grid gap-1.5 md:col-span-2">
+        <div className="grid gap-1.5 lg:col-span-2">
           <span className={labelClass}>Chọn khóa học</span>
-          <div className="grid max-h-36 gap-2 overflow-y-auto rounded-md border border-slate-200 bg-white p-2 sm:grid-cols-2">
+          <div className="grid max-h-36 gap-2 overflow-y-auto rounded-md border border-slate-200 bg-white p-2 sm:grid-cols-2 xl:grid-cols-3">
             {courses.map((course, index) => (
               <label
                 key={course.slug}
@@ -95,7 +95,7 @@ export function StudentIntakeForm({ courses }: { courses: Course[] }) {
           <span className={labelClass}>Mật khẩu</span>
           <input className={inputClass} name="temporaryPassword" placeholder="Để trống sẽ tự tạo" type="text" />
         </label>
-        <label className="grid gap-1.5 md:col-span-2">
+        <label className="grid gap-1.5 lg:col-span-2">
           <span className={labelClass}>Nguồn / ghi chú</span>
           <input className={inputClass} name="source" placeholder="Facebook, Zalo, Referral..." />
         </label>

@@ -50,6 +50,8 @@ test("admin student access controls can update multiple courses for one student"
   assert.match(accessRoute, /Promise\.all|for \(const course/);
   assert.match(intakeForm, /getAll\("courseSlugs"\)/);
   assert.match(intakeForm, /type="checkbox"/);
+  assert.match(intakeForm, /lg:grid-cols-4/);
+  assert.match(intakeForm, /xl:grid-cols-3/);
   assert.match(actions, /type="checkbox"/);
   assert.match(actions, /checkedCourseSlugs/);
 });
@@ -61,6 +63,7 @@ test("admin student page follows the compact student-management layout", () => {
   assert.match(page, /Đã cấp quyền/);
   assert.match(page, /Đang chờ/);
   assert.match(page, /Thêm học viên/);
+  assert.match(page, /mt-4 w-full rounded-lg/);
   assert.match(page, /Danh sách học viên/);
   assert.match(page, /Tên\/liên hệ/);
   assert.match(page, /Thao tác/);
