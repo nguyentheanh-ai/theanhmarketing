@@ -34,12 +34,16 @@ export type MetaAdAccount = {
 
 const leadActionTypes = new Set(["lead", "onsite_conversion.lead_grouped", "offsite_conversion.fb_pixel_lead"]);
 
+export function cleanMetaEnvValue(value: string | undefined) {
+  return (value ?? "").replace(/^\uFEFF/, "").trim();
+}
+
 function getMetaApiVersion() {
-  return process.env.META_API_VERSION || process.env.META_CAPI_API_VERSION || "v25.0";
+  return cleanMetaEnvValue(process.env.META_API_VERSION) || cleanMetaEnvValue(process.env.META_CAPI_API_VERSION) || "v25.0";
 }
 
 export function getMetaAdsAccessToken() {
-  return process.env.META_ADS_ACCESS_TOKEN || "";
+  return cleanMetaEnvValue(process.env.META_ADS_ACCESS_TOKEN);
 }
 
 export function normalizeMetaAdAccountId(adAccountId: string) {
@@ -81,13 +85,15 @@ function classifyMetaError(status: number, payload: MetaApiErrorPayload) {
 }
 
 async function metaFetch<T>(path: string, params: Record<string, string>, accessToken = getMetaAdsAccessToken()) {
-  if (!accessToken) {
+  const cleanAccessToken = cleanMetaEnvValue(accessToken);
+
+  if (!cleanAccessToken) {
     return null;
   }
 
   const response = await fetch(graphUrl(path, params), {
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${cleanAccessToken}`,
     },
     cache: "no-store",
   });

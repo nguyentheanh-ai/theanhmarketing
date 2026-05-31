@@ -193,6 +193,7 @@ test("admin facebook ads route exposes the required dense product report table",
   const connectStartRoute = read("app/api/admin/meta/connect/start/route.ts");
   const connectCallbackRoute = read("app/api/admin/meta/connect/callback/route.ts");
   const oauth = read("lib/meta/oauth.ts");
+  const adsApi = read("lib/meta/ads-api.ts");
   const providerTokenStore = read("lib/facebook-provider-token-store.ts");
 
   assert.match(page, /allowedRoles=\{\["owner"\]\}/);
@@ -210,6 +211,8 @@ test("admin facebook ads route exposes the required dense product report table",
   assert.match(oauth, /cleanEnvValue/);
   assert.match(oauth, /replace\(\/\^\\uFEFF\//);
   assert.match(oauth, /https:\/\/www\.theanhmarketing\.com/);
+  assert.match(adsApi, /cleanMetaEnvValue/);
+  assert.match(adsApi, /Authorization: `Bearer \$\{cleanAccessToken\}`/);
   assert.match(oauth, /ads_read/);
   assert.match(oauth, /read_insights/);
   assert.match(providerTokenStore, /facebook_provider_tokens/);

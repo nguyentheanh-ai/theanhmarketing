@@ -209,19 +209,19 @@ async function loadMetaData({
 
   for (const token of tokenCandidates) {
     try {
-    const accounts = await getMetaAdAccounts(token);
-    const selectedAdAccountId = chooseSelectedAdAccountId(accounts, adAccountId);
-    const campaigns = selectedAdAccountId
-      ? await getMetaCampaignPerformance({ adAccountId: selectedAdAccountId, startDate, endDate, accessToken: token })
-      : [];
+      const accounts = await getMetaAdAccounts(token);
+      const selectedAdAccountId = chooseSelectedAdAccountId(accounts, adAccountId);
+      const campaigns = selectedAdAccountId
+        ? await getMetaCampaignPerformance({ adAccountId: selectedAdAccountId, startDate, endDate, accessToken: token })
+        : [];
 
-    return {
-      accounts,
-      campaigns,
-      selectedAdAccountId,
-      metaConfigured: true,
-      metaError: null,
-    };
+      return {
+        accounts,
+        campaigns,
+        selectedAdAccountId,
+        metaConfigured: true,
+        metaError: null,
+      };
     } catch (error) {
       lastError = error instanceof Error ? error.message : "Không đọc được Meta Ads.";
     }
