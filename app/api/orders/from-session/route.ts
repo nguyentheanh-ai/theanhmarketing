@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { getCurrentAuth } from "@/lib/auth/session";
 import { sendMetaLeadEvent } from "@/lib/meta/conversions-api";
+import { syncOrderToGoogleSheet } from "@/lib/notifications/google-sheets";
 import { sendOrderCreatedEmails } from "@/lib/notifications/pending-payment-email";
+import { sendTelegramOrderNotification } from "@/lib/notifications/telegram";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import {
   cleanEmail,
@@ -126,6 +128,35 @@ export async function POST(request: Request) {
       }
     } catch (emailError) {
       console.warn("[orders] Order-created email failed:", emailError);
+    }
+
+    try {
+      const telegram = await sendTelegramOrderNotification(order, "order_created");
+
+      if (!telegram.ok && !telegram.skipped) {
+        console.warn("[orders] Telegram order notification failed:", {
+          reason: telegram.reason,
+          status: telegram.status,
+        });
+      }
+    } catch (telegramError) {
+      console.warn("[orders] Telegram order notification failed:", telegramError);
+    }
+
+    try {
+      const sheetSync = await syncOrderToGoogleSheet(order, {
+        source: "Logged-in checkout",
+        landingPageUrl: `${siteConfig.url}/gio-hang`,
+      });
+
+      if (!sheetSync.ok && !sheetSync.skipped) {
+        console.warn("[orders] Google Sheets order sync failed:", {
+          reason: sheetSync.reason,
+          status: sheetSync.status,
+        });
+      }
+    } catch (sheetError) {
+      console.warn("[orders] Google Sheets order sync failed:", sheetError);
     }
 
     return NextResponse.json({

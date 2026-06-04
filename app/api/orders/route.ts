@@ -11,7 +11,9 @@ import {
   isValidSlug,
 } from "@/lib/security/validation";
 import { sendMetaLeadEvent } from "@/lib/meta/conversions-api";
+import { syncOrderToGoogleSheet } from "@/lib/notifications/google-sheets";
 import { sendOrderCreatedEmails } from "@/lib/notifications/pending-payment-email";
+import { sendTelegramOrderNotification } from "@/lib/notifications/telegram";
 import { invalidateAdminModules } from "@/services/adminDataService";
 import { createLeadAdmin } from "@/services/leadService";
 import { createPaymentOrder, type PaymentOrder } from "@/services/orderService";
@@ -180,6 +182,35 @@ export async function POST(request: Request) {
       }
     } catch (emailError) {
       console.warn("[orders] Order-created email failed:", emailError);
+    }
+
+    try {
+      const telegram = await sendTelegramOrderNotification(order, "order_created");
+
+      if (!telegram.ok && !telegram.skipped) {
+        console.warn("[orders] Telegram order notification failed:", {
+          reason: telegram.reason,
+          status: telegram.status,
+        });
+      }
+    } catch (telegramError) {
+      console.warn("[orders] Telegram order notification failed:", telegramError);
+    }
+
+    try {
+      const sheetSync = await syncOrderToGoogleSheet(order, {
+        source: determineLeadSource(order, body.landingPage),
+        landingPageUrl: cleanText(body.pageUrl, 500),
+      });
+
+      if (!sheetSync.ok && !sheetSync.skipped) {
+        console.warn("[orders] Google Sheets order sync failed:", {
+          reason: sheetSync.reason,
+          status: sheetSync.status,
+        });
+      }
+    } catch (sheetError) {
+      console.warn("[orders] Google Sheets order sync failed:", sheetError);
     }
 
     return NextResponse.json({

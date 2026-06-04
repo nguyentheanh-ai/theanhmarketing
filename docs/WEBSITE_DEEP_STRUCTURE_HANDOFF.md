@@ -67,7 +67,8 @@ Quy tac quan trong: khong load full data mot lan neu co the query theo module/pa
 | --- | --- | --- |
 | `/dang-nhap` | `app/dang-nhap/page.tsx` | Student login. |
 | `/dashboard` | `app/dashboard/page.tsx` | Student dashboard/course access. |
-| `/doi-mat-khau` | `app/doi-mat-khau/page.tsx` | First-login/change password flow. |
+| `/doi-mat-khau` | `app/doi-mat-khau/page.tsx` | First-login/change password flow; `?mode=recovery` is used after Supabase password recovery. |
+| `/auth/callback` | `app/auth/callback/route.ts` | Supabase auth code exchange callback, then redirects to a safe local `next` path. |
 | `/learn/[course]/[lesson]` | `app/learn/[course]/[lesson]/page.tsx` | Learning room/video lesson. |
 
 Learning UI chinh: `components/course/learning-room.tsx`.
@@ -83,13 +84,14 @@ Hien trang learning room:
 
 | Route | File | Role | Vai tro |
 | --- | --- | --- | --- |
-| `/admin` | `app/admin/page.tsx` | owner/editor redirect | Owner vao Ads & doanh thu, editor vao Khoa hoc. |
+| `/admin` | `app/admin/page.tsx` | owner/editor redirect | Owner vao Lead, editor vao Khoa hoc. |
 | `/admin/login` | `app/admin/login/page.tsx` | public login | Admin login. |
 | `/admin/hoc-vien` | `app/admin/hoc-vien/page.tsx` | owner | Quan ly hoc vien/grant access. |
 | `/admin/leads` | `app/admin/leads/page.tsx` | owner | Quan ly lead CRM. |
-| `/admin/facebook-ads` | `app/admin/facebook-ads/page.tsx` | owner | Bao cao Ads theo san pham: spend, revenue, ME/RE, leads, CPL, click, CVR. |
+| `/admin/facebook-ads` | `app/admin/facebook-ads/page.tsx` | owner | Legacy/direct-only bao cao Ads theo san pham; khong nam trong nav chinh. |
 | `/admin/khoa-hoc` | `app/admin/khoa-hoc/page.tsx` | owner/editor | Quan ly khoa hoc, modules, lessons, videos/resources. |
 | `/admin/thanh-vien-admin` | `app/admin/thanh-vien-admin/page.tsx` | owner | Quan ly thanh vien admin va role owner/editor. |
+| `/admin/email-remarketing` | `app/admin/email-remarketing/page.tsx` | owner | Tao campaign email remarketing, chon audience, gui test, len lich, xem recipient report. |
 | `/admin/dashboard` | `app/admin/dashboard/page.tsx` | owner | Legacy Growth OS/Admin CRM route, khong nam trong nav chinh. |
 | `/admin/don-hang` | `app/admin/don-hang/page.tsx` | owner | Legacy orders/payment follow-up route, khong nam trong nav chinh. |
 | `/admin/remarketing` | `app/admin/remarketing/page.tsx` | owner | Legacy remarketing/tracking route, khong nam trong nav chinh. |
@@ -105,13 +107,12 @@ Admin auth logic: `lib/auth/session.ts`.
 
 Editor role duoc doc tu `user.app_metadata.admin_role = "editor"`. Owner fallback den `ADMIN_EMAILS`/`ADMIN_LOGIN_EMAIL`. Dung `app_metadata`, khong dung `user_metadata` cho phan quyen.
 
-Admin nav chinh chi gom 5 module tap trung:
+Admin nav chinh chi gom 4 module tap trung:
 
 1. Hoc vien.
 2. Lead.
-3. Ads & doanh thu.
-4. Khoa hoc.
-5. Thanh vien admin.
+3. Khoa hoc.
+4. Thanh vien admin.
 
 Khong them lai nhieu card/dashboard lon vao nav chinh neu chua co yeu cau ro; cac route cu van giu de khong mat chuc nang cu.
 
@@ -161,9 +162,10 @@ Agent Kit workflow:
 ### Admin UI
 
 - `components/admin/admin-growth-os-dashboard.tsx`: dashboard CRM + LMS + automation tabs.
-- `components/admin/lead-manager.tsx`: Lead CRM table/actions.
+- `components/admin/lead-manager.tsx`: Lead CRM table/actions; payment badge uses StudentAccess/paid order context first and displays compact `Paid`/`Pending`.
 - `components/admin/product-ads-report-client.tsx`: dense table bao cao Ads theo san pham cho `/admin/facebook-ads`.
 - `components/admin/admin-members-client.tsx`: quan ly owner/editor cho `/admin/thanh-vien-admin`.
+- `components/email/*`: Email Remarketing UI cho `/admin/email-remarketing`; tach `CampaignList`, `CampaignEditor`, `AudienceSelector`, `EmailPreview`, `ScheduleModal`, `CampaignReport`.
 - `components/admin/course-editor.tsx`: add/edit course, modules, lessons, videos/resources.
 - `components/admin/student-intake-form.tsx`: create student/grant course access.
 - `components/admin/student-access-actions.tsx`: per-student preview modal, grant/revoke access, and safe delete marker for `/admin/hoc-vien`.
@@ -191,6 +193,18 @@ Core services:
 - `services/studentAccountService.ts`: auto-create student account.
 - `services/marketingSettingsService.ts`: marketing pixel/settings.
 - `services/brandService.ts`, `services/offerService.ts`: site branding/offer popup.
+
+Email Remarketing:
+
+- Admin UI: `/admin/email-remarketing`.
+- API: `/api/email/contacts`, `/api/email/contacts/import`, `/api/email/campaigns`, `/api/email/campaigns/[id]/*`, `/api/email/worker/send-due`, `/api/email/track/open`, `/api/email/track/click`, `/api/email/unsubscribe`.
+- Logic: `lib/email/audience.ts`, `lib/email/campaigns.ts`, `lib/email/render.ts`, `lib/email/provider.ts`, `lib/email/worker.ts`.
+- Payment remarketing sequence: `lib/notifications/payment-remarketing-email.ts` + `services/paymentRemarketingService.ts`; `/api/email/worker/send-due` also sends the approved `Quang cao Facebook Master 2026` unpaid sequence at 5h/1d/3d from `orders.created_at` for non-`paid` orders. CTA amount/plan is derived from each order so 399.000d and 799.000d plans do not share a hard-coded CTA.
+- Telegram order alerts: `lib/notifications/telegram.ts` sends owner alerts for `order_created` from `app/api/orders/route.ts` and `app/api/orders/from-session/route.ts`, plus `payment_paid` from `app/api/sepay/webhook/route.ts`. Telegram failures are logged but must not block checkout, email, payment confirmation, or SePay webhook success. Production needs `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`.
+- Google Sheets order sync: `lib/notifications/google-sheets.ts` posts new order payloads from `app/api/orders/route.ts` and `app/api/orders/from-session/route.ts` to `GOOGLE_SHEETS_WEBHOOK_URL`. Sheets failures are logged but must not block checkout. Production code deployed in hotfix `dpl_CoRRS7n2nWUGdB6G59PS7gQh5eac`; end-to-end verification still needs a real/new order or approved test order.
+- Supabase tables: `email_contacts`, `email_campaigns`, `email_campaign_recipients`, `email_events`; migration SQL is `docs/SUPABASE_EMAIL_REMARKETING.sql`.
+- Cron: `vercel.json` calls `/api/email/worker/send-due` daily because the current Vercel Hobby plan blocks sub-daily cron. The route itself can be called every 5 minutes by Vercel Pro or an external cron with `Authorization: Bearer CRON_SECRET`; worker sends at most 50 recipients per run.
+- Safety rules: no campaign is sent until admin schedules/confirms permission; worker skips unsubscribed/inactive/invalid emails; marketing HTML must contain `{{unsubscribe_url}}` or an unsubscribe route; provider keys stay server-side only.
 
 Admin performance read-model:
 
@@ -248,6 +262,7 @@ Khong expose service role key ra client. API route/server-only moi dung service 
 - Login form: `components/auth/login-form.tsx`.
 - Register/lead form: `components/auth/register-form.tsx`.
 - Password change: `components/auth/change-password-form.tsx`.
+- Admin-triggered recovery email: `POST /api/admin/students/password-reset`, exposed from `components/admin/student-access-actions.tsx`, owner-only, calls Supabase `resetPasswordForEmail` and redirects through `/auth/callback?next=/doi-mat-khau?mode=recovery`.
 - Student auth helper: `lib/auth/session.ts`, `requireStudentAuth`.
 - First-login password logic: `lib/auth/student-account.ts`.
 
@@ -296,10 +311,14 @@ Email helpers:
 - `lib/notifications/registration-email.ts`: admin new lead + registration/pending flow.
 - `lib/notifications/pending-payment-email.ts`
 - `lib/notifications/payment-success-email.ts`
+- `lib/notifications/telegram.ts`: owner Telegram alerts for new orders and paid orders.
+- `lib/notifications/google-sheets.ts`: owner Google Sheets sync for new orders.
 
 Important tests:
 
 - `tests/order-created-email-flow.test.mjs`
+- `tests/telegram-notifications.test.mjs`
+- `tests/google-sheets-sync.test.mjs`
 - `tests/pending-payment-email.test.mjs`
 - `tests/payment-success-email.test.mjs`
 - `tests/payment-expiry-flow.test.mjs`
@@ -478,7 +497,7 @@ Be careful when editing:
 - `app/api/admin/meta/*`: affects Ads/revenue reporting and KPI writes.
 - `app/api/admin/members/*`: affects admin role management.
 - `components/admin/course-editor.tsx`: writes modules/lessons/resources to Supabase.
-- `components/app/admin-shell.tsx`: primary admin IA; keep 5 core CRM modules unless owner asks otherwise.
+- `components/app/admin-shell.tsx`: primary admin IA; keep 4 core CRM modules unless owner asks otherwise.
 - `app/globals.css`: massive shared CSS, changes can affect many pages.
 
 Before changing these, run targeted tests and full build.
@@ -486,9 +505,9 @@ Before changing these, run targeted tests and full build.
 ## 15. Recent Important Decisions
 
 - Admin CRM/LMS redesign is under same repo, not a separate admin template.
-- Admin primary nav has been reduced to 5 focused modules: Hoc vien, Lead, Ads & doanh thu, Khoa hoc, Thanh vien admin.
-- `/admin` now routes owner to `/admin/facebook-ads` and editor to `/admin/khoa-hoc`.
-- `/admin/facebook-ads` is the central operating report, not a generic dashboard. Keep it as a dense product table with sticky header and horizontal scroll on mobile.
+- Admin primary nav has been reduced to 4 focused modules: Hoc vien, Lead, Khoa hoc, Thanh vien admin.
+- `/admin` now routes owner to `/admin/leads` and editor to `/admin/khoa-hoc`.
+- `/admin/facebook-ads` remains an owner-only direct route for the product Ads report, but it is hidden from the primary admin nav.
 - Product Ads report uses `product_ads_mappings` + `product_ads_kpis`; apply `docs/SUPABASE_PRODUCT_ADS_REPORT.sql` before expecting persistent KPI/mapping edits in production.
 - Meta Ads API is ported server-side from Adplan-style Graph reads through `lib/meta/ads-api.ts`; never print or client-expose access tokens.
 - `/admin/thanh-vien-admin` manages admin roles with `app_metadata.admin_role`; env owner remains protected.
@@ -557,7 +576,8 @@ Before changing these, run targeted tests and full build.
 1. Trace from `app/api/orders/route.ts` or `app/api/sepay/webhook/route.ts`.
 2. Email template/helper in `lib/notifications/*`.
 3. Student account creation in `services/studentAccountService.ts`.
-4. Run payment/email tests before build.
+4. Auto-create account from SePay payment webhook must not depend on Supabase Auth `listUsers`; if that call fails after the order is marked `paid`, success email/account email can be skipped with `payment_email_sent_at` still null.
+5. Run payment/email tests before build.
 
 ### Sua Meta Pixel/CAPI
 

@@ -52,12 +52,15 @@ test("AI Master X10 landing follows the premium gold reference system with cours
   assert.doesNotMatch(html, /--orange:/);
 });
 
-test("Next and CSP config expose the AI Master X10 academy route", () => {
+test("AI Master X10 academy route is disabled from public access", () => {
   const nextConfig = read(path.resolve("next.config.ts"));
   const proxy = read(path.resolve("proxy.ts"));
 
-  assert.match(nextConfig, /\/academy\/ai-master-x10-hieu-suat/);
-  assert.match(nextConfig, /\/academy\/ai-master-x10-hieu-suat\.html/);
+  assert.doesNotMatch(nextConfig, /source:\s*"\/academy\/ai-master-x10-hieu-suat"/);
+  assert.doesNotMatch(nextConfig, /destination:\s*"\/academy\/ai-master-x10-hieu-suat\.html"/);
+  assert.match(proxy, /isDisabledAcademyRoute/);
   assert.match(proxy, /\/academy\/ai-master-x10-hieu-suat/);
   assert.match(proxy, /\/academy\/ai-master-x10-hieu-suat\.html/);
+  assert.match(proxy, /status:\s*404/);
+  assert.match(proxy, /noindex, nofollow/);
 });

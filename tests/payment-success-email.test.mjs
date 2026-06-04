@@ -66,6 +66,9 @@ test("builds a customer payment success email with course, Zalo, and dashboard l
   assert.match(payload.html, /399\.000đ/);
   assert.match(payload.html, /https:\/\/zalo\.me\/g\/ye0dcyowbepyhnrtyacr/);
   assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/dang-nhap\?next=%2Fdashboard/);
+  assert.match(payload.html, /target="_blank"/);
+  assert.match(payload.html, /rel="noopener noreferrer"/);
+  assert.match(payload.html, /copy link/);
   assert.match(payload.text, /dùng đúng email student@example.com/);
   assert.match(payload.text, /https:\/\/zalo\.me\/g\/ye0dcyowbepyhnrtyacr/);
 });
@@ -108,6 +111,28 @@ test("builds AI Master payment success benefits for the AI Master order", () => 
   assert.match(payload.html, /Bộ agent, template và workflow triển khai landing, content, video, CRM/);
   assert.doesNotMatch(payload.html, /Facebook Ads Master 2026/);
   assert.match(payload.text, /biến tri thức thành sản phẩm bán được/);
+});
+
+test("builds Agent Kit payment success benefits for this landing page order", () => {
+  const payload = buildPaymentSuccessEmailPayload({
+    ...paidOrder,
+    courseSlug: "bo-agent-kit-x10-hieu-suat-cong-viec",
+    courseTitle: "Bộ Agent Kit X10 hiệu suất công việc - Gói private ads 359K",
+    amount: 359000,
+    amountLabel: "359.000đ",
+    orderItems: [
+      {
+        slug: "bo-agent-kit-x10-hieu-suat-cong-viec",
+        title: "Bộ Agent Kit X10 hiệu suất công việc - Gói private ads 359K",
+        price: 359000,
+      },
+    ],
+  });
+
+  assert.match(payload.subject, /Bộ Agent Kit X10/);
+  assert.match(payload.html, /Bộ agent, skill, command và workflow tiếng Việt/);
+  assert.match(payload.html, /Khung triển khai AI Agent cho marketing, bán hàng, vận hành và CRM/);
+  assert.doesNotMatch(payload.html, /Buổi Zoom hỗ trợ trực tiếp 1-1/);
 });
 
 test("sends payment success email only for paid orders without a prior sent timestamp", () => {

@@ -102,55 +102,47 @@ export async function ensureStudentAccountForPaidOrder(
     };
   }
 
-  const existingUser = await findAuthUserByEmail(supabase, credentials.email);
+  if (options.forcePasswordUpdate) {
+    const existingUser = await findAuthUserByEmail(supabase, credentials.email);
 
-  if (existingUser) {
-    if (!options.forcePasswordUpdate) {
+    if (existingUser) {
+      const { error } = await supabase.auth.admin.updateUserById(existingUser.id, {
+        password: credentials.password,
+        email_confirm: true,
+        user_metadata: {
+          ...(existingUser.user_metadata ?? {}),
+          full_name: order.studentName,
+          phone: order.phone,
+          must_change_password: true,
+          password_set_by_admin: true,
+          source_order_code: order.orderCode,
+          enrolled_course_slug: order.courseSlug,
+          enrolled_course_title: order.courseTitle,
+          temporary_password_strategy: options.temporaryPassword ? "manual-admin" : "given_name_phone",
+          temporary_password_created_at: new Date().toISOString(),
+        },
+      });
+
+      if (error) {
+        return {
+          ...baseResult,
+          ok: false,
+          skipped: false,
+          created: false,
+          reason: error.message,
+        };
+      }
+
       return {
-        ...baseResult,
         ok: true,
-        skipped: true,
-        created: false,
-        reason: "Student account already exists.",
-      };
-    }
-
-    const { error } = await supabase.auth.admin.updateUserById(existingUser.id, {
-      password: credentials.password,
-      email_confirm: true,
-      user_metadata: {
-        ...(existingUser.user_metadata ?? {}),
-        full_name: order.studentName,
-        phone: order.phone,
-        must_change_password: true,
-        password_set_by_admin: true,
-        source_order_code: order.orderCode,
-        enrolled_course_slug: order.courseSlug,
-        enrolled_course_title: order.courseTitle,
-        temporary_password_strategy: options.temporaryPassword ? "manual-admin" : "given_name_phone",
-        temporary_password_created_at: new Date().toISOString(),
-      },
-    });
-
-    if (error) {
-      return {
-        ...baseResult,
-        ok: false,
         skipped: false,
         created: false,
-        reason: error.message,
+        email: credentials.email,
+        temporaryPassword: credentials.password,
+        reason: "Student account password updated.",
+        userId: existingUser.id,
       };
     }
-
-    return {
-      ok: true,
-      skipped: false,
-      created: false,
-      email: credentials.email,
-      temporaryPassword: credentials.password,
-      reason: "Student account password updated.",
-      userId: existingUser.id,
-    };
   }
 
   const { data, error } = await supabase.auth.admin.createUser({

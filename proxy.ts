@@ -15,7 +15,12 @@ function isLadiPageRoute(pathname: string) {
   return (
     pathname.startsWith("/ladipage/") ||
     pathname === "/academy/facebook-ads-master-2026" ||
-    pathname === "/academy/facebook-ads-master-2026.html" ||
+    pathname === "/academy/facebook-ads-master-2026.html"
+  );
+}
+
+function isDisabledAcademyRoute(pathname: string) {
+  return (
     pathname === "/academy/ai-master-x10-hieu-suat" ||
     pathname === "/academy/ai-master-x10-hieu-suat.html"
   );
@@ -83,6 +88,15 @@ export function proxy(request: NextRequest) {
     url.host = host;
 
     return NextResponse.redirect(url, 308);
+  }
+
+  if (isDisabledAcademyRoute(request.nextUrl.pathname)) {
+    return new NextResponse("Not Found", {
+      status: 404,
+      headers: {
+        "X-Robots-Tag": "noindex, nofollow",
+      },
+    });
   }
 
   const nonceBytes = new Uint8Array(16);

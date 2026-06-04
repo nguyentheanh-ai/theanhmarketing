@@ -2670,7 +2670,7 @@
         <section id="hoc-phi" class="section pricing">
           <div class="container pricing-grid">
             <div class="plan-grid" aria-label="Chọn gói học Facebook Ads Master 2026">
-              <article class="plan-card is-selected" data-plan-card="video">
+              <article class="plan-card is-selected" data-plan-card="video" tabindex="0">
                 <span class="plan-name">Gói Video</span>
                 <div class="plan-price">
                   <strong>399K</strong>
@@ -2687,7 +2687,7 @@
                 <button class="btn btn-secondary" type="button" data-plan-select="video">Chọn gói 399K</button>
               </article>
 
-              <article class="plan-card is-featured" data-plan-card="zoom-kit">
+              <article class="plan-card is-featured" data-plan-card="zoom-kit" tabindex="0">
                 <span class="plan-ribbon">Gói khuyên chọn</span>
                 <span class="plan-name">Gói Hỗ Trợ</span>
                 <div class="plan-price">
@@ -2946,6 +2946,15 @@
             setSelectedPlan(button.getAttribute("data-plan-select"));
             showToast("Đã chọn " + selectedPlan.label + " - " + selectedPlan.price + ".");
           });
+        });
+
+        document.querySelectorAll("[data-plan-card]").forEach(function (card) {
+          function selectHoveredPlan() {
+            setSelectedPlan(card.getAttribute("data-plan-card"));
+          }
+
+          card.addEventListener("mouseenter", selectHoveredPlan);
+          card.addEventListener("focusin", selectHoveredPlan);
         });
 
         form.addEventListener("submit", async function (event) {

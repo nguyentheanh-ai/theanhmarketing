@@ -3,6 +3,7 @@ import {
   sendPaymentSuccessEmail,
   shouldSendPaymentSuccessEmail,
 } from "@/lib/notifications/payment-success-email";
+import { sendTelegramOrderNotification } from "@/lib/notifications/telegram";
 import { sendMetaPurchaseEvent } from "@/lib/meta/conversions-api";
 import { verifySepayApiKey, type SepayWebhookPayload } from "@/lib/payments/sepay";
 import { logSecurityEvent } from "@/lib/security/audit-log";
@@ -10,6 +11,7 @@ import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/
 import { invalidateAdminModules } from "@/services/adminDataService";
 import { confirmOrderFromSepay, markPaymentEmailError, markPaymentEmailSent } from "@/services/orderService";
 import { ensureStudentAccountForPaidOrder } from "@/services/studentAccountService";
+import { notifyStudentPortalProvisioning } from "@/services/studentPortalProvisioningService";
 import { siteConfig } from "@/data/site";
 
 export const runtime = "nodejs";
@@ -66,6 +68,9 @@ export async function POST(request: Request) {
     let studentAccount:
       | Awaited<ReturnType<typeof ensureStudentAccountForPaidOrder>>
       | null = null;
+    let studentPortalProvisioning:
+      | Awaited<ReturnType<typeof notifyStudentPortalProvisioning>>
+      | null = null;
 
     if (!confirmation.wasAlreadyPaid) {
       try {
@@ -106,6 +111,25 @@ export async function POST(request: Request) {
         });
       }
 
+      if (studentAccount.ok && studentAccount.userId) {
+        studentPortalProvisioning = await notifyStudentPortalProvisioning({
+          order: confirmation.order,
+          userId: studentAccount.userId,
+        });
+
+        if (!studentPortalProvisioning.ok) {
+          logSecurityEvent({
+            action: "student_portal_provisioning_failed",
+            request,
+            detail: {
+              orderCode: confirmation.order.orderCode,
+              reason: studentPortalProvisioning.reason,
+              status: studentPortalProvisioning.status,
+            },
+          });
+        }
+      }
+
       const result = await sendPaymentSuccessEmail(confirmation.order, {
         account: studentAccount.created
           ? {
@@ -142,6 +166,21 @@ export async function POST(request: Request) {
       }
     }
 
+    if (!confirmation.wasAlreadyPaid) {
+      try {
+        const telegram = await sendTelegramOrderNotification(confirmation.order, "payment_paid");
+
+        if (!telegram.ok && !telegram.skipped) {
+          console.warn("[sepay] Telegram paid notification failed:", {
+            reason: telegram.reason,
+            status: telegram.status,
+          });
+        }
+      } catch (telegramError) {
+        console.warn("[sepay] Telegram paid notification failed:", telegramError);
+      }
+    }
+
     invalidateAdminModules(["orders", "students", "leads"]);
 
     return NextResponse.json({
@@ -158,6 +197,7 @@ export async function POST(request: Request) {
                   reason: studentAccount.reason,
                 }
               : null,
+            studentPortalProvisioning,
           }
         : {}),
     });
