@@ -22,6 +22,9 @@ type ResendEmailPayload = {
 const defaultSender = "The Anh Marketing <noreply@theanhmarketing.com>";
 const defaultSiteUrl = "https://www.theanhmarketing.com";
 const zaloGroupUrl = "https://zalo.me/g/ye0dcyowbepyhnrtyacr";
+const adsSupportAgentName = "Agent Hỗ Trợ Quảng Cáo";
+const adsSupportAgentUrl =
+  "https://chatgpt.com/g/g-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner";
 
 function escapeHtml(value: string) {
   return value
@@ -63,8 +66,37 @@ function getCourseList(order: PaymentOrder) {
   return [order.courseTitle].filter(Boolean);
 }
 
+function getFacebookAdsProductTitle(order: PaymentOrder) {
+  const isFacebookAdsOrder =
+    order.courseSlug === "facebook-ads-2026" ||
+    order.orderItems.some((item) => item.slug === "facebook-ads-2026");
+
+  if (!isFacebookAdsOrder) {
+    return null;
+  }
+
+  if (order.amount === 799000 || order.orderItems.some((item) => item.price === 799000)) {
+    return "Quảng cáo Facebook Master 2026 - Gói Hỗ Trợ 799K - Zoom lên ads + Agent kit";
+  }
+
+  return "Quảng cáo Facebook Master 2026 - Gói Video 399K";
+}
+
 function getProductTitle(order: PaymentOrder) {
-  return getCourseList(order)[0] || order.courseTitle || "Khóa học tại The Anh Marketing";
+  return getFacebookAdsProductTitle(order) || getCourseList(order)[0] || order.courseTitle || "Khóa học tại The Anh Marketing";
+}
+
+function isFacebookAdsSupportPlan(order: PaymentOrder) {
+  const productTitle = getProductTitle(order);
+  const courseIdentity = `${order.courseSlug} ${productTitle} ${order.amountLabel}`.toLowerCase();
+  const isFacebookAdsOrder =
+    order.courseSlug === "facebook-ads-2026" ||
+    courseIdentity.includes("facebook ads") ||
+    courseIdentity.includes("facebook master") ||
+    courseIdentity.includes("quảng cáo facebook");
+  const isSupportPlan = order.amount === 799000 || /799|zoom|hỗ trợ|ho tro/i.test(productTitle);
+
+  return isFacebookAdsOrder && isSupportPlan;
 }
 
 function getPaymentFailedTitle(order: PaymentOrder) {
@@ -96,7 +128,7 @@ function getBenefitItems(order: PaymentOrder) {
     ];
   }
 
-  if (isSupportPlan) {
+  if (isSupportPlan && isFacebookAdsSupportPlan(order)) {
     return [
       "Toàn bộ nội dung khóa Facebook Ads Master 2026",
       "Buổi Zoom hỗ trợ trực tiếp 1-1",
@@ -206,6 +238,27 @@ export function buildPaymentSuccessEmailPayload(
   const benefits = getBenefitItems(order);
   const loginUrl = `${siteUrl}/dang-nhap?next=${encodeURIComponent("/dashboard")}`;
   const accountBlock = renderAccountBlock(options.account);
+  const supportAgentBlock = isFacebookAdsSupportPlan(order)
+    ? `
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;border:1px solid #5b3a23;border-radius:14px;background:#211913">
+        <tr>
+          <td style="padding:22px 24px">
+            <p style="margin:0 0 10px;color:#d8b653;font-size:13px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase">
+              ${escapeHtml(adsSupportAgentName)}
+            </p>
+            <p style="margin:0;color:#e9e3d5;font-size:15px;line-height:1.7">
+              Đây là agent đi kèm gói Hỗ Trợ 799.000đ để bạn lên kế hoạch test ads, chuẩn bị câu hỏi cho buổi Zoom và đọc chỉ số sau khi học.
+            </p>
+            <p style="margin:16px 0 0">
+              <a href="${escapeHtml(adsSupportAgentUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#d8b653;color:#111111;text-decoration:none;border-radius:10px;padding:13px 18px;font-size:14px;font-weight:900">
+                Mở ${escapeHtml(adsSupportAgentName)}
+              </a>
+            </p>
+          </td>
+        </tr>
+      </table>
+    `
+    : "";
   const accessCopy = options.account?.temporaryPassword
     ? `Hệ thống đã ghi nhận thanh toán và tạo tài khoản học cho bạn bằng email <strong style="color:#ffffff">${escapeHtml(order.email)}</strong>.`
     : `Hệ thống đã ghi nhận thanh toán của bạn. Vui lòng dùng đúng email <strong style="color:#ffffff">${escapeHtml(order.email)}</strong> để đăng nhập hoặc tạo tài khoản học.`;
@@ -248,6 +301,7 @@ export function buildPaymentSuccessEmailPayload(
                       </td>
                     </tr>
                   </table>
+                  ${supportAgentBlock}
                   <div style="padding-top:30px;text-align:center">
                     <a href="${loginUrl}" target="_blank" rel="noopener noreferrer" style="display:block;background:#d8b653;color:#111111;text-decoration:none;border-radius:10px;padding:17px 20px;font-size:15px;font-weight:900;letter-spacing:0.02em;text-transform:uppercase">Vào dashboard học viên</a>
                     <a href="${zaloGroupUrl}" target="_blank" rel="noopener noreferrer" style="display:block;margin-top:12px;background:#1f6feb;color:#ffffff;text-decoration:none;border-radius:10px;padding:15px 20px;font-size:14px;font-weight:900">Tham gia nhóm Zalo hỗ trợ</a>
@@ -291,6 +345,7 @@ export function buildPaymentSuccessEmailPayload(
       "",
       "Bạn nhận được:",
       ...benefits.map((item) => `- ${item}`),
+      isFacebookAdsSupportPlan(order) ? `${adsSupportAgentName}: ${adsSupportAgentUrl}` : "",
       "",
       `Dashboard học viên: ${loginUrl}`,
       `Nhóm Zalo hỗ trợ: ${zaloGroupUrl}`,

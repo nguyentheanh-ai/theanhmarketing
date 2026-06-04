@@ -29,6 +29,9 @@ const {
   shouldSendPaymentSuccessEmail,
 } = loadTsModule("lib/notifications/payment-success-email.ts");
 
+const adsSupportAgentUrl =
+  "https://chatgpt.com/g/g-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner";
+
 const paidOrder = {
   id: "order-1",
   orderCode: "TAM123",
@@ -68,6 +71,8 @@ test("builds a customer payment success email with course, Zalo, and dashboard l
   assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/dang-nhap\?next=%2Fdashboard/);
   assert.match(payload.html, /target="_blank"/);
   assert.match(payload.html, /rel="noopener noreferrer"/);
+  assert.doesNotMatch(payload.html, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.doesNotMatch(payload.text, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.match(payload.html, /copy link/);
   assert.match(payload.text, /dùng đúng email student@example.com/);
   assert.match(payload.text, /https:\/\/zalo\.me\/g\/ye0dcyowbepyhnrtyacr/);
@@ -111,6 +116,31 @@ test("builds AI Master payment success benefits for the AI Master order", () => 
   assert.match(payload.html, /Bộ agent, template và workflow triển khai landing, content, video, CRM/);
   assert.doesNotMatch(payload.html, /Facebook Ads Master 2026/);
   assert.match(payload.text, /biến tri thức thành sản phẩm bán được/);
+});
+
+test("includes Ads support agent link for the Facebook Ads 799K payment success email", () => {
+  const payload = buildPaymentSuccessEmailPayload({
+    ...paidOrder,
+    courseTitle: "Qu?ng c?o Facebook Master 2026 - G?i H? Tr? 799K",
+    amount: 799000,
+    amountLabel: "799.000đ",
+    orderItems: [
+      {
+        slug: "facebook-ads-2026",
+        title: "Qu?ng c?o Facebook Master 2026 - G?i H? Tr? 799K",
+        price: 799000,
+      },
+    ],
+  });
+
+  assert.match(payload.subject, /Quảng cáo Facebook Master 2026 - Gói Hỗ Trợ 799K/);
+  assert.match(payload.html, /Quảng cáo Facebook Master 2026 - Gói Hỗ Trợ 799K/);
+  assert.doesNotMatch(payload.subject, /Qu\?ng c\?o/);
+  assert.doesNotMatch(payload.html, /Qu\?ng c\?o/);
+  assert.match(payload.html, /Agent H/);
+  assert.match(payload.text, /Agent H/);
+  assert.match(payload.html, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.match(payload.text, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 });
 
 test("builds Agent Kit payment success benefits for this landing page order", () => {

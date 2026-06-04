@@ -23,6 +23,9 @@ type SendEmailResult = {
 const defaultSender = "The Anh Marketing <noreply@theanhmarketing.com>";
 const defaultAdminRecipient = "theanhnguyen.marketing@gmail.com";
 const defaultSiteUrl = "https://www.theanhmarketing.com";
+const adsSupportAgentName = "Agent Hỗ Trợ Quảng Cáo";
+const adsSupportAgentUrl =
+  "https://chatgpt.com/g/g-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner";
 
 const bankNameMap: Record<string, string> = {
   VCB: "Vietcombank",
@@ -110,8 +113,37 @@ function getCourseList(order: PaymentOrder) {
   return [order.courseTitle].filter(Boolean);
 }
 
+function getFacebookAdsProductTitle(order: PaymentOrder) {
+  const isFacebookAdsOrder =
+    order.courseSlug === "facebook-ads-2026" ||
+    order.orderItems.some((item) => item.slug === "facebook-ads-2026");
+
+  if (!isFacebookAdsOrder) {
+    return null;
+  }
+
+  if (order.amount === 799000 || order.orderItems.some((item) => item.price === 799000)) {
+    return "Quảng cáo Facebook Master 2026 - Gói Hỗ Trợ 799K - Zoom lên ads + Agent kit";
+  }
+
+  return "Quảng cáo Facebook Master 2026 - Gói Video 399K";
+}
+
 function getProductTitle(order: PaymentOrder) {
-  return getCourseList(order)[0] || order.courseTitle || "Khóa học tại The Anh Marketing";
+  return getFacebookAdsProductTitle(order) || getCourseList(order)[0] || order.courseTitle || "Khóa học tại The Anh Marketing";
+}
+
+function isFacebookAdsSupportPlan(order: PaymentOrder) {
+  const productTitle = getProductTitle(order);
+  const courseIdentity = `${order.courseSlug} ${productTitle} ${order.amountLabel}`.toLowerCase();
+  const isFacebookAdsOrder =
+    order.courseSlug === "facebook-ads-2026" ||
+    courseIdentity.includes("facebook ads") ||
+    courseIdentity.includes("facebook master") ||
+    courseIdentity.includes("quảng cáo facebook");
+  const isSupportPlan = order.amount === 799000 || /799|zoom|hỗ trợ|ho tro/i.test(productTitle);
+
+  return isFacebookAdsOrder && isSupportPlan;
 }
 
 function getPaymentStatusLabel(order: PaymentOrder) {
@@ -310,6 +342,27 @@ export function buildPendingPaymentEmailPayload(
       </table>
     `
     : "";
+  const supportAgentBlock = isFacebookAdsSupportPlan(order)
+    ? `
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;border:1px solid #4b3321;border-radius:14px;background:#241a13">
+        <tr>
+          <td style="padding:22px 24px">
+            <p style="margin:0 0 10px;color:#f66628;font-size:13px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase">
+              ${escapeHtml(adsSupportAgentName)}
+            </p>
+            <p style="margin:0;color:#e9e3d5;font-size:15px;line-height:1.7">
+              Gói Hỗ Trợ 799.000đ có thêm agent này để bạn chuẩn bị câu hỏi, lên kế hoạch test ads và đọc chỉ số sau khi học.
+            </p>
+            <p style="margin:16px 0 0">
+              <a href="${escapeHtml(adsSupportAgentUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#f66628;color:#111111;text-decoration:none;border-radius:10px;padding:13px 18px;font-size:14px;font-weight:900">
+                Mở ${escapeHtml(adsSupportAgentName)}
+              </a>
+            </p>
+          </td>
+        </tr>
+      </table>
+    `
+    : "";
   const qrBlock = order.paymentQrUrl
     ? `
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;border:1px solid #3a3a3a;border-radius:14px;background:#f6f1e7">
@@ -376,6 +429,7 @@ export function buildPendingPaymentEmailPayload(
 
                   ${qrBlock}
                   ${transferBlock}
+                  ${supportAgentBlock}
 
                   <div style="padding-top:28px;text-align:center">
                     <a href="${safePaymentUrl}" style="display:block;background:#f66628;color:#111111;text-decoration:none;border-radius:10px;padding:17px 20px;font-size:15px;font-weight:900;letter-spacing:0.02em;text-transform:uppercase">
@@ -413,6 +467,7 @@ export function buildPendingPaymentEmailPayload(
       ? ["", "Thông tin chuyển khoản:", ...transferRows.map(([label, value]) => `${label}: ${value}`)].join("\n")
       : "",
     order.paymentQrUrl ? `QR Sepay: ${order.paymentQrUrl}` : "",
+    isFacebookAdsSupportPlan(order) ? `${adsSupportAgentName}: ${adsSupportAgentUrl}` : "",
     `Trang thanh toán: ${paymentUrl}`,
   ]
     .filter(Boolean)

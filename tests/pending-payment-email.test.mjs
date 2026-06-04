@@ -27,6 +27,9 @@ const {
   shouldSendPendingPaymentEmail,
 } = loadTsModule("lib/notifications/pending-payment-email.ts");
 
+const adsSupportAgentUrl =
+  "https://chatgpt.com/g/g-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner";
+
 const pendingOrder = {
   id: "order-1",
   orderCode: "TAMDEMO0524",
@@ -97,6 +100,8 @@ test("builds a customer pending payment email with Sepay QR and payment page lin
     assert.match(payload.html, /Nội dung chuyển khoản/);
     assert.match(payload.html, /TAMDEMO0524/);
     assert.match(payload.text, /QR Sepay: https:\/\/qr\.sepay\.vn\/img/);
+    assert.doesNotMatch(payload.html, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    assert.doesNotMatch(payload.text, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     assert.match(payload.text, /Thông tin chuyển khoản:/);
     assert.match(payload.text, /Số tài khoản: 0367928921/);
     assert.match(payload.text, /Nội dung chuyển khoản: TAMDEMO0524/);
@@ -111,6 +116,37 @@ test("builds a customer pending payment email with Sepay QR and payment page lin
     if (previousBankName === undefined) delete process.env.SEPAY_BANK_ACCOUNT_NAME;
     else process.env.SEPAY_BANK_ACCOUNT_NAME = previousBankName;
   }
+});
+
+test("includes Ads support agent link only for the Facebook Ads 799K support package", () => {
+  const payload = buildPendingPaymentEmailPayload(
+    {
+      ...pendingOrder,
+      courseTitle: "Qu?ng c?o Facebook Master 2026 - G?i H? Tr? 799K",
+      amount: 799000,
+      amountLabel: "799.000đ",
+      orderItems: [
+        {
+          slug: "facebook-ads-2026",
+          title: "Qu?ng c?o Facebook Master 2026 - G?i H? Tr? 799K",
+          price: 799000,
+        },
+      ],
+    },
+    {
+      siteUrl: "https://www.theanhmarketing.com",
+      from: "The Anh Marketing <hoc@theanhmarketing.com>",
+    },
+  );
+
+  assert.match(payload.subject, /Quảng cáo Facebook Master 2026 - Gói Hỗ Trợ 799K/);
+  assert.match(payload.html, /Quảng cáo Facebook Master 2026 - Gói Hỗ Trợ 799K/);
+  assert.doesNotMatch(payload.subject, /Qu\?ng c\?o/);
+  assert.doesNotMatch(payload.html, /Qu\?ng c\?o/);
+  assert.match(payload.html, /Agent H/);
+  assert.match(payload.text, /Agent H/);
+  assert.match(payload.html, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.match(payload.text, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 });
 
 test("sends pending payment email only for pending orders with email", () => {
