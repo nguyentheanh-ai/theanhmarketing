@@ -62,7 +62,7 @@ test("telegram notification payloads are compact and customer-safe", () => {
   assert.match(pendingText, /Nguyen Van A/);
   assert.match(pendingText, /0900000000/);
   assert.match(pendingText, /399\.000d/);
-  assert.match(pendingText, /https:\/\/www\.theanhmarketing\.com\/thanh-toan\/TAM123/);
+  assert.match(pendingText, /https:\/\/theanhmarketing\.com\/thanh-toan\/TAM123/);
   assert.match(paidText, /\[PAID\]/);
   assert.match(paidText, /paid/);
 });

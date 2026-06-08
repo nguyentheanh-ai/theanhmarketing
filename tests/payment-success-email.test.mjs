@@ -15,8 +15,15 @@ function loadTsModule(relativePath) {
     },
   }).outputText;
   const cjsModule = { exports: {} };
-  const runner = new Function("exports", "module", compiled);
-  runner(cjsModule.exports, cjsModule);
+  const runner = new Function("exports", "module", "require", compiled);
+  const requireShim = (specifier) => {
+    if (specifier === "@/lib/notifications/email-link-bridge") {
+      return loadTsModule("lib/notifications/email-link-bridge.ts");
+    }
+
+    throw new Error(`Unsupported test import: ${specifier}`);
+  };
+  runner(cjsModule.exports, cjsModule, requireShim);
   return cjsModule.exports;
 }
 
@@ -28,9 +35,6 @@ const {
   shouldSendPaymentFailedEmail,
   shouldSendPaymentSuccessEmail,
 } = loadTsModule("lib/notifications/payment-success-email.ts");
-
-const adsSupportAgentUrl =
-  "https://chatgpt.com/g/g-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner";
 
 const paidOrder = {
   id: "order-1",
@@ -67,15 +71,63 @@ test("builds a customer payment success email with course, Zalo, and dashboard l
   assert.match(payload.subject, /TAM123/);
   assert.match(payload.html, /Quảng cáo Facebook Master 2026/);
   assert.match(payload.html, /399\.000đ/);
-  assert.match(payload.html, /https:\/\/zalo\.me\/g\/ye0dcyowbepyhnrtyacr/);
-  assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/dang-nhap\?next=%2Fdashboard/);
-  assert.match(payload.html, /target="_blank"/);
-  assert.match(payload.html, /rel="noopener noreferrer"/);
-  assert.doesNotMatch(payload.html, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-  assert.doesNotMatch(payload.text, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-  assert.match(payload.html, /copy link/);
+  assert.match(payload.html, /https:\/\/theanhmarketing\.com\/go\?to=https%3A%2F%2Fzalo\.me%2Fg%2Fye0dcyowbepyhnrtyacr/);
+  assert.match(payload.html, /https:\/\/theanhmarketing\.com\/go\?to=https%3A%2F%2Ftheanhmarketing\.com%2Fvao-khoa-hoc/);
+  assert.doesNotMatch(payload.html, /https:\/\/www\.theanhmarketing\.com\/dang-nhap\?next=%2Fdashboard/);
   assert.match(payload.text, /dùng đúng email student@example.com/);
   assert.match(payload.text, /https:\/\/zalo\.me\/g\/ye0dcyowbepyhnrtyacr/);
+  assert.match(payload.text, /https:\/\/theanhmarketing\.com\/vao-khoa-hoc/);
+  assert.doesNotMatch(payload.text, /\/dang-nhap\?next=%2Fdashboard/);
+});
+
+test("payment success email reminds students to check Spam if the access email is missing", () => {
+  const payload = buildPaymentSuccessEmailPayload(paidOrder, {
+    siteUrl: "https://www.theanhmarketing.com",
+    from: "The Anh Marketing <hoc@theanhmarketing.com>",
+  });
+
+  assert.match(payload.html, /Spam/);
+  assert.match(payload.html, /Quảng cáo|Promotions|Khuyến mãi/);
+  assert.match(payload.text, /Spam/);
+});
+
+test("Facebook Ads 799K success benefits include AI Agent but not Zoom", () => {
+  const payload = buildPaymentSuccessEmailPayload({
+    ...paidOrder,
+    courseTitle: "Quảng cáo Facebook Master 2026 - Gói AI Agent 799K - Tặng AI Agent lên kế hoạch quảng cáo",
+    amount: 799000,
+    amountLabel: "799.000đ",
+  });
+
+  assert.match(payload.html, /Tặng AI Agent lên kế hoạch quảng cáo/);
+  assert.doesNotMatch(payload.html, /1 buổi Zoom lên ads trên case thực tế/);
+});
+
+test("Facebook Ads AI Agent success email includes the Agent usage guide", () => {
+  const guideUrl = "https://docs.google.com/document/d/1H8BbQZnSvyw50nO6oXw-u1PD0Ph_DWzXdeqPL9CZFrM/edit?usp=sharing";
+  const aiAgentPayload = buildPaymentSuccessEmailPayload({
+    ...paidOrder,
+    courseTitle: "Quảng cáo Facebook Master 2026 - Gói AI Agent 799K - Tặng AI Agent lên kế hoạch quảng cáo",
+    amount: 799000,
+    amountLabel: "799.000đ",
+  });
+  const advancedPayload = buildPaymentSuccessEmailPayload({
+    ...paidOrder,
+    courseTitle: "Gói AI Agent 799K + 1 buổi Zoom chuyên sâu",
+    amount: 1299000,
+    amountLabel: "1.299.000đ",
+  });
+  const basicPayload = buildPaymentSuccessEmailPayload(paidOrder);
+
+  for (const payload of [aiAgentPayload, advancedPayload]) {
+    assert.match(payload.html, /Hướng dẫn sử dụng AI Agent/);
+    assert.match(payload.html, /https:\/\/theanhmarketing\.com\/go\?to=https%3A%2F%2Fdocs\.google\.com%2Fdocument/);
+    assert.match(payload.text, /Hướng dẫn sử dụng AI Agent/);
+    assert.match(payload.text, new RegExp(guideUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
+
+  assert.doesNotMatch(basicPayload.html, new RegExp(guideUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.doesNotMatch(basicPayload.text, new RegExp(guideUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 });
 
 test("includes temporary login credentials when an account is auto-created", () => {
@@ -118,53 +170,6 @@ test("builds AI Master payment success benefits for the AI Master order", () => 
   assert.match(payload.text, /biến tri thức thành sản phẩm bán được/);
 });
 
-test("includes Ads support agent link for the Facebook Ads 799K payment success email", () => {
-  const payload = buildPaymentSuccessEmailPayload({
-    ...paidOrder,
-    courseTitle: "Qu?ng c?o Facebook Master 2026 - G?i H? Tr? 799K",
-    amount: 799000,
-    amountLabel: "799.000đ",
-    orderItems: [
-      {
-        slug: "facebook-ads-2026",
-        title: "Qu?ng c?o Facebook Master 2026 - G?i H? Tr? 799K",
-        price: 799000,
-      },
-    ],
-  });
-
-  assert.match(payload.subject, /Quảng cáo Facebook Master 2026 - Gói Hỗ Trợ 799K/);
-  assert.match(payload.html, /Quảng cáo Facebook Master 2026 - Gói Hỗ Trợ 799K/);
-  assert.doesNotMatch(payload.subject, /Qu\?ng c\?o/);
-  assert.doesNotMatch(payload.html, /Qu\?ng c\?o/);
-  assert.match(payload.html, /Agent H/);
-  assert.match(payload.text, /Agent H/);
-  assert.match(payload.html, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-  assert.match(payload.text, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-});
-
-test("builds Agent Kit payment success benefits for this landing page order", () => {
-  const payload = buildPaymentSuccessEmailPayload({
-    ...paidOrder,
-    courseSlug: "bo-agent-kit-x10-hieu-suat-cong-viec",
-    courseTitle: "Bộ Agent Kit X10 hiệu suất công việc - Gói private ads 359K",
-    amount: 359000,
-    amountLabel: "359.000đ",
-    orderItems: [
-      {
-        slug: "bo-agent-kit-x10-hieu-suat-cong-viec",
-        title: "Bộ Agent Kit X10 hiệu suất công việc - Gói private ads 359K",
-        price: 359000,
-      },
-    ],
-  });
-
-  assert.match(payload.subject, /Bộ Agent Kit X10/);
-  assert.match(payload.html, /Bộ agent, skill, command và workflow tiếng Việt/);
-  assert.match(payload.html, /Khung triển khai AI Agent cho marketing, bán hàng, vận hành và CRM/);
-  assert.doesNotMatch(payload.html, /Buổi Zoom hỗ trợ trực tiếp 1-1/);
-});
-
 test("sends payment success email only for paid orders without a prior sent timestamp", () => {
   assert.equal(shouldSendPaymentSuccessEmail(paidOrder), true);
   assert.equal(
@@ -194,9 +199,9 @@ test("builds a customer payment failed email with a retry payment link", () => {
   assert.match(payload.html, /Thanh toán không thành công/);
   assert.match(payload.html, /Quảng cáo Facebook Master 2026/);
   assert.match(payload.html, /399\.000đ/);
-  assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/thanh-toan\/TAMFAILED/);
+  assert.match(payload.html, /https:\/\/theanhmarketing\.com\/thanh-toan\/TAMFAILED/);
   assert.match(payload.text, /Thanh toán không thành công/);
-  assert.match(payload.text, /Trang thanh toán: https:\/\/www\.theanhmarketing\.com\/thanh-toan\/TAMFAILED/);
+  assert.match(payload.text, /Trang thanh toán: https:\/\/theanhmarketing\.com\/thanh-toan\/TAMFAILED/);
 });
 
 test("sends payment failed email only for failed or expired orders", async () => {

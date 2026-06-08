@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { canAccessAdminRole, getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
+import { sendStudentAccessEmail } from "@/lib/notifications/student-access-email";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import { cleanEmail, cleanPhone, cleanSlug, cleanText, isValidEmail, isValidSlug } from "@/lib/security/validation";
 import { invalidateAdminModules } from "@/services/adminDataService";
 import { getCourses } from "@/services/courseService";
 import { createLeadAdmin } from "@/services/leadService";
+import { ensureStudentAccountForAccessGrant } from "@/services/studentAccountService";
 
 type AccessAction = "grant" | "revoke";
 
@@ -38,7 +40,7 @@ export async function POST(request: Request) {
     if (isAuthGuardEnabled() || process.env.NODE_ENV !== "development") {
       const { adminRole } = await getCurrentAuth();
 
-      if (!canAccessAdminRole(adminRole, ["owner"])) {
+      if (!canAccessAdminRole(adminRole, ["owner", "editor"])) {
         return NextResponse.json(
           { ok: false, message: "Bạn không có quyền thay đổi quyền học viên." },
           { status: 403 },
@@ -82,6 +84,32 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, message: "Không tìm thấy một hoặc nhiều khóa học." }, { status: 404 });
     }
 
+    let studentAccount:
+      | Awaited<ReturnType<typeof ensureStudentAccountForAccessGrant>>
+      | null = null;
+
+    if (action === "grant") {
+      studentAccount = await ensureStudentAccountForAccessGrant(
+        {
+          studentName: name,
+          email,
+          phone,
+          courseSlug: courseSlugs.join(","),
+          courseTitle: coursesToUpdate.map((course) => course.title).join(" | "),
+        },
+        {
+          forcePasswordUpdate: true,
+        },
+      );
+
+      if (!studentAccount.ok) {
+        return NextResponse.json(
+          { ok: false, message: `Chưa tạo/cập nhật được tài khoản học viên: ${studentAccount.reason}` },
+          { status: 500 },
+        );
+      }
+    }
+
     for (const course of coursesToUpdate) {
       const result = await createLeadAdmin({
         name,
@@ -103,14 +131,46 @@ export async function POST(request: Request) {
       }
     }
 
+    const emailResult = await sendStudentAccessEmail(
+      {
+        action,
+        studentName: name,
+        email,
+        courseTitles: coursesToUpdate.map((course) => course.title),
+      },
+      {
+        account:
+          action === "grant" && studentAccount?.temporaryPassword
+            ? {
+                email: studentAccount.email,
+                temporaryPassword: studentAccount.temporaryPassword,
+                created: studentAccount.created,
+                mustChangePassword: true,
+              }
+            : undefined,
+      },
+    );
+
+    if (!emailResult.ok || emailResult.skipped) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: `Đã cập nhật quyền học nhưng chưa gửi được email cho khách: ${
+            emailResult.reason ?? "không rõ lý do"
+          }`,
+        },
+        { status: 500 },
+      );
+    }
+
     invalidateAdminModules(["leads", "students"]);
 
     return NextResponse.json({
       ok: true,
       message:
         action === "grant"
-          ? `Đã cấp quyền ${coursesToUpdate.length} khóa cho ${email}.`
-          : `Đã thu quyền ${coursesToUpdate.length} khóa của ${email}.`,
+          ? `Đã cấp quyền ${coursesToUpdate.length} khóa, tạo/cập nhật tài khoản và gửi email cho ${email}.`
+          : `Đã thu quyền ${coursesToUpdate.length} khóa và gửi email thông báo cho ${email}.`,
     });
   } catch (error) {
     return NextResponse.json(

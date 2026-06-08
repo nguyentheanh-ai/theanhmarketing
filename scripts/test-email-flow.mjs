@@ -52,7 +52,7 @@ async function main() {
 
   process.env.NEW_LEAD_NOTIFICATION_TO = recipient;
   process.env.REGISTRATION_NOTIFICATION_EMAIL = recipient;
-  process.env.NEXT_PUBLIC_SITE_URL ||= "https://www.theanhmarketing.com";
+  process.env.NEXT_PUBLIC_SITE_URL ||= "https://theanhmarketing.com";
 
   const payment = loadTsModule("lib/notifications/payment-success-email.ts");
   const registration = loadTsModule("lib/notifications/registration-email.ts");

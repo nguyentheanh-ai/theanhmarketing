@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const supabaseHost = "vsxxgdzwtscuxcmjfckt.supabase.co";
+const canonicalHost = "theanhmarketing.com";
+const legacyHost = "www.theanhmarketing.com";
+const enableLegacyHostRedirect = process.env.ENABLE_WWW_TO_APEX_REDIRECT === "true";
 
 function isLocalHost(host: string) {
   return (
@@ -24,6 +27,18 @@ function isDisabledAcademyRoute(pathname: string) {
     pathname === "/academy/ai-master-x10-hieu-suat" ||
     pathname === "/academy/ai-master-x10-hieu-suat.html"
   );
+}
+
+function isStudentAccessBridgeRoute(pathname: string) {
+  return pathname === "/vao-khoa-hoc" || pathname === "/go";
+}
+
+function stripFrameAncestors(policy: string) {
+  return policy
+    .split(";")
+    .map((part) => part.trim())
+    .filter((part) => part && !part.startsWith("frame-ancestors"))
+    .join("; ");
 }
 
 function buildContentSecurityPolicy(nonce: string) {
@@ -81,13 +96,15 @@ export function proxy(request: NextRequest) {
   const forwardedProto = request.headers.get("x-forwarded-proto");
   const isHttpRequest =
     forwardedProto === "http" || request.nextUrl.protocol === "http:";
+  const isProductionDomain = host === canonicalHost || host === legacyHost;
 
-  if (!isLocalHost(host) && isHttpRequest) {
+  if (!isLocalHost(host) && isProductionDomain && (isHttpRequest || (enableLegacyHostRedirect && host === legacyHost))) {
     const url = request.nextUrl.clone();
     url.protocol = "https:";
-    url.host = host;
+    url.host = canonicalHost;
+    url.port = "";
 
-    return NextResponse.redirect(url, 308);
+    return NextResponse.redirect(url, 301);
   }
 
   if (isDisabledAcademyRoute(request.nextUrl.pathname)) {
@@ -111,12 +128,20 @@ export function proxy(request: NextRequest) {
     },
   });
 
+  const contentSecurityPolicy = isLadiPageRoute(request.nextUrl.pathname)
+    ? buildLadiPageContentSecurityPolicy()
+    : buildContentSecurityPolicy(nonce);
+
   response.headers.set(
     "Content-Security-Policy",
-    isLadiPageRoute(request.nextUrl.pathname)
-      ? buildLadiPageContentSecurityPolicy()
-      : buildContentSecurityPolicy(nonce),
+    isStudentAccessBridgeRoute(request.nextUrl.pathname)
+      ? stripFrameAncestors(contentSecurityPolicy)
+      : contentSecurityPolicy,
   );
+
+  if (!isStudentAccessBridgeRoute(request.nextUrl.pathname)) {
+    response.headers.set("X-Frame-Options", "SAMEORIGIN");
+  }
 
   return response;
 }

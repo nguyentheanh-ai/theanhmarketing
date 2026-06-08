@@ -4,5 +4,5 @@ import { getCurrentAuth } from "@/lib/auth/session";
 export default async function AdminIndexPage() {
   const { adminRole } = await getCurrentAuth();
 
-  redirect(adminRole === "editor" ? "/admin/khoa-hoc" : "/admin/facebook-ads");
+  redirect(adminRole === "editor" ? "/admin/khoa-hoc" : "/admin/dashboard");
 }

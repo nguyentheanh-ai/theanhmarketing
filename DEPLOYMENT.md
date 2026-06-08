@@ -2,7 +2,7 @@
 
 ## Domain
 
-Primary domain: `https://www.theanhmarketing.com`
+Primary domain: `https://theanhmarketing.com`
 
 If the production domain changes, update:
 
@@ -56,7 +56,7 @@ Private areas are intentionally excluded from indexing:
   - `SEPAY_BANK_ACCOUNT_NUMBER=0367928921`
   - `SEPAY_BANK_ACCOUNT_NAME=NGUYEN THE ANH`
   - `SEPAY_WEBHOOK_API_KEY` from Sepay, kept secret and never committed.
-- Configure Sepay webhook URL: `https://www.theanhmarketing.com/api/sepay/webhook`.
+- Configure Sepay webhook URL: `https://theanhmarketing.com/api/sepay/webhook`.
 - Replace media placeholders with real images/videos.
 - Add social links in `components/seo/json-ld.tsx` when official channels are ready.
 - Connect forms to a backend or form service when static `mailto` is not enough.

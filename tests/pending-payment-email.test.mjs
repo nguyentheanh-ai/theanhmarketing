@@ -15,8 +15,15 @@ function loadTsModule(relativePath) {
     },
   }).outputText;
   const cjsModule = { exports: {} };
-  const runner = new Function("exports", "module", compiled);
-  runner(cjsModule.exports, cjsModule);
+  const runner = new Function("exports", "module", "require", compiled);
+  const requireShim = (specifier) => {
+    if (specifier === "@/lib/notifications/email-link-bridge") {
+      return loadTsModule("lib/notifications/email-link-bridge.ts");
+    }
+
+    throw new Error(`Unsupported test import: ${specifier}`);
+  };
+  runner(cjsModule.exports, cjsModule, requireShim);
   return cjsModule.exports;
 }
 
@@ -93,8 +100,10 @@ test("builds a customer pending payment email with Sepay QR and payment page lin
     assert.match(payload.html, /Chưa thanh toán/);
     assert.match(payload.html, /399\.000đ/);
     assert.match(payload.html, /https:\/\/qr\.sepay\.vn\/img\?bank=VPB&amp;acc=0367928921&amp;amount=399000&amp;des=TAMDEMO0524/);
-    assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/thanh-toan\/TAMDEMO0524/);
+    assert.match(payload.html, /https:\/\/theanhmarketing\.com\/thanh-toan\/TAMDEMO0524/);
     assert.match(payload.html, /Thông tin chuyển khoản để copy/);
+    assert.match(payload.html, /Số tiền/);
+    assert.match(payload.html, /399\.000đ/);
     assert.match(payload.html, /Số tài khoản/);
     assert.match(payload.html, /0367928921/);
     assert.match(payload.html, /Nội dung chuyển khoản/);
@@ -103,9 +112,10 @@ test("builds a customer pending payment email with Sepay QR and payment page lin
     assert.doesNotMatch(payload.html, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     assert.doesNotMatch(payload.text, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     assert.match(payload.text, /Thông tin chuyển khoản:/);
+    assert.match(payload.text, /Số tiền: 399\.000đ/);
     assert.match(payload.text, /Số tài khoản: 0367928921/);
     assert.match(payload.text, /Nội dung chuyển khoản: TAMDEMO0524/);
-    assert.match(payload.text, /Trang thanh toán: https:\/\/www\.theanhmarketing\.com\/thanh-toan\/TAMDEMO0524/);
+    assert.match(payload.text, /Trang thanh toán: https:\/\/theanhmarketing\.com\/thanh-toan\/TAMDEMO0524/);
   } finally {
     if (previousBankCode === undefined) delete process.env.SEPAY_BANK_CODE;
     else process.env.SEPAY_BANK_CODE = previousBankCode;
@@ -145,7 +155,7 @@ test("includes Ads support agent link only for the Facebook Ads 799K support pac
   assert.doesNotMatch(payload.html, /Qu\?ng c\?o/);
   assert.match(payload.html, /Agent H/);
   assert.match(payload.text, /Agent H/);
-  assert.match(payload.html, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.match(payload.html, /https:\/\/theanhmarketing\.com\/go\?to=https%3A%2F%2Fchatgpt\.com%2Fg%2Fg-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner/);
   assert.match(payload.text, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 });
 
@@ -169,4 +179,11 @@ test("skips pending payment email without a Resend API key without throwing", as
       process.env.RESEND_API_KEY = previousKey;
     }
   }
+});
+
+test("pending payment email sends Resend JSON as explicit UTF-8 bytes", () => {
+  const source = fs.readFileSync(path.resolve("lib/notifications/pending-payment-email.ts"), "utf8");
+
+  assert.match(source, /"Content-Type": "application\/json; charset=utf-8"/);
+  assert.match(source, /Buffer\.from\(JSON\.stringify\(payload\), "utf8"\)/);
 });

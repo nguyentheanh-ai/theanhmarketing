@@ -66,10 +66,52 @@ function isAiMasterX10(order: PaymentOrder) {
 }
 
 function isAgentKit(order: PaymentOrder) {
-  const haystack = `${order.courseSlug} ${order.courseTitle} ${order.orderItems
-    .map((item) => `${item.slug} ${item.title}`)
+  const slugHaystack = `${order.courseSlug} ${order.orderItems
+    .map((item) => item.slug)
     .join(" ")}`.toLowerCase();
-  return haystack.includes(agentKitSlug) || haystack.includes("agent kit") || haystack.includes("ai agent business");
+  return slugHaystack.includes(agentKitSlug);
+}
+
+function isFacebookAds2026(order: PaymentOrder) {
+  const slugHaystack = `${order.courseSlug} ${order.orderItems
+    .map((item) => item.slug)
+    .join(" ")}`.toLowerCase();
+  return slugHaystack.includes("facebook-ads-2026");
+}
+
+function getPaymentOffer(order: PaymentOrder, amountLabel: string) {
+  if (!isFacebookAds2026(order)) {
+    return {
+      originalPriceLabel: undefined,
+      currentPriceLabel: amountLabel,
+    };
+  }
+
+  if (order.amount === 799000) {
+    return {
+      originalPriceLabel: "2.590.000đ",
+      currentPriceLabel: "799.000đ",
+    };
+  }
+
+  if (order.amount === 1299000) {
+    return {
+      originalPriceLabel: undefined,
+      currentPriceLabel: "1.299.000đ",
+    };
+  }
+
+  if (order.amount === 399000) {
+    return {
+      originalPriceLabel: "2.290.000đ",
+      currentPriceLabel: "399.000đ",
+    };
+  }
+
+  return {
+    originalPriceLabel: undefined,
+    currentPriceLabel: amountLabel,
+  };
 }
 
 function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
@@ -152,6 +194,7 @@ function getCheckoutContent(order: PaymentOrder) {
       description:
         "Quét QR hoặc chuyển khoản đúng nội dung. Khi SePay xác nhận giao dịch, hệ thống sẽ mở quyền truy cập và gửi hướng dẫn theo email bạn đã đăng ký.",
       productLabel: "AI Agent Business",
+      productHref: "/academy/bo-kit-agent-doanh-nghiep",
       includes: agentKitIncludes,
       saleReasons: agentKitSaleReasons,
       nextSteps: [
@@ -163,6 +206,29 @@ function getCheckoutContent(order: PaymentOrder) {
     };
   }
 
+  if (isFacebookAds2026(order)) {
+    return {
+      eyebrow: "Bước cuối để hoàn tất đăng ký",
+      title: "Quảng cáo Facebook Master 2026",
+      description:
+        "Kiểm tra đúng số tiền và nội dung chuyển khoản. Khi SePay xác nhận giao dịch, hệ thống sẽ gửi email hướng dẫn truy cập khóa học. Nếu chưa thấy email, hãy kiểm tra mục Spam hoặc Promotions/Khuyến mãi.",
+      productLabel: "Facebook Ads Master 2026",
+      productHref: "/academy/facebook-ads-master-2026",
+      includes:
+        order.orderItems.length > 0
+          ? order.orderItems.map((item) => item.title)
+          : ["Quảng cáo Facebook Master 2026", "Email hướng dẫn sau thanh toán", "Hỗ trợ kiểm tra nếu giao dịch chưa được xác nhận"],
+      saleReasons: defaultSaleReasons,
+      nextSteps: [
+        "Nhận email xác nhận thanh toán",
+        "Kiểm tra mục Spam hoặc Promotions/Khuyến mãi nếu chưa thấy email sau vài phút",
+        "Đăng nhập vào dashboard học viên",
+        "Bắt đầu học theo lộ trình Facebook Ads 2026",
+      ],
+      stickyCopy: "Hoàn tất đăng ký Facebook Ads",
+    };
+  }
+
   if (isAiMasterX10(order)) {
     return {
       eyebrow: "Bước cuối để mở khóa khóa học",
@@ -170,6 +236,7 @@ function getCheckoutContent(order: PaymentOrder) {
       description:
         "Kiểm tra đúng số tiền và nội dung chuyển khoản. Khi SePay xác nhận giao dịch, hệ thống sẽ gửi email hướng dẫn truy cập.",
       productLabel: "AI Master X10",
+      productHref: "/academy/ai-master-x10-hieu-suat",
       includes: aiMasterIncludes,
       saleReasons: defaultSaleReasons,
       nextSteps: [
@@ -187,6 +254,7 @@ function getCheckoutContent(order: PaymentOrder) {
     description:
       "Kiểm tra đúng khóa học, số tiền và nội dung chuyển khoản. Hệ thống sẽ tự xác nhận sau khi SePay báo giao dịch thành công.",
     productLabel: "The Anh Marketing",
+    productHref: "/khoa-hoc",
     includes:
       order.orderItems.length > 0
         ? order.orderItems.map((item) => item.title)
@@ -217,6 +285,7 @@ export default async function PaymentPage({
   const amountLabel = order.amountLabel || formatVnd(order.amount);
   const courseTitle = getDisplayCourseTitle(order);
   const content = getCheckoutContent(order);
+  const paymentOffer = getPaymentOffer(order, amountLabel);
   const isLocalDemoOrder = order.id.startsWith("local-");
   const createdTimestamp = Date.parse(order.createdAt);
   const fallbackDeadline = Number.isNaN(createdTimestamp)
@@ -331,10 +400,69 @@ export default async function PaymentPage({
             font-size: 0.72rem;
           }
 
+          .payment-checkout-page section {
+            padding-left: 0.75rem !important;
+            padding-right: 0.75rem !important;
+            width: 100% !important;
+            max-width: 100vw !important;
+            overflow-x: hidden !important;
+          }
+
           .payment-checkout-page .payment-hero-title {
             font-size: 2.55rem !important;
             letter-spacing: -0.035em !important;
             line-height: 1.02 !important;
+          }
+
+          .payment-checkout-page .payment-qr-title {
+            font-size: 1.45rem !important;
+            letter-spacing: -0.03em !important;
+            line-height: 1.12 !important;
+            overflow-wrap: anywhere;
+          }
+
+          .payment-checkout-page .payment-offer-title {
+            font-size: 1.36rem !important;
+            letter-spacing: -0.035em !important;
+            line-height: 1.12 !important;
+            overflow-wrap: anywhere;
+          }
+
+          .payment-checkout-page .payment-focus-grid {
+            grid-template-columns: minmax(0, 1fr) !important;
+            justify-items: stretch !important;
+            width: 100% !important;
+            max-width: calc(100vw - 3rem) !important;
+            overflow-x: hidden !important;
+          }
+
+          .payment-checkout-page .payment-focus-grid > * {
+            max-width: 100% !important;
+            min-width: 0 !important;
+            width: 100% !important;
+          }
+
+          .payment-checkout-page .payment-card,
+          .payment-checkout-page .payment-soft-card {
+            width: min(100%, calc(100vw - 1.5rem)) !important;
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+          }
+
+          .payment-checkout-page .payment-qr-shell,
+          .payment-checkout-page .payment-qr-inner,
+          .payment-checkout-page .payment-focus-grid img {
+            max-width: 100% !important;
+            min-width: 0 !important;
+            width: 100% !important;
+          }
+
+          .payment-checkout-page .payment-current-price {
+            display: block !important;
+          }
+
+          .payment-checkout-page .payment-countdown-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
           }
 
         }
@@ -351,7 +479,7 @@ export default async function PaymentPage({
 
       <header className="payment-header relative z-10 border-b border-slate-900/8 bg-white/88 px-5 py-4 backdrop-blur-2xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-          <Link className="flex items-center gap-3 font-black text-slate-950" href="/academy/bo-kit-agent-doanh-nghiep">
+          <Link className="flex items-center gap-3 font-black text-slate-950" href={content.productHref}>
             <span className="grid size-11 place-items-center overflow-hidden rounded-2xl bg-white shadow-[0_10px_28px_rgba(15,23,42,0.12)]">
               <Image src="/brand/ta-mark.svg" alt="The Anh Marketing" width={44} height={44} priority />
             </span>
@@ -407,7 +535,7 @@ export default async function PaymentPage({
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-600">Thanh toán SePay</p>
-                  <h2 className="mt-2 text-[1.7rem] font-black leading-[1.08] tracking-[-0.035em] text-slate-950 sm:text-3xl sm:tracking-[-0.045em]">
+                  <h2 className="payment-qr-title mt-2 text-[1.7rem] font-black leading-[1.08] tracking-[-0.035em] text-slate-950 sm:text-3xl sm:tracking-[-0.045em]">
                     Thanh toán ngay - 3 bước đơn giản
                   </h2>
                 </div>
@@ -418,7 +546,11 @@ export default async function PaymentPage({
               </div>
 
               <div className="mt-5">
-                <PaymentOfferCountdown deadline={offerDeadline} />
+                <PaymentOfferCountdown
+                  currentPriceLabel={paymentOffer.currentPriceLabel}
+                  deadline={offerDeadline}
+                  originalPriceLabel={paymentOffer.originalPriceLabel}
+                />
               </div>
 
               <div className="payment-focus-grid mt-7 grid justify-center gap-5 md:items-stretch">

@@ -86,9 +86,11 @@ test("Meta CAPI helper sends numeric Meta lead ids only and skips network withou
   const previousToken = process.env.META_CAPI_ACCESS_TOKEN;
   const previousDataset = process.env.META_CAPI_DATASET_ID;
   const previousPixel = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  const previousAdditionalPixels = process.env.NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS;
   delete process.env.META_CAPI_ACCESS_TOKEN;
   delete process.env.META_CAPI_DATASET_ID;
   delete process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  delete process.env.NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS;
 
   try {
     const result = await sendMetaLeadEvent({ orderCode: "LEAD-3", email: "lead@example.com" });
@@ -102,6 +104,8 @@ test("Meta CAPI helper sends numeric Meta lead ids only and skips network withou
     else process.env.META_CAPI_DATASET_ID = previousDataset;
     if (previousPixel === undefined) delete process.env.NEXT_PUBLIC_META_PIXEL_ID;
     else process.env.NEXT_PUBLIC_META_PIXEL_ID = previousPixel;
+    if (previousAdditionalPixels === undefined) delete process.env.NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS;
+    else process.env.NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS = previousAdditionalPixels;
   }
 });
 
@@ -135,12 +139,44 @@ test("environment and browser pixel fallback are documented without hard-coded s
   const capiSource = read("lib/meta/conversions-api.ts");
 
   assert.match(envExample, /NEXT_PUBLIC_META_PIXEL_ID=/);
+  assert.match(envExample, /NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS=/);
   assert.match(envExample, /META_CAPI_DATASET_ID=/);
   assert.match(envExample, /META_CAPI_ACCESS_TOKEN=/);
   assert.match(envExample, /META_CAPI_API_VERSION=v25\.0/);
   assert.match(envExample, /META_CAPI_TEST_EVENT_CODE=/);
   assert.match(marketingSettings, /NEXT_PUBLIC_META_PIXEL_ID/);
+  assert.match(marketingSettings, /NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS/);
+  assert.match(marketingSettings, /facebookPixelIds/);
   assert.match(marketingSettings, /envFacebookPixelId/);
   assert.match(marketingSettingsService, /normalizeMarketingSettings\(fallbackMarketingSettings\)/);
   assert.doesNotMatch(capiSource, /EAA[A-Za-z0-9_-]{20,}/);
+});
+
+test("all sales landing surfaces include browser Pixel and pass fbp/fbc into order CAPI", () => {
+  const marketingScripts = read("components/site/marketing-scripts.tsx");
+  const aiMasterSource = read("public/ladipage/ai-master-x10-hieu-suat.html");
+  const aiMasterPublished = read("public/academy/ai-master-x10-hieu-suat.html");
+  const facebookAdsSource = read("public/ladipage/facebook-ads-2026.html");
+  const facebookAdsPublished = read("public/academy/facebook-ads-master-2026.html");
+  const staticLandingPages = [
+    aiMasterSource,
+    aiMasterPublished,
+    facebookAdsSource,
+    facebookAdsPublished,
+  ];
+
+  assert.match(marketingScripts, /facebookPixelIds\.map/);
+  assert.match(marketingScripts, /fbq\('init', '\$\{pixelId\}'\)/);
+  assert.match(marketingScripts, /facebook\.com\/tr\?id=\$\{pixelId\}&ev=PageView/);
+
+  for (const html of staticLandingPages) {
+    assert.match(html, /connect\.facebook\.net\/en_US\/fbevents\.js/);
+    assert.match(html, /fbq\(["']init["'], ["']1315653423712065["']\)/);
+    assert.match(html, /fbq\(["']track["'], ["']PageView["']\)/);
+    assert.match(html, /(?:fbq\(["']track["'], ["']Lead["']|track\(["']Lead["'])/);
+    assert.match(html, /(?:fbq\(["']track["'], ["']InitiateCheckout["']|track\(["']InitiateCheckout["'])/);
+    assert.match(html, /\/api\/orders/);
+    assert.match(html, /fbp:\s*getCookie\(["']_fbp["']\)/);
+    assert.match(html, /fbc:\s*getCookie\(["']_fbc["']\)/);
+  }
 });

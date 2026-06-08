@@ -42,6 +42,16 @@ export function ChangePasswordForm() {
       return;
     }
 
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      setMessage("Link đặt lại mật khẩu chưa hợp lệ hoặc đã hết hạn. Vui lòng mở lại link mới nhất trong email.");
+      setIsSubmitting(false);
+      return;
+    }
+
     const { error } = await supabase.auth.updateUser({
       password,
       data: {

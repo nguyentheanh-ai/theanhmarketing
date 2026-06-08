@@ -1,4 +1,5 @@
 import { getCourseAccessSlugs, getConfiguredAdminEmails, parseAccessOverrideSource } from "@/lib/course-access";
+import { getActiveDeletedStudentKeys } from "@/services/adminDeletionService";
 import type { LeadItem } from "@/services/leadService";
 import { getLeads } from "@/services/leadService";
 import type { PaymentOrder } from "@/services/orderService";
@@ -188,14 +189,16 @@ function markAdminRecord(record: StudentAccessRecord) {
 }
 
 export async function getStudentAccessRecords() {
-  const [orders, leads] = await Promise.all([
+  const [orders, leads, activeDeletedStudentKeys] = await Promise.all([
     getPaymentOrders({ includeFallback: false }),
     getLeads({ includeFallback: false }),
+    getActiveDeletedStudentKeys(),
   ]);
   const records = new Map<string, StudentAccessRecord>();
-  const deletedStudentKeys = new Set(
-    leads.filter((item) => item.source === "admin-student-delete").map((lead) => getStudentKey(lead)),
-  );
+  const deletedStudentKeys = new Set([
+    ...activeDeletedStudentKeys,
+    ...leads.filter((item) => item.source === "admin-student-delete").map((lead) => getStudentKey(lead)),
+  ]);
 
   for (const order of orders) {
     const key = getStudentKey(order);

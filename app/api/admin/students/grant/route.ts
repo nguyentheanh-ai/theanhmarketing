@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     if (isAuthGuardEnabled() || process.env.NODE_ENV !== "development") {
       const { adminRole } = await getCurrentAuth();
 
-      if (!canAccessAdminRole(adminRole, ["owner"])) {
+      if (!canAccessAdminRole(adminRole, ["owner", "editor"])) {
         return NextResponse.json(
           { ok: false, message: "Bạn không có quyền cấp quyền học viên." },
           { status: 403 },

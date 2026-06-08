@@ -742,13 +742,24 @@ function TrialAccessModal({
     }
 
     if (mode === "register") {
-      await supabase.from("leads").insert({
-        name: fullName,
-        phone,
-        email,
-        message: `Đăng ký học thử Growth System: ${course.title}`,
-        source: "trial",
+      const leadResponse = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: fullName,
+          phone,
+          email,
+          message: `Đăng ký học thử Growth System: ${course.title}`,
+          source: "trial",
+        }),
       });
+
+      if (!leadResponse.ok) {
+        const leadResult = (await leadResponse.json()) as { message?: string };
+        setMessage(leadResult.message ?? "Chưa lưu được thông tin đăng ký học thử.");
+        setIsSubmitting(false);
+        return;
+      }
 
       try {
         await fetch("/api/notifications/registration", {

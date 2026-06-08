@@ -1,3 +1,5 @@
+import { getConfiguredOwnerEmails } from "@/lib/admin/admin-emails";
+
 export type CourseAccessOrder = {
   email?: string | null;
   status?: string | null;
@@ -35,10 +37,7 @@ function getOrderCourseSlugs(order: CourseAccessOrder) {
 }
 
 export function getConfiguredAdminEmails() {
-  return (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map(normalizeEmail)
-    .filter(Boolean);
+  return getConfiguredOwnerEmails();
 }
 
 export function isAdminEmail(email: string | null | undefined) {

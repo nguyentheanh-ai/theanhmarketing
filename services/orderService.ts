@@ -169,12 +169,16 @@ async function resolveCourses(input: CreatePaymentOrderInput) {
 const coursePaymentPlans: Record<string, Record<string, { title: string; amount: number }>> = {
   "facebook-ads-2026": {
     video: {
-      title: "Gói Video 399K",
+      title: "Gói Cơ Bản 399K",
       amount: 399000,
     },
     "zoom-kit": {
-      title: "Gói Hỗ Trợ 799K - Zoom lên ads + Agent kit",
+      title: "Gói AI Agent 799K - Tặng AI Agent lên kế hoạch quảng cáo",
       amount: 799000,
+    },
+    "advanced-zoom": {
+      title: "Gói AI Agent 799K + 1 buổi Zoom chuyên sâu",
+      amount: 1299000,
     },
   },
   "bo-agent-kit-x10-hieu-suat-cong-viec": {

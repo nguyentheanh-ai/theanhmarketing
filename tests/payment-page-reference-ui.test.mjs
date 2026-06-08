@@ -31,6 +31,11 @@ test("payment page follows the agent kit checkout section structure", () => {
   assert.match(page, /SePay tự đối soát/);
   assert.match(page, /qr-payment-section/);
   assert.match(page, /AI Master X10/);
+  assert.match(page, /Facebook Ads Master 2026/);
+  assert.match(page, /isFacebookAds2026/);
+  assert.match(page, /2\.590\.000đ/);
+  assert.match(page, /2\.290\.000đ/);
+  assert.match(page, /399\.000đ/);
   assert.doesNotMatch(page, /Vì sao nên hoàn tất ngay/);
   assert.doesNotMatch(page, /Sale checkpoint/);
   assert.doesNotMatch(page, /Bạn nhận được/);
@@ -69,17 +74,20 @@ test("payment helper components support the light checkout design while keeping 
   assert.match(poller, /checkoutTrackedRef/);
   assert.match(poller, /InitiateCheckout/);
   assert.match(poller, /Purchase/);
+  assert.match(poller, /Spam/);
+  assert.match(poller, /Promotions/);
   assert.match(poller, /Đang chờ chuyển khoản/);
 });
 
-test("payment offer countdown renders a live incentive timer", () => {
+test("payment offer block renders the locked discount without a hard-coded 359K", () => {
   const countdown = read("components/payment/payment-offer-countdown.tsx");
 
-  assert.match(countdown, /Tăng giá sau:/);
-  assert.match(countdown, /Chỉ còn hôm nay/);
-  assert.match(countdown, /Giữ giá/);
-  assert.match(countdown, /359K/);
-  assert.match(countdown, /799K/);
+  assert.match(countdown, /Ưu đãi đã áp dụng/);
+  assert.match(countdown, /Giảm từ/);
+  assert.match(countdown, /originalPriceLabel/);
+  assert.match(countdown, /currentPriceLabel/);
+  assert.match(countdown, /Giữ đúng số tiền/);
+  assert.doesNotMatch(countdown, /359K/);
   assert.match(countdown, /payment-countdown-grid/);
   assert.match(countdown, /setInterval/);
   assert.match(countdown, /formatTimeParts/);
@@ -87,7 +95,7 @@ test("payment offer countdown renders a live incentive timer", () => {
   assert.match(countdown, /giờ/);
   assert.match(countdown, /phút/);
   assert.match(countdown, /giây/);
-  assert.match(countdown, /Sau thời gian này/);
+  assert.match(countdown, /Mã đơn này đã khóa đúng số tiền/);
 });
 
 test("checkout result images are allowed by CSP", () => {

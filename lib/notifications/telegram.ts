@@ -20,8 +20,25 @@ function cleanEnvValue(value: string | undefined) {
   return (value ?? "").replace(/^\uFEFF/, "").trim().replace(/^['"]|['"]$/g, "");
 }
 
+function normalizeSiteUrl(value?: string) {
+  const rawUrl = cleanEnvValue(value) || "https://theanhmarketing.com";
+
+  try {
+    const url = new URL(rawUrl);
+    url.protocol = "https:";
+
+    if (url.hostname === "www.theanhmarketing.com") {
+      url.hostname = "theanhmarketing.com";
+    }
+
+    return url.origin;
+  } catch {
+    return "https://theanhmarketing.com";
+  }
+}
+
 function getSiteUrl(options?: TelegramSendOptions) {
-  return cleanEnvValue(options?.siteUrl) || cleanEnvValue(process.env.NEXT_PUBLIC_SITE_URL) || "https://www.theanhmarketing.com";
+  return normalizeSiteUrl(options?.siteUrl || process.env.NEXT_PUBLIC_SITE_URL);
 }
 
 function getEventTitle(event: TelegramOrderEvent) {

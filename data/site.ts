@@ -4,7 +4,7 @@ export const siteConfig = {
   logoMark: "TA",
   logoImage: "/brand/ta-mark.svg",
   tagline: "AI Performance Marketing System.",
-  url: "https://www.theanhmarketing.com",
+  url: "https://theanhmarketing.com",
   phone: "0367 928 921",
   phoneHref: "tel:0367928921",
   email: "theanhmarketing@gmail.com",

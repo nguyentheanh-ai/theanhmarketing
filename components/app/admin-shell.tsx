@@ -7,70 +7,144 @@ import { useMemo, useState, type ReactNode } from "react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import type { AdminRole } from "@/lib/auth/session";
 
+type ShellIconName = "home" | "lead" | "book" | "student" | "shield" | "settings";
+
 const adminNavGroups = [
   {
-    label: "Quản lý tập trung",
+    label: "Admin Panel",
     items: [
-      { label: "Học viên", href: "/admin/hoc-vien", shortcut: "01", allowedRoles: ["owner"] },
-      { label: "Lead", href: "/admin/leads", shortcut: "02", allowedRoles: ["owner"] },
-      { label: "Ads & doanh thu", href: "/admin/facebook-ads", shortcut: "03", allowedRoles: ["owner"] },
-      { label: "Khóa học", href: "/admin/khoa-hoc", shortcut: "04", allowedRoles: ["owner", "editor"] },
-      { label: "Thành viên admin", href: "/admin/thanh-vien-admin", shortcut: "05", allowedRoles: ["owner"] },
+      { label: "Tổng quan", href: "/admin/dashboard", icon: "home", allowedRoles: ["owner"] },
+      { label: "Quản lý Lead", href: "/admin/leads", icon: "lead", allowedRoles: ["owner"] },
+      { label: "Khóa học", href: "/admin/khoa-hoc", icon: "book", allowedRoles: ["owner", "editor"] },
+      { label: "Học viên", href: "/admin/hoc-vien", icon: "student", allowedRoles: ["owner", "editor"] },
+      { label: "Thành viên admin", href: "/admin/thanh-vien-admin", icon: "shield", allowedRoles: ["owner"] },
+      { label: "Cài đặt", href: "/admin/thanh-vien-admin", icon: "settings", allowedRoles: ["owner"] },
     ],
   },
 ] satisfies Array<{
   label: string;
-  items: Array<{ label: string; href: string; shortcut: string; allowedRoles: AdminRole[] }>;
+  items: Array<{ label: string; href: string; icon: ShellIconName; allowedRoles: AdminRole[] }>;
 }>;
 
 function canShowItem(item: { allowedRoles?: AdminRole[] }, adminRole: AdminRole) {
   return !item.allowedRoles || item.allowedRoles.includes(adminRole);
 }
 
-function normalizeModuleSearch(value: string) {
-  return value.trim().toLowerCase();
-}
+function ShellIcon({ name }: { name: ShellIconName }) {
+  const baseProps = {
+    className: "size-5",
+    fill: "none",
+    stroke: "currentColor",
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    strokeWidth: 2,
+    viewBox: "0 0 24 24",
+  };
 
-const quickActions = [
-  { label: "Thêm học viên", href: "/admin/hoc-vien", allowedRoles: ["owner"] },
-  { label: "Thêm lead", href: "/admin/leads", allowedRoles: ["owner"] },
-  { label: "Báo cáo ads", href: "/admin/facebook-ads", allowedRoles: ["owner"] },
-] satisfies Array<{ label: string; href: string; allowedRoles: AdminRole[] }>;
+  if (name === "home") {
+    return (
+      <svg aria-hidden="true" {...baseProps}>
+        <path d="m3 11 9-8 9 8" />
+        <path d="M5 10v10h14V10" />
+        <path d="M10 20v-6h4v6" />
+      </svg>
+    );
+  }
+
+  if (name === "lead") {
+    return (
+      <svg aria-hidden="true" {...baseProps}>
+        <path d="M16 21v-2a4 4 0 0 0-8 0v2" />
+        <circle cx="12" cy="7" r="4" />
+        <path d="M20 8v6" />
+        <path d="M23 11h-6" />
+      </svg>
+    );
+  }
+
+  if (name === "book") {
+    return (
+      <svg aria-hidden="true" {...baseProps}>
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z" />
+      </svg>
+    );
+  }
+
+  if (name === "student") {
+    return (
+      <svg aria-hidden="true" {...baseProps}>
+        <path d="m22 10-10-5-10 5 10 5 10-5z" />
+        <path d="M6 12v5c3 2 9 2 12 0v-5" />
+      </svg>
+    );
+  }
+
+  if (name === "shield") {
+    return (
+      <svg aria-hidden="true" {...baseProps}>
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        <path d="m9 12 2 2 4-4" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg aria-hidden="true" {...baseProps}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 2v3" />
+      <path d="M12 19v3" />
+      <path d="m4.9 4.9 2.1 2.1" />
+      <path d="m17 17 2.1 2.1" />
+      <path d="M2 12h3" />
+      <path d="M19 12h3" />
+      <path d="m4.9 19.1 2.1-2.1" />
+      <path d="m17 7 2.1-2.1" />
+    </svg>
+  );
+}
 
 export function AdminShell({ children, adminRole }: { children: ReactNode; adminRole: AdminRole }) {
   const pathname = usePathname();
-  const [moduleSearch, setModuleSearch] = useState("");
-  const { adminNav, visibleNavGroups, visibleQuickActions } = useMemo(() => {
-    const keyword = normalizeModuleSearch(moduleSearch);
-    const matchesModuleSearch = (item: { label: string; href: string }) => {
-      if (!keyword) {
-        return true;
-      }
-
-      return `${item.label} ${item.href}`.toLowerCase().includes(keyword);
-    };
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => pathname.startsWith("/admin/leads"));
+  const { adminNav, visibleNavGroups } = useMemo(() => {
     const visibleNavGroups = adminNavGroups
       .map((group) => ({
         ...group,
-        items: group.items.filter((item) => canShowItem(item, adminRole) && matchesModuleSearch(item)),
+        items: group.items.filter((item) => canShowItem(item, adminRole)),
       }))
       .filter((group) => group.items.length > 0);
 
     return {
       adminNav: visibleNavGroups.flatMap((group) => group.items),
       visibleNavGroups,
-      visibleQuickActions: quickActions.filter((item) => canShowItem(item, adminRole) && matchesModuleSearch(item)),
     };
-  }, [adminRole, moduleSearch]);
+  }, [adminRole]);
 
   return (
     <main data-admin-theme="light" className="min-h-screen overflow-x-hidden bg-[#f7f8fb] text-slate-950">
-      <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-slate-200 bg-white p-4 text-slate-950 lg:flex">
-        <Link
-          href={adminRole === "editor" ? "/admin/khoa-hoc" : "/admin/facebook-ads"}
-          className="flex items-center gap-3 rounded-md border border-slate-200 bg-white p-3 hover:bg-slate-50"
-        >
-          <span className="grid size-10 place-items-center overflow-hidden rounded-md bg-slate-50 p-1.5 ring-1 ring-slate-200">
+      <button
+        aria-label={isSidebarCollapsed ? "Mở menu quản trị" : "Ẩn menu quản trị"}
+        className={`fixed top-4 z-50 hidden size-10 place-items-center rounded-md border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 lg:grid ${
+          isSidebarCollapsed ? "left-4" : "left-[252px]"
+        }`}
+        onClick={() => setIsSidebarCollapsed((current) => !current)}
+        title={isSidebarCollapsed ? "Mở menu quản trị" : "Ẩn menu quản trị"}
+        type="button"
+      >
+        <svg aria-hidden="true" className="size-5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+          <path d={isSidebarCollapsed ? "M9 6l6 6-6 6" : "M15 6l-6 6 6 6"} />
+          <path d="M4 4h16v16H4z" />
+        </svg>
+      </button>
+
+      <aside
+        className={`fixed inset-y-0 left-0 w-[244px] flex-col border-r border-slate-200 bg-white p-4 text-slate-950 ${
+          isSidebarCollapsed ? "hidden" : "hidden lg:flex"
+        }`}
+      >
+        <Link href={adminRole === "editor" ? "/admin/khoa-hoc" : "/admin/dashboard"} className="flex items-center gap-3 rounded-md bg-white p-1">
+          <span className="grid size-11 place-items-center overflow-hidden rounded-md bg-blue-50 p-1.5 ring-1 ring-blue-100">
             <Image
               alt="The Anh Marketing"
               className="size-full object-contain"
@@ -83,30 +157,15 @@ export function AdminShell({ children, adminRole }: { children: ReactNode; admin
           </span>
           <span className="min-w-0">
             <span className="block text-sm font-black leading-4">The Anh Marketing</span>
-            <span className="mt-0.5 block text-xs font-semibold text-slate-500">
-              {adminRole === "editor" ? "Quản lý khóa học" : "Quản lý tập trung"}
-            </span>
+            <span className="mt-0.5 block text-xs font-semibold text-slate-500">Admin Panel</span>
           </span>
         </Link>
 
-        <label className="mt-4 flex min-h-10 items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 text-sm text-slate-500">
-          <span aria-hidden="true">⌕</span>
-          <input
-            aria-label="Tìm module admin"
-            className="w-full bg-transparent outline-none placeholder:text-slate-500"
-            placeholder="Tìm module..."
-            type="search"
-            value={moduleSearch}
-            onChange={(event) => setModuleSearch(event.target.value)}
-          />
-        </label>
-
-        <nav className="mt-6 grid min-h-0 flex-1 gap-5 overflow-y-auto pr-1">
+        <nav className="mt-8 grid min-h-0 flex-1 gap-5 overflow-y-auto pr-1">
           {visibleNavGroups.length > 0 ? (
             visibleNavGroups.map((group) => (
               <div key={group.label}>
-                <p className="px-3 text-[11px] font-black uppercase text-slate-400">{group.label}</p>
-                <div className="mt-2 grid gap-1">
+                <div className="grid gap-2">
                   {group.items.map((item) => {
                     const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
@@ -115,16 +174,16 @@ export function AdminShell({ children, adminRole }: { children: ReactNode; admin
                         key={item.href}
                         href={item.href}
                         aria-current={isActive ? "page" : undefined}
-                        className={`flex items-center justify-between rounded-md px-3 py-2.5 text-sm font-bold ${
+                        className={`flex items-center gap-3 rounded-md px-3 py-3 text-sm font-bold ${
                           isActive
-                            ? "border border-blue-200 bg-blue-50 text-blue-700"
+                            ? "border border-blue-200 bg-blue-50 text-blue-700 shadow-sm"
                             : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
                         }`}
                       >
-                        <span>{item.label}</span>
-                        <span className={`text-[11px] font-black ${isActive ? "text-blue-500" : "text-slate-400"}`}>
-                          {item.shortcut}
+                        <span className="grid size-5 place-items-center">
+                          <ShellIcon name={item.icon} />
                         </span>
+                        <span>{item.label}</span>
                       </Link>
                     );
                   })}
@@ -146,7 +205,7 @@ export function AdminShell({ children, adminRole }: { children: ReactNode; admin
           <p className="mt-2 text-sm leading-5 text-slate-600">
             {adminRole === "editor"
               ? "Biên tập và cập nhật nội dung khóa học."
-              : "Học viên, lead, ads, doanh thu, khóa học và quyền admin."}
+              : "Học viên, lead, khóa học và quyền admin."}
           </p>
           <SignOutButton
             mode="admin"
@@ -157,7 +216,7 @@ export function AdminShell({ children, adminRole }: { children: ReactNode; admin
 
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white px-4 py-3 text-slate-950 lg:hidden">
         <div className="flex items-center justify-between gap-3">
-          <Link href={adminRole === "editor" ? "/admin/khoa-hoc" : "/admin/facebook-ads"} className="flex min-w-0 items-center gap-2 font-bold">
+          <Link href={adminRole === "editor" ? "/admin/khoa-hoc" : "/admin/dashboard"} className="flex min-w-0 items-center gap-2 font-bold">
             <span className="grid size-9 place-items-center overflow-hidden rounded-md bg-slate-50 p-1 ring-1 ring-slate-200">
               <Image
                 alt="The Anh Marketing"
@@ -193,39 +252,8 @@ export function AdminShell({ children, adminRole }: { children: ReactNode; admin
         </nav>
       </header>
 
-      <section className="lg:ml-64">
-        <div className="sticky top-0 z-30 hidden border-b border-slate-200 bg-white px-8 py-4 xl:px-10 lg:block">
-          <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-5">
-            <div className="flex min-w-0 flex-1 items-center gap-3">
-              <label className="flex h-10 w-full max-w-xl items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 text-sm text-slate-500">
-                <span aria-hidden="true">⌕</span>
-                <input
-                  aria-label="Tìm module admin"
-                  className="w-full bg-transparent outline-none placeholder:text-slate-500"
-                  placeholder="Tìm module quản lý..."
-                  type="search"
-                  value={moduleSearch}
-                  onChange={(event) => setModuleSearch(event.target.value)}
-                />
-              </label>
-              <span className="shrink-0 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-black uppercase text-emerald-700">
-                Realtime
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              {visibleQuickActions.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 xl:px-10">{children}</div>
+      <section className={isSidebarCollapsed ? "lg:ml-0" : "lg:ml-[244px]"}>
+        <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-6 xl:px-10">{children}</div>
       </section>
     </main>
   );

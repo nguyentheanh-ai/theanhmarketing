@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import {
   cleanEmail,
   cleanPhone,
@@ -10,12 +9,13 @@ import {
   isValidPhone,
   isValidSlug,
 } from "@/lib/security/validation";
+import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import { sendMetaLeadEvent } from "@/lib/meta/conversions-api";
 import { syncOrderToGoogleSheet } from "@/lib/notifications/google-sheets";
 import { sendOrderCreatedEmails } from "@/lib/notifications/pending-payment-email";
 import { sendTelegramOrderNotification } from "@/lib/notifications/telegram";
 import { invalidateAdminModules } from "@/services/adminDataService";
-import { createLeadAdmin } from "@/services/leadService";
+import { createLeadAdmin, syncLeadByIdToGoogleSheet, updateLeadAdmin } from "@/services/leadService";
 import { createPaymentOrder, type PaymentOrder } from "@/services/orderService";
 
 function determineLeadSource(order: PaymentOrder, landingPage?: string) {
@@ -118,16 +118,36 @@ export async function POST(request: Request) {
       `Lead ID: ${cleanText(body.leadId, 120)}`,
     ].join("\n");
 
-    const leadSync = await createLeadAdmin({
-      name: studentName,
-      email,
-      phone,
-      message: remarketingNote,
-      source: determineLeadSource(order, body.landingPage),
-    });
+    const leadSource = determineLeadSource(order, body.landingPage);
+    const leadSync = body.leadId
+      ? await updateLeadAdmin(cleanText(body.leadId, 120), {
+          name: studentName,
+          email,
+          phone,
+          message: remarketingNote,
+          source: leadSource,
+        })
+      : await createLeadAdmin({
+          name: studentName,
+          email,
+          phone,
+          message: remarketingNote,
+          source: leadSource,
+        });
 
     if (!leadSync.ok) {
       console.warn("[orders] Remarketing lead sync failed:", leadSync.error);
+    }
+
+    if (leadSync.ok && body.leadId) {
+      const updatedLeadSheetSync = await syncLeadByIdToGoogleSheet(cleanText(body.leadId, 120));
+
+      if (!updatedLeadSheetSync.ok && !updatedLeadSheetSync.skipped) {
+        console.warn("[orders] Google Sheets lead update sync failed:", {
+          reason: updatedLeadSheetSync.reason,
+          status: updatedLeadSheetSync.status,
+        });
+      }
     }
 
     invalidateAdminModules(["orders", "leads", "students"]);
@@ -199,7 +219,7 @@ export async function POST(request: Request) {
 
     try {
       const sheetSync = await syncOrderToGoogleSheet(order, {
-        source: determineLeadSource(order, body.landingPage),
+        source: leadSource,
         landingPageUrl: cleanText(body.pageUrl, 500),
       });
 

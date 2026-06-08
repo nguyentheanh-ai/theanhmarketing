@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getSafeNextPath } from "@/lib/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -60,7 +61,12 @@ export function AdminLoginForm() {
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm font-semibold text-white/65">Mật khẩu</label>
+        <div className="flex items-center justify-between gap-3">
+          <label className="text-sm font-semibold text-white/65">Mật khẩu</label>
+          <Link className="text-xs font-bold text-white/55 hover:text-white" href="/quen-mat-khau">
+            Quên mật khẩu?
+          </Link>
+        </div>
         <input
           className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none transition placeholder:text-white/35 focus:border-[#77d7ff]/35"
           name="password"

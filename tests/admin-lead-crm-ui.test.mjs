@@ -8,14 +8,19 @@ function read(relativePath) {
 }
 
 test("lead CRM page uses the light management page header instead of the legacy header", () => {
-  const source = read("app/admin/leads/page.tsx");
+  const page = read("app/admin/leads/page.tsx");
+  const source = read("components/admin/lead-manager.tsx");
 
-  assert.doesNotMatch(source, /AdminPageHeader/);
-  assert.match(source, /Lead CRM/);
-  assert.match(source, /CRM gọn/);
+  assert.doesNotMatch(page, /AdminPageHeader/);
+  assert.match(source, /Quản lý Lead/);
+  assert.match(source, /khách hàng tiềm năng/);
+  assert.match(source, /Tổng số lead/);
+  assert.match(source, /Đã thanh toán/);
+  assert.match(source, /Chưa thanh toán/);
+  assert.match(source, /Chưa liên hệ/);
   assert.match(source, /border-slate-200/);
   assert.match(source, /text-slate-950/);
-  assert.match(source, /max-w-\[1480px\]/);
+  assert.match(page, /max-w-\[1480px\]/);
 });
 
 test("lead manager summarizes remarketing payloads instead of dumping raw tracking logs", () => {
@@ -26,7 +31,17 @@ test("lead manager summarizes remarketing payloads instead of dumping raw tracki
   assert.match(source, /courseTitle/);
   assert.match(source, /trackingBadges/);
   assert.match(source, /Mã đơn/);
-  assert.match(source, /Khóa \/ mã đơn/);
+  assert.match(source, /getCourseCode/);
+  assert.match(source, /Khóa học/);
+  assert.match(source, /Bank/);
+  assert.match(source, /Sale/);
+  assert.match(source, /aria-label=\{`Lọc cột \$\{label\}`\}/);
+  assert.match(source, /columnFilterOpen/);
+  assert.match(source, /mailFilter/);
+  assert.match(source, /detailLead/);
+  assert.match(source, /pageSizeOptions/);
+  assert.match(source, /actionMenuLeadId/);
+  assert.match(source, /Xóa lead/);
   assert.match(source, /useDeferredValue/);
   assert.match(source, /filteredLeads/);
   assert.doesNotMatch(source, /max-w-sm text-black\/65">\{lead\.need/);
@@ -37,12 +52,14 @@ test("lead table puts created date at the beginning and keeps name cell compact"
   const headerStart = source.indexOf("<thead");
   const headerEnd = source.indexOf("</thead>", headerStart);
   const header = source.slice(headerStart, headerEnd);
-  const rowStart = source.indexOf("<tr className=\"border-t border-slate-100");
+  const rowStart = source.indexOf("<tr className=\"group border-t border-slate-100");
   const rowEnd = source.indexOf("</tr>", rowStart);
   const row = source.slice(rowStart, rowEnd);
 
-  assert.ok(header.indexOf("Ngày tạo") < header.indexOf("Họ tên"));
-  assert.ok(row.indexOf("formatAdminDate(lead.createdAt)") < row.indexOf("lead.name"));
+  assert.ok(header.indexOf("Thời gian") < header.indexOf("Tên"));
+  assert.match(row, /formatShortDate\(lead\.createdAt\)/);
+  assert.match(row, /max-w-\[190px\] truncate font-black text-slate-950/);
+  assert.match(row, /\{courseCode\}/);
   assert.doesNotMatch(source, /Lead từ landing\/checkout; xem nhãn tracking bên dưới/);
   assert.doesNotMatch(row, /summary\.shortNote/);
 });

@@ -9,6 +9,7 @@ export type MarketingSettings = {
   trackingEnabled: boolean;
   facebookPixelEnabled: boolean;
   facebookPixelId: string;
+  facebookPixelIds: string[];
   gaEnabled: boolean;
   gaMeasurementId: string;
   gtmEnabled: boolean;
@@ -25,6 +26,7 @@ export const fallbackMarketingSettings: MarketingSettings = {
   trackingEnabled: false,
   facebookPixelEnabled: false,
   facebookPixelId: "",
+  facebookPixelIds: [],
   gaEnabled: false,
   gaMeasurementId: "",
   gtmEnabled: false,
@@ -41,6 +43,17 @@ function extractMetaContent(value: string) {
 function normalizePixelId(value?: string) {
   const id = String(value ?? "").trim();
   return /^\d{6,32}$/.test(id) ? id : "";
+}
+
+function normalizePixelIds(values: Array<string | undefined>) {
+  return Array.from(
+    new Set(
+      values
+        .flatMap((value) => String(value ?? "").split(","))
+        .map((value) => normalizePixelId(value))
+        .filter(Boolean),
+    ),
+  );
 }
 
 function normalizeGaId(value?: string) {
@@ -85,9 +98,14 @@ export function normalizeMarketingSettings(value: Partial<MarketingSettings> | n
 
   const facebookPixelId = normalizePixelId(merged.facebookPixelId);
   const envFacebookPixelId = normalizePixelId(process.env.NEXT_PUBLIC_META_PIXEL_ID);
+  const facebookPixelIds = normalizePixelIds([
+    facebookPixelId,
+    envFacebookPixelId,
+    process.env.NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS,
+  ]);
   const gaMeasurementId = normalizeGaId(merged.gaMeasurementId);
   const gtmId = normalizeGtmId(merged.gtmId);
-  const effectiveFacebookPixelId = facebookPixelId || envFacebookPixelId;
+  const effectiveFacebookPixelId = facebookPixelIds[0] || "";
 
   return {
     seoTitle: String(merged.seoTitle || fallbackMarketingSettings.seoTitle).trim().slice(0, 90),
@@ -95,9 +113,10 @@ export function normalizeMarketingSettings(value: Partial<MarketingSettings> | n
     socialImageUrl: normalizeUrl(merged.socialImageUrl),
     googleSiteVerification: normalizeVerification(merged.googleSiteVerification),
     facebookDomainVerification: normalizeVerification(merged.facebookDomainVerification),
-    trackingEnabled: Boolean(merged.trackingEnabled || envFacebookPixelId),
-    facebookPixelEnabled: Boolean((merged.facebookPixelEnabled || envFacebookPixelId) && effectiveFacebookPixelId),
+    trackingEnabled: Boolean(merged.trackingEnabled || facebookPixelIds.length > 0),
+    facebookPixelEnabled: Boolean((merged.facebookPixelEnabled || facebookPixelIds.length > 0) && effectiveFacebookPixelId),
     facebookPixelId: effectiveFacebookPixelId,
+    facebookPixelIds,
     gaEnabled: Boolean(merged.gaEnabled && gaMeasurementId),
     gaMeasurementId,
     gtmEnabled: Boolean(merged.gtmEnabled && gtmId),

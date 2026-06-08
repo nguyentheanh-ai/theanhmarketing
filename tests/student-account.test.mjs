@@ -39,6 +39,10 @@ function loadTsModuleWithMocks(relativePath, mocks) {
   return cjsModule.exports;
 }
 
+function read(relativePath) {
+  return fs.readFileSync(path.resolve(relativePath), "utf8");
+}
+
 const {
   buildAutoStudentAccountCredentials,
   getPostLoginRedirect,
@@ -133,4 +137,95 @@ test("auto-created paid student accounts do not depend on listing auth users", a
       delete process.env.SUPABASE_SERVICE_ROLE_KEY;
     }
   }
+});
+
+test("paid order provisioning resets password for existing auth users", async () => {
+  const previousServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-role";
+  let createUserCalls = 0;
+  let listUsersCalls = 0;
+  let updateUserByIdCalls = 0;
+
+  const { ensureStudentAccountForPaidOrder } = loadTsModuleWithMocks("services/studentAccountService.ts", {
+    "@/lib/auth/student-account": {
+      buildAutoStudentAccountCredentials() {
+        return {
+          email: "oauth-student@example.com",
+          password: "Tinh0344123443",
+        };
+      },
+    },
+    "@/lib/supabase/admin": {
+      createSupabaseAdminClient() {
+        return {
+          auth: {
+            admin: {
+              async createUser() {
+                createUserCalls += 1;
+                return { data: { user: null }, error: { message: "User already registered" } };
+              },
+              async listUsers() {
+                listUsersCalls += 1;
+                return {
+                  data: {
+                    users: [
+                      {
+                        id: "oauth-user-1",
+                        email: "oauth-student@example.com",
+                        user_metadata: { provider_id: "google-1" },
+                      },
+                    ],
+                  },
+                  error: null,
+                };
+              },
+              async updateUserById(userId, payload) {
+                updateUserByIdCalls += 1;
+                assert.equal(userId, "oauth-user-1");
+                assert.equal(payload.password, "Tinh0344123443");
+                assert.equal(payload.email_confirm, true);
+                assert.equal(payload.user_metadata.must_change_password, true);
+                assert.equal(payload.user_metadata.password_set_by_admin, true);
+                return { data: { user: { id: userId } }, error: null };
+              },
+            },
+          },
+        };
+      },
+    },
+  });
+
+  try {
+    const result = await ensureStudentAccountForPaidOrder({
+      studentName: "Phạm Thành Tính",
+      email: "oauth-student@example.com",
+      phone: "0344123443",
+      status: "paid",
+      orderCode: "TAM123",
+      courseSlug: "facebook-ads-2026",
+      courseTitle: "Facebook Ads Master",
+    });
+
+    assert.equal(result.ok, true);
+    assert.equal(result.skipped, false);
+    assert.equal(result.created, false);
+    assert.equal(result.temporaryPassword, "Tinh0344123443");
+    assert.equal(result.userId, "oauth-user-1");
+    assert.equal(createUserCalls, 1);
+    assert.equal(listUsersCalls, 1);
+    assert.equal(updateUserByIdCalls, 1);
+  } finally {
+    if (previousServiceRole) {
+      process.env.SUPABASE_SERVICE_ROLE_KEY = previousServiceRole;
+    } else {
+      delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+    }
+  }
+});
+
+test("SePay paid email includes account password when an existing user was reset", () => {
+  const route = read("app/api/sepay/webhook/route.ts");
+
+  assert.match(route, /studentAccount\.temporaryPassword/);
+  assert.doesNotMatch(route, /account:\s*studentAccount\.created/);
 });

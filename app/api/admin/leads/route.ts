@@ -2,8 +2,54 @@ import { NextResponse } from "next/server";
 import { canAccessAdminRole, getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import { cleanEmail, cleanPhone, cleanText, isValidEmail, isValidPhone } from "@/lib/security/validation";
-import { invalidateAdminModules } from "@/services/adminDataService";
+import { getAdminLeads, invalidateAdminModules } from "@/services/adminDataService";
+import { recordLeadActivity } from "@/services/leadActivityService";
 import { createLeadAdmin } from "@/services/leadService";
+
+async function requireOwner() {
+  if (isAuthGuardEnabled() || process.env.NODE_ENV !== "development") {
+    const { adminRole } = await getCurrentAuth();
+
+    if (!canAccessAdminRole(adminRole, ["owner"])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export async function GET(request: Request) {
+  try {
+    const rateLimit = checkRateLimit({
+      key: rateLimitKey(request, "admin:leads:list"),
+      limit: 120,
+      windowMs: 10 * 60 * 1000,
+    });
+
+    if (!rateLimit.ok) {
+      return rateLimitResponse(rateLimit.resetAt);
+    }
+
+    if (!(await requireOwner())) {
+      return NextResponse.json({ ok: false, message: "Bạn không có quyền xem lead." }, { status: 403 });
+    }
+
+    const url = new URL(request.url);
+
+    if (url.searchParams.get("force_refresh") === "1") {
+      invalidateAdminModules(["leads"]);
+    }
+
+    const leads = await getAdminLeads();
+
+    return NextResponse.json({ ok: true, leads, refreshedAt: new Date().toISOString() });
+  } catch (error) {
+    return NextResponse.json(
+      { ok: false, message: error instanceof Error ? error.message : "Không tải được lead." },
+      { status: 500 },
+    );
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -17,12 +63,8 @@ export async function POST(request: Request) {
       return rateLimitResponse(rateLimit.resetAt);
     }
 
-    if (isAuthGuardEnabled() || process.env.NODE_ENV !== "development") {
-      const { adminRole } = await getCurrentAuth();
-
-      if (!canAccessAdminRole(adminRole, ["owner"])) {
-        return NextResponse.json({ ok: false, message: "Bạn không có quyền tạo lead." }, { status: 403 });
-      }
+    if (!(await requireOwner())) {
+      return NextResponse.json({ ok: false, message: "Bạn không có quyền tạo lead." }, { status: 403 });
     }
 
     const body = (await request.json()) as {
@@ -57,9 +99,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, message: result.error ?? "Chưa lưu được lead." }, { status: 500 });
     }
 
-    invalidateAdminModules(["leads", "students"]);
+    await recordLeadActivity({
+      leadId: result.lead?.id ?? null,
+      activityType: "lead_created",
+      title: `${result.lead?.name || name} đã được thêm vào hệ thống lead`,
+      description: message || source,
+      metadata: { source },
+    });
+    invalidateAdminModules(["leads", "students", "activities"]);
 
-    return NextResponse.json({ ok: true, message: "Đã lưu lead vào Supabase." });
+    return NextResponse.json({
+      ok: true,
+      message: "Đã lưu lead vào Supabase.",
+      lead: result.lead,
+      sheetSync: result.sheetSync,
+    });
   } catch (error) {
     return NextResponse.json(
       { ok: false, message: error instanceof Error ? error.message : "Không lưu được lead." },

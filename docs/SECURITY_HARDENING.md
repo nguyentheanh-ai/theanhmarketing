@@ -5,6 +5,7 @@ This checklist tracks the production security work for The Anh Marketing.
 ## Phase 1 - App Guardrails
 
 - Public API routes use basic rate limiting.
+- Public order and registration notification endpoints use basic rate limiting. Public form anti-spam guard was removed on 2026-06-06 per owner request after a landing form regression.
 - Public order lookup redacts personal data.
 - SePay webhook requires an API key outside local development.
 - SePay webhook checks incoming transfer direction, amount, order code, and receiver account.
@@ -26,6 +27,7 @@ This checklist tracks the production security work for The Anh Marketing.
 - Production RLS replacement SQL is available at `docs/SUPABASE_PRODUCTION_RLS.sql`.
 - The production RLS script removes demo anon write policies and covers courses, modules, lessons, resources, leads, orders, blog posts, testimonials, comments, and site settings.
 - Security events are logged for CSP reports, SePay webhook failures, and rejected admin uploads.
+- No active form anti-spam audit logging is enabled after the 2026-06-06 removal.
 
 ## Required Production Environment
 

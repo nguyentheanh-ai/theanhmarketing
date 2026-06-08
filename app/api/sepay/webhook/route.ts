@@ -3,6 +3,7 @@ import {
   sendPaymentSuccessEmail,
   shouldSendPaymentSuccessEmail,
 } from "@/lib/notifications/payment-success-email";
+import { syncOrderToGoogleSheet } from "@/lib/notifications/google-sheets";
 import { sendTelegramOrderNotification } from "@/lib/notifications/telegram";
 import { sendMetaPurchaseEvent } from "@/lib/meta/conversions-api";
 import { verifySepayApiKey, type SepayWebhookPayload } from "@/lib/payments/sepay";
@@ -131,7 +132,7 @@ export async function POST(request: Request) {
       }
 
       const result = await sendPaymentSuccessEmail(confirmation.order, {
-        account: studentAccount.created
+        account: studentAccount.temporaryPassword
           ? {
               email: studentAccount.email,
               temporaryPassword: studentAccount.temporaryPassword,
@@ -178,6 +179,24 @@ export async function POST(request: Request) {
         }
       } catch (telegramError) {
         console.warn("[sepay] Telegram paid notification failed:", telegramError);
+      }
+    }
+
+    if (!confirmation.wasAlreadyPaid) {
+      try {
+        const sheetSync = await syncOrderToGoogleSheet(confirmation.order, {
+          source: "SePay paid webhook",
+          landingPageUrl: `${siteConfig.url}/thanh-toan/${encodeURIComponent(confirmation.order.orderCode)}`,
+        });
+
+        if (!sheetSync.ok && !sheetSync.skipped) {
+          console.warn("[sepay] Google Sheets paid order sync failed:", {
+            reason: sheetSync.reason,
+            status: sheetSync.status,
+          });
+        }
+      } catch (sheetError) {
+        console.warn("[sepay] Google Sheets paid order sync failed:", sheetError);
       }
     }
 

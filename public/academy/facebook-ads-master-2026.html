@@ -1319,14 +1319,14 @@
 
       .pricing-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1.04fr) minmax(360px, 0.66fr);
+        grid-template-columns: minmax(0, 1.18fr) minmax(430px, 0.92fr);
         gap: 24px;
-        align-items: stretch;
+        align-items: start;
       }
 
       .plan-grid {
         display: grid;
-        grid-template-columns: minmax(0, 0.78fr) minmax(0, 1fr);
+        grid-template-columns: minmax(150px, 0.48fr) minmax(330px, 1.52fr);
         gap: 24px;
         align-items: stretch;
       }
@@ -1341,11 +1341,21 @@
         box-shadow: 0 18px 52px rgba(0, 0, 0, 0.22);
       }
 
+      .plan-card[data-plan-card] {
+        cursor: pointer;
+      }
+
       .plan-card.is-featured {
         border-color: rgba(246, 102, 40, 0.36);
         background:
           radial-gradient(circle at 85% 8%, rgba(246, 102, 40, 0.22), transparent 18rem),
           rgba(35, 24, 22, 0.88);
+        padding: 34px;
+      }
+
+      .plan-card.is-compact {
+        border-radius: 20px;
+        padding: 18px;
       }
 
       .plan-ribbon {
@@ -1400,6 +1410,45 @@
         margin-top: 12px;
         color: var(--muted-2);
         line-height: 1.58;
+      }
+
+      .plan-card.is-compact .plan-name {
+        margin-top: 10px;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+      }
+
+      .plan-card.is-compact .plan-price {
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .plan-card.is-compact .plan-price strong {
+        font-size: clamp(34px, 3.4vw, 46px);
+      }
+
+      .plan-card.is-compact .plan-price span,
+      .plan-card.is-compact p,
+      .plan-card.is-compact .plan-features li {
+        font-size: 12px;
+        line-height: 1.42;
+      }
+
+      .plan-card.is-compact .plan-features {
+        gap: 8px;
+        margin-top: 16px;
+        padding-top: 14px;
+      }
+
+      .plan-card.is-compact .plan-features li {
+        padding-left: 20px;
+      }
+
+      .plan-card.is-compact .btn {
+        min-height: 40px;
+        margin-top: 18px;
+        padding: 0 14px;
+        font-size: 13px;
       }
 
       .plan-features {
@@ -1492,6 +1541,8 @@
       }
 
       .form-card {
+        width: 100%;
+        margin: 0 auto;
         border: 1px solid var(--line);
         border-radius: 30px;
         background: #f3f5f7;
@@ -1526,6 +1577,76 @@
         font-size: 14px;
         font-weight: 900;
         line-height: 1.4;
+      }
+
+      .zoom-addon {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 12px;
+        align-items: flex-start;
+        border: 1px solid rgba(246, 102, 40, 0.25);
+        border-radius: 18px;
+        background: #fff8f2;
+        color: #2d170b;
+        padding: 15px;
+        cursor: pointer;
+        transition:
+          transform 160ms ease,
+          border-color 160ms ease,
+          background 160ms ease,
+          box-shadow 160ms ease;
+      }
+
+      .zoom-addon:hover,
+      .zoom-addon:focus-within {
+        border-color: rgba(246, 102, 40, 0.48);
+        background: #fffaf5;
+        transform: translateY(-3px);
+        box-shadow: 0 16px 36px rgba(246, 102, 40, 0.18);
+      }
+
+      .zoom-addon[hidden] {
+        display: none;
+      }
+
+      .zoom-addon input {
+        appearance: none;
+        display: grid;
+        place-content: center;
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        border: 2px solid #1d7cff;
+        border-radius: 5px;
+        background: #fff;
+        box-shadow:
+          inset 0 0 0 2px #fff,
+          0 0 0 3px rgba(29, 124, 255, 0.12);
+      }
+
+      .zoom-addon input:checked::before {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        background: #1d7cff;
+        content: "";
+      }
+
+      .zoom-addon strong {
+        display: block;
+        color: #1c0f08;
+        font-size: 15px;
+        font-weight: 900;
+        line-height: 1.35;
+      }
+
+      .zoom-addon span {
+        display: block;
+        margin-top: 4px;
+        color: #6d4a35;
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1.45;
       }
 
       .field {
@@ -1960,7 +2081,7 @@
         }
       }
 
-      @media (max-width: 980px) {
+      @media (max-width: 1020px) {
         .nav {
           display: none;
         }
@@ -1968,6 +2089,10 @@
         .hero-grid,
         .pricing-grid {
           grid-template-columns: 1fr;
+        }
+
+        .form-card {
+          width: min(720px, 100%);
         }
 
         .hero-card {
@@ -2197,9 +2322,9 @@
               </div>
               <div class="hero-proof" aria-label="Điểm nổi bật khóa học">
                 <div class="stat"><strong>20+</strong><span>video bài giảng và tài liệu thực hành</span></div>
-                <div class="stat"><strong>799K</strong><span>có gói kèm Zoom lên ads và Agent kit</span></div>
+                <div class="stat"><strong>799K</strong><span>gói khuyên chọn, tặng AI Agent lên kế hoạch quảng cáo</span></div>
                 <div class="stat"><strong>2026</strong><span>cập nhật thuật toán, tracking và cách đọc số</span></div>
-                <div class="stat"><strong>399K</strong><span>gói video để bắt đầu có hệ thống</span></div>
+                <div class="stat"><strong>+500K</strong><span>tùy chọn thêm 1 buổi Zoom chuyên sâu khi chọn gói 799K</span></div>
               </div>
             </div>
 
@@ -2214,7 +2339,8 @@
                 <p class="eyebrow">Duy nhất chỉ có tại Thế Anh Marketing</p>
                 <h2>Quà tặng</h2>
                 <ul>
-                  <li>Gói hỗ trợ tặng bộ Agent kit lên kế hoạch quảng cáo</li>
+                  <li>Gói 799.000đ tặng AI Agent lên kế hoạch quảng cáo</li>
+                  <li>Có tùy chọn thêm 1 buổi Zoom chuyên sâu +500.000đ khi đăng ký gói 799.000đ</li>
                   <li>Tặng 7 ngày dùng thử Adsplan lên quảng cáo và đăng bài tự động</li>
                   <li>Ưu đãi giảm 5% các khóa AI Master</li>
                 </ul>
@@ -2596,8 +2722,8 @@
               </article>
               <article class="panel">
                 <div class="panel-icon">✓</div>
-                <h3>Gói hỗ trợ Zoom lên ads</h3>
-                <p>Gỡ vướng thực tế cho bạn chọn gói 799.000đ: setup, đọc số và quyết định tối ưu.</p>
+                <h3>Gói AI Agent lên kế hoạch quảng cáo</h3>
+                <p>Với gói 799.000đ, bạn nhận AI Agent giúp lên kế hoạch quảng cáo, gợi ý angle và khung test để triển khai nhanh hơn.</p>
               </article>
             </div>
           </div>
@@ -2642,7 +2768,7 @@
               </p>
               <ul class="authority-list">
                 <li>Tư duy dành cho chủ doanh nghiệp: hiểu để tự triển khai hoặc quản lý người chạy ads tốt hơn.</li>
-                <li>Có checklist, prompt, dashboard; gói 799.000đ có thêm Zoom lên ads và Agent kit.</li>
+                <li>Có checklist, prompt, dashboard; gói 799.000đ tặng AI Agent lên kế hoạch quảng cáo, gói 1.299.000đ có thêm Zoom sửa quảng cáo.</li>
                 <li>Nội dung cập nhật theo bối cảnh 2026: AI, tracking, tài khoản, content, inbox và dữ liệu.</li>
                 <li>Có lộ trình nâng cấp lên Performance Marketing With AI khi bạn muốn scale sâu hơn.</li>
               </ul>
@@ -2654,11 +2780,15 @@
               </div>
               <div class="proof-item">
                 <strong>Gói video dễ bắt đầu</strong>
-                <span>399.000đ để bạn học nền tảng qua video trước khi đầu tư ngân sách quảng cáo lớn hơn.</span>
+                <span>399.000đ để bạn học kiến thức cơ bản qua video. Gói này không tặng AI Agent và không gồm Zoom.</span>
               </div>
               <div class="proof-item">
-                <strong>Gói 799 có hỗ trợ sâu hơn</strong>
-                <span>Thêm 1 buổi Zoom lên ads và bộ Agent kit để bạn triển khai nhanh hơn trên case thực tế.</span>
+                <strong>Gói 799 là gói nên chọn</strong>
+                <span>Nhận toàn bộ khóa học và AI Agent lên kế hoạch quảng cáo để triển khai nhanh hơn.</span>
+              </div>
+              <div class="proof-item">
+                <strong>Tùy chọn Zoom chuyên sâu</strong>
+                <span>Khi chọn gói 799.000đ, bạn có thể thêm 1 buổi Zoom chuyên sâu +500.000đ ngay trong form đăng ký.</span>
               </div>
               <div class="guarantee-box">
                 <strong>Cam kết học tập rõ ràng:</strong> nếu bạn học đúng lộ trình, hoàn thành checklist và chuẩn bị case thực tế, đội ngũ sẽ hỗ trợ gỡ vướng trong phạm vi khóa để bạn biết bước tiếp theo cần làm gì.
@@ -2670,61 +2800,70 @@
         <section id="hoc-phi" class="section pricing">
           <div class="container pricing-grid">
             <div class="plan-grid" aria-label="Chọn gói học Facebook Ads Master 2026">
-              <article class="plan-card is-selected" data-plan-card="video" tabindex="0">
-                <span class="plan-name">Gói Video</span>
+              <article class="plan-card is-compact" data-plan-card="video">
+                <span class="plan-name">Gói Cơ Bản</span>
                 <div class="plan-price">
                   <strong>399K</strong>
                   <span>thanh toán 1 lần</span>
                 </div>
-                <p>Học qua video, phù hợp nếu bạn muốn tự học nền tảng và triển khai theo checklist.</p>
+                <p>Học cơ bản qua video, phù hợp nếu bạn muốn nắm nền tảng trước khi dùng AI Agent hoặc cần hỗ trợ sâu hơn.</p>
                 <ul class="plan-features">
                   <li>20+ video bài giảng</li>
                   <li>Checklist chạy ads 2026</li>
                   <li>Prompt AI viết content</li>
                   <li>Dashboard đọc chỉ số cơ bản</li>
-                  <li>Không gồm Zoom và Agent kit</li>
+                  <li>Không gồm AI Agent</li>
+                  <li>Không gồm Zoom</li>
                 </ul>
                 <button class="btn btn-secondary" type="button" data-plan-select="video">Chọn gói 399K</button>
               </article>
 
-              <article class="plan-card is-featured" data-plan-card="zoom-kit" tabindex="0">
+              <article class="plan-card is-featured is-selected" data-plan-card="zoom-kit">
                 <span class="plan-ribbon">Gói khuyên chọn</span>
-                <span class="plan-name">Gói Hỗ Trợ</span>
+                <span class="plan-name">Gói AI Agent</span>
                 <div class="plan-price">
                   <strong>799K</strong>
-                  <span>video + hỗ trợ</span>
+                  <span>video + AI Agent</span>
                 </div>
-                <p>Khóa 799.000đ gồm học qua video, hỗ trợ thêm 1 buổi Zoom lên ads và tặng bộ Agent kit.</p>
+                <p>Gói nên chọn nếu bạn muốn học xong có ngay AI Agent lên kế hoạch quảng cáo để triển khai thực tế nhanh hơn.</p>
                 <ul class="plan-features">
-                  <li>Toàn bộ nội dung gói 399K</li>
-                  <li>1 buổi Zoom lên ads trên case thực tế</li>
-                  <li>Tặng bộ Agent kit lên kế hoạch quảng cáo</li>
-                  <li>Gợi ý hướng tối ưu sau khi xem chỉ số</li>
-                  <li>Phù hợp nếu muốn triển khai nhanh hơn</li>
+                  <li>Toàn bộ nội dung gói cơ bản 399K</li>
+                  <li>Tặng AI Agent lên kế hoạch quảng cáo</li>
+                  <li>Prompt phân tích sản phẩm, khách hàng và angle ads</li>
+                  <li>Khung plan test quảng cáo 7 ngày</li>
+                  <li>Phù hợp nhất để bắt đầu triển khai</li>
                 </ul>
                 <button class="btn btn-primary" type="button" data-plan-select="zoom-kit">Chọn gói 799K</button>
               </article>
+
             </div>
 
             <aside class="form-card">
               <h3>Đăng ký và tạo QR thanh toán</h3>
-              <p id="payment-plan-summary">Đang chọn gói Video 399.000đ. Điền thông tin, hệ thống sẽ tạo đơn và chuyển bạn sang trang thanh toán SePay.</p>
+              <p id="payment-plan-summary">Đang chọn gói AI Agent 799.000đ: học video + tặng AI Agent lên kế hoạch quảng cáo. Điền thông tin, hệ thống sẽ tạo đơn và chuyển bạn sang trang thanh toán SePay.</p>
               <form id="payment-form" class="form">
-                <input type="hidden" name="paymentPlan" value="video" />
-                <div class="selected-plan-note" id="selected-plan-note">Gói đang chọn: Video 399.000đ - học qua video.</div>
+                <input type="hidden" name="paymentPlan" value="zoom-kit" />
+                <div class="selected-plan-note" id="selected-plan-note">Gói đang chọn: AI Agent 799.000đ - học video và nhận AI Agent lên kế hoạch quảng cáo.</div>
                 <div class="field">
                   <label for="name">Họ tên</label>
                   <input id="name" name="name" type="text" autocomplete="name" required placeholder="Ví dụ: Nguyễn Văn Anh" />
                 </div>
                 <div class="field">
                   <label for="email">Email nhận quyền học</label>
-                  <input id="email" name="email" type="email" autocomplete="email" required placeholder="email@domain.com" />
+                  <input id="email" name="email" type="email" autocomplete="email" required placeholder="email@gmail.com" />
                 </div>
                 <div class="field">
                   <label for="phone">Số điện thoại / Zalo</label>
                   <input id="phone" name="phone" type="tel" autocomplete="tel" required placeholder="09..." />
                 </div>
-                <button class="btn btn-primary" type="submit" id="payment-submit">Thanh toán gói Video - 399.000đ</button>
+                <label class="zoom-addon" id="zoom-addon-row">
+                  <input type="checkbox" name="zoomAddon" value="advanced-zoom" />
+                  <span>
+                    <strong>Thêm 1 buổi Zoom chuyên sâu (+500.000đ)</strong>
+                    <span>Tùy chọn thêm cho gói 799K. Tổng thanh toán khi chọn Zoom là 1.299.000đ.</span>
+                  </span>
+                </label>
+                <button class="btn btn-primary" type="submit" id="payment-submit">Đăng ký gói AI Agent - 799.000đ</button>
               </form>
               <div class="secure-note">
                 <span>Thanh toán qua QR ngân hàng, hệ thống đối soát tự động.</span>
@@ -2788,7 +2927,7 @@
                   <span class="number">?</span>
                   <h3>Học xong có được hỗ trợ sửa quảng cáo không?</h3>
                 </summary>
-                <p>Có nếu bạn chọn gói 799.000đ. Buổi Zoom tập trung vào case thật, ảnh setup, chỉ số hoặc câu hỏi cụ thể để xử lý đúng điểm kẹt.</p>
+                <p>Có nếu bạn chọn gói 1.299.000đ. Buổi Zoom tập trung vào case thật, ảnh setup, chỉ số hoặc câu hỏi cụ thể để xử lý đúng điểm kẹt.</p>
               </details>
               <details>
                 <summary>
@@ -2828,7 +2967,7 @@
             <span class="sticky-icon" aria-hidden="true">↯</span>
             <div class="sticky-copy">
               <strong>Facebook Ads Master 2026</strong>
-              <span><del>3.995.000đ</del> <b>từ 399.000đ</b> <em class="sticky-discount">-90%</em></span>
+              <span>Gói khuyên chọn <b>799.000đ</b> tặng AI Agent <em class="sticky-discount">Nên chọn</em></span>
             </div>
           </div>
           <a class="btn btn-primary" href="#hoc-phi" data-cta>Đăng ký ngay →</a>
@@ -2846,24 +2985,33 @@
         var plans = {
           video: {
             id: "video",
-            label: "Gói Video",
+            label: "Gói Cơ Bản",
             price: "399K",
             amount: 399000,
-            summary: "Đang chọn gói Video 399.000đ. Điền thông tin, hệ thống sẽ tạo đơn và chuyển bạn sang trang thanh toán SePay.",
-            note: "Gói đang chọn: Video 399.000đ - học qua video.",
-            submitText: "Thanh toán gói Video - 399.000đ",
+            summary: "Đang chọn gói Cơ Bản 399.000đ: học kiến thức nền tảng qua video, không tặng AI Agent và không gồm Zoom.",
+            note: "Gói đang chọn: Cơ Bản 399.000đ - học qua video, không tặng AI Agent, không Zoom.",
+            submitText: "Đăng ký gói Cơ Bản - 399.000đ",
           },
           "zoom-kit": {
             id: "zoom-kit",
-            label: "Gói Hỗ Trợ",
+            label: "Gói AI Agent",
             price: "799K",
             amount: 799000,
-            summary: "Đang chọn gói Hỗ Trợ 799.000đ: video + 1 buổi Zoom lên ads + bộ Agent kit.",
-            note: "Gói đang chọn: Hỗ Trợ 799.000đ - video, Zoom lên ads và Agent kit.",
-            submitText: "Thanh toán gói Hỗ Trợ - 799.000đ",
+            summary: "Đang chọn gói AI Agent 799.000đ: học video + tặng AI Agent lên kế hoạch quảng cáo.",
+            note: "Gói đang chọn: AI Agent 799.000đ - học video và nhận AI Agent lên kế hoạch quảng cáo.",
+            submitText: "Đăng ký gói AI Agent - 799.000đ",
+          },
+          "advanced-zoom": {
+            id: "advanced-zoom",
+            label: "Gói AI Agent + Zoom chuyên sâu",
+            price: "1.299K",
+            amount: 1299000,
+            summary: "Đang chọn gói AI Agent 799.000đ + 1 buổi Zoom chuyên sâu 500.000đ. Tổng thanh toán 1.299.000đ.",
+            note: "Gói đang chọn: AI Agent 799.000đ, thêm tùy chọn Zoom chuyên sâu +500.000đ.",
+            submitText: "Đăng ký gói AI Agent + Zoom - 1.299.000đ",
           },
         };
-        var selectedPlan = plans.video;
+        var selectedPlan = plans["zoom-kit"];
         var cartKey = "tam-cart-courses";
         var form = document.getElementById("payment-form");
         var toast = document.getElementById("toast");
@@ -2871,6 +3019,8 @@
         var planSummary = document.getElementById("payment-plan-summary");
         var planNote = document.getElementById("selected-plan-note");
         var submitButton = document.getElementById("payment-submit");
+        var zoomAddon = form.querySelector('[name="zoomAddon"]');
+        var zoomAddonRow = document.getElementById("zoom-addon-row");
 
         function track(eventName, payload) {
           if (typeof window.fbq === "function") {
@@ -2878,14 +3028,22 @@
           }
         }
 
+        function resolveSelectedPlan() {
+          if (zoomAddon && zoomAddon.checked && selectedPlan.id === "zoom-kit") {
+            return plans["advanced-zoom"];
+          }
+          return selectedPlan;
+        }
+
         function addCourseToCart() {
           try {
+            var checkoutPlan = resolveSelectedPlan();
             var current = JSON.parse(localStorage.getItem(cartKey) || "[]");
             if (!Array.isArray(current)) current = [];
             var cartItem = {
               slug: course.slug,
-              title: course.title + " - " + selectedPlan.label,
-              price: selectedPlan.price,
+              title: course.title + " - " + checkoutPlan.label,
+              price: checkoutPlan.price,
             };
             var existingIndex = current.findIndex(function (item) { return item && item.slug === course.slug; });
             if (existingIndex >= 0) {
@@ -2899,14 +3057,30 @@
         }
 
         function setSelectedPlan(planId) {
-          selectedPlan = plans[planId] || plans.video;
-          planInput.value = selectedPlan.id;
-          planSummary.textContent = selectedPlan.summary;
-          planNote.textContent = selectedPlan.note;
-          submitButton.textContent = selectedPlan.submitText;
+          selectedPlan = plans[planId] || plans["zoom-kit"];
+          if (selectedPlan.id !== "zoom-kit" && zoomAddon) {
+            zoomAddon.checked = false;
+          }
+          if (zoomAddonRow) {
+            zoomAddonRow.hidden = selectedPlan.id !== "zoom-kit";
+          }
+          var checkoutPlan = resolveSelectedPlan();
+          planInput.value = checkoutPlan.id;
+          planSummary.textContent = checkoutPlan.summary;
+          planNote.textContent = checkoutPlan.note;
+          submitButton.textContent = checkoutPlan.submitText;
           document.querySelectorAll("[data-plan-card]").forEach(function (card) {
             card.classList.toggle("is-selected", card.getAttribute("data-plan-card") === selectedPlan.id);
           });
+        }
+
+        function jumpToPaymentFormOnMobile() {
+          if (!form || typeof window.matchMedia !== "function") return;
+          if (!window.matchMedia("(max-width: 820px)").matches) return;
+          var target = form.closest(".form-card") || form;
+          window.setTimeout(function () {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 80);
         }
 
         function showToast(message, isDanger) {
@@ -2932,11 +3106,12 @@
         document.querySelectorAll("[data-cta]").forEach(function (cta) {
           cta.addEventListener("click", function () {
             addCourseToCart();
+            var checkoutPlan = resolveSelectedPlan();
             track("Lead", {
               content_name: course.title,
               content_category: "Facebook Ads",
               currency: "VND",
-              value: selectedPlan.amount,
+              value: checkoutPlan.amount,
             });
           });
         });
@@ -2944,18 +3119,27 @@
         document.querySelectorAll("[data-plan-select]").forEach(function (button) {
           button.addEventListener("click", function () {
             setSelectedPlan(button.getAttribute("data-plan-select"));
+            jumpToPaymentFormOnMobile();
             showToast("Đã chọn " + selectedPlan.label + " - " + selectedPlan.price + ".");
           });
         });
 
         document.querySelectorAll("[data-plan-card]").forEach(function (card) {
-          function selectHoveredPlan() {
+          card.addEventListener("click", function (event) {
+            if (event.target.closest("[data-plan-select]")) return;
             setSelectedPlan(card.getAttribute("data-plan-card"));
-          }
-
-          card.addEventListener("mouseenter", selectHoveredPlan);
-          card.addEventListener("focusin", selectHoveredPlan);
+            jumpToPaymentFormOnMobile();
+            showToast("Đã chọn " + selectedPlan.label + " - " + selectedPlan.price + ".");
+          });
         });
+
+        if (zoomAddon) {
+          zoomAddon.addEventListener("change", function () {
+            setSelectedPlan(selectedPlan.id);
+            var checkoutPlan = resolveSelectedPlan();
+            showToast("Đã chọn " + checkoutPlan.label + " - " + checkoutPlan.price + ".");
+          });
+        }
 
         form.addEventListener("submit", async function (event) {
           event.preventDefault();
@@ -2970,15 +3154,16 @@
           var leadId = "web." + Date.now() + "." + Math.random().toString(10).slice(2);
           var button = form.querySelector('button[type="submit"]');
           var oldText = button.textContent;
+          var checkoutPlan = resolveSelectedPlan();
 
           button.disabled = true;
           button.textContent = "Đang tạo mã thanh toán...";
-          showToast("Đang tạo đơn thanh toán " + new Intl.NumberFormat("vi-VN").format(selectedPlan.amount) + "đ...");
+          showToast("Đang tạo đơn thanh toán " + new Intl.NumberFormat("vi-VN").format(checkoutPlan.amount) + "đ...");
           track("InitiateCheckout", {
             content_ids: [course.slug],
-            content_name: course.title + " - " + selectedPlan.label,
+            content_name: course.title + " - " + checkoutPlan.label,
             currency: "VND",
-            value: selectedPlan.amount,
+            value: checkoutPlan.amount,
           });
 
           try {
@@ -2990,7 +3175,7 @@
                 email: email,
                 phone: phone,
                 courseSlug: course.slug,
-                paymentPlan: selectedPlan.id,
+                paymentPlan: checkoutPlan.id,
                 landingPage: "academy/facebook-ads-master-2026",
                 pageUrl: window.location.href,
                 referrer: document.referrer,
@@ -3016,7 +3201,7 @@
           }
         });
 
-        setSelectedPlan("video");
+        setSelectedPlan("zoom-kit");
       })();
     </script>
     <script>

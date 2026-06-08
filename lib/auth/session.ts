@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import type { User } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getConfiguredOwnerEmails } from "@/lib/admin/admin-emails";
 import { shouldRequirePasswordChange } from "@/lib/auth/student-account";
 import { hasSupabaseEnv } from "@/lib/supabase/client";
 
@@ -18,18 +19,7 @@ export function isAuthGuardEnabled() {
 }
 
 export function getAdminEmails() {
-  const configuredEmails = (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean);
-
-  const fallbackEmail = process.env.ADMIN_LOGIN_EMAIL?.trim().toLowerCase();
-
-  if (configuredEmails.length > 0 || !fallbackEmail) {
-    return configuredEmails;
-  }
-
-  return [fallbackEmail];
+  return getConfiguredOwnerEmails();
 }
 
 export function getAdminRole(user: User | null, isAdminEmail = false): AdminRole | null {

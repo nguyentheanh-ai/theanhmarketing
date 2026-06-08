@@ -1,9 +1,11 @@
 import type { PaymentOrder } from "@/services/orderService";
+import { buildEmailLink } from "@/lib/notifications/email-link-bridge";
 
 type PendingPaymentEmailOptions = {
   from?: string;
   siteUrl?: string;
   adminTo?: string;
+  force?: boolean;
 };
 
 type ResendEmailPayload = {
@@ -22,7 +24,8 @@ type SendEmailResult = {
 
 const defaultSender = "The Anh Marketing <noreply@theanhmarketing.com>";
 const defaultAdminRecipient = "theanhnguyen.marketing@gmail.com";
-const defaultSiteUrl = "https://www.theanhmarketing.com";
+const defaultSiteUrl = "https://theanhmarketing.com";
+const emailFontFamily = `'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif`;
 const adsSupportAgentName = "Agent Hỗ Trợ Quảng Cáo";
 const adsSupportAgentUrl =
   "https://chatgpt.com/g/g-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner";
@@ -64,6 +67,12 @@ function normalizeSiteUrl(value?: string) {
 
   try {
     const url = new URL(rawUrl);
+    url.protocol = "https:";
+
+    if (url.hostname === "www.theanhmarketing.com") {
+      url.hostname = "theanhmarketing.com";
+    }
+
     return url.origin;
   } catch {
     return defaultSiteUrl;
@@ -171,7 +180,7 @@ function getTransferRows(order: PaymentOrder) {
     ["Ngân hàng", bankName],
     ["Số tài khoản", sepay.bankAccountNumber],
     ["Chủ tài khoản", sepay.bankAccountName],
-    ["Số tiền", String(order.amount)],
+    ["Số tiền", order.amountLabel],
     ["Nội dung chuyển khoản", transferContent],
   ].filter(([, value]) => Boolean(String(value ?? "").trim())) as Array<[string, string]>;
 }
@@ -198,9 +207,9 @@ function buildResendRequest(payload: ResendEmailPayload, apiKey: string) {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
+      "Content-Type": "application/json; charset=utf-8",
     },
-    body: JSON.stringify(payload),
+    body: Buffer.from(JSON.stringify(payload), "utf8"),
   });
 }
 
@@ -255,17 +264,17 @@ export function buildAdminNewLeadEmailPayload(
   ]);
 
   const html = `
-    <div style="margin:0;padding:0;background:#080808;font-family:Arial,Helvetica,sans-serif;color:#f6f1e7">
+    <div style="margin:0;padding:0;background:#080808;font-family:${emailFontFamily};color:#f6f1e7">
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#080808;margin:0;padding:34px 14px">
         <tr>
           <td align="center">
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;max-width:620px;background:#171717;border:1px solid #303030;border-radius:18px;overflow:hidden">
               <tr>
                 <td style="padding:30px 32px;border-bottom:1px solid #39352a;background:#161616">
-                  <p style="margin:0 0 10px;color:#f66628;font-size:13px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase">
+                  <p style="margin:0 0 10px;color:#f66628;font-size:13px;font-weight:800;letter-spacing:0.04em">
                     Lead mới từ landing page
                   </p>
-                  <h1 style="margin:0;color:#ffffff;font-size:28px;line-height:1.25;font-weight:900">
+                  <h1 style="margin:0;color:#ffffff;font-size:28px;line-height:1.25;font-weight:800">
                     ${safeName} vừa đăng ký khóa học
                   </h1>
                   <p style="margin:14px 0 0;color:#bdb7a9;font-size:15px;line-height:1.7">
@@ -319,11 +328,14 @@ export function buildPendingPaymentEmailPayload(
 ): ResendEmailPayload {
   const siteUrl = normalizeSiteUrl(options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL);
   const paymentUrl = `${siteUrl}/thanh-toan/${encodeURIComponent(order.orderCode)}`;
+  const paymentEmailUrl = buildEmailLink(paymentUrl, siteUrl);
+  const adsSupportAgentEmailUrl = buildEmailLink(adsSupportAgentUrl, siteUrl);
   const statusLabel = getPaymentStatusLabel(order);
   const productTitle = getProductTitle(order);
   const safeName = escapeHtml(order.studentName || "bạn");
   const safeOrderCode = escapeHtml(order.orderCode);
-  const safePaymentUrl = escapeHtml(paymentUrl);
+  const safePaymentUrl = escapeHtml(paymentEmailUrl);
+  const safeRawPaymentUrl = escapeHtml(paymentUrl);
   const safeQrUrl = escapeHtml(order.paymentQrUrl);
   const transferRows = getTransferRows(order);
   const transferBlock = transferRows.length
@@ -331,7 +343,7 @@ export function buildPendingPaymentEmailPayload(
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;border:1px solid #3a3a3a;border-radius:14px;background:#202020">
         <tr>
           <td style="padding:22px 24px">
-            <p style="margin:0 0 18px;color:#f66628;font-size:13px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase">
+            <p style="margin:0 0 18px;color:#f66628;font-size:13px;font-weight:800;letter-spacing:0.03em">
               Thông tin chuyển khoản để copy
             </p>
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
@@ -347,14 +359,14 @@ export function buildPendingPaymentEmailPayload(
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;border:1px solid #4b3321;border-radius:14px;background:#241a13">
         <tr>
           <td style="padding:22px 24px">
-            <p style="margin:0 0 10px;color:#f66628;font-size:13px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase">
+            <p style="margin:0 0 10px;color:#f66628;font-size:13px;font-weight:800;letter-spacing:0.03em">
               ${escapeHtml(adsSupportAgentName)}
             </p>
             <p style="margin:0;color:#e9e3d5;font-size:15px;line-height:1.7">
               Gói Hỗ Trợ 799.000đ có thêm agent này để bạn chuẩn bị câu hỏi, lên kế hoạch test ads và đọc chỉ số sau khi học.
             </p>
             <p style="margin:16px 0 0">
-              <a href="${escapeHtml(adsSupportAgentUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#f66628;color:#111111;text-decoration:none;border-radius:10px;padding:13px 18px;font-size:14px;font-weight:900">
+              <a href="${escapeHtml(adsSupportAgentEmailUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#f66628;color:#111111;text-decoration:none;border-radius:10px;padding:13px 18px;font-size:14px;font-weight:900">
                 Mở ${escapeHtml(adsSupportAgentName)}
               </a>
             </p>
@@ -379,7 +391,7 @@ export function buildPendingPaymentEmailPayload(
     : "";
 
   const html = `
-    <div style="margin:0;padding:0;background:#080808;font-family:Arial,Helvetica,sans-serif;color:#f6f1e7">
+    <div style="margin:0;padding:0;background:#080808;font-family:${emailFontFamily};color:#f6f1e7">
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#080808;margin:0;padding:42px 14px">
         <tr>
           <td align="center">
@@ -389,7 +401,7 @@ export function buildPendingPaymentEmailPayload(
                   <div style="width:76px;height:76px;border-radius:50%;background:#f66628;color:#101010;font-size:42px;line-height:76px;font-weight:900;margin:0 auto 24px">
                     !
                   </div>
-                  <h1 style="margin:0;color:#f66628;font-size:26px;line-height:1.25;letter-spacing:0.08em;text-transform:uppercase;font-weight:900">
+                  <h1 style="margin:0;color:#f66628;font-size:26px;line-height:1.25;font-weight:800">
                     Chưa thanh toán
                   </h1>
                   <p style="margin:16px 0 0;color:#e9e3d5;font-size:15px;line-height:1.7">
@@ -412,7 +424,7 @@ export function buildPendingPaymentEmailPayload(
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:30px;border:1px solid #3a3a3a;border-radius:14px;background:#202020">
                     <tr>
                       <td style="padding:22px 24px">
-                        <p style="margin:0 0 18px;color:#f66628;font-size:13px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase">
+                        <p style="margin:0 0 18px;color:#f66628;font-size:13px;font-weight:800;letter-spacing:0.03em">
                           Chi tiết đơn hàng
                         </p>
                         <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
@@ -432,12 +444,12 @@ export function buildPendingPaymentEmailPayload(
                   ${supportAgentBlock}
 
                   <div style="padding-top:28px;text-align:center">
-                    <a href="${safePaymentUrl}" style="display:block;background:#f66628;color:#111111;text-decoration:none;border-radius:10px;padding:17px 20px;font-size:15px;font-weight:900;letter-spacing:0.02em;text-transform:uppercase">
+                    <a href="${safePaymentUrl}" style="display:block;background:#f66628;color:#111111;text-decoration:none;border-radius:10px;padding:17px 20px;font-size:15px;font-weight:800">
                       Mở trang thanh toán
                     </a>
                     <p style="margin:20px 0 0;color:#8f887c;font-size:13px;line-height:1.7">
                       Nội dung chuyển khoản: <strong style="color:#f66628">${safeOrderCode}</strong><br />
-                      Trang thanh toán: <a href="${safePaymentUrl}" style="color:#f66628">${safePaymentUrl}</a>
+                      Trang thanh toán: <a href="${safePaymentUrl}" style="color:#f66628">${safeRawPaymentUrl}</a>
                     </p>
                   </div>
                 </td>
@@ -494,7 +506,7 @@ export async function sendPendingPaymentEmail(
   order: PaymentOrder,
   options: PendingPaymentEmailOptions = {},
 ) {
-  if (!shouldSendPendingPaymentEmail(order)) {
+  if (!options.force && !shouldSendPendingPaymentEmail(order)) {
     return { ok: true, skipped: true, reason: "Order is not eligible for pending payment email." };
   }
 

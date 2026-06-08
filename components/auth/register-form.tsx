@@ -71,13 +71,31 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
       return;
     }
 
-    await supabase.from("leads").insert({
-      name: fullName,
-      phone,
-      email,
-      message: `Đăng ký Growth Hub: ${interestedCourse}`,
-      source: "signup",
+    const leadResponse = await fetch("/api/leads", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: fullName,
+        phone,
+        email,
+        message: `Đăng ký Growth Hub: ${interestedCourse}`,
+        source: "signup",
+      }),
     });
+    const leadData = (await leadResponse.json()) as {
+      ok?: boolean;
+      lead?: { id?: string };
+      message?: string;
+    };
+
+    if (!leadResponse.ok || !leadData.ok) {
+      setMessage(leadData.message ?? "Đã tạo tài khoản nhưng chưa lưu được lead vào CRM.");
+      setIsSubmitting(false);
+      return;
+    }
+
     trackMarketingEvent("Lead", {
       content_name: interestedCourse,
       method: "email",
@@ -95,6 +113,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
         phone,
         courseSlug,
         courseSlugs: orderCourseSlugs,
+        leadId: leadData.lead?.id,
       }),
     });
     const orderData = (await orderResponse.json()) as {

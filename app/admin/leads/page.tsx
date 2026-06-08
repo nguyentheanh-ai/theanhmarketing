@@ -1,30 +1,170 @@
 import { LeadManager } from "@/components/admin/lead-manager";
 import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { getAdminLeads } from "@/services/adminDataService";
+import type { LeadItem } from "@/services/leadService";
+
+const visualPreviewLeads: LeadItem[] = [
+  {
+    id: "preview-1",
+    name: "Codex Test Admin Lead",
+    phone: "0900000605",
+    email: "codex.adminlead.2026@theanhmarketing.test",
+    need: "Khóa: Chưa chọn khóa",
+    source: "Codex production test",
+    status: "new",
+    saleStatus: "Chưa liên hệ",
+    paymentStatus: "unpaid",
+    resendEmailCount: 0,
+    createdAt: "2026-06-05T15:15:00.000Z",
+  },
+  {
+    id: "preview-2",
+    name: "Mai Phương Trang",
+    phone: "+84332475439",
+    email: "maiphuongtran0311@gmail.com",
+    need: "Khóa: Quảng cáo Facebook Master 2.0",
+    source: "LDP Facebook Ads",
+    status: "new",
+    saleStatus: "Chưa liên hệ",
+    paymentStatus: "unpaid",
+    orderCode: "TAMMQ1IIZ10NG191",
+    courseTitle: "Quảng cáo Facebook Master 2.0",
+    resendEmailCount: 0,
+    createdAt: "2026-06-05T14:30:00.000Z",
+  },
+  {
+    id: "preview-3",
+    name: "Vũ Phương Thảo",
+    phone: "0858578283",
+    email: "vtpthaocv@gmail.com",
+    need: "Khóa: Quảng cáo Facebook Master 2.0",
+    source: "admin-access-group",
+    status: "new",
+    saleStatus: "Chưa liên hệ",
+    paymentStatus: "paid",
+    paymentMethod: "manual-admin",
+    orderCode: "TAMMQ0QE4WS3MCUW",
+    courseTitle: "Quảng cáo Facebook Master 2.0",
+    resendEmailCount: 0,
+    createdAt: "2026-06-05T09:58:00.000Z",
+  },
+  {
+    id: "preview-4",
+    name: "Vũ Phương Thảo",
+    phone: "0858578283",
+    email: "vtpthaocv@gmail.com",
+    need: "Khóa: Quảng cáo Facebook Master 2.0",
+    source: "LDP Facebook Ads",
+    status: "new",
+    saleStatus: "Chưa liên hệ",
+    paymentStatus: "paid",
+    paymentMethod: "sepay",
+    orderCode: "TAMMQ0QE4WS3MCUW",
+    courseTitle: "Quảng cáo Facebook Master 2.0",
+    resendEmailCount: 0,
+    createdAt: "2026-06-05T09:34:00.000Z",
+  },
+  {
+    id: "preview-5",
+    name: "Nam",
+    phone: "09322245351",
+    email: "namhp031@gmail.com",
+    need: "Khóa: Quảng cáo Facebook Master 2.0",
+    source: "LDP Facebook Ads",
+    status: "new",
+    saleStatus: "Chưa liên hệ",
+    paymentStatus: "unpaid",
+    orderCode: "TAMMQ0M8314QCH2Q",
+    courseTitle: "Quảng cáo Facebook Master 2.0",
+    resendEmailCount: 0,
+    createdAt: "2026-06-05T07:41:00.000Z",
+  },
+  {
+    id: "preview-6",
+    name: "Tuyết Vân Nguyễn",
+    phone: "+84902789135",
+    email: "lamboutique123@gmail.com",
+    need: "Khóa: Quảng cáo Facebook Master 2.0",
+    source: "LDP Facebook Ads",
+    status: "new",
+    saleStatus: "Chưa liên hệ",
+    paymentStatus: "unpaid",
+    orderCode: "TAMMQ0D244ZXVP3K",
+    courseTitle: "Quảng cáo Facebook Master 2.0",
+    resendEmailCount: 0,
+    createdAt: "2026-06-05T03:29:00.000Z",
+  },
+  {
+    id: "preview-7",
+    name: "Nguyễn việt an",
+    phone: "0987564019",
+    email: "nguyenvietan89@gmail.com",
+    need: "Khóa: Quảng cáo Facebook Master 2.0",
+    source: "admin-access-group",
+    status: "new",
+    saleStatus: "Chưa liên hệ",
+    paymentStatus: "paid",
+    paymentMethod: "manual-admin",
+    orderCode: "TAMMQ0C9MZA06CTB",
+    courseTitle: "Quảng cáo Facebook Master 2.0",
+    resendEmailCount: 0,
+    createdAt: "2026-06-05T03:21:00.000Z",
+  },
+  {
+    id: "preview-8",
+    name: "Nguyễn việt an",
+    phone: "0987564019",
+    email: "annguyen.bdsviet@gmail.com",
+    need: "Khóa: Quảng cáo Facebook Master 2.0",
+    source: "LDP Facebook Ads",
+    status: "new",
+    saleStatus: "Chưa liên hệ",
+    paymentStatus: "paid",
+    paymentMethod: "manual-admin",
+    orderCode: "TAMMQ0C9MZA06CTB",
+    courseTitle: "Quảng cáo Facebook Master 2.0",
+    resendEmailCount: 0,
+    createdAt: "2026-06-05T03:09:00.000Z",
+  },
+  {
+    id: "preview-9",
+    name: "Nguyễn việt an",
+    phone: "0987564019",
+    email: "annguyen.bdsviet@gmail.com",
+    need: "Khóa: Quảng cáo Facebook Master 2.0",
+    source: "LDP Facebook Ads",
+    status: "new",
+    saleStatus: "Chưa liên hệ",
+    paymentStatus: "unpaid",
+    orderCode: "TAMMQ0C8FPWFAU9A",
+    courseTitle: "Quảng cáo Facebook Master 2.0",
+    resendEmailCount: 0,
+    createdAt: "2026-06-05T03:05:00.000Z",
+  },
+  {
+    id: "preview-10",
+    name: "Lê Hoàng",
+    phone: "0912000605",
+    email: "leadtest0605@gmail.com",
+    need: "Khóa: Quảng cáo Facebook Master 2.0",
+    source: "Website",
+    status: "new",
+    saleStatus: "Chưa liên hệ",
+    paymentStatus: "unpaid",
+    courseTitle: "Quảng cáo Facebook Master 2.0",
+    resendEmailCount: 0,
+    createdAt: "2026-06-05T02:55:00.000Z",
+  },
+];
 
 export default async function AdminLeadsPage() {
   const leads = await getAdminLeads();
+  const visibleLeads = leads.length > 0 || process.env.NODE_ENV !== "development" ? leads : visualPreviewLeads;
 
   return (
     <ProtectedAdminShell nextPath="/admin/leads">
       <div className="mx-auto max-w-[1480px]">
-        <div className="flex flex-col gap-4 border-b border-slate-200 pb-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-xs font-black uppercase text-blue-700">Lead CRM</p>
-            <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
-              CRM gọn cho sale và CSKH
-            </h1>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 md:text-base">
-              Lead từ landing page, form tư vấn và nhập tay vẫn lấy từ Supabase cũ, nhưng bảng được tóm tắt lại để không trộn tracking log vào nội dung chăm sóc.
-            </p>
-          </div>
-          <div className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-700">
-            Realtime data
-          </div>
-        </div>
-        <div className="mt-6">
-          <LeadManager leads={leads} />
-        </div>
+        <LeadManager leads={visibleLeads} />
       </div>
     </ProtectedAdminShell>
   );

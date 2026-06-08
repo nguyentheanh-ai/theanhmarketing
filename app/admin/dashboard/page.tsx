@@ -1,23 +1,18 @@
-import { AdminGrowthOsDashboard } from "@/components/admin/admin-growth-os-dashboard";
+import { AdminOverviewDashboard } from "@/components/admin/admin-overview-dashboard";
 import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
-import {
-  getAdminCourses,
-  getAdminLeads,
-  getAdminPaymentOrders,
-  getAdminStudentAccessRecords,
-} from "@/services/adminDataService";
+import { getAdminCourses, getAdminLeadActivities, getAdminLeads, getAdminPaymentOrders } from "@/services/adminDataService";
 
 export default async function AdminDashboardPage() {
-  const [orders, leads, students, courses] = await Promise.all([
+  const [orders, leads, courses, activities] = await Promise.all([
     getAdminPaymentOrders(),
     getAdminLeads(),
-    getAdminStudentAccessRecords(),
     getAdminCourses(),
+    getAdminLeadActivities(),
   ]);
 
   return (
     <ProtectedAdminShell nextPath="/admin/dashboard">
-      <AdminGrowthOsDashboard orders={orders} leads={leads} students={students} courses={courses} />
+      <AdminOverviewDashboard orders={orders} leads={leads} courses={courses} activities={activities} />
     </ProtectedAdminShell>
   );
 }

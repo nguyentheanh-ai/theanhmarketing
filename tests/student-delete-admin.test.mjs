@@ -14,14 +14,34 @@ test("admin student table can delete a student without deleting paid orders", ()
   const actions = read("components/admin/student-access-actions.tsx");
 
   assert.match(page, /StudentAccessActions/);
-  assert.match(deleteRoute, /admin-student-delete/);
+  assert.match(deleteRoute, /softDeleteStudent/);
   assert.match(deleteRoute, /canAccessAdminRole\(adminRole, \["owner"\]\)/);
   assert.match(deleteRoute, /invalidateAdminModules\(\["leads", "students"\]\)/);
+  assert.match(deleteRoute, /30 ngày/);
+  assert.match(service, /getActiveDeletedStudentKeys/);
   assert.match(service, /deletedStudentKeys/);
   assert.match(service, /records\.delete\(key\)/);
   assert.match(actions, /Xóa học viên/);
   assert.match(actions, /\/api\/admin\/students\/delete/);
   assert.match(actions, /isEditing \? \([\s\S]*Xóa học viên/);
+});
+
+test("admin deletion flow stores tombstones and purges after retention window", () => {
+  const service = read("services/adminDeletionService.ts");
+  const cron = read("app/api/admin/purge-deleted/route.ts");
+  const vercel = read("vercel.json");
+  const schema = read("docs/SUPABASE_ADMIN_SOFT_DELETE.sql");
+
+  assert.match(service, /retentionDays = 30/);
+  assert.match(service, /admin_deleted_students/);
+  assert.match(service, /softDeleteLead/);
+  assert.match(service, /purgeExpiredAdminDeletes/);
+  assert.match(cron, /CRON_SECRET/);
+  assert.match(cron, /purgeExpiredAdminDeletes/);
+  assert.match(vercel, /\/api\/admin\/purge-deleted/);
+  assert.match(schema, /deleted_at/);
+  assert.match(schema, /delete_after/);
+  assert.match(schema, /admin_deleted_students/);
 });
 
 test("admin student view opens a detail preview modal", () => {

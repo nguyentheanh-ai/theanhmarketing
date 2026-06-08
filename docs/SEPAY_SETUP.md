@@ -51,7 +51,7 @@ If the account already exists, the webhook skips account creation and still keep
 Configure this URL in Sepay:
 
 ```txt
-https://www.theanhmarketing.com/api/sepay/webhook
+https://theanhmarketing.com/api/sepay/webhook
 ```
 
 Important: avoid a URL that redirects (3xx).  

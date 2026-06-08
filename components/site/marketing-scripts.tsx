@@ -7,7 +7,8 @@ import { TrackingPageView } from "@/components/site/tracking-page-view";
 export async function MarketingScripts({ settings }: { settings: MarketingSettings }) {
   const nonce = await getCspNonce();
   const trackingEnabled = settings.trackingEnabled;
-  const hasFacebookPixel = trackingEnabled && settings.facebookPixelEnabled && settings.facebookPixelId;
+  const facebookPixelIds = settings.facebookPixelIds.length > 0 ? settings.facebookPixelIds : [settings.facebookPixelId].filter(Boolean);
+  const hasFacebookPixel = trackingEnabled && settings.facebookPixelEnabled && facebookPixelIds.length > 0;
   const hasGa = trackingEnabled && settings.gaEnabled && settings.gaMeasurementId;
   const hasGtm = trackingEnabled && settings.gtmEnabled && settings.gtmId;
 
@@ -66,7 +67,7 @@ n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '${settings.facebookPixelId}');
+${facebookPixelIds.map((pixelId) => `fbq('init', '${pixelId}');`).join("\n")}
 `,
           }}
         />
@@ -87,18 +88,20 @@ fbq('init', '${settings.facebookPixelId}');
           />
         </noscript>
       ) : null}
-      {hasFacebookPixel ? (
-        <noscript>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            alt=""
-            height="1"
-            src={`https://www.facebook.com/tr?id=${settings.facebookPixelId}&ev=PageView&noscript=1`}
-            style={{ display: "none" }}
-            width="1"
-          />
-        </noscript>
-      ) : null}
+      {hasFacebookPixel
+        ? facebookPixelIds.map((pixelId) => (
+            <noscript key={pixelId}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                alt=""
+                height="1"
+                src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
+                style={{ display: "none" }}
+                width="1"
+              />
+            </noscript>
+          ))
+        : null}
     </>
   );
 }

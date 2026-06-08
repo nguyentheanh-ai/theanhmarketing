@@ -57,6 +57,7 @@ describe("admin performance guardrails", () => {
 
   it("keeps admin-facing source strings free of mojibake", () => {
     const files = [
+      "components/app/admin-shell.tsx",
       "app/admin/don-hang/page.tsx",
       "app/admin/leads/page.tsx",
       "app/api/admin/leads/route.ts",

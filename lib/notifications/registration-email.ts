@@ -9,6 +9,7 @@ export type RegistrationNotificationInput = {
 
 const defaultRecipient = "theanhnguyen.marketing@gmail.com";
 const defaultSender = "The Anh Marketing <noreply@theanhmarketing.com>";
+const emailFontFamily = `'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif`;
 
 function escapeHtml(value: string) {
   return value
@@ -44,7 +45,7 @@ function buildEmailHtml(input: RegistrationNotificationInput) {
   ];
 
   return `
-    <div style="font-family:Arial,sans-serif;background:#f6f4ef;padding:28px;color:#111">
+    <div style="font-family:${emailFontFamily};background:#f6f4ef;padding:28px;color:#111">
       <div style="max-width:640px;margin:0 auto;background:#fff;border-radius:20px;padding:28px;border:1px solid #e8e2d8">
         <p style="margin:0 0 8px;color:#c77b20;font-weight:700">Đăng ký mới</p>
         <h1 style="margin:0 0 22px;font-size:28px;line-height:1.2">Có học viên vừa đăng ký</h1>

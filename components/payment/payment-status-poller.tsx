@@ -85,7 +85,7 @@ export function PaymentStatusPoller({
       }
       const redirectTimer = window.setTimeout(() => {
         router.push("/dashboard");
-      }, 1200);
+      }, 4500);
       return () => window.clearTimeout(redirectTimer);
     }
 
@@ -130,7 +130,7 @@ export function PaymentStatusPoller({
       </p>
       <p className={isLight ? "mt-2 text-sm font-semibold leading-6 text-slate-600" : "mt-2 text-sm leading-6 text-white/60"}>
         {paid
-          ? "SePay đã báo tiền vào. Đang chuyển bạn tới khu học viên..."
+          ? "SePay đã báo tiền vào. Hệ thống sẽ gửi email hướng dẫn, nếu chưa thấy hãy kiểm tra Spam hoặc Promotions/Khuyến mãi trước khi liên hệ hỗ trợ. Đang chuyển bạn tới khu học viên..."
           : disablePolling
             ? "Đây là bản demo giao diện checkout. Khi tạo đơn thật từ form đăng ký, hệ thống sẽ tự đối soát SePay theo mã đơn mới."
             : "Trang này tự kiểm tra mỗi vài giây. Sau khi chuyển khoản thành công, trạng thái sẽ đổi tự động."}

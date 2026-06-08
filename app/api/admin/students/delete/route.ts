@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { canAccessAdminRole, getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import { cleanEmail, cleanPhone, cleanText, isValidEmail, isValidPhone } from "@/lib/security/validation";
+import { softDeleteStudent } from "@/services/adminDeletionService";
 import { invalidateAdminModules } from "@/services/adminDataService";
-import { createLeadAdmin } from "@/services/leadService";
 
 export async function POST(request: Request) {
   try {
@@ -35,20 +35,17 @@ export async function POST(request: Request) {
     const name = cleanText(body.name, 120) || email || phone || "Học viên";
 
     if ((!email || !isValidEmail(email)) && (!phone || !isValidPhone(phone))) {
-      return NextResponse.json({ ok: false, message: "Thiếu email hoặc số điện thoại hợp lệ để xóa học viên." }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, message: "Thiếu email hoặc số điện thoại hợp lệ để xóa học viên." },
+        { status: 400 },
+      );
     }
 
-    const result = await createLeadAdmin({
+    const result = await softDeleteStudent({
       name,
       email,
       phone,
-      source: "admin-student-delete",
-      message: [
-        "Xóa học viên khỏi danh sách quản lý",
-        "Đơn hàng đã thanh toán vẫn được giữ để đối soát.",
-        `Email: ${email || "-"}`,
-        `Phone: ${phone || "-"}`,
-      ].join("\n"),
+      reason: "Admin ẩn học viên khỏi giao diện, giữ 30 ngày trước khi purge.",
     });
 
     if (!result.ok) {
@@ -59,7 +56,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       ok: true,
-      message: "Đã xóa học viên khỏi danh sách quản lý. Lịch sử đơn hàng vẫn được giữ để đối soát.",
+      message: "Đã ẩn học viên khỏi giao diện. Dữ liệu được giữ 30 ngày trước khi purge tự động.",
+      deleteAfter: result.student?.deleteAfter,
     });
   } catch (error) {
     return NextResponse.json(

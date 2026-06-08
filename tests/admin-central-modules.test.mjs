@@ -7,31 +7,36 @@ function read(relativePath) {
   return fs.readFileSync(path.resolve(relativePath), "utf8");
 }
 
-test("admin shell module search is functional instead of decorative", () => {
+test("admin shell matches the focused lead-management chrome", () => {
   const shell = read("components/app/admin-shell.tsx");
 
-  assert.match(shell, /moduleSearch/);
-  assert.match(shell, /setModuleSearch/);
-  assert.match(shell, /matchesModuleSearch/);
-  assert.match(shell, /Không có module phù hợp/);
+  for (const item of ["Tổng quan", "Quản lý Lead", "Khóa học", "Học viên", "Thành viên admin", "Cài đặt"]) {
+    assert.match(shell, new RegExp(item));
+  }
+
+  assert.match(shell, /Admin Panel/);
+  assert.match(shell, /lg:ml-\[244px\]/);
+  assert.doesNotMatch(shell, /moduleSearch/);
 });
 
-test("admin navigation is centralized into five management modules", () => {
+test("admin navigation is centralized into focused management modules without unused ads/revenue", () => {
   const shell = read("components/app/admin-shell.tsx");
   const index = read("app/admin/page.tsx");
 
   for (const item of [
     "Học viên",
     "Lead",
-    "Ads & doanh thu",
     "Khóa học",
     "Thành viên admin",
   ]) {
     assert.match(shell, new RegExp(item));
   }
 
-  assert.match(index, /\/admin\/facebook-ads/);
+  assert.match(index, /\/admin\/dashboard/);
   assert.match(index, /\/admin\/khoa-hoc/);
+  assert.doesNotMatch(shell, /Ads & doanh thu/);
+  assert.doesNotMatch(shell, /Báo cáo ads/);
+  assert.doesNotMatch(shell, /doanh thu/);
   assert.doesNotMatch(shell, /Đơn hàng/);
   assert.doesNotMatch(shell, /Remarketing/);
   assert.doesNotMatch(shell, /SEO\/Tracking/);

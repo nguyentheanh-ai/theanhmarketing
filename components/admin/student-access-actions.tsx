@@ -46,7 +46,9 @@ export function StudentAccessActions({
   const [message, setMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const canManageStudent = Boolean(student.email || student.phone);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const canManageAccess = Boolean(student.email);
+  const canDeleteStudent = Boolean(student.email || student.phone);
   const visibleProgress = Math.max(0, Math.min(100, student.progressPercent));
 
   function toggleCourse(slug: string) {
@@ -67,11 +69,13 @@ export function StudentAccessActions({
     setIsSaving(true);
 
     const formData = new FormData(event.currentTarget);
+    const submitter = (event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
+    const action = submitter?.value || String(formData.get("action") ?? "");
     const response = await fetch("/api/admin/students/access", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        action: String(formData.get("action") ?? ""),
+        action,
         courseSlugs: checkedCourseSlugs,
         email: student.email,
         name: student.name,
@@ -89,10 +93,46 @@ export function StudentAccessActions({
     }
   }
 
+  async function resetStudentPassword() {
+    setMessage("");
+
+    if (!student.email) {
+      setMessage("Thiếu email học viên để cấp lại mật khẩu.");
+      return;
+    }
+
+    const confirmed = window.confirm(`Cấp lại mật khẩu và gửi email đăng nhập mới cho ${student.email}?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    setIsResettingPassword(true);
+
+    const response = await fetch("/api/admin/students/password-reset", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: student.email,
+        name: student.name,
+        phone: student.phone,
+        courseSlugs: checkedCourseSlugs,
+      }),
+    });
+    const result = (await response.json()) as { ok: boolean; message?: string };
+
+    setIsResettingPassword(false);
+    setMessage(result.message ?? "Đã cấp lại mật khẩu và gửi email đăng nhập mới cho học viên.");
+
+    if (response.ok && result.ok) {
+      router.refresh();
+    }
+  }
+
   async function deleteStudent() {
     setMessage("");
 
-    if (!canManageStudent) {
+    if (!canDeleteStudent) {
       setMessage("Thiếu email hoặc số điện thoại để xóa học viên.");
       return;
     }
@@ -141,11 +181,20 @@ export function StudentAccessActions({
         <span className="text-slate-300">|</span>
         <button
           className="text-blue-700 transition hover:text-blue-900 disabled:text-slate-400"
-          disabled={!canManageStudent}
+          disabled={!canManageAccess}
           onClick={() => setIsEditing((current) => !current)}
           type="button"
         >
           Edit
+        </button>
+        <span className="text-slate-300">|</span>
+        <button
+          className="text-blue-700 transition hover:text-blue-900 disabled:text-slate-400"
+          disabled={!canManageAccess || isResettingPassword}
+          onClick={resetStudentPassword}
+          type="button"
+        >
+          {isResettingPassword ? "Đang gửi" : "Cấp lại mật khẩu"}
         </button>
       </div>
 
@@ -167,7 +216,7 @@ export function StudentAccessActions({
           <div className="flex flex-wrap gap-2">
             <button
               className="rounded-md bg-emerald-600 px-2.5 py-1.5 text-xs font-black text-white disabled:opacity-50"
-              disabled={isSaving || !canManageStudent}
+              disabled={isSaving || !canManageAccess}
               name="action"
               type="submit"
               value="grant"
@@ -176,7 +225,7 @@ export function StudentAccessActions({
             </button>
             <button
               className="rounded-md border border-red-200 bg-white px-2.5 py-1.5 text-xs font-black text-red-700 disabled:opacity-50"
-              disabled={isSaving || !canManageStudent}
+              disabled={isSaving || !canManageAccess}
               name="action"
               type="submit"
               value="revoke"
@@ -185,7 +234,7 @@ export function StudentAccessActions({
             </button>
             <button
               className="rounded-md border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-black text-red-700 disabled:opacity-50"
-              disabled={isDeleting || !canManageStudent}
+              disabled={isDeleting || !canDeleteStudent}
               onClick={deleteStudent}
               type="button"
             >

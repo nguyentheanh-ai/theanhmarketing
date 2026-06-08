@@ -19,17 +19,18 @@ export const metadata: Metadata = {
 export default async function ChangePasswordPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ next?: string }>;
+  searchParams?: Promise<{ mode?: string; next?: string }>;
 }) {
   const params = await searchParams;
   const nextPath = getSafeNextPath(params?.next, "/dashboard");
+  const isPasswordResetMode = params?.mode === "reset";
   const { user } = await getCurrentAuth();
 
-  if (!user) {
+  if (!user && !isPasswordResetMode) {
     redirect(`/dang-nhap?next=${encodeURIComponent("/doi-mat-khau")}`);
   }
 
-  if (user && !shouldRequirePasswordChange(user)) {
+  if (user && !isPasswordResetMode && !shouldRequirePasswordChange(user)) {
     redirect(nextPath);
   }
 

@@ -9,7 +9,7 @@ const inputClass =
   "h-11 w-full rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
 const labelClass = "text-xs font-bold text-slate-700";
 
-export function StudentIntakeForm({ courses }: { courses: Course[] }) {
+export function StudentIntakeForm({ courses, onSuccess }: { courses: Course[]; onSuccess?: () => void }) {
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -45,6 +45,7 @@ export function StudentIntakeForm({ courses }: { courses: Course[] }) {
 
     setMessage(result.message ?? "Đã lưu hồ sơ học viên.");
     event.currentTarget.reset();
+    onSuccess?.();
     router.refresh();
   }
 

@@ -64,7 +64,7 @@ test("google sheets payload includes top-level fields expected by Apps Script an
   assert.equal(payload.orderCode, "TAM123");
   assert.equal(payload.source, "LDP Test");
   assert.equal(payload.amount, 399000);
-  assert.equal(payload.paymentUrl, "https://www.theanhmarketing.com/thanh-toan/TAM123");
+  assert.equal(payload.paymentUrl, "https://theanhmarketing.com/thanh-toan/TAM123");
   assert.match(payload.orderItems, /Facebook Ads Master 2026/);
 });
 

@@ -13,17 +13,19 @@ test("admin shell uses the light management workspace and avoids fixed logout ov
   assert.match(source, /data-admin-theme="light"/);
   assert.match(source, /bg-\[#f7f8fb\]/);
   assert.match(source, /\/brand\/ta-logo\.svg/);
-  assert.match(source, /Admin CRM/);
-  assert.match(source, /\/admin\/facebook-ads/);
+  assert.match(source, /Admin Panel/);
+  assert.match(source, /\/admin\/leads/);
   assert.match(source, /\/admin\/thanh-vien-admin/);
   assert.match(source, /lg:flex/);
-  assert.match(source, /lg:ml-64/);
+  assert.match(source, /lg:ml-\[244px\]/);
   assert.match(source, /lg:px-8/);
   assert.match(source, /xl:px-10/);
-  assert.match(source, /lg:py-8/);
+  assert.match(source, /lg:py-6/);
   assert.doesNotMatch(source, /backdrop-blur/);
   assert.doesNotMatch(source, /absolute inset-x-5 bottom-5/);
-  assert.match(source, /Ads & doanh thu/);
+  assert.doesNotMatch(source, /Ads & doanh thu/);
+  assert.doesNotMatch(source, /Báo cáo ads/);
+  assert.doesNotMatch(source, /\/admin\/facebook-ads/);
   assert.doesNotMatch(source, /Remarketing/);
   assert.doesNotMatch(source, /SEO\/Tracking/);
 });
@@ -35,7 +37,7 @@ test("admin panels and orders page use roomy dashboard spacing", () => {
 
   assert.match(ui, /rounded-\[1\.35rem\]/);
   assert.match(ui, /shadow-\[0_22px_70px/);
-  assert.match(uiShell, /max-w-\[1480px\]/);
+  assert.match(uiShell, /w-\[244px\]/);
   assert.match(ordersPage, /max-w-\[1440px\]/);
   assert.doesNotMatch(ordersPage, /max-w-\[1180px\]/);
   assert.match(ordersPage, /mt-8 grid gap-5/);

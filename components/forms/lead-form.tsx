@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { createLead } from "@/services/leadService";
 
 type LeadFormProps = {
   source: string;
@@ -21,22 +20,27 @@ export function LeadForm({ source, submitLabel = "Gửi thông tin" }: LeadFormP
         setIsSubmitting(true);
 
         const formData = new FormData(event.currentTarget);
-        const result = await createLead({
-          name: String(formData.get("name") ?? ""),
-          phone: String(formData.get("phone") ?? ""),
-          email: String(formData.get("email") ?? ""),
-          message: String(formData.get("need") ?? ""),
-          source,
+        const response = await fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: String(formData.get("name") ?? ""),
+            phone: String(formData.get("phone") ?? ""),
+            email: String(formData.get("email") ?? ""),
+            message: String(formData.get("need") ?? ""),
+            source,
+          }),
         });
+        const result = (await response.json()) as { ok?: boolean };
 
         setIsSubmitting(false);
         setMessage(
-          result.ok
+          response.ok && result.ok
             ? "Đã gửi thông tin. Team The Anh Marketing sẽ liên hệ lại."
-            : "Đã ghi nhận trên giao diện. Supabase chưa sẵn sàng nên dữ liệu chưa được lưu vào database.",
+            : "Chưa gửi được thông tin. Vui lòng thử lại hoặc nhắn trực tiếp Fanpage The Anh Marketing.",
         );
 
-        if (result.ok) {
+        if (response.ok && result.ok) {
           event.currentTarget.reset();
         }
       }}
