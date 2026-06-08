@@ -168,11 +168,16 @@ export function buildGoogleSheetOrderPayload(order: PaymentOrder, options: Googl
   const siteUrl = getSiteUrl(options);
   const paymentUrl = `${siteUrl}/thanh-toan/${encodeURIComponent(order.orderCode)}`;
   const landingPageUrl = cleanEnvValue(options.landingPageUrl);
+  const date = formatVietnamDateTime(order.createdAt);
+  const paidAt = order.paidAt ? formatVietnamDateTime(order.paidAt) : "";
+  const source = options.source ?? "Website";
+  const orderItems = order.orderItems.map((item) => `${item.title} (${item.slug}) - ${item.price}`).join(" | ");
+  const syncedAt = new Date().toISOString();
 
   return {
     entityType: "order",
     dedupeKey: order.orderCode || order.id,
-    date: formatVietnamDateTime(order.createdAt),
+    date,
     createdAt: order.createdAt,
     id: order.id,
     orderCode: order.orderCode,
@@ -190,10 +195,26 @@ export function buildGoogleSheetOrderPayload(order: PaymentOrder, options: Googl
     status: order.status,
     paymentMethod: order.paymentMethod,
     paymentUrl,
-    paidAt: order.paidAt ?? "",
-    source: options.source ?? "Website",
-    orderItems: order.orderItems.map((item) => `${item.title} (${item.slug}) - ${item.price}`).join(" | "),
-    syncedAt: new Date().toISOString(),
+    paidAt,
+    source,
+    orderItems,
+    syncedAt,
+    "Created At": date,
+    "Order Code": order.orderCode,
+    "Customer Name": order.studentName,
+    Email: order.email,
+    Phone: order.phone,
+    "Course Slug": order.courseSlug,
+    "Course Title": order.courseTitle,
+    Amount: order.amount,
+    Currency: order.currency,
+    Status: order.status,
+    "Payment Method": order.paymentMethod,
+    "Payment URL": paymentUrl,
+    "Paid At": paidAt,
+    Source: source,
+    "Order Items": orderItems,
+    "Synced At": syncedAt,
   };
 }
 

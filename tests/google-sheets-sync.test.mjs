@@ -66,6 +66,15 @@ test("google sheets payload includes top-level fields expected by Apps Script an
   assert.equal(payload.amount, 399000);
   assert.equal(payload.paymentUrl, "https://theanhmarketing.com/thanh-toan/TAM123");
   assert.match(payload.orderItems, /Facebook Ads Master 2026/);
+  assert.equal(payload["Created At"], "03/06/2026 17:00");
+  assert.equal(payload["Order Code"], "TAM123");
+  assert.equal(payload["Customer Name"], "Nguyen Van A");
+  assert.equal(payload["Course Slug"], "facebook-ads-2026");
+  assert.equal(payload["Course Title"], "Facebook Ads Master 2026");
+  assert.equal(payload["Payment URL"], "https://theanhmarketing.com/thanh-toan/TAM123");
+  assert.equal(payload.Source, "LDP Test");
+  assert.match(payload["Order Items"], /Facebook Ads Master 2026/);
+  assert.ok(payload["Synced At"]);
 });
 
 test("google sheets sync skips without webhook and posts JSON when configured", async () => {
