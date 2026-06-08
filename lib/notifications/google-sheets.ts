@@ -170,6 +170,7 @@ export function buildGoogleSheetOrderPayload(order: PaymentOrder, options: Googl
   const landingPageUrl = cleanEnvValue(options.landingPageUrl);
   const date = formatVietnamDateTime(order.createdAt);
   const paidAt = order.paidAt ? formatVietnamDateTime(order.paidAt) : "";
+  const expiresAt = order.expiresAt ? formatVietnamDateTime(order.expiresAt) : "";
   const source = options.source ?? "Website";
   const orderItems = order.orderItems.map((item) => `${item.title} (${item.slug}) - ${item.price}`).join(" | ");
   const syncedAt = new Date().toISOString();
@@ -215,6 +216,19 @@ export function buildGoogleSheetOrderPayload(order: PaymentOrder, options: Googl
     Source: source,
     "Order Items": orderItems,
     "Synced At": syncedAt,
+    "Mã đơn": order.orderCode,
+    "Ngày tạo": date,
+    "Khách hàng": order.studentName,
+    "SĐT": order.phone,
+    "Khóa/Gói": order.courseTitle,
+    "Số tiền": order.amount,
+    "Trạng thái": order.status,
+    "Phương thức": order.paymentMethod,
+    "Ngày thanh toán": paidAt,
+    "Hạn thanh toán": expiresAt,
+    "Mã GD SePay": order.sepayReferenceCode ?? "",
+    "Course slug": order.courseSlug,
+    "Link thanh toán": paymentUrl,
   };
 }
 
