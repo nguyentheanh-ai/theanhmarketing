@@ -458,7 +458,9 @@ async function fetchCourses() {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
-    console.warn("[courseService] Supabase env missing; using fallback courses.");
+    if (process.env.NODE_ENV !== "production") {
+      console.info("[courseService] Supabase env missing; using fallback courses.");
+    }
     return getFallbackCourses();
   }
 

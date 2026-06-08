@@ -13,6 +13,8 @@ type GoogleSheetSyncResult = {
   skipped: boolean;
   reason?: string;
   status?: number;
+  responseSnippet?: string;
+  webhookHost?: string;
 };
 
 export type GoogleSheetLeadRecord = {
@@ -35,6 +37,85 @@ export type GoogleSheetLeadRecord = {
 
 function cleanEnvValue(value: string | undefined) {
   return (value ?? "").replace(/^\uFEFF/, "").trim().replace(/^['"]|['"]$/g, "");
+}
+
+function sanitizeResponseSnippet(value: string) {
+  return value
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 240);
+}
+
+function parseWebhookSuccess(responseText: string) {
+  const snippet = sanitizeResponseSnippet(responseText);
+  const lower = snippet.toLowerCase();
+  const rawLower = responseText.toLowerCase();
+
+  if (
+    lower.includes("không tìm thấy hàm tập lệnh") ||
+    lower.includes("khong tim thay ham tap lenh") ||
+    lower.includes("script function not found") ||
+    lower.includes("dopost") ||
+    lower.includes("google apps script") ||
+    rawLower.includes("<!doctype html")
+  ) {
+    return {
+      ok: false as const,
+      reason:
+        "Google Sheets Apps Script Web App responded with an error page. The deployment must define function doPost(e) and return JSON.",
+      responseSnippet: snippet,
+    };
+  }
+
+  if (!responseText.trim()) {
+    return { ok: true as const, responseSnippet: snippet };
+  }
+
+  try {
+    const parsed = JSON.parse(responseText) as { ok?: unknown; success?: unknown; error?: unknown; message?: unknown };
+    const explicitSuccess = parsed.ok === true || parsed.success === true;
+    const explicitFailure = parsed.ok === false || parsed.success === false || parsed.error;
+
+    if (explicitFailure) {
+      return {
+        ok: false as const,
+        reason: String(parsed.error || parsed.message || "Google Sheets webhook returned a failure response."),
+        responseSnippet: snippet,
+      };
+    }
+
+    return { ok: explicitSuccess || Object.keys(parsed).length > 0, responseSnippet: snippet };
+  } catch {
+    return { ok: true as const, responseSnippet: snippet };
+  }
+}
+
+function parseAppsScriptWebhookUrl(webhookUrl: string) {
+  try {
+    const url = new URL(webhookUrl);
+    const isAppsScriptHost = url.hostname === "script.google.com" || url.hostname === "script.googleusercontent.com";
+    const isExecPath = url.pathname.includes("/macros/s/") && url.pathname.endsWith("/exec");
+
+    if (url.protocol !== "https:" || !isAppsScriptHost || !isExecPath) {
+      return {
+        ok: false as const,
+        host: url.hostname,
+        reason:
+          "GOOGLE_SHEETS_WEBHOOK_URL must be an Apps Script Web App /exec URL, for example https://script.google.com/macros/s/.../exec.",
+      };
+    }
+
+    return { ok: true as const, url, host: url.hostname };
+  } catch {
+    return {
+      ok: false as const,
+      host: "",
+      reason: "GOOGLE_SHEETS_WEBHOOK_URL is not a valid URL.",
+    };
+  }
 }
 
 function normalizeSiteUrl(value?: string) {
@@ -157,28 +238,85 @@ async function postGoogleSheetPayload(payload: Record<string, unknown>, options:
     return { ok: true, skipped: true, reason: "Missing GOOGLE_SHEETS_WEBHOOK_URL" };
   }
 
-  const fetchImpl = options.fetchImpl ?? fetch;
-  const response = await fetchImpl(webhookUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  const parsedWebhook = parseAppsScriptWebhookUrl(webhookUrl);
 
-  if (!response.ok) {
-    console.warn("[google-sheets] Webhook rejected sync.", {
+  if (!parsedWebhook.ok) {
+    console.warn("[google-sheets] Invalid webhook URL configuration.", {
       entityType: payload.entityType,
       dedupeKey: payload.dedupeKey,
-      status: response.status,
+      host: parsedWebhook.host || "invalid",
     });
     return {
       ok: false,
       skipped: false,
-      reason: "Google Sheets webhook rejected the sync.",
-      status: response.status,
+      reason: parsedWebhook.reason,
+      webhookHost: parsedWebhook.host || undefined,
     };
   }
 
-  return { ok: true, skipped: false, status: response.status };
+  const fetchImpl = options.fetchImpl ?? fetch;
+  const response = await fetchImpl(parsedWebhook.url.toString(), {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json; charset=utf-8",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const responseText = await response.text().catch(() => "");
+
+  if (!response.ok) {
+    const responseSnippet = sanitizeResponseSnippet(responseText);
+    const reason =
+      response.status === 403
+        ? "Google Sheets Apps Script webhook returned HTTP 403. Redeploy the Apps Script Web App with Execute as: Me and Who has access: Anyone, then update GOOGLE_SHEETS_WEBHOOK_URL to the new /exec URL."
+        : `Google Sheets webhook rejected the sync with HTTP ${response.status}.`;
+
+    console.warn("[google-sheets] Webhook rejected sync.", {
+      entityType: payload.entityType,
+      dedupeKey: payload.dedupeKey,
+      status: response.status,
+      host: parsedWebhook.host,
+      responseSnippet,
+    });
+    return {
+      ok: false,
+      skipped: false,
+      reason,
+      status: response.status,
+      responseSnippet,
+      webhookHost: parsedWebhook.host,
+    };
+  }
+
+  const parsedSuccess = parseWebhookSuccess(responseText);
+
+  if (!parsedSuccess.ok) {
+    console.warn("[google-sheets] Webhook returned an error payload.", {
+      entityType: payload.entityType,
+      dedupeKey: payload.dedupeKey,
+      status: response.status,
+      host: parsedWebhook.host,
+      responseSnippet: parsedSuccess.responseSnippet,
+    });
+    return {
+      ok: false,
+      skipped: false,
+      reason: parsedSuccess.reason,
+      status: response.status,
+      responseSnippet: parsedSuccess.responseSnippet,
+      webhookHost: parsedWebhook.host,
+    };
+  }
+
+  return {
+    ok: true,
+    skipped: false,
+    status: response.status,
+    responseSnippet: parsedSuccess.responseSnippet,
+    webhookHost: parsedWebhook.host,
+  };
 }
 
 export async function syncOrderToGoogleSheet(

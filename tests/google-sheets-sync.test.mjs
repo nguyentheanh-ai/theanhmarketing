@@ -80,6 +80,17 @@ test("google sheets sync skips without webhook and posts JSON when configured", 
     assert.equal(skipped.skipped, true);
     assert.equal(skipped.reason, "Missing GOOGLE_SHEETS_WEBHOOK_URL");
 
+    process.env.GOOGLE_SHEETS_WEBHOOK_URL =
+      "https://docs.google.com/spreadsheets/d/16OR43vZDLEtjYTgyOdt3DM46PF0cjE-kyLH1YkqBFX0/edit";
+    const invalidUrl = await syncOrderToGoogleSheet(order, {
+      fetchImpl: async () => {
+        throw new Error("invalid URL should not be posted");
+      },
+    });
+    assert.equal(invalidUrl.ok, false);
+    assert.match(invalidUrl.reason, /Apps Script Web App \/exec URL/);
+    assert.equal(invalidUrl.webhookHost, "docs.google.com");
+
     process.env.GOOGLE_SHEETS_WEBHOOK_URL = "https://script.google.com/macros/s/test/exec";
     const calls = [];
     const sent = await syncOrderToGoogleSheet(order, {
@@ -98,6 +109,34 @@ test("google sheets sync skips without webhook and posts JSON when configured", 
     assert.match(calls[0].init.body, /TAM123/);
     assert.match(calls[0].init.body, /Nguyen Van A/);
     assert.match(calls[0].init.body, /ldpUrl/);
+    assert.match(calls[0].init.headers["Content-Type"], /charset=utf-8/);
+
+    const rejected = await syncOrderToGoogleSheet(order, {
+      webhookUrl: "https://script.google.com/macros/s/test/exec",
+      fetchImpl: async () => ({
+        ok: false,
+        status: 403,
+        text: async () => "<html><body>You do not have access to this app</body></html>",
+      }),
+    });
+    assert.equal(rejected.ok, false);
+    assert.equal(rejected.status, 403);
+    assert.match(rejected.reason, /Execute as: Me/);
+    assert.match(rejected.reason, /Who has access: Anyone/);
+    assert.equal(rejected.responseSnippet, "You do not have access to this app");
+
+    const missingDoPost = await syncOrderToGoogleSheet(order, {
+      webhookUrl: "https://script.google.com/macros/s/test/exec",
+      fetchImpl: async () => ({
+        ok: true,
+        status: 200,
+        text: async () => "<html><body>Google Apps Script Khong tim thay ham tap lenh: doPost</body></html>",
+      }),
+    });
+    assert.equal(missingDoPost.ok, false);
+    assert.equal(missingDoPost.status, 200);
+    assert.match(missingDoPost.reason, /doPost\(e\)/);
+    assert.equal(missingDoPost.responseSnippet, "Google Apps Script Khong tim thay ham tap lenh: doPost");
   } finally {
     if (previousWebhook === undefined) delete process.env.GOOGLE_SHEETS_WEBHOOK_URL;
     else process.env.GOOGLE_SHEETS_WEBHOOK_URL = previousWebhook;

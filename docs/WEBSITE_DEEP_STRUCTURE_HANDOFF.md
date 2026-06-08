@@ -314,10 +314,11 @@ Compatibility note: Admin Lead resend still writes legacy `lead_email_logs` for 
 Google Sheet sync:
 
 - `lib/notifications/google-sheets.ts` posts to `GOOGLE_SHEETS_WEBHOOK_URL`; it does not read service-account env directly.
+- `GOOGLE_SHEETS_WEBHOOK_URL` must be an Apps Script Web App `/exec` URL such as `https://script.google.com/macros/s/.../exec`, not the Google Sheet edit URL. The Apps Script deployment must be a Web App with Execute as `Me` and Who has access `Anyone`.
 - Payloads include `entityType` and `dedupeKey`. For lead entity, prefer stable `lead.id` so an initial lead sync and later order/status sync update the same row.
 - Lead sync metadata lives in `leads.google_sheet_synced_at`, `leads.google_sheet_row_id`, `leads.google_sheet_sync_error`; apply `docs/SUPABASE_ADMIN_LEADS_FLOW.sql` before expecting this to persist in production.
 - Apps Script/webhook must upsert by `entityType + dedupeKey` (or equivalent leadId/orderCode/email/phone priority) to avoid duplicate rows.
-- Production note 2026-06-05: migration `admin_leads_crm_sheet_resend_20260605` is applied. Live test lead `fda940c2-f34a-4650-9995-fcbe8b4e1cee` saved to DB, but Google Sheet webhook returned 403 and set `google_sheet_sync_error='Google Sheets webhook rejected the sync.'`. Fix Apps Script deployment/permission or Vercel webhook URL, then use Admin Lead `Resync Google Sheet`.
+- Production note 2026-06-08: migration `admin_leads_crm_sheet_resend_20260605` is applied. Live smoke lead `d1f78d15-85c1-4a06-931a-c9bf66b4f983` saved to DB, but the old Google Sheet webhook returned 403 and the row was not found in spreadsheet `16OR43vZDLEtjYTgyOdt3DM46PF0cjE-kyLH1YkqBFX0` tab `Orders`. The newer Apps Script URL provided later returned HTTP 200 with HTML error `Khong tim thay ham tap lenh: doPost`; do not treat that as sync success. Apps Script must define `function doPost(e)`, parse JSON payloads, upsert by `entityType + dedupeKey`, return JSON, and be deployed as Web App Execute as `Me` / access `Anyone`. Then update Vercel Production `GOOGLE_SHEETS_WEBHOOK_URL` and use Admin Lead `Resync Google Sheet`.
 
 Resend logs:
 

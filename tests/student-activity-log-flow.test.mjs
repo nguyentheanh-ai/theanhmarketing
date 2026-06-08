@@ -22,9 +22,10 @@ test("student activity log has a central service, schema, and protected admin AP
   const studentRoute = read("app/api/student/activity/route.ts");
 
   assert.match(schema, /create table if not exists public\.activity_logs/);
-  assert.match(schema, /event_type text not null/);
-  assert.match(schema, /actor_type text not null/);
-  assert.match(schema, /ip_address text/);
+  assert.match(schema, /add column if not exists event_type text null/);
+  assert.match(schema, /alter column event_type set not null/);
+  assert.match(schema, /add column if not exists actor_type text not null default 'system'/);
+  assert.match(schema, /alter column ip_address type text/);
   assert.match(schema, /user_agent text/);
   assert.match(schema, /password_reset_completed/);
   assert.match(schema, /student_entered_learning/);
