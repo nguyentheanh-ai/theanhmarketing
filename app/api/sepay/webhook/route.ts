@@ -10,6 +10,7 @@ import { verifySepayApiKey, type SepayWebhookPayload } from "@/lib/payments/sepa
 import { logSecurityEvent } from "@/lib/security/audit-log";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import { invalidateAdminModules } from "@/services/adminDataService";
+import { logStudentActivity } from "@/services/activityLogService";
 import { confirmOrderFromSepay, markPaymentEmailError, markPaymentEmailSent } from "@/services/orderService";
 import { ensureStudentAccountForPaidOrder } from "@/services/studentAccountService";
 import { notifyStudentPortalProvisioning } from "@/services/studentPortalProvisioningService";
@@ -153,6 +154,17 @@ export async function POST(request: Request) {
             detail: { orderCode: confirmation.order.orderCode, reason: markResult.error },
           });
         }
+        await logStudentActivity({
+          userId: studentAccount?.userId ?? null,
+          studentEmail: confirmation.order.email,
+          studentPhone: confirmation.order.phone,
+          eventType: "payment_success_email_sent",
+          eventTitle: "Đã gửi email thanh toán thành công",
+          eventDescription: `Email xác nhận thanh toán đã gửi cho đơn ${confirmation.order.orderCode}.`,
+          status: "success",
+          actorType: "system",
+          metadata: { orderCode: confirmation.order.orderCode, courseSlug: confirmation.order.courseSlug },
+        });
       } else {
         const reason = result.reason ?? "Payment success email was skipped.";
         const markResult = await markPaymentEmailError(confirmation.order.orderCode, reason);
@@ -164,6 +176,17 @@ export async function POST(request: Request) {
             detail: { orderCode: confirmation.order.orderCode, reason: markResult.error },
           });
         }
+        await logStudentActivity({
+          userId: studentAccount?.userId ?? null,
+          studentEmail: confirmation.order.email,
+          studentPhone: confirmation.order.phone,
+          eventType: "payment_success_email_failed",
+          eventTitle: "Gửi email thanh toán thành công thất bại",
+          eventDescription: reason,
+          status: "failed",
+          actorType: "system",
+          metadata: { orderCode: confirmation.order.orderCode, courseSlug: confirmation.order.courseSlug },
+        });
       }
     }
 
@@ -194,13 +217,34 @@ export async function POST(request: Request) {
             reason: sheetSync.reason,
             status: sheetSync.status,
           });
+          await logStudentActivity({
+            studentEmail: confirmation.order.email,
+            studentPhone: confirmation.order.phone,
+            eventType: "sheet_sync_failed",
+            eventTitle: "Đồng bộ Google Sheet đơn paid thất bại",
+            eventDescription: sheetSync.reason ?? "Google Sheets paid order sync failed",
+            status: "failed",
+            actorType: "system",
+            metadata: { orderCode: confirmation.order.orderCode, status: sheetSync.status ?? null },
+          });
+        } else if (sheetSync.ok && !sheetSync.skipped) {
+          await logStudentActivity({
+            studentEmail: confirmation.order.email,
+            studentPhone: confirmation.order.phone,
+            eventType: "sheet_sync_success",
+            eventTitle: "Đã đồng bộ Google Sheet đơn paid",
+            eventDescription: `Đơn ${confirmation.order.orderCode} đã được gửi sang Google Sheet sau webhook SePay.`,
+            status: "success",
+            actorType: "system",
+            metadata: { orderCode: confirmation.order.orderCode },
+          });
         }
       } catch (sheetError) {
         console.warn("[sepay] Google Sheets paid order sync failed:", sheetError);
       }
     }
 
-    invalidateAdminModules(["orders", "students", "leads"]);
+    invalidateAdminModules(["orders", "students", "leads", "activities"]);
 
     return NextResponse.json({
       success: true,

@@ -111,6 +111,11 @@ test("auto-created paid student accounts do not depend on listing auth users", a
         };
       },
     },
+    "@/services/activityLogService": {
+      async logStudentActivity() {
+        return { ok: true, skipped: false, error: null };
+      },
+    },
   });
 
   try {
@@ -191,6 +196,11 @@ test("paid order provisioning resets password for existing auth users", async ()
             },
           },
         };
+      },
+    },
+    "@/services/activityLogService": {
+      async logStudentActivity() {
+        return { ok: true, skipped: false, error: null };
       },
     },
   });

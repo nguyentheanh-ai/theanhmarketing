@@ -5,6 +5,7 @@ import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { getAccessStatusMeta } from "@/lib/admin/crm-dashboard";
 import { isAdminEmail } from "@/lib/course-access";
 import { getAdminCourses, getAdminStudentAccessRecords } from "@/services/adminDataService";
+import { getStudentActivityLogs, type ActivityLog } from "@/services/activityLogService";
 import type { StudentAccessRecord } from "@/services/studentAccessService";
 
 function MetricIcon({ tone, children }: { tone: "slate" | "green" | "amber"; children: string }) {
@@ -91,6 +92,13 @@ export default async function AdminStudentsPage({
   const shouldOpenStudentDialog = params?.add_student === "1";
   const [courses, students] = await Promise.all([getAdminCourses(), getAdminStudentAccessRecords()]);
   const visibleStudents = query ? students.filter((student) => getSearchText(student).includes(query)) : students;
+  const activityLogEntries = await Promise.all(
+    visibleStudents.map(async (student) => [
+      student.id,
+      student.email ? await getStudentActivityLogs({ studentEmail: student.email, limit: 20 }) : [],
+    ] as const),
+  );
+  const activityLogsByStudentId = Object.fromEntries(activityLogEntries) as Record<string, ActivityLog[]>;
   const grantedCount = students.filter((student) => getAccessStatusMeta(student.accessStatus).tone === "success").length;
   const pendingCount = students.length - grantedCount;
 
@@ -184,7 +192,11 @@ export default async function AdminStudentsPage({
                         </td>
                         <td className="px-3 py-4 font-semibold text-slate-700">{getOrderLabel(student)}</td>
                         <td className="px-3 py-4">
-                          <StudentAccessActions courses={courses} student={student} />
+                          <StudentAccessActions
+                            activityLogs={activityLogsByStudentId[student.id] ?? []}
+                            courses={courses}
+                            student={student}
+                          />
                         </td>
                       </tr>
                     );

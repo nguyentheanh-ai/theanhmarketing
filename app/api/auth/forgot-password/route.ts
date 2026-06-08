@@ -6,6 +6,7 @@ import { passwordResetEmailSubject, sendPasswordResetEmailViaResend } from "@/li
 import { getPasswordResetConfirmUrl, getPasswordResetRedirectUrl } from "@/lib/auth/password-reset-url";
 import { recordEmailLog } from "@/services/emailLogService";
 import { recordLeadActivity } from "@/services/leadActivityService";
+import { logStudentActivity } from "@/services/activityLogService";
 
 const sentMessage =
   "Email đã tồn tại trong hệ thống. Hệ thống đã gửi link đặt lại mật khẩu qua email để anh/chị tạo mật khẩu mới.";
@@ -89,6 +90,16 @@ export async function POST(request: Request) {
     });
 
     if (!emailResult.ok) {
+      await logStudentActivity({
+        userId: user.id,
+        studentEmail: email,
+        eventType: "password_reset_requested",
+        eventTitle: "Gửi email reset mật khẩu thất bại",
+        eventDescription: emailResult.reason ?? "Không rõ lý do",
+        status: "failed",
+        actorType: "system",
+        metadata: { source: "forgot_password" },
+      });
       return NextResponse.json({ ok: false, status: "failed", message: unavailableMessage }, { status: 502 });
     }
 
@@ -97,6 +108,18 @@ export async function POST(request: Request) {
       title: "Password reset requested",
       description: `Reset password request for ${email}`,
       metadata: { email },
+    });
+    await logStudentActivity({
+      userId: user.id,
+      studentEmail: email,
+      eventType: "password_reset_requested",
+      eventTitle: "Học viên yêu cầu đặt lại mật khẩu",
+      eventDescription: "Hệ thống đã tạo và gửi email reset mật khẩu hợp lệ.",
+      status: "success",
+      actorType: "student",
+      actorId: user.id,
+      actorEmail: email,
+      metadata: { source: "forgot_password" },
     });
 
     return NextResponse.json({ ok: true, status: "sent", message: sentMessage });

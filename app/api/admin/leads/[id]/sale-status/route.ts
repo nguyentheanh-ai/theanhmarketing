@@ -3,6 +3,7 @@ import { canAccessAdminRole, getCurrentAuth, isAuthGuardEnabled } from "@/lib/au
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import { cleanText } from "@/lib/security/validation";
 import { invalidateAdminModules } from "@/services/adminDataService";
+import { logStudentActivity } from "@/services/activityLogService";
 import { recordLeadActivity } from "@/services/leadActivityService";
 import { leadSaleStatuses, updateLeadSaleStatus, type LeadSaleStatus } from "@/services/leadService";
 
@@ -61,6 +62,19 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       oldValue: previousSaleStatus,
       newValue: saleStatus,
       metadata: { requestedLeadId: id, leadName },
+    });
+    await logStudentActivity({
+      leadId: updatedLead && "id" in updatedLead && typeof updatedLead.id === "string" ? updatedLead.id : id,
+      studentEmail: updatedLead && "email" in updatedLead && typeof updatedLead.email === "string" ? updatedLead.email : null,
+      studentPhone: updatedLead && "phone" in updatedLead && typeof updatedLead.phone === "string" ? updatedLead.phone : null,
+      eventType: "sale_status_updated",
+      eventTitle: `Đã cập nhật sale status thành ${saleStatus}`,
+      eventDescription: previousSaleStatus
+        ? `Sale status đổi từ ${previousSaleStatus} sang ${saleStatus}.`
+        : `Sale status hiện là ${saleStatus}.`,
+      status: "success",
+      actorType: "admin",
+      metadata: { oldValue: previousSaleStatus, newValue: saleStatus, requestedLeadId: id, leadName },
     });
     invalidateAdminModules(["leads", "activities"]);
 

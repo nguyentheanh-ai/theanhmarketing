@@ -6,6 +6,7 @@ import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/
 import { cleanEmail, cleanPhone, cleanSlug, cleanText, isValidEmail, isValidSlug } from "@/lib/security/validation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { invalidateAdminModules } from "@/services/adminDataService";
+import { logStudentActivity } from "@/services/activityLogService";
 import { getCourses } from "@/services/courseService";
 import { ensureStudentAccountForAccessGrant } from "@/services/studentAccountService";
 
@@ -82,8 +83,10 @@ export async function POST(request: Request) {
       return rateLimitResponse(rateLimit.resetAt);
     }
 
+    let adminActor: Awaited<ReturnType<typeof getCurrentAuth>>["user"] | null = null;
     if (isAuthGuardEnabled() || process.env.NODE_ENV !== "development") {
-      const { adminRole } = await getCurrentAuth();
+      const { adminRole, user } = await getCurrentAuth();
+      adminActor = user;
 
       if (!canAccessAdminRole(adminRole, ["owner", "editor"])) {
         return NextResponse.json(
@@ -194,6 +197,19 @@ export async function POST(request: Request) {
     );
 
     if (!emailResult.ok || emailResult.skipped) {
+      await logStudentActivity({
+        userId: studentAccount.userId,
+        studentEmail: email,
+        studentPhone: phone,
+        eventType: "payment_email_failed",
+        eventTitle: "Gửi email cấp lại mật khẩu thất bại",
+        eventDescription: emailResult.reason ?? "Không rõ lý do",
+        status: "failed",
+        actorType: "admin",
+        actorId: adminActor?.id ?? null,
+        actorEmail: adminActor?.email ?? null,
+        metadata: { courseSlugs, sourceOrderCode: latestPaidOrder?.order_code ?? null },
+      });
       return NextResponse.json(
         {
           ok: false,
@@ -205,7 +221,21 @@ export async function POST(request: Request) {
       );
     }
 
-    invalidateAdminModules(["leads", "orders", "students"]);
+    await logStudentActivity({
+      userId: studentAccount.userId,
+      studentEmail: email,
+      studentPhone: phone,
+      eventType: "password_changed",
+      eventTitle: "Admin đã cấp lại mật khẩu học viên",
+      eventDescription: "Mật khẩu mới đã được verify bằng đăng nhập Supabase anon trước khi gửi email.",
+      status: "success",
+      actorType: "admin",
+      actorId: adminActor?.id ?? null,
+      actorEmail: adminActor?.email ?? null,
+      metadata: { courseSlugs, sourceOrderCode: latestPaidOrder?.order_code ?? null, emailSent: true },
+    });
+
+    invalidateAdminModules(["leads", "orders", "students", "activities"]);
 
     return NextResponse.json({
       ok: true,

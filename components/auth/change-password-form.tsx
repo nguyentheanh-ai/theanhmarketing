@@ -6,10 +6,26 @@ import { Button } from "@/components/ui/button";
 import { getSafeNextPath } from "@/lib/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
+async function recordPasswordChangedActivity(mode: string | null) {
+  try {
+    await fetch("/api/student/activity", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        eventType: mode === "reset" ? "password_reset_completed" : "password_changed",
+        title: mode === "reset" ? "Học viên đặt lại mật khẩu thành công" : "Học viên đổi mật khẩu thành công",
+      }),
+    });
+  } catch {
+    // Activity logging must not block a successful password update.
+  }
+}
+
 export function ChangePasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = getSafeNextPath(searchParams.get("next"), "/dashboard");
+  const mode = searchParams.get("mode");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -66,6 +82,7 @@ export function ChangePasswordForm() {
       return;
     }
 
+    await recordPasswordChangedActivity(mode);
     router.push(nextPath);
     router.refresh();
   }

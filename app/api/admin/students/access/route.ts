@@ -4,6 +4,7 @@ import { sendStudentAccessEmail } from "@/lib/notifications/student-access-email
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import { cleanEmail, cleanPhone, cleanSlug, cleanText, isValidEmail, isValidSlug } from "@/lib/security/validation";
 import { invalidateAdminModules } from "@/services/adminDataService";
+import { logStudentActivity } from "@/services/activityLogService";
 import { getCourses } from "@/services/courseService";
 import { createLeadAdmin } from "@/services/leadService";
 import { ensureStudentAccountForAccessGrant } from "@/services/studentAccountService";
@@ -37,8 +38,10 @@ export async function POST(request: Request) {
       return rateLimitResponse(rateLimit.resetAt);
     }
 
+    let adminActor: Awaited<ReturnType<typeof getCurrentAuth>>["user"] | null = null;
     if (isAuthGuardEnabled() || process.env.NODE_ENV !== "development") {
-      const { adminRole } = await getCurrentAuth();
+      const { adminRole, user } = await getCurrentAuth();
+      adminActor = user;
 
       if (!canAccessAdminRole(adminRole, ["owner", "editor"])) {
         return NextResponse.json(
@@ -129,6 +132,20 @@ export async function POST(request: Request) {
           { status: 500 },
         );
       }
+
+      await logStudentActivity({
+        leadId: result.lead?.id ?? null,
+        studentEmail: email,
+        studentPhone: phone,
+        eventType: action === "grant" ? "course_access_granted" : "course_access_revoked",
+        eventTitle: action === "grant" ? "Đã cấp quyền học viên" : "Đã thu quyền học viên",
+        eventDescription: `${action === "grant" ? "Cấp quyền" : "Thu quyền"} khóa ${course.title}.`,
+        status: "success",
+        actorType: "admin",
+        actorId: adminActor?.id ?? null,
+        actorEmail: adminActor?.email ?? null,
+        metadata: { courseSlug: course.slug, courseName: course.title },
+      });
     }
 
     const emailResult = await sendStudentAccessEmail(
@@ -152,6 +169,18 @@ export async function POST(request: Request) {
     );
 
     if (!emailResult.ok || emailResult.skipped) {
+      await logStudentActivity({
+        studentEmail: email,
+        studentPhone: phone,
+        eventType: "payment_email_failed",
+        eventTitle: "Gửi email quyền học thất bại",
+        eventDescription: emailResult.reason ?? "Không rõ lý do",
+        status: "failed",
+        actorType: "admin",
+        actorId: adminActor?.id ?? null,
+        actorEmail: adminActor?.email ?? null,
+        metadata: { action, courseSlugs },
+      });
       return NextResponse.json(
         {
           ok: false,

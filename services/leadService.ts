@@ -2,6 +2,7 @@ import { fallbackLeads } from "@/data/platform";
 import { syncLeadToGoogleSheet } from "@/lib/notifications/google-sheets";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { logStudentActivity } from "@/services/activityLogService";
 import { getPaymentOrders, type PaymentOrder } from "@/services/orderService";
 
 export type LeadInput = {
@@ -392,8 +393,30 @@ export async function createLeadAdmin(input: LeadInput) {
 
   if (sheetSync.ok && !sheetSync.skipped) {
     await updateLeadSheetState(lead.id, { googleSheetSyncedAt: new Date().toISOString(), googleSheetSyncError: null });
+    await logStudentActivity({
+      leadId: lead.id ?? null,
+      studentEmail: lead.email,
+      studentPhone: lead.phone,
+      eventType: "sheet_sync_success",
+      eventTitle: "Đã đồng bộ Google Sheet",
+      eventDescription: "Lead mới đã được gửi sang Google Sheet.",
+      status: "success",
+      actorType: "system",
+      metadata: { source: lead.source, dedupeKey: lead.id },
+    });
   } else if (!sheetSync.ok) {
     await updateLeadSheetState(lead.id, { googleSheetSyncError: sheetSync.reason ?? "Google Sheet sync failed" });
+    await logStudentActivity({
+      leadId: lead.id ?? null,
+      studentEmail: lead.email,
+      studentPhone: lead.phone,
+      eventType: "sheet_sync_failed",
+      eventTitle: "Đồng bộ Google Sheet thất bại",
+      eventDescription: sheetSync.reason ?? "Google Sheet sync failed",
+      status: "failed",
+      actorType: "system",
+      metadata: { source: lead.source, status: sheetSync.status ?? null },
+    });
   }
 
   return { ok: true, fallback: false, error: null, lead, sheetSync };
@@ -611,6 +634,17 @@ export async function resyncUnsyncedLeadsToGoogleSheet() {
     if (result.ok && !result.skipped) {
       synced += 1;
       await updateLeadSheetState(lead.id, { googleSheetSyncedAt: new Date().toISOString(), googleSheetSyncError: null });
+      await logStudentActivity({
+        leadId: lead.id ?? null,
+        studentEmail: lead.email,
+        studentPhone: lead.phone,
+        eventType: "sheet_sync_success",
+        eventTitle: "Đã đồng bộ lại Google Sheet",
+        eventDescription: "Lead đã được sync lại từ Admin.",
+        status: "success",
+        actorType: "system",
+        metadata: { source: lead.source, manualBackfill: true },
+      });
     } else if (result.skipped) {
       skipped += 1;
     } else {
@@ -618,6 +652,17 @@ export async function resyncUnsyncedLeadsToGoogleSheet() {
       const error = result.reason ?? "Google Sheet sync failed";
       errors.push({ leadId: lead.id, error });
       await updateLeadSheetState(lead.id, { googleSheetSyncError: error });
+      await logStudentActivity({
+        leadId: lead.id ?? null,
+        studentEmail: lead.email,
+        studentPhone: lead.phone,
+        eventType: "sheet_sync_failed",
+        eventTitle: "Đồng bộ lại Google Sheet thất bại",
+        eventDescription: error,
+        status: "failed",
+        actorType: "system",
+        metadata: { source: lead.source, manualBackfill: true },
+      });
     }
   }
 
@@ -635,8 +680,30 @@ export async function syncLeadByIdToGoogleSheet(leadId: string) {
 
   if (result.ok && !result.skipped) {
     await updateLeadSheetState(lead.id, { googleSheetSyncedAt: new Date().toISOString(), googleSheetSyncError: null });
+    await logStudentActivity({
+      leadId: lead.id ?? null,
+      studentEmail: lead.email,
+      studentPhone: lead.phone,
+      eventType: "sheet_sync_success",
+      eventTitle: "Đã đồng bộ Google Sheet",
+      eventDescription: "Lead đã được gửi sang Google Sheet.",
+      status: "success",
+      actorType: "system",
+      metadata: { source: lead.source, dedupeKey: lead.id },
+    });
   } else if (!result.ok) {
     await updateLeadSheetState(lead.id, { googleSheetSyncError: result.reason ?? "Google Sheet sync failed" });
+    await logStudentActivity({
+      leadId: lead.id ?? null,
+      studentEmail: lead.email,
+      studentPhone: lead.phone,
+      eventType: "sheet_sync_failed",
+      eventTitle: "Đồng bộ Google Sheet thất bại",
+      eventDescription: result.reason ?? "Google Sheet sync failed",
+      status: "failed",
+      actorType: "system",
+      metadata: { source: lead.source, status: result.status ?? null },
+    });
   }
 
   return result;

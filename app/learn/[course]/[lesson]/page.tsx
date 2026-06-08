@@ -3,6 +3,7 @@ import { LearningRoom, type LearningLesson } from "@/components/course/learning-
 import type { Course } from "@/data/courses";
 import { getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
 import { getCourseAccessSlugs } from "@/lib/course-access";
+import { logStudentActivity } from "@/services/activityLogService";
 import { getCourseBySlug } from "@/services/courseService";
 import { getLeads } from "@/services/leadService";
 import { getPaymentOrders } from "@/services/orderService";
@@ -70,6 +71,22 @@ export default async function LessonPage({ params }: LessonPageProps) {
       if (!ownedSlugs.includes(course.slug)) {
         redirect("/dashboard?error=course-access");
       }
+    }
+
+    if (user?.email) {
+      await logStudentActivity({
+        userId: user.id,
+        studentEmail: user.email,
+        eventType: "student_entered_learning",
+        eventTitle: "Học viên đã vào khu vực học",
+        eventDescription: `${course.title} - ${currentLesson.title}`,
+        status: "success",
+        actorType: "student",
+        actorId: user.id,
+        actorEmail: user.email,
+        metadata: { route: `/learn/${courseSlug}/${lessonId}`, courseSlug, lessonId },
+        dedupeWindowMinutes: 15,
+      });
     }
   }
 

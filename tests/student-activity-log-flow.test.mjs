@@ -51,7 +51,7 @@ test("real student auth and learning flows write activity only after success", (
   assert.match(loginForm, /signInWithPassword/);
   assert.match(loginForm, /\/api\/student\/activity/);
   assert.match(loginForm, /student_login_success/);
-  assert.match(loginForm, /setMessage\("Email hoáº·c máº­t kháº©u chÆ°a Ä‘Ãºng/);
+  assert.match(loginForm, /setMessage\("Email hoặc mật khẩu chưa đúng/);
 
   assert.match(changePasswordForm, /updateUser/);
   assert.match(changePasswordForm, /\/api\/student\/activity/);
@@ -69,8 +69,8 @@ test("admin student detail shows real activity timeline instead of fake mail/pro
 
   assert.match(page, /getStudentActivityLogs/);
   assert.match(actions, /activityLogs/);
-  assert.match(actions, /Lá»‹ch sá»­ hoáº¡t Ä‘á»™ng há»c viÃªn/);
-  assert.match(actions, /ChÆ°a cÃ³ hoáº¡t Ä‘á»™ng nÃ o Ä‘Æ°á»£c ghi nháº­n/);
-  assert.doesNotMatch(actions, /Lá»‹ch sá»­ mail/);
-  assert.doesNotMatch(actions, /ChÆ°a cÃ³ log há»c táº­p/);
+  assert.match(actions, /Lịch sử hoạt động học viên/);
+  assert.match(actions, /Chưa có hoạt động nào được ghi nhận/);
+  assert.doesNotMatch(actions, /Lịch sử mail/);
+  assert.doesNotMatch(actions, /Chưa có log học tập/);
 });

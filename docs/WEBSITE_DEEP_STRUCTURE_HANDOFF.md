@@ -189,6 +189,7 @@ Core services:
 - `services/leadService.ts`: leads; Admin Lead read-model maps payment from `orders`, sale status from `leads.sale_status`, sheet metadata from `leads.google_sheet_*`, and resend count from `lead_email_logs`.
 - `services/studentAccessService.ts`: student course access, admin delete markers, registration time, and current learning-progress placeholder.
 - `services/studentAccountService.ts`: auto-create student account.
+- `services/activityLogService.ts`: central timeline log for real student/customer/admin operations in `public.activity_logs`.
 - `services/marketingSettingsService.ts`: marketing pixel/settings.
 - `services/brandService.ts`, `services/offerService.ts`: site branding/offer popup.
 
@@ -198,10 +199,11 @@ Admin performance read-model:
 - `services/adminDataService.ts` exposes cached getters for leads, orders, students, and courses.
 - `services/adminDataService.ts` also exposes `getAdminLeadActivities()` with cache key `admin:activities` and 15s TTL; dashboard refresh calls `/api/admin/activities/recent?refresh=1`.
 - Admin routes `/admin/dashboard`, `/admin/leads`, `/admin/don-hang`, and `/admin/hoc-vien` should prefer these cached getters.
-- Admin mutations that change leads/orders/student access should call `invalidateAdminModules(...)` before returning success; lead/note/email mutations should include `activities` when they write `lead_activities`.
+- Admin mutations that change leads/orders/student access should call `invalidateAdminModules(...)` before returning success; lead/note/email mutations should include `activities` when they write `lead_activities` or `activity_logs`.
 - Public lead capture should go through `POST /api/leads`, not browser-side Supabase inserts. This keeps admin service normalization, Google Sheet sync, and admin cache invalidation in one place.
 - Public form anti-spam guard was removed on 2026-06-06 per owner request after the landing form regression. Do not require hidden `company` or `formStartedAt` fields unless a new design is explicitly approved and tested on mobile landing pages.
-- Admin operations tables/services added 2026-06-08: `services/leadActivityService.ts` (`public.lead_activities`), `services/leadNoteService.ts` (`public.lead_notes`), and `services/emailLogService.ts` (`public.email_logs`). Apply `docs/SUPABASE_ADMIN_OPERATIONS.sql` before expecting production persistence.
+- Admin operations tables/services added 2026-06-08: `services/leadActivityService.ts` (`public.lead_activities`), `services/leadNoteService.ts` (`public.lead_notes`), and `services/emailLogService.ts` (`public.email_logs`). Production migration `docs/SUPABASE_ADMIN_OPERATIONS.sql` was applied on 2026-06-08.
+- Student activity timeline added 2026-06-08: `services/activityLogService.ts`, `public.activity_logs`, `GET /api/admin/activity-logs`, and `POST /api/student/activity`. Production migration `student_activity_logs_reconcile_20260608` was applied on 2026-06-08; the SQL file keeps the legacy `activity_logs` columns compatible while adding the new student timeline schema.
 - `/api/admin/leads` is owner-only for listing/creating leads from admin. `GET /api/admin/leads?force_refresh=1` refreshes latest DB data without a full page reload.
 - Admin Lead mutations: `PATCH /api/admin/leads/[id]/sale-status`, `POST /api/admin/leads/[id]/resend-email`, `GET /api/admin/leads/[id]/email-logs`, `POST /api/admin/leads/resync-google-sheet`. All are owner-only and must invalidate lead/student admin caches after writes.
 - `/api/admin/payment-links` is owner/editor; it creates a pending SePay order via `createPaymentOrder`, sends the existing pending-payment email, writes a lead marker `admin-payment-link`, and invalidates orders/leads/students.
@@ -251,7 +253,7 @@ Khong expose service role key ra client. API route/server-only moi dung service 
 - Student auth helper: `lib/auth/session.ts`, `requireStudentAuth`.
 - First-login password logic: `lib/auth/student-account.ts`.
 
-Forgot password uses Supabase Auth `resetPasswordForEmail`, redirects recovery links to `/doi-mat-khau?next=%2Fdashboard&mode=reset`, rate-limits requests, and always returns the neutral message `Nếu email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi.`
+Forgot password uses Supabase Admin `generateLink`, sends the reset email through Resend, and routes recovery through `/api/auth/recovery/confirm` before `/doi-mat-khau?next=%2Fdashboard&mode=reset`. It logs `password_reset_requested` in `activity_logs` only after a real send success/failure.
 
 Payment success/paid order co the auto-create student account:
 
@@ -321,6 +323,15 @@ Resend logs:
 
 - `lead_email_logs` stores Admin Lead resend history: lead id, order code, email, template, success/failed, error message, timestamp.
 - Failed resend must be logged as `failed` and must not increment the success count displayed in Admin Lead.
+
+Student activity timeline:
+
+- `activity_logs` is the admin-facing source of truth for student/customer timeline events. Do not invent timeline rows from an email address, account existence, or course access alone.
+- Central writer: `services/activityLogService.ts` (`logStudentActivity`). All event metadata must be sanitized; do not store passwords, reset tokens, session tokens, API keys, or raw Authorization headers.
+- Admin reader: `GET /api/admin/activity-logs`, owner/editor only. Student/internal writer: `POST /api/student/activity`, server-side authenticated and limited to student auth events.
+- `/admin/hoc-vien` replaces the old mail-history/progress placeholder with `Lich su hoat dong hoc vien`, rendered from real `activity_logs`. Empty state must be `Chua co hoat dong nao duoc ghi nhan`.
+- Current wired event groups: mail/payment (`payment_email_*`, `payment_success_email_*`), account/access (`student_account_created`, `course_access_granted`, `course_access_revoked`), login/learning (`student_login_success`, `student_login_failed`, `student_entered_learning`), password (`password_changed`, `password_reset_requested`, `password_reset_completed`), admin updates (`sale_status_updated`, `payment_status_updated`, `profile_updated`), and Sheet sync (`sheet_sync_success`, `sheet_sync_failed`).
+- `lead_email_logs` and `email_logs` remain technical/provider logs. Admin student detail should use `activity_logs` for readable history.
 
 Important tests:
 
@@ -527,7 +538,8 @@ Before changing these, run targeted tests and full build.
 - Apply `docs/SUPABASE_ADMIN_LEADS_FLOW.sql` before expecting Admin Lead sale status, resend logs, and Google Sheet sync metadata to persist in production.
 - Production migration was applied on 2026-06-05. Current remaining blocker is Google Sheet webhook 403, not missing DB schema.
 - Admin Lead order-only rows use synthetic id `order:<orderCode>` until a real `public.leads` row exists. First Sale status update on that row must create the real lead from the order and persist `leads.sale_status`; do not store Sale status on `orders`. Hotfix deployed 2026-06-08 in `dpl_9zoRcPU7zpS89r8AbYJBN3ZLQNDH`.
-- Admin operations upgrade 2026-06-08 added public forgot-password, lead notes, `lead_activities`, `email_logs`, Resend webhook, and dashboard activity refresh. Local verification passed, but production still needs `docs/SUPABASE_ADMIN_OPERATIONS.sql` applied and Resend webhook configured.
+- Admin operations upgrade 2026-06-08 added public forgot-password, lead notes, `lead_activities`, `email_logs`, Resend webhook, and dashboard activity refresh. Production migration `docs/SUPABASE_ADMIN_OPERATIONS.sql` was applied, but Resend webhook still needs provider/dashboard configuration.
+- Student activity timeline upgrade 2026-06-08 added `activity_logs`, `services/activityLogService.ts`, `GET /api/admin/activity-logs`, `POST /api/student/activity`, and replaced the `/admin/hoc-vien` mail-history/progress placeholder with real `Lich su hoat dong hoc vien`. Production migration `student_activity_logs_reconcile_20260608` is applied and deployment `dpl_DpXu9azftiN1sh56DHoMUJ2P2LgL` is live.
 - `/admin/thanh-vien-admin` manages admin roles with `app_metadata.admin_role`; env owner remains protected.
 - `/admin/hoc-vien` has `PaymentLinkForm` for sending payment forms to customers; the API is `/api/admin/payment-links` and should keep using `createPaymentOrder` + `sendPendingPaymentEmail`.
 - Admin role `editor` is now also the student-operations role for `/admin/hoc-vien`: create student, grant/revoke access, send payment link, and cap lai mat khau. It must not get student delete or admin member management unless owner explicitly approves.

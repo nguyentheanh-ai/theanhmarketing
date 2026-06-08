@@ -3,6 +3,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import type { Course } from "@/data/courses";
+import type { ActivityLog } from "@/services/activityLogService";
 import type { StudentAccessRecord } from "@/services/studentAccessService";
 
 function formatDateTime(value: string) {
@@ -31,10 +32,38 @@ function InfoRow({ label, value }: { label: string; value: ReactNode }) {
   );
 }
 
+function getActivityActorLabel(activity: ActivityLog) {
+  if (activity.actorType === "student") return "Học viên";
+  if (activity.actorType === "admin" || activity.actorType === "sale" || activity.actorType === "support") {
+    return activity.actorName || activity.actorEmail || "Admin";
+  }
+
+  return "Hệ thống";
+}
+
+function getActivityGroupLabel(eventType: string) {
+  if (eventType.includes("email")) return "Mail";
+  if (eventType.includes("payment")) return "Thanh toán";
+  if (eventType.includes("login") || eventType.includes("learning")) return "Đăng nhập/Học tập";
+  if (eventType.includes("password")) return "Mật khẩu";
+  if (eventType.includes("access") || eventType.includes("account")) return "Quyền truy cập";
+  if (eventType.includes("sheet")) return "Dữ liệu/Google Sheet";
+  return "Cập nhật bởi admin";
+}
+
+function getActivityStatusClass(status: ActivityLog["status"]) {
+  if (status === "success") return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  if (status === "failed") return "border-red-200 bg-red-50 text-red-700";
+  if (status === "pending") return "border-amber-200 bg-amber-50 text-amber-700";
+  return "border-slate-200 bg-slate-50 text-slate-600";
+}
+
 export function StudentAccessActions({
+  activityLogs = [],
   courses,
   student,
 }: {
+  activityLogs?: ActivityLog[];
   courses: Course[];
   student: StudentAccessRecord;
 }) {
@@ -49,7 +78,6 @@ export function StudentAccessActions({
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const canManageAccess = Boolean(student.email);
   const canDeleteStudent = Boolean(student.email || student.phone);
-  const visibleProgress = Math.max(0, Math.min(100, student.progressPercent));
 
   function toggleCourse(slug: string) {
     setCheckedCourseSlugs((current) =>
@@ -304,17 +332,32 @@ export function StudentAccessActions({
                 value={`${student.accessStatus} · ${student.paymentStatus} · ${student.role}`}
               />
               <InfoRow
-                label="Tiến độ học"
+                label="Lịch sử hoạt động học viên"
                 value={
-                  <div className="grid gap-2">
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-sm font-black text-slate-950">{visibleProgress}%</span>
-                      <span className="text-xs font-semibold text-slate-500">{student.progressNote || "Chưa có log học tập"}</span>
-                    </div>
-                    <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-                      <div className="h-full rounded-full bg-emerald-500" style={{ width: `${visibleProgress}%` }} />
-                    </div>
-                  </div>
+                  activityLogs.length > 0 ? (
+                    <ol className="grid gap-3">
+                      {activityLogs.map((activity) => (
+                        <li key={activity.id} className="rounded-md border border-slate-200 bg-slate-50 p-3">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className={`rounded-full border px-2 py-0.5 text-[11px] font-black ${getActivityStatusClass(activity.status)}`}>
+                              {activity.status}
+                            </span>
+                            <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-black text-slate-600">
+                              {getActivityGroupLabel(activity.eventType)}
+                            </span>
+                            <span className="text-xs font-semibold text-slate-500">{formatDateTime(activity.createdAt)}</span>
+                          </div>
+                          <p className="mt-2 text-sm font-black text-slate-950">{activity.eventTitle}</p>
+                          {activity.eventDescription ? (
+                            <p className="mt-1 text-xs leading-5 text-slate-600">{activity.eventDescription}</p>
+                          ) : null}
+                          <p className="mt-2 text-[11px] font-semibold text-slate-500">Người thực hiện: {getActivityActorLabel(activity)}</p>
+                        </li>
+                      ))}
+                    </ol>
+                  ) : (
+                    "Chưa có hoạt động nào được ghi nhận"
+                  )
                 }
               />
               <InfoRow label="Nguồn" value={student.source || "Chưa có"} />

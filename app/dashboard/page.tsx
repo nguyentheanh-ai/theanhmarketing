@@ -1,6 +1,7 @@
 import { StudentDashboard } from "@/components/app/student-dashboard";
 import { getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
 import { getCourseAccessSlugs } from "@/lib/course-access";
+import { logStudentActivity } from "@/services/activityLogService";
 import { getCourses } from "@/services/courseService";
 import { getLeads } from "@/services/leadService";
 import { getPaymentOrders } from "@/services/orderService";
@@ -39,6 +40,22 @@ export default async function DashboardPage() {
     paidSlugs.length > 0 || isAuthGuardEnabled()
       ? Array.from(new Set(paidSlugs))
       : ["facebook-ads-2026"];
+
+  if (user?.email) {
+    await logStudentActivity({
+      userId: user.id,
+      studentEmail: user.email,
+      eventType: "student_login_success",
+      eventTitle: "Học viên vào dashboard",
+      eventDescription: "Session hợp lệ và dashboard học viên đã render thành công.",
+      status: "success",
+      actorType: "student",
+      actorId: user.id,
+      actorEmail: user.email,
+      metadata: { route: "/dashboard", ownedSlugs },
+      dedupeWindowMinutes: 15,
+    });
+  }
 
   return (
     <StudentDashboard

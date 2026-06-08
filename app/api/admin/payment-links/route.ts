@@ -4,6 +4,7 @@ import { sendPendingPaymentEmail } from "@/lib/notifications/pending-payment-ema
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import { cleanEmail, cleanPhone, cleanSlug, cleanText, isValidEmail, isValidPhone, isValidSlug } from "@/lib/security/validation";
 import { invalidateAdminModules } from "@/services/adminDataService";
+import { logStudentActivity } from "@/services/activityLogService";
 import { createLeadAdmin } from "@/services/leadService";
 import { createPaymentOrder } from "@/services/orderService";
 
@@ -36,8 +37,10 @@ export async function POST(request: Request) {
       return rateLimitResponse(rateLimit.resetAt);
     }
 
+    let adminActor: Awaited<ReturnType<typeof getCurrentAuth>>["user"] | null = null;
     if (isAuthGuardEnabled() || process.env.NODE_ENV !== "development") {
-      const { adminRole } = await getCurrentAuth();
+      const { adminRole, user } = await getCurrentAuth();
+      adminActor = user;
 
       if (!canAccessAdminRole(adminRole, ["owner", "editor"])) {
         return NextResponse.json(
@@ -77,7 +80,7 @@ export async function POST(request: Request) {
     const paymentUrl = `${normalizeSiteUrl()}/thanh-toan/${encodeURIComponent(order.orderCode)}`;
     const emailResult = await sendPendingPaymentEmail(order);
 
-    await createLeadAdmin({
+    const leadResult = await createLeadAdmin({
       name: studentName,
       email,
       phone,
@@ -90,8 +93,21 @@ export async function POST(request: Request) {
         `Trang thanh toán: ${paymentUrl}`,
       ].join("\n"),
     });
+    await logStudentActivity({
+      leadId: leadResult.lead?.id ?? null,
+      studentEmail: email,
+      studentPhone: phone,
+      eventType: emailResult.ok && !emailResult.skipped ? "payment_email_sent" : "payment_email_failed",
+      eventTitle: emailResult.ok && !emailResult.skipped ? "Đã gửi email thông báo thanh toán" : "Gửi email thông báo thanh toán thất bại",
+      eventDescription: emailResult.ok && !emailResult.skipped ? `Đơn ${order.orderCode} - ${order.amountLabel}` : emailResult.reason ?? "Không rõ lý do",
+      status: emailResult.ok && !emailResult.skipped ? "success" : "failed",
+      actorType: "admin",
+      actorId: adminActor?.id ?? null,
+      actorEmail: adminActor?.email ?? null,
+      metadata: { orderCode: order.orderCode, courseSlug, paymentPlan, paymentUrl },
+    });
 
-    invalidateAdminModules(["orders", "leads", "students"]);
+    invalidateAdminModules(["orders", "leads", "students", "activities"]);
 
     if (!emailResult.ok || emailResult.skipped) {
       return NextResponse.json(

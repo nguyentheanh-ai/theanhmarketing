@@ -8,6 +8,21 @@ import { getPostLoginRedirect } from "@/lib/auth/student-account";
 import { getSafeNextPath } from "@/lib/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
+async function recordStudentLoginActivity() {
+  try {
+    await fetch("/api/student/activity", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        eventType: "student_login_success",
+        title: "Học viên đăng nhập thành công",
+      }),
+    });
+  } catch {
+    // Activity logging must not block a valid login.
+  }
+}
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -21,7 +36,7 @@ export function LoginForm() {
     setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
-    const email = String(formData.get("email") ?? "");
+    const email = String(formData.get("email") ?? "").trim().toLowerCase();
     const password = String(formData.get("password") ?? "");
     const supabase = createSupabaseBrowserClient();
 
@@ -37,11 +52,12 @@ export function LoginForm() {
     });
 
     if (error) {
-      setMessage(error.message);
+      setMessage("Email hoặc mật khẩu chưa đúng. Anh/chị kiểm tra lại thông tin đăng nhập.");
       setIsSubmitting(false);
       return;
     }
 
+    await recordStudentLoginActivity();
     router.push(getPostLoginRedirect(data.user, nextPath));
     router.refresh();
   }

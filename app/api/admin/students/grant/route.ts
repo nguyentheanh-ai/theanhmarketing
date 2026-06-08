@@ -13,6 +13,7 @@ import {
 } from "@/lib/security/validation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { invalidateAdminModules } from "@/services/adminDataService";
+import { logStudentActivity } from "@/services/activityLogService";
 import { createManualPaidOrder, markPaymentEmailError, markPaymentEmailSent } from "@/services/orderService";
 import { ensureStudentAccountForPaidOrder } from "@/services/studentAccountService";
 
@@ -28,8 +29,10 @@ export async function POST(request: Request) {
       return rateLimitResponse(rateLimit.resetAt);
     }
 
+    let adminActor: Awaited<ReturnType<typeof getCurrentAuth>>["user"] | null = null;
     if (isAuthGuardEnabled() || process.env.NODE_ENV !== "development") {
-      const { adminRole } = await getCurrentAuth();
+      const { adminRole, user } = await getCurrentAuth();
+      adminActor = user;
 
       if (!canAccessAdminRole(adminRole, ["owner", "editor"])) {
         return NextResponse.json(
@@ -152,10 +155,50 @@ export async function POST(request: Request) {
 
         if (result.ok && !result.skipped) {
           await markPaymentEmailSent(order.orderCode);
+          await logStudentActivity({
+            userId: studentAccount.userId,
+            studentEmail: email,
+            studentPhone: phone,
+            eventType: "payment_success_email_sent",
+            eventTitle: "Đã gửi email thanh toán thành công",
+            eventDescription: `Email cấp tài khoản đã gửi sau đơn ${order.orderCode}.`,
+            status: "success",
+            actorType: "admin",
+            actorId: adminActor?.id ?? null,
+            actorEmail: adminActor?.email ?? null,
+            metadata: { orderCode: order.orderCode, courseSlugs },
+          });
         } else {
           await markPaymentEmailError(order.orderCode, result.reason ?? "Payment success email was skipped.");
+          await logStudentActivity({
+            userId: studentAccount.userId,
+            studentEmail: email,
+            studentPhone: phone,
+            eventType: "payment_success_email_failed",
+            eventTitle: "Gửi email thanh toán thành công thất bại",
+            eventDescription: result.reason ?? "Payment success email was skipped.",
+            status: "failed",
+            actorType: "admin",
+            actorId: adminActor?.id ?? null,
+            actorEmail: adminActor?.email ?? null,
+            metadata: { orderCode: order.orderCode, courseSlugs },
+          });
         }
       }
+
+      await logStudentActivity({
+        userId: studentAccount.userId,
+        studentEmail: email,
+        studentPhone: phone,
+        eventType: "course_access_granted",
+        eventTitle: "Đã cấp quyền học viên",
+        eventDescription: `Cấp quyền qua đơn thủ công ${order.orderCode}.`,
+        status: "success",
+        actorType: "admin",
+        actorId: adminActor?.id ?? null,
+        actorEmail: adminActor?.email ?? null,
+        metadata: { orderCode: order.orderCode, courseSlugs },
+      });
 
       invalidateAdminModules(["leads", "orders", "students"]);
 

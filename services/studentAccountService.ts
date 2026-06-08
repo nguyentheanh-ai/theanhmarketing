@@ -1,5 +1,6 @@
 import { buildAutoStudentAccountCredentials } from "@/lib/auth/student-account";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { logStudentActivity } from "@/services/activityLogService";
 import type { PaymentOrder } from "@/services/orderService";
 
 type EnsureStudentAccountOptions = {
@@ -246,6 +247,18 @@ export async function ensureStudentAccountForPaidOrder(
     };
   }
 
+  await logStudentActivity({
+    userId: data.user?.id ?? null,
+    studentEmail: credentials.email,
+    studentPhone: order.phone,
+    eventType: "student_account_created",
+    eventTitle: "Đã tạo tài khoản học viên",
+    eventDescription: `Tài khoản được tạo sau khi đơn ${order.orderCode} đã thanh toán.`,
+    status: "success",
+    actorType: "system",
+    metadata: { orderCode: order.orderCode, courseSlug: order.courseSlug, courseTitle: order.courseTitle },
+  });
+
   return {
     ok: true,
     skipped: false,
@@ -404,6 +417,18 @@ export async function ensureStudentAccountForAccessGrant(
       reason: error.message,
     };
   }
+
+  await logStudentActivity({
+    userId: data.user?.id ?? null,
+    studentEmail: credentials.email,
+    studentPhone: input.phone,
+    eventType: "student_account_created",
+    eventTitle: "Đã tạo tài khoản học viên",
+    eventDescription: "Tài khoản được tạo từ thao tác cấp quyền của admin.",
+    status: "success",
+    actorType: "system",
+    metadata: { sourceOrderCode: input.sourceOrderCode ?? null, courseSlug: input.courseSlug, courseTitle: input.courseTitle },
+  });
 
   return {
     ok: true,
