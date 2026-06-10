@@ -20,6 +20,18 @@ test("Facebook Ads landing keeps source and published HTML synced", () => {
   assert.equal(published, source);
 });
 
+test("Facebook Ads landing keeps Vietnamese UTF-8 text readable", () => {
+  const source = read("public/ladipage/facebook-ads-2026.html");
+  const published = read("public/academy/facebook-ads-master-2026.html");
+  const mojibakePattern = /KhÃ|Ä|áº|á»|â€|Ã|Â/;
+
+  assert.doesNotMatch(source, mojibakePattern);
+  assert.doesNotMatch(published, mojibakePattern);
+  assert.match(source, /Khóa học <span class="hero-title-accent">Quảng cáo Facebook<\/span> Master 2026\./);
+  assert.match(source, /Đăng ký ngay - 399\.000đ/);
+  assert.match(source, /Quà tặng/);
+});
+
 test("Facebook Ads landing shows only 399K and 799K plan cards, with 799K as the selected primary offer", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
 
