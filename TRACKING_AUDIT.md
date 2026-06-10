@@ -100,6 +100,27 @@ docs/SUPABASE_TRACKING_ATTRIBUTION.sql
 
 This adds attribution columns to `leads` and `orders`, plus `orders.purchase_event_sent`.
 
+Production status:
+
+- Supabase project `vsxxgdzwtscuxcmjfckt` applied migration `tracking_attribution_meta_pixel_20260610` on 2026-06-10.
+- Verified production columns for `public.leads`, `public.orders`, and `orders.purchase_event_sent`.
+- Existing old orders are not backfilled as sent Purchase events, to avoid sending historical revenue as new Meta purchases.
+
+## Production deploy
+
+- Commit: `ac62003 fix: standardize meta tracking attribution`
+- Vercel production URL: `https://theanhmarketing-bsv8p4an4-theanhs-projects-509d0c97.vercel.app`
+- Alias: `https://www.theanhmarketing.com`
+- Production env `NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS` was removed after deploy. Runtime code also ignores this variable.
+
+Live smoke:
+
+- `/` returns 200 and includes only pixel `1315653423712065`.
+- `/academy/facebook-ads-master-2026.html` returns 200 and includes only pixel `1315653423712065`.
+- `/ladipage/facebook-ads-2026.html` returns 200 and includes only pixel `1315653423712065`.
+- `/ladipage/ai-master-x10-hieu-suat.html` returns 200 and includes only pixel `1315653423712065`.
+- `/api/payment/confirm` without API key returns 401.
+
 ## Dashboard va CSV
 
 Admin Growth OS tracking tab now includes campaign reporting:
@@ -145,5 +166,5 @@ Spend is currently `0` until a real Ads Insights spend source is connected. The 
 ## Rui ro con lai
 
 - Google Tag Manager remote container cannot be audited from local source. Local code only controls the configured GTM ID, not remote tags inside GTM UI.
-- Production database must run `docs/SUPABASE_TRACKING_ATTRIBUTION.sql` before every attribution field and `purchase_event_sent` can persist.
+- Meta Events Manager still needs a real Test Events run for browser + CAPI deduplication.
 - Real ad spend is not connected yet, so CPA/ROAS show `N/A` until a verified spend source is added.
