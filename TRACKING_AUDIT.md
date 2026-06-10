@@ -109,8 +109,7 @@ Production status:
 ## Production deploy
 
 - Commit: `ac62003 fix: standardize meta tracking attribution`
-- Vercel production URL: `https://theanhmarketing-bsv8p4an4-theanhs-projects-509d0c97.vercel.app`
-- Alias: `https://www.theanhmarketing.com`
+- Production alias: `https://www.theanhmarketing.com`
 - Production env `NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS` was removed after deploy. Runtime code also ignores this variable.
 
 Live smoke:
