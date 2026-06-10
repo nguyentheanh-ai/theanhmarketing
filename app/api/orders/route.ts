@@ -33,6 +33,10 @@ function determineLeadSource(order: PaymentOrder, landingPage?: string) {
   return page ? `LDP ${page}` : `LDP ${order.courseTitle || "Website"}`;
 }
 
+function isDatabaseLeadId(value?: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value ?? "").trim());
+}
+
 export async function POST(request: Request) {
   try {
     const rateLimit = checkRateLimit({
@@ -59,7 +63,14 @@ export async function POST(request: Request) {
       utmMedium?: string;
       utmCampaign?: string;
       utmContent?: string;
+      utmId?: string;
       utmTerm?: string;
+      campaignId?: string;
+      campaignName?: string;
+      adsetId?: string;
+      adId?: string;
+      adName?: string;
+      fbclid?: string;
       fbp?: string;
       fbc?: string;
       leadId?: string;
@@ -74,6 +85,25 @@ export async function POST(request: Request) {
     const ipAddress =
       request.headers.get("cf-connecting-ip") ?? forwardedFor.split(",")[0]?.trim() ?? "";
     const userAgent = request.headers.get("user-agent") ?? "";
+    const incomingLeadId = cleanText(body.leadId, 120);
+    const databaseLeadId = isDatabaseLeadId(incomingLeadId) ? incomingLeadId : "";
+    const attribution = {
+      utmSource: cleanText(body.utmSource, 120),
+      utmMedium: cleanText(body.utmMedium, 120),
+      utmCampaign: cleanText(body.utmCampaign, 160),
+      utmContent: cleanText(body.utmContent, 160),
+      utmId: cleanText(body.utmId, 160),
+      utmTerm: cleanText(body.utmTerm, 160),
+      campaignId: cleanText(body.campaignId, 120) || cleanText(body.utmId, 160),
+      campaignName: cleanText(body.campaignName, 200) || cleanText(body.utmCampaign, 160),
+      adsetId: cleanText(body.adsetId, 120),
+      adId: cleanText(body.adId, 120),
+      adName: cleanText(body.adName, 200),
+      fbclid: cleanText(body.fbclid, 220),
+      fbp: cleanText(body.fbp, 180),
+      fbc: cleanText(body.fbc, 220),
+      landingPage: cleanText(body.pageUrl, 500) || cleanText(body.landingPage, 160),
+    };
 
     if (!studentName || !email || !phone || !isValidEmail(email) || !isValidPhone(phone)) {
       return NextResponse.json(
@@ -96,6 +126,8 @@ export async function POST(request: Request) {
       courseSlug,
       courseSlugs,
       paymentPlan,
+      leadId: databaseLeadId || null,
+      attribution,
     });
 
     const remarketingNote = [
@@ -111,21 +143,29 @@ export async function POST(request: Request) {
       `UTM medium: ${cleanText(body.utmMedium, 120)}`,
       `UTM campaign: ${cleanText(body.utmCampaign, 160)}`,
       `UTM content: ${cleanText(body.utmContent, 160)}`,
+      `UTM id: ${cleanText(body.utmId, 160)}`,
       `UTM term: ${cleanText(body.utmTerm, 160)}`,
+      `campaign_id: ${attribution.campaignId}`,
+      `campaign_name: ${attribution.campaignName}`,
+      `adset_id: ${attribution.adsetId}`,
+      `ad_id: ${attribution.adId}`,
+      `ad_name: ${attribution.adName}`,
+      `fbclid: ${attribution.fbclid}`,
       `IP: ${cleanText(ipAddress, 80)}`,
       `fbp: ${cleanText(body.fbp, 180)}`,
       `fbc: ${cleanText(body.fbc, 220)}`,
-      `Lead ID: ${cleanText(body.leadId, 120)}`,
+      `Lead ID: ${incomingLeadId}`,
     ].join("\n");
 
     const leadSource = determineLeadSource(order, body.landingPage);
-    const leadSync = body.leadId
-      ? await updateLeadAdmin(cleanText(body.leadId, 120), {
+    const leadSync = databaseLeadId
+      ? await updateLeadAdmin(databaseLeadId, {
           name: studentName,
           email,
           phone,
           message: remarketingNote,
           source: leadSource,
+          attribution,
         })
       : await createLeadAdmin({
           name: studentName,
@@ -133,14 +173,15 @@ export async function POST(request: Request) {
           phone,
           message: remarketingNote,
           source: leadSource,
+          attribution,
         });
 
     if (!leadSync.ok) {
       console.warn("[orders] Remarketing lead sync failed:", leadSync.error);
     }
 
-    if (leadSync.ok && body.leadId) {
-      const updatedLeadSheetSync = await syncLeadByIdToGoogleSheet(cleanText(body.leadId, 120));
+    if (leadSync.ok && databaseLeadId) {
+      const updatedLeadSheetSync = await syncLeadByIdToGoogleSheet(databaseLeadId);
 
       if (!updatedLeadSheetSync.ok && !updatedLeadSheetSync.skipped) {
         console.warn("[orders] Google Sheets lead update sync failed:", {
@@ -176,10 +217,17 @@ export async function POST(request: Request) {
         utmMedium: cleanText(body.utmMedium, 120),
         utmCampaign: cleanText(body.utmCampaign, 160),
         utmContent: cleanText(body.utmContent, 160),
+        utmId: cleanText(body.utmId, 160),
         utmTerm: cleanText(body.utmTerm, 160),
+        campaignId: attribution.campaignId,
+        campaignName: attribution.campaignName,
+        adsetId: attribution.adsetId,
+        adId: attribution.adId,
+        adName: attribution.adName,
+        fbclid: attribution.fbclid,
         fbp: cleanText(body.fbp, 180),
         fbc: cleanText(body.fbc, 220),
-        leadId: cleanText(body.leadId, 120),
+        leadId: leadSync.ok ? leadSync.lead?.id ?? incomingLeadId : incomingLeadId,
         ipAddress,
         userAgent,
       });
@@ -236,6 +284,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       order,
+      leadId: leadSync.ok ? leadSync.lead?.id ?? null : null,
       ...(process.env.NODE_ENV === "development" ? { leadSync, metaLead } : {}),
     });
   } catch (error) {

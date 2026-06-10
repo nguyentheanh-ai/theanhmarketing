@@ -47,12 +47,6 @@ export function CartPageClient({ auth }: CartPageClientProps) {
 
     setMessage("");
     setIsCreatingOrder(true);
-    trackMarketingEvent("InitiateCheckout", {
-      content_ids: items.map((item) => item.slug),
-      content_name: items.map((item) => item.title).join(", "),
-      currency: "VND",
-      value: total,
-    });
 
     const response = await fetch("/api/orders/from-session", {
       method: "POST",
@@ -77,6 +71,15 @@ export function CartPageClient({ auth }: CartPageClientProps) {
     }
 
     clearCart();
+    trackMarketingEvent("InitiateCheckout", {
+      event_id: payload.order.orderCode,
+      order_id: payload.order.orderCode,
+      content_ids: items.map((item) => item.slug),
+      content_name: items.map((item) => item.title).join(", "),
+      content_type: "product",
+      currency: "VND",
+      value: total,
+    });
     router.push(`/thanh-toan/${payload.order.orderCode}`);
   }
 

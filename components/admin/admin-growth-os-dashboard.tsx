@@ -49,6 +49,18 @@ type ClickEventRow = {
   paymentStatus: string;
   pixelStatus: string;
   createdAt: string;
+  utmCampaign?: string;
+};
+
+type CampaignReportRow = {
+  campaignId: string;
+  campaignName: string;
+  leads: number;
+  paidOrders: number;
+  revenue: number;
+  spend: number;
+  cpa: number;
+  roas: number;
 };
 
 type DashboardSummaryData = {
@@ -268,6 +280,89 @@ function metricTrend(current: number, total: number) {
   return `${Math.round((current / total) * 100)}%`;
 }
 
+function campaignKeyFromAttribution(attribution?: LeadItem["attribution"] | PaymentOrder["attribution"]) {
+  const campaignId = attribution?.campaignId?.trim();
+  if (campaignId) return campaignId;
+
+  const campaignName = attribution?.campaignName?.trim() || attribution?.utmCampaign?.trim();
+  return campaignName || "organic/unknown";
+}
+
+function campaignNameFromAttribution(attribution?: LeadItem["attribution"] | PaymentOrder["attribution"]) {
+  return attribution?.campaignName?.trim() || attribution?.utmCampaign?.trim() || "organic/unknown";
+}
+
+function buildCampaignReport(leads: LeadItem[], orders: PaymentOrder[]): CampaignReportRow[] {
+  const rows = new Map<string, CampaignReportRow>();
+
+  function ensureRow(key: string, name: string) {
+    const existing = rows.get(key);
+    if (existing) return existing;
+
+    const row: CampaignReportRow = {
+      campaignId: key,
+      campaignName: name || key,
+      leads: 0,
+      paidOrders: 0,
+      revenue: 0,
+      spend: 0,
+      cpa: 0,
+      roas: 0,
+    };
+    rows.set(key, row);
+    return row;
+  }
+
+  for (const lead of leads) {
+    const key = campaignKeyFromAttribution(lead.attribution);
+    ensureRow(key, campaignNameFromAttribution(lead.attribution)).leads += 1;
+  }
+
+  for (const order of orders) {
+    const key = campaignKeyFromAttribution(order.attribution);
+    const row = ensureRow(key, campaignNameFromAttribution(order.attribution));
+    if (order.status === "paid") {
+      row.paidOrders += 1;
+      row.revenue += order.amount;
+    }
+  }
+
+  return [...rows.values()]
+    .map((row) => ({
+      ...row,
+      cpa: row.spend > 0 && row.paidOrders > 0 ? row.spend / row.paidOrders : 0,
+      roas: row.spend > 0 ? row.revenue / row.spend : 0,
+    }))
+    .sort((a, b) => b.revenue - a.revenue || b.paidOrders - a.paidOrders || b.leads - a.leads);
+}
+
+function downloadCampaignCsv(rows: CampaignReportRow[]) {
+  const headers = ["campaign_id", "campaign_name", "leads", "paid_orders", "lead_to_paid_rate", "revenue", "spend", "cpa", "roas"];
+  const csvRows = rows.map((row) => {
+    const rate = row.leads > 0 ? row.paidOrders / row.leads : 0;
+    return [
+      row.campaignId,
+      row.campaignName,
+      row.leads,
+      row.paidOrders,
+      rate.toFixed(4),
+      row.revenue,
+      row.spend,
+      Math.round(row.cpa),
+      row.roas.toFixed(4),
+    ];
+  });
+  const escapeCsv = (value: string | number) => `"${String(value).replace(/"/g, '""')}"`;
+  const csv = [headers, ...csvRows].map((row) => row.map(escapeCsv).join(",")).join("\r\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `campaign-orders-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 function topCounts(rows: ClickEventRow[], selector: (row: ClickEventRow) => string) {
   const counts = new Map<string, number>();
 
@@ -405,6 +500,10 @@ export function AdminGrowthOsDashboard({ orders, leads, students, courses }: Das
 
     return buildClickEventAnalytics(leads, orders);
   }, [activeTab, leads, orders]);
+  const campaignRows = useMemo(() => buildCampaignReport(leads, orders), [leads, orders]);
+  const handleExportCampaignCsv = useCallback(() => {
+    downloadCampaignCsv(campaignRows);
+  }, [campaignRows]);
 
   return (
     <div className="mx-auto max-w-[1480px]">
@@ -719,6 +818,55 @@ export function AdminGrowthOsDashboard({ orders, leads, students, courses }: Das
               tone="rose"
             />
           </div>
+
+          <Panel className="overflow-hidden">
+            <div className="flex flex-col gap-3 border-b border-white/10 p-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase text-slate-500">Campaign attribution</p>
+                <h2 className="mt-2 text-xl font-black text-white">Revenue by campaign</h2>
+              </div>
+              <button
+                type="button"
+                onClick={handleExportCampaignCsv}
+                className="rounded-md border border-sky-300/25 bg-sky-400/12 px-3 py-2 text-sm font-black text-sky-100 transition hover:bg-sky-400/20"
+              >
+                Export CSV
+              </button>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[980px] text-left text-sm">
+                <thead className="bg-white/[0.035] text-xs uppercase text-sky-200/70">
+                  <tr>
+                    <th className="px-4 py-3">Campaign</th>
+                    <th className="px-4 py-3">Lead</th>
+                    <th className="px-4 py-3">Paid orders</th>
+                    <th className="px-4 py-3">Lead to paid</th>
+                    <th className="px-4 py-3">Revenue</th>
+                    <th className="px-4 py-3">Spend</th>
+                    <th className="px-4 py-3">CPA</th>
+                    <th className="px-4 py-3">ROAS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {campaignRows.map((row) => (
+                    <tr key={row.campaignId} className="border-t border-white/8 align-top">
+                      <td className="px-4 py-4">
+                        <p className="font-bold text-white">{row.campaignName}</p>
+                        <p className="mt-1 font-mono text-xs text-slate-500">{row.campaignId}</p>
+                      </td>
+                      <td className="px-4 py-4 text-slate-300">{row.leads}</td>
+                      <td className="px-4 py-4 text-slate-300">{row.paidOrders}</td>
+                      <td className="px-4 py-4 text-slate-300">{metricTrend(row.paidOrders, row.leads)}</td>
+                      <td className="px-4 py-4 font-bold text-white">{formatVnd(row.revenue)}</td>
+                      <td className="px-4 py-4 text-slate-300">{formatVnd(row.spend)}</td>
+                      <td className="px-4 py-4 text-slate-300">{row.cpa ? formatVnd(row.cpa) : "N/A"}</td>
+                      <td className="px-4 py-4 text-slate-300">{row.roas ? row.roas.toFixed(2) : "N/A"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Panel>
 
           <div className="grid gap-4 xl:grid-cols-[0.75fr_0.75fr_1.5fr]">
             <Panel className="p-5">

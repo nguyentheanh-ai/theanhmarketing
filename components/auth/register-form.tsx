@@ -8,6 +8,7 @@ import type { Course } from "@/data/courses";
 import { clearCart, readCart, subscribeCart, type CartItem } from "@/lib/cart";
 import { getSafeNextPath } from "@/lib/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getClientAttribution } from "@/lib/tracking/client-attribution";
 import { trackMarketingEvent } from "@/lib/tracking/events";
 
 export function RegisterForm({ courses }: { courses: Course[] }) {
@@ -45,6 +46,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
     const interestedCourse = selectedCartSlugs.length > 0
       ? cartItems.map((item) => item.title).join(", ")
       : selectedCourse?.title ?? courseSlug;
+    const attribution = getClientAttribution();
     const supabase = createSupabaseBrowserClient();
 
     if (!supabase) {
@@ -82,6 +84,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
         email,
         message: `Đăng ký Growth Hub: ${interestedCourse}`,
         source: "signup",
+        attribution,
       }),
     });
     const leadData = (await leadResponse.json()) as {
@@ -97,9 +100,12 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
     }
 
     trackMarketingEvent("Lead", {
+      event_id: leadData.lead?.id,
       content_name: interestedCourse,
+      content_type: "product",
       method: "email",
       source: "signup",
+      ...attribution,
     });
 
     const orderResponse = await fetch("/api/orders", {
@@ -114,6 +120,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
         courseSlug,
         courseSlugs: orderCourseSlugs,
         leadId: leadData.lead?.id,
+        ...attribution,
       }),
     });
     const orderData = (await orderResponse.json()) as {
@@ -156,10 +163,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
     if (error) {
       setMessage(error.message);
     } else {
-      trackMarketingEvent("Lead", {
-        method: "google",
-        source: "google_auth",
-      });
+      setMessage("Đang chuyển sang Google để đăng nhập.");
     }
   }
 

@@ -33,6 +33,24 @@ export type GoogleSheetLeadRecord = {
   paymentMethod?: string | null;
   paidAt?: string | null;
   resendEmailCount?: number;
+  attribution?: {
+    utmSource?: string;
+    utmMedium?: string;
+    utmCampaign?: string;
+    utmContent?: string;
+    utmId?: string;
+    utmTerm?: string;
+    campaignId?: string;
+    campaignName?: string;
+    adsetId?: string;
+    adId?: string;
+    adName?: string;
+    fbclid?: string;
+    fbc?: string;
+    fbp?: string;
+    landingPage?: string;
+    source?: string;
+  };
 };
 
 function cleanEnvValue(value: string | undefined) {
@@ -172,6 +190,7 @@ export function buildGoogleSheetOrderPayload(order: PaymentOrder, options: Googl
   const paidAt = order.paidAt ? formatVietnamDateTime(order.paidAt) : "";
   const expiresAt = order.expiresAt ? formatVietnamDateTime(order.expiresAt) : "";
   const source = options.source ?? "Website";
+  const attribution = order.attribution;
   const orderItems = order.orderItems.map((item) => `${item.title} (${item.slug}) - ${item.price}`).join(" | ");
   const syncedAt = new Date().toISOString();
 
@@ -198,6 +217,20 @@ export function buildGoogleSheetOrderPayload(order: PaymentOrder, options: Googl
     paymentUrl,
     paidAt,
     source,
+    utmSource: attribution.utmSource,
+    utmMedium: attribution.utmMedium,
+    utmCampaign: attribution.utmCampaign,
+    utmContent: attribution.utmContent,
+    utmId: attribution.utmId,
+    utmTerm: attribution.utmTerm,
+    campaignId: attribution.campaignId,
+    campaignName: attribution.campaignName,
+    adsetId: attribution.adsetId,
+    adId: attribution.adId,
+    adName: attribution.adName,
+    "FB Click ID": attribution.fbclid,
+    "FBC": attribution.fbc,
+    "FBP": attribution.fbp,
     orderItems,
     syncedAt,
     "Created At": date,
@@ -214,6 +247,20 @@ export function buildGoogleSheetOrderPayload(order: PaymentOrder, options: Googl
     "Payment URL": paymentUrl,
     "Paid At": paidAt,
     Source: source,
+    "UTM Source": attribution.utmSource,
+    "UTM Medium": attribution.utmMedium,
+    "UTM Campaign": attribution.utmCampaign,
+    "UTM Content": attribution.utmContent,
+    "UTM ID": attribution.utmId,
+    "UTM Term": attribution.utmTerm,
+    "Campaign ID": attribution.campaignId,
+    "Campaign Name": attribution.campaignName,
+    "Adset ID": attribution.adsetId,
+    "Ad ID": attribution.adId,
+    "Ad Name": attribution.adName,
+    fbclid: attribution.fbclid,
+    fbc: attribution.fbc,
+    fbp: attribution.fbp,
     "Order Items": orderItems,
     "Synced At": syncedAt,
     "Mã đơn": order.orderCode,
@@ -238,6 +285,7 @@ export function buildGoogleSheetLeadPayload(lead: GoogleSheetLeadRecord, options
   const normalizedPhone = (lead.phone ?? "").replace(/\D/g, "");
   const orderCode = lead.orderCode ?? "";
   const dedupeKey = lead.id || orderCode || normalizedEmail || normalizedPhone;
+  const attribution = lead.attribution;
 
   return {
     entityType: "lead",
@@ -256,6 +304,21 @@ export function buildGoogleSheetLeadPayload(lead: GoogleSheetLeadRecord, options
     paymentMethod: lead.paymentMethod ?? "",
     paidAt: lead.paidAt ?? "",
     source: options.source ?? lead.source ?? "Website",
+    utmSource: attribution?.utmSource ?? "",
+    utmMedium: attribution?.utmMedium ?? "",
+    utmCampaign: attribution?.utmCampaign ?? "",
+    utmContent: attribution?.utmContent ?? "",
+    utmId: attribution?.utmId ?? "",
+    utmTerm: attribution?.utmTerm ?? "",
+    campaignId: attribution?.campaignId ?? "",
+    campaignName: attribution?.campaignName ?? "",
+    adsetId: attribution?.adsetId ?? "",
+    adId: attribution?.adId ?? "",
+    adName: attribution?.adName ?? "",
+    fbclid: attribution?.fbclid ?? "",
+    fbc: attribution?.fbc ?? "",
+    fbp: attribution?.fbp ?? "",
+    landingPage: attribution?.landingPage ?? "",
     note: lead.need ?? "",
     resendEmailCount: lead.resendEmailCount ?? 0,
     syncedAt: new Date().toISOString(),

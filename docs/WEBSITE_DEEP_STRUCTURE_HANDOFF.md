@@ -364,8 +364,9 @@ Current Pixel/CAPI knowledge:
 
 - Pixel/dataset ID and test event code should be loaded from env or Meta Events Manager when testing.
 - Do not hard-code access token, pixel token, or test event code in docs/code. Use env only.
-- Layout/browser Pixel supports multiple public IDs: primary `NEXT_PUBLIC_META_PIXEL_ID` plus comma-separated `NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS`. Production currently uses additional public Pixels `1315653423712065,1966683547571929` so Next-rendered landing pages match the static LadiPage HTML coverage.
-- Static sales landing HTML under `public/ladipage` and `public/academy` must keep browser Pixel, `Lead`/`InitiateCheckout`, `/api/orders`, and `_fbp`/`_fbc` forwarding. Guard this with `tests/meta-conversions-api.test.mjs`.
+- Layout/browser Pixel is standardized to the single primary Pixel `1315653423712065` (`Pixel 01 - Khoa hoc FB ADS 799.000d`). Do not re-enable `NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS` or secondary Pixels `1966683547571929`, `1297209809285103`, `2364261364083192`.
+- Static sales landing HTML under `public/ladipage` and `public/academy` must keep the single browser Pixel, `Lead` after successful form/order save, `InitiateCheckout` after real order code creation, `/api/orders`, `_fbp`/`_fbc`, `fbclid`, and UTM forwarding. Guard this with `tests/meta-conversions-api.test.mjs`.
+- Meta CAPI Purchase is server-side only after paid confirmation from SePay or `POST /api/payment/confirm`; it uses `event_id=order_code` and marks `orders.purchase_event_sent=true` after a successful Meta request. Apply `docs/SUPABASE_TRACKING_ATTRIBUTION.sql` before expecting attribution and purchase-event flags to persist.
 - If a Meta access token is pasted in chat/logs, rotate it after testing; never commit or document the token value.
 
 Important tests:

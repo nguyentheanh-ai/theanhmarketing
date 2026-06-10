@@ -58,7 +58,14 @@ export type MetaLeadEventInput = {
   utmMedium?: string;
   utmCampaign?: string;
   utmContent?: string;
+  utmId?: string;
   utmTerm?: string;
+  campaignId?: string;
+  campaignName?: string;
+  adsetId?: string;
+  adId?: string;
+  adName?: string;
+  fbclid?: string;
   fbp?: string;
   fbc?: string;
   leadId?: string;
@@ -73,6 +80,7 @@ export type MetaPurchaseEventInput = MetaLeadEventInput & {
 
 const DEFAULT_API_VERSION = "v25.0";
 const MAX_LOG_BODY_LENGTH = 800;
+const PRIMARY_META_PIXEL_ID = "1315653423712065";
 
 function cleanString(value?: string | null, maxLength = 500) {
   return String(value ?? "").trim().slice(0, maxLength);
@@ -135,6 +143,11 @@ function nowUnixSeconds() {
   return Math.floor(Date.now() / 1000);
 }
 
+function toUnixSeconds(value?: string | null) {
+  const timestamp = value ? Date.parse(value) : Number.NaN;
+  return Number.isFinite(timestamp) ? Math.floor(timestamp / 1000) : nowUnixSeconds();
+}
+
 function buildExternalId(input: MetaLeadEventInput) {
   const raw = input.orderCode || input.leadId || input.email || input.phone;
   return hashMetaValue(raw);
@@ -168,12 +181,20 @@ function buildBaseCustomData(input: MetaLeadEventInput): MetaCustomData {
     status: cleanString(input.status, 40) || undefined,
     value: typeof input.amount === "number" && Number.isFinite(input.amount) ? input.amount : undefined,
     currency: cleanString(input.currency, 10) || "VND",
+    content_type: "product",
     landing_page: cleanString(input.landingPage, 160) || undefined,
     utm_source: cleanString(input.utmSource, 120) || undefined,
     utm_medium: cleanString(input.utmMedium, 120) || undefined,
     utm_campaign: cleanString(input.utmCampaign, 160) || undefined,
     utm_content: cleanString(input.utmContent, 160) || undefined,
+    utm_id: cleanString(input.utmId, 160) || undefined,
     utm_term: cleanString(input.utmTerm, 160) || undefined,
+    campaign_id: cleanString(input.campaignId, 120) || undefined,
+    campaign_name: cleanString(input.campaignName, 200) || undefined,
+    adset_id: cleanString(input.adsetId, 120) || undefined,
+    ad_id: cleanString(input.adId, 120) || undefined,
+    ad_name: cleanString(input.adName, 200) || undefined,
+    fbclid: cleanString(input.fbclid, 220) || undefined,
   };
 }
 
@@ -184,14 +205,14 @@ export function buildMetaLeadEvent(input: MetaLeadEventInput, eventTime = nowUni
     event_name: "Lead",
     event_time: eventTime,
     action_source: "website",
-    event_id: input.orderCode ? `lead:${cleanString(input.orderCode, 80)}` : undefined,
+    event_id: cleanString(input.leadId, 120) || cleanString(input.orderCode, 80) || undefined,
     event_source_url: pageUrl || undefined,
     user_data: buildUserData(input),
     custom_data: buildBaseCustomData(input),
   };
 }
 
-export function buildMetaPurchaseEvent(input: MetaPurchaseEventInput, eventTime = nowUnixSeconds()): MetaServerEvent {
+export function buildMetaPurchaseEvent(input: MetaPurchaseEventInput, eventTime = toUnixSeconds(input.paidAt)): MetaServerEvent {
   const pageUrl = cleanUrl(input.pageUrl);
   const itemSlugs = (input.orderItems ?? [])
     .map((item) => cleanString(item.slug, 120))
@@ -201,7 +222,7 @@ export function buildMetaPurchaseEvent(input: MetaPurchaseEventInput, eventTime 
     event_name: "Purchase",
     event_time: eventTime,
     action_source: "website",
-    event_id: input.orderCode ? `purchase:${cleanString(input.orderCode, 80)}` : undefined,
+    event_id: cleanString(input.orderCode, 80) || undefined,
     event_source_url: pageUrl || undefined,
     user_data: buildUserData(input),
     custom_data: {
@@ -216,7 +237,7 @@ export function buildMetaPurchaseEvent(input: MetaPurchaseEventInput, eventTime 
 
 function getMetaConfig() {
   const accessToken = cleanString(process.env.META_CAPI_ACCESS_TOKEN, 2000);
-  const datasetId = normalizePixelId(process.env.META_CAPI_DATASET_ID) || normalizePixelId(process.env.NEXT_PUBLIC_META_PIXEL_ID);
+  const datasetId = normalizePixelId(PRIMARY_META_PIXEL_ID);
   const apiVersion = /^v\d+\.\d+$/.test(cleanString(process.env.META_CAPI_API_VERSION, 20))
     ? cleanString(process.env.META_CAPI_API_VERSION, 20)
     : DEFAULT_API_VERSION;

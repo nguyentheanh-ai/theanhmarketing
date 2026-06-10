@@ -57,7 +57,7 @@ test("Meta CAPI helper hashes customer data and keeps website lead ids out of Me
   assert.equal(normalizeMetaPhone("0904 160 809"), "84904160809");
   assert.equal(event.event_name, "Lead");
   assert.equal(event.action_source, "website");
-  assert.equal(event.event_id, "lead:TAM123");
+  assert.equal(event.event_id, "web.1779628866719.5636929147258652");
   assert.equal(event.event_source_url, "https://www.theanhmarketing.com/academy/facebook-ads-master-2026");
   assert.deepEqual(event.user_data.em, [hashMetaValue("student@example.com")]);
   assert.deepEqual(event.user_data.ph, [hashMetaValue("84904160809")]);
@@ -86,11 +86,9 @@ test("Meta CAPI helper sends numeric Meta lead ids only and skips network withou
   const previousToken = process.env.META_CAPI_ACCESS_TOKEN;
   const previousDataset = process.env.META_CAPI_DATASET_ID;
   const previousPixel = process.env.NEXT_PUBLIC_META_PIXEL_ID;
-  const previousAdditionalPixels = process.env.NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS;
   delete process.env.META_CAPI_ACCESS_TOKEN;
   delete process.env.META_CAPI_DATASET_ID;
   delete process.env.NEXT_PUBLIC_META_PIXEL_ID;
-  delete process.env.NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS;
 
   try {
     const result = await sendMetaLeadEvent({ orderCode: "LEAD-3", email: "lead@example.com" });
@@ -104,9 +102,36 @@ test("Meta CAPI helper sends numeric Meta lead ids only and skips network withou
     else process.env.META_CAPI_DATASET_ID = previousDataset;
     if (previousPixel === undefined) delete process.env.NEXT_PUBLIC_META_PIXEL_ID;
     else process.env.NEXT_PUBLIC_META_PIXEL_ID = previousPixel;
-    if (previousAdditionalPixels === undefined) delete process.env.NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS;
-    else process.env.NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS = previousAdditionalPixels;
   }
+});
+
+test("Meta Purchase uses paid time and raw order code for deduplication", () => {
+  const { buildMetaPurchaseEvent } = loadTsModule("lib/meta/conversions-api.ts");
+  const event = buildMetaPurchaseEvent({
+    orderCode: "TAMPAID123",
+    email: "paid@example.com",
+    phone: "0904160809",
+    courseTitle: "Pixel 01 - Khóa học FB ADS 799.000đ",
+    amount: 799000,
+    currency: "VND",
+    paidAt: "2026-06-10T08:00:00.000Z",
+    campaignId: "cmp-1",
+    adsetId: "as-1",
+    adId: "ad-1",
+    fbp: "fb.1.1779.abc",
+    fbc: "fb.1.1779.click",
+  });
+
+  assert.equal(event.event_name, "Purchase");
+  assert.equal(event.event_id, "TAMPAID123");
+  assert.equal(event.event_time, 1781078400);
+  assert.equal(event.custom_data.currency, "VND");
+  assert.equal(event.custom_data.value, 799000);
+  assert.equal(event.custom_data.content_type, "product");
+  assert.equal(event.custom_data.order_id, "TAMPAID123");
+  assert.equal(event.custom_data.campaign_id, "cmp-1");
+  assert.equal(event.custom_data.adset_id, "as-1");
+  assert.equal(event.custom_data.ad_id, "ad-1");
 });
 
 test("order and payment routes emit Meta Lead and Purchase events without blocking core flow", () => {
@@ -139,20 +164,20 @@ test("environment and browser pixel fallback are documented without hard-coded s
   const capiSource = read("lib/meta/conversions-api.ts");
 
   assert.match(envExample, /NEXT_PUBLIC_META_PIXEL_ID=/);
-  assert.match(envExample, /NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS=/);
-  assert.match(envExample, /META_CAPI_DATASET_ID=/);
+  assert.match(envExample, /NEXT_PUBLIC_META_PIXEL_ID=1315653423712065/);
+  assert.match(envExample, /META_CAPI_DATASET_ID=1315653423712065/);
   assert.match(envExample, /META_CAPI_ACCESS_TOKEN=/);
   assert.match(envExample, /META_CAPI_API_VERSION=v25\.0/);
   assert.match(envExample, /META_CAPI_TEST_EVENT_CODE=/);
   assert.match(marketingSettings, /NEXT_PUBLIC_META_PIXEL_ID/);
-  assert.match(marketingSettings, /NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS/);
+  assert.doesNotMatch(marketingSettings, /NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS/);
   assert.match(marketingSettings, /facebookPixelIds/);
-  assert.match(marketingSettings, /envFacebookPixelId/);
+  assert.match(marketingSettings, /PRIMARY_META_PIXEL_ID/);
   assert.match(marketingSettingsService, /normalizeMarketingSettings\(fallbackMarketingSettings\)/);
   assert.doesNotMatch(capiSource, /EAA[A-Za-z0-9_-]{20,}/);
 });
 
-test("all sales landing surfaces include browser Pixel and pass fbp/fbc into order CAPI", () => {
+test("all sales landing surfaces include only primary browser Pixel and pass attribution into order CAPI", () => {
   const marketingScripts = read("components/site/marketing-scripts.tsx");
   const aiMasterSource = read("public/ladipage/ai-master-x10-hieu-suat.html");
   const aiMasterPublished = read("public/academy/ai-master-x10-hieu-suat.html");
@@ -165,18 +190,22 @@ test("all sales landing surfaces include browser Pixel and pass fbp/fbc into ord
     facebookAdsPublished,
   ];
 
-  assert.match(marketingScripts, /facebookPixelIds\.map/);
-  assert.match(marketingScripts, /fbq\('init', '\$\{pixelId\}'\)/);
-  assert.match(marketingScripts, /facebook\.com\/tr\?id=\$\{pixelId\}&ev=PageView/);
+  assert.match(marketingScripts, /PRIMARY_META_PIXEL_ID/);
+  assert.match(marketingScripts, /fbq\('init', '\$\{PRIMARY_META_PIXEL_ID\}'\)/);
+  assert.match(marketingScripts, /facebook\.com\/tr\?id=\$\{PRIMARY_META_PIXEL_ID\}&ev=PageView/);
 
   for (const html of staticLandingPages) {
     assert.match(html, /connect\.facebook\.net\/en_US\/fbevents\.js/);
     assert.match(html, /fbq\(["']init["'], ["']1315653423712065["']\)/);
+    assert.doesNotMatch(html, /1966683547571929|1297209809285103|2364261364083192/);
     assert.match(html, /fbq\(["']track["'], ["']PageView["']\)/);
     assert.match(html, /(?:fbq\(["']track["'], ["']Lead["']|track\(["']Lead["'])/);
     assert.match(html, /(?:fbq\(["']track["'], ["']InitiateCheckout["']|track\(["']InitiateCheckout["'])/);
     assert.match(html, /\/api\/orders/);
-    assert.match(html, /fbp:\s*getCookie\(["']_fbp["']\)/);
-    assert.match(html, /fbc:\s*getCookie\(["']_fbc["']\)/);
+    assert.match(html, /fbp:\s*attribution\.fbp/);
+    assert.match(html, /fbc:\s*attribution\.fbc/);
+    assert.match(html, /fb\.1\./);
+    assert.match(html, /utmId:/);
+    assert.match(html, /adId:/);
   }
 });

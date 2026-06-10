@@ -2,6 +2,7 @@ import { fallbackLeads } from "@/data/platform";
 import { syncLeadToGoogleSheet } from "@/lib/notifications/google-sheets";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { attributionToDbColumns, normalizeAttribution, type Attribution, type AttributionInput } from "@/lib/tracking/attribution";
 import { logStudentActivity } from "@/services/activityLogService";
 import { getPaymentOrders, type PaymentOrder } from "@/services/orderService";
 
@@ -11,6 +12,7 @@ export type LeadInput = {
   email?: string;
   message?: string;
   source?: string;
+  attribution?: AttributionInput;
 };
 
 export const leadSaleStatuses = ["Chưa liên hệ", "Đã liên hệ", "Đã liên hệ lần 2", "Đã liên hệ lần 3", "K nhu cầu"] as const;
@@ -43,6 +45,7 @@ export type LeadItem = {
   paidAt?: string | null;
   resendEmailCount: number;
   lastResendEmailAt?: string | null;
+  attribution?: Attribution;
 };
 
 export type LeadEmailLog = {
@@ -73,6 +76,21 @@ type DbLead = {
   delete_reason?: string | null;
   created_at: string | null;
   updated_at?: string | null;
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  utm_content?: string | null;
+  utm_id?: string | null;
+  utm_term?: string | null;
+  campaign_id?: string | null;
+  campaign_name?: string | null;
+  adset_id?: string | null;
+  ad_id?: string | null;
+  ad_name?: string | null;
+  fbclid?: string | null;
+  fbc?: string | null;
+  fbp?: string | null;
+  landing_page?: string | null;
 };
 
 type DbLeadEmailLog = {
@@ -87,7 +105,7 @@ type DbLeadEmailLog = {
 };
 
 const leadSelectFields =
-  "id,name,phone,email,message,source,status,sale_status,google_sheet_synced_at,google_sheet_row_id,google_sheet_sync_error,deleted_at,delete_after,delete_reason,created_at,updated_at";
+  "id,name,phone,email,message,source,status,sale_status,google_sheet_synced_at,google_sheet_row_id,google_sheet_sync_error,deleted_at,delete_after,delete_reason,created_at,updated_at,utm_source,utm_medium,utm_campaign,utm_content,utm_id,utm_term,campaign_id,campaign_name,adset_id,ad_id,ad_name,fbclid,fbc,fbp,landing_page";
 const fallbackLeadSelectFields = "id,name,phone,email,message,source,created_at";
 const leadEmailLogSelectFields = "id,lead_id,order_code,email,template,status,error_message,created_at";
 const orderOnlyLeadIdPrefix = "order:";
@@ -214,7 +232,28 @@ function buildLeadFromOrder(order: PaymentOrder): LeadItem {
     paidAt: order.paidAt,
     resendEmailCount: 0,
     lastResendEmailAt: null,
+    attribution: order.attribution,
   };
+}
+
+function mapLeadAttribution(row: DbLead): Attribution {
+  return normalizeAttribution({
+    utmSource: row.utm_source,
+    utmMedium: row.utm_medium,
+    utmCampaign: row.utm_campaign,
+    utmContent: row.utm_content,
+    utmId: row.utm_id,
+    utmTerm: row.utm_term,
+    campaignId: row.campaign_id,
+    campaignName: row.campaign_name,
+    adsetId: row.adset_id,
+    adId: row.ad_id,
+    adName: row.ad_name,
+    fbclid: row.fbclid,
+    fbc: row.fbc,
+    fbp: row.fbp,
+    landingPage: row.landing_page,
+  });
 }
 
 function mapEmailLog(row: DbLeadEmailLog): LeadEmailLog {
@@ -268,6 +307,7 @@ function mapDbLead(row: DbLead, orders: PaymentOrder[], emailLogsByLeadId: Map<s
     courseTitle: matchedOrder?.courseTitle ?? (getLeadCourseTitleFromNote(row.message ?? "") || null),
     amountLabel: matchedOrder?.amountLabel ?? null,
     paidAt: matchedOrder?.paidAt ?? null,
+    attribution: matchedOrder?.attribution ?? mapLeadAttribution(row),
     ...logSummary,
   };
 }
@@ -336,12 +376,14 @@ export async function createLead(input: LeadInput) {
     return { ok: false, fallback: true, error: "Supabase env is missing" };
   }
 
+  const attribution = normalizeAttribution(input.attribution);
   const { error } = await supabase.from("leads").insert({
     name: input.name,
     phone: input.phone ?? "",
     email: input.email ?? "",
     message: input.message ?? "",
-    source: input.source ?? "Website",
+    source: input.source ?? attribution.source,
+    ...attributionToDbColumns(attribution),
   });
 
   if (error) {
@@ -358,15 +400,23 @@ export async function createLeadAdmin(input: LeadInput) {
     return { ok: false, fallback: true, error: "Supabase env is missing" };
   }
 
+  const attribution = normalizeAttribution(input.attribution);
   const insertPayload = {
     name: input.name,
+    full_name: input.name,
     phone: input.phone ?? "",
     email: input.email ?? "",
     message: input.message ?? "",
-    source: input.source ?? "Website",
+    source: input.source ?? attribution.source,
     status: "new",
     sale_status: "Chưa liên hệ",
   };
+
+  Object.assign(insertPayload, {
+    lead_status: "new",
+    payment_status: "unpaid",
+    ...attributionToDbColumns(attribution),
+  });
 
   let insert = await supabase.from("leads").insert(insertPayload).select(leadSelectFields).single();
 
@@ -378,7 +428,7 @@ export async function createLeadAdmin(input: LeadInput) {
         phone: input.phone ?? "",
         email: input.email ?? "",
         message: input.message ?? "",
-        source: input.source ?? "Website",
+        source: input.source ?? attribution.source,
       })
       .select(fallbackLeadSelectFields)
       .single();
@@ -427,6 +477,7 @@ export async function updateLeadAdmin(
   patch: Partial<Pick<LeadInput, "name" | "phone" | "email" | "message" | "source">> & {
     saleStatus?: LeadSaleStatus;
     status?: string;
+    attribution?: AttributionInput;
   },
 ) {
   const supabase = createSupabaseAdminClient();
@@ -435,7 +486,7 @@ export async function updateLeadAdmin(
     return { ok: false, error: "Missing Supabase admin client" };
   }
 
-  const dbPatch: Record<string, string> = {};
+  const dbPatch: Record<string, string | null> = {};
 
   if (patch.name !== undefined) dbPatch.name = patch.name;
   if (patch.phone !== undefined) dbPatch.phone = patch.phone ?? "";
@@ -444,6 +495,9 @@ export async function updateLeadAdmin(
   if (patch.source !== undefined) dbPatch.source = patch.source ?? "Website";
   if (patch.status !== undefined) dbPatch.status = patch.status;
   if (patch.saleStatus !== undefined) dbPatch.sale_status = patch.saleStatus;
+  if (patch.attribution !== undefined) {
+    Object.assign(dbPatch, attributionToDbColumns(normalizeAttribution(patch.attribution)));
+  }
 
   const previous = await supabase.from("leads").select(leadSelectFields).eq("id", leadId).maybeSingle();
   const { data, error } = await supabase.from("leads").update(dbPatch).eq("id", leadId).select(leadSelectFields).single();

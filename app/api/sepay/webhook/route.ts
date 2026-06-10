@@ -11,7 +11,12 @@ import { logSecurityEvent } from "@/lib/security/audit-log";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import { invalidateAdminModules } from "@/services/adminDataService";
 import { logStudentActivity } from "@/services/activityLogService";
-import { confirmOrderFromSepay, markPaymentEmailError, markPaymentEmailSent } from "@/services/orderService";
+import {
+  confirmOrderFromSepay,
+  markPaymentEmailError,
+  markPaymentEmailSent,
+  markPurchaseEventSent,
+} from "@/services/orderService";
 import { ensureStudentAccountForPaidOrder } from "@/services/studentAccountService";
 import { notifyStudentPortalProvisioning } from "@/services/studentPortalProvisioningService";
 import { siteConfig } from "@/data/site";
@@ -74,8 +79,9 @@ export async function POST(request: Request) {
       | Awaited<ReturnType<typeof notifyStudentPortalProvisioning>>
       | null = null;
 
-    if (!confirmation.wasAlreadyPaid) {
+    if (!confirmation.wasAlreadyPaid && !confirmation.order.purchaseEventSent) {
       try {
+        const eventSourceUrl = `${siteConfig.url}/thanh-toan/${encodeURIComponent(confirmation.order.orderCode)}`;
         metaPurchase = await sendMetaPurchaseEvent({
           orderCode: confirmation.order.orderCode,
           studentName: confirmation.order.studentName,
@@ -86,10 +92,33 @@ export async function POST(request: Request) {
           amount: confirmation.order.amount,
           currency: confirmation.order.currency,
           status: confirmation.order.status,
-          pageUrl: `${siteConfig.url}/thanh-toan/${encodeURIComponent(confirmation.order.orderCode)}`,
+          pageUrl: eventSourceUrl,
+          landingPage: confirmation.order.attribution.landingPage || eventSourceUrl,
+          utmSource: confirmation.order.attribution.utmSource,
+          utmMedium: confirmation.order.attribution.utmMedium,
+          utmCampaign: confirmation.order.attribution.utmCampaign,
+          utmContent: confirmation.order.attribution.utmContent,
+          utmId: confirmation.order.attribution.utmId,
+          utmTerm: confirmation.order.attribution.utmTerm,
+          campaignId: confirmation.order.attribution.campaignId,
+          campaignName: confirmation.order.attribution.campaignName,
+          adsetId: confirmation.order.attribution.adsetId,
+          adId: confirmation.order.attribution.adId,
+          adName: confirmation.order.attribution.adName,
+          fbclid: confirmation.order.attribution.fbclid,
+          fbp: confirmation.order.attribution.fbp,
+          fbc: confirmation.order.attribution.fbc,
           paidAt: confirmation.order.paidAt,
           orderItems: confirmation.order.orderItems,
         });
+
+        if (metaPurchase.ok && !metaPurchase.skipped) {
+          const markResult = await markPurchaseEventSent(confirmation.order.orderCode);
+
+          if (!markResult.ok) {
+            console.warn("[sepay] Could not mark Purchase event as sent:", markResult.error);
+          }
+        }
 
         if (!metaPurchase.ok && !metaPurchase.skipped) {
           console.warn("[sepay] Meta Purchase event failed:", {

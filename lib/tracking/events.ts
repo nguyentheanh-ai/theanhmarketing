@@ -21,10 +21,17 @@ function isBrowser() {
   return typeof window !== "undefined";
 }
 
+function getEventId(payload: MarketingEventPayload) {
+  const eventId = payload.event_id ?? payload.eventID;
+  return typeof eventId === "string" || typeof eventId === "number" ? String(eventId) : "";
+}
+
 export function trackMarketingEvent(eventName: MarketingEventName, payload: MarketingEventPayload = {}) {
   if (!isBrowser()) {
     return;
   }
+
+  const eventId = getEventId(payload);
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
@@ -37,7 +44,11 @@ export function trackMarketingEvent(eventName: MarketingEventName, payload: Mark
   }
 
   if (typeof window.fbq === "function") {
-    window.fbq("track", eventName, payload);
+    if (eventId) {
+      window.fbq("track", eventName, payload, { eventID: eventId });
+    } else {
+      window.fbq("track", eventName, payload);
+    }
   }
 }
 

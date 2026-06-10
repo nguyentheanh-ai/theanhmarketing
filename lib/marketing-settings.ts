@@ -16,6 +16,9 @@ export type MarketingSettings = {
   gtmId: string;
 };
 
+export const PRIMARY_META_PIXEL_ID = "1315653423712065";
+const RETIRED_META_PIXEL_IDS = new Set(["1966683547571929", "1297209809285103", "2364261364083192"]);
+
 export const fallbackMarketingSettings: MarketingSettings = {
   seoTitle: "The Anh Marketing | AI Performance Marketing System",
   seoDescription:
@@ -45,15 +48,21 @@ function normalizePixelId(value?: string) {
   return /^\d{6,32}$/.test(id) ? id : "";
 }
 
-function normalizePixelIds(values: Array<string | undefined>) {
-  return Array.from(
-    new Set(
-      values
-        .flatMap((value) => String(value ?? "").split(","))
-        .map((value) => normalizePixelId(value))
-        .filter(Boolean),
-    ),
-  );
+function getPrimaryPixelId(...values: Array<string | undefined>) {
+  const configuredIds = values
+    .flatMap((value) => String(value ?? "").split(","))
+    .map((value) => normalizePixelId(value))
+    .filter(Boolean);
+
+  if (configuredIds.some((id) => id === PRIMARY_META_PIXEL_ID)) {
+    return PRIMARY_META_PIXEL_ID;
+  }
+
+  if (configuredIds.some((id) => !RETIRED_META_PIXEL_IDS.has(id))) {
+    return PRIMARY_META_PIXEL_ID;
+  }
+
+  return PRIMARY_META_PIXEL_ID;
 }
 
 function normalizeGaId(value?: string) {
@@ -96,16 +105,14 @@ export function normalizeMarketingSettings(value: Partial<MarketingSettings> | n
     ...(value ?? {}),
   };
 
-  const facebookPixelId = normalizePixelId(merged.facebookPixelId);
-  const envFacebookPixelId = normalizePixelId(process.env.NEXT_PUBLIC_META_PIXEL_ID);
-  const facebookPixelIds = normalizePixelIds([
-    facebookPixelId,
-    envFacebookPixelId,
-    process.env.NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS,
-  ]);
+  const effectiveFacebookPixelId = getPrimaryPixelId(
+    merged.facebookPixelId,
+    process.env.NEXT_PUBLIC_META_PIXEL_ID,
+    process.env.META_PIXEL_ID,
+  );
+  const facebookPixelIds = effectiveFacebookPixelId ? [effectiveFacebookPixelId] : [];
   const gaMeasurementId = normalizeGaId(merged.gaMeasurementId);
   const gtmId = normalizeGtmId(merged.gtmId);
-  const effectiveFacebookPixelId = facebookPixelIds[0] || "";
 
   return {
     seoTitle: String(merged.seoTitle || fallbackMarketingSettings.seoTitle).trim().slice(0, 90),

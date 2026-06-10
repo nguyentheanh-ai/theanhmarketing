@@ -1,14 +1,15 @@
 /* eslint-disable @next/next/next-script-for-ga */
 import { Suspense } from "react";
 import type { MarketingSettings } from "@/lib/marketing-settings";
+import { PRIMARY_META_PIXEL_ID } from "@/lib/marketing-settings";
 import { getCspNonce } from "@/lib/security/nonce";
 import { TrackingPageView } from "@/components/site/tracking-page-view";
 
 export async function MarketingScripts({ settings }: { settings: MarketingSettings }) {
   const nonce = await getCspNonce();
   const trackingEnabled = settings.trackingEnabled;
-  const facebookPixelIds = settings.facebookPixelIds.length > 0 ? settings.facebookPixelIds : [settings.facebookPixelId].filter(Boolean);
-  const hasFacebookPixel = trackingEnabled && settings.facebookPixelEnabled && facebookPixelIds.length > 0;
+  const facebookPixelId = settings.facebookPixelId || PRIMARY_META_PIXEL_ID;
+  const hasFacebookPixel = trackingEnabled && settings.facebookPixelEnabled && facebookPixelId === PRIMARY_META_PIXEL_ID;
   const hasGa = trackingEnabled && settings.gaEnabled && settings.gaMeasurementId;
   const hasGtm = trackingEnabled && settings.gtmEnabled && settings.gtmId;
 
@@ -67,7 +68,7 @@ n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
-${facebookPixelIds.map((pixelId) => `fbq('init', '${pixelId}');`).join("\n")}
+fbq('init', '${PRIMARY_META_PIXEL_ID}');
 `,
           }}
         />
@@ -88,20 +89,18 @@ ${facebookPixelIds.map((pixelId) => `fbq('init', '${pixelId}');`).join("\n")}
           />
         </noscript>
       ) : null}
-      {hasFacebookPixel
-        ? facebookPixelIds.map((pixelId) => (
-            <noscript key={pixelId}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                alt=""
-                height="1"
-                src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
-                style={{ display: "none" }}
-                width="1"
-              />
-            </noscript>
-          ))
-        : null}
+      {hasFacebookPixel ? (
+        <noscript>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            alt=""
+            height="1"
+            src={`https://www.facebook.com/tr?id=${PRIMARY_META_PIXEL_ID}&ev=PageView&noscript=1`}
+            style={{ display: "none" }}
+            width="1"
+          />
+        </noscript>
+      ) : null}
     </>
   );
 }

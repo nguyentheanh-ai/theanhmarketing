@@ -2,25 +2,11 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { getClientAttribution } from "@/lib/tracking/client-attribution";
+import { trackMarketingEvent } from "@/lib/tracking/events";
 
 const COURSE_SLUG = "bo-agent-kit-x10-hieu-suat-cong-viec";
 const PAYMENT_PLAN = "agent-kit-ads-359";
-
-function getCookieValue(name: string) {
-  if (typeof document === "undefined") {
-    return "";
-  }
-
-  return (
-    document.cookie
-      .split(";")
-      .map((item) => item.trim())
-      .find((item) => item.startsWith(`${name}=`))
-      ?.split("=")
-      .slice(1)
-      .join("=") ?? ""
-  );
-}
 
 export function AgentKitCheckoutForm() {
   const router = useRouter();
@@ -33,6 +19,7 @@ export function AgentKitCheckoutForm() {
     setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
+    const attribution = getClientAttribution();
     const payload = {
       studentName: String(formData.get("studentName") || "").trim(),
       email: String(formData.get("email") || "").trim(),
@@ -42,13 +29,7 @@ export function AgentKitCheckoutForm() {
       landingPage: "academy/bo-kit-agent-doanh-nghiep",
       pageUrl: window.location.href,
       referrer: document.referrer,
-      utmSource: new URLSearchParams(window.location.search).get("utm_source") || "",
-      utmMedium: new URLSearchParams(window.location.search).get("utm_medium") || "",
-      utmCampaign: new URLSearchParams(window.location.search).get("utm_campaign") || "",
-      utmContent: new URLSearchParams(window.location.search).get("utm_content") || "",
-      utmTerm: new URLSearchParams(window.location.search).get("utm_term") || "",
-      fbp: decodeURIComponent(getCookieValue("_fbp")),
-      fbc: decodeURIComponent(getCookieValue("_fbc")),
+      ...attribution,
     };
 
     if (!payload.studentName || !payload.email || !payload.phone) {
@@ -66,12 +47,31 @@ export function AgentKitCheckoutForm() {
       const result = (await response.json()) as {
         ok?: boolean;
         message?: string;
+        leadId?: string | null;
         order?: { orderCode?: string };
       };
 
       if (!response.ok || !result.ok || !result.order?.orderCode) {
         throw new Error(result.message || "Chưa tạo được đơn thanh toán.");
       }
+
+      trackMarketingEvent("Lead", {
+        event_id: result.leadId || result.order.orderCode,
+        content_name: "Bo Agent Kit X10 Hieu Suat Cong Viec",
+        content_type: "product",
+        value: 359000,
+        currency: "VND",
+        ...attribution,
+      });
+      trackMarketingEvent("InitiateCheckout", {
+        event_id: result.order.orderCode,
+        order_id: result.order.orderCode,
+        content_name: "Bo Agent Kit X10 Hieu Suat Cong Viec",
+        content_type: "product",
+        value: 359000,
+        currency: "VND",
+        ...attribution,
+      });
 
       router.push(`/thanh-toan/${encodeURIComponent(result.order.orderCode)}`);
     } catch (error) {

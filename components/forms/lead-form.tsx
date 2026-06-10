@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { getClientAttribution } from "@/lib/tracking/client-attribution";
+import { trackMarketingEvent } from "@/lib/tracking/events";
 
 type LeadFormProps = {
   source: string;
@@ -20,6 +22,7 @@ export function LeadForm({ source, submitLabel = "Gửi thông tin" }: LeadFormP
         setIsSubmitting(true);
 
         const formData = new FormData(event.currentTarget);
+        const attribution = getClientAttribution();
         const response = await fetch("/api/leads", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -29,9 +32,10 @@ export function LeadForm({ source, submitLabel = "Gửi thông tin" }: LeadFormP
             email: String(formData.get("email") ?? ""),
             message: String(formData.get("need") ?? ""),
             source,
+            attribution,
           }),
         });
-        const result = (await response.json()) as { ok?: boolean };
+        const result = (await response.json()) as { ok?: boolean; lead?: { id?: string } };
 
         setIsSubmitting(false);
         setMessage(
@@ -41,6 +45,12 @@ export function LeadForm({ source, submitLabel = "Gửi thông tin" }: LeadFormP
         );
 
         if (response.ok && result.ok) {
+          trackMarketingEvent("Lead", {
+            event_id: result.lead?.id,
+            content_name: source,
+            content_type: "product",
+            ...attribution,
+          });
           event.currentTarget.reset();
         }
       }}

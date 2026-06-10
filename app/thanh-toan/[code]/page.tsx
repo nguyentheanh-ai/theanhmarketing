@@ -12,6 +12,7 @@ import {
   getSepayConfig,
   isSepayConfigured,
 } from "@/lib/payments/sepay";
+import { normalizeAttribution } from "@/lib/tracking/attribution";
 import { getPaymentOrder, type PaymentOrder } from "@/services/orderService";
 
 export const dynamic = "force-dynamic";
@@ -124,6 +125,7 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
   if (normalizedCode === "AGENTKITDEMO") {
     return {
       id: "local-agent-kit-demo",
+      leadId: null,
       orderCode: "AGENTKITDEMO",
       studentName: "Khách đăng ký demo",
       email: "demo@gmail.com",
@@ -149,12 +151,15 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
       ],
       paymentEmailSentAt: null,
       paymentEmailLastError: null,
+      purchaseEventSent: false,
+      attribution: normalizeAttribution(),
     };
   }
 
   if (normalizedCode === "AIMASTERX10DEMO") {
     return {
       id: "local-ai-master-x10-demo",
+      leadId: null,
       orderCode: "AIMASTERX10DEMO",
       studentName: "Khách đăng ký demo",
       email: "demo@gmail.com",
@@ -180,6 +185,8 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
       ],
       paymentEmailSentAt: null,
       paymentEmailLastError: null,
+      purchaseEventSent: false,
+      attribution: normalizeAttribution(),
     };
   }
 

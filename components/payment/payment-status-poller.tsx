@@ -34,7 +34,6 @@ export function PaymentStatusPoller({
   const [order, setOrder] = useState(initialOrder);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const checkoutTrackedRef = useRef(false);
-  const purchaseTrackedRef = useRef(false);
   const isLight = variant === "light";
 
   const countdownTarget = useMemo(() => {
@@ -61,20 +60,12 @@ export function PaymentStatusPoller({
 
     if (!checkoutTrackedRef.current) {
       checkoutTrackedRef.current = true;
-      trackMarketingEvent("InitiateCheckout", {
-        content_ids: getContentIds(order),
-        content_name: order.courseTitle,
-        content_type: "product",
-        currency: order.currency || "VND",
-        transaction_id: order.orderCode,
-        value: order.amount,
-      });
-    }
-
-    if (order.status === "paid") {
-      if (!purchaseTrackedRef.current) {
-        purchaseTrackedRef.current = true;
-        trackMarketingEvent("Purchase", {
+      const checkoutEventKey = `tam:initiate-checkout:${order.orderCode}`;
+      if (!window.sessionStorage.getItem(checkoutEventKey)) {
+        window.sessionStorage.setItem(checkoutEventKey, "1");
+        trackMarketingEvent("InitiateCheckout", {
+          event_id: order.orderCode,
+          order_id: order.orderCode,
           content_ids: getContentIds(order),
           content_name: order.courseTitle,
           content_type: "product",
@@ -83,6 +74,9 @@ export function PaymentStatusPoller({
           value: order.amount,
         });
       }
+    }
+
+    if (order.status === "paid") {
       const redirectTimer = window.setTimeout(() => {
         router.push("/dashboard");
       }, 4500);
