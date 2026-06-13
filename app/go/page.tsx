@@ -4,7 +4,7 @@ import { EmailOpenClient } from "@/components/site/email-open-client";
 import { getAllowedEmailLinkTarget } from "@/lib/notifications/email-link-bridge";
 
 export const metadata: Metadata = {
-  title: "Mo lien ket",
+  title: "Mở liên kết",
   robots: {
     index: false,
     follow: false,
@@ -24,13 +24,13 @@ export default async function EmailOpenPage({ searchParams }: EmailOpenPageProps
       <main className="min-h-screen bg-[#080808] px-5 py-16 text-white">
         <section className="mx-auto max-w-xl rounded-2xl border border-white/10 bg-white/[0.06] p-7">
           <p className="text-sm font-black uppercase tracking-[0.18em] text-sky-200">The Anh Marketing</p>
-          <h1 className="mt-4 text-3xl font-black">Lien ket khong hop le</h1>
+          <h1 className="mt-4 text-3xl font-black">Liên kết không hợp lệ</h1>
           <p className="mt-4 text-sm leading-7 text-white/70">
-            Link trong email khong nam trong danh sach duoc phep mo. Anh/chi vui long quay lai email hoac lien he
-            The Anh Marketing de duoc ho tro.
+            Link trong email không nằm trong danh sách được phép mở. Anh/chị vui lòng quay lại email hoặc liên hệ
+            The Anh Marketing để được hỗ trợ.
           </p>
           <Link className="mt-6 inline-flex rounded-xl bg-sky-400 px-5 py-3 text-sm font-black text-slate-950" href="/">
-            Ve trang chu
+            Về trang chủ
           </Link>
         </section>
       </main>
@@ -42,9 +42,9 @@ export default async function EmailOpenPage({ searchParams }: EmailOpenPageProps
       <EmailOpenClient targetUrl={targetUrl} />
       <section className="mx-auto max-w-xl rounded-2xl border border-white/10 bg-white/[0.06] p-7">
         <p className="text-sm font-black uppercase tracking-[0.18em] text-sky-200">The Anh Marketing</p>
-        <h1 className="mt-4 text-3xl font-black">Dang mo lien ket</h1>
+        <h1 className="mt-4 text-3xl font-black">Đang mở liên kết</h1>
         <p className="mt-4 text-sm leading-7 text-white/70">
-          He thong dang mo lien ket an toan tu email. Neu trinh duyet khong tu chuyen, anh/chi bam nut ben duoi.
+          Hệ thống đang mở liên kết an toàn từ email. Nếu trình duyệt không tự chuyển, anh/chị bấm nút bên dưới.
         </p>
         <a
           className="mt-6 inline-flex rounded-xl bg-sky-400 px-5 py-3 text-sm font-black text-slate-950"
@@ -52,7 +52,7 @@ export default async function EmailOpenPage({ searchParams }: EmailOpenPageProps
           rel="noopener noreferrer"
           target="_blank"
         >
-          Mo lien ket
+          Mở liên kết
         </a>
         <p className="mt-5 break-all rounded-xl border border-white/10 bg-black/30 p-4 text-xs leading-6 text-white/65">
           {targetUrl}

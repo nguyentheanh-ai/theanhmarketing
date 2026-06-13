@@ -58,6 +58,6 @@ test("admin student view opens a detail preview modal", () => {
   assert.match(actions, /Thời gian đăng ký/);
   assert.match(actions, /Khóa đăng ký/);
   assert.match(actions, /Tiến độ học/);
-  assert.match(actions, /Chưa có log học tập/);
+  assert.match(actions, /Chưa có hoạt động học tập/);
   assert.match(actions, /setIsPreviewOpen\(true\)/);
 });

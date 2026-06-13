@@ -24,7 +24,7 @@ type SendEmailResult = {
 
 const defaultSender = "The Anh Marketing <noreply@theanhmarketing.com>";
 const defaultAdminRecipient = "theanhnguyen.marketing@gmail.com";
-const defaultSiteUrl = "https://theanhmarketing.com";
+const defaultSiteUrl = "https://www.theanhmarketing.com";
 const emailFontFamily = `'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif`;
 const adsSupportAgentName = "Agent Hỗ Trợ Quảng Cáo";
 const adsSupportAgentUrl =
@@ -69,8 +69,8 @@ function normalizeSiteUrl(value?: string) {
     const url = new URL(rawUrl);
     url.protocol = "https:";
 
-    if (url.hostname === "www.theanhmarketing.com") {
-      url.hostname = "theanhmarketing.com";
+    if (url.hostname === "theanhmarketing.com") {
+      url.hostname = "www.theanhmarketing.com";
     }
 
     return url.origin;

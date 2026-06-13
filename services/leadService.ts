@@ -13,6 +13,7 @@ export type LeadInput = {
   message?: string;
   source?: string;
   attribution?: AttributionInput;
+  syncGoogleSheet?: boolean;
 };
 
 export const leadSaleStatuses = ["Chưa liên hệ", "Đã liên hệ", "Đã liên hệ lần 2", "Đã liên hệ lần 3", "K nhu cầu"] as const;
@@ -439,6 +440,16 @@ export async function createLeadAdmin(input: LeadInput) {
   }
 
   const lead = mapDbLead(insert.data as DbLead, [], new Map());
+  if (input.syncGoogleSheet === false) {
+    return {
+      ok: true,
+      fallback: false,
+      error: null,
+      lead,
+      sheetSync: { ok: true, skipped: true, reason: "scheduled_after_response" },
+    };
+  }
+
   const sheetSync = await syncLeadToGoogleSheet(lead, { source: lead.source });
 
   if (sheetSync.ok && !sheetSync.skipped) {

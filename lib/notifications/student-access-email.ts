@@ -27,7 +27,7 @@ type ResendEmailPayload = {
 };
 
 const defaultSender = "The Anh Marketing <noreply@theanhmarketing.com>";
-const defaultSiteUrl = "https://theanhmarketing.com";
+const defaultSiteUrl = "https://www.theanhmarketing.com";
 const emailFontFamily = `'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif`;
 const supportEmail = "theanhmarketing@gmail.com";
 
@@ -47,9 +47,11 @@ function normalizeSiteUrl(value?: string) {
     const url = new URL(rawUrl);
     url.protocol = "https:";
 
-    if (url.hostname === "www.theanhmarketing.com") {
-      url.hostname = "theanhmarketing.com";
+    if (url.hostname === "theanhmarketing.com") {
+      url.hostname = "www.theanhmarketing.com";
     }
+
+    url.port = "";
 
     return url.origin;
   } catch {

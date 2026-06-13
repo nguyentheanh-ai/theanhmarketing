@@ -4,6 +4,10 @@ Muc tieu cua file nay: giup cac phien Codex/Claude/agent khac vao repo la hieu d
 
 Repo chinh: `E:\TheAnh-Business-Workspace\02_Website\landing-page`
 
+Current deploy source after 2026-06-11 incident: `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`
+
+Do not deploy from `E:\TheAnh-Business-Workspace\02_Website\landing-page` until it is synced and passes the full gate. Read `E:\TheAnh-Business-Workspace\02_Website\DEPLOY_SOURCE_OF_TRUTH.md` first.
+
 Remote GitHub: `https://github.com/nguyentheanh-ai/theanhmarketing.git`
 
 Production: `https://theanhmarketing.com`
@@ -15,10 +19,12 @@ Stack: Next.js App Router, TypeScript, Tailwind CSS v4, Supabase, Recharts, Fram
 Neu chi co 5 phut, doc theo thu tu nay:
 
 1. `docs/WEBSITE_DEEP_STRUCTURE_HANDOFF.md` - file nay.
-2. `docs/DESIGN_RULES.md` - quy tac UI/branding.
-3. `docs/DATABASE_ARCHITECTURE.md` - bang Supabase va quan he du lieu.
-4. `docs/SECURITY_HARDENING.md` - auth, RLS, CSP, env, hardening.
-5. `docs/SEPAY_SETUP.md` - payment/webhook/doi soat.
+2. `E:\TheAnh-Business-Workspace\02_Website\DEPLOY_SOURCE_OF_TRUTH.md` - deploy root va predeploy gate.
+3. `E:\Kinh doanh\docs\SESSION_START_CHECKLIST.md` - protocol dau phien.
+4. `docs/DESIGN_RULES.md` - quy tac UI/branding.
+5. `docs/DATABASE_ARCHITECTURE.md` - bang Supabase va quan he du lieu.
+6. `docs/SECURITY_HARDENING.md` - auth, RLS, CSP, env, hardening.
+7. `docs/SEPAY_SETUP.md` - payment/webhook/doi soat.
 
 Doc theo task:
 
@@ -57,7 +63,7 @@ Quy tac quan trong: khong load full data mot lan neu co the query theo module/pa
 | `/khoa-hoc/bo-kit-agent-doanh-nghiep` | `app/khoa-hoc/bo-kit-agent-doanh-nghiep/page.tsx` | Landing private/noindex cho ads ban Bo Agent Kit X10, checkout truc tiep qua `/api/orders`. |
 | `/dang-ky` | `app/dang-ky/page.tsx` | Form dang ky/lead/order entry. |
 | `/gio-hang` | `app/gio-hang/page.tsx` | Cart page client. |
-| `/thanh-toan/[code]` | `app/thanh-toan/[code]/page.tsx` | Huong dan thanh toan va polling trang thai; co layout checkout sang cho AI Agent Business/Agent Kit va Facebook Ads 2026, demo local `AGENTKITDEMO`, van dung `SEPAY_*`, QR SePay, `TransferDetails`, `PaymentStatusPoller`. Facebook Ads 2026 phai nhan dien bang slug, khong dua vao title co chu `Agent kit`: 799K hien `2.590.000d -> 799.000d`, 399K hien `2.290.000d -> 399.000d`. |
+| `/thanh-toan/[code]` | `app/thanh-toan/[code]/page.tsx` | Huong dan thanh toan va polling trang thai; co layout checkout sang cho AI Agent Business/Agent Kit va Facebook Ads 2026, demo local `AGENTKITDEMO`, van dung `SEPAY_*`, QR SePay, `TransferDetails`, `PaymentStatusPoller`. Facebook Ads 2026 phai nhan dien bang slug, khong dua vao title co chu `Agent kit`: 799K hien `2.590.000d -> 799.000d`, 399K hien `2.290.000d -> 399.000d`. Since 2026-06-10 this page schedules customer pending-payment email and Telegram `order_created` after the page response through `services/checkoutNotificationService.ts`. |
 | `/blog`, `/blog/[slug]` | `app/blog/*` | Blog/content hub. |
 | `/tai-lieu` | `app/tai-lieu/page.tsx` | Resource/document hub. |
 | `/workshop`, `/gioi-thieu`, `/doi-tac`, `/lien-he`, `/he-sinh-thai`, `/ky-nang` | `app/*/page.tsx` | Static/public marketing pages. |
@@ -283,9 +289,9 @@ When adding new admin route:
 
 Order APIs:
 
-- `app/api/orders/route.ts`: create order; if a `leadId` is supplied, update the existing lead instead of creating a duplicate lead row, then sync that lead to Google Sheet.
+- `app/api/orders/route.ts`: create order; if a `leadId` is supplied, update the existing lead instead of creating a duplicate lead row. Since 2026-06-10 this route must not send admin email, customer pending-payment email, Telegram `order_created`, Meta Lead, or Google Sheet sync inside the response-critical request; heavy side effects run after-response. New leads created from this route pass `syncGoogleSheet: false` to `createLeadAdmin()` and are synced later via `syncLeadByIdToGoogleSheet()`.
 - `app/api/orders/[code]/route.ts`: lookup/update order by code.
-- `app/api/orders/from-session/route.ts`: order from session/cart.
+- `app/api/orders/from-session/route.ts`: order from session/cart; same after-response side-effect rule as public order creation.
 - `app/api/orders/expire/route.ts`: expire stale pending orders.
 - `app/api/admin/payment-links/route.ts`: owner/editor admin order/payment form sender; reuse existing order service and pending-payment email instead of manual scripts.
 - `app/api/sepay/webhook/route.ts`: SePay payment webhook; on newly paid order it syncs paid order status to Google Sheet and keeps payment/account/email flow intact.
@@ -304,10 +310,11 @@ Email helpers:
 - `lib/notifications/pending-payment-email.ts`: pending payment/customer payment form email; Resend request must use `Content-Type: application/json; charset=utf-8` and `Buffer.from(JSON.stringify(payload), "utf8")`.
 - `lib/notifications/payment-success-email.ts`
 - `lib/notifications/student-access-email.ts`: admin grant/revoke access/account notification.
+- `services/checkoutNotificationService.ts`: checkout-entry notification coordinator. It sends customer pending-payment email and Telegram `order_created` only after `/thanh-toan/[code]` has rendered, and uses conditional DB claims on `pending_payment_email_sent_at` plus `order_created_telegram_sent_at` markers from `docs/SUPABASE_CHECKOUT_NOTIFICATION_MARKERS.sql` to avoid duplicates, including near-simultaneous payment page opens. It must not call admin email helpers and must not set `payment_email_sent_at`.
 - `services/emailLogService.ts`: lifecycle logging in `email_logs`; `/api/resend/webhook` updates delivered/bounced/complained/opened/clicked by `resend_email_id`.
 
 Compatibility note: Admin Lead resend still writes legacy `lead_email_logs` for existing resend count/history and also writes `email_logs` for lifecycle tracking after `SUPABASE_ADMIN_OPERATIONS.sql` is applied.
-- `lib/notifications/telegram.ts`: Telegram order notifications. `app/api/orders/route.ts` and `app/api/orders/from-session/route.ts` send `order_created`; `app/api/sepay/webhook/route.ts` sends `payment_paid` once for newly paid orders. Production `TELEGRAM_CHAT_ID` was set on 2026-06-08 to the `Greezhub x Report` group (`-5220455978`) and redeployed in `dpl_7fq1tDhaQYmoVwtwtmE5reknPbWn`. Do not print `TELEGRAM_BOT_TOKEN`; Vercel env pull may return empty values for encrypted/sensitive Telegram vars.
+- `lib/notifications/telegram.ts`: Telegram order notifications. `order_created` is now sent by `services/checkoutNotificationService.ts` after the payment page response, not by order creation APIs. `app/api/sepay/webhook/route.ts` still sends `payment_paid` once for newly paid orders. Production `TELEGRAM_CHAT_ID` was set on 2026-06-08 to the `Greezhub x Report` group (`-5220455978`) and redeployed in `dpl_7fq1tDhaQYmoVwtwtmE5reknPbWn`. Do not print `TELEGRAM_BOT_TOKEN`; Vercel env pull may return empty values for encrypted/sensitive Telegram vars.
 - `services/leadEmailService.ts`: chooses resend template by real matched order status (`payment_success`, `payment_failed`, `pending_payment`) and is called by owner-only Admin Lead resend API.
 - Email font/style note 2026-06-07: notification emails should use CSS-safe inline font stack `'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif`; do not use bare `font-family:Arial...` or heavily letter-spaced uppercase H1 styles. Guard: `tests/notification-email-font.test.mjs`.
 
@@ -365,7 +372,8 @@ Current Pixel/CAPI knowledge:
 - Pixel/dataset ID and test event code should be loaded from env or Meta Events Manager when testing.
 - Do not hard-code access token, pixel token, or test event code in docs/code. Use env only.
 - Layout/browser Pixel is standardized to the single primary Pixel `1315653423712065` (`Pixel 01 - Khoa hoc FB ADS 799.000d`). Do not re-enable `NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS` or secondary Pixels `1966683547571929`, `1297209809285103`, `2364261364083192`.
-- Static sales landing HTML under `public/ladipage` and `public/academy` must keep the single browser Pixel, `Lead` after successful form/order save, `InitiateCheckout` after real order code creation, `/api/orders`, `_fbp`/`_fbc`, `fbclid`, and UTM forwarding. Guard this with `tests/meta-conversions-api.test.mjs`.
+- Static sales landing HTML under `public/ladipage` and `public/academy` must keep the single browser Pixel, `Lead` after successful form/order save, `/api/orders`, `_fbp`/`_fbc`, `fbclid`, and UTM forwarding. Do not fire `InitiateCheckout` before a real checkout/order-code context; Facebook Ads landing specifically must not fire `InitiateCheckout` in the submit handler before redirecting to `/thanh-toan/<orderCode>`. Guard this with `tests/meta-conversions-api.test.mjs` and `tests/facebook-ads-landing.test.mjs`.
+- Checkout page `/thanh-toan/[code]` fires browser `InitiateCheckout` once per order code using `event_id=order.orderCode` and sessionStorage dedupe. Keep checkout optimization tied to this order-code event, not CTA clicks or pre-order form submits.
 - Meta CAPI Purchase is server-side only after paid confirmation from SePay or `POST /api/payment/confirm`; it uses `event_id=order_code` and marks `orders.purchase_event_sent=true` after a successful Meta request. Apply `docs/SUPABASE_TRACKING_ATTRIBUTION.sql` before expecting attribution and purchase-event flags to persist.
 - If a Meta access token is pasted in chat/logs, rotate it after testing; never commit or document the token value.
 
@@ -450,7 +458,7 @@ When changing UI:
 
 ## 12. Deploy & Git
 
-Branch: `main`
+Branch: `deploy/website-production-20260604` in the current production deploy worktree. The canonical root branch `main` must be synced before it is used for deploy again.
 
 Remote:
 
@@ -470,6 +478,12 @@ Deploy production:
 
 ```powershell
 npx.cmd vercel --prod --force
+```
+
+Before deploy, run the guard:
+
+```powershell
+E:\TheAnh-Business-Workspace\02_Website\scripts\codex-session-guard.ps1 -Path .
 ```
 
 After deploy, verify:
@@ -564,7 +578,9 @@ Before changing these, run targeted tests and full build.
 - Keep course/student/payment/pixel data logic stable when changing UI.
 - Private ads landing `app/khoa-hoc/bo-kit-agent-doanh-nghiep/page.tsx` uses source facts from `E:\TheAnh-Business-Workspace\05_AI_Growth_Kit_Product` and the route is `noindex`. The visible ads price is `359K` through payment plan `agent-kit-ads-359`; do not change the global course price `Bo Agent Kit X10` from `799K` unless the owner explicitly asks.
 - Facebook Ads 2026 checkout must stay separate from Agent Kit private ads checkout. Do not classify an order as Agent Kit from product title text like `Agent kit`; use `courseSlug`/item slug. Verified live 2026-06-05: `TAMMPX99H22LJP8R` shows `2.590.000d -> 799.000d`, `TAMMPYBBP2110IHA` shows `2.290.000d -> 399.000d`, and neither shows `Giu gia 359K` or `AI Agent Business`.
-- Deployed 2026-06-08 in `dpl_DSCncK46ydco5XjuDcvK4n4jMDoB`: Facebook Ads Master 2026 LadiPage shows only 399K and featured 799K cards; 799K includes AI Agent planning ads; optional Zoom +500K is a form checkbox that submits internal `advanced-zoom` amount 1.299K. Card hover/click selects the plan; mobile selection scrolls to the form; email placeholder is `email@gmail.com`. Payment success email CTA must point to `/vao-khoa-hoc`, not direct `/dang-nhap`. Pending-payment transfer amount is formatted with `amountLabel`.
+- Deployed 2026-06-08 in `dpl_DSCncK46ydco5XjuDcvK4n4jMDoB`: Facebook Ads Master 2026 LadiPage shows only 399K and featured 799K cards; 799K includes AI Agent planning ads. Updated 2026-06-11: the public landing form no longer shows optional Zoom +500K, no longer has `zoomAddon`, and only submits visible plans `video` or `zoom-kit`; keep `advanced-zoom` only for historical orders unless owner asks otherwise. Card hover/click selects the plan; mobile selection scrolls to the form; email placeholder is `email@gmail.com`. Payment success email CTA must point to `/vao-khoa-hoc`, not direct `/dang-nhap`. Pending-payment transfer amount is formatted with `amountLabel`.
+- Course/LMS update 2026-06-13: Facebook Ads 2026 has lesson `Bài 17 - Hướng dẫn lên quảng cáo tin nhắn` in module `Triển khai, đo lường và tối ưu quảng cáo`, YouTube URL `https://www.youtube.com/watch?v=auPdBJGY_pQ`, embed `https://www.youtube.com/embed/auPdBJGY_pQ`. Production Supabase `vsxxgdzwtscuxcmjfckt` was updated directly; fallback `data/courses.ts` and SQL patch `docs/SUPABASE_ADD_FACEBOOK_ADS_MESSAGE_ADS_LESSON_20260613.sql` keep the lesson durable. Direct học viên URL is `/learn/facebook-ads-2026/8ab7e52a-f3d4-48d4-809d-fec6a5c13e92` and unauthenticated users correctly redirect to login with `next`.
+- Ebook Facebook Ads 2026 landing/payment update 2026-06-13: public URL is `/academy/ebook-facebook-ads-2026` redirecting to `/academy/ebook-facebook-ads-2026.html`; source static HTML is `public/ladipage/ebook-facebook-ads-2026.html` and published HTML is `public/academy/ebook-facebook-ads-2026.html`. Preview images are original PNG pages under `public/ebook-facebook-ads-2026/phan-1/1.png` through `29.png`. Payment uses separate product slug `ebook-facebook-ads-2026`, plan `full-access-299`, amount `299000`, so it does not grant/report as the `facebook-ads-2026` course. Keep these routes in `isLadiPageRoute()` in `proxy.ts`; otherwise CSP blocks inline preview/search/order scripts. Guard test: `tests/ebook-facebook-ads-landing.test.mjs`.
 - Deployed 2026-06-08 in `dpl_7bwk1CyGBFk2CutK7XNmCMfYpYEK`: Facebook Ads 2026 payment success emails for AI Agent plans (799K and 1.299K add-on Zoom) include the Google Doc `Huong dan su dung AI Agent`; 399K basic email must not include that guide link.
 - `/vao-khoa-hoc` is an email/browser bridge page. It intentionally does not set `X-Frame-Options` and strips CSP `frame-ancestors` to avoid Chrome/Gmail `ERR_BLOCKED_BY_RESPONSE`; keep frame blocking on other routes through `proxy.ts`.
 - Incident/fix 2026-06-08: paid student accounts must not skip existing Supabase Auth users. Google OAuth users can exist without an email/password hash, so `services/studentAccountService.ts` must update existing users with a fresh password/metadata when paid access or admin force reset is requested. SePay payment-success email must include the account block whenever `studentAccount.temporaryPassword` exists, not only when `created=true`.
@@ -572,6 +588,8 @@ Before changing these, run targeted tests and full build.
 - Production customer recovery 2026-06-08: `phamthanhtinh1995@gmail.com`, order `TAMMQ4VQNH9MOH4L`, Auth user reset, login verified, email account recovery sent, temporary internal route removed, clean deploy `dpl_EnV4sofurA4XB9QegvrutmttVGDQ`.
 - Email link bridge 2026-06-08: customer-facing HTML email buttons should use `buildEmailLink()` and route through `/go?to=...`; `app/go/page.tsx` validates an allowlist, auto-opens with a client component, and shows a manual button/copy fallback. `proxy.ts` exempts `/go` from `X-Frame-Options` and strips `frame-ancestors` to avoid Gmail/Chrome mail-webview blocked responses. Plain-text email bodies should keep the raw destination URL for copy fallback.
 - Codex skill added: `C:\Users\12c1t\.codex\skills\theanh-student-account-email-safety\SKILL.md`; use it for paid student account, password reset, Resend email, or email link blocked incidents.
+- Incident 2026-06-11: production admin was briefly rolled back because Vercel was deployed from `E:\TheAnh-Business-Workspace\02_Website\landing-page` instead of this production worktree. Until the root is explicitly synced, deploy website production only from `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`; verify `/admin` redirects to `/admin/dashboard`, `/admin/facebook-ads` is 404, and `node --test tests\*.mjs` plus build pass before deploy.
+- Workspace cleanup note 2026-06-11: do not run broad `git clean -fdx` in either website root. Dry-run includes real untracked source (`/go`, `/vao-khoa-hoc`, email bridge/student access helpers) alongside cache/log artifacts. Classify and sync source first, then clean only whitelisted build/test artifacts.
 
 ## 16. Quick Task Recipes
 
@@ -620,7 +638,8 @@ Before changing these, run targeted tests and full build.
 3. Student account creation in `services/studentAccountService.ts`.
 4. Admin student access email helper is `lib/notifications/student-access-email.ts`; do not send access/account emails from raw PowerShell Vietnamese strings. Render/check UTF-8 content before calling Resend.
 5. Admin payment form sender is `components/admin/payment-link-form.tsx` + `app/api/admin/payment-links/route.ts`; it creates pending orders and sends the existing pending-payment email, not a separate template.
-6. Run payment/email tests before build.
+6. Public checkout order APIs must stay fast: no admin email, no customer pending-payment email, and no Telegram `order_created` inside `POST /api/orders` or `POST /api/orders/from-session`. Checkout-entry notifications live in `services/checkoutNotificationService.ts` and require the marker columns from `docs/SUPABASE_CHECKOUT_NOTIFICATION_MARKERS.sql`.
+7. Run payment/email tests before build.
 
 ### Sua Meta Pixel/CAPI
 

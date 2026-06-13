@@ -29,7 +29,11 @@ test("email links are wrapped through the public bridge and keep a strict allowl
 
   assert.equal(
     buildEmailLink("https://www.theanhmarketing.com/vao-khoa-hoc", "https://www.theanhmarketing.com"),
-    "https://theanhmarketing.com/go?to=https%3A%2F%2Ftheanhmarketing.com%2Fvao-khoa-hoc",
+    "https://www.theanhmarketing.com/go?to=https%3A%2F%2Fwww.theanhmarketing.com%2Fvao-khoa-hoc",
+  );
+  assert.equal(
+    buildEmailLink("https://theanhmarketing.com/vao-khoa-hoc", "https://theanhmarketing.com"),
+    "https://www.theanhmarketing.com/go?to=https%3A%2F%2Fwww.theanhmarketing.com%2Fvao-khoa-hoc",
   );
   assert.equal(
     getAllowedEmailLinkTarget("https://docs.google.com/document/d/abc/edit"),
@@ -47,8 +51,19 @@ test("email link bridge route is public, noindex, and has manual fallback copy",
   assert.match(page, /getAllowedEmailLinkTarget/);
   assert.match(page, /robots:[\s\S]*index:\s*false/);
   assert.match(page, /targetUrl/);
-  assert.match(page, /Mo lien ket/);
+  assert.match(page, /Mở liên kết/);
   assert.match(page, /break-all/);
   assert.match(client, /window\.location\.assign\(targetUrl\)/);
   assert.match(proxy, /pathname === "\/vao-khoa-hoc" \|\| pathname === "\/go"/);
+});
+
+test("email link bridge fallback UI uses readable Vietnamese with accents", () => {
+  const page = read("app/go/page.tsx");
+
+  assert.match(page, /Mở liên kết/);
+  assert.match(page, /Đang mở liên kết/);
+  assert.match(page, /Hệ thống đang mở liên kết an toàn từ email/);
+  assert.match(page, /Liên kết không hợp lệ/);
+  assert.match(page, /Về trang chủ/);
+  assert.doesNotMatch(page, /Dang mo lien ket|He thong dang mo|Lien ket khong hop le|Ve trang chu/);
 });

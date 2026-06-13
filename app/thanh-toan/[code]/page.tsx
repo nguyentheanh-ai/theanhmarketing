@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { after } from "next/server";
 import { notFound } from "next/navigation";
 import { PaymentOfferCountdown } from "@/components/payment/payment-offer-countdown";
 import { PaymentStatusPoller } from "@/components/payment/payment-status-poller";
@@ -13,6 +14,7 @@ import {
   isSepayConfigured,
 } from "@/lib/payments/sepay";
 import { normalizeAttribution } from "@/lib/tracking/attribution";
+import { sendCheckoutEntryNotifications } from "@/services/checkoutNotificationService";
 import { getPaymentOrder, type PaymentOrder } from "@/services/orderService";
 
 export const dynamic = "force-dynamic";
@@ -80,7 +82,21 @@ function isFacebookAds2026(order: PaymentOrder) {
   return slugHaystack.includes("facebook-ads-2026");
 }
 
+function isFacebookAdsEbook2026(order: PaymentOrder) {
+  const slugHaystack = `${order.courseSlug} ${order.orderItems
+    .map((item) => item.slug)
+    .join(" ")}`.toLowerCase();
+  return slugHaystack.includes("ebook-facebook-ads-2026");
+}
+
 function getPaymentOffer(order: PaymentOrder, amountLabel: string) {
+  if (isFacebookAdsEbook2026(order)) {
+    return {
+      originalPriceLabel: "799.000đ",
+      currentPriceLabel: "299.000đ",
+    };
+  }
+
   if (!isFacebookAds2026(order)) {
     return {
       originalPriceLabel: undefined,
@@ -214,6 +230,30 @@ function getCheckoutContent(order: PaymentOrder) {
   }
 
   if (isFacebookAds2026(order)) {
+    if (isFacebookAdsEbook2026(order)) {
+      return {
+        eyebrow: "Bước cuối để mở khóa thư viện",
+        title: "Thư viện kiến thức Facebook Ads 2026",
+        description:
+          "Kiểm tra đúng số tiền và nội dung chuyển khoản. Khi SePay xác nhận giao dịch, hệ thống sẽ gửi email hướng dẫn truy cập thư viện và tài nguyên thực hành đi kèm.",
+        productLabel: "Thư viện Facebook Ads 2026",
+        productHref: "/academy/ebook-facebook-ads-2026",
+        includes: [
+          "Truy cập website thư viện Facebook Ads 2026",
+          "Bản đồ 12 phần nội dung từ nền tảng đến vận hành thực tế",
+          "Tài nguyên thực hành, checklist và template đi kèm",
+        ],
+        saleReasons: defaultSaleReasons,
+        nextSteps: [
+          "Nhận email xác nhận thanh toán",
+          "Kiểm tra mục Spam hoặc Promotions/Khuyến mãi nếu chưa thấy email sau vài phút",
+          "Đăng nhập vào dashboard học viên",
+          "Mở thư viện Facebook Ads 2026 và tra cứu theo nhu cầu",
+        ],
+        stickyCopy: "Mở khóa thư viện Facebook Ads",
+      };
+    }
+
     return {
       eyebrow: "Bước cuối để hoàn tất đăng ký",
       title: "Quảng cáo Facebook Master 2026",
@@ -294,6 +334,19 @@ export default async function PaymentPage({
   const content = getCheckoutContent(order);
   const paymentOffer = getPaymentOffer(order, amountLabel);
   const isLocalDemoOrder = order.id.startsWith("local-");
+  if (!isLocalDemoOrder) {
+    after(async () => {
+      const notifications = await sendCheckoutEntryNotifications(order);
+
+      if (!notifications.ok) {
+        console.warn("[checkout] Entry notifications failed:", {
+          orderCode: order.orderCode,
+          email: notifications.email.reason,
+          telegram: notifications.telegram.reason,
+        });
+      }
+    });
+  }
   const createdTimestamp = Date.parse(order.createdAt);
   const fallbackDeadline = Number.isNaN(createdTimestamp)
     ? ""

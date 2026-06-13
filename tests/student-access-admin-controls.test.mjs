@@ -216,7 +216,7 @@ test("student access emails include account details for grant notifications", ()
   assert.match(payload.subject, /Đã cấp quyền học/);
   assert.match(payload.html, /Mật khẩu tạm/);
   assert.match(payload.text, /Truy cập khu vực học viên/);
-  assert.match(payload.text, /https:\/\/theanhmarketing\.com\/vao-khoa-hoc/);
+  assert.match(payload.text, /https:\/\/www\.theanhmarketing\.com\/vao-khoa-hoc/);
 });
 
 test("admin operator can issue a fresh student password email without recovery links", () => {

@@ -61,7 +61,7 @@
         src="https://www.facebook.com/tr?id=1315653423712065&ev=PageView&noscript=1"
         alt=""
       />
-</noscript>
+    </noscript>
     <style>
       :root {
         color-scheme: dark;
@@ -1571,76 +1571,6 @@
         line-height: 1.4;
       }
 
-      .zoom-addon {
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr);
-        gap: 12px;
-        align-items: flex-start;
-        border: 1px solid rgba(246, 102, 40, 0.25);
-        border-radius: 18px;
-        background: #fff8f2;
-        color: #2d170b;
-        padding: 15px;
-        cursor: pointer;
-        transition:
-          transform 160ms ease,
-          border-color 160ms ease,
-          background 160ms ease,
-          box-shadow 160ms ease;
-      }
-
-      .zoom-addon:hover,
-      .zoom-addon:focus-within {
-        border-color: rgba(246, 102, 40, 0.48);
-        background: #fffaf5;
-        transform: translateY(-3px);
-        box-shadow: 0 16px 36px rgba(246, 102, 40, 0.18);
-      }
-
-      .zoom-addon[hidden] {
-        display: none;
-      }
-
-      .zoom-addon input {
-        appearance: none;
-        display: grid;
-        place-content: center;
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-        border: 2px solid #1d7cff;
-        border-radius: 5px;
-        background: #fff;
-        box-shadow:
-          inset 0 0 0 2px #fff,
-          0 0 0 3px rgba(29, 124, 255, 0.12);
-      }
-
-      .zoom-addon input:checked::before {
-        width: 10px;
-        height: 10px;
-        border-radius: 2px;
-        background: #1d7cff;
-        content: "";
-      }
-
-      .zoom-addon strong {
-        display: block;
-        color: #1c0f08;
-        font-size: 15px;
-        font-weight: 900;
-        line-height: 1.35;
-      }
-
-      .zoom-addon span {
-        display: block;
-        margin-top: 4px;
-        color: #6d4a35;
-        font-size: 13px;
-        font-weight: 800;
-        line-height: 1.45;
-      }
-
       .field {
         display: grid;
         gap: 7px;
@@ -2316,7 +2246,6 @@
                 <div class="stat"><strong>20+</strong><span>video bài giảng và tài liệu thực hành</span></div>
                 <div class="stat"><strong>799K</strong><span>gói khuyên chọn, tặng AI Agent lên kế hoạch quảng cáo</span></div>
                 <div class="stat"><strong>2026</strong><span>cập nhật thuật toán, tracking và cách đọc số</span></div>
-                <div class="stat"><strong>+500K</strong><span>tùy chọn thêm 1 buổi Zoom chuyên sâu khi chọn gói 799K</span></div>
               </div>
             </div>
 
@@ -2332,7 +2261,6 @@
                 <h2>Quà tặng</h2>
                 <ul>
                   <li>Gói 799.000đ tặng AI Agent lên kế hoạch quảng cáo</li>
-                  <li>Có tùy chọn thêm 1 buổi Zoom chuyên sâu +500.000đ khi đăng ký gói 799.000đ</li>
                   <li>Tặng 7 ngày dùng thử Adsplan lên quảng cáo và đăng bài tự động</li>
                   <li>Ưu đãi giảm 5% các khóa AI Master</li>
                 </ul>
@@ -2760,7 +2688,7 @@
               </p>
               <ul class="authority-list">
                 <li>Tư duy dành cho chủ doanh nghiệp: hiểu để tự triển khai hoặc quản lý người chạy ads tốt hơn.</li>
-                <li>Có checklist, prompt, dashboard; gói 799.000đ tặng AI Agent lên kế hoạch quảng cáo, gói 1.299.000đ có thêm Zoom sửa quảng cáo.</li>
+                <li>Có checklist, prompt, dashboard; gói 799.000đ tặng AI Agent lên kế hoạch quảng cáo để bạn triển khai nhanh hơn.</li>
                 <li>Nội dung cập nhật theo bối cảnh 2026: AI, tracking, tài khoản, content, inbox và dữ liệu.</li>
                 <li>Có lộ trình nâng cấp lên Performance Marketing With AI khi bạn muốn scale sâu hơn.</li>
               </ul>
@@ -2777,10 +2705,6 @@
               <div class="proof-item">
                 <strong>Gói 799 là gói nên chọn</strong>
                 <span>Nhận toàn bộ khóa học và AI Agent lên kế hoạch quảng cáo để triển khai nhanh hơn.</span>
-              </div>
-              <div class="proof-item">
-                <strong>Tùy chọn Zoom chuyên sâu</strong>
-                <span>Khi chọn gói 799.000đ, bạn có thể thêm 1 buổi Zoom chuyên sâu +500.000đ ngay trong form đăng ký.</span>
               </div>
               <div class="guarantee-box">
                 <strong>Cam kết học tập rõ ràng:</strong> nếu bạn học đúng lộ trình, hoàn thành checklist và chuẩn bị case thực tế, đội ngũ sẽ hỗ trợ gỡ vướng trong phạm vi khóa để bạn biết bước tiếp theo cần làm gì.
@@ -2848,13 +2772,6 @@
                   <label for="phone">Số điện thoại / Zalo</label>
                   <input id="phone" name="phone" type="tel" autocomplete="tel" required placeholder="09..." />
                 </div>
-                <label class="zoom-addon" id="zoom-addon-row">
-                  <input type="checkbox" name="zoomAddon" value="advanced-zoom" />
-                  <span>
-                    <strong>Thêm 1 buổi Zoom chuyên sâu (+500.000đ)</strong>
-                    <span>Tùy chọn thêm cho gói 799K. Tổng thanh toán khi chọn Zoom là 1.299.000đ.</span>
-                  </span>
-                </label>
                 <button class="btn btn-primary" type="submit" id="payment-submit">Đăng ký gói AI Agent - 799.000đ</button>
               </form>
               <div class="secure-note">
@@ -2919,7 +2836,7 @@
                   <span class="number">?</span>
                   <h3>Học xong có được hỗ trợ sửa quảng cáo không?</h3>
                 </summary>
-                <p>Có nếu bạn chọn gói 1.299.000đ. Buổi Zoom tập trung vào case thật, ảnh setup, chỉ số hoặc câu hỏi cụ thể để xử lý đúng điểm kẹt.</p>
+                <p>Hiện form đăng ký chỉ mở 2 gói chính: 399.000đ học video cơ bản và 799.000đ kèm AI Agent lên kế hoạch quảng cáo.</p>
               </details>
               <details>
                 <summary>
@@ -2993,15 +2910,6 @@
             note: "Gói đang chọn: AI Agent 799.000đ - học video và nhận AI Agent lên kế hoạch quảng cáo.",
             submitText: "Đăng ký gói AI Agent - 799.000đ",
           },
-          "advanced-zoom": {
-            id: "advanced-zoom",
-            label: "Gói AI Agent + Zoom chuyên sâu",
-            price: "1.299K",
-            amount: 1299000,
-            summary: "Đang chọn gói AI Agent 799.000đ + 1 buổi Zoom chuyên sâu 500.000đ. Tổng thanh toán 1.299.000đ.",
-            note: "Gói đang chọn: AI Agent 799.000đ, thêm tùy chọn Zoom chuyên sâu +500.000đ.",
-            submitText: "Đăng ký gói AI Agent + Zoom - 1.299.000đ",
-          },
         };
         var selectedPlan = plans["zoom-kit"];
         var cartKey = "tam-cart-courses";
@@ -3011,24 +2919,14 @@
         var planSummary = document.getElementById("payment-plan-summary");
         var planNote = document.getElementById("selected-plan-note");
         var submitButton = document.getElementById("payment-submit");
-        var zoomAddon = form.querySelector('[name="zoomAddon"]');
-        var zoomAddonRow = document.getElementById("zoom-addon-row");
 
         function track(eventName, payload) {
           if (typeof window.fbq === "function") {
-            var eventId = payload && (payload.event_id || payload.eventID);
-            if (eventId) {
-              window.fbq("track", eventName, payload || {}, { eventID: String(eventId) });
-            } else {
-              window.fbq("track", eventName, payload || {});
-            }
+            window.fbq("track", eventName, payload || {});
           }
         }
 
         function resolveSelectedPlan() {
-          if (zoomAddon && zoomAddon.checked && selectedPlan.id === "zoom-kit") {
-            return plans["advanced-zoom"];
-          }
           return selectedPlan;
         }
 
@@ -3055,12 +2953,6 @@
 
         function setSelectedPlan(planId) {
           selectedPlan = plans[planId] || plans["zoom-kit"];
-          if (selectedPlan.id !== "zoom-kit" && zoomAddon) {
-            zoomAddon.checked = false;
-          }
-          if (zoomAddonRow) {
-            zoomAddonRow.hidden = selectedPlan.id !== "zoom-kit";
-          }
           var checkoutPlan = resolveSelectedPlan();
           planInput.value = checkoutPlan.id;
           planSummary.textContent = checkoutPlan.summary;
@@ -3100,31 +2992,16 @@
           return match ? decodeURIComponent(match[1]) : "";
         }
 
-        function getAttribution() {
-          var urlParams = new URLSearchParams(window.location.search);
-          var fbclid = urlParams.get("fbclid") || "";
-          var fbc = getCookie("_fbc") || (fbclid ? "fb.1." + Math.floor(Date.now() / 1000) + "." + fbclid : "");
-          return {
-            utmSource: urlParams.get("utm_source") || "",
-            utmMedium: urlParams.get("utm_medium") || "",
-            utmCampaign: urlParams.get("utm_campaign") || "",
-            utmContent: urlParams.get("utm_content") || "",
-            utmId: urlParams.get("utm_id") || "",
-            utmTerm: urlParams.get("utm_term") || "",
-            campaignId: urlParams.get("campaign_id") || urlParams.get("utm_id") || "",
-            campaignName: urlParams.get("campaign_name") || urlParams.get("utm_campaign") || "",
-            adsetId: urlParams.get("adset_id") || "",
-            adId: urlParams.get("ad_id") || "",
-            adName: urlParams.get("ad_name") || "",
-            fbclid: fbclid,
-            fbp: getCookie("_fbp"),
-            fbc: fbc,
-          };
-        }
-
         document.querySelectorAll("[data-cta]").forEach(function (cta) {
           cta.addEventListener("click", function () {
             addCourseToCart();
+            var checkoutPlan = resolveSelectedPlan();
+            track("Lead", {
+              content_name: course.title,
+              content_category: "Facebook Ads",
+              currency: "VND",
+              value: checkoutPlan.amount,
+            });
           });
         });
 
@@ -3145,14 +3022,6 @@
           });
         });
 
-        if (zoomAddon) {
-          zoomAddon.addEventListener("change", function () {
-            setSelectedPlan(selectedPlan.id);
-            var checkoutPlan = resolveSelectedPlan();
-            showToast("Đã chọn " + checkoutPlan.label + " - " + checkoutPlan.price + ".");
-          });
-        }
-
         form.addEventListener("submit", async function (event) {
           event.preventDefault();
           addCourseToCart();
@@ -3162,7 +3031,25 @@
           var studentName = getFormValue("name");
           var email = getFormValue("email");
           var phone = getFormValue("phone");
-          var attribution = getAttribution();
+          var urlParams = new URLSearchParams(window.location.search);
+          var fbclid = urlParams.get("fbclid") || "";
+          var fbc = getCookie("_fbc") || (fbclid ? "fb.1." + Date.now() + "." + fbclid : "");
+          var attribution = {
+            utmSource: urlParams.get("utm_source") || "",
+            utmMedium: urlParams.get("utm_medium") || "",
+            utmCampaign: urlParams.get("utm_campaign") || "",
+            utmContent: urlParams.get("utm_content") || "",
+            utmId: urlParams.get("utm_id") || "",
+            utmTerm: urlParams.get("utm_term") || "",
+            campaignId: urlParams.get("campaign_id") || "",
+            campaignName: urlParams.get("campaign_name") || "",
+            adsetId: urlParams.get("adset_id") || "",
+            adId: urlParams.get("ad_id") || "",
+            adName: urlParams.get("ad_name") || "",
+            fbclid: fbclid,
+            fbp: getCookie("_fbp"),
+            fbc: fbc,
+          };
           var leadId = "web." + Date.now() + "." + Math.random().toString(10).slice(2);
           var button = form.querySelector('button[type="submit"]');
           var oldText = button.textContent;
@@ -3206,23 +3093,6 @@
             if (!response.ok || !payload.order || !payload.order.orderCode) {
               throw new Error(payload.message || "Không tạo được đơn thanh toán.");
             }
-            track("Lead", {
-              event_id: payload.leadId || leadId,
-              content_ids: [course.slug],
-              content_name: course.title + " - " + checkoutPlan.label,
-              content_type: "product",
-              currency: "VND",
-              value: checkoutPlan.amount,
-            });
-            track("InitiateCheckout", {
-              event_id: payload.order.orderCode,
-              order_id: payload.order.orderCode,
-              content_ids: [course.slug],
-              content_name: course.title + " - " + checkoutPlan.label,
-              content_type: "product",
-              currency: "VND",
-              value: checkoutPlan.amount,
-            });
             window.location.href = "/thanh-toan/" + encodeURIComponent(payload.order.orderCode);
           } catch (error) {
             button.disabled = false;

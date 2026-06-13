@@ -71,12 +71,12 @@ test("builds a customer payment success email with course, Zalo, and dashboard l
   assert.match(payload.subject, /TAM123/);
   assert.match(payload.html, /Quảng cáo Facebook Master 2026/);
   assert.match(payload.html, /399\.000đ/);
-  assert.match(payload.html, /https:\/\/theanhmarketing\.com\/go\?to=https%3A%2F%2Fzalo\.me%2Fg%2Fye0dcyowbepyhnrtyacr/);
-  assert.match(payload.html, /https:\/\/theanhmarketing\.com\/go\?to=https%3A%2F%2Ftheanhmarketing\.com%2Fvao-khoa-hoc/);
+  assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/go\?to=https%3A%2F%2Fzalo\.me%2Fg%2Fye0dcyowbepyhnrtyacr/);
+  assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/go\?to=https%3A%2F%2Fwww\.theanhmarketing\.com%2Fvao-khoa-hoc/);
   assert.doesNotMatch(payload.html, /https:\/\/www\.theanhmarketing\.com\/dang-nhap\?next=%2Fdashboard/);
   assert.match(payload.text, /dùng đúng email student@example.com/);
   assert.match(payload.text, /https:\/\/zalo\.me\/g\/ye0dcyowbepyhnrtyacr/);
-  assert.match(payload.text, /https:\/\/theanhmarketing\.com\/vao-khoa-hoc/);
+  assert.match(payload.text, /https:\/\/www\.theanhmarketing\.com\/vao-khoa-hoc/);
   assert.doesNotMatch(payload.text, /\/dang-nhap\?next=%2Fdashboard/);
 });
 
@@ -121,7 +121,7 @@ test("Facebook Ads AI Agent success email includes the Agent usage guide", () =>
 
   for (const payload of [aiAgentPayload, advancedPayload]) {
     assert.match(payload.html, /Hướng dẫn sử dụng AI Agent/);
-    assert.match(payload.html, /https:\/\/theanhmarketing\.com\/go\?to=https%3A%2F%2Fdocs\.google\.com%2Fdocument/);
+    assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/go\?to=https%3A%2F%2Fdocs\.google\.com%2Fdocument/);
     assert.match(payload.text, /Hướng dẫn sử dụng AI Agent/);
     assert.match(payload.text, new RegExp(guideUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
@@ -199,9 +199,9 @@ test("builds a customer payment failed email with a retry payment link", () => {
   assert.match(payload.html, /Thanh toán không thành công/);
   assert.match(payload.html, /Quảng cáo Facebook Master 2026/);
   assert.match(payload.html, /399\.000đ/);
-  assert.match(payload.html, /https:\/\/theanhmarketing\.com\/thanh-toan\/TAMFAILED/);
+  assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/go\?to=https%3A%2F%2Fwww\.theanhmarketing\.com%2Fthanh-toan%2FTAMFAILED/);
   assert.match(payload.text, /Thanh toán không thành công/);
-  assert.match(payload.text, /Trang thanh toán: https:\/\/theanhmarketing\.com\/thanh-toan\/TAMFAILED/);
+  assert.match(payload.text, /Trang thanh toán: https:\/\/www\.theanhmarketing\.com\/thanh-toan\/TAMFAILED/);
 });
 
 test("sends payment failed email only for failed or expired orders", async () => {

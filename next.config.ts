@@ -81,6 +81,10 @@ const nextConfig: NextConfig = {
         destination: "/academy/facebook-ads-master-2026.html",
       },
       {
+        source: "/academy/ebook-facebook-ads-2026",
+        destination: "/academy/ebook-facebook-ads-2026.html",
+      },
+      {
         source: "/academy/bo-kit-agent-doanh-nghiep",
         destination: "/khoa-hoc/bo-kit-agent-doanh-nghiep",
       },

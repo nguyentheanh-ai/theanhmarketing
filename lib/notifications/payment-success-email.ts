@@ -22,7 +22,8 @@ type ResendEmailPayload = {
 };
 
 const defaultSender = "The Anh Marketing <noreply@theanhmarketing.com>";
-const defaultSiteUrl = "https://theanhmarketing.com";
+const defaultSiteUrl = "https://www.theanhmarketing.com";
+const emailFontFamily = `'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif`;
 const zaloGroupUrl = "https://zalo.me/g/ye0dcyowbepyhnrtyacr";
 const agentGuideUrl =
   "https://docs.google.com/document/d/1H8BbQZnSvyw50nO6oXw-u1PD0Ph_DWzXdeqPL9CZFrM/edit?usp=sharing";
@@ -45,8 +46,8 @@ function normalizeSiteUrl(value?: string) {
 
   try {
     const url = new URL(rawUrl);
-    if (url.hostname === "www.theanhmarketing.com") {
-      url.hostname = "theanhmarketing.com";
+    if (url.hostname === "theanhmarketing.com") {
+      url.hostname = "www.theanhmarketing.com";
     }
     url.protocol = "https:";
     url.port = "";
@@ -221,7 +222,7 @@ export function buildPaymentSuccessEmailPayload(
                     <strong style="color:#ffffff">${safeEmail}</strong> để đăng nhập hoặc tạo tài khoản học.`;
 
   const html = `
-    <div style="margin:0;padding:0;background:#080808;font-family:Arial,Helvetica,sans-serif;color:#f6f1e7">
+    <div style="margin:0;padding:0;background:#080808;font-family:${emailFontFamily};color:#f6f1e7">
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#080808;margin:0;padding:42px 14px">
         <tr>
           <td align="center">
@@ -231,7 +232,7 @@ export function buildPaymentSuccessEmailPayload(
                   <div style="width:76px;height:76px;border-radius:50%;background:#d8b653;color:#101010;font-size:42px;line-height:76px;font-weight:400;margin:0 auto 24px">
                     ✓
                   </div>
-                  <h1 style="margin:0;color:#d8b653;font-size:26px;line-height:1.25;letter-spacing:0.08em;text-transform:uppercase;font-weight:900">
+                  <h1 style="margin:0;color:#d8b653;font-size:26px;line-height:1.25;font-weight:800">
                     Thanh toán thành công
                   </h1>
                   <p style="margin:16px 0 0;color:#e9e3d5;font-size:15px;line-height:1.7">
@@ -382,7 +383,7 @@ export function buildPaymentFailedEmailPayload(
   const safeRawPaymentUrl = escapeHtml(paymentUrl);
 
   const html = `
-    <div style="margin:0;padding:0;background:#080808;font-family:Arial,Helvetica,sans-serif;color:#f6f1e7">
+    <div style="margin:0;padding:0;background:#080808;font-family:${emailFontFamily};color:#f6f1e7">
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#080808;margin:0;padding:42px 14px">
         <tr>
           <td align="center">
@@ -392,7 +393,7 @@ export function buildPaymentFailedEmailPayload(
                   <div style="width:76px;height:76px;border-radius:50%;background:#f66628;color:#101010;font-size:42px;line-height:76px;font-weight:900;margin:0 auto 24px">
                     !
                   </div>
-                  <h1 style="margin:0;color:#f66628;font-size:26px;line-height:1.25;letter-spacing:0.08em;text-transform:uppercase;font-weight:900">
+                  <h1 style="margin:0;color:#f66628;font-size:26px;line-height:1.25;font-weight:800">
                     ${escapeHtml(statusTitle)}
                   </h1>
                   <p style="margin:16px 0 0;color:#e9e3d5;font-size:15px;line-height:1.7">

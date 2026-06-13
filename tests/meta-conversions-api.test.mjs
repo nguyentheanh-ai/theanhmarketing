@@ -183,6 +183,7 @@ test("all sales landing surfaces include only primary browser Pixel and pass att
   const aiMasterPublished = read("public/academy/ai-master-x10-hieu-suat.html");
   const facebookAdsSource = read("public/ladipage/facebook-ads-2026.html");
   const facebookAdsPublished = read("public/academy/facebook-ads-master-2026.html");
+  const paymentPoller = read("components/payment/payment-status-poller.tsx");
   const staticLandingPages = [
     aiMasterSource,
     aiMasterPublished,
@@ -200,7 +201,6 @@ test("all sales landing surfaces include only primary browser Pixel and pass att
     assert.doesNotMatch(html, /1966683547571929|1297209809285103|2364261364083192/);
     assert.match(html, /fbq\(["']track["'], ["']PageView["']\)/);
     assert.match(html, /(?:fbq\(["']track["'], ["']Lead["']|track\(["']Lead["'])/);
-    assert.match(html, /(?:fbq\(["']track["'], ["']InitiateCheckout["']|track\(["']InitiateCheckout["'])/);
     assert.match(html, /\/api\/orders/);
     assert.match(html, /fbp:\s*attribution\.fbp/);
     assert.match(html, /fbc:\s*attribution\.fbc/);
@@ -208,4 +208,7 @@ test("all sales landing surfaces include only primary browser Pixel and pass att
     assert.match(html, /utmId:/);
     assert.match(html, /adId:/);
   }
+
+  assert.match(paymentPoller, /trackMarketingEvent\("InitiateCheckout"/);
+  assert.match(paymentPoller, /event_id: order\.orderCode/);
 });

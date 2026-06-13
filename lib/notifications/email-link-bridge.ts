@@ -1,4 +1,4 @@
-const defaultSiteUrl = "https://theanhmarketing.com";
+const defaultSiteUrl = "https://www.theanhmarketing.com";
 
 const allowedEmailLinkHosts = new Set([
   "theanhmarketing.com",
@@ -16,8 +16,8 @@ export function normalizeEmailSiteUrl(value?: string) {
     url.protocol = "https:";
     url.port = "";
 
-    if (url.hostname === "www.theanhmarketing.com") {
-      url.hostname = "theanhmarketing.com";
+    if (url.hostname === "theanhmarketing.com") {
+      url.hostname = "www.theanhmarketing.com";
     }
 
     return url.origin;
@@ -39,8 +39,8 @@ export function getAllowedEmailLinkTarget(rawTarget: string, siteUrl?: string) {
       return null;
     }
 
-    if (targetUrl.hostname === "www.theanhmarketing.com") {
-      targetUrl.hostname = "theanhmarketing.com";
+    if (targetUrl.hostname === "theanhmarketing.com") {
+      targetUrl.hostname = "www.theanhmarketing.com";
     }
 
     return targetUrl.toString();

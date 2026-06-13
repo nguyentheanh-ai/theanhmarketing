@@ -332,6 +332,10 @@ export function StudentAccessActions({
                 value={`${student.accessStatus} · ${student.paymentStatus} · ${student.role}`}
               />
               <InfoRow
+                label="Tiến độ học"
+                value={`${student.progressPercent}% · ${student.progressNote || "Chưa có hoạt động học tập"}`}
+              />
+              <InfoRow
                 label="Lịch sử hoạt động học viên"
                 value={
                   activityLogs.length > 0 ? (

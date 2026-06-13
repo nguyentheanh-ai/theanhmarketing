@@ -190,7 +190,7 @@ export function buildGoogleSheetOrderPayload(order: PaymentOrder, options: Googl
   const paidAt = order.paidAt ? formatVietnamDateTime(order.paidAt) : "";
   const expiresAt = order.expiresAt ? formatVietnamDateTime(order.expiresAt) : "";
   const source = options.source ?? "Website";
-  const attribution = order.attribution;
+  const attribution = order.attribution ?? ({} as PaymentOrder["attribution"]);
   const orderItems = order.orderItems.map((item) => `${item.title} (${item.slug}) - ${item.price}`).join(" | ");
   const syncedAt = new Date().toISOString();
 

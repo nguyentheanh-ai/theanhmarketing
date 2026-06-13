@@ -294,6 +294,12 @@ const coursePaymentPlans: Record<string, Record<string, { title: string; amount:
       amount: 1299000,
     },
   },
+  "ebook-facebook-ads-2026": {
+    "full-access-299": {
+      title: "Mở khóa thư viện Facebook Ads 2026",
+      amount: 299000,
+    },
+  },
   "bo-agent-kit-x10-hieu-suat-cong-viec": {
     "agent-kit-ads-359": {
       title: "Gói private ads 359K",

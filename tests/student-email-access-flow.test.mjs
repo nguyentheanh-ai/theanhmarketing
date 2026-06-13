@@ -84,8 +84,8 @@ test("paid student emails use the official access landing link", () => {
   );
 
   for (const payload of [paymentPayload, accessPayload]) {
-    assert.match(payload.html, /https:\/\/theanhmarketing\.com\/go\?to=https%3A%2F%2Ftheanhmarketing\.com%2Fvao-khoa-hoc/);
-    assert.match(payload.text, /https:\/\/theanhmarketing\.com\/vao-khoa-hoc/);
+    assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/go\?to=https%3A%2F%2Fwww\.theanhmarketing\.com%2Fvao-khoa-hoc/);
+    assert.match(payload.text, /https:\/\/www\.theanhmarketing\.com\/vao-khoa-hoc/);
     assert.match(payload.html, /Truy c.p khu v.c h.c vi.n/s);
     assert.match(payload.html, /theanhmarketing\.com/);
     assert.doesNotMatch(payload.html, /https:\/\/www\.theanhmarketing\.com\/dang-nhap\?next=%2Fdashboard/);

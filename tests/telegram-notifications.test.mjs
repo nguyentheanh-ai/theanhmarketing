@@ -106,16 +106,22 @@ test("telegram notification skips safely without bot config and posts through Bo
   }
 });
 
-test("order and payment routes send telegram notifications without blocking core flows", () => {
+test("checkout page sends order-created telegram after payment page opens", () => {
   const publicOrderRoute = read("app/api/orders/route.ts");
   const sessionOrderRoute = read("app/api/orders/from-session/route.ts");
+  const paymentPage = read("app/thanh-toan/[code]/page.tsx");
+  const checkoutNotifications = read("services/checkoutNotificationService.ts");
   const sepayWebhookRoute = read("app/api/sepay/webhook/route.ts");
 
   for (const source of [publicOrderRoute, sessionOrderRoute]) {
-    assert.match(source, /sendTelegramOrderNotification/);
-    assert.match(source, /"order_created"/);
-    assert.match(source, /Telegram order notification failed/);
+    assert.doesNotMatch(source, /sendTelegramOrderNotification/);
+    assert.doesNotMatch(source, /"order_created"/);
+    assert.doesNotMatch(source, /Telegram order notification failed/);
   }
+
+  assert.match(paymentPage, /sendCheckoutEntryNotifications/);
+  assert.match(checkoutNotifications, /sendTelegramOrderNotification\(order, "order_created"/);
+  assert.match(checkoutNotifications, /order_created_telegram_sent_at/);
 
   assert.match(sepayWebhookRoute, /sendTelegramOrderNotification/);
   assert.match(sepayWebhookRoute, /!confirmation\.wasAlreadyPaid/);

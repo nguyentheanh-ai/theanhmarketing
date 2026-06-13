@@ -100,7 +100,7 @@ test("builds a customer pending payment email with Sepay QR and payment page lin
     assert.match(payload.html, /Chưa thanh toán/);
     assert.match(payload.html, /399\.000đ/);
     assert.match(payload.html, /https:\/\/qr\.sepay\.vn\/img\?bank=VPB&amp;acc=0367928921&amp;amount=399000&amp;des=TAMDEMO0524/);
-    assert.match(payload.html, /https:\/\/theanhmarketing\.com\/thanh-toan\/TAMDEMO0524/);
+    assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/go\?to=https%3A%2F%2Fwww\.theanhmarketing\.com%2Fthanh-toan%2FTAMDEMO0524/);
     assert.match(payload.html, /Thông tin chuyển khoản để copy/);
     assert.match(payload.html, /Số tiền/);
     assert.match(payload.html, /399\.000đ/);
@@ -115,7 +115,7 @@ test("builds a customer pending payment email with Sepay QR and payment page lin
     assert.match(payload.text, /Số tiền: 399\.000đ/);
     assert.match(payload.text, /Số tài khoản: 0367928921/);
     assert.match(payload.text, /Nội dung chuyển khoản: TAMDEMO0524/);
-    assert.match(payload.text, /Trang thanh toán: https:\/\/theanhmarketing\.com\/thanh-toan\/TAMDEMO0524/);
+    assert.match(payload.text, /Trang thanh toán: https:\/\/www\.theanhmarketing\.com\/thanh-toan\/TAMDEMO0524/);
   } finally {
     if (previousBankCode === undefined) delete process.env.SEPAY_BANK_CODE;
     else process.env.SEPAY_BANK_CODE = previousBankCode;
@@ -155,7 +155,7 @@ test("includes Ads support agent link only for the Facebook Ads 799K support pac
   assert.doesNotMatch(payload.html, /Qu\?ng c\?o/);
   assert.match(payload.html, /Agent H/);
   assert.match(payload.text, /Agent H/);
-  assert.match(payload.html, /https:\/\/theanhmarketing\.com\/go\?to=https%3A%2F%2Fchatgpt\.com%2Fg%2Fg-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner/);
+  assert.match(payload.html, /https:\/\/www\.theanhmarketing\.com\/go\?to=https%3A%2F%2Fchatgpt\.com%2Fg%2Fg-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner/);
   assert.match(payload.text, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 });
 

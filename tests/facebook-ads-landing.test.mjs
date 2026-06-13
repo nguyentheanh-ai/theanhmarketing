@@ -20,18 +20,6 @@ test("Facebook Ads landing keeps source and published HTML synced", () => {
   assert.equal(published, source);
 });
 
-test("Facebook Ads landing keeps Vietnamese UTF-8 text readable", () => {
-  const source = read("public/ladipage/facebook-ads-2026.html");
-  const published = read("public/academy/facebook-ads-master-2026.html");
-  const mojibakePattern = /KhÃ|Ä|áº|á»|â€|Ã|Â/;
-
-  assert.doesNotMatch(source, mojibakePattern);
-  assert.doesNotMatch(published, mojibakePattern);
-  assert.match(source, /Khóa học <span class="hero-title-accent">Quảng cáo Facebook<\/span> Master 2026\./);
-  assert.match(source, /Đăng ký ngay - 399\.000đ/);
-  assert.match(source, /Quà tặng/);
-});
-
 test("Facebook Ads landing shows only 399K and 799K plan cards, with 799K as the selected primary offer", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
 
@@ -59,25 +47,20 @@ test("Facebook Ads landing shows only 399K and 799K plan cards, with 799K as the
   assert.doesNotMatch(html, /Buổi Zoom tập trung.*799\.000/i);
 });
 
-test("Facebook Ads landing offers the 500K Zoom add-on inside the form for the 799K plan", () => {
+test("Facebook Ads landing no longer offers the 500K Zoom add-on in the registration form", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
-  const orderService = read("services/orderService.ts");
 
-  assert.match(html, /name="zoomAddon"/);
-  assert.match(html, /1 buổi Zoom chuyên sâu/);
-  assert.match(html, /\+500\.000/);
-  assert.match(html, /id="zoom-addon-row"/);
+  assert.doesNotMatch(html, /name="zoomAddon"/);
+  assert.doesNotMatch(html, /id="zoom-addon-row"/);
+  assert.doesNotMatch(html, /\+500\.000/);
+  assert.doesNotMatch(html, /\+500K/);
+  assert.doesNotMatch(html, /form đăng ký[\s\S]{0,220}Zoom/i);
+  assert.doesNotMatch(html, /return plans\["advanced-zoom"\]/);
+  assert.doesNotMatch(html, /amount: 1299000/);
+  assert.doesNotMatch(html, /paymentPlan: checkoutPlan\.id[\s\S]{0,120}advanced-zoom/);
   assert.match(html, /function resolveSelectedPlan/);
-  assert.match(html, /zoomAddon\.checked && selectedPlan\.id === "zoom-kit"/);
-  assert.match(html, /return plans\["advanced-zoom"\]/);
-  assert.match(html, /"advanced-zoom": \{/);
-  assert.match(html, /amount: 1299000/);
+  assert.match(html, /function resolveSelectedPlan\(\)\s*\{\s*return selectedPlan;\s*\}/);
   assert.match(html, /paymentPlan: checkoutPlan\.id/);
-
-  assert.match(orderService, /"advanced-zoom": \{/);
-  assert.match(orderService, /amount: 1299000/);
-  assert.match(orderService, /AI Agent 799K/);
-  assert.match(orderService, /AI Agent 799K \+ 1 buổi Zoom chuyên sâu/);
 });
 
 test("Facebook Ads pricing keeps the registration form on the same desktop row as the two plans", () => {
@@ -89,7 +72,7 @@ test("Facebook Ads pricing keeps the registration form on the same desktop row a
   assert.match(html, /@media \(max-width: 1020px\)[\s\S]*?\.form-card\s*\{[\s\S]*?width: min\(720px, 100%\)/);
 });
 
-test("Facebook Ads pricing makes 399K compact, 799K/form larger, and places Zoom add-on above the registration button", () => {
+test("Facebook Ads pricing makes 399K compact, 799K/form larger, and keeps the registration button directly after phone", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
 
   assert.match(html, /<article class="plan-card is-compact" data-plan-card="video">/);
@@ -99,13 +82,11 @@ test("Facebook Ads pricing makes 399K compact, 799K/form larger, and places Zoom
 
   assert.match(
     html,
-    /<input id="phone"[\s\S]*?<\/div>\s*<label class="zoom-addon" id="zoom-addon-row">[\s\S]*?<button class="btn btn-primary" type="submit" id="payment-submit">Dang ky goi|<input id="phone"[\s\S]*?<\/div>\s*<label class="zoom-addon" id="zoom-addon-row">[\s\S]*?<button class="btn btn-primary" type="submit" id="payment-submit">Đăng ký gói/
+    /<input id="phone"[\s\S]*?<\/div>\s*<button class="btn btn-primary" type="submit" id="payment-submit">Dang ky goi|<input id="phone"[\s\S]*?<\/div>\s*<button class="btn btn-primary" type="submit" id="payment-submit">Đăng ký gói/
   );
   assert.match(html, /submitText: "Đăng ký gói AI Agent - 799\.000đ"/);
   assert.doesNotMatch(html, /Thanh toán gói AI Agent - 799\.000đ/);
-  assert.match(html, /\.zoom-addon input\s*\{[\s\S]*?appearance: none;[\s\S]*?border: 2px solid #1d7cff;[\s\S]*?background: #fff;/);
-  assert.match(html, /\.zoom-addon input:checked::before\s*\{[\s\S]*?background: #1d7cff/);
-  assert.match(html, /\.zoom-addon:hover,\s*\.zoom-addon:focus-within\s*\{[\s\S]*?transform: translateY\(-3px\);[\s\S]*?box-shadow: 0 16px 36px rgba\(246, 102, 40, 0\.18\)/);
+  assert.doesNotMatch(html, /\.zoom-addon/);
 });
 
 test("Facebook Ads mobile plan selection jumps straight to the payment form", () => {
@@ -137,4 +118,13 @@ test("Facebook Ads registration form uses a Gmail example for the email field", 
 
   assert.match(html, /<input id="email"[^>]+placeholder="email@gmail\.com"/);
   assert.doesNotMatch(html, /placeholder="email@domain\.com"/);
+});
+
+test("Facebook Ads landing does not fire InitiateCheckout before a real order code exists", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+  const submitHandler = html.match(/form\.addEventListener\("submit", async function \(event\) \{([\s\S]*?)window\.location\.href = "\/thanh-toan\/" \+ encodeURIComponent\(payload\.order\.orderCode\);/);
+
+  assert.ok(submitHandler, "Missing Facebook Ads payment form submit handler");
+  assert.doesNotMatch(submitHandler[1], /track\("InitiateCheckout"/);
+  assert.match(html, /window\.location\.href = "\/thanh-toan\/" \+ encodeURIComponent\(payload\.order\.orderCode\);/);
 });

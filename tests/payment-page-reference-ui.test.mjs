@@ -73,7 +73,7 @@ test("payment helper components support the light checkout design while keeping 
   assert.match(poller, /variant\?: "dark" \| "light"/);
   assert.match(poller, /checkoutTrackedRef/);
   assert.match(poller, /InitiateCheckout/);
-  assert.match(poller, /Purchase/);
+  assert.doesNotMatch(poller, /trackMarketingEvent\("Purchase"/);
   assert.match(poller, /Spam/);
   assert.match(poller, /Promotions/);
   assert.match(poller, /Đang chờ chuyển khoản/);
