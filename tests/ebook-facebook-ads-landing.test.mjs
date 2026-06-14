@@ -92,6 +92,12 @@ test("Ebook Facebook Ads landing has a pinned bottom preorder CTA", () => {
   assert.match(html, /<strong>Th\u01B0 vi\u1EC7n ki\u1EBFn th\u1EE9c &amp; th\u1EF1c h\u00E0nh Facebook Ads<\/strong>/);
   assert.match(html, /<span class="sticky-cta-icon"><img src="\/brand\/ta-logo\.svg" alt="The Anh Marketing"><\/span>/);
   assert.doesNotMatch(html, /<span class="sticky-cta-icon">TA<\/span>/);
+  assert.match(html, /\.sticky-cta-icon\s*\{[\s\S]*?display:\s*inline-grid;[\s\S]*?place-items:\s*center;[\s\S]*?line-height:\s*0;/);
+  assert.match(html, /\.sticky-cta-icon img\s*\{[\s\S]*?width:\s*31px;[\s\S]*?height:\s*18px;[\s\S]*?transform:\s*translateY\(1px\);/);
+  assert.match(html, /\.sticky-cta-icon img\s*\{\s*width:\s*28px;\s*height:\s*16px;\s*\}/);
+  assert.doesNotMatch(html, /\.sticky-cta-icon img\s*\{[\s\S]*?height:\s*28px;/);
+  assert.match(html, /\.sticky-cta-info > div > span\s*\{[\s\S]*?font-size:\s*13px;/);
+  assert.doesNotMatch(html, /\.sticky-cta span\s*\{/);
   assert.match(html, /<b class="sticky-cta-original">799\.000\u0111<\/b>/);
   assert.match(html, /<b class="sticky-cta-price">299\.000\u0111<\/b>/);
   assert.match(html, /<a class="btn btn-gold" href="#offer">\u0110\u1EB7t tr\u01B0\u1EDBc ngay \u2192<\/a>/);
