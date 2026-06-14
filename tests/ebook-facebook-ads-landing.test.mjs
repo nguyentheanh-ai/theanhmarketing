@@ -18,8 +18,10 @@ test("Ebook Facebook Ads landing uses preorder CTA copy", () => {
   const html = read("public/ladipage/ebook-facebook-ads-2026.html");
 
   assert.match(html, /\u0110\u1EB7t tr\u01B0\u1EDBc th\u01B0 vi\u1EC7n Facebook Ads 2026/);
+  assert.match(html, /Xem tr\u01B0\u1EDBc Ebook/);
   assert.match(html, /\u0110\u1EB7t tr\u01B0\u1EDBc quy\u1EC1n truy c\u1EADp ngay/);
   assert.doesNotMatch(html, /M\u1EDF kh\u00F3a quy\u1EC1n truy c\u1EADp ngay/);
+  assert.doesNotMatch(html, /Xem b\u00EAn trong c\u00F3 g\u00EC/);
 });
 
 test("Ebook Facebook Ads landing uses the real The Anh Marketing logo", () => {
