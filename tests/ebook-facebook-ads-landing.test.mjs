@@ -20,6 +20,7 @@ test("Ebook Facebook Ads landing uses preorder CTA copy", () => {
   assert.match(html, /\u0110\u1EB7t tr\u01B0\u1EDBc th\u01B0 vi\u1EC7n Facebook Ads 2026/);
   assert.match(html, /Xem tr\u01B0\u1EDBc Ebook/);
   assert.match(html, /Outline Ebook/);
+  assert.match(html, /Th\u01B0 vi\u1EC7n ki\u1EBFn th\u1EE9c &amp; th\u1EF1c h\u00E0nh Facebook Ads/);
   assert.match(html, /M\u1EA5t nhi\u1EC1u th\u1EDDi gian \u0111\u1EC3 <span class="gold">t\u00ECm h\u01B0\u1EDBng d\u1EABn<\/span> cho nh\u1EEFng <span class="gold">thao t\u00E1c \u0111\u01A1n gi\u1EA3n<\/span>\./);
   assert.match(html, /L\u1EE5c video qu\u00E1 l\u00E2u/);
   assert.match(html, /Kh\u00F4ng bi\u1EBFt m\u1EDF b\u00E0i n\u00E0o/);
@@ -66,6 +67,36 @@ test("Ebook Facebook Ads landing uses preorder CTA copy", () => {
   assert.doesNotMatch(html, /Live th\u01B0 vi\u1EC7n th\u1EF1c h\u00E0nh/);
   assert.doesNotMatch(html, /Kh\u00F4ng thi\u1EBFu video\. Thi\u1EBFu b\u1EA3n \u0111\u1ED3 \u0111\u1EC3 bi\u1EBFt s\u1EEDa g\u00EC tr\u01B0\u1EDBc\./);
   assert.doesNotMatch(html, /ph\u1EA7n ki\u1EBFn th\u1EE9c theo t\u00ECnh hu\u1ED1ng ch\u1EA1y ads/);
+});
+
+test("Ebook Facebook Ads landing has a pinned bottom preorder CTA", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026.html");
+
+  assert.match(html, /body \{[\s\S]*?padding-bottom:\s*92px;/);
+  assert.match(html, /\.sticky-cta\s*\{/);
+  assert.match(html, /position:\s*fixed;[\s\S]*?bottom:\s*0;/);
+  assert.match(html, /<div class="sticky-cta" aria-label="\u0110\u1EB7t tr\u01B0\u1EDBc th\u01B0 vi\u1EC7n Facebook Ads 2026">/);
+  assert.match(html, /<strong>Th\u01B0 vi\u1EC7n ki\u1EBFn th\u1EE9c &amp; th\u1EF1c h\u00E0nh Facebook Ads<\/strong>/);
+  assert.match(html, /<b class="sticky-cta-price">299\.000\u0111<\/b>/);
+  assert.match(html, /<a class="btn btn-gold" href="#offer">\u0110\u1EB7t tr\u01B0\u1EDBc ngay \u2192<\/a>/);
+});
+
+test("Ebook Facebook Ads preview opens full screen and searches only part 1 topics", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026.html");
+
+  assert.match(html, /\.ebook-preview\.is-focused\s*\{[\s\S]*?inset:\s*0;/);
+  assert.match(html, /\.ebook-preview\.is-focused\s*\{[\s\S]*?width:\s*100vw;/);
+  assert.match(html, /\.ebook-preview\.is-focused\s*\{[\s\S]*?height:\s*100dvh;/);
+  assert.match(html, /\.ebook-preview\.is-focused \.ebook-stage\s*\{[\s\S]*?place-items:\s*center;/);
+  assert.match(html, /\.ebook-preview\.is-focused \.page-frame img\s*\{[\s\S]*?object-fit:\s*contain;/);
+  assert.doesNotMatch(html, /\.ebook-preview\.is-focused\s*\{[\s\S]*?transform:\s*translate\(-50%, -50%\) scale\(1\.02\)/);
+  assert.match(html, /placeholder="T\u00ECm: Facebook Ads l\u00E0 g\u00EC, t\u00EDnh ti\u1EC1n, CPM, \u0111\u1EA5u gi\u00E1\.\.\."/);
+  assert.doesNotMatch(html, /placeholder="T\u00ECm: pixel, target/);
+  assert.doesNotMatch(html, /terms:\s*\[[^\]]*"pixel"/);
+  assert.doesNotMatch(html, /terms:\s*\[[^\]]*"target"/);
+  assert.match(html, /terms:\s*\["facebook ads l\u00E0 g\u00EC", "doanh nghi\u1EC7p"\]/);
+  assert.match(html, /terms:\s*\["\u0111\u1EA5u gi\u00E1", "gi\u00E1 th\u1EA7u", "ph\u00E2n ph\u1ED1i"\]/);
+  assert.match(html, /terms:\s*\["campaign", "ad set", "ad", "c\u1EA5u tr\u00FAc"\]/);
 });
 
 test("Ebook Facebook Ads landing adds a light color-wash hover effect", () => {
