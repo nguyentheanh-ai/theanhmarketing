@@ -576,6 +576,7 @@ Before changing these, run targeted tests and full build.
   - Blog posts can use optional `thumbnail` and `publishedAt`; AI Leaders thumbnails are under `public/blog-thumbnails/ai-leaders`.
   - `/blog/[slug]` builds the table of contents from `h2`/`h3` content headings and renders a hero image when `thumbnail` exists.
 - Keep course/student/payment/pixel data logic stable when changing UI.
+- Meta tracking update 2026-06-14: `components/auth/register-form.tsx` fires browser `CompleteRegistration` after `/api/orders` succeeds. Payload must include `event_id` and `order_id` from `orderData.order.orderCode`, `value` from `orderData.order.amount`, and `currency` fallback `"VND"` so Meta Events Manager does not flag missing currency/ROAS issues. Guard: `tests/meta-conversions-api.test.mjs`. Deployed production `dpl_EDEwYpeV5VPCkvxZnD5ZvN84uPkR`; live `/dang-ky` JS chunk confirmed the new payload.
 - Private ads landing `app/khoa-hoc/bo-kit-agent-doanh-nghiep/page.tsx` uses source facts from `E:\TheAnh-Business-Workspace\05_AI_Growth_Kit_Product` and the route is `noindex`. The visible ads price is `359K` through payment plan `agent-kit-ads-359`; do not change the global course price `Bo Agent Kit X10` from `799K` unless the owner explicitly asks.
 - Facebook Ads 2026 checkout must stay separate from Agent Kit private ads checkout. Do not classify an order as Agent Kit from product title text like `Agent kit`; use `courseSlug`/item slug. Verified live 2026-06-05: `TAMMPX99H22LJP8R` shows `2.590.000d -> 799.000d`, `TAMMPYBBP2110IHA` shows `2.290.000d -> 399.000d`, and neither shows `Giu gia 359K` or `AI Agent Business`.
 - Deployed 2026-06-08 in `dpl_DSCncK46ydco5XjuDcvK4n4jMDoB`: Facebook Ads Master 2026 LadiPage shows only 399K and featured 799K cards; 799K includes AI Agent planning ads. Updated 2026-06-11: the public landing form no longer shows optional Zoom +500K, no longer has `zoomAddon`, and only submits visible plans `video` or `zoom-kit`; keep `advanced-zoom` only for historical orders unless owner asks otherwise. Card hover/click selects the plan; mobile selection scrolls to the form; email placeholder is `email@gmail.com`. Payment success email CTA must point to `/vao-khoa-hoc`, not direct `/dang-nhap`. Pending-payment transfer amount is formatted with `amountLabel`.
@@ -644,6 +645,7 @@ Before changing these, run targeted tests and full build.
 ### Sua Meta Pixel/CAPI
 
 1. Client page events: `components/site/tracking-page-view.tsx`, `lib/tracking/events.ts`.
-2. Server CAPI: `lib/meta/conversions-api.ts`.
-3. Never expose token.
-4. Run `tests/meta-conversions-api.test.mjs`.
+2. Registration completion event: `components/auth/register-form.tsx`; keep `CompleteRegistration` currency/value/order fields.
+3. Server CAPI: `lib/meta/conversions-api.ts`.
+4. Never expose token.
+5. Run `tests/meta-conversions-api.test.mjs`.

@@ -212,3 +212,15 @@ test("all sales landing surfaces include only primary browser Pixel and pass att
   assert.match(paymentPoller, /trackMarketingEvent\("InitiateCheckout"/);
   assert.match(paymentPoller, /event_id: order\.orderCode/);
 });
+
+test("email registration completion sends valid Meta currency and order value", () => {
+  const registerForm = read("components/auth/register-form.tsx");
+
+  assert.match(registerForm, /trackMarketingEvent\("CompleteRegistration"/);
+  assert.match(registerForm, /event_id: orderData\.order\.orderCode/);
+  assert.match(registerForm, /order_id: orderData\.order\.orderCode/);
+  assert.match(registerForm, /content_type: "product"/);
+  assert.match(registerForm, /value: orderData\.order\.amount \?\? 0/);
+  assert.match(registerForm, /currency: orderData\.order\.currency \|\| "VND"/);
+  assert.doesNotMatch(registerForm, /currency:\s*""/);
+});

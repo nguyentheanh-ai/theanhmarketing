@@ -125,7 +125,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
     });
     const orderData = (await orderResponse.json()) as {
       ok?: boolean;
-      order?: { orderCode: string };
+      order?: { orderCode: string; amount?: number; currency?: string };
       message?: string;
     };
 
@@ -137,9 +137,14 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
 
     clearCart();
     trackMarketingEvent("CompleteRegistration", {
+      event_id: orderData.order.orderCode,
+      order_id: orderData.order.orderCode,
       content_ids: orderCourseSlugs,
       content_name: interestedCourse,
+      content_type: "product",
       method: "email",
+      value: orderData.order.amount ?? 0,
+      currency: orderData.order.currency || "VND",
     });
     router.push(`/thanh-toan/${orderData.order.orderCode}`);
   }
