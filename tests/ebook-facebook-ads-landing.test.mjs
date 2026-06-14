@@ -21,12 +21,27 @@ test("Ebook Facebook Ads landing uses preorder CTA copy", () => {
   assert.match(html, /Xem tr\u01B0\u1EDBc Ebook/);
   assert.match(html, /Outline Ebook/);
   assert.match(html, /M\u1EA5t nhi\u1EC1u th\u1EDDi gian \u0111\u1EC3 <span class="gold">t\u00ECm h\u01B0\u1EDBng d\u1EABn<\/span> cho nh\u1EEFng <span class="gold">thao t\u00E1c \u0111\u01A1n gi\u1EA3n<\/span>\./);
+  assert.match(html, /L\u1EE5c video qu\u00E1 l\u00E2u/);
+  assert.match(html, /Kh\u00F4ng bi\u1EBFt m\u1EDF b\u00E0i n\u00E0o/);
+  assert.match(html, /Ph\u1EA3i h\u1ECFi l\u1EA1i t\u1EEBng b\u01B0\u1EDBc/);
   assert.match(html, /\u0110\u1EB7t tr\u01B0\u1EDBc quy\u1EC1n truy c\u1EADp ngay/);
   assert.doesNotMatch(html, /M\u1EDF kh\u00F3a quy\u1EC1n truy c\u1EADp ngay/);
+  assert.doesNotMatch(html, /M\u1EE5c ti\u00EAu sai/);
+  assert.doesNotMatch(html, /T\u1EC7p kh\u00F4ng r\u00F5/);
+  assert.doesNotMatch(html, /\u0110\u1ECDc s\u1ED1 c\u1EA3m t\u00EDnh/);
   assert.doesNotMatch(html, /Xem b\u00EAn trong c\u00F3 g\u00EC/);
   assert.doesNotMatch(html, /Live th\u01B0 vi\u1EC7n th\u1EF1c h\u00E0nh/);
   assert.doesNotMatch(html, /Kh\u00F4ng thi\u1EBFu video\. Thi\u1EBFu b\u1EA3n \u0111\u1ED3 \u0111\u1EC3 bi\u1EBFt s\u1EEDa g\u00EC tr\u01B0\u1EDBc\./);
   assert.doesNotMatch(html, /ph\u1EA7n ki\u1EBFn th\u1EE9c theo t\u00ECnh hu\u1ED1ng ch\u1EA1y ads/);
+});
+
+test("Ebook Facebook Ads landing adds a light color-wash hover effect", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026.html");
+
+  assert.match(html, /\.problem-card::before/);
+  assert.match(html, /\.quick-card:hover::before/);
+  assert.match(html, /radial-gradient\(circle at 24% 18%, rgba\(255, 213, 95, \.26\), transparent 30%\)/);
+  assert.match(html, /transition: opacity \.28s ease, transform \.42s ease/);
 });
 
 test("Ebook Facebook Ads landing uses the real The Anh Marketing logo", () => {

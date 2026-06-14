@@ -1203,6 +1203,62 @@
       font-weight: 900;
     }
     details p { margin-top: 10px; }
+    .btn,
+    .announcement,
+    .problem-card,
+    .card,
+    .flow-step,
+    .version-card,
+    .part-card,
+    .quick-card,
+    details {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::before,
+    .announcement::before,
+    .problem-card::before,
+    .card::before,
+    .flow-step::before,
+    .version-card::before,
+    .part-card::before,
+    .quick-card::before,
+    details::before {
+      content: "";
+      position: absolute;
+      inset: -42%;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 24% 18%, rgba(255, 213, 95, .26), transparent 30%),
+        radial-gradient(circle at 76% 62%, rgba(0, 141, 255, .17), transparent 34%);
+      opacity: 0;
+      transform: scale(.86) rotate(-5deg);
+      transition: opacity .28s ease, transform .42s ease;
+      pointer-events: none;
+    }
+    .btn:hover::before,
+    .announcement:hover::before,
+    .problem-card:hover::before,
+    .card:hover::before,
+    .flow-step:hover::before,
+    .version-card:hover::before,
+    .part-card:hover::before,
+    .quick-card:hover::before,
+    details:hover::before {
+      opacity: 1;
+      transform: scale(1.03) rotate(0deg);
+    }
+    .announcement > *,
+    .problem-card > *,
+    .card > *,
+    .flow-step > *,
+    .version-card > *,
+    .part-card > *,
+    .quick-card > *,
+    details > * {
+      position: relative;
+      z-index: 1;
+    }
 
     .final-cta {
       position: relative;
@@ -1353,18 +1409,18 @@
         <div class="problem-cards">
           <article class="problem-card">
             <div class="card-icon">01</div>
-            <h3>Mục tiêu sai</h3>
-            <p>Muốn đơn hàng nhưng chọn mục tiêu không đúng phễu.</p>
+            <h3>Lục video quá lâu</h3>
+            <p>Chỉ cần một thao tác nhỏ nhưng phải tua lại video dài để tìm đúng đoạn hướng dẫn.</p>
           </article>
           <article class="problem-card">
             <div class="card-icon">02</div>
-            <h3>Tệp không rõ</h3>
-            <p>Không biết target, loại trừ và remarketing theo dữ liệu nào.</p>
+            <h3>Không biết mở bài nào</h3>
+            <p>Pixel, target, mẫu quảng cáo và đọc chỉ số nằm rải rác, càng tìm càng mất mạch làm.</p>
           </article>
           <article class="problem-card">
             <div class="card-icon">03</div>
-            <h3>Đọc số cảm tính</h3>
-            <p>Thấy rẻ thì tăng tiền, thấy đắt thì tắt, nhưng không nhìn theo phễu.</p>
+            <h3>Phải hỏi lại từng bước</h3>
+            <p>Mỗi lần kẹt lại phải hỏi group hoặc nhân sự, trong khi chỉ cần một hướng dẫn ngắn để làm tiếp.</p>
           </article>
         </div>
       </div>
