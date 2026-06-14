@@ -72,6 +72,11 @@ const nextConfig: NextConfig = {
         destination: "/khoa-hoc",
         permanent: false,
       },
+      {
+        source: "/academy/ebook-facebook-ads-2026.html",
+        destination: "/academy/ebook-facebook-ads-2026",
+        permanent: false,
+      },
     ];
   },
   async rewrites() {

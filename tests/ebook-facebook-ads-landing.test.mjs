@@ -83,6 +83,7 @@ test("Ebook Facebook Ads payment plan is configured as a separate 299K product",
   assert.match(paymentPage, /productHref:\s*"\/academy\/ebook-facebook-ads-2026"/);
   assert.match(paymentPage, /currentPriceLabel:\s*"299\.000đ"/);
   assert.match(ordersRoute, /LDP Ebook Facebook Ads 2026/);
+  assert.match(nextConfig, /source:\s*"\/academy\/ebook-facebook-ads-2026\.html"[\s\S]*?destination:\s*"\/academy\/ebook-facebook-ads-2026"/);
   assert.match(nextConfig, /source:\s*"\/academy\/ebook-facebook-ads-2026"[\s\S]*?destination:\s*"\/academy\/ebook-facebook-ads-2026\.html"/);
   assert.ok(
     !fs.existsSync(path.resolve("app/academy/ebook-facebook-ads-2026/route.ts")),
