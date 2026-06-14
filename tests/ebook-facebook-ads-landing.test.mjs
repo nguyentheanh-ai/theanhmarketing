@@ -22,6 +22,13 @@ test("Ebook Facebook Ads landing uses preorder CTA copy", () => {
   assert.doesNotMatch(html, /M\u1EDF kh\u00F3a quy\u1EC1n truy c\u1EADp ngay/);
 });
 
+test("Ebook Facebook Ads landing uses the real The Anh Marketing logo", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026.html");
+
+  assert.match(html, /<img src="\/brand\/ta-logo\.svg" alt="The Anh Marketing">/);
+  assert.doesNotMatch(html, /<span class="brand-mark">TA<\/span>/);
+});
+
 test("Ebook Facebook Ads landing uses deployed PNG preview assets", () => {
   const html = read("public/ladipage/ebook-facebook-ads-2026.html");
 
@@ -66,7 +73,6 @@ test("Ebook Facebook Ads payment plan is configured as a separate 299K product",
   const paymentPage = read("app/thanh-toan/[code]/page.tsx");
   const ordersRoute = read("app/api/orders/route.ts");
   const nextConfig = read("next.config.ts");
-  const cleanRoute = read("app/academy/ebook-facebook-ads-2026/route.ts");
   const proxy = read("proxy.ts");
 
   assert.match(courses, /slug:\s*"ebook-facebook-ads-2026"/);
@@ -78,8 +84,10 @@ test("Ebook Facebook Ads payment plan is configured as a separate 299K product",
   assert.match(paymentPage, /currentPriceLabel:\s*"299\.000đ"/);
   assert.match(ordersRoute, /LDP Ebook Facebook Ads 2026/);
   assert.match(nextConfig, /source:\s*"\/academy\/ebook-facebook-ads-2026"[\s\S]*?destination:\s*"\/academy\/ebook-facebook-ads-2026\.html"/);
-  assert.match(cleanRoute, /NextResponse\.redirect/);
-  assert.match(cleanRoute, /\/academy\/ebook-facebook-ads-2026\.html/);
+  assert.ok(
+    !fs.existsSync(path.resolve("app/academy/ebook-facebook-ads-2026/route.ts")),
+    "Clean ebook URL must be served by rewrite, not redirected to .html",
+  );
   assert.match(proxy, /pathname === "\/academy\/ebook-facebook-ads-2026"/);
   assert.match(proxy, /pathname === "\/academy\/ebook-facebook-ads-2026\.html"/);
 });

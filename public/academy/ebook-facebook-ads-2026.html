@@ -98,14 +98,23 @@
       font-weight: 900;
     }
     .brand-mark {
-      width: 42px;
+      width: 74px;
       height: 42px;
-      display: grid;
-      place-items: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       border-radius: 14px;
-      background: #071225;
-      color: #fff;
-      box-shadow: 0 14px 34px rgba(7, 92, 255, .18);
+      background: #fff;
+      border: 1px solid rgba(7, 18, 37, .08);
+      box-shadow: 0 14px 34px rgba(7, 92, 255, .14);
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+    .brand-mark img {
+      width: 64px;
+      height: 36px;
+      object-fit: contain;
+      display: block;
     }
     .nav-links {
       display: flex;
@@ -1278,7 +1287,7 @@
   <nav class="nav">
     <div class="wrap nav-inner">
       <a class="brand" href="#top" aria-label="The Anh Marketing">
-        <span class="brand-mark">TA</span>
+        <span class="brand-mark"><img src="/brand/ta-logo.svg" alt="The Anh Marketing"></span>
         <span>Facebook Ads 2026</span>
       </a>
       <div class="nav-links">
