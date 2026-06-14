@@ -1593,11 +1593,16 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
-      color: #17100a;
-      background: linear-gradient(135deg, #ffe08a, var(--gold));
+      border-radius: 13px;
+      background: #fff;
       box-shadow: 0 16px 30px rgba(209, 144, 17, .28);
-      font-weight: 900;
+      overflow: hidden;
+    }
+    .sticky-cta-icon img {
+      width: 34px;
+      height: 28px;
+      object-fit: contain;
+      display: block;
     }
     .sticky-cta strong {
       display: block;
@@ -1613,6 +1618,13 @@
     }
     .sticky-cta-price {
       color: #ffd46f;
+      font-weight: 900;
+    }
+    .sticky-cta-original {
+      color: rgba(255,255,255,.5);
+      text-decoration: line-through;
+      text-decoration-thickness: 2px;
+      text-decoration-color: rgba(255, 212, 111, .62);
       font-weight: 900;
     }
     .sticky-cta .btn {
@@ -1707,6 +1719,7 @@
       }
       .sticky-cta-info { grid-template-columns: 36px minmax(0, 1fr); gap: 10px; }
       .sticky-cta-icon { width: 36px; height: 36px; }
+      .sticky-cta-icon img { width: 30px; height: 25px; }
       .sticky-cta strong { font-size: 14px; }
       .sticky-cta span { font-size: 12px; }
       .sticky-cta .btn { width: 100%; min-height: 46px; }
@@ -2155,10 +2168,10 @@
   <div class="sticky-cta" aria-label="Đặt trước thư viện Facebook Ads 2026">
     <div class="wrap sticky-cta-inner">
       <div class="sticky-cta-info">
-        <span class="sticky-cta-icon">TA</span>
+        <span class="sticky-cta-icon"><img src="/brand/ta-logo.svg" alt="The Anh Marketing"></span>
         <div>
           <strong>Thư viện kiến thức &amp; thực hành Facebook Ads</strong>
-          <span>Đặt trước <b class="sticky-cta-price">299.000đ</b> - truy cập toàn bộ thư viện</span>
+          <span>Giá gốc <b class="sticky-cta-original">799.000đ</b> - đặt trước <b class="sticky-cta-price">299.000đ</b></span>
         </div>
       </div>
       <a class="btn btn-gold" href="#offer">Đặt trước ngay →</a>

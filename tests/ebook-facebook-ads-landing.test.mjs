@@ -77,6 +77,9 @@ test("Ebook Facebook Ads landing has a pinned bottom preorder CTA", () => {
   assert.match(html, /position:\s*fixed;[\s\S]*?bottom:\s*0;/);
   assert.match(html, /<div class="sticky-cta" aria-label="\u0110\u1EB7t tr\u01B0\u1EDBc th\u01B0 vi\u1EC7n Facebook Ads 2026">/);
   assert.match(html, /<strong>Th\u01B0 vi\u1EC7n ki\u1EBFn th\u1EE9c &amp; th\u1EF1c h\u00E0nh Facebook Ads<\/strong>/);
+  assert.match(html, /<span class="sticky-cta-icon"><img src="\/brand\/ta-logo\.svg" alt="The Anh Marketing"><\/span>/);
+  assert.doesNotMatch(html, /<span class="sticky-cta-icon">TA<\/span>/);
+  assert.match(html, /<b class="sticky-cta-original">799\.000\u0111<\/b>/);
   assert.match(html, /<b class="sticky-cta-price">299\.000\u0111<\/b>/);
   assert.match(html, /<a class="btn btn-gold" href="#offer">\u0110\u1EB7t tr\u01B0\u1EDBc ngay \u2192<\/a>/);
 });
