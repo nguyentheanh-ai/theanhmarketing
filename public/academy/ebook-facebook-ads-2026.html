@@ -1214,6 +1214,7 @@
     details {
       position: relative;
       overflow: hidden;
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background .22s ease;
     }
     .btn::before,
     .announcement::before,
@@ -1248,6 +1249,23 @@
       opacity: 1;
       transform: scale(1.03) rotate(0deg);
     }
+    .btn:hover,
+    .announcement:hover,
+    .problem-card:hover,
+    .card:hover,
+    .flow-step:hover,
+    .version-card:hover,
+    .part-card:hover,
+    .quick-card:hover,
+    details:hover {
+      transform: translateY(-3px) scale(1.018);
+      border-color: rgba(0, 119, 255, .22);
+      box-shadow: 0 22px 54px rgba(6, 43, 106, .14);
+    }
+    .btn:hover {
+      transform: translateY(-3px) scale(1.025);
+      box-shadow: 0 20px 44px rgba(7, 92, 255, .24);
+    }
     .announcement > *,
     .problem-card > *,
     .card > *,
@@ -1258,6 +1276,41 @@
     details > * {
       position: relative;
       z-index: 1;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .btn,
+      .announcement,
+      .problem-card,
+      .card,
+      .flow-step,
+      .version-card,
+      .part-card,
+      .quick-card,
+      details {
+        transition: none;
+      }
+      .btn:hover,
+      .announcement:hover,
+      .problem-card:hover,
+      .card:hover,
+      .flow-step:hover,
+      .version-card:hover,
+      .part-card:hover,
+      .quick-card:hover,
+      details:hover {
+        transform: none;
+      }
+      .btn::before,
+      .announcement::before,
+      .problem-card::before,
+      .card::before,
+      .flow-step::before,
+      .version-card::before,
+      .part-card::before,
+      .quick-card::before,
+      details::before {
+        transition: none;
+      }
     }
 
     .final-cta {

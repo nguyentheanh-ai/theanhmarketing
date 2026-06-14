@@ -42,6 +42,9 @@ test("Ebook Facebook Ads landing adds a light color-wash hover effect", () => {
   assert.match(html, /\.quick-card:hover::before/);
   assert.match(html, /radial-gradient\(circle at 24% 18%, rgba\(255, 213, 95, \.26\), transparent 30%\)/);
   assert.match(html, /transition: opacity \.28s ease, transform \.42s ease/);
+  assert.match(html, /transform: translateY\(-3px\) scale\(1\.018\)/);
+  assert.match(html, /transform: translateY\(-3px\) scale\(1\.025\)/);
+  assert.match(html, /prefers-reduced-motion: reduce/);
 });
 
 test("Ebook Facebook Ads landing uses the real The Anh Marketing logo", () => {
