@@ -44,6 +44,10 @@ test("Ebook Facebook Ads landing adds a light color-wash hover effect", () => {
   assert.match(html, /transition: opacity \.28s ease, transform \.42s ease/);
   assert.match(html, /transform: translateY\(-3px\) scale\(1\.018\)/);
   assert.match(html, /transform: translateY\(-3px\) scale\(1\.025\)/);
+  assert.match(html, /\.browser-card:hover/);
+  assert.match(html, /\.order-box:hover/);
+  assert.match(html, /\.reveal\.is-visible\.card:hover/);
+  assert.match(html, /\.reveal\.is-visible\.ebook-preview:not\(\.is-focused\):hover/);
   assert.match(html, /prefers-reduced-motion: reduce/);
 });
 
