@@ -415,6 +415,65 @@
     }
     .card h3 { margin-bottom: 10px; }
     .card p { font-size: 15px; }
+    .section-note-card {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 16px;
+      align-items: center;
+      margin: -8px 0 20px;
+      border: 1px solid rgba(7, 92, 255, .14);
+      border-radius: 22px;
+      background: linear-gradient(135deg, #ffffff, #f2f7ff);
+      box-shadow: 0 16px 44px rgba(6, 43, 106, .08);
+      padding: 18px 20px;
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+    .section-note-card::before {
+      content: "";
+      position: absolute;
+      inset: -55%;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 18% 28%, rgba(255, 213, 95, .28), transparent 30%),
+        radial-gradient(circle at 78% 72%, rgba(0, 141, 255, .16), transparent 34%);
+      opacity: 0;
+      transform: scale(.9);
+      transition: opacity .28s ease, transform .42s ease;
+      pointer-events: none;
+    }
+    .section-note-card:hover {
+      transform: translateY(-3px) scale(1.012);
+      border-color: rgba(0, 119, 255, .22);
+      box-shadow: 0 22px 54px rgba(6, 43, 106, .13);
+    }
+    .section-note-card:hover::before {
+      opacity: 1;
+      transform: scale(1.03);
+    }
+    .section-note-card > * {
+      position: relative;
+      z-index: 1;
+    }
+    .section-note-card span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      border-radius: 999px;
+      background: #eaf3ff;
+      color: var(--blue);
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .section-note-card p {
+      color: #2d405c;
+      font-size: 16px;
+      font-weight: 800;
+    }
     .metric-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1472,6 +1531,9 @@
     .reveal.is-visible.ebook-preview:not(.is-focused):hover {
       transform: translateY(-3px) scale(1.018);
     }
+    .reveal.is-visible.section-note-card:hover {
+      transform: translateY(-3px) scale(1.012);
+    }
 
     @media (max-width: 980px) {
       .nav-links { display: none; }
@@ -1496,6 +1558,7 @@
       .announcement { grid-template-columns: 1fr; }
       .card, .problem-panel, .content-dashboard, .offer-main, .order-box { padding: 20px; border-radius: 18px; }
       .ebook-toolbar, .ebook-search { grid-template-columns: 1fr; }
+      .section-note-card { grid-template-columns: 1fr; }
       .preview-focus-toggle,
       .preview-focus-close { width: 100%; }
       .ebook-stage { padding: 12px 44px; }
@@ -1691,8 +1754,8 @@
           <span class="eyebrow">Cách dùng</span>
           <h2>Vướng đâu, mở đúng phần đó.</h2>
         </div>
-        <p>Khi đang chạy quảng cáo thật, điều quan trọng là tìm được đúng phần để xử lý nhanh, không học lan man và không ra quyết định theo cảm giác.</p>
       </div>
+      <div class="section-note-card reveal"><span>Gợi ý dùng</span><p>Khi đang chạy quảng cáo thật, điều quan trọng là tìm được đúng phần để xử lý nhanh, không học lan man và không ra quyết định theo cảm giác.</p></div>
       <ul class="quick-list">
         <li class="reveal"><span>01</span>Chạy quảng cáo tin nhắn: mở mục tiêu và thực hành tạo quảng cáo.</li>
         <li class="reveal"><span>02</span>Setup Pixel/CAPI: mở phần dữ liệu, sự kiện và kiểm tra đo lường.</li>
@@ -1792,8 +1855,8 @@
           <span class="eyebrow">So sánh nhanh</span>
           <h2>Vì sao nên dùng dạng thư viện?</h2>
         </div>
-        <p>Điểm khác biệt không nằm ở việc “nhiều chữ hơn”, mà ở cách mở đúng phần khi đang làm.</p>
       </div>
+      <div class="section-note-card reveal"><span>Điểm khác biệt</span><p>Không phải nhiều chữ hơn. Giá trị nằm ở việc anh/chị mở đúng phần ngay lúc đang setup, kiểm tra hoặc tối ưu quảng cáo.</p></div>
       <div class="matrix reveal">
         <div class="matrix-row matrix-head"><span>Tiêu chí</span><span>Video dài</span><span>PDF tĩnh</span><span>Thư viện web</span></div>
         <div class="matrix-row"><span>Tìm lại đúng đoạn cần xem</span><span>Chậm</span><span>Trung bình</span><span><i class="check">Nhanh</i></span></div>
@@ -1811,8 +1874,8 @@
           <span class="eyebrow">Lối vào nhanh</span>
           <h2>Đang vướng gì?</h2>
         </div>
-        <p>Chọn đúng tình huống, mở ngay phần cần xử lý.</p>
       </div>
+      <div class="section-note-card reveal"><span>Chọn tình huống</span><p>Bắt đầu từ vấn đề đang xảy ra trong tài khoản ads, rồi mở đúng nhóm bài để xử lý bước tiếp theo.</p></div>
       <div class="grid-3">
         <article class="card quick-entry reveal"><div class="card-icon">01</div><h3>Nhiều inbox, ít đơn</h3><p>Mở phần mục tiêu, content và đọc chất lượng tin nhắn.</p></article>
         <article class="card quick-entry reveal"><div class="card-icon">02</div><h3>Pixel thiếu dữ liệu</h3><p>Mở phần Pixel, CAPI, sự kiện và kiểm tra domain.</p></article>
@@ -1836,8 +1899,8 @@
           <span class="eyebrow">Ai nên dùng?</span>
           <h2>Dành cho người cần kiểm soát ads.</h2>
         </div>
-        <p>Không dành cho người tìm mẹo lách chính sách hoặc lời hứa chắc chắn có đơn sau vài ngày.</p>
       </div>
+      <div class="section-note-card reveal"><span>Phù hợp</span><p>Dành cho người muốn hiểu đủ để tự chạy, kiểm tra đội triển khai hoặc trao đổi với agency bằng số liệu và quy trình rõ ràng.</p></div>
       <div class="audience-list">
         <div class="reveal">Chủ doanh nghiệp tự chạy ads</div>
         <div class="reveal">Chủ shop online</div>
@@ -1856,8 +1919,8 @@
           <span class="eyebrow">Bonus</span>
           <h2>Tài nguyên dùng khi chạy thật.</h2>
         </div>
-        <p>Không phải bonus cho đẹp. Đây là các checklist và template để triển khai nhanh hơn.</p>
       </div>
+      <div class="section-note-card reveal"><span>Tài nguyên thực hành</span><p>Các checklist và template được đặt cạnh nội dung chính để anh/chị dùng ngay khi chuẩn bị chiến dịch, đọc số hoặc làm báo cáo.</p></div>
       <div class="bonus-grid">
         <div class="reveal">Checklist trước khi chạy ads</div>
         <div class="reveal">Checklist setup Pixel</div>
@@ -1870,12 +1933,14 @@
   </section>
 
   <section class="section blue">
-    <div class="wrap section-head reveal">
-      <div>
-        <span class="eyebrow">Giá trị lớn nhất</span>
-        <h2>Một nơi để quay lại khi cần sửa ads.</h2>
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Giá trị lớn nhất</span>
+          <h2>Một nơi để quay lại khi cần sửa ads.</h2>
+        </div>
       </div>
-      <p>Khi cần chạy, có hướng dẫn. Khi cần kiểm tra, có checklist. Khi cần tối ưu, có cách đọc số. Khi gặp lỗi, có phần xử lý. Với chủ doanh nghiệp, điều này quan trọng hơn vài mẹo ngắn hạn.</p>
+      <div class="section-note-card reveal"><span>Dùng lâu dài</span><p>Khi cần chạy, có hướng dẫn. Khi cần kiểm tra, có checklist. Khi cần tối ưu, có cách đọc số. Khi gặp lỗi, có phần xử lý. Với chủ doanh nghiệp, điều này quan trọng hơn vài mẹo ngắn hạn.</p></div>
     </div>
   </section>
 
@@ -1911,7 +1976,6 @@
           </div>
           <div class="status" id="status" aria-live="polite"></div>
         </form>
-        <p class="fine-print">Hotline: 0367 928 921<br>Email: theanhnguyen.marketing@gmail.com</p>
       </aside>
     </div>
   </section>
@@ -1923,8 +1987,8 @@
           <span class="eyebrow">FAQ</span>
           <h2>Cần rõ trước khi mở khóa.</h2>
         </div>
-        <p>Các câu hỏi thường gặp về hình thức sản phẩm, cách học và nội dung bên trong.</p>
       </div>
+      <div class="section-note-card reveal"><span>Câu hỏi thường gặp</span><p>Những điểm cần biết trước khi đặt trước: hình thức sản phẩm, cách truy cập, nội dung phù hợp và cách dùng thư viện.</p></div>
       <div class="faq">
         <details class="reveal" open><summary>Đây là ebook hay khóa học?</summary><p>Đây là website kiến thức thực hành, tổ chức như thư viện tra cứu. Không phải PDF tĩnh và không bắt buộc xem theo thứ tự.</p></details>
         <details class="reveal"><summary>Người mới dùng được không?</summary><p>Có. Nội dung đi từ nền tảng đến thực hành, giúp anh/chị bắt đầu từ phần dễ hiểu nhất.</p></details>
@@ -1943,7 +2007,6 @@
         <p>Nếu anh/chị muốn có một nơi để học, tra cứu và thực hành Facebook Ads rõ ràng hơn, thư viện này được tạo ra cho việc đó.</p>
         <p>Không phải để đọc một lần. Mà để dùng mỗi khi cần chạy, kiểm tra, sửa, tối ưu và phát triển quảng cáo.</p>
       </div>
-      <a class="btn btn-gold reveal" href="#offer">Đặt trước ngay</a>
     </div>
   </section>
 
