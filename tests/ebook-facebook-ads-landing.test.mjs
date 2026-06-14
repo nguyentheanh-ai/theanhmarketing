@@ -84,6 +84,17 @@ test("Ebook Facebook Ads landing has a pinned bottom preorder CTA", () => {
   assert.match(html, /<a class="btn btn-gold" href="#offer">\u0110\u1EB7t tr\u01B0\u1EDBc ngay \u2192<\/a>/);
 });
 
+test("Ebook Facebook Ads order form buttons keep readable Vietnamese typography", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026.html");
+
+  assert.match(html, /\.form-actions \.btn\s*\{[\s\S]*?font-family:\s*"Be Vietnam Pro"/);
+  assert.match(html, /\.form-actions \.btn\s*\{[\s\S]*?font-size:\s*15px;/);
+  assert.match(html, /\.form-actions \.btn\s*\{[\s\S]*?line-height:\s*1\.25;/);
+  assert.match(html, /\.form-actions \.btn\s*\{[\s\S]*?letter-spacing:\s*0;/);
+  assert.match(html, /\.form-actions \.btn\s*\{[\s\S]*?white-space:\s*normal;/);
+  assert.match(html, /<button class="btn btn-primary" type="submit">\u0110\u1EB7t tr\u01B0\u1EDBc quy\u1EC1n truy c\u1EADp ngay<\/button>/);
+});
+
 test("Ebook Facebook Ads preview opens full screen and searches only part 1 topics", () => {
   const html = read("public/ladipage/ebook-facebook-ads-2026.html");
 
