@@ -28,6 +28,11 @@ test("Ebook Facebook Ads landing uses preorder CTA copy", () => {
   assert.match(html, /Kh\u00F4ng bi\u1EBFt sai \u1EDF \u0111\u00E2u/);
   assert.match(html, /C\u1EA7n ki\u1EC3m so\u00E1t team/);
   assert.match(html, /K\u1EB9t m\u1ED9t thao t\u00E1c nh\u1ECF/);
+  assert.match(html, /B\u1EAFt \u0111\u1EA7u theo nhu c\u1EA7u/);
+  assert.match(html, /\u0110ang v\u01B0\u1EDBng vi\u1EC7c n\u00E0o, m\u1EDF \u0111\u00FAng nh\u00F3m \u0111\u00F3\./);
+  assert.match(html, /M\u1EDF \u0111\u00FAng h\u01B0\u1EDBng d\u1EABn/);
+  assert.match(html, /Bi\u1EBFt s\u1EEDa ch\u1ED7 n\u00E0o tr\u01B0\u1EDBc/);
+  assert.match(html, /Khi \u0111ang ch\u1EA1y qu\u1EA3ng c\u00E1o th\u1EADt, \u0111i\u1EC1u quan tr\u1ECDng l\u00E0 t\u00ECm \u0111\u01B0\u1EE3c \u0111\u00FAng ph\u1EA7n/);
   assert.match(html, /\u0110\u1EB7t tr\u01B0\u1EDBc quy\u1EC1n truy c\u1EADp ngay/);
   assert.doesNotMatch(html, /M\u1EDF kh\u00F3a quy\u1EC1n truy c\u1EADp ngay/);
   assert.doesNotMatch(html, /C\u1EA7n ch\u1EA1y/);
@@ -35,6 +40,10 @@ test("Ebook Facebook Ads landing uses preorder CTA copy", () => {
   assert.doesNotMatch(html, /C\u1EA7n s\u1EEDa/);
   assert.doesNotMatch(html, /C\u1EA7n scale/);
   assert.doesNotMatch(html, /C\u00F3 thanh t\u00ECm ki\u1EBFm, s\u1ED1 trang v\u00E0 \u1EA3nh trang th\u1EADt l\u1EA5y t\u1EEB b\u1ED9 PNG anh \u0111\u00E3 c\u1EA5p\./);
+  assert.doesNotMatch(html, /Trang c\u1EA7n gi\u00FAp/);
+  assert.doesNotMatch(html, /Landing page kh\u00F4ng c\u1EA7n k\u1EC3 d\u00E0i/);
+  assert.doesNotMatch(html, /Ng\u01B0\u1EDDi d\u00F9ng c\u1EA7n th\u1EA5y/);
+  assert.doesNotMatch(html, /Lookup nhanh/);
   assert.doesNotMatch(html, /M\u1EE5c ti\u00EAu sai/);
   assert.doesNotMatch(html, /T\u1EC7p kh\u00F4ng r\u00F5/);
   assert.doesNotMatch(html, /\u0110\u1ECDc s\u1ED1 c\u1EA3m t\u00EDnh/);
