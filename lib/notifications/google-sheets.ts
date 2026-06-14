@@ -182,6 +182,76 @@ function formatVietnamDateTime(value: string) {
   return `${parts.day}/${parts.month}/${parts.year} ${parts.hour}:${parts.minute}`;
 }
 
+function normalizeLineLabel(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+}
+
+function isGeneratedCheckoutNote(value: string) {
+  const note = normalizeLineLabel(value);
+
+  if (!note) {
+    return false;
+  }
+
+  const hasOrderMarker = /^(ma don|order code|order):/im.test(note);
+  const hasCheckoutTrackingMarker =
+    /^(utm source|utm medium|utm campaign|utm content|utm id|utm term|campaign_id|campaign name|campaign_name|adset_id|ad_id|ad_name|fbclid|fbp|fbc|ip|lead id|url|referrer):/im.test(
+      note,
+    );
+  const hasGeneratedOrderMarker = /tu bo sung tu order/i.test(note);
+
+  return hasOrderMarker && (hasCheckoutTrackingMarker || hasGeneratedOrderMarker);
+}
+
+function getGoogleSheetLeadNote(value?: string) {
+  const note = value?.trim() ?? "";
+  return isGeneratedCheckoutNote(note) ? "" : note;
+}
+
+function getGeneratedCheckoutNoteValue(note: string, labels: string[]) {
+  const normalizedLabels = labels.map(normalizeLineLabel);
+
+  for (const line of note.split(/\r?\n/)) {
+    const separatorIndex = line.indexOf(":");
+
+    if (separatorIndex < 0) {
+      continue;
+    }
+
+    const label = normalizeLineLabel(line.slice(0, separatorIndex));
+
+    if (normalizedLabels.includes(label)) {
+      return line.slice(separatorIndex + 1).trim();
+    }
+  }
+
+  return "";
+}
+
+function getGeneratedCheckoutNoteFields(value?: string) {
+  const note = value?.trim() ?? "";
+
+  if (!isGeneratedCheckoutNote(note)) {
+    return {
+      paymentPlan: "",
+      referrer: "",
+      ipAddress: "",
+      webLeadId: "",
+    };
+  }
+
+  return {
+    paymentPlan: getGeneratedCheckoutNoteValue(note, ["goi", "payment plan"]),
+    referrer: getGeneratedCheckoutNoteValue(note, ["referrer"]),
+    ipAddress: getGeneratedCheckoutNoteValue(note, ["ip", "ip address"]),
+    webLeadId: getGeneratedCheckoutNoteValue(note, ["lead id", "web lead id"]),
+  };
+}
+
 export function buildGoogleSheetOrderPayload(order: PaymentOrder, options: GoogleSheetSyncOptions = {}) {
   const siteUrl = getSiteUrl(options);
   const paymentUrl = `${siteUrl}/thanh-toan/${encodeURIComponent(order.orderCode)}`;
@@ -286,6 +356,7 @@ export function buildGoogleSheetLeadPayload(lead: GoogleSheetLeadRecord, options
   const orderCode = lead.orderCode ?? "";
   const dedupeKey = lead.id || orderCode || normalizedEmail || normalizedPhone;
   const attribution = lead.attribution;
+  const generatedNoteFields = getGeneratedCheckoutNoteFields(lead.need);
 
   return {
     entityType: "lead",
@@ -319,7 +390,11 @@ export function buildGoogleSheetLeadPayload(lead: GoogleSheetLeadRecord, options
     fbc: attribution?.fbc ?? "",
     fbp: attribution?.fbp ?? "",
     landingPage: attribution?.landingPage ?? "",
-    note: lead.need ?? "",
+    paymentPlan: generatedNoteFields.paymentPlan,
+    referrer: generatedNoteFields.referrer,
+    ipAddress: generatedNoteFields.ipAddress,
+    webLeadId: generatedNoteFields.webLeadId,
+    note: getGoogleSheetLeadNote(lead.need),
     resendEmailCount: lead.resendEmailCount ?? 0,
     syncedAt: new Date().toISOString(),
   };

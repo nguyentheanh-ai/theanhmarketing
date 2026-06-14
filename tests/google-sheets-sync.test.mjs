@@ -90,6 +90,81 @@ test("google sheets payload includes top-level fields expected by Apps Script an
   assert.equal(payload["Link thanh toán"], "https://theanhmarketing.com/thanh-toan/TAM123");
 });
 
+test("google sheets lead payload does not put generated checkout tracking blobs into note", () => {
+  const { buildGoogleSheetLeadPayload } = loadTsModule("lib/notifications/google-sheets.ts");
+  const payload = buildGoogleSheetLeadPayload({
+    id: "lead-1",
+    name: "Nguyen Van A",
+    email: "student@example.com",
+    phone: "0900000000",
+    need: [
+      "Ma don: TAM123",
+      "Khoa: Facebook Ads Master 2026",
+      "Goi: zoom-kit",
+      "So tien: 799.000d",
+      "Trang thai: pending",
+      "Landing: academy/facebook-ads-master-2026",
+      "URL: https://www.theanhmarketing.com/academy/facebook-ads-master-2026",
+      "Referrer: https://l.facebook.com/",
+      "UTM source: fb",
+      "UTM medium: paid",
+      "campaign_id: 120248392122080568",
+      "fbclid: test-fbclid",
+      "IP: 127.0.0.1",
+      "fbp: fb.1.test",
+      "fbc: fb.1.test",
+      "Lead ID: web.test",
+    ].join("\n"),
+    source: "LDP Facebook Ads Master 2026",
+    status: "new",
+    saleStatus: "Chua lien he",
+    createdAt: "2026-06-03T10:00:00.000Z",
+    orderCode: "TAM123",
+    courseTitle: "Facebook Ads Master 2026",
+    paymentStatus: "unpaid",
+    paymentMethod: "sepay",
+    attribution: {
+      utmSource: "fb",
+      utmMedium: "paid",
+      campaignId: "120248392122080568",
+      fbclid: "test-fbclid",
+      fbc: "fb.1.test",
+      fbp: "fb.1.test",
+      landingPage: "https://www.theanhmarketing.com/academy/facebook-ads-master-2026",
+    },
+  });
+
+  assert.equal(payload.orderCode, "TAM123");
+  assert.equal(payload.utmSource, "fb");
+  assert.equal(payload.utmMedium, "paid");
+  assert.equal(payload.campaignId, "120248392122080568");
+  assert.equal(payload.fbclid, "test-fbclid");
+  assert.equal(payload.fbc, "fb.1.test");
+  assert.equal(payload.fbp, "fb.1.test");
+  assert.equal(payload.landingPage, "https://www.theanhmarketing.com/academy/facebook-ads-master-2026");
+  assert.equal(payload.paymentPlan, "zoom-kit");
+  assert.equal(payload.referrer, "https://l.facebook.com/");
+  assert.equal(payload.ipAddress, "127.0.0.1");
+  assert.equal(payload.webLeadId, "web.test");
+  assert.equal(payload.note, "");
+});
+
+test("google sheets lead payload preserves real manual notes", () => {
+  const { buildGoogleSheetLeadPayload } = loadTsModule("lib/notifications/google-sheets.ts");
+  const payload = buildGoogleSheetLeadPayload({
+    id: "lead-2",
+    name: "Nguyen Van B",
+    email: "student-b@example.com",
+    phone: "0911111111",
+    need: "Khach can goi lai luc 15h",
+    source: "Manual",
+    status: "new",
+    saleStatus: "Chua lien he",
+  });
+
+  assert.equal(payload.note, "Khach can goi lai luc 15h");
+});
+
 test("google sheets sync skips without webhook and posts JSON when configured", async () => {
   const { syncOrderToGoogleSheet } = loadTsModule("lib/notifications/google-sheets.ts");
   const previousWebhook = process.env.GOOGLE_SHEETS_WEBHOOK_URL;

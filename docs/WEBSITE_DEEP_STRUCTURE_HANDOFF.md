@@ -326,6 +326,7 @@ Google Sheet sync:
 - Lead sync metadata lives in `leads.google_sheet_synced_at`, `leads.google_sheet_row_id`, `leads.google_sheet_sync_error`; apply `docs/SUPABASE_ADMIN_LEADS_FLOW.sql` before expecting this to persist in production.
 - Apps Script/webhook must upsert by `entityType + dedupeKey` (or equivalent leadId/orderCode/email/phone priority) to avoid duplicate rows.
 - Production note 2026-06-08: migration `admin_leads_crm_sheet_resend_20260605` is applied. Google Sheet webhook blocker is fixed after Vercel Production `GOOGLE_SHEETS_WEBHOOK_URL` was updated and redeployed in `dpl_4FBV2ojuaYWKBSFEAyQiJ3Bkh8mw`. Smoke lead `b12d1975-a15b-47bd-8ae6-15bc14101d88` returned `sheetSync.ok=true` and appeared in `Orders` row 7. Backfill cleared 81/81 pending/failed leads; remaining unsynced leads = 0. Supabase extension `http` was enabled via migration `enable_http_extension_for_google_sheet_backfill_20260608` only to run DB-side backfill.
+- Production note 2026-06-14: checkout-created lead rows must not dump the generated remarketing/order tracking blob into the `note` column. `buildGoogleSheetLeadPayload()` suppresses generated checkout notes and sends `paymentPlan`, `referrer`, `ipAddress`, and `webLeadId` as separate payload fields; UTM/fbclid/fbc/fbp/landingPage already have separate columns. Live Sheet `Orders` now has BZ:CC for those four fields, and BY `note` is hidden to avoid confusing operators while preserving raw historical notes.
 
 Resend logs:
 
