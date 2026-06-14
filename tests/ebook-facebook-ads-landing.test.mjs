@@ -20,10 +20,13 @@ test("Ebook Facebook Ads landing uses preorder CTA copy", () => {
   assert.match(html, /\u0110\u1EB7t tr\u01B0\u1EDBc th\u01B0 vi\u1EC7n Facebook Ads 2026/);
   assert.match(html, /Xem tr\u01B0\u1EDBc Ebook/);
   assert.match(html, /Outline Ebook/);
+  assert.match(html, /M\u1EA5t nhi\u1EC1u th\u1EDDi gian \u0111\u1EC3 t\u00ECm h\u01B0\u1EDBng d\u1EABn cho nh\u1EEFng thao t\u00E1c \u0111\u01A1n gi\u1EA3n\./);
   assert.match(html, /\u0110\u1EB7t tr\u01B0\u1EDBc quy\u1EC1n truy c\u1EADp ngay/);
   assert.doesNotMatch(html, /M\u1EDF kh\u00F3a quy\u1EC1n truy c\u1EADp ngay/);
   assert.doesNotMatch(html, /Xem b\u00EAn trong c\u00F3 g\u00EC/);
   assert.doesNotMatch(html, /Live th\u01B0 vi\u1EC7n th\u1EF1c h\u00E0nh/);
+  assert.doesNotMatch(html, /Kh\u00F4ng thi\u1EBFu video\. Thi\u1EBFu b\u1EA3n \u0111\u1ED3 \u0111\u1EC3 bi\u1EBFt s\u1EEDa g\u00EC tr\u01B0\u1EDBc\./);
+  assert.doesNotMatch(html, /ph\u1EA7n ki\u1EBFn th\u1EE9c theo t\u00ECnh hu\u1ED1ng ch\u1EA1y ads/);
 });
 
 test("Ebook Facebook Ads landing uses the real The Anh Marketing logo", () => {
