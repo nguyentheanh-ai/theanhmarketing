@@ -121,6 +121,20 @@ test("Ebook Facebook Ads landing submits to the existing payment order flow", ()
   assert.doesNotMatch(html, /mailto:/);
 });
 
+test("Ebook Facebook Ads landing includes the primary Meta Pixel without early checkout", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026.html");
+
+  assert.match(html, /https:\/\/connect\.facebook\.net\/en_US\/fbevents\.js/);
+  assert.match(html, /fbq\("init", "1315653423712065"\)/);
+  assert.match(html, /fbq\("track", "PageView"\)/);
+  assert.match(html, /fbq\("track", "ViewContent", \{/);
+  assert.match(html, /content_ids:\s*\["ebook-facebook-ads-2026"\]/);
+  assert.match(html, /content_type:\s*"product"/);
+  assert.match(html, /currency:\s*"VND"/);
+  assert.match(html, /value:\s*299000/);
+  assert.match(html, /https:\/\/www\.facebook\.com\/tr\?id=1315653423712065&ev=PageView&noscript=1/);
+});
+
 test("Ebook Facebook Ads landing does not fire InitiateCheckout before checkout page", () => {
   const html = read("public/ladipage/ebook-facebook-ads-2026.html");
   const submitHandler = html.match(/form\.addEventListener\("submit", async \(event\) => \{([\s\S]*?)window\.location\.href = "\/thanh-toan\/" \+ encodeURIComponent\(payload\.order\.orderCode\);/);
