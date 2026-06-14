@@ -31,6 +31,7 @@ test("Ebook Facebook Ads landing uses preorder CTA copy", () => {
   assert.match(html, /K\u1EB9t m\u1ED9t thao t\u00E1c nh\u1ECF/);
   assert.match(html, /B\u1EAFt \u0111\u1EA7u theo nhu c\u1EA7u/);
   assert.match(html, /\u0110ang v\u01B0\u1EDBng vi\u1EC7c n\u00E0o, m\u1EDF \u0111\u00FAng nh\u00F3m \u0111\u00F3\./);
+  assert.match(html, /class="section-note-card reveal"><span>C\u00E1ch b\u1EAFt \u0111\u1EA7u<\/span><p>Ch\u1ECDn t\u00ECnh hu\u1ED1ng g\u1EA7n nh\u1EA5t v\u1EDBi v\u1EA5n \u0111\u1EC1 \u0111ang g\u1EB7p/);
   assert.match(html, /M\u1EDF \u0111\u00FAng h\u01B0\u1EDBng d\u1EABn/);
   assert.match(html, /Bi\u1EBFt s\u1EEDa ch\u1ED7 n\u00E0o tr\u01B0\u1EDBc/);
   assert.match(html, /Khi \u0111ang ch\u1EA1y qu\u1EA3ng c\u00E1o th\u1EADt, \u0111i\u1EC1u quan tr\u1ECDng l\u00E0 t\u00ECm \u0111\u01B0\u1EE3c \u0111\u00FAng ph\u1EA7n/);
@@ -59,6 +60,7 @@ test("Ebook Facebook Ads landing uses preorder CTA copy", () => {
   assert.doesNotMatch(html, /Trang c\u1EA7n gi\u00FAp/);
   assert.doesNotMatch(html, /Landing page kh\u00F4ng c\u1EA7n k\u1EC3 d\u00E0i/);
   assert.doesNotMatch(html, /Ng\u01B0\u1EDDi d\u00F9ng c\u1EA7n th\u1EA5y/);
+  assert.doesNotMatch(html, /<p>Anh\/ch\u1ECB kh\u00F4ng c\u1EA7n h\u1ECDc l\u1EA1i t\u1EEB \u0111\u1EA7u\. Ch\u1EC9 c\u1EA7n x\u00E1c \u0111\u1ECBnh v\u1EA5n \u0111\u1EC1 \u0111ang g\u1EB7p/);
   assert.doesNotMatch(html, /Lookup nhanh/);
   assert.doesNotMatch(html, /M\u1EE5c ti\u00EAu sai/);
   assert.doesNotMatch(html, /T\u1EC7p kh\u00F4ng r\u00F5/);
@@ -67,6 +69,17 @@ test("Ebook Facebook Ads landing uses preorder CTA copy", () => {
   assert.doesNotMatch(html, /Live th\u01B0 vi\u1EC7n th\u1EF1c h\u00E0nh/);
   assert.doesNotMatch(html, /Kh\u00F4ng thi\u1EBFu video\. Thi\u1EBFu b\u1EA3n \u0111\u1ED3 \u0111\u1EC3 bi\u1EBFt s\u1EEDa g\u00EC tr\u01B0\u1EDBc\./);
   assert.doesNotMatch(html, /ph\u1EA7n ki\u1EBFn th\u1EE9c theo t\u00ECnh hu\u1ED1ng ch\u1EA1y ads/);
+});
+
+test("Ebook Facebook Ads positioning cards have a clear section context", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026.html");
+
+  assert.match(html, /<span class="eyebrow">\u0110\u1ECBnh v\u1ECB r\u00F5<\/span>/);
+  assert.match(html, /<h2>Kh\u00F4ng ph\u1EA3i m\u1EB9o\. Kh\u00F4ng ph\u1EA3i file t\u0129nh\.<\/h2>/);
+  assert.match(html, /class="section-note-card reveal"><span>D\u00F9ng khi l\u00E0m th\u1EADt<\/span><p>Ph\u1EA7n n\u00E0y gi\u00FAp anh\/ch\u1ECB ph\u00E2n bi\u1EC7t th\u01B0 vi\u1EC7n/);
+  assert.match(html, /<h3>Kh\u00F4ng b\u00E1n m\u1EB9o v\u1EB7t<\/h3>/);
+  assert.match(html, /<h3>Kh\u00E1c video\/PDF<\/h3>/);
+  assert.match(html, /<h3>D\u00F9ng \u0111\u1EC3 v\u1EADn h\u00E0nh<\/h3>/);
 });
 
 test("Ebook Facebook Ads landing has a pinned bottom preorder CTA", () => {
