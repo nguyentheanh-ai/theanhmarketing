@@ -36,6 +36,9 @@ const {
   shouldSendPaymentSuccessEmail,
 } = loadTsModule("lib/notifications/payment-success-email.ts");
 
+const adsSupportAgentUrl =
+  "https://chatgpt.com/g/g-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner";
+
 const paidOrder = {
   id: "order-1",
   orderCode: "TAM123",
@@ -128,6 +131,22 @@ test("Facebook Ads AI Agent success email includes the Agent usage guide", () =>
 
   assert.doesNotMatch(basicPayload.html, new RegExp(guideUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.doesNotMatch(basicPayload.text, new RegExp(guideUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+});
+
+test("Facebook Ads 799K success email includes the Ads Performance GPT", () => {
+  const aiAgentPayload = buildPaymentSuccessEmailPayload({
+    ...paidOrder,
+    courseTitle: "Quảng cáo Facebook Master 2026 - Gói AI Agent 799K - Tặng AI Agent lên kế hoạch quảng cáo",
+    amount: 799000,
+    amountLabel: "799.000đ",
+  });
+  const basicPayload = buildPaymentSuccessEmailPayload(paidOrder);
+
+  assert.match(aiAgentPayload.html, /Agent Hỗ Trợ Quảng Cáo/);
+  assert.match(aiAgentPayload.html, /https:\/\/www\.theanhmarketing\.com\/go\?to=https%3A%2F%2Fchatgpt\.com%2Fg%2Fg-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner/);
+  assert.match(aiAgentPayload.text, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.doesNotMatch(basicPayload.html, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.doesNotMatch(basicPayload.text, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 });
 
 test("includes temporary login credentials when an account is auto-created", () => {

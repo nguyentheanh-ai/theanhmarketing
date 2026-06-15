@@ -27,6 +27,9 @@ const emailFontFamily = `'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif`;
 const zaloGroupUrl = "https://zalo.me/g/ye0dcyowbepyhnrtyacr";
 const agentGuideUrl =
   "https://docs.google.com/document/d/1H8BbQZnSvyw50nO6oXw-u1PD0Ph_DWzXdeqPL9CZFrM/edit?usp=sharing";
+const adsSupportAgentName = "Agent Hỗ Trợ Quảng Cáo";
+const adsSupportAgentUrl =
+  "https://chatgpt.com/g/g-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner";
 
 function escapeHtml(value: string) {
   return value
@@ -178,6 +181,15 @@ function shouldShowAgentGuide(items: string[]) {
   return items.some((item) => item.includes("Tặng AI Agent lên kế hoạch quảng cáo"));
 }
 
+function isFacebookAdsSupportPlan(order: PaymentOrder) {
+  const isFacebookAdsOrder =
+    order.courseSlug === "facebook-ads-2026" ||
+    order.orderItems.some((item) => item.slug === "facebook-ads-2026");
+  const isSupportPlan = order.amount === 799000 || order.orderItems.some((item) => item.price === 799000);
+
+  return isFacebookAdsOrder && isSupportPlan;
+}
+
 export function shouldSendPaymentSuccessEmail(order: PaymentOrder) {
   return order.status === "paid" && Boolean(order.email.trim()) && !order.paymentEmailSentAt;
 }
@@ -200,17 +212,26 @@ export function buildPaymentSuccessEmailPayload(
   const productTitle = getProductTitle(order);
   const benefitItems = getBenefitItems(order);
   const showAgentGuide = shouldShowAgentGuide(benefitItems);
+  const showAdsSupportAgent = isFacebookAdsSupportPlan(order);
   const safeName = escapeHtml(order.studentName || "bạn");
   const safeEmail = escapeHtml(order.email);
   const safeOrderCode = escapeHtml(order.orderCode);
   const safeAmount = escapeHtml(order.amountLabel);
   const safeProductTitle = escapeHtml(productTitle);
   const safeAgentGuideUrl = escapeHtml(buildEmailLink(agentGuideUrl, siteUrl));
+  const safeAdsSupportAgentUrl = escapeHtml(buildEmailLink(adsSupportAgentUrl, siteUrl));
   const benefitRows = renderBenefitRows(benefitItems);
   const agentGuideButton = showAgentGuide
     ? `
                     <a href="${safeAgentGuideUrl}" style="display:block;margin-top:14px;background:#159cfb;color:#ffffff;text-decoration:none;border-radius:10px;padding:15px 20px;font-size:15px;font-weight:900">
                       Hướng dẫn sử dụng AI Agent
+                    </a>
+      `
+    : "";
+  const adsSupportAgentButton = showAdsSupportAgent
+    ? `
+                    <a href="${safeAdsSupportAgentUrl}" style="display:block;margin-top:14px;background:#f66628;color:#111111;text-decoration:none;border-radius:10px;padding:15px 20px;font-size:15px;font-weight:900">
+                      Mở ${escapeHtml(adsSupportAgentName)}
                     </a>
       `
     : "";
@@ -319,6 +340,7 @@ export function buildPaymentSuccessEmailPayload(
                       Truy cập khu vực học viên
                     </a>
                     ${agentGuideButton}
+                    ${adsSupportAgentButton}
                     <p style="margin:20px 0 0;color:#8f887c;font-size:13px;line-height:1.7">
                       Link dashboard: <a href="${escapeHtml(dashboardEmailUrl)}" style="color:#d8b653">${escapeHtml(dashboardUrl)}</a>
                     </p>
@@ -353,6 +375,7 @@ export function buildPaymentSuccessEmailPayload(
     `Nhóm Zalo: ${zaloGroupUrl}`,
     `Link truy cập khu vực học viên: ${accessUrl}`,
     showAgentGuide ? `Hướng dẫn sử dụng AI Agent: ${agentGuideUrl}` : "",
+    showAdsSupportAgent ? `${adsSupportAgentName}: ${adsSupportAgentUrl}` : "",
     `Dashboard: ${dashboardUrl}`,
     "Nếu chưa thấy email hướng dẫn sau vài phút, vui lòng kiểm tra mục Spam, Quảng cáo/Promotions hoặc Khuyến mãi.",
   ].join("\n");

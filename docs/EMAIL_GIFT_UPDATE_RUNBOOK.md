@@ -5,7 +5,7 @@ Use this when updating a gift/bonus shown in customer emails for the Facebook Ad
 ## Scope
 
 - Main app: `theanhmarketing.com`.
-- Production hotfix branch/worktree: `C:\Users\12c1t\Desktop\theanhmarketing-email-account-hotfix` on `deploy/website-production-20260604`.
+- Production hotfix branch/worktree: `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix` on `deploy/website-production-20260604`.
 - Email templates:
   - `lib/notifications/pending-payment-email.ts`
   - `lib/notifications/payment-success-email.ts`
@@ -17,7 +17,7 @@ Use this when updating a gift/bonus shown in customer emails for the Facebook Ad
 
 - Label: `Agent Hỗ Trợ Quảng Cáo`
 - Link: `https://chatgpt.com/g/g-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner`
-- Condition: only `facebook-ads-2026` support/799K orders.
+- Condition: only `facebook-ads-2026` support/799K orders. Pending-payment email and payment-success email both include this gift.
 - Do not show this gift on the 399K video package.
 
 ## Update Steps
