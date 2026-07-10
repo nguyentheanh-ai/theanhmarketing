@@ -6,7 +6,7 @@ Phạm vi: integrate the preserved recovery checkpoint into the canonical produc
 Các file đã thay đổi: existing recovery checkpoint plus `CURRENT_STATE.md` and `SESSION_LOG.md`.
 Kết quả: fast-forward integration completed; remote backup branch exists; preview `dpl_FFnYLkGmZsPn5Aay2MzpYkXCphKD` is Ready.
 Kiểm tra đã chạy: session guard, protected-route preflight, 247/247 tests, typecheck, lint, local build, Vercel build and preview smoke.
-Việc còn lại: push production branch and verify live deployment.
+Việc còn lại: normal post-release monitoring; no blocker remains.
 Cảnh báo: landing-page and temporary roots remain forbidden deploy sources.
 
 ## 2026-07-10 - Workspace governance
