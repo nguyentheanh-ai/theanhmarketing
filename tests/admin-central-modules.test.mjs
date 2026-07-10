@@ -7,10 +7,10 @@ function read(relativePath) {
   return fs.readFileSync(path.resolve(relativePath), "utf8");
 }
 
-test("admin shell matches the focused lead-management chrome", () => {
+test("admin shell matches the focused solo command center chrome", () => {
   const shell = read("components/app/admin-shell.tsx");
 
-  for (const item of ["Tổng quan", "Quản lý Lead", "Khóa học", "Học viên", "Thành viên admin", "Cài đặt"]) {
+  for (const item of ["Tổng quan", "Việc cần xử lý", "Học viên", "Đơn hàng", "Leads", "Khóa học", "Báo cáo", "Cài đặt"]) {
     assert.match(shell, new RegExp(item));
   }
 
@@ -25,9 +25,11 @@ test("admin navigation is centralized into focused management modules without un
 
   for (const item of [
     "Học viên",
-    "Lead",
+    "Đơn hàng",
+    "Leads",
     "Khóa học",
-    "Thành viên admin",
+    "Báo cáo",
+    "Cài đặt",
   ]) {
     assert.match(shell, new RegExp(item));
   }
@@ -37,7 +39,6 @@ test("admin navigation is centralized into focused management modules without un
   assert.doesNotMatch(shell, /Ads & doanh thu/);
   assert.doesNotMatch(shell, /Báo cáo ads/);
   assert.doesNotMatch(shell, /doanh thu/);
-  assert.doesNotMatch(shell, /Đơn hàng/);
   assert.doesNotMatch(shell, /Remarketing/);
   assert.doesNotMatch(shell, /SEO\/Tracking/);
   assert.doesNotMatch(shell, /Feedback/);

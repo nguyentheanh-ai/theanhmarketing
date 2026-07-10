@@ -7,18 +7,20 @@ import { useMemo, useState, type ReactNode } from "react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import type { AdminRole } from "@/lib/auth/session";
 
-type ShellIconName = "home" | "lead" | "book" | "student" | "shield" | "settings";
+type ShellIconName = "home" | "task" | "student" | "order" | "lead" | "book" | "report" | "settings";
 
 const adminNavGroups = [
   {
     label: "Admin Panel",
     items: [
       { label: "Tổng quan", href: "/admin/dashboard", icon: "home", allowedRoles: ["owner"] },
-      { label: "Quản lý Lead", href: "/admin/leads", icon: "lead", allowedRoles: ["owner"] },
-      { label: "Khóa học", href: "/admin/khoa-hoc", icon: "book", allowedRoles: ["owner", "editor"] },
+      { label: "Việc cần xử lý", href: "/admin/viec-can-xu-ly", icon: "task", allowedRoles: ["owner"] },
       { label: "Học viên", href: "/admin/hoc-vien", icon: "student", allowedRoles: ["owner", "editor"] },
-      { label: "Thành viên admin", href: "/admin/thanh-vien-admin", icon: "shield", allowedRoles: ["owner"] },
-      { label: "Cài đặt", href: "/admin/thanh-vien-admin", icon: "settings", allowedRoles: ["owner"] },
+      { label: "Đơn hàng", href: "/admin/don-hang", icon: "order", allowedRoles: ["owner"] },
+      { label: "Leads", href: "/admin/leads", icon: "lead", allowedRoles: ["owner"] },
+      { label: "Khóa học", href: "/admin/khoa-hoc", icon: "book", allowedRoles: ["owner", "editor"] },
+      { label: "Báo cáo", href: "/admin/bao-cao", icon: "report", allowedRoles: ["owner"] },
+      { label: "Cài đặt", href: "/admin/cai-dat", icon: "settings", allowedRoles: ["owner"] },
     ],
   },
 ] satisfies Array<{
@@ -47,6 +49,19 @@ function ShellIcon({ name }: { name: ShellIconName }) {
         <path d="m3 11 9-8 9 8" />
         <path d="M5 10v10h14V10" />
         <path d="M10 20v-6h4v6" />
+      </svg>
+    );
+  }
+
+  if (name === "task") {
+    return (
+      <svg aria-hidden="true" {...baseProps}>
+        <path d="M9 6h11" />
+        <path d="M9 12h11" />
+        <path d="M9 18h11" />
+        <path d="m3 6 1 1 2-2" />
+        <path d="m3 12 1 1 2-2" />
+        <path d="m3 18 1 1 2-2" />
       </svg>
     );
   }
@@ -80,11 +95,25 @@ function ShellIcon({ name }: { name: ShellIconName }) {
     );
   }
 
-  if (name === "shield") {
+  if (name === "order") {
     return (
       <svg aria-hidden="true" {...baseProps}>
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        <path d="m9 12 2 2 4-4" />
+        <path d="M6 2h12v20l-3-2-3 2-3-2-3 2V2z" />
+        <path d="M9 7h6" />
+        <path d="M9 11h6" />
+        <path d="M9 15h4" />
+      </svg>
+    );
+  }
+
+  if (name === "report") {
+    return (
+      <svg aria-hidden="true" {...baseProps}>
+        <path d="M4 19V9" />
+        <path d="M10 19V5" />
+        <path d="M16 19v-7" />
+        <path d="M22 19V3" />
+        <path d="M2 19h22" />
       </svg>
     );
   }
@@ -228,7 +257,7 @@ export function AdminShell({ children, adminRole }: { children: ReactNode; admin
                 width={64}
               />
             </span>
-            <span className="truncate">Admin CRM</span>
+            <span className="truncate">Admin Panel</span>
           </Link>
           <SignOutButton mode="admin" className="hidden shrink-0 rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 disabled:opacity-50 sm:inline-block" />
         </div>

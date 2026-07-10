@@ -110,15 +110,15 @@ test("Click events tab renders tracking analytics instead of a placeholder", () 
   assert.doesNotMatch(source, /Khi bảng click_events được bật/);
 });
 
-test("admin shell uses the website logo and compact centralized admin navigation", () => {
+test("admin shell uses the website logo and compact solo command center navigation", () => {
   const source = readSource("components/app/admin-shell.tsx");
 
   assert.match(source, /\/brand\/ta-logo\.svg/);
-  assert.match(source, /Admin CRM/);
+  assert.match(source, /Admin Panel/);
   assert.match(source, /\/admin\/hoc-vien/);
   assert.match(source, /\/admin\/leads/);
   assert.match(source, /\/admin\/khoa-hoc/);
-  assert.match(source, /\/admin\/thanh-vien-admin/);
+  assert.match(source, /\/admin\/cai-dat/);
   assert.match(source, /\/admin\/dashboard/);
   assert.doesNotMatch(source, /\/admin\/ad-costs/);
   assert.doesNotMatch(source, /\/admin\/facebook-ads/);

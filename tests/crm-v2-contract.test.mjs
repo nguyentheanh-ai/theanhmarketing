@@ -77,17 +77,18 @@ test("crm v2 production actions fail closed instead of silently mocking", () => 
   }
 });
 
-test("admin index promotes crm v2 when the production flag is enabled", () => {
+test("crm v2 stays gated and available without hijacking the admin index", () => {
   const adminIndex = read("app/admin/page.tsx");
   const adminDashboard = read("app/admin/dashboard/page.tsx");
-  assert.match(adminIndex, /isCrmV2Enabled/, "admin index must read CRM v2 flag");
-  assert.match(adminIndex, /redirect\(\"\/admin\/crm-v2\"\)/, "admin index must send enabled CRM v2 to /admin/crm-v2");
-  assert.match(adminDashboard, /isCrmV2Enabled/, "legacy dashboard must read CRM v2 flag");
-  assert.match(adminDashboard, /redirect\(\"\/admin\/crm-v2\"\)/, "legacy dashboard must redirect to CRM v2 when enabled");
-  assert.ok(
-    adminIndex.indexOf('redirect("/admin/crm-v2")') < adminIndex.indexOf('redirect(adminRole === "editor"'),
-    "CRM v2 redirect should happen before legacy admin fallback",
-  );
+  const crmLayout = read("app/admin/crm-v2/layout.tsx");
+  const crmDashboard = read("app/admin/crm-v2/page.tsx");
+
+  assert.match(adminIndex, /redirect\(\"\/admin\/dashboard\"\)/, "admin index must default owners to the solo dashboard");
+  assert.doesNotMatch(adminIndex, /isCrmV2Enabled|\/admin\/crm-v2/, "CRM v2 must not hijack the admin index");
+  assert.doesNotMatch(adminDashboard, /isCrmV2Enabled|\/admin\/crm-v2/, "CRM v2 must not hijack the solo dashboard");
+  assert.match(crmLayout, /requireAdminAuth\(\"\/admin\/crm-v2\", \[\"owner\"\]\)/, "CRM v2 routes must remain owner-gated");
+  assert.match(crmLayout, /isCrmV2Enabled/, "CRM v2 routes must keep their availability gate");
+  assert.match(crmDashboard, /getCrmV2Dashboard/, "CRM v2 dashboard must remain available behind its route gate");
 });
 
 test("crm v2 source strings remain readable Vietnamese without mojibake", () => {
