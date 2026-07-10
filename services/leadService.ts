@@ -49,6 +49,13 @@ export type LeadItem = {
   attribution?: Attribution;
 };
 
+export type CommandCenterLeadSummary = {
+  id: string;
+  email: string | null;
+  phone: string | null;
+  createdAt: string;
+};
+
 export type LeadEmailLog = {
   id: string;
   leadId: string | null;
@@ -575,11 +582,43 @@ async function createLeadFromOrderSaleStatus(orderCode: string, saleStatus: Lead
   };
 }
 
-export async function getLeads(options: { includeFallback?: boolean } = {}): Promise<LeadItem[]> {
+export async function getCommandCenterLeadsStrict(): Promise<CommandCenterLeadSummary[]> {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Command center lead source is unavailable");
+
+  const primary = await supabase
+    .from("leads")
+    .select("id,email,phone,created_at")
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false });
+  let data = primary.data;
+  let error = primary.error;
+
+  if (error) {
+    const fallback = await supabase
+      .from("leads")
+      .select("id,email,phone,created_at")
+      .order("created_at", { ascending: false });
+    data = fallback.data;
+    error = fallback.error;
+  }
+
+  if (error) throw new Error(`Could not read command center leads: ${error.message}`);
+  return ((data ?? []) as Array<{ id: string; email: string | null; phone: string | null; created_at: string }>).map((lead) => ({
+    id: lead.id,
+    email: lead.email,
+    phone: lead.phone,
+    createdAt: lead.created_at,
+  }));
+}
+
+export async function getLeads(options: { includeFallback?: boolean; strict?: boolean } = {}): Promise<LeadItem[]> {
   const includeFallback = options.includeFallback ?? false;
+  const strict = options.strict ?? false;
   const supabase = createSupabaseAdminClient();
 
   if (!supabase) {
+    if (strict) throw new Error("Lead source is unavailable");
     return includeFallback
       ? fallbackLeads.map((lead) => ({
           ...lead,
@@ -607,7 +646,12 @@ export async function getLeads(options: { includeFallback?: boolean } = {}): Pro
     error = fallback.error;
   }
 
+  if (error && strict) {
+    throw new Error(`Could not read leads: ${error.message}`);
+  }
+
   if (error || !data || data.length === 0) {
+    if (strict) return [];
     if (!includeFallback) {
       return [];
     }
@@ -621,7 +665,7 @@ export async function getLeads(options: { includeFallback?: boolean } = {}): Pro
   }
 
   const [orders, emailLogsByLeadId] = await Promise.all([
-    getPaymentOrders({ includeFallback: false }),
+    getPaymentOrders({ includeFallback: false, strict }),
     getEmailLogsByLeadId(),
   ]);
 

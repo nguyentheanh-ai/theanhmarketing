@@ -70,6 +70,16 @@ type DbActivityLog = {
 const activityLogSelect =
   "id,student_id,lead_id,user_id,student_email,student_phone,event_type,event_title,event_description,status,actor_type,actor_id,actor_email,actor_name,metadata,ip_address,user_agent,created_at";
 
+const commandCenterEventTypes: ActivityEventType[] = [
+  "payment_email_sent",
+  "payment_email_failed",
+  "payment_success_email_sent",
+  "payment_success_email_failed",
+  "student_account_created",
+  "course_access_granted",
+  "course_access_revoked",
+];
+
 const blockedMetadataKeys = new Set([
   "authorization",
   "apiKey",
@@ -242,6 +252,39 @@ export async function getStudentActivityLogs(input: {
   if (error || !data) {
     if (error) console.error("[activity-log] Could not read activity logs", { error: error.message });
     return [];
+  }
+
+  return (data as DbActivityLog[]).map(mapActivityLog);
+}
+
+export function getCommandCenterActivityQuery(input: { from: string; to: string; limit?: number }) {
+  const limit = Math.max(1, Math.min(input.limit ?? 200, 200));
+  return {
+    from: new Date(`${input.from}T00:00:00+07:00`).toISOString(),
+    to: new Date(`${input.to}T23:59:59.999+07:00`).toISOString(),
+    limit,
+  };
+}
+
+export async function getCommandCenterStudentActivities(input: { from: string; to: string; limit?: number }) {
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    throw new Error("Command center activity source is unavailable");
+  }
+
+  const bounds = getCommandCenterActivityQuery(input);
+  const { data, error } = await supabase
+    .from("activity_logs")
+    .select(activityLogSelect)
+    .in("event_type", commandCenterEventTypes)
+    .gte("created_at", bounds.from)
+    .lte("created_at", bounds.to)
+    .order("created_at", { ascending: false })
+    .limit(bounds.limit);
+
+  if (error || !data) {
+    throw new Error("Could not read command center activities");
   }
 
   return (data as DbActivityLog[]).map(mapActivityLog);

@@ -1,18 +1,38 @@
-import { AdminOverviewDashboard } from "@/components/admin/admin-overview-dashboard";
-import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
-import { getAdminCourses, getAdminLeadActivities, getAdminLeads, getAdminPaymentOrders } from "@/services/adminDataService";
+import { CommandCenterDashboard } from "@/components/admin/solo-command-center/command-center-dashboard";
+import { AdminShell } from "@/components/app/admin-shell";
+import { requireAdminAuth } from "@/lib/auth/session";
+import {
+  getSoloCommandCenterModel,
+  resolveCommandCenterRange,
+} from "@/services/adminCommandCenterService";
 
-export default async function AdminDashboardPage() {
-  const [orders, leads, courses, activities] = await Promise.all([
-    getAdminPaymentOrders(),
-    getAdminLeads(),
-    getAdminCourses(),
-    getAdminLeadActivities(),
-  ]);
+type DashboardSearchParams = {
+  from?: string | string[];
+  to?: string | string[];
+  task?: string | string[];
+};
+
+function firstValue(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function AdminDashboardPage({
+  searchParams,
+}: {
+  searchParams?: Promise<DashboardSearchParams>;
+}) {
+  const auth = await requireAdminAuth("/admin/dashboard", ["owner"]);
+  const query = (await searchParams) ?? {};
+  const range = resolveCommandCenterRange({
+    from: firstValue(query.from),
+    to: firstValue(query.to),
+  });
+  const selectedTaskId = firstValue(query.task);
+  const model = await getSoloCommandCenterModel(range);
 
   return (
-    <ProtectedAdminShell nextPath="/admin/dashboard">
-      <AdminOverviewDashboard orders={orders} leads={leads} courses={courses} activities={activities} />
-    </ProtectedAdminShell>
+    <AdminShell adminRole={auth?.adminRole ?? "owner"}>
+      <CommandCenterDashboard model={model} selectedTaskId={selectedTaskId} />
+    </AdminShell>
   );
 }

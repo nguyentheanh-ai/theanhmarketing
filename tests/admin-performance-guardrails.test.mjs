@@ -42,6 +42,17 @@ describe("admin performance guardrails", () => {
     assert.match(dashboard, /activeTab !== "clicks"/);
   });
 
+  it("keeps command center activities bounded and charts lazy", () => {
+    const activities = read("services/activityLogService.ts");
+    const dashboard = read("components/admin/solo-command-center/command-center-dashboard.tsx");
+
+    assert.match(activities, /getCommandCenterStudentActivities/);
+    assert.match(activities, /Math\.max\(1,\s*Math\.min\(input\.limit\s*\?\?\s*200,\s*200\)\)/);
+    assert.match(dashboard, /dynamic\(/);
+    assert.match(dashboard, /ssr:\s*false/);
+    assert.match(dashboard, /h-\[320px\]/);
+  });
+
   it("keeps order mutations invalidating admin caches", () => {
     const routes = [
       "app/api/orders/route.ts",
@@ -64,7 +75,11 @@ describe("admin performance guardrails", () => {
       "app/api/admin/students/access/route.ts",
       "app/api/admin/students/grant/route.ts",
       "components/admin/admin-growth-os-dashboard.tsx",
+      "components/admin/solo-command-center/command-center-dashboard.tsx",
+      "components/admin/solo-command-center/command-center-charts.tsx",
+      "components/admin/solo-command-center/priority-queue.tsx",
       "components/admin/lead-manager.tsx",
+      "services/adminCommandCenterService.ts",
       "services/orderService.ts",
     ];
     const badTextPattern = /\uFFFD|Ã|Â|Æ|Ä/;

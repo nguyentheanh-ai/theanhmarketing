@@ -20,6 +20,21 @@ import { logStudentActivity } from "@/services/activityLogService";
 type SupabaseClient = NonNullable<ReturnType<typeof createSupabaseAdminClient>>;
 type Row = Record<string, unknown>;
 
+export type CommandCenterEnrollment = {
+  id: string;
+  contactId: string | null;
+  userId: string | null;
+  email: string;
+  phone: string;
+  courseSlug: string;
+  status: string;
+  activatedAt: string | null;
+  createdAt: string;
+  expiresAt: string | null;
+  accessKind: "paid" | "free" | "trial" | null;
+  orderId: string | null;
+};
+
 const enrollmentAccessStatuses = new Set(["active", "completed"]);
 const enrollmentStatuses = new Set(["active", "paused", "completed", "revoked"]);
 const publishStatuses = new Set(["draft", "published", "archived"]);
@@ -368,6 +383,35 @@ async function fetchEnrollmentRows(client: SupabaseClient) {
     enrollmentRows: asArray(payload.enrollments),
     progressRows: asArray(payload.progress),
   };
+}
+
+export async function getCommandCenterEnrollmentsStrict(): Promise<CommandCenterEnrollment[]> {
+  const client = getClientOrThrow();
+  const { data, error } = await client.rpc("crm_v2_lms_enrollments_raw");
+  if (error) throw new Error(`Could not read command center enrollments: ${error.message}`);
+
+  return asArray(asRecord(data).enrollments).map((row) => {
+    const contact = firstRelation(row.contacts);
+    const metadata = asRecord(row.metadata);
+    const accessKindValue = text(metadata.access_kind).trim().toLowerCase();
+    const accessKind = accessKindValue === "paid" || accessKindValue === "free" || accessKindValue === "trial"
+      ? accessKindValue
+      : null;
+    return {
+      id: text(row.id),
+      contactId: text(row.contact_id) || null,
+      userId: text(row.user_id) || null,
+      email: normalizeEmail(text(contact.email) || text(metadata.student_email)) ?? "",
+      phone: text(contact.phone) || text(metadata.student_phone),
+      courseSlug: text(row.course_slug) || text(metadata.course_slug),
+      status: text(row.status),
+      activatedAt: text(row.activated_at) || null,
+      createdAt: text(row.created_at),
+      expiresAt: text(row.expires_at) || null,
+      accessKind,
+      orderId: text(row.order_id) || null,
+    };
+  });
 }
 
 async function loadAdminLmsData(client: SupabaseClient) {

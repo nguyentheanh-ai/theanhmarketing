@@ -101,13 +101,13 @@ export type CommandCenterInput = {
   students?: CommandCenterAccessInput[];
   accessRecords?: CommandCenterAccessInput[];
   activities: CommandCenterActivityInput[];
-  dataStatus?: Partial<Record<"orders" | "leads" | "students" | "activities", CommandCenterDataStatus>>;
+  dataStatus?: Partial<Record<"orders" | "leads" | "courses" | "students" | "activities", CommandCenterDataStatus>>;
 };
 
 export type SoloCommandCenterModel = {
   range: CommandCenterRange;
   generatedAt: string;
-  dataStatus: Record<"orders" | "leads" | "students" | "activities", CommandCenterDataStatus>;
+  dataStatus: Record<"orders" | "leads" | "courses" | "students" | "activities", CommandCenterDataStatus>;
   kpis: {
     revenue: Metric;
     paidOrders: Metric;
@@ -654,11 +654,16 @@ function buildPriorityTasks(
   }
 
   const severityOrder = { critical: 0, warning: 1, info: 2 };
-  return tasks.sort((a, b) =>
-    severityOrder[a.severity] - severityOrder[b.severity] ||
-    (timestamp(a.createdAt) ?? 0) - (timestamp(b.createdAt) ?? 0) ||
-    a.id.localeCompare(b.id),
-  );
+  return tasks
+    .map((task) => ({
+      ...task,
+      href: `/admin/dashboard?task=${encodeURIComponent(task.id)}#viec-can-xu-ly`,
+    }))
+    .sort((a, b) =>
+      severityOrder[a.severity] - severityOrder[b.severity] ||
+      (timestamp(a.createdAt) ?? 0) - (timestamp(b.createdAt) ?? 0) ||
+      a.id.localeCompare(b.id),
+    );
 }
 
 export function buildSoloCommandCenterModel(input: CommandCenterInput): SoloCommandCenterModel {
@@ -756,6 +761,7 @@ export function buildSoloCommandCenterModel(input: CommandCenterInput): SoloComm
     dataStatus: {
       orders: input.dataStatus?.orders ?? "ready",
       leads: input.dataStatus?.leads ?? "ready",
+      courses: input.dataStatus?.courses ?? "ready",
       students: input.dataStatus?.students ?? "ready",
       activities: input.dataStatus?.activities ?? "ready",
     },

@@ -539,13 +539,15 @@ export async function getPaymentOrder(orderCode: string) {
   return mapDbOrder(data as DbOrder);
 }
 
-export async function getPaymentOrders(options: { includeFallback?: boolean } = {}) {
+export async function getPaymentOrders(options: { includeFallback?: boolean; strict?: boolean } = {}) {
   const includeFallback = options.includeFallback ?? false;
+  const strict = options.strict ?? false;
   const supabase = process.env.SUPABASE_SERVICE_ROLE_KEY
     ? createSupabaseAdminClient()
     : await (await import("@/lib/auth/session")).createSupabaseAuthServerClient();
 
   if (!supabase) {
+    if (strict) throw new Error("Payment order source is unavailable");
     return includeFallback ? getFallbackOrders() : [];
   }
 
@@ -565,9 +567,14 @@ export async function getPaymentOrders(options: { includeFallback?: boolean } = 
     error = fallback.error;
   }
 
+  if (error && strict) {
+    throw new Error(`Could not read payment orders: ${error.message}`);
+  }
+
   const rows = (data ?? []) as DbOrder[];
 
   if (error || rows.length === 0) {
+    if (strict) return [];
     if (!includeFallback) {
       return [];
     }

@@ -397,10 +397,10 @@ test("never copies arbitrary failure details into priority tasks", () => {
 
 test("preserves explicit source errors while defaulting omitted data status to ready", () => {
   const defaults = build();
-  assert.deepEqual(defaults.dataStatus, { orders: "ready", leads: "ready", students: "ready", activities: "ready" });
+  assert.deepEqual(defaults.dataStatus, { orders: "ready", leads: "ready", courses: "ready", students: "ready", activities: "ready" });
 
-  const withError = build({ dataStatus: { orders: "error", activities: "error" } });
-  assert.deepEqual(withError.dataStatus, { orders: "error", leads: "ready", students: "ready", activities: "error" });
+  const withError = build({ dataStatus: { orders: "error", courses: "error", activities: "error" } });
+  assert.deepEqual(withError.dataStatus, { orders: "error", leads: "ready", courses: "error", students: "ready", activities: "error" });
 });
 
 test("counts new leads against the equal previous period", () => {
@@ -591,7 +591,7 @@ test("emits one safe task for an unlinked operational failure", () => {
   const tasks = model.priorityTasks.filter((task) => task.kind === "access");
   assert.equal(tasks.length, 1);
   assert.equal(tasks[0].id, "activity-access-orphan-failure");
-  assert.equal(tasks[0].href, "/admin/viec-can-xu-ly?activity=orphan-failure");
+  assert.equal(tasks[0].href, `/admin/dashboard?task=${encodeURIComponent(tasks[0].id)}#viec-can-xu-ly`);
   assert.ok(!JSON.stringify(tasks).includes("Bearer hidden"));
 });
 
@@ -625,7 +625,7 @@ test("never serializes contact PII into priority task URLs or text", () => {
   assert.ok(!serialized.includes(email));
   assert.ok(!serialized.includes(phone));
   assert.ok(!serialized.includes("0901234567"));
-  assert.ok(model.priorityTasks.every((task) => task.href.includes(`activity=${encodeURIComponent(task.id.replace(/^activity-(email|access|account)-/, ""))}`)));
+  assert.ok(model.priorityTasks.every((task) => task.href === `/admin/dashboard?task=${encodeURIComponent(task.id)}#viec-can-xu-ly`));
 });
 
 test("declares access kind as a required narrow union while keeping runtime validation", () => {

@@ -1,5 +1,5 @@
 import { getCourses } from "@/services/courseService";
-import { getLeads } from "@/services/leadService";
+import { getCommandCenterLeadsStrict, getLeads } from "@/services/leadService";
 import { getPaymentOrders } from "@/services/orderService";
 import { getStudentAccessRecords } from "@/services/studentAccessService";
 import { invalidateAdminDataCache, readAdminDataCache } from "@/services/adminDataCache";
@@ -26,6 +26,14 @@ export function getAdminLeads() {
 
 export function getAdminPaymentOrders() {
   return readAdminDataCache(adminDataCacheKeys.orders, () => getPaymentOrders({ includeFallback: false }), adminCacheTtlMs);
+}
+
+export function getAdminPaymentOrdersStrict() {
+  return getPaymentOrders({ strict: true });
+}
+
+export function getAdminCommandCenterLeadsStrict() {
+  return getCommandCenterLeadsStrict();
 }
 
 export function getAdminStudentAccessRecords() {

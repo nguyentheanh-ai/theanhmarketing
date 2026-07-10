@@ -562,6 +562,29 @@ export async function getCourses() {
   return fetchCourses();
 }
 
+export type CourseSummary = {
+  id: string;
+  slug: string;
+  title: string;
+};
+
+export async function getCourseSummariesStrict(): Promise<CourseSummary[]> {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Course source is unavailable");
+
+  const { data, error } = await supabase
+    .from("courses")
+    .select("id,slug,title")
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(`Could not read course summaries: ${error.message}`);
+  return ((data ?? []) as Array<{ id: string; slug: string; title: string }>).map((course) => ({
+    id: course.id,
+    slug: course.slug,
+    title: course.title,
+  }));
+}
+
 export async function getCourseBySlug(slug: string) {
   const courses = await getCourses();
   const course = courses.find((course) => course.slug === slug);
