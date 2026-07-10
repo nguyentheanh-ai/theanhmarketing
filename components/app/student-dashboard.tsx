@@ -2,20 +2,27 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BrandMark } from "@/components/site/brand-mark";
 import type { Course } from "@/data/courses";
 import { getCourseLessonCount, getCourseModuleCount } from "@/data/courses";
 import { siteConfig } from "@/data/site";
+import { FACEBOOK_EBOOK_COURSE_SLUG, FACEBOOK_EBOOK_PDF_HREF, FACEBOOK_EBOOK_READER_HREF } from "@/lib/ebook/facebook-ebook";
 import { formatCurrency, getDiscountPercent, parsePrice } from "@/lib/price";
+import {
+  getOwnedCoursesInAccessOrder,
+  getPrimaryDashboardCourse,
+  getSuggestedCoursesForDashboard,
+} from "@/lib/student-dashboard-courses";
 import { toYouTubeThumbnailUrl } from "@/lib/youtube";
 import type { ResourceItem } from "@/services/resourceService";
 
 type StudentDashboardProps = {
   courses: Course[];
   ownedSlugs: string[];
+  progressBySlug: Record<string, number>;
   resources: ResourceItem[];
   studentName: string;
   studentEmail: string;
@@ -30,7 +37,15 @@ function getCourseImage(course: Course) {
   );
 }
 
+function isFacebookEbookCourse(course: Course) {
+  return course.slug === FACEBOOK_EBOOK_COURSE_SLUG;
+}
+
 function getFirstLessonHref(course: Course) {
+  if (isFacebookEbookCourse(course)) {
+    return FACEBOOK_EBOOK_READER_HREF;
+  }
+
   const firstLesson = course.modules
     .flatMap((module) => module.lessons)
     .sort((a, b) => a.order - b.order)[0];
@@ -52,10 +67,12 @@ function CourseTile({
   course,
   isOwned,
   isDark,
+  progress,
 }: {
   course: Course;
   isOwned: boolean;
   isDark: boolean;
+  progress: number;
 }) {
   const discountPercent = getDiscountPercent(course.price, course.originalPrice);
   const studentOfferPrice = getStudentOfferPrice(course);
@@ -138,15 +155,37 @@ function CourseTile({
                 {course.price}
               </p>
             ) : null}
+            {isOwned ? (
+              <p className={`mt-1 text-xs font-bold ${isDark ? "text-white/58" : "text-black/48"}`}>Tiến độ: {progress}%</p>
+            ) : null}
           </div>
 
           {isOwned ? (
-            <Link
-              href={getFirstLessonHref(course)}
-              className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#49b77a] px-5 text-sm font-black text-white transition-colors hover:bg-[#3aa86c]"
-            >
-              Vào workflow
-            </Link>
+            isFacebookEbookCourse(course) ? (
+              <div className="grid gap-2">
+                <Link
+                  href={FACEBOOK_EBOOK_READER_HREF}
+                  className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#49b77a] px-5 text-sm font-black text-white transition-colors hover:bg-[#3aa86c]"
+                >
+                  Đọc online
+                </Link>
+                <Link
+                  href={FACEBOOK_EBOOK_PDF_HREF}
+                  className={`inline-flex min-h-11 items-center justify-center rounded-full px-5 text-sm font-black ring-1 ${
+                    isDark ? "bg-white/8 text-white ring-white/10 hover:bg-white/12" : "bg-white text-black ring-black/10 hover:bg-black/5"
+                  }`}
+                >
+                  Tải PDF
+                </Link>
+              </div>
+            ) : (
+              <Link
+                href={getFirstLessonHref(course)}
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#49b77a] px-5 text-sm font-black text-white transition-colors hover:bg-[#3aa86c]"
+              >
+                Vào workflow
+              </Link>
+            )
           ) : course.status === "open" ? (
             <AddToCartButton
               slug={course.slug}
@@ -174,17 +213,18 @@ function CourseTile({
 export function StudentDashboard({
   courses,
   ownedSlugs,
+  progressBySlug,
   resources,
   studentName,
   studentEmail,
 }: StudentDashboardProps) {
   const [isDark, setIsDark] = useState(true);
-  const ownedSet = useMemo(() => new Set(ownedSlugs), [ownedSlugs]);
-  const ownedCourses = courses.filter((course) => ownedSet.has(course.slug));
-  const suggestedCourses = courses.filter((course) => !ownedSet.has(course.slug));
-  const activeCourse = ownedCourses[0] ?? courses[0];
+  const ownedCourses = getOwnedCoursesInAccessOrder(courses, ownedSlugs);
+  const suggestedCourses = getSuggestedCoursesForDashboard(courses, ownedSlugs);
+  const activeCourse = getPrimaryDashboardCourse(courses, ownedSlugs);
   const nextLessonHref = activeCourse ? getFirstLessonHref(activeCourse) : "/khoa-hoc";
-  const completion = activeCourse ? Math.min(100, Math.max(8, Math.round((1 / Math.max(getCourseLessonCount(activeCourse), 1)) * 100))) : 0;
+  const activeCourseIsFacebookEbook = activeCourse ? isFacebookEbookCourse(activeCourse) : false;
+  const completion = activeCourse ? Math.max(0, Math.min(100, Math.round(progressBySlug[activeCourse.slug] ?? 0))) : 0;
 
   const shellClass = isDark
     ? "bg-[#202026] text-white"
@@ -301,12 +341,22 @@ export function StudentDashboard({
                   Tiến độ hiện tại: {completion}%
                 </p>
               </div>
-              <Link
-                href={nextLessonHref}
-                className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 text-sm font-black text-black ring-1 ring-black/8"
-              >
-                Vào phòng học
-              </Link>
+              <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-1">
+                <Link
+                  href={nextLessonHref}
+                  className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 text-sm font-black text-black ring-1 ring-black/8"
+                >
+                  {activeCourseIsFacebookEbook ? "Đọc online" : "Vào phòng học"}
+                </Link>
+                {activeCourseIsFacebookEbook ? (
+                  <Link
+                    href={FACEBOOK_EBOOK_PDF_HREF}
+                    className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#d8b653] px-6 text-sm font-black text-black ring-1 ring-black/8"
+                  >
+                    Tải PDF
+                  </Link>
+                ) : null}
+              </div>
             </div>
           </div>
 
@@ -352,7 +402,7 @@ export function StudentDashboard({
               </h3>
               <div className="mt-3 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {ownedCourses.map((course) => (
-                  <CourseTile key={course.slug} course={course} isOwned isDark={isDark} />
+                  <CourseTile key={course.slug} course={course} isOwned isDark={isDark} progress={Math.round(progressBySlug[course.slug] ?? 0)} />
                 ))}
               </div>
             </>
@@ -363,7 +413,7 @@ export function StudentDashboard({
           </h3>
           <div className="mt-3 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {suggestedCourses.map((course) => (
-              <CourseTile key={course.slug} course={course} isOwned={false} isDark={isDark} />
+              <CourseTile key={course.slug} course={course} isOwned={false} isDark={isDark} progress={0} />
             ))}
           </div>
         </section>

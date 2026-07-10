@@ -17,6 +17,7 @@ export type LearningLesson = CourseLesson & {
 type LearningRoomProps = {
   course: Course;
   currentLesson: LearningLesson;
+  currentLessonCompleted?: boolean;
   lessons: LearningLesson[];
   previousLesson?: LearningLesson;
   nextLesson?: LearningLesson;
@@ -49,11 +50,15 @@ function getModuleGroups(lessons: LearningLesson[]) {
 export function LearningRoom({
   course,
   currentLesson,
+  currentLessonCompleted = false,
   lessons,
   nextLesson,
   previousLesson,
 }: LearningRoomProps) {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(currentLessonCompleted);
+  const [progressMessage, setProgressMessage] = useState("");
+  const [isSavingProgress, setIsSavingProgress] = useState(false);
   const moduleGroups = useMemo(() => getModuleGroups(lessons), [lessons]);
   const canWatchVideo = Boolean(currentLesson.embedUrl);
   const thumbnailUrl = toYouTubeThumbnailUrl(currentLesson.youtubeUrl);
@@ -62,6 +67,30 @@ export function LearningRoom({
   const mutedText = "text-white/62";
   const subtlePanel = "border border-white/10 bg-white/8 text-white/72";
   const dividerClass = "border-white/10";
+
+  async function updateProgress() {
+    setIsSavingProgress(true);
+    setProgressMessage("");
+    try {
+      const response = await fetch("/api/student/progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          courseSlug: course.slug,
+          lessonId: currentLesson.id,
+          completed: true,
+        }),
+      });
+      const result = (await response.json().catch(() => null)) as { ok?: boolean; message?: string; progressPercent?: number } | null;
+      if (!response.ok || !result?.ok) throw new Error(result?.message ?? "Không cập nhật được tiến độ.");
+      setIsCompleted(true);
+      setProgressMessage(`Đã lưu tiến độ ${result.progressPercent ?? 0}%.`);
+    } catch (error) {
+      setProgressMessage(error instanceof Error ? error.message : "Không cập nhật được tiến độ.");
+    } finally {
+      setIsSavingProgress(false);
+    }
+  }
 
   return (
     <main className={`min-h-screen ${shellClass}`}>
@@ -186,6 +215,14 @@ export function LearningRoom({
                   {cleanLessonTitle(currentLesson.title)}
                 </h1>
                 <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                  <button
+                    className={`rounded-xl px-5 py-3 text-center text-sm font-bold ${isCompleted ? "bg-emerald-400/80 text-white" : "bg-white text-black"}`}
+                    disabled={isSavingProgress || isCompleted}
+                    onClick={updateProgress}
+                    type="button"
+                  >
+                    {isCompleted ? "Đã hoàn thành" : isSavingProgress ? "Đang lưu..." : "Hoàn thành bài học"}
+                  </button>
                   {previousLesson ? (
                     <Link
                       className={`rounded-xl px-5 py-3 text-center text-sm font-bold ${subtlePanel}`}
@@ -210,7 +247,32 @@ export function LearningRoom({
                     </Link>
                   )}
                 </div>
+                {progressMessage ? <p className="mt-3 text-sm font-bold text-white/72">{progressMessage}</p> : null}
               </section>
+              {currentLesson.description || currentLesson.content ? (
+                <section className={`rounded-2xl p-4 ring-1 ${panelClass}`}>
+                  <p className={`text-xs font-black uppercase tracking-[0.14em] ${mutedText}`}>Nội dung bài học</p>
+                  {currentLesson.description ? <p className="mt-3 text-sm leading-7 text-white/72">{currentLesson.description}</p> : null}
+                  {currentLesson.content ? <div className="mt-4 whitespace-pre-wrap text-sm leading-7 text-white/82">{currentLesson.content}</div> : null}
+                </section>
+              ) : null}
+              {currentLesson.resources?.length ? (
+                <section className={`rounded-2xl p-4 ring-1 ${panelClass}`}>
+                  <p className={`text-xs font-black uppercase tracking-[0.14em] ${mutedText}`}>Tài nguyên</p>
+                  <div className="mt-3 grid gap-2">
+                    {currentLesson.resources.map((resource) => (
+                      <Link
+                        className="rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-bold text-white/82 hover:bg-white/12"
+                        href={resource.url}
+                        key={`${resource.title}-${resource.url}`}
+                        target="_blank"
+                      >
+                        {resource.title}
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
             </div>
           </div>
 

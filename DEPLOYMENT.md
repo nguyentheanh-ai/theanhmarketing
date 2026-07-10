@@ -1,5 +1,10 @@
 # Deploy & Domain Checklist
 
+Project ID: `theanh-main`. Direct `vercel --prod` is forbidden.
+
+- Preview: `node E:\_workspace-control\scripts\workspace.mjs deploy theanh-main preview`
+- Production: `node E:\_workspace-control\scripts\workspace.mjs deploy theanh-main production`, then type `DEPLOY theanh-main TO PRODUCTION` exactly.
+
 ## Domain
 
 Primary domain: `https://theanhmarketing.com`
@@ -51,11 +56,11 @@ Private areas are intentionally excluded from indexing:
 - Run `npm run lint`.
 - Run `npm run build`.
 - With the site running, run `npm run verify:routes`.
-- Set payment environment variables on the hosting provider:
-  - `SEPAY_BANK_CODE=VPB`
-  - `SEPAY_BANK_ACCOUNT_NUMBER=0367928921`
-  - `SEPAY_BANK_ACCOUNT_NAME=NGUYEN THE ANH`
-  - `SEPAY_WEBHOOK_API_KEY` from Sepay, kept secret and never committed.
+- Set these payment environment variable names on the hosting provider; values must not be stored in this document:
+  - `SEPAY_BANK_CODE`
+  - `SEPAY_BANK_ACCOUNT_NUMBER`
+  - `SEPAY_BANK_ACCOUNT_NAME`
+  - `SEPAY_WEBHOOK_API_KEY`
 - Configure Sepay webhook URL: `https://theanhmarketing.com/api/sepay/webhook`.
 - Replace media placeholders with real images/videos.
 - Add social links in `components/seo/json-ld.tsx` when official channels are ready.

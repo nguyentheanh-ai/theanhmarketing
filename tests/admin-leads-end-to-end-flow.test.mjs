@@ -56,6 +56,8 @@ test("admin lead APIs cover refresh, sale status, resend email, email logs and s
   assert.match(resendRoute, /sendLeadResendEmail/);
   assert.match(deleteRoute, /softDeleteLead/);
   assert.match(resyncRoute, /resyncUnsyncedLeadsToGoogleSheet/);
+  assert.match(resyncRoute, /CRON_SECRET/);
+  assert.match(resyncRoute, /Bearer \$\{process\.env\.CRON_SECRET\}/);
 });
 
 test("order-only admin lead rows can persist sale status by creating a real lead", () => {

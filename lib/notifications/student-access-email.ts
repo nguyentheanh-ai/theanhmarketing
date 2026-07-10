@@ -12,7 +12,7 @@ type StudentAccessEmailOptions = {
 };
 
 type StudentAccessEmailInput = {
-  action: "grant" | "revoke";
+  action: "grant" | "revoke" | "password_reset";
   studentName: string;
   email: string;
   courseTitles: string[];
@@ -85,8 +85,14 @@ function renderCourseList(courseTitles: string[]) {
     .join("");
 }
 
-function renderAccountBlock(account?: StudentAccessEmailOptions["account"]) {
+function renderAccountBlock(account?: StudentAccessEmailOptions["account"], mode: "access" | "password_reset" = "access") {
   if (!account?.temporaryPassword) return "";
+
+  const passwordLabel = mode === "password_reset" ? "Mật khẩu mới" : "Mật khẩu tạm";
+  const passwordNote =
+    mode === "password_reset"
+      ? "Mật khẩu cũ đã được thay bằng mật khẩu mới bên trên. Sau khi đăng nhập, hệ thống sẽ yêu cầu bạn đổi mật khẩu để bảo vệ tài khoản."
+      : "Sau khi đăng nhập lần đầu, hệ thống sẽ yêu cầu bạn đổi mật khẩu để bảo vệ tài khoản.";
 
   return `
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;border:1px solid #5b3a23;border-radius:14px;background:#211913">
@@ -99,12 +105,12 @@ function renderAccountBlock(account?: StudentAccessEmailOptions["account"]) {
               <td align="right" style="padding:12px 0;border-top:1px solid #3a3024;color:#ffffff;font-size:14px;font-weight:800">${escapeHtml(account.email)}</td>
             </tr>
             <tr>
-              <td style="padding:12px 0;border-top:1px solid #3a3024;color:#9d978c;font-size:14px">Mật khẩu tạm</td>
+              <td style="padding:12px 0;border-top:1px solid #3a3024;color:#9d978c;font-size:14px">${escapeHtml(passwordLabel)}</td>
               <td align="right" style="padding:12px 0;border-top:1px solid #3a3024;color:#d8b653;font-size:17px;font-weight:900">${escapeHtml(account.temporaryPassword)}</td>
             </tr>
           </table>
           <p style="margin:12px 0 0;color:#bdb7a9;font-size:13px;line-height:1.7">
-            Sau khi đăng nhập lần đầu, hệ thống sẽ yêu cầu bạn đổi mật khẩu để bảo vệ tài khoản.
+            ${escapeHtml(passwordNote)}
           </p>
         </td>
       </tr>
@@ -153,12 +159,16 @@ export function buildStudentAccessEmailPayload(
   const courseTitles = input.courseTitles.filter(Boolean);
   const firstCourseTitle = courseTitles[0] ?? "khóa học tại The Anh Marketing";
   const isGrant = input.action === "grant";
-  const headline = isGrant ? "Đã cấp quyền học" : "Quyền học đã được cập nhật";
-  const title = isGrant ? "Tài khoản học viên của bạn" : "Thông báo cập nhật quyền học";
-  const intro = isGrant
-    ? `Bạn đã được cấp quyền truy cập khóa học bên dưới.`
-    : `Quyền truy cập của bạn với khóa học bên dưới đã được cập nhật.`;
-  const accountBlock = renderAccountBlock(options.account);
+  const isPasswordReset = input.action === "password_reset";
+  const headline = isPasswordReset ? "Cấp lại mật khẩu" : isGrant ? "Đã cấp quyền học" : "Quyền học đã được cập nhật";
+  const title = isPasswordReset ? "Mật khẩu đăng nhập mới của bạn" : isGrant ? "Tài khoản học viên của bạn" : "Thông báo cập nhật quyền học";
+  const intro = isPasswordReset
+    ? "Admin The Anh Marketing vừa cấp lại mật khẩu đăng nhập mới cho tài khoản học viên của bạn. Bạn dùng thông tin bên dưới để đăng nhập lại."
+    : isGrant
+      ? `Bạn đã được cấp quyền truy cập khóa học bên dưới.`
+      : `Quyền truy cập của bạn với khóa học bên dưới đã được cập nhật.`;
+  const accessCtaLabel = isPasswordReset ? "Đăng nhập khu vực học viên" : "Truy cập khu vực học viên";
+  const accountBlock = renderAccountBlock(options.account, isPasswordReset ? "password_reset" : "access");
 
   const html = withEmailDocument(`
     <div style="margin:0;padding:0;background:#080808;font-family:${emailFontFamily};color:#f6f1e7">
@@ -187,9 +197,9 @@ export function buildStudentAccessEmailPayload(
                   </table>
                   ${accountBlock}
                   ${
-                    isGrant
+                    isGrant || isPasswordReset
                       ? `<div style="padding-top:28px;text-align:center">
-                          <a href="${escapeHtml(accessEmailUrl)}" target="_blank" rel="noopener noreferrer" style="display:block;background:#d8b653;color:#111111;text-decoration:none;border-radius:10px;padding:16px 20px;font-size:15px;font-weight:800">Truy cập khu vực học viên</a>
+                          <a href="${escapeHtml(accessEmailUrl)}" target="_blank" rel="noopener noreferrer" style="display:block;background:#d8b653;color:#111111;text-decoration:none;border-radius:10px;padding:16px 20px;font-size:15px;font-weight:800">${escapeHtml(accessCtaLabel)}</a>
                           <p style="margin:16px 0 0;color:#8f887c;font-size:12px;line-height:1.7">
                             Link truy cập chính thức: <strong style="color:#f6f1e7">theanhmarketing.com</strong><br />
                             Nếu nút không hoạt động, anh/chị copy đường dẫn này và mở bằng Chrome: <a href="${escapeHtml(accessEmailUrl)}" target="_blank" rel="noopener noreferrer" style="color:#d8b653;word-break:break-all">${escapeHtml(accessUrl)}</a>
@@ -211,8 +221,10 @@ export function buildStudentAccessEmailPayload(
         "",
         "Thông tin đăng nhập:",
         `Email: ${options.account.email}`,
-        `Mật khẩu tạm: ${options.account.temporaryPassword}`,
-        "Sau lần đăng nhập đầu tiên, hệ thống sẽ yêu cầu bạn đổi mật khẩu.",
+        `${isPasswordReset ? "Mật khẩu mới" : "Mật khẩu tạm"}: ${options.account.temporaryPassword}`,
+        isPasswordReset
+          ? "Mật khẩu cũ đã được thay bằng mật khẩu mới bên trên. Sau khi đăng nhập, hệ thống sẽ yêu cầu bạn đổi mật khẩu."
+          : "Sau lần đăng nhập đầu tiên, hệ thống sẽ yêu cầu bạn đổi mật khẩu.",
       ].join("\n")
     : "";
 
@@ -229,8 +241,8 @@ export function buildStudentAccessEmailPayload(
       "Khóa học:",
       ...courseTitles.map((courseTitle) => `- ${courseTitle}`),
       accountText,
-      isGrant ? `Truy cập khu vực học viên: ${accessUrl}` : "",
-      isGrant ? `Link truy cập chính thức: ${accessUrl}` : "",
+      isGrant || isPasswordReset ? `${accessCtaLabel}: ${accessUrl}` : "",
+      isGrant || isPasswordReset ? `Link truy cập chính thức: ${accessUrl}` : "",
       `Hỗ trợ: ${supportEmail}`,
     ]
       .filter(Boolean)

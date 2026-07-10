@@ -6,6 +6,209 @@ Repo chinh: `E:\TheAnh-Business-Workspace\02_Website\landing-page`
 
 Current deploy source after 2026-06-11 incident: `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`
 
+## 2026-07-10 - Facebook Ads post-payment access guide
+
+- Page: `app/cam-on-thanh-toan/facebook-ads-2026/page.tsx` remains the public/noindex thank-you route for paid `facebook-ads-2026` orders.
+- Flow: `components/payment/payment-status-poller.tsx` still redirects paid Facebook Ads course orders to `/cam-on-thanh-toan/facebook-ads-2026`; payment behavior was not changed.
+- UI requirement: the page now explains the full customer-visible access journey in five steps: payment success, check mail, open the payment confirmation email, retrieve the temporary password, log in and enter the student dashboard.
+- Safety: the guide shows only masked placeholder credential copy (`Email đã mua khóa`, `Mật khẩu tạm`) and reminds customers not to create a new account before checking the payment-success email. It does not expose passwords or protected course content.
+- Guard: `tests/facebook-ads-thank-you-guide.test.mjs` locks the email-password-login copy and verifies the paid redirect remains pointed at the dedicated guide.
+
+## 2026-07-08 - CRM v2 Leads customer-detail student access actions
+
+- Request: owner wants `/admin/crm-v2/leads` to let him grant course access and resend/set student passwords, with every task visible only after clicking a customer name.
+- UI: `app/admin/crm-v2/leads/page.tsx` now loads real course options through `getCourses()` and passes them to `components/crm-v2/leads-page-client.tsx`. The expanded customer row renders a `Quyen hoc vien` panel with course checkboxes, `Cap quyen`, `Thu quyen`, and `Gui lai mat khau`.
+- Flow preserved: the CRM Leads screen does not own a new access/email flow. It reuses `POST /api/admin/students/access` and `POST /api/admin/students/password-reset`; those routes remain owner/editor guarded and continue through `ensureStudentAccountForAccessGrant`, LMS enrollment sync, `sendStudentAccessEmail`, activity logs, and the existing password-login verification boundary.
+- Guard: `tests/crm-v2-contract.test.mjs` requires course loading from the leads page, placement inside expanded detail, and both real API endpoints.
+- Verification: RED contract test failed before implementation; then `node --test tests\crm-v2-contract.test.mjs` 21/21, `node --test tests\student-access-admin-controls.test.mjs tests\student-account.test.mjs` 19/19, TypeScript, lint, production build, and diff-check passed locally.
+- Deploy: production `dpl_6juduNdvjcjQx4NzvefLGS4ewrsx`, alias `https://www.theanhmarketing.com`, Ready. Live unauth smoke: `/admin/crm-v2/leads` redirects to login, both admin student POST APIs return 403 unauth, `/vao-khoa-hoc` returns 200.
+- Remaining: authenticated owner-session visual/click smoke is still needed because Codex could not see the logged-in CRM table after deploy.
+
+## 2026-07-06 - Public Facebook Ads ebook trial reader
+
+- Official trial link: `https://www.theanhmarketing.com/doc-thu/ebook-facebook-ads-2026`. This route is public/noindex and belongs to the main `theanhmarketing.com` deployment, not a standalone Vercel project.
+- Premium landing entrypoint: `https://www.theanhmarketing.com/academy/ebook-facebook-ads-2026-premium#sample` has a `Mo ban doc thu online` CTA under the sample-section intro. It links to `/doc-thu/ebook-facebook-ads-2026` in a new tab and carries `data-event="sample_trial_reader_click"`.
+- Component/page: `app/doc-thu/ebook-facebook-ads-2026/page.tsx` renders `components/ebook/facebook-ebook-preview-reader.tsx`.
+- Access shape: only chapters 1 and 5 are readable from public images under `/ebook-facebook-ads-2026/phan-1` and `/ebook-facebook-ads-2026/phan-5`. Locked chapters remain listed but open a purchase modal to `/academy/ebook-facebook-ads-2026-premium#price`.
+- Important separation: paid reader `/thu-vien/facebook-ads` and protected image API `/api/ebook/facebook-ads/page` still require login/access and should not be used for the trial route.
+- Owner UI requirement: the trial sidebar hides `Phan n`, ordinal badges, and page counts; only chapter titles show, with readable/open chapters bright and locked chapters greyed. The sidebar has a full-width `Mua Ebook` CTA at the end of the left column.
+- Guard: `tests/facebook-ebook-preview-reader.test.mjs` checks only parts 1 and 5 are unlocked, public assets do not include part 2, the preview does not import paid access checks, and the image key changes with `imageSrc`.
+- Verification: targeted ebook tests `18/18`, TypeScript, lint, diff-check, production build, live route 200, paid reader unauth redirect, public part 2 image 404, public part 5 image 200, and live Playwright smoke passed. Production deploy `dpl_F8ZspEpZ3YjRuBWMvAchtaiCUTwH`, alias `https://www.theanhmarketing.com`, Ready. Wrong standalone Vercel project `ebook-main-locked` was removed. CTA follow-up deploy `dpl_441iB1zPaSTafe8epW2LfVyodgkc` verified live HTML contains `Mua Ebook` and the buy href. Landing-sample CTA deploy `dpl_5QpPWhERFvWJnLyNE5b8VkEvGJ2w` verified live HTML contains the reader CTA and Playwright sees it visible at `#sample`. Cleanup deploy `dpl_EHEp5vpkzGatfjBci5xGF2vXbfz8` removed internal-facing sample copy/cards from `#sample` while keeping the reader CTA visible.
+
+## 2026-07-06 - Facebook Ads course paid checkout thank-you page
+
+- Correction: `facebook-ads-2026` is the video/course product, while `ebook-facebook-ads-2026` is the gated ebook product. Do not reuse the ebook thank-you page/copy for course buyers.
+- Page: `app/cam-on-thanh-toan/facebook-ads-2026/page.tsx` is public/noindex and explains the course buyer flow: `Check mail`, `Đăng nhập`, `Vào khóa học online`. Its CTA goes to `/dang-nhap?next=%2Fdashboard`, not the protected ebook reader/PDF routes.
+- Redirect: `components/payment/payment-status-poller.tsx` now checks exact slugs. Paid `facebook-ads-2026` orders go to `/cam-on-thanh-toan/facebook-ads-2026`; paid `ebook-facebook-ads-2026` orders still go to `/cam-on-thanh-toan/ebook-facebook-ads-2026`; other products fall back to `/dashboard`.
+- Guard: `tests/payment-page-reference-ui.test.mjs` requires the course route and forbids ebook copy/reader routes in the course thank-you page.
+- Verification: RED/GREEN payment-page guard `7/7`, TypeScript, lint, production build, and targeted diff check passed. Production deploy `dpl_GNHDqZzGjjfLcyd4Vz5sFxuMsEWD`, alias `https://www.theanhmarketing.com`, Ready. Live smoke confirmed the course thank-you page has Facebook Ads Master 2026 copy, dashboard login next, and no ebook copy; ebook thank-you page still has ebook copy.
+
+## 2026-07-06 - Premium ebook landing performance fix
+
+- Issue: owner reported the premium Ebook Facebook Ads landing felt slow/laggy.
+- Root cause: the page itself is small, but it referenced 29 PNG preview/mockup images totaling about `45.7MB`, including many 1920x1080 ebook page screenshots. Google Fonts was also loaded as a render-blocking stylesheet.
+- Fix: created optimized JPEG assets under `public/ebook-facebook-ads-2026-premium/optimized` and updated both `public/ladipage/ebook-facebook-ads-2026-premium.html` and `public/academy/ebook-facebook-ads-2026-premium.html`. Only the hero image is `fetchpriority="high"`; the other 28 images use `loading="lazy" decoding="async"`. Google Fonts now loads via non-blocking preload with a noscript fallback.
+- Verification: source/published landing tests passed, typecheck passed, diff-check passed, build passed. Live Playwright smoke on `https://www.theanhmarketing.com/academy/ebook-facebook-ads-2026-premium` saw 29 optimized images, 28 lazy images, 1 high-priority image, 7 image resources loaded initially, about `0.69MB` initial image transfer, and no failed requests.
+- Production deployed: `dpl_7duU7Ah7i4BbZs6z3ZYW3NWg1Pp4`, alias `https://www.theanhmarketing.com`, status Ready.
+
+## 2026-07-06 - Ebook paid checkout thank-you handoff
+
+- Request: after a customer scans the QR and SePay marks the ebook order paid, do not send them straight to `/dashboard`. Show a thank-you page that explains how to get the ebook: `Check mail`, `Đăng nhập`, then `Tải Ebook hoặc học Online`.
+- Fix: `components/payment/payment-status-poller.tsx` now routes paid `ebook-facebook-ads-2026` orders to `/cam-on-thanh-toan/ebook-facebook-ads-2026` after the existing 4.5s success delay. Other products keep the old `/dashboard` fallback.
+- Page: `app/cam-on-thanh-toan/ebook-facebook-ads-2026/page.tsx` is public/noindex and links to `/dang-nhap?next=%2Fthu-vien%2Ffacebook-ads` for online reading and `/dang-nhap?next=%2Fthu-vien%2Ffacebook-ads%2Fpdf` for PDF download. It does not make protected ebook/PDF content public.
+- Guard: `tests/payment-page-reference-ui.test.mjs` requires the ebook paid redirect to use the thank-you route and not `router.push("/dashboard")`.
+- Verification: RED/GREEN payment-page test, targeted payment/ebook/email/account suite `50/50`, full Node suite `239/239`, TypeScript, lint, and production build passed locally.
+- Production deployed: `dpl_7sKw4uTkJwMgQ2kDMZzMvT7oHF97`, URL `https://theanhmarketing-q15i4k7tt-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready. Live smoke: thank-you route 200 with the 3-step guide, login reader/PDF links 200, and unauth reader/PDF still redirect to login with the correct `next` path.
+
+## 2026-07-06 - Meta CAPI Lead dedup for sales landing pages
+
+- Request: owner asked to set up CAPI for the website and landing pages following Meta guidance: server route, hashed customer data, direct Graph API delivery, and shared `event_id` for deduplication.
+- Existing shape preserved: this repo already sends server-side `Lead` from `/api/orders` and `Purchase` from `/api/sepay/webhook` plus `/api/payment/confirm` through `lib/meta/conversions-api.ts`. Because website orders/payments already land in Vercel routes, we did not add a separate Supabase webhook or duplicate CAPI route.
+- Fix: `MetaLeadEventInput` now has explicit `eventId`, so CAPI `event_id` can stay equal to the browser Pixel event ID while `leadId` can still be used for Meta numeric `user_data.lead_id` when available. `/api/orders` passes the incoming landing-page `leadId` as `eventId`.
+- Landing pages: Facebook Ads static source/published pages now send Pixel `Lead` with `{ eventID: leadId }` on real form submit and send the same `leadId` to `/api/orders`. Premium ebook static source/published pages now generate a client `leadId`, pass it to `/api/orders`, and use that same ID for Pixel `Lead`.
+- Env: production Vercel has encrypted `META_CAPI_ACCESS_TOKEN`, `META_CAPI_DATASET_ID`, `META_CAPI_API_VERSION`, and `NEXT_PUBLIC_META_PIXEL_ID`. The helper now reads `META_CAPI_DATASET_ID` and falls back to the primary Pixel ID if env is absent.
+- Verification: RED/GREEN `tests/meta-conversions-api.test.mjs`, updated ebook landing guard, full `node --test tests\*.mjs` 237/237, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, touched-file `git diff --check` with LF/CRLF warnings only, and `npm.cmd run build` passed. Live Events Manager test/dedup still needs a temporary `META_CAPI_TEST_EVENT_CODE` or approved live order after deploy.
+- Production deployed: `dpl_2EzaAHyN4ed8SET7j1u666mQewy3`, URL `https://theanhmarketing-myurgxj96-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready. Live smoke: `/academy/facebook-ads-master-2026` 200 and contains primary Pixel plus `eventID`/`event_id: leadId`, `/academy/ebook-facebook-ads-2026-premium` 200 and contains client `leadId`, `/vao-khoa-hoc` 200, `/go?.../vao-khoa-hoc` 200, `/api/orders` 405, and Vercel logs after smoke showed only info 200 entries.
+
+## 2026-07-06 - Ebook paid email requires verified account
+
+- Issue: owner noted that paid ebook customers click "read online" or "download PDF" after payment, but those routes require login. If the email does not include a usable account/password, the customer is stuck at `/dang-nhap`.
+- Access shape: ebook reader/PDF access is intentionally protected by auth plus the `ebook-facebook-ads-2026` access slug. Do not make the PDF public to solve this; the paid email must only go out when login credentials are ready.
+- Fix: `app/api/sepay/webhook/route.ts` now detects `ebook-facebook-ads-2026` paid orders and requires `ensureStudentAccountForPaidOrder()` to return a verified `temporaryPassword` before calling `sendPaymentSuccessEmail()`. If provisioning fails or returns no password, it records `payment_email_last_error` and activity `payment_success_email_failed` instead of sending protected links.
+- Guard: `tests/student-account.test.mjs` includes a source-level regression test that requires the SePay ebook success email to be blocked until a verified login account is available.
+- Verification: targeted account/payment/ebook tests `56/56`, full Node tests `237/237`, TypeScript, lint, and production build passed locally.
+- Production deployed: `dpl_4VFsyQV6CejyjJgg659wne4Ryczv`, URL `https://theanhmarketing-5xkx2cixr-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready. Live smoke: `/thu-vien/facebook-ads` unauth redirects to login, `/thu-vien/facebook-ads/pdf` unauth redirects to login, `/vao-khoa-hoc` returns 200, and the premium academy route works without `.html`.
+
+## 2026-07-06 - Student dashboard course selection fix
+
+- Issue: owner screenshot showed `/dashboard` opening/highlighting the wrong course. The dashboard was selecting `activeCourse = ownedCourses[0]`, and `ownedCourses` inherited the raw `courses` order from DB/static data. For admin or multi-access accounts, this could put `marketing-gioi-phai-kiem-duoc-tien` in the hero even when the expected course was `facebook-ads-2026`.
+- Fix: added `lib/student-dashboard-courses.ts` as the shared ordering helper. Dashboard course order now follows the canonical product sequence, and owned courses preserve the access/order-paid slug order. `app/dashboard/page.tsx` passes `allCourseSlugs` from that helper and merges `paidSlugs` before LMS backfill slugs, so explicit paid access drives the main course selection.
+- UI: `components/app/student-dashboard.tsx` now derives `ownedCourses`, `suggestedCourses`, and `activeCourse` through the helper. The hero, `Hoc tiep`, owned course tiles, suggested course tiles, and ebook reader/PDF behavior stay consistent.
+- Guard: `tests/student-dashboard-course-selection.test.mjs` reproduces the bug where raw courses start with the flagship course but owned access starts with `facebook-ads-2026`.
+- Verification: RED/GREEN dashboard selection test, targeted LMS/dashboard tests `31/31`, full Node suite `236/236`, TypeScript, lint, `git diff --check` on touched files with LF/CRLF warnings only, and `npm run build`.
+- Production deployed: `dpl_B836efZdg94xfCq9YaDYFFx5iJXV`, URL `https://theanhmarketing-elx5w59zq-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready. Live unauth smoke: `/dashboard` redirects to login, `/learn/facebook-ads-2026/11187acd-83da-4e75-87dc-c2de058deddd` redirects to login without leaking lesson/YouTube content, and `/vao-khoa-hoc` returns 200.
+
+## 2026-07-06 - Login persistence and forgot-password audit
+
+- Request: add a remember-login feature and verify whether forgot-password gives customers a real password reset path.
+- Login fix: `lib/supabase/client.ts` now supports `persistence: "remember" | "session"`. Remember mode uses browser `localStorage` plus a 30-day Supabase auth cookie; session mode uses `sessionStorage` plus a browser-session cookie. Student `/dang-nhap` and admin `/admin/login` both expose `Luu dang nhap tren thiet bi nay`, default checked to preserve previous login behavior.
+- Forgot-password audit: `/api/auth/forgot-password` already creates a real Supabase `recovery` link with Admin `generateLink`, converts the `hashed_token` into the internal `/api/auth/recovery/confirm` URL, sends it through Resend, then `verifyOtp` sets the recovery session before `/doi-mat-khau`. The customer sets the new password via `supabase.auth.updateUser({ password })`; no plaintext password is emailed.
+- Scope: no schema/database changes, no customer account reset, no live reset email sent in this pass.
+- Guard: `tests/admin-operational-lead-email-flow.test.mjs` covers the recovery-link path, password update path, and remember/session login persistence controls.
+- Verification: targeted test passed 5/5, related auth/email tests passed 26/26, full Node suite passed 234/234, TypeScript passed, lint passed, and production build passed.
+- Production deployed: `dpl_5NxHaYHhJHADrmjxTTa1vTBQh2zR`, URL `https://theanhmarketing-dk083gui9-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready. Live smoke: `/dang-nhap` and `/admin/login` return 200 and contain the remember-login checkbox, `/quen-mat-khau` 200, `/vao-khoa-hoc` 200, unauth `/api/admin/crm-v2/reports?range=30d` 403, `GET /api/auth/forgot-password` 405, and Vercel logs showed only expected info entries.
+
+## 2026-07-05 - CRM v2 reports daily revenue newest-first fix
+
+- Issue: owner screenshot showed `/admin/crm-v2/reports` daily revenue still listing oldest dates first, so today/newest day was pushed down.
+- Fix: `getCrmV2ReportSnapshot()` now reverses the report daily revenue series after selecting the direct attribution daily revenue fallback, so the Reports `Doanh thu theo ngay` card renders newest/today first.
+- Scope: display ordering only. No schema, API, payment/order/email write flow, or attribution calculation change.
+- Guard: `tests/crm-v2-contract.test.mjs` requires Reports daily revenue to call `.reverse()` for newest-first rendering.
+- Verification: CRM contract 21/21, TypeScript, lint, `git diff --check` for touched files, and production build passed.
+- Production deployed: latest `dpl_2Z49sZ4aVUBqyoUCob94S9sXekLQ`, URL `https://theanhmarketing-n164m0df2-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready. Live smoke: `/admin/crm-v2/reports?range=30d` unauth redirects to login, `/api/admin/crm-v2/reports?range=30d` returns 403 unauth, `/vao-khoa-hoc` returns 200, and Vercel logs showed no errors.
+
+## 2026-07-05 - CRM v2 activity feed from Resend, orders, and learning logs
+
+- Issue: owner wanted `/admin/crm-v2` "Hoat dong gan day" to show real customer activity: Resend/email delivery for payment/registration checks, order registration/payment events, and learning-area events when a customer enters the course area. The list must be newest-first and have a full history view.
+- Fix: `listCrmV2ActivityHistory()` now merges `public.email_logs` (Resend-backed `resend_email_id` and status timestamps), `public.activity_logs` (student/login/learning/payment/account events), `public.lead_activities`, CRM v2 events, CRM v2 email events, and live `public.orders`. Events carry `occurredAtIso` for real newest-first sorting instead of sorting formatted Vietnamese date strings.
+- UI: Overview still shows a short "Hoat dong gan day" feed, now with a button to `/admin/crm-v2/activity`. The new `/admin/crm-v2/activity` route shows up to 100 events for the selected CRM date range and is also in the CRM sidebar as `Hoat dong CRM`.
+- Learning source: real lesson pages already write `student_entered_learning` through `logStudentActivity()`, so the feed can show customers entering the learning area only after the actual learning route succeeds.
+- Scope: read/display only. No schema migration, no Resend API token use, no email sending change, no order/payment write flow change.
+- Guard: `tests/crm-v2-contract.test.mjs` requires the direct `email_logs` read, `resend_email_id`, `student_email`, `student_entered_learning`, `occurredAtIso`, and the full activity route.
+- Verification: targeted CRM contract passed 21/21, full Node tests passed 229/229, student/payment email targeted tests passed 21/21, TypeScript passed, lint passed, `git diff --check` had LF/CRLF warnings only, and `npm run build` passed.
+- Production deployed: latest `dpl_997EJK13xdz47Pxgot1ibU7yJUtc`, URL `https://theanhmarketing-pid0mjgj3-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready. Live smoke: `/admin/crm-v2/activity?range=30d` and `/admin/crm-v2?range=30d` unauth redirect to login, `/api/admin/crm-v2/reports?range=30d` returns 403 unauth, `/vao-khoa-hoc` returns 200, and Vercel logs showed only info smoke entries/no errors.
+
+## 2026-07-05 - CRM v2 overview daily revenue chart live-order fix
+
+- Issue: owner screenshot showed `/admin/crm-v2` overview "Doanh thu theo ngay" stuck on old dates such as `06-10`..`06-16`, and bar values were displayed as unclear raw numbers (`0`, `2`, `3`).
+- Root cause: `getCrmV2Dashboard()` already used live `public.orders` for the KPI total, but the overview daily revenue chart still rendered `dailyRows` from the CRM daily read model. If the read model lagged, the overview chart lagged even while real orders existed.
+- Fix: overview daily revenue now builds a date series from paid `public.orders` for the selected CRM range, maps timestamps with `Asia/Ho_Chi_Minh` day keys, keeps only the latest 7 days for the overview card, and sends `displayValue` labels like `0d`, `799k`, or `1tr` into `SimpleBars`.
+- Follow-up same day: owner clarified the chart must put today's date at the top and must not round money. `buildDashboardDailyRevenueSeries(...).slice(-7).reverse()` now renders the latest day first, `value` stays the exact VND amount, and `displayValue` uses exact VND formatting such as `2.399.000đ` instead of compact rounded labels.
+- Scope: UI/data read formatting only. No schema, migration, auth, payment/order write flow, email, Google Sheet, or CRM action API change.
+- Guard: `tests/crm-v2-contract.test.mjs` now requires overview daily revenue to use `buildDashboardDailyRevenueSeries()` from live orders and requires `SimpleBars` to support `displayValue`.
+- Verification: targeted CRM v2 contract passed 21/21, full Node tests passed 229/229, TypeScript passed, lint passed, `git diff --check` had LF/CRLF warnings only, and `npm run build` passed.
+- Production deployed: latest `dpl_Ft6qnmURme2Xgozo4kXZabW8AcSS`, URL `https://theanhmarketing-nwsx77i5u-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready. Live smoke: `/admin/crm-v2?range=30d` unauth redirects to login, `/api/admin/crm-v2/reports?range=30d` returns 403 unauth, `/vao-khoa-hoc` and `/go?.../vao-khoa-hoc` return 200, and Vercel logs showed only info smoke entries/no errors.
+
+## 2026-07-03 - Google Sheet order sync activity logging
+
+- Issue: owner reported orders were not appearing in Google Sheet and needed a clear note on required Google permissions.
+- Existing shape preserved: `lib/notifications/google-sheets.ts` still owns payload building, Apps Script URL validation, and webhook POST. No schema, payment, checkout, SePay, or Apps Script payload contract changed.
+- Fix: added `lib/notifications/google-sheets-order-sync.ts` as the required boundary for order sync. It calls `syncOrderToGoogleSheet()`, writes `activity_logs` event `sheet_sync_success` or `sheet_sync_failed`, and records safe metadata only (`orderCode`, source, status, skipped, webhookHost).
+- Wired routes: `/api/orders`, `/api/orders/from-session`, `/api/sepay/webhook`, and `/api/payment/confirm` now use `syncOrderToGoogleSheetWithActivity()` instead of calling the low-level webhook helper directly.
+- Runbook: `docs/GOOGLE_SHEETS_ORDER_SYNC_RUNBOOK.md` explains that `GOOGLE_SHEETS_WEBHOOK_URL` must be an Apps Script Web App `/exec` URL, deployed with `Execute as: Me` and `Who has access: Anyone`, with a `doPost(e)` handler returning JSON.
+- Guard: `tests/google-sheets-sync.test.mjs` now requires route wiring through the activity helper and checks success/failure activity log coverage.
+- Verification: targeted Google Sheet test was run RED then GREEN; targeted order/payment suite, full Node 220/220, typecheck, lint, diff-check, and build passed. Deployed production `dpl_GaiPNW2SVszTUoJW9UhS8Q4RJV62`, alias `https://www.theanhmarketing.com`, Ready. Smoke confirmed `/api/orders` HEAD 405, admin orders login redirect, `/vao-khoa-hoc` 200, `/go` 200, and clean 10m logs. Live Apps Script response still needs an approved real/test order after deploy; if activity shows HTTP 403, redeploy Apps Script with public web-app access and update Vercel env.
+
+## 2026-06-29 - CRM v2 Leads time column local fix
+
+- Request: add hour/minute display on `https://www.theanhmarketing.com/admin/crm-v2/leads`.
+- Scope: UI/data formatting only. No schema, API, auth, Zalo action, payment/order/email flow, or production data mutation changed.
+- Fix: `lib/crm-v2/data.ts` adds `formatCrmLeadDateTime()` and uses it for unified Leads rows from CRM v2 rows, `public.leads`, and `public.orders`; `components/crm-v2/leads-page-client.tsx` labels the first table column `Thời gian` and gives it room for `dd/mm hh:mm`.
+- Guard: `tests/crm-v2-contract.test.mjs` now requires the `Thời gian` column, the shared formatter, and prevents mapper regressions to `slice(0, 10)` date-only labels.
+- Verification: targeted CRM v2 contract failed before the fix and passed 20/20 after the fix; full Node 203/203, TypeScript, lint, diff-check, and build passed.
+- Production deployed: `dpl_FmLscGrfkMG8CoyS3VydPLRK1xeJ`, URL `https://theanhmarketing-j9qj3t4ln-theanhs-projects-509d0c97.vercel.app`, aliases `https://www.theanhmarketing.com` and apex, status Ready.
+- Live smoke: `/admin/crm-v2/leads?range=30d` unauth redirects to login, `/api/admin/crm-v2/leads?range=30d` unauth returns 403, `/vao-khoa-hoc` and `/go?.../vao-khoa-hoc` return 200, and Vercel logs for 10m showed only info smoke entries/no 5xx.
+
+## 2026-06-28 - Admin CRM v2 frame-block header fix deployed
+
+- Issue: Chrome showed `ERR_BLOCKED_BY_RESPONSE` when opening `https://theanhmarketing.com/admin/crm-v2`.
+- Root cause verified from live headers: the route redirects apex -> `www` -> `/admin/login`, but admin responses still emitted `X-Frame-Options: SAMEORIGIN` and CSP `frame-ancestors 'self'`, which can block Chrome/webview/shell flows that treat apex and `www` as different ancestors.
+- Fix: `proxy.ts` adds `isAdminRoute()` for `/admin` and `/admin/*`; those routes no longer set `X-Frame-Options` and instead use CSP `frame-ancestors 'self' https://theanhmarketing.com https://www.theanhmarketing.com`.
+- Scope: `/api/admin/*` and other non-admin routes still keep `X-Frame-Options: SAMEORIGIN`; `/go` and `/vao-khoa-hoc` keep their older bridge behavior with no `frame-ancestors`.
+- Guard: `tests/student-email-access-flow.test.mjs` checks the admin canonical frame-ancestor allowlist and prevents reintroducing admin `X-Frame-Options`.
+- Verification: full Node tests 203/203, TypeScript, lint, diff-check, build, local header smoke, Vercel inspect, live header smoke, and 10m log scan all passed.
+- Production deployed: `dpl_2z2ZdkbMUFWe8hWdBEjixuFZb4jD`, URL `https://theanhmarketing-57xgfpozo-theanhs-projects-509d0c97.vercel.app`, aliases `https://www.theanhmarketing.com` and `https://theanhmarketing.com`, status Ready.
+
+## 2026-06-26 - CRM v2 Leads Zalo row action deployed
+
+- `/admin/crm-v2/leads` now has a compact row action button that displays only `Z`.
+- Follow-up hotfix: the Zalo column now sits next to `SDT` instead of at the far-right edge, so it is not clipped; expanded quick detail shows `Zalo: Da nhan Zalo` or `Chua nhan Zalo`.
+- Follow-up persist fix: the click handler now posts `mark_zalo_messaged` and updates local detail state before opening Zalo PC/web fallback, so every successful click records the lead as Zalo-messaged first.
+- Follow-up bridge-row fix: the click payload includes phone/email/orderCode, and the backend resolves `public-order:*` rows back to CRM/public leads before updating to avoid `Marked 0 lead rows as Zalo messaged`.
+- Follow-up fallback-anchor fix: if no existing lead/contact can be resolved but the row has phone/email/orderCode, the action creates a small `public.leads` anchor with `sale_status=Da nhan Zalo` so the update succeeds and the UI can open Zalo.
+- Follow-up operation-order fix: the UI now opens Zalo first, then runs the CRM update in the background with `fetch(..., keepalive: true)`; CRM update errors no longer block opening Zalo.
+- The button normalizes the row phone number, tries to open Zalo PC with `zalo://conversation?phone=<phone>`, and falls back to `https://zalo.me/<phone>` if the browser stays on the page.
+- The same click posts `mark_zalo_messaged` to `/api/admin/crm-v2/leads/actions`.
+- The action is owner-gated like other CRM v2 lead actions. It updates `crm_v2.leads` with `last_touch_at`, `next_action`, and metadata `last_zalo_messaged_at`, writes `crm_v2.crm_events`, and applies tag `da-nhan-zalo`.
+- For fresh bridge rows with ids like `public-lead:<uuid>`, the fallback update is `public.leads.sale_status=Da nhan Zalo`; no migration was added.
+- Guard: `tests/crm-v2-contract.test.mjs` checks the UI link behavior, API action, metadata/event/tag persistence, bridge-row identifiers/resolution, fallback anchor creation, open-before-update click order, keepalive, Zalo column placement next to phone, and expanded-detail Zalo status.
+- Verification: RED contract test failed before implementation and again for the follow-up layout guard; after fixes, CRM contract 20/20, full Node 202/202, TypeScript, lint, build, and diff-check passed locally.
+- Production deployed: `dpl_32qDyRtSW37kF5tCH1QPjigNeU47`, URL `https://theanhmarketing-hwcy5jqbd-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready.
+- Live unauth smoke: `/admin` and `/admin/crm-v2/leads?range=30d` redirect to login next, unauth `POST /api/admin/crm-v2/leads/actions` returns 403, `/vao-khoa-hoc` and `/go?.../vao-khoa-hoc` return 200, and Vercel logs for 10m showed only smoke requests/no 5xx.
+- Owner-session click verify is still needed because Codex has no admin cookie.
+
+## 2026-06-24 - Facebook domain verification deployed
+
+- The site now renders Facebook domain verification for `theanhmarketing.com` via `FACEBOOK_DOMAIN_VERIFICATION` in `lib/marketing-settings.ts`.
+- `app/layout.tsx` sets root metadata `facebook-domain-verification` directly from that constant so app routes do not depend on a mutable DB setting for domain verification.
+- Static HTML landing pages under `public/ladipage` and `public/academy` also include the tag, including Facebook Ads 2026, ebook Facebook Ads 2026, and AI Agent pages.
+- Guard: `tests/meta-conversions-api.test.mjs` checks the constant, layout metadata, and representative static HTML output.
+- Verification pass: full Node tests 202/202, TypeScript, lint, diff-check, and production build.
+- Production deployed: `dpl_EiE4xd5corSrCg44JgHxPdRQZuPs`, alias `https://www.theanhmarketing.com`, status Ready. Live smoke confirmed the meta tag on homepage and `/academy/facebook-ads-master-2026`; apex redirects to `www` and final 200; `/vao-khoa-hoc` and `/go?.../vao-khoa-hoc` return 200.
+
+## 2026-06-17 - Student account password delivery guard local-ready
+
+- `services/studentAccountService.ts` is now the required boundary for any flow that issues a temporary student password.
+- After Supabase Admin `createUser`/`updateUserById`, the service attempts to normalize Auth password-login fields on `auth.users`: `aud/role=authenticated` and token/change string fields (`confirmation_token`, `recovery_token`, `email_change_token_current`, `email_change_token_new`, `email_change`, `phone_change`, `phone_change_token`, `reauthentication_token`) to empty strings.
+- The same service then verifies the issued password with Supabase anon `signInWithPassword`. If verification fails, it returns `ok=false`, does not return the temporary password, and callers must not send account/password email.
+- `/api/admin/students/password-reset` no longer owns a separate sign-in verification helper; paid-order provisioning, admin grant, and password reset share the service-level guard.
+- Regression guards: `tests/student-account.test.mjs` and `tests/student-access-admin-controls.test.mjs`.
+- Local gate pass: full Node tests 202/202, TypeScript, lint, diff-check, and production build.
+- Deployed production after owner approval: `dpl_BF5vXQ5QT1KiTvgyw9SP2SjLYdGE`, URL `https://theanhmarketing-mveii7n6j-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready.
+- Live smoke after deploy: `/admin` and `/admin/dashboard` redirect to `/admin/crm-v2`; `/admin/hoc-vien` redirects to login unauthenticated; unauthenticated `POST /api/admin/students/password-reset` returns 403; `/vao-khoa-hoc`, `/go`, and `/dang-nhap` return 200; Vercel logs after smoke show no error/fatal entries.
+- E2E reset/password email was not run in this pass because it would reset a real/test account and send a real email. Use an approved test account/email before running that live path.
+
+## 2026-06-16 - CRM v2 perceived lag feedback deployed
+
+- CRM v2 now has shell-level route feedback in `components/crm-v2/crm-components.tsx` via `CrmRouteFeedback`.
+- CRM v2 links, range controls, search submit, filter controls, and refresh emit immediate pending feedback before server navigation finishes.
+- `app/admin/crm-v2/loading.tsx` provides a route segment skeleton for KPI/table/right-panel surfaces.
+- This pass does not change CRM v2 data ownership, migrations, backfill, email behavior, or legacy admin routes.
+- Local verify: Node tests 198/198, typecheck, lint, diff-check, build, Playwright CRM v2 32/32.
+- Warm local TTFB measured: overview 0.160s, reports today 0.139s, orders 0.152s, leads 0.153s, students 0.187s.
+- Production deployed from this worktree as `dpl_GAcZpGLMhL1nHMBaCwhoqX1zjyyv`, URL `https://theanhmarketing-dj4cokqw2-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready.
+- Post-deploy smoke: `/admin` and `/admin/dashboard` redirect to `/admin/crm-v2`; unauth CRM v2 redirects to login; unauth CRM API returns 403; `/go` and `/vao-khoa-hoc` return 200; Vercel error logs 15m clean.
+
 Do not deploy from `E:\TheAnh-Business-Workspace\02_Website\landing-page` until it is synced and passes the full gate. Read `E:\TheAnh-Business-Workspace\02_Website\DEPLOY_SOURCE_OF_TRUTH.md` first.
 
 Remote GitHub: `https://github.com/nguyentheanh-ai/theanhmarketing.git`
@@ -13,6 +216,20 @@ Remote GitHub: `https://github.com/nguyentheanh-ai/theanhmarketing.git`
 Production: `https://theanhmarketing.com`
 
 Stack: Next.js App Router, TypeScript, Tailwind CSS v4, Supabase, Recharts, Framer Motion, Resend/email helpers, Meta Pixel/CAPI, SePay webhook.
+
+## 2026-06-22 - CRM v2 Reports revenue chart + visual funnel fix
+
+- App/domain: `main-site` / `theanhmarketing.com`.
+- Source/deploy root: `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`.
+- Issue: `/admin/crm-v2/reports?range=yesterday` showed total revenue from direct `public.orders` attribution, but the "Doanh thu theo ngay" chart could stay blank/stale because it rendered `dashboard.revenue` from CRM daily metrics/read model.
+- Fix: `getCrmV2ReportSnapshot()` now returns `reportSummary.dailyRevenue` and overrides report `dashboard.revenue` with daily revenue built from paid `public.orders` for the selected CRM date range. It uses Vietnam-day bounds via `dateLowerBound()` / `dateUpperBoundExclusive()` and maps `paid_at`/`created_at` to `Asia/Ho_Chi_Minh` date keys.
+- UI: Reports now renders daily/period revenue through `ReportValueBars`, with compact VND labels and a clear empty state instead of an empty white card.
+- UI: "Pheu dang ky -> vao hoc" now renders a clipped triangle/trapezoid funnel with the five business stages: Khach dang ky, MQL, Cho thanh toan, Da thanh toan, Vao hoc.
+- Guard: `tests/crm-v2-contract.test.mjs` now checks direct daily revenue source, Vietnam-day report bounds, report-specific chart renderer, empty-state copy, and visual funnel clipping.
+- Verification: `node --test tests\crm-v2-contract.test.mjs`, full `node --test tests\*.mjs` 202/202, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `git diff --check` (LF/CRLF warnings only), `npm.cmd run build`.
+- Local visual smoke: `http://127.0.0.1:3020/admin/crm-v2/reports?range=yesterday` screenshot saved at `E:\Temp\UserTemp\crm-v2-reports-funnel-fix.png`; body horizontal overflow was 0.
+- Deploy: production `dpl_izTDqCN9tS3vDYGDZEhPB9q2gz2f`, alias `https://www.theanhmarketing.com`, status Ready. Live unauth smoke: `/admin` 307 to `/admin/crm-v2`, `/admin/crm-v2/reports?range=yesterday` 307 to login, `/api/admin/crm-v2/reports?range=yesterday` 403, `/vao-khoa-hoc` 200, `/go?.../vao-khoa-hoc` 200. Vercel logs after smoke showed only info 200/307/403.
+- Limitation: authenticated owner-session visual confirmation on live production still needs anh refresh browser session because Codex HTTP smoke has no owner cookie.
 
 ## 1. Doc Can Doc Truoc
 
@@ -592,6 +809,9 @@ Before changing these, run targeted tests and full build.
 - Email link bridge 2026-06-08: customer-facing HTML email buttons should use `buildEmailLink()` and route through `/go?to=...`; `app/go/page.tsx` validates an allowlist, auto-opens with a client component, and shows a manual button/copy fallback. `proxy.ts` exempts `/go` from `X-Frame-Options` and strips `frame-ancestors` to avoid Gmail/Chrome mail-webview blocked responses. Plain-text email bodies should keep the raw destination URL for copy fallback.
 - Codex skill added: `C:\Users\12c1t\.codex\skills\theanh-student-account-email-safety\SKILL.md`; use it for paid student account, password reset, Resend email, or email link blocked incidents.
 - Incident 2026-06-11: production admin was briefly rolled back because Vercel was deployed from `E:\TheAnh-Business-Workspace\02_Website\landing-page` instead of this production worktree. Until the root is explicitly synced, deploy website production only from `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`; verify `/admin` redirects to `/admin/dashboard`, `/admin/facebook-ads` is 404, and `node --test tests\*.mjs` plus build pass before deploy.
+- CRM v2 parallel build 2026-06-15 lives only in feature worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-crm-v2` on branch `feature/crm-v2-parallel-build`. Do not deploy or merge it into `theanhmarketing-email-account-hotfix` until the existing dirty login-bridge changes are resolved, the `crm_v2` migration is reviewed/applied, live audit/backfill/verify pass, and `CRM_V2_ENABLED` is intentionally enabled.
+- CRM v2 completion update 2026-06-15: the feature worktree now has feature-flagged admin APIs for all CRM v2 modules, workflow action support for test/save draft/publish/version history, mojibake guards for CRM v2 source strings, and Playwright smoke coverage for 12 UI routes plus 10 API/action checks. This is still local-only; no production migration/backfill/deploy has been run.
+- CRM v2 real-controls update 2026-06-15: topbar search is a GET form, refresh calls `router.refresh()`, header/right-panel shortcuts are real links or API-backed client actions, inactive filters are read-only chips, and Email/Automation action buttons POST to CRM v2 APIs. Local verification now covers 26 Playwright CRM v2 checks plus full node tests/build. Still local-only: no production migration/backfill/deploy/flag enablement.
 - Workspace cleanup note 2026-06-11: do not run broad `git clean -fdx` in either website root. Dry-run includes real untracked source (`/go`, `/vao-khoa-hoc`, email bridge/student access helpers) alongside cache/log artifacts. Classify and sync source first, then clean only whitelisted build/test artifacts.
 
 ## 16. Quick Task Recipes
@@ -651,3 +871,260 @@ Before changing these, run targeted tests and full build.
 3. Server CAPI: `lib/meta/conversions-api.ts`.
 4. Never expose token.
 5. Run `tests/meta-conversions-api.test.mjs`.
+6. Test runbook: `docs/META_CAPI_TEST_RUNBOOK.md`. Future manual CAPI smoke uses Graph API Explorer `POST /v25.0/1315653423712065/events` with a temporary `test_event_code`. Full website-route smoke requires temporary Vercel env `META_CAPI_TEST_EVENT_CODE`, one approved test form submit, then removing the env and redeploying.
+
+## 2026-06-15 - CRM v2 workflow builder/runner local completion
+
+- Worktree: `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-crm-v2`.
+- CRM v2 Automation Workflow now has an editable React Flow builder, API-backed test/save/publish/history, normalized node/edge persistence, additive workflow hardening migration, and server-side idempotent step-run preparation wired into lead bulk `add_workflow`.
+- Verified locally: CRM targeted 18/18, full Node tests 187/187, Playwright CRM v2 27/27, manual builder payload smoke, typecheck, lint, build.
+- Not production-enabled: no live migration/backfill/strict verify/flag/deploy yet.
+
+## 2026-06-15 - CRM v2 remaining module action completion
+
+- Worktree: `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-crm-v2`.
+- Added API-backed primary actions for Segments, Orders, Students, Team, and Integrations. These routes are owner-gated, rate-limited, feature-flagged, and write only to private `crm_v2` tables when Supabase admin env exists.
+- New routes: `/api/admin/crm-v2/segments/actions`, `/orders/actions`, `/students/actions`, `/team/actions`, `/integrations/actions`.
+- UI pages now render direct client action components for those modules, matching the no-fake-buttons rule used for Email/Automation.
+- Verified locally: targeted contract 10/10, remaining-module Playwright 2/2, full Node tests 187/187, Playwright CRM v2 29/29, typecheck, lint, diff-check, build. Preview checked on `http://127.0.0.1:3020/admin/crm-v2/orders`.
+- Still not production-enabled: no live migration/backfill/strict verify/flag/deploy has been run.
+
+## 2026-06-16 - CRM v2 code deployed behind disabled production flag
+
+- Deploy root: `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`.
+- Deployment: `dpl_kyZw65t5eWJ3Dj5sxwTDbzf2ZCxR`, production URL `https://theanhmarketing-idotpi4gl-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, Vercel status Ready.
+- CRM v2 code/routes/API are now deployed to production, but Vercel Production env does not define `CRM_V2_ENABLED`; CRM v2 remains disabled until migration/backfill/strict verify are run and the flag is intentionally enabled.
+- Predeploy gate from deploy worktree passed: `node --test tests\*.mjs` 190/190, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `git diff --check`, `npm.cmd run build`, and Playwright CRM v2 29/29.
+- Live smoke after deploy: `/admin` redirects to `/admin/dashboard`; `/admin/dashboard`, `/admin/leads`, `/admin/hoc-vien` redirect to admin login; `/admin/facebook-ads` is 404; `/go?to=.../vao-khoa-hoc` is 200 without frame blocking; `/vao-khoa-hoc` is 200 without frame blocking; Facebook Ads landing has only Pixel `1315653423712065`, no extra pixels, no `zoomAddon`, and no early `InitiateCheckout`; `/app-login-bridge` unauth redirects to `/dang-nhap?next=%2Fapp-login-bridge`.
+- Vercel log scan immediately after deploy returned no logs found.
+
+## 2026-06-16 - CRM v2 Vietnamese copy hotfix deployed
+
+- Fixed CRM v2 visible copy that still used no-diacritic Vietnamese, including sidebar/topbar/filter/pagination labels, Orders action `Gửi nhắc thanh toán`, module action buttons, lead profile labels, outline labels, data fallbacks, and API action status messages.
+- Added regression guard in `tests\crm-v2-contract.test.mjs` so CRM v2 source/API/UI copy cannot regress to common no-diacritic phrases like `Gui nhac thanh toan`, `Tong quan CRM`, or `Tim ten`.
+- Updated action APIs to honor `CRM_V2_USE_DEMO_DATA=true`, keeping local/demo preview mock-safe even when Supabase env exists but the private `crm_v2` schema has not been applied locally.
+- Verification passed: CRM v2 contract 11/11, full Node tests 191/191, typecheck, lint, diff-check, production audit 0 vulnerabilities, build, and Playwright CRM v2 29/29.
+- Production redeploy: `dpl_4Nu2ELMgXFc8mXfrVgEUJJcY6fmh`, production URL `https://theanhmarketing-mzuzds8xd-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, Vercel status Ready. CRM v2 remains disabled on production because `CRM_V2_ENABLED` is still absent/off.
+- Local preview is running at `http://127.0.0.1:3020/admin/crm-v2/orders`; browser DOM verified `Đơn hàng & Thanh toán`, `Gửi nhắc thanh toán`, `Tìm`, and `30 ngày`.
+
+## 2026-06-16 - CRM v2 Outline operator-copy hotfix deployed
+
+- User flagged `/admin/crm-v2/outline` for exposing internal implementation language (`BLUEPRINT`, `Data safe`, migration checklist, `crm_v2`, `legacy_id_map`, etc.).
+- Fixed `/admin/crm-v2/outline` to be operator-facing: `Bản đồ vận hành`, practical module descriptions, `Ưu tiên vận hành`, and non-technical safety copy such as `CRM hiện tại: Giữ nguyên`, `Dữ liệu khách hàng: Không ghi đè`.
+- Cleaned shared CRM shell labels: `Data safe mode` -> `Chế độ vận hành an toàn`, `Legacy CRM vẫn chạy song song` -> `CRM hiện tại vẫn giữ nguyên`, `CRM v2 on` -> `Bản CRM mới`.
+- Added test guard so the Outline page cannot reintroduce implementation-only terms like `Blueprint`, `Data safe`, `Checklist migration`, `crm_v2`, `legacy_id_map`, `read-model`, `UI route ready`, `Safety guard`, `webhook`, `owner`, `stage`, `task`, or `ticket`.
+- Verification passed: CRM v2 contract 12/12, typecheck, lint, build, diff-check with LF/CRLF warnings only, and local browser DOM check with `badFound=[]`.
+- Production redeploy: `dpl_2Hk6kEEjSoRn7wjFoXg2SJvEpAAY`, production URL `https://theanhmarketing-n3bjlb4fu-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, Vercel status Ready. CRM v2 remains disabled on production because `CRM_V2_ENABLED` is still absent/off.
+
+## 2026-06-16 - CRM v2 live data enabled and `/admin` replaced
+
+- Production Supabase project `vsxxgdzwtscuxcmjfckt`: applied additive private-schema CRM v2 migration to `crm_v2`; no destructive SQL against legacy `public.*` tables.
+- Live backfill run `crm-v2-live-sql-backfill-20260616` is `success` with `drift_detected=false`.
+- Latest production counts: source `public.leads=131`, `public.orders=138`, `public.activity_logs=536`, `public.lead_activities=19`, `public.email_logs=56`, `public.lead_email_logs=2`; CRM v2 `contacts=125`, `leads=264`, `orders=138`, `payments=138`, `enrollments=45`, `crm_events=882`, `email_sends=58`, `email_events=58`, `legacy_id_map=1583`.
+- `/admin` now checks `CRM_V2_ENABLED`; with the production flag on it redirects to `/admin/crm-v2`. Direct legacy routes remain deployed for rollback, including `/admin/dashboard` and `/admin/leads`.
+- Vercel production env was corrected after an initial blank-value add: `CRM_V2_ENABLED=true`, `CRM_V2_USE_DEMO_DATA=false`, `CRM_V2_ALLOW_DEMO_SEED=false`.
+- Production deployment: `dpl_HriDnGzRaXTERRx2jWSL6oamyKJ4`, URL `https://theanhmarketing-mx5uxnxc5-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready.
+- Smoke: `/admin` -> `/admin/crm-v2`; unauth `/admin/crm-v2` -> `/admin/login?next=%2Fadmin%2Fcrm-v2`; `/admin/dashboard` still resolves and redirects to its own login next path; `/vao-khoa-hoc` returns 200; Vercel error log scan found no errors.
+
+## 2026-06-16 - CRM v2 live data alignment follow-up
+
+- User reported CRM v2 numbers were misaligned from new leads through course management.
+- Production root cause:
+  - `crm_daily_metrics.new_leads` counted order-derived CRM opportunities in addition to true `public.leads`.
+  - `/admin/crm-v2/leads` stage cards counted only current paginated rows.
+  - CRM v2 `course_id` fields were null because production `public.courses` has only 1 row while real orders use multiple `course_slug` product values.
+- Applied additive/idempotent SQL only in private `crm_v2`: refreshed daily metrics so `new_leads` excludes `metadata.source_table = public.orders`; legacy `public.*` tables were not modified.
+- Updated code:
+  - `lib/crm-v2/data.ts`: live dashboard direct rows, total stage summary, `course_slug` filters/search/display for leads/orders/students/contact profile, accented fallbacks.
+  - `app/admin/crm-v2/leads/page.tsx`: stage summary query no longer derives from current page rows.
+  - `components/crm-v2/crm-components.tsx`: added `/admin/khoa-hoc` link for the real course manager.
+  - `tests/crm-v2-contract.test.mjs`: guards for true lead count, course_slug mapping, stage summary totals, course manager link, and copy accents.
+  - `supabase/migrations/20260616123000_crm_v2_live_data_alignment.sql`: documents the corrected aggregate rule.
+- Production verify after SQL: `public_leads_today=1`, `crm_real_leads_today=1`, `crm_order_opportunities_today=1`, `metric_new_leads_today=1`, `crm_orders=138`, `crm_enrollments=45`, `orders_with_course_slug=138`, `enrollments_with_course_slug=45`.
+- Production deploy: `dpl_B5Lrn1XWG28By62DuWYHpnBRzr8H`, alias `https://www.theanhmarketing.com`, Ready.
+- Gate passed: CRM v2 contract 14/14, full Node tests 194/194, typecheck, lint, build, diff-check, Vercel inspect Ready, no Vercel error logs in 15m.
+- Browser is at `https://www.theanhmarketing.com/admin/login?next=%2Fadmin%2Fcrm-v2`; authenticated owner-session smoke remains needed to inspect rendered tables/actions.
+
+## 2026-06-16 - CRM v2 live lead dedupe and table overflow fix
+
+| Hang muc | Chi tiet |
+|---|---|
+| App/domain | main-site / theanhmarketing.com; production deploy worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`. |
+| Muc tieu | Sua UI CRM v2 bi tran ngang tren Orders/Leads va Leads bi lap cung mot nguoi theo feedback anh chup man hinh. |
+| Root cause | CRM v2 Leads dang hien mot row cho moi `crm_v2.leads` opportunity. Contact co ca lead-form row va order-derived row nen bi lap ten; stage hien raw code; Orders/Leads table bi long course/product text keo rong viewport. |
+| Database | Applied additive migrations `crm_v2_dedupe_lead_rpc` va `crm_v2_dedupe_dashboard_rpc`; chi replace server-only read RPC, khong drop/truncate/delete/rename legacy tables. |
+| Data verify | Production RPC: deduped lead total `125` thay vi raw duplicate total `258`; dashboard MQL `105`; stage counts `consulting=4`, `disqualified=17`, `not_contacted=3`, `paid=42`, `pending_payment=59`; sample Quang/Nguyen Hien/Le Son moi nguoi chi con 1 row, co phone, stage uu tien theo trang thai van hanh. |
+| Code | `CrmDataTable` fixed layout/scroll/wrapping; Leads table them cot `SĐT`; stage/status badges hien label tieng Viet; Leads/Orders page grids dung `minmax(0,1fr)` de khong day tran viewport. |
+| Deploy | Production deployment `dpl_4tbu2R5PkaRMvnQsbLLYjLc518iy`, URL `https://theanhmarketing-f9xzh9zl4-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, Ready. |
+| Verify | CRM v2 contract 14/14, full Node tests 194/194, typecheck, lint, build, diff-check with LF/CRLF warnings only, Vercel inspect Ready, no Vercel errors in 15m, unauth live smoke for `/admin`, `/admin/crm-v2/leads`, and `/admin/crm-v2/orders`. |
+| Con lai | Anh hard refresh owner browser session de nhin rendered UI da het tran va danh sach Leads da gop; Codex session nay khong expose browser-control tool de dung cookie login cua anh. |
+
+## 2026-06-16 - CRM v2 Leads/Orders readability pass from mockups
+
+| Hang muc | Chi tiet |
+|---|---|
+| App/domain | main-site / theanhmarketing.com; production deploy worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`. |
+| Muc tieu | Sua giao dien CRM v2 theo mockup `E:\002\CRM 002`, uu tien de nhin/de truy van thay vi chi render du route. |
+| Root cause | Leads table bi ep boi side panel va table fixed khong co width theo cot, lam course/customer text vo doc; stage cards khong nam mot hang nhu mockup. |
+| Code | `CrmDataTable` co colgroup/explicit widths/clamp; Leads bo right insight panel, stage cards 7 cot desktop, contact block hien ten+email+SĐT; Orders insight panel chi nam canh table tren man rat rong. |
+| Visual verify | Local Playwright 1620x900: `bodyOverflow=0`, seven stage cards same row, course cell reads normal, table scrolls internally. Screenshot: `E:\Temp\UserTemp\crm-v2-leads-ui-fix-1620-v3.png`. |
+| Deploy | Production deployment `dpl_55W7jwfv4qYYuV4mBiY81MUhjrXT`, URL `https://theanhmarketing-qsejbu6pr-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, Ready. |
+| Verify | CRM v2 contract 14/14, full Node tests 194/194, typecheck, lint, build, diff-check with LF/CRLF warnings only, Vercel inspect Ready, no Vercel errors in 15m, unauth live smoke `/admin/crm-v2/leads` and `/orders`. |
+
+## 2026-06-16 - CRM v2 functional audit, date range RPC, and live-action hardening
+
+| Hang muc | Chi tiet |
+|---|---|
+| App/domain | main-site / theanhmarketing.com; production deploy worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`. |
+| Muc tieu | Bien CRM v2 tu khung UI thanh he van hanh that hon: audit tung route/nut/KPI, range dashboard that, email/payment reminder co provider/log, production khong mock ngam. |
+| Docs | Added `docs\crm-v2\FUNCTIONAL_AUDIT.md`; rewrote `docs\crm-v2\VISUAL_SPEC.md` with readable Vietnamese and mockup rules. |
+| Database | Applied additive Supabase migration `crm_v2_range_rpc` on project `vsxxgdzwtscuxcmjfckt`; adds date-aware server-only RPC overloads. No DROP/TRUNCATE/DELETE/rename legacy tables. |
+| Data verify | Production RPC with date args returned `dashboard_new_leads_today=1`, `leads_total_30d=124`, `orders_total_30d=138`, `students_total_30d=45`. |
+| Code | Range control now supports `7/30/90 ngày` through shared query contract; CRM v2 action APIs fail closed on production missing env; `send_test_email`, `send_campaign_now`, and `send_payment_reminder` use the EmailProvider boundary, suppression checks, idempotency keys, and CRM v2 event logs. |
+| Safety | Real campaign send requires `GUI THAT` and a segment; it will not blast all contacts. Live reminder requires a valid CRM v2 order UUID. Demo mode is local/test only. |
+| Deploy | Production deployment `dpl_GSRxiqKyxxLt3YBR4WqAGqSkfpG9`, URL `https://theanhmarketing-mchjmgep6-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, Ready. |
+| Verify | Full Node tests 197/197, CRM unit/migration 12/12, typecheck, lint, build, diff-check with LF/CRLF warnings only, Playwright CRM v2 29/29, Vercel inspect Ready, live unauth smoke `/admin` -> `/admin/crm-v2`, CRM v2 pages -> login next, admin API -> 403, runtime logs 15m no errors. |
+
+## 2026-06-16 - CRM v2 direct legacy dashboard redirect and side-panel overflow fix
+
+| Hang muc | Chi tiet |
+|---|---|
+| App/domain | main-site / theanhmarketing.com; production deploy worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`. |
+| Muc tieu | Xu ly feedback anh chup: `/admin/dashboard` van hien Admin Panel cu va nhieu CRM v2 dashboard bi cat right preview/insight panel. |
+| Root cause | `/admin/dashboard` chua check `CRM_V2_ENABLED`; cac page CRM v2 dung grid `xl:grid-cols-[1fr_360px]`/`xl:grid-cols-[280px_1fr_340px]`, bi min-content cua table/day text keo panel ra ngoai viewport. |
+| Code | `app/admin/dashboard/page.tsx` redirect sang `/admin/crm-v2` khi CRM v2 enabled; cac layout side-panel CRM v2 doi sang `minmax(0,1fr)`, `min-w-0`, va chi dat panel canh noi dung tren man rat rong. |
+| Verify | CRM v2 contract 17/17, full Node tests 197/197, CRM unit/migration 12/12, typecheck, lint, build, diff-check, Playwright CRM v2 31/31. Playwright them guard no horizontal overflow tat ca CRM v2 route tai 1620x900 va guard `/admin/dashboard` redirect. |
+| Deploy | Production deployment `dpl_CnHhSPVs1ALxEZurjTwohYa8Td1z`, URL `https://theanhmarketing-ey5rrt7tn-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, Ready. |
+| Live smoke | `/admin/dashboard` -> `307 /admin/crm-v2`; unauth CRM v2 pages -> `/admin/login?next=%2Fadmin%2Fcrm-v2`; Vercel runtime logs 15m khong co error/fatal. |
+
+## 2026-06-16 - Meta CompleteRegistration ROAS guard local fix
+
+| Hang muc | Chi tiet |
+|---|---|
+| App/domain | main-site / theanhmarketing.com; production deploy worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`. |
+| Muc tieu | Xu ly canh bao Meta Events Manager cho `CompleteRegistration` thieu/khong hop le `value` va `currency`. |
+| Code | `components/auth/register-form.tsx` parse `Number(orderData.order.amount)` va chi fire browser `CompleteRegistration` khi `value > 0`; khong con `value: orderData.order.amount ?? 0`; van dung `currency || "VND"` va van redirect checkout neu skip tracking. |
+| Guard | `tests/meta-conversions-api.test.mjs` bat buoc co `completeRegistrationValue`, guard `> 0`, va cam fallback `value` ve `0`. |
+| Verify | RED tracking test fail dung ly do truoc fix; sau fix `node --test tests\meta-conversions-api.test.mjs` pass 7/7, full `node --test tests\*.mjs` pass 198/198, typecheck, lint va build pass. |
+| Deploy | Production deployment `dpl_FSTG8J5dejRsJkzatxBMA3f6NGuE`, URL `https://theanhmarketing-l5wehx7tn-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, Ready. Live smoke `/`, `/dang-ky`, `/admin/dashboard`, `/go?.../vao-khoa-hoc` pass; live bundle co warning guard moi va khong thay fallback `value ?? 0`. |
+
+## 2026-06-17 - CRM v2 Email course scope và Reports public-orders attribution
+
+| Hang muc | Chi tiet |
+|---|---|
+| App/domain | main-site / theanhmarketing.com; production deploy worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`. |
+| Muc tieu | Sua Email MKT de gan dung khoa hoc/tep thanh toan truoc khi preview/gui; sua Reports vi doanh thu paid co the sai khi `crm_v2.orders` stale. |
+| Production data check | Count-only Supabase check: `public.orders` ngay 2026-06-16 co 1 paid order doanh thu 799.000d, trong khi `crm_v2.orders` cung ngay co 0. Legacy `public.orders` tiep tuc la payment source of truth. |
+| Email code | Composer co select `Khóa học khách đăng ký`; `save_draft`, `preview_audience`, `refresh_audience`, `send_test_email`, `send_campaign_now` truyen/luu course/payment scope; campaign metadata co `audience_scope`; audience loc bang segment + `crm_v2.orders` contact/course/payment status. |
+| Reports code | `buildReportAttributionRows` doc `public.orders` voi `paid_at`, `utm_source`, `course_slug`, `product_name`; KPI Reports uu tien attribution totals tu source thanh toan that. |
+| Verify | `node --test tests\*.mjs` 198/198, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `npm.cmd run build`, Playwright CRM v2 Chromium 32/32, `git diff --check` pass voi LF/CRLF warnings only. |
+| Deploy | Production deployment `dpl_A7JEVMxuxQSkCEJBHZBtG4eNwwPt`, URL `https://theanhmarketing-hb1d3gz9o-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, Ready. |
+| Smoke | `/admin/dashboard` 307 -> `/admin/crm-v2`; unauth `/admin/crm-v2/email` and `/admin/crm-v2/reports?range=today&view=period` 307 -> login; unauth Reports/Email APIs 403; Vercel logs 10m no errors. |
+
+## 2026-06-22 - CRM v2 Leads live source bridge
+
+| Hang muc | Chi tiet |
+|---|---|
+| App/domain | main-site / theanhmarketing.com; production deploy worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`. |
+| Muc tieu | Sua `/admin/crm-v2/leads?range=30d` vi table moi nhat dung o 16/06 trong khi ngay hien tai la 22/06. |
+| Root cause | Leads & Pipeline unified table chi hop nhat `crm_v2` read-model/RPC lead/order rows. Read model nay co the stale sau backfill, trong khi source that `public.leads` va `public.orders` co du lieu moi hon. |
+| Code | `lib/crm-v2/data.ts` them `listPublicLeadRowsForRange`, public lead/order mappers, `listFreshUnifiedCustomerRows`, `filterUnifiedCustomerRows`; `listCrmV2UnifiedCustomers(query)` merge CRM v2 rows voi fresh public rows theo selected range roi moi filter/sort/paginate. |
+| Guard | `tests/crm-v2-contract.test.mjs` bat buoc unified pipeline doc `public.leads` + `public.orders` va dung Vietnam-day bounds. |
+| Verify | CRM v2 contract 20/20, full Node 202/202, typecheck, lint, build, diff-check with LF/CRLF warnings only. |
+| Deploy | Production deployment `dpl_24SRq1VEGMqVm6zy8D7QYmbkaYGF`, URL `https://theanhmarketing-5fikhwm6t-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, Ready. |
+| Smoke | `/admin/crm-v2/leads?range=30d` unauth -> login 200, `/api/admin/crm-v2/leads?range=30d` unauth 403, `/admin` -> login 200, `/vao-khoa-hoc` 200, Vercel logs after smoke only info 200/307/403. |
+| Con lai | Need owner-session hard refresh de nhin table live hien rows sau 16/06; Codex khong co admin cookie trong phien nay. |
+
+## 2026-06-30 - CRM v2 overview dashboard visual upgrade rolled back
+
+| Hang muc | Chi tiet |
+|---|---|
+| App/domain | main-site / theanhmarketing.com; production deploy worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`. |
+| Yeu cau moi | Anh yeu cau xoa toan bo thay doi trong phien "Nang cap CRM v2 UI". |
+| Rollback | `/admin/crm-v2` quay lai dashboard co ban dung truc tiep `getCrmV2Dashboard(query)` voi `MetricGrid`, `SimpleBars`, `Timeline`, `RightInsightPanel`; sidebar quay lai menu CRM v2 cu. |
+| Da xoa | `components/crm-v2/overview-dashboard.tsx`, `lib/crm-v2/dashboardMetrics.ts`, contract test ep dashboard mockup, marker smoke-test moi tren row buttons. |
+| Khong doi | Khong sua database/schema/API/auth/admin permission/production data. Cac route CRM v2 hien co van giu nguyen. |
+| Verify | Can xem phan rollback session 2026-06-30 trong workspace docs de biet lenh kiem tra cuoi cung. |
+
+## 2026-07-01 - Facebook Ads ebook gated reader local-ready
+
+| Hang muc | Chi tiet |
+|---|---|
+| App/domain | main-site / theanhmarketing.com; production deploy worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`. |
+| Muc tieu | Dua local PNG ebook reader len website nhung khong mo bang public link; chi account da mua `ebook-facebook-ads-2026` hoac admin moi doc duoc. |
+| Routes | `/thu-vien/facebook-ads` renders the reader; `/api/ebook/facebook-ads/page?part=X&page=Y` streams one PNG page after entitlement check. |
+| Access | `lib\ebook\facebook-ebook-access.ts` uses `getCurrentAuth`, admin role bypass, and `getCourseAccessSlugs` over paid/admin-granted `ebook-facebook-ads-2026`. |
+| Assets | Full 471 pages are expected in private Supabase Storage bucket `facebook-ads-ebook-2026` at `pages/part-{part}/{page}.png`. The full ebook must not be copied into `public`. |
+| Sync | Run `node scripts\sync-facebook-ebook-storage.mjs` with `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`; local source defaults to `E:\Kinh doanh Ebook\ebook-data\manifest.json` and `E:\Kinh doanh Ebook`. |
+| Dashboard | `components\app\student-dashboard.tsx` routes owned ebook card to `/thu-vien/facebook-ads` instead of `/learn/ebook-facebook-ads-2026/lesson-1`. |
+| Verify | `node --test tests\facebook-ebook-reader-access.test.mjs`, full `node --test tests\*.mjs` 208/208, typecheck, lint, and build passed locally. |
+| Deploy | Continued 2026-07-01: uploaded 471/471 pages to private bucket `facebook-ads-ebook-2026`; deployed production `dpl_3dgywqBZ6X2vfcX8xTvNXhDAUArp`, alias `https://www.theanhmarketing.com`, Ready. |
+| Smoke | Unauth `/thu-vien/facebook-ads` 307 to login, unauth `/api/ebook/facebook-ads/page?part=1&page=1` 401 JSON, `/academy/ebook-facebook-ads-2026` and `/vao-khoa-hoc` 200, direct public Supabase object URL for page 1 returned 400, Vercel logs clean. Authenticated paid-customer visual smoke still requires a real session. |
+| Follow-up 2026-07-01 | Fullscreen/performance hotfix deployed production `dpl_DBSrASpVFHJ3Qp5qRMoqF2DZciRa`: reader fullscreen removes the 1120px cap and uses `100vw/100vh object-contain`; previous/next pages preload via protected API; visible PNG has async/high-priority hints; API cache is private `max-age=3600, stale-while-revalidate=86400`. Targeted test 7/7, typecheck, lint, build, live unauth smoke/log scan passed. |
+| Follow-up 2026-07-01 14:43 | Mouse/keyboard interaction hotfix deployed production `dpl_E63Abo6XTRazDLxSa3KVaxCm8RKj`: wheel over the reader area zooms between `50%` and `220%`, toolbar zoom buttons share the same clamp, and `ArrowLeft`/`ArrowRight` navigate pages except while focus is inside editable inputs. Targeted reader test 8/8, typecheck, lint, build, live unauth smoke/log scan passed. |
+| Follow-up 2026-07-01 15:06 | Owner asked to remove wheel zoom and fix stutter/hidden-sidebar whitespace. Production `dpl_7qXNevcDRCfTvTjQfvSVNBNcSUAc`: wheel zoom removed; buffered preloader now keeps current page plus 4 pages before/after in `preloadedImagesRef` and calls `.decode()`; hidden-sidebar mode uses wide reading width with `Math.max(zoom, 100)%` and no 1120px cap. Targeted reader test 9/9, typecheck, lint, build, live unauth smoke/log scan passed. |
+| Follow-up 2026-07-01 17:08 | Owner screenshot showed hidden-sidebar left blank rail plus over-large reader crop. Production `dpl_4grqxCuV1HPqSbgytgVtF5ki3C2r`: closed TOC now collapses to `lg:w-0`; zoom buttons clamp to `75%`-`130%`; wide reading mode uses `fit-content`, `max-width: 100%`, and `max-height: calc(100vh - 9rem)` so the PNG fits the available viewport. Targeted reader test 10/10, typecheck, lint, build, live unauth smoke/log scan passed. |
+| Follow-up 2026-07-01 18:19 | Owner reported TOC jumps between parts feel delayed. Production `dpl_6ohEbzEFGP995NeqZwp2HXKWhSdG`: added lightweight TOC target prefetch with `requestIdleCallback`, shared `preloadImageSrc()`/`Image.decode()` cache, and hover/focus prefetch for part/search-result buttons while keeping the protected image API. Targeted reader test 11/11, typecheck, lint, build, live unauth smoke/log scan passed. |
+| Follow-up 2026-07-01 18:27 | Owner screenshot showed Phần 5 selected/header while the old Phần 2 PNG remained visible. Production `dpl_HYVJshDhgW7HxArVHbkvz9kAy77B`: navigation now stores `pendingAbsolutePage`, awaits target PNG decode, ignores stale navigation requests, then commits part/page state and clears the loading pill. Targeted reader test 12/12, typecheck, lint, build, live unauth smoke/log scan passed. |
+
+## 2026-07-08 - CRM v2 Leads student access actions and password reset hotfix
+
+| Hang muc | Chi tiet |
+|---|---|
+| App/domain | main-site / theanhmarketing.com; production deploy worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`. |
+| CRM Leads UI | `/admin/crm-v2/leads` expanded customer detail now contains `Quyen hoc vien` controls: course checkboxes, `Cap quyen`, `Thu quyen`, and `Gui lai mat khau`. |
+| APIs | UI reuses existing `POST /api/admin/students/access` and `POST /api/admin/students/password-reset`; no new student-access database flow was added. |
+| Hotfix | Owner reported `Cap quyen` and `Gui lai mat khau` both looked like the course grant email. Root cause: `app/api/admin/students/password-reset/route.ts` called `sendStudentAccessEmail` with `action: "grant"`. |
+| Fix | Password reset route now uses `action: "password_reset"`. `lib/notifications/student-access-email.ts` renders a distinct email with `Cap lai mat khau`, `Mat khau moi`, login CTA, and old-password-replaced note. Grant emails remain course-access emails. |
+| Guards | `tests/crm-v2-contract.test.mjs` guards expanded-detail placement and real course loading. `tests/student-access-admin-controls.test.mjs` guards the distinct password-reset email and route action. |
+| Verify | `node --test tests\student-access-admin-controls.test.mjs tests\student-account.test.mjs tests\notification-email-font.test.mjs` 21/21, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `npm.cmd run build`. |
+| Deploy | Latest production deployment `dpl_E99Ku6Yt5jnjGEEBuwVeerDg57sS`, alias `https://www.theanhmarketing.com`, Ready. Live unauth smoke: both student admin APIs return 403 and `/vao-khoa-hoc` returns 200. |
+| Remaining | Owner-session UI click and approved mailbox smoke are still needed before using the reset button broadly on real customers. |
+
+## 2026-07-05 - CRM v2 LMS real management local-ready
+
+| Hang muc | Chi tiet |
+|---|---|
+| App/domain | main-site / theanhmarketing.com; production deploy worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`. |
+| Muc tieu | Bien CRM v2 `Hoc vien/LMS` va `Quan ly khoa hoc` thanh khu quan ly that: course/module/lesson/resource/enrollment/progress dung database, khong con tab chet cho chuc nang chinh. |
+| Data source | Shared source: `public.courses`, `public.course_modules`, `public.lessons`, `public.lesson_resources`, new `public.course_resources`, `crm_v2.enrollments`, and `crm_v2.course_progress`. |
+| Code | Added `services/lmsService.ts`, `lib/lms/types.ts`, `components/crm-v2/lms-management-client.tsx`, admin LMS APIs under `app/api/admin/crm-v2/lms`, student progress API, student dashboard/lesson-room integration, and legacy admin-student access sync to LMS enrollment. |
+| Migration/backfill | Added additive migration `supabase/migrations/20260705120000_lms_management.sql`; added idempotent `scripts/lms/backfill-lms-from-static.ts` with dry-run default and `--apply` gate. |
+| Safety | Owner guard on admin LMS routes; student route only shows published course/module/lesson content and requires admin, active/completed LMS enrollment, or legacy paid access during rollout. Legacy paid-order access remains merged until backfill is live. |
+| Verify | Local contract/type/lint/full Node/build passed; offline backfill dry-run passed; live read-only backfill dry-run from canonical website env showed 10 seed courses plus 99 paid orders eligible for enrollment. Production migration, backfill apply, and owner/student authenticated smoke are still pending. |
+
+## 2026-07-05 - CRM v2 LMS production rollout
+
+| Hang muc | Chi tiet |
+|---|---|
+| App/domain | main-site / theanhmarketing.com; production deploy worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`. |
+| Database | Applied Supabase production migrations `lms_management`, `lms_private_rpc`, and `lms_rpc_preserve_enrollment_fields` to project `vsxxgdzwtscuxcmjfckt`. |
+| Backfill | Seeded shared LMS catalog and access bridge idempotently: `10` courses, `23` modules, `56` lessons, `11` course resources, and `100/100` paid order-course pairs in `crm_v2.enrollments`. |
+| RPC/privacy | Runtime LMS reads/writes use service-role-only public RPC wrappers for private `crm_v2` enrollments/progress instead of exposing the private schema through PostgREST. |
+| Security hotfix | `/learn/[course]/[lesson]` now gates enrolled/private courses before rendering lesson content. Live smoke confirmed the checked Facebook Ads lesson redirects unauthenticated users to `/dang-nhap` and no longer includes title/video iframe in the response. |
+| Deploy | Production deployment `dpl_B4HHLLEdHcVw124StqLtViRd5X4L`, URL `https://theanhmarketing-3u4tc6020-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, Ready. |
+| Verify | `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, targeted CRM/LMS tests `40/40`, full Node tests `233/233`, `npm.cmd run build`, Vercel build/inspect Ready, live unauth smoke, and Vercel runtime error scan passed. Authenticated owner/student browser smoke still needs a real session. |
+
+## 2026-07-05 - CRM v2 LMS blank lesson hotfix
+
+| Hang muc | Chi tiet |
+|---|---|
+| Symptom | Owner screenshot showed `/learn/facebook-ads-2026/d1701af9-0e2b-41af-8e9d-1722b49e6dd1` rendering `Chua co video`. |
+| Root cause | LMS backfill published static placeholder lessons that had no `youtube_url`, `embed_url`, or lesson content. |
+| Data fix | Production empty published lessons were changed to `draft` without deleting rows. `facebook-ads-2026` now has `21` published lessons, all with video, and `0` empty published lessons. |
+| Code fix | `services/courseService.ts` filters student-visible lessons through `isStudentReadyLesson`; `scripts/lms/backfill-lms-from-static.ts` keeps empty lessons as `draft`; stale/draft lesson links redirect to the first available published lesson instead of 404. |
+| Deploy | Production deployment `dpl_F6MLk6UxPvjPLsu5U1sLkwaQnn86`, URL `https://theanhmarketing-6rezmv0ct-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, Ready. |
+| Verify | Typecheck, lint, targeted LMS/course tests `16/16`, build, Vercel inspect Ready, live smoke for the broken URL redirecting to the first video lesson, and runtime error scan passed. |
+
+## 2026-07-05 - CRM v2 LMS admin UI/UX refactor
+
+| Hang muc | Chi tiet |
+|---|---|
+| App/domain | main-site / theanhmarketing.com; production deploy worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`. |
+| Scope | UI/UX refactor only for `/admin/crm-v2/students?view=courses`; no database/schema change and no mock/local-data fallback. |
+| Code | `components/crm-v2/lms-management-client.tsx` now provides two-column course management, compact course list, selected-course header, real tabs, compact overview/module/lesson/student/resource/settings panels, modal editors, confirm deletes, loading/action messages, and up/down reorder controls. |
+| Lessons | Lesson tab no longer renders every edit form open. It uses module/search/status filters plus compact rows; add/edit opens a focused modal with basic info, video/content fields, status, access level, and sticky-ish actions. |
+| Slug | `services/lmsService.ts` normalizes `đ/Đ` to `d` before ASCII cleanup for future Vietnamese slugs; existing slugs were not rewritten. |
+| Tests | Adjusted `tests/lms-management-contract.test.mjs` so real input placeholders are allowed while mock/demo LMS behavior is still rejected. |
+| Deploy | Production deployment `dpl_BnRYUiinSWdsV5VkdzZuv5V7jHxs`, URL `https://theanhmarketing-gd5jh1nbm-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, Ready. |
+| Verify | `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, LMS contract, CRM v2 contract, student access admin controls, student activity log flow, `npm.cmd run build`, Vercel production build, and live unauth route smoke passed. Authenticated owner visual smoke still needs a real browser session. |

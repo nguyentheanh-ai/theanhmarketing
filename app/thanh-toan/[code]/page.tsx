@@ -93,7 +93,7 @@ function getPaymentOffer(order: PaymentOrder, amountLabel: string) {
   if (isFacebookAdsEbook2026(order)) {
     return {
       originalPriceLabel: "799.000đ",
-      currentPriceLabel: "299.000đ",
+      currentPriceLabel: "399.000đ",
     };
   }
 
@@ -240,7 +240,7 @@ function getCheckoutContent(order: PaymentOrder) {
         productHref: "/academy/ebook-facebook-ads-2026",
         includes: [
           "Truy cập website thư viện Facebook Ads 2026",
-          "Bản đồ 12 phần nội dung từ nền tảng đến vận hành thực tế",
+          "Bản đồ 10 phần nội dung từ nền tảng đến vận hành thực tế",
           "Tài nguyên thực hành, checklist và template đi kèm",
         ],
         saleReasons: defaultSaleReasons,

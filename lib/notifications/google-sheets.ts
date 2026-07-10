@@ -182,6 +182,16 @@ function formatVietnamDateTime(value: string) {
   return `${parts.day}/${parts.month}/${parts.year} ${parts.hour}:${parts.minute}`;
 }
 
+function formatSheetPhone(value: string) {
+  const digits = String(value ?? "").replace(/\D/g, "");
+
+  if (!digits) {
+    return "";
+  }
+
+  return `="${digits}"`;
+}
+
 function normalizeLineLabel(value: string) {
   return value
     .normalize("NFD")
@@ -255,16 +265,13 @@ function getGeneratedCheckoutNoteFields(value?: string) {
 export function buildGoogleSheetOrderPayload(order: PaymentOrder, options: GoogleSheetSyncOptions = {}) {
   const siteUrl = getSiteUrl(options);
   const paymentUrl = `${siteUrl}/thanh-toan/${encodeURIComponent(order.orderCode)}`;
-  const landingPageUrl = cleanEnvValue(options.landingPageUrl);
   const date = formatVietnamDateTime(order.createdAt);
   const paidAt = order.paidAt ? formatVietnamDateTime(order.paidAt) : "";
   const expiresAt = order.expiresAt ? formatVietnamDateTime(order.expiresAt) : "";
   const source = options.source ?? "Website";
-  const attribution = order.attribution ?? ({} as PaymentOrder["attribution"]);
-  const orderItems = order.orderItems.map((item) => `${item.title} (${item.slug}) - ${item.price}`).join(" | ");
   const syncedAt = new Date().toISOString();
 
-  return {
+  const payload = {
     entityType: "order",
     dedupeKey: order.orderCode || order.id,
     date,
@@ -273,10 +280,7 @@ export function buildGoogleSheetOrderPayload(order: PaymentOrder, options: Googl
     orderCode: order.orderCode,
     name: order.studentName,
     email: order.email,
-    phone: order.phone,
-    ldpUrl: landingPageUrl,
-    landingPageUrl,
-    linkLdp: landingPageUrl,
+    phone: formatSheetPhone(order.phone),
     courseSlug: order.courseSlug,
     courseTitle: order.courseTitle,
     amount: order.amount,
@@ -286,53 +290,10 @@ export function buildGoogleSheetOrderPayload(order: PaymentOrder, options: Googl
     paymentMethod: order.paymentMethod,
     paymentUrl,
     paidAt,
+    expiresAt,
+    sepayReferenceCode: order.sepayReferenceCode ?? "",
     source,
-    utmSource: attribution.utmSource,
-    utmMedium: attribution.utmMedium,
-    utmCampaign: attribution.utmCampaign,
-    utmContent: attribution.utmContent,
-    utmId: attribution.utmId,
-    utmTerm: attribution.utmTerm,
-    campaignId: attribution.campaignId,
-    campaignName: attribution.campaignName,
-    adsetId: attribution.adsetId,
-    adId: attribution.adId,
-    adName: attribution.adName,
-    "FB Click ID": attribution.fbclid,
-    "FBC": attribution.fbc,
-    "FBP": attribution.fbp,
-    orderItems,
     syncedAt,
-    "Created At": date,
-    "Order Code": order.orderCode,
-    "Customer Name": order.studentName,
-    Email: order.email,
-    Phone: order.phone,
-    "Course Slug": order.courseSlug,
-    "Course Title": order.courseTitle,
-    Amount: order.amount,
-    Currency: order.currency,
-    Status: order.status,
-    "Payment Method": order.paymentMethod,
-    "Payment URL": paymentUrl,
-    "Paid At": paidAt,
-    Source: source,
-    "UTM Source": attribution.utmSource,
-    "UTM Medium": attribution.utmMedium,
-    "UTM Campaign": attribution.utmCampaign,
-    "UTM Content": attribution.utmContent,
-    "UTM ID": attribution.utmId,
-    "UTM Term": attribution.utmTerm,
-    "Campaign ID": attribution.campaignId,
-    "Campaign Name": attribution.campaignName,
-    "Adset ID": attribution.adsetId,
-    "Ad ID": attribution.adId,
-    "Ad Name": attribution.adName,
-    fbclid: attribution.fbclid,
-    fbc: attribution.fbc,
-    fbp: attribution.fbp,
-    "Order Items": orderItems,
-    "Synced At": syncedAt,
     "Mã đơn": order.orderCode,
     "Ngày tạo": date,
     "Khách hàng": order.studentName,
@@ -346,7 +307,34 @@ export function buildGoogleSheetOrderPayload(order: PaymentOrder, options: Googl
     "Mã GD SePay": order.sepayReferenceCode ?? "",
     "Course slug": order.courseSlug,
     "Link thanh toán": paymentUrl,
-  };
+  } as Record<string, unknown>;
+
+  const allowedKeys = new Set([
+    "entityType",
+    "dedupeKey",
+    "orderCode",
+    "date",
+    "name",
+    "email",
+    "phone",
+    "courseTitle",
+    "amount",
+    "status",
+    "paymentMethod",
+    "paidAt",
+    "expiresAt",
+    "sepayReferenceCode",
+    "courseSlug",
+    "paymentUrl",
+  ]);
+
+  for (const key of Object.keys(payload)) {
+    if (!allowedKeys.has(key)) {
+      delete payload[key];
+    }
+  }
+
+  return payload;
 }
 
 export function buildGoogleSheetLeadPayload(lead: GoogleSheetLeadRecord, options: GoogleSheetSyncOptions = {}) {

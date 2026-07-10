@@ -31,15 +31,29 @@ test("email defaults target the real admin address and verified-domain sender", 
   const paid = read("lib/notifications/payment-success-email.ts");
   const envExample = read(".env.example");
 
-  for (const source of [registration, pending, envExample]) {
+  for (const source of [registration, pending]) {
     assert.match(source, /theanhnguyen\.marketing@gmail\.com/);
   }
 
-  for (const source of [registration, pending, paid, envExample]) {
+  for (const source of [registration, pending, paid]) {
     assert.match(source, /noreply@theanhmarketing\.com/);
   }
 
+  assert.match(envExample, /^NEW_LEAD_NOTIFICATION_TO=$/m);
+  assert.match(envExample, /^REGISTRATION_NOTIFICATION_FROM=$/m);
   assert.doesNotMatch(envExample, /onboarding@resend\.dev/);
+});
+
+test("environment example documents variable names without values", () => {
+  const envExample = read(".env.example");
+  const assignments = envExample
+    .split(/\r?\n/)
+    .filter((line) => /^[A-Z][A-Z0-9_]*=/.test(line));
+
+  assert.ok(assignments.length > 0);
+  for (const assignment of assignments) {
+    assert.match(assignment, /^[A-Z][A-Z0-9_]*=$/);
+  }
 });
 
 test("email senders strip invisible BOM characters from the Resend API key", () => {

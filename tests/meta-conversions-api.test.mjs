@@ -79,8 +79,10 @@ test("Meta CAPI helper sends numeric Meta lead ids only and skips network withou
     email: "lead@example.com",
     phone: "+84 904 160 809",
     leadId: "1234567890123456",
+    eventId: "web.1779628866719.5636929147258652",
   });
 
+  assert.equal(event.event_id, "web.1779628866719.5636929147258652");
   assert.equal(event.user_data.lead_id, 1234567890123456);
 
   const previousToken = process.env.META_CAPI_ACCESS_TOKEN;
@@ -103,6 +105,15 @@ test("Meta CAPI helper sends numeric Meta lead ids only and skips network withou
     if (previousPixel === undefined) delete process.env.NEXT_PUBLIC_META_PIXEL_ID;
     else process.env.NEXT_PUBLIC_META_PIXEL_ID = previousPixel;
   }
+});
+
+test("Meta CAPI success responses are logged safely during test-event verification", () => {
+  const capiSource = read("lib/meta/conversions-api.ts");
+
+  assert.match(capiSource, /events_received/);
+  assert.match(capiSource, /Meta Conversion API event accepted/);
+  assert.match(capiSource, /has_test_event_code/);
+  assert.doesNotMatch(capiSource, /console\.info\([^)]*accessToken/);
 });
 
 test("Meta Purchase uses paid time and raw order code for deduplication", () => {
@@ -146,6 +157,7 @@ test("order and payment routes emit Meta Lead and Purchase events without blocki
   assert.match(orderRoute, /body\.fbp/);
   assert.match(orderRoute, /body\.fbc/);
   assert.match(orderRoute, /body\.leadId/);
+  assert.match(orderRoute, /eventId:\s*incomingLeadId/);
 
   assert.match(sessionOrderRoute, /sendMetaLeadEvent/);
   assert.match(sessionOrderRoute, /await sendMetaLeadEvent\(/);
@@ -161,18 +173,24 @@ test("environment and browser pixel fallback are documented without hard-coded s
   const envExample = read(".env.example");
   const marketingSettings = read("lib/marketing-settings.ts");
   const marketingSettingsService = read("services/marketingSettingsService.ts");
+  const rootLayout = read("app/layout.tsx");
   const capiSource = read("lib/meta/conversions-api.ts");
 
   assert.match(envExample, /NEXT_PUBLIC_META_PIXEL_ID=/);
-  assert.match(envExample, /NEXT_PUBLIC_META_PIXEL_ID=1315653423712065/);
-  assert.match(envExample, /META_CAPI_DATASET_ID=1315653423712065/);
+  assert.match(envExample, /^META_CAPI_DATASET_ID=$/m);
   assert.match(envExample, /META_CAPI_ACCESS_TOKEN=/);
-  assert.match(envExample, /META_CAPI_API_VERSION=v25\.0/);
+  assert.match(envExample, /^META_CAPI_API_VERSION=$/m);
   assert.match(envExample, /META_CAPI_TEST_EVENT_CODE=/);
+  assert.match(capiSource, /process\.env\.META_CAPI_DATASET_ID/);
+  assert.match(capiSource, /PRIMARY_META_PIXEL_ID = "1315653423712065"/);
+  assert.match(capiSource, /DEFAULT_API_VERSION = "v25\.0"/);
   assert.match(marketingSettings, /NEXT_PUBLIC_META_PIXEL_ID/);
   assert.doesNotMatch(marketingSettings, /NEXT_PUBLIC_META_ADDITIONAL_PIXEL_IDS/);
   assert.match(marketingSettings, /facebookPixelIds/);
   assert.match(marketingSettings, /PRIMARY_META_PIXEL_ID/);
+  assert.match(marketingSettings, /FACEBOOK_DOMAIN_VERIFICATION = "rx0h2xuwlyy1b5vd6ge5f60gm10b2c"/);
+  assert.match(marketingSettings, /facebookDomainVerification: FACEBOOK_DOMAIN_VERIFICATION/);
+  assert.match(rootLayout, /"facebook-domain-verification": FACEBOOK_DOMAIN_VERIFICATION/);
   assert.match(marketingSettingsService, /normalizeMarketingSettings\(fallbackMarketingSettings\)/);
   assert.doesNotMatch(capiSource, /EAA[A-Za-z0-9_-]{20,}/);
 });
@@ -183,12 +201,16 @@ test("all sales landing surfaces include only primary browser Pixel and pass att
   const aiMasterPublished = read("public/academy/ai-master-x10-hieu-suat.html");
   const facebookAdsSource = read("public/ladipage/facebook-ads-2026.html");
   const facebookAdsPublished = read("public/academy/facebook-ads-master-2026.html");
+  const ebookPremiumSource = read("public/ladipage/ebook-facebook-ads-2026-premium.html");
+  const ebookPremiumPublished = read("public/academy/ebook-facebook-ads-2026-premium.html");
   const paymentPoller = read("components/payment/payment-status-poller.tsx");
   const staticLandingPages = [
     aiMasterSource,
     aiMasterPublished,
     facebookAdsSource,
     facebookAdsPublished,
+    ebookPremiumSource,
+    ebookPremiumPublished,
   ];
 
   assert.match(marketingScripts, /PRIMARY_META_PIXEL_ID/);
@@ -197,16 +219,35 @@ test("all sales landing surfaces include only primary browser Pixel and pass att
 
   for (const html of staticLandingPages) {
     assert.match(html, /connect\.facebook\.net\/en_US\/fbevents\.js/);
+    assert.match(html, /<meta name="facebook-domain-verification" content="rx0h2xuwlyy1b5vd6ge5f60gm10b2c"/);
     assert.match(html, /fbq\(["']init["'], ["']1315653423712065["']\)/);
     assert.doesNotMatch(html, /1966683547571929|1297209809285103|2364261364083192/);
     assert.match(html, /fbq\(["']track["'], ["']PageView["']\)/);
     assert.match(html, /(?:fbq\(["']track["'], ["']Lead["']|track\(["']Lead["'])/);
+    assert.match(html, /eventID:/);
     assert.match(html, /\/api\/orders/);
-    assert.match(html, /fbp:\s*attribution\.fbp/);
-    assert.match(html, /fbc:\s*attribution\.fbc/);
     assert.match(html, /fb\.1\./);
     assert.match(html, /utmId:/);
+  }
+
+  for (const html of [aiMasterSource, aiMasterPublished, facebookAdsSource, facebookAdsPublished]) {
+    assert.match(html, /fbp:\s*attribution\.fbp/);
+    assert.match(html, /fbc:\s*attribution\.fbc/);
     assert.match(html, /adId:/);
+  }
+
+  for (const html of [facebookAdsSource, facebookAdsPublished]) {
+    assert.match(html, /const eventId|var eventId/);
+    assert.match(html, /eventID:\s*eventId/);
+    assert.match(html, /event_id:\s*leadId/);
+  }
+
+  for (const html of [ebookPremiumSource, ebookPremiumPublished]) {
+    assert.match(html, /function getMetaAttribution/);
+    assert.match(html, /\.\.\.getMetaAttribution\(params\)/);
+    assert.match(html, /const leadId = `web\.\$\{Date\.now\(\)\}\.\$\{Math\.random\(\)\.toString\(10\)\.slice\(2\)\}`/);
+    assert.match(html, /leadId,/);
+    assert.match(html, /trackLead\(result\.order,\s*leadId\)/);
   }
 
   assert.match(paymentPoller, /trackMarketingEvent\("InitiateCheckout"/);
@@ -220,7 +261,10 @@ test("email registration completion sends valid Meta currency and order value", 
   assert.match(registerForm, /event_id: orderData\.order\.orderCode/);
   assert.match(registerForm, /order_id: orderData\.order\.orderCode/);
   assert.match(registerForm, /content_type: "product"/);
-  assert.match(registerForm, /value: orderData\.order\.amount \?\? 0/);
+  assert.match(registerForm, /const completeRegistrationValue = Number\(orderData\.order\.amount\)/);
+  assert.match(registerForm, /if \(completeRegistrationValue > 0\)/);
+  assert.match(registerForm, /value: completeRegistrationValue/);
   assert.match(registerForm, /currency: orderData\.order\.currency \|\| "VND"/);
+  assert.doesNotMatch(registerForm, /value:\s*orderData\.order\.amount \?\? 0/);
   assert.doesNotMatch(registerForm, /currency:\s*""/);
 });

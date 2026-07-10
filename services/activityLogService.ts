@@ -15,6 +15,7 @@ export type ActivityEventType =
   | "student_login_success"
   | "student_login_failed"
   | "student_entered_learning"
+  | "lesson_completed"
   | "password_changed"
   | "password_reset_requested"
   | "password_reset_completed"

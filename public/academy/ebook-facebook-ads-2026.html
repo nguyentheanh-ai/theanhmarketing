@@ -6,6 +6,7 @@
   <title>Thư viện Facebook Ads 2026 - The Anh Marketing</title>
   <meta name="description" content="Thư viện kiến thức Facebook Ads 2026 giúp adser, chủ doanh nghiệp và chuyên gia tra cứu nhanh, làm theo từng bước và kiểm soát quảng cáo tốt hơn.">
   <link rel="canonical" href="https://www.theanhmarketing.com/academy/ebook-facebook-ads-2026">
+  <meta name="facebook-domain-verification" content="rx0h2xuwlyy1b5vd6ge5f60gm10b2c">
   <meta property="og:url" content="https://www.theanhmarketing.com/academy/ebook-facebook-ads-2026">
   <meta property="og:title" content="Thư viện Facebook Ads 2026 - The Anh Marketing">
   <meta property="og:description" content="Thư viện kiến thức Facebook Ads 2026 giúp adser, chủ doanh nghiệp và chuyên gia tra cứu nhanh, làm theo từng bước.">
@@ -36,7 +37,7 @@
       content_name: "Thu vien Facebook Ads 2026",
       content_type: "product",
       currency: "VND",
-      value: 299000,
+      value: 399000,
     });
   </script>
   <noscript>
@@ -155,10 +156,19 @@
     }
     .nav-links {
       display: flex;
-      gap: 18px;
+      gap: 16px;
       color: #22334b;
       font-size: 14px;
       font-weight: 800;
+    }
+    .nav-links a {
+      border-radius: 999px;
+      padding: 8px 10px;
+      transition: background .18s ease, color .18s ease;
+    }
+    .nav-links a:hover {
+      background: rgba(7, 92, 255, .08);
+      color: var(--blue);
     }
 
     .btn {
@@ -254,36 +264,62 @@
       font-weight: 900;
       box-shadow: 0 10px 24px rgba(6, 43, 106, .08);
     }
-    .hero-note {
-      margin-top: 20px;
-      padding-left: 14px;
-      border-left: 4px solid var(--gold);
-      color: #253852;
-      font-weight: 800;
-    }
-    .announcement {
+    .hero-conversion {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 16px;
-      align-items: center;
-      margin-top: 22px;
-      border: 1px solid rgba(7, 92, 255, .16);
-      border-radius: 18px;
-      background: rgba(255,255,255,.76);
-      box-shadow: 0 14px 36px rgba(6, 43, 106, .08);
-      padding: 14px;
+      gap: 22px;
+      margin-top: 30px;
       max-width: 720px;
     }
-    .announcement strong {
+    .hero-conversion .hero-actions {
+      margin-top: 0;
+    }
+    .hero-conversion .btn {
+      min-height: 48px;
+      border-radius: 999px;
+      padding: 0 24px;
+    }
+    .hero-conversion .btn-primary {
+      background: linear-gradient(135deg, var(--blue), #18a8ff);
+    }
+    .hero-conversion .btn-light {
+      background: rgba(255, 255, 255, .7);
+      border-color: rgba(7, 18, 37, .12);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8), 0 12px 28px rgba(6, 43, 106, .08);
+    }
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .hero-metric {
+      min-height: 144px;
+      border: 1px solid rgba(7, 92, 255, .14);
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(240,247,255,.78));
+      box-shadow: 0 16px 34px rgba(6, 43, 106, .1);
+      padding: 20px 18px;
+    }
+    .hero-metric strong {
       display: block;
       color: var(--ink);
-      font-size: 15px;
-      margin-bottom: 2px;
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 900;
     }
-    .announcement span {
-      color: var(--muted);
+    .hero-metric:nth-child(2) strong {
+      color: var(--blue);
+    }
+    .hero-metric:nth-child(3) strong {
+      color: var(--gold);
+    }
+    .hero-metric span {
+      display: block;
+      margin-top: 10px;
+      color: #4b5d76;
       font-size: 13px;
-      font-weight: 700;
+      line-height: 1.38;
+      font-weight: 800;
     }
     .browser-card {
       overflow: hidden;
@@ -308,6 +344,33 @@
     .dot:nth-child(2) { background: #ffbd2e; }
     .dot:nth-child(3) { background: #28c840; }
     .browser-card img { aspect-ratio: 16 / 9; width: 100%; object-fit: cover; }
+    .product-hero {
+      position: relative;
+      display: grid;
+      min-height: 430px;
+      place-items: center;
+      isolation: isolate;
+    }
+    .product-hero::before {
+      content: "";
+      position: absolute;
+      inset: 8% 4% 2%;
+      z-index: -1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 62% 40%, rgba(7, 92, 255, .18), transparent 48%),
+        radial-gradient(circle at 32% 58%, rgba(209, 144, 17, .14), transparent 36%);
+      filter: blur(8px);
+      opacity: .86;
+    }
+    .product-book-hero {
+      width: min(105%, 760px);
+      max-width: none;
+      height: auto;
+      filter: drop-shadow(0 30px 44px rgba(6, 43, 106, .18));
+      transform: translateX(-3%) translateZ(0);
+      animation: floatCard 5.5s ease-in-out infinite alternate;
+    }
     .mini-preview {
       width: min(360px, 84%);
       margin: -62px 22px 0 auto;
@@ -1184,6 +1247,58 @@
       font-weight: 800;
       box-shadow: 0 12px 30px rgba(6, 43, 106, .06);
     }
+    .ebook-showcase-section {
+      background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(7,92,255,.06));
+    }
+    .ebook-toc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .ebook-toc-card {
+      overflow: hidden;
+      border: 1px solid rgba(7, 92, 255, .16);
+      border-radius: 18px;
+      background: #fff;
+      padding: 18px;
+      box-shadow: 0 18px 44px rgba(6, 43, 106, .1);
+    }
+    .ebook-toc-head {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+    .ebook-toc-number {
+      display: inline-grid;
+      width: 44px;
+      height: 44px;
+      place-items: center;
+      border-radius: 14px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue), var(--blue-2));
+      font-weight: 900;
+      box-shadow: 0 12px 26px rgba(7, 92, 255, .2);
+    }
+    .ebook-toc-card h3 {
+      font-size: 18px;
+      line-height: 1.25;
+    }
+    .toc-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding-left: 20px;
+      color: #283a54;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 750;
+    }
+    .toc-list li::marker {
+      color: var(--blue);
+      font-weight: 900;
+    }
 
     .offer {
       display: grid;
@@ -1681,13 +1796,14 @@
       .brand-mark { width: 62px; height: 36px; }
       .brand-mark img { width: 54px; height: 30px; }
       .hero-grid, .section-head, .ebook-toolbar, .offer, .final-cta .wrap { grid-template-columns: 1fr; }
-      .grid-3, .part-chip-grid, .audience-list, .bonus-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3, .part-chip-grid, .audience-list, .bonus-grid, .ebook-toc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .flow, .quick-list, .grid-2, .metric-grid, .version-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .problem-intro { grid-template-columns: 1fr; }
       .problem-cards { grid-template-columns: 1fr; }
       .dashboard-grid { grid-template-columns: 1fr; }
       .matrix-row { grid-template-columns: 1fr; }
       .hero-visual { max-width: 680px; }
+      .product-book-hero { width: min(100%, 680px); transform: none; }
     }
     @media (max-width: 640px) {
       body { padding-bottom: 136px; }
@@ -1699,7 +1815,9 @@
       .lead { font-size: 16px; }
       .hero-actions { align-items: stretch; }
       .btn { width: 100%; min-height: 50px; }
-      .grid-3, .part-chip-grid, .score-grid, .audience-list, .bonus-grid, .faq, .metric-grid, .version-grid, .flow, .quick-list, .grid-2 { grid-template-columns: 1fr; }
+      .hero-metrics { grid-template-columns: 1fr; }
+      .hero-metric { min-height: auto; }
+      .grid-3, .part-chip-grid, .score-grid, .audience-list, .bonus-grid, .ebook-toc-grid, .faq, .metric-grid, .version-grid, .flow, .quick-list, .grid-2 { grid-template-columns: 1fr; }
       .announcement { grid-template-columns: 1fr; }
       .card, .problem-panel, .content-dashboard, .offer-main, .order-box { padding: 20px; border-radius: 18px; }
       .ebook-toolbar, .ebook-search { grid-template-columns: 1fr; }
@@ -1723,6 +1841,8 @@
       .axis { font-size: 11px; }
       .mini-preview { width: 94%; margin-top: -34px; margin-right: 0; }
       .price { font-size: 38px; }
+      .product-hero { min-height: 300px; }
+      .product-book-hero { width: min(112%, 520px); }
       .sticky-cta-inner {
         min-height: 116px;
         padding: 12px 0;
@@ -1746,13 +1866,13 @@
     <div class="wrap nav-inner">
       <a class="brand" href="#top" aria-label="The Anh Marketing">
         <span class="brand-mark"><img src="/brand/ta-logo.svg" alt="The Anh Marketing"></span>
-        <span>Thư viện kiến thức &amp; thực hành Facebook Ads</span>
+        <span>Thư viện Facebook Ads 2026</span>
       </a>
       <div class="nav-links">
-        <a href="#problem">Vấn đề</a>
-        <a href="#inside">Bên trong</a>
-        <a href="#quick">Tìm nhanh</a>
-        <a href="#offer">Mở khóa</a>
+        <a href="#problem">Vì sao cần</a>
+        <a href="#ebook-showcase">Mục lục 10 phần</a>
+        <a href="#preview">Xem Chương 1</a>
+        <a href="#offer">Mở khóa 399K</a>
       </div>
     </div>
   </nav>
@@ -1771,26 +1891,30 @@
           <p class="lead">Cần phần nào, mở đúng phần đó, làm theo từng bước.</p>
           <p>Tra cứu nhanh cách chọn mục tiêu, tạo chiến dịch, viết nội dung, setup Pixel, tạo tệp, remarketing, đọc chỉ số, tối ưu ngân sách và xử lý lỗi thường gặp.</p>
         </div>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="#offer">Đặt trước thư viện Facebook Ads 2026</a>
-          <a class="btn btn-light" href="#preview">Xem trước Ebook</a>
-        </div>
-        <p class="hero-note">Không phải để đọc một lần cho biết. Đây là nơi quay lại mỗi khi cần chạy, kiểm tra, sửa và tối ưu quảng cáo.</p>
-        <div class="announcement">
-          <div>
-            <strong>Outline Ebook</strong>
-            <span>12 phần nội dung, checklist, bản đồ tra cứu và tài nguyên triển khai.</span>
+        <div class="hero-conversion">
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#offer">Đăng ký ngay - 399.000đ</a>
+            <a class="btn btn-light" href="#ebook-showcase">Xem mục lục 10 phần</a>
           </div>
-          <a class="btn btn-gold" href="#offer">Mở khóa</a>
+          <div class="hero-metrics" aria-label="Điểm nổi bật của thư viện Facebook Ads 2026">
+            <div class="hero-metric">
+              <strong>10 phần</strong>
+              <span>Từ nền tảng, mục tiêu, target, content đến tối ưu và scale.</span>
+            </div>
+            <div class="hero-metric">
+              <strong>399K</strong>
+              <span>Mua một lần, đọc trực tiếp thư viện và quay lại khi cần tra cứu.</span>
+            </div>
+            <div class="hero-metric">
+              <strong>2026</strong>
+              <span>Cập nhật cho Pixel, CAPI, remarketing, testing và chính sách.</span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="hero-visual reveal">
-        <div class="browser-card">
-          <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-          <img src="/ebook-facebook-ads-2026/phan-1/1.png" alt="Bìa thư viện Facebook Ads 2026">
-        </div>
-        <div class="mini-preview">
-          <img src="/ebook-facebook-ads-2026/phan-1/2.png" alt="Mục lục thư viện Facebook Ads 2026">
+        <div class="product-hero">
+          <img class="product-book-hero" src="/ebook-facebook-ads-2026/ebook-product-hero.png" alt="Ebook Tất tần tật về Facebook Ads 2026">
         </div>
       </div>
     </div>
@@ -1881,25 +2005,25 @@
     </div>
   </section>
 
-  <section class="section" id="preview">
+  <section class="section preview-section" id="preview">
     <div class="wrap">
       <div class="section-head reveal">
         <div>
-          <span class="eyebrow">Preview phần 1</span>
-          <h2>Xem thử như đang mở một ebook thật.</h2>
+          <span class="eyebrow">Chương 1</span>
+          <h2>Xem Chương 1: Hiểu về Facebook Ads.</h2>
         </div>
       </div>
-      <div class="ebook-preview reveal" data-total-pages="29">
+      <div class="ebook-preview reveal" data-total-pages="37">
         <div class="ebook-toolbar">
           <div class="ebook-title">
-            <strong>Phần 1: Hiểu về Facebook Ads</strong>
-            <span>Bản xem trước thư viện Facebook Ads 2026</span>
+            <strong>Chương 1: Hiểu về Facebook Ads</strong>
+            <span>Xem nội dung nền tảng trước khi mở khóa toàn bộ thư viện</span>
           </div>
           <form class="ebook-search" id="ebookSearch">
             <input id="ebookSearchInput" type="search" placeholder="Tìm: Facebook Ads là gì, tính tiền, CPM, đấu giá..." aria-label="Tìm trong bản preview">
             <button type="submit">Tìm kiếm</button>
           </form>
-          <div class="page-indicator" id="pageIndicator">Trang 08/29</div>
+          <div class="page-indicator" id="pageIndicator">Trang 01/37</div>
           <button class="preview-focus-toggle" id="previewFocusToggle" type="button">Phóng to</button>
           <button class="preview-focus-close" id="previewFocusClose" type="button" aria-label="Đóng preview">Đóng</button>
         </div>
@@ -1941,7 +2065,7 @@
       <div class="content-dashboard reveal">
         <div class="dashboard-head">
           <span class="eyebrow dark-eyebrow">CONTENT MAP</span>
-          <h2>12 phần theo 6 trục vận hành ads</h2>
+          <h2>10 phần theo 6 trục vận hành ads</h2>
           <p>Mở đúng nhóm việc đang cần: nền tảng, mục tiêu, tệp, content, dữ liệu, tối ưu.</p>
         </div>
         <div class="dashboard-grid">
@@ -2090,26 +2214,6 @@
     </div>
   </section>
 
-  <section class="section">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <div>
-          <span class="eyebrow">Bonus</span>
-          <h2>Tài nguyên dùng khi chạy thật.</h2>
-        </div>
-      </div>
-      <div class="section-note-card reveal"><span>Tài nguyên thực hành</span><p>Các checklist và template được đặt cạnh nội dung chính để anh/chị dùng ngay khi chuẩn bị chiến dịch, đọc số hoặc làm báo cáo.</p></div>
-      <div class="bonus-grid">
-        <div class="reveal">Checklist trước khi chạy ads</div>
-        <div class="reveal">Checklist setup Pixel</div>
-        <div class="reveal">Bảng đọc chỉ số</div>
-        <div class="reveal">Template testing 7 ngày</div>
-        <div class="reveal">Mẫu đặt tên campaign</div>
-        <div class="reveal">Mẫu báo cáo ngày/tuần/tháng</div>
-      </div>
-    </div>
-  </section>
-
   <section class="section blue">
     <div class="wrap">
       <div class="section-head reveal">
@@ -2122,12 +2226,148 @@
     </div>
   </section>
 
+  <section class="section ebook-showcase-section" id="ebook-showcase">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Mục lục thư viện</span>
+          <h2>10 phần để kiểm soát Facebook Ads từ nền tảng đến scale.</h2>
+        </div>
+      </div>
+      <div class="ebook-toc-grid">
+        <article class="ebook-toc-card reveal">
+          <div class="ebook-toc-head"><span class="ebook-toc-number">01</span><h3>Hiểu về Facebook Ads</h3></div>
+          <ol class="toc-list">
+            <li>Facebook Ads là gì và vì sao doanh nghiệp cần chạy quảng cáo</li>
+            <li>Cách Facebook tính tiền nhà quảng cáo</li>
+            <li>Cách hệ thống đấu giá quảng cáo hoạt động</li>
+            <li>Hệ sinh thái Meta Ads</li>
+            <li>Fanpage, Instagram, Messenger và Business Suite</li>
+            <li>Tài khoản quảng cáo cá nhân và doanh nghiệp</li>
+            <li>Cấu trúc Campaign - Ad Set - Ad</li>
+            <li>Những hiểu lầm phổ biến khi mới chạy quảng cáo</li>
+          </ol>
+        </article>
+        <article class="ebook-toc-card reveal">
+          <div class="ebook-toc-head"><span class="ebook-toc-number">02</span><h3>Mục tiêu và hình thức quảng cáo</h3></div>
+          <ol class="toc-list">
+            <li>Các mục tiêu quảng cáo trên Facebook</li>
+            <li>Khi nào chọn tiếp cận, tương tác, tin nhắn, lead hoặc doanh số</li>
+            <li>Các hình thức quảng cáo phổ biến</li>
+            <li>Quảng cáo hình ảnh, video, carousel, reels và story</li>
+            <li>Quảng cáo tin nhắn và khách hàng tiềm năng</li>
+            <li>Quảng cáo doanh số và chuyển đổi website</li>
+            <li>Cách chọn mục tiêu quảng cáo theo ngành hàng</li>
+            <li>Cách chia ngân sách theo từng mục tiêu</li>
+          </ol>
+        </article>
+        <article class="ebook-toc-card reveal">
+          <div class="ebook-toc-head"><span class="ebook-toc-number">03</span><h3>Target và tệp khách hàng</h3></div>
+          <ol class="toc-list">
+            <li>Tư duy target trong Facebook Ads</li>
+            <li>Đối tượng đã lưu</li>
+            <li>Đối tượng tùy chỉnh</li>
+            <li>Đối tượng tương tự</li>
+            <li>Loại trừ tệp rác chuyên sâu</li>
+            <li>Chiến lược target hiệu quả dựa trên tệp khách hàng</li>
+          </ol>
+        </article>
+        <article class="ebook-toc-card reveal">
+          <div class="ebook-toc-head"><span class="ebook-toc-number">04</span><h3>Content và media quảng cáo</h3></div>
+          <ol class="toc-list">
+            <li>Vì sao content quyết định chất lượng khách hàng</li>
+            <li>Các mô hình content quảng cáo</li>
+            <li>Ma trận nội dung quảng cáo</li>
+            <li>Chiến lược nội dung theo mức độ nhận thức của khách</li>
+            <li>Công thức viết mẫu quảng cáo chuyển đổi</li>
+            <li>Creative Testing và cách test ý tưởng</li>
+            <li>Cách nhận biết creative bị mỏi</li>
+            <li>Thư viện content và media cần chuẩn bị trước khi chạy</li>
+          </ol>
+        </article>
+        <article class="ebook-toc-card reveal">
+          <div class="ebook-toc-head"><span class="ebook-toc-number">05</span><h3>Thực hành tạo quảng cáo</h3></div>
+          <ol class="toc-list">
+            <li>Chuẩn bị trước khi tạo chiến dịch</li>
+            <li>Hướng dẫn chạy quảng cáo tiếp cận</li>
+            <li>Hướng dẫn chạy quảng cáo tương tác</li>
+            <li>Hướng dẫn chạy quảng cáo tăng lượt theo dõi</li>
+            <li>Hướng dẫn chạy quảng cáo tin nhắn</li>
+            <li>Hướng dẫn chạy quảng cáo khách hàng tiềm năng</li>
+            <li>Hướng dẫn chạy quảng cáo doanh số</li>
+            <li>Hướng dẫn tạo nhiều mẫu quảng cáo để test</li>
+          </ol>
+        </article>
+        <article class="ebook-toc-card reveal">
+          <div class="ebook-toc-head"><span class="ebook-toc-number">06</span><h3>Pixel và CAPI</h3></div>
+          <ol class="toc-list">
+            <li>Pixel và CAPI</li>
+            <li>Tạo, băm dữ liệu, thử nghiệm sự kiện và thiết lập tập dữ liệu</li>
+            <li>Gắn tập dữ liệu lên website</li>
+            <li>Gắn tập dữ liệu lên Landing Page</li>
+            <li>Xác minh miền</li>
+          </ol>
+        </article>
+        <article class="ebook-toc-card reveal">
+          <div class="ebook-toc-head"><span class="ebook-toc-number">07</span><h3>Đọc chỉ số và tối ưu quảng cáo</h3></div>
+          <ol class="toc-list">
+            <li>Cách đọc báo cáo trong Ads Manager</li>
+            <li>Các chỉ số quan trọng khi chạy tiếp cận</li>
+            <li>Các chỉ số quan trọng khi chạy tương tác</li>
+            <li>Các chỉ số quan trọng khi chạy tin nhắn</li>
+            <li>Các chỉ số quan trọng khi chạy Lead Form</li>
+            <li>Các chỉ số quan trọng khi chạy chuyển đổi</li>
+            <li>Cách xử lý khi quảng cáo không hiệu quả</li>
+          </ol>
+        </article>
+        <article class="ebook-toc-card reveal">
+          <div class="ebook-toc-head"><span class="ebook-toc-number">08</span><h3>Remarketing chuyên sâu</h3></div>
+          <ol class="toc-list">
+            <li>Remarketing là gì và vì sao cần chạy</li>
+            <li>Remarketing từ Fanpage, Instagram, video và tin nhắn</li>
+            <li>Remarketing từ Lead Form và website</li>
+            <li>Remarketing người xem sản phẩm và thêm giỏ hàng</li>
+            <li>Loại trừ khách đã mua</li>
+            <li>Loại trừ tệp kém chất lượng</li>
+            <li>Cấu trúc chiến dịch remarketing theo ngân sách</li>
+          </ol>
+        </article>
+        <article class="ebook-toc-card reveal">
+          <div class="ebook-toc-head"><span class="ebook-toc-number">09</span><h3>Testing, Optimize và Scale Up</h3></div>
+          <ol class="toc-list">
+            <li>Testing trong Facebook Ads là gì</li>
+            <li>Cách test target, content angle, creative và offer</li>
+            <li>Cách test mục tiêu quảng cáo</li>
+            <li>Cách tối ưu sau 24 giờ, 72 giờ và 7 ngày</li>
+            <li>Khi nào nên tăng ngân sách</li>
+            <li>Khi nào nên nhân nhóm quảng cáo thắng</li>
+            <li>Khi nào không nên scale</li>
+            <li>Quy trình Testing - Optimize - Scale Up</li>
+          </ol>
+        </article>
+        <article class="ebook-toc-card reveal">
+          <div class="ebook-toc-head"><span class="ebook-toc-number">10</span><h3>Chính sách Facebook và hướng dẫn rời rạc</h3></div>
+          <ol class="toc-list">
+            <li>Tổng quan chính sách quảng cáo Meta</li>
+            <li>Cơ chế 3 tầng nội dung và thực thi kiểm duyệt</li>
+            <li>Nội dung bị cấm, bị hạn chế và bị giới hạn nghiêm ngặt</li>
+            <li>Đặc điểm cá nhân, nội dung gây hiểu lầm và cam kết quá mức</li>
+            <li>Chính sách theo ngành và Special Ad Categories</li>
+            <li>Trang đích, biểu mẫu thu thập dữ liệu và chất lượng nội dung</li>
+            <li>Account Quality và quy trình xin xem xét lại</li>
+            <li>Andromeda, checklist vận hành và hướng dẫn thiết lập bổ sung</li>
+          </ol>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <section class="section" id="offer">
     <div class="wrap offer">
       <div class="offer-main reveal">
         <span class="eyebrow">Mở khóa</span>
-        <h2>Đặt trước thư viện thực hành Facebook Ads 2026</h2>
-        <p>Truy cập toàn bộ 12 phần nội dung, các bài tra cứu nhanh và tài nguyên thực hành đi kèm.</p>
+        <h2>Đăng ký mua thư viện thực hành Facebook Ads 2026</h2>
+        <p>Truy cập toàn bộ 10 phần nội dung, các bài tra cứu nhanh và tài nguyên thực hành đi kèm.</p>
         <ul class="check-list">
           <li>Nền tảng Facebook Ads, mục tiêu, target, content và thực hành tạo chiến dịch.</li>
           <li>Pixel, CAPI, đọc chỉ số, remarketing, testing, scale và chính sách.</li>
@@ -2135,9 +2375,9 @@
         </ul>
       </div>
       <aside class="order-box reveal">
-        <h3>Đặt trước quyền truy cập</h3>
+        <h3>Đăng ký mua quyền truy cập</h3>
         <p>Điền thông tin để nhận hướng dẫn thanh toán và truy cập thư viện.</p>
-        <div class="price">299.000đ <small>Truy cập thư viện và tài nguyên thực hành đi kèm.</small></div>
+        <div class="price">399.000đ <small>Truy cập thư viện và tài nguyên thực hành đi kèm.</small></div>
         <form id="orderForm">
           <label>Họ tên
             <input id="name" name="name" autocomplete="name" placeholder="Ví dụ: Nguyễn Văn A" required>
@@ -2149,8 +2389,7 @@
             <input id="email" name="email" type="email" autocomplete="email" placeholder="email@gmail.com" required>
           </label>
           <div class="form-actions">
-            <button class="btn btn-primary" type="submit">Đặt trước quyền truy cập ngay</button>
-            <a class="btn btn-light" href="https://zalo.me/0367928921" target="_blank" rel="noopener">Nhắn Zalo để truy cập</a>
+            <button class="btn btn-primary" type="submit">Đăng ký mua quyền truy cập ngay</button>
           </div>
           <div class="status" id="status" aria-live="polite"></div>
         </form>
@@ -2166,7 +2405,7 @@
           <h2>Cần rõ trước khi mở khóa.</h2>
         </div>
       </div>
-      <div class="section-note-card reveal"><span>Câu hỏi thường gặp</span><p>Những điểm cần biết trước khi đặt trước: hình thức sản phẩm, cách truy cập, nội dung phù hợp và cách dùng thư viện.</p></div>
+      <div class="section-note-card reveal"><span>Câu hỏi thường gặp</span><p>Những điểm cần biết trước khi mua: hình thức sản phẩm, cách truy cập, nội dung phù hợp và cách dùng thư viện.</p></div>
       <div class="faq">
         <details class="reveal" open><summary>Đây là ebook hay khóa học?</summary><p>Đây là website kiến thức thực hành, tổ chức như thư viện tra cứu. Không phải PDF tĩnh và không bắt buộc xem theo thứ tự.</p></details>
         <details class="reveal"><summary>Người mới dùng được không?</summary><p>Có. Nội dung đi từ nền tảng đến thực hành, giúp anh/chị bắt đầu từ phần dễ hiểu nhất.</p></details>
@@ -2188,16 +2427,16 @@
     </div>
   </section>
 
-  <div class="sticky-cta" aria-label="Đặt trước thư viện Facebook Ads 2026">
+  <div class="sticky-cta" aria-label="Đăng ký mua thư viện Facebook Ads 2026">
     <div class="wrap sticky-cta-inner">
       <div class="sticky-cta-info">
         <span class="sticky-cta-icon"><img src="/brand/ta-logo.svg" alt="The Anh Marketing"></span>
         <div>
           <strong>Thư viện kiến thức &amp; thực hành Facebook Ads</strong>
-          <span>Giá gốc <b class="sticky-cta-original">799.000đ</b> - đặt trước <b class="sticky-cta-price">299.000đ</b></span>
+          <span>Giá gốc <b class="sticky-cta-original">799.000đ</b> - hôm nay <b class="sticky-cta-price">399.000đ</b></span>
         </div>
       </div>
-      <a class="btn btn-gold" href="#offer">Đặt trước ngay →</a>
+      <a class="btn btn-gold" href="#offer">Đăng ký mua ngay →</a>
     </div>
   </div>
 
@@ -2212,9 +2451,7 @@
       ["Phần 7", "Đọc số và tối ưu", "CPM, CTR, CPC, inbox, lead, chuyển đổi và quyết định tắt, sửa, giữ, scale."],
       ["Phần 8", "Remarketing", "Chạy lại người xem video, nhắn tin, vào website, thêm giỏ hàng hoặc đã mua."],
       ["Phần 9", "Testing và scale", "Test target, content, creative, offer và tối ưu sau 24 giờ, 72 giờ, 7 ngày."],
-      ["Phần 10", "Theo ngành", "Tư duy triển khai cho shop, spa, dịch vụ, bất động sản, giáo dục, coaching."],
-      ["Phần 11", "Chính sách và lỗi", "Tránh vi phạm, xử lý quảng cáo bị từ chối, lỗi thanh toán và tài khoản bị hạn chế."],
-      ["Phần 12", "Báo cáo vận hành", "Báo cáo ngày, tuần, tháng, benchmark, đặt tên campaign và lịch tối ưu."]
+      ["Phần 10", "Chính sách Facebook & hướng dẫn rời rạc", "Chính sách Meta, tài khoản, trang đích, hóa đơn, ChatGPT và trợ lý bán hàng Messenger."]
     ];
 
     document.getElementById("partsGrid").innerHTML = parts.map(([no, title]) => `
@@ -2227,43 +2464,51 @@
     const course = {
       slug: "ebook-facebook-ads-2026",
       title: "Thư viện kiến thức Facebook Ads 2026",
-      plan: "full-access-299",
-      amount: 299000
+      plan: "full-access-399",
+      amount: 399000
     };
 
     const previewPages = [
-      { page: 1, kind: "image", title: "Bìa Facebook Ads 2026", label: "Bìa", terms: ["bìa", "facebook ads 2026"] },
-      { page: 2, kind: "image", title: "Bản đồ 12 phần nội dung", label: "12 phần", terms: ["mục lục", "12 phần", "bản đồ"] },
-      { page: 3, kind: "image", title: "Các nhóm vận hành chính", label: "Vận hành", terms: ["12 phần", "nội dung", "vận hành"] },
-      { page: 4, kind: "image", title: "Testing, ngành, chính sách và báo cáo", label: "Tối ưu", terms: ["mục lục", "bản đồ", "các phần"] },
-      { page: 5, kind: "image", title: "Trang mở đầu phần 1", label: "Mở đầu", terms: ["phần 1", "hiểu về"] },
-      { page: 6, kind: "text", title: "Mục tiêu của phần 1", label: "Mục tiêu", terms: ["mục tiêu phần 1", "học gì", "nền tảng"], body: "Phần này giúp anh/chị hiểu Facebook Ads ở mức nền tảng trước khi đi vào thao tác. Khi hiểu hệ thống, anh/chị sẽ biết vì sao quảng cáo hiệu quả hoặc thất bại, thay vì chỉ nhìn nút bật tắt.", bullets: ["Biết Facebook Ads hoạt động theo hệ thống phân phối và đấu giá.", "Hiểu quảng cáo tính tiền theo hiển thị, tương tác hoặc kết quả tùy mục tiêu.", "Nắm các thành phần cơ bản: Fanpage, Business Suite, tài khoản quảng cáo, Campaign - Ad Set - Ad.", "Có nền để đọc tiếp các phần sau trong thư viện."] },
-      { page: 7, kind: "text", title: "Facebook Ads là gì?", label: "Ads là gì", terms: ["facebook ads là gì", "doanh nghiệp"], body: "Facebook Ads là hệ thống quảng cáo giúp doanh nghiệp đưa thông điệp đến đúng nhóm người có khả năng quan tâm trên Facebook, Instagram, Messenger và các vị trí hiển thị của Meta.", bullets: ["Không chỉ là bài viết được đẩy tiền, mà là một hệ thống phân phối có mục tiêu, dữ liệu và thuật toán học.", "Doanh nghiệp cần chạy ads khi muốn tăng nhận biết, kéo tương tác, tạo tin nhắn, thu lead hoặc tạo chuyển đổi.", "Kết quả phụ thuộc vào mục tiêu, nội dung, dữ liệu, ngân sách và cách đọc số sau khi chạy."] },
-      { page: 8, kind: "image", title: "Luồng quảng cáo từ hiển thị đến mua hàng", label: "Luồng ads", terms: ["tin nhắn", "mua hàng", "nhấp", "tương tác"] },
-      { page: 9, kind: "text", title: "Cách Facebook tính tiền", label: "Tính tiền", terms: ["tính tiền", "cpm", "chi phí", "hiển thị"], body: "Facebook không tính tiền đơn giản theo việc có đơn hay không. Hệ thống thường tính dựa trên lượt hiển thị, sau đó tối ưu phân phối theo mục tiêu chiến dịch anh/chị chọn.", bullets: ["CPM cho biết chi phí để quảng cáo hiển thị 1.000 lần.", "CPC, CTR, inbox, lead hoặc chuyển đổi là chỉ số để đọc tiếp chất lượng sau hiển thị.", "Giá rẻ chưa chắc hiệu quả nếu khách không đúng nhu cầu hoặc không đi tiếp trong phễu.", "Muốn giảm chi phí bền hơn cần tối ưu nội dung, tệp, mục tiêu và trải nghiệm sau click."] },
-      { page: 10, kind: "image", title: "CPM là gì?", label: "CPM", terms: ["cpm", "1000 hiển thị"] },
-      { page: 11, kind: "text", title: "Hệ thống đấu giá hoạt động thế nào?", label: "Đấu giá", terms: ["đấu giá", "giá thầu", "phân phối"], body: "Mỗi lần có cơ hội hiển thị quảng cáo, Meta sẽ so sánh nhiều nhà quảng cáo cùng muốn tiếp cận người dùng đó. Quảng cáo thắng không chỉ vì trả nhiều tiền hơn.", bullets: ["Hệ thống đánh giá giá thầu, khả năng người dùng hành động và chất lượng quảng cáo.", "Nội dung liên quan, trải nghiệm tốt và tệp phù hợp có thể giúp phân phối hiệu quả hơn.", "Nếu quảng cáo bị phản hồi xấu hoặc nội dung yếu, chi phí có thể tăng dù ngân sách không đổi."] },
-      { page: 12, kind: "image", title: "Cơ chế đấu giá quảng cáo Meta", label: "Sơ đồ đấu giá", terms: ["đấu giá", "total value", "giá thầu"] },
-      { page: 13, kind: "text", title: "Hệ sinh thái Meta Ads", label: "Hệ sinh thái", terms: ["meta ads", "business suite", "fanpage", "instagram"], body: "Trước khi chạy quảng cáo, anh/chị cần phân biệt các tài sản trong hệ sinh thái Meta. Mỗi tài sản có vai trò riêng và ảnh hưởng trực tiếp đến việc quản lý, đo lường, phân quyền.", bullets: ["Fanpage và Instagram là nơi thương hiệu tương tác với khách hàng.", "Business Suite hỗ trợ quản lý nội dung, tin nhắn và một phần vận hành.", "Ads Manager là nơi tạo chiến dịch, nhóm quảng cáo, mẫu quảng cáo và xem báo cáo.", "Business Settings dùng để quản trị tài sản, phân quyền, Pixel, domain và tài khoản quảng cáo."] },
-      { page: 14, kind: "image", title: "Business Suite, Ads Manager và Business Settings", label: "Công cụ", terms: ["ads manager", "business settings"] },
-      { page: 15, kind: "image", title: "Fanpage trong hệ thống Meta Ads", label: "Fanpage", terms: ["fanpage"] },
-      { page: 16, kind: "image", title: "Instagram và Messenger", label: "IG/Messenger", terms: ["instagram", "messenger"] },
-      { page: 17, kind: "image", title: "Business Suite", label: "Suite", terms: ["business suite"] },
-      { page: 18, kind: "text", title: "Tài khoản quảng cáo cá nhân", label: "TK cá nhân", terms: ["tài khoản cá nhân"], body: "Tài khoản quảng cáo cá nhân thường dễ bắt đầu nhưng khó quản trị lâu dài khi doanh nghiệp có nhiều người cùng vận hành hoặc cần phân quyền rõ.", bullets: ["Phù hợp để học và thử nghiệm ở giai đoạn rất nhỏ.", "Dễ phụ thuộc vào một người nếu không có cấu trúc tài sản rõ ràng.", "Khi doanh nghiệp tăng quy mô, nên quản lý qua Business Manager để an toàn hơn."] },
-      { page: 19, kind: "image", title: "Giao diện tài khoản quảng cáo cá nhân", label: "Giao diện", terms: ["tài khoản cá nhân", "giao diện"] },
-      { page: 20, kind: "text", title: "Tài khoản quảng cáo doanh nghiệp", label: "TK doanh nghiệp", terms: ["doanh nghiệp", "business manager"], body: "Tài khoản quảng cáo doanh nghiệp giúp quản lý tài sản, phân quyền và đo lường bài bản hơn. Đây là cấu trúc nên dùng khi ads trở thành kênh vận hành nghiêm túc.", bullets: ["Quản lý Fanpage, Pixel, domain, tài khoản quảng cáo và người dùng trong một hệ thống.", "Có thể phân quyền cho nhân sự, freelancer hoặc agency mà không giao tài sản cá nhân.", "Dễ kiểm soát bảo mật, lịch sử thao tác và rủi ro khi mở rộng đội triển khai."] },
-      { page: 21, kind: "text", title: "Hướng dẫn tạo Business Manager", label: "Tạo BM", terms: ["tạo business manager"], body: "Quy trình tạo Business Manager cần đi từ đúng tài khoản, đúng thông tin doanh nghiệp và kiểm tra lại quyền truy cập sau khi tạo.", bullets: ["Vào trang business của Meta để bắt đầu tạo tài khoản.", "Điền tên doanh nghiệp, tên người quản trị và email làm việc.", "Chọn đúng trang quản lý tài sản doanh nghiệp.", "Kiểm tra lại quyền truy cập, Fanpage và tài khoản quảng cáo sau khi tạo."] },
-      { page: 22, kind: "text", title: "Tạo tài khoản quảng cáo doanh nghiệp", label: "Tạo TKQC", terms: ["tạo tài khoản quảng cáo"], body: "Sau khi có Business Manager, anh/chị có thể tạo tài khoản quảng cáo thuộc doanh nghiệp để vận hành ổn định hơn.", bullets: ["Mở Business Settings và vào khu vực tài khoản quảng cáo.", "Chọn tạo tài khoản mới hoặc thêm tài khoản đang có.", "Đặt tên dễ quản lý theo thương hiệu hoặc thị trường.", "Kiểm tra múi giờ, tiền tệ và người được phân quyền trước khi chạy."] },
-      { page: 23, kind: "image", title: "Cấp quyền truy cập tài khoản quảng cáo", label: "Cấp quyền", terms: ["cấp quyền", "quyền truy cập"] },
-      { page: 24, kind: "image", title: "Kiểm tra tài khoản quảng cáo vừa tạo", label: "Kiểm tra", terms: ["kiểm tra tài khoản"] },
-      { page: 25, kind: "text", title: "Cấu trúc Campaign - Ad Set - Ad", label: "Cấu trúc", terms: ["campaign", "ad set", "ad", "cấu trúc"], body: "Facebook Ads được tổ chức theo ba tầng. Hiểu đúng ba tầng này giúp anh/chị biết mình đang chỉnh mục tiêu, chỉnh tệp hay chỉnh nội dung quảng cáo.", bullets: ["Campaign là cấp chiến dịch, nơi chọn mục tiêu chính.", "Ad Set là cấp nhóm quảng cáo, nơi quyết định tệp, ngân sách, lịch chạy và vị trí hiển thị.", "Ad là mẫu quảng cáo, gồm hình ảnh/video, nội dung, tiêu đề và lời kêu gọi hành động.", "Khi tối ưu, cần biết vấn đề nằm ở tầng nào trước khi sửa."] },
-      { page: 26, kind: "image", title: "Sơ đồ Campaign - Ad Set - Ad", label: "Sơ đồ cấu trúc", terms: ["campaign", "ad set"] },
-      { page: 27, kind: "image", title: "Ví dụ cấu trúc chiến dịch trong Ads Manager", label: "Ví dụ", terms: ["ads manager", "chiến dịch"] },
-      { page: 28, kind: "text", title: "Những hiểu lầm phổ biến khi mới chạy ads", label: "Hiểu lầm", terms: ["hiểu lầm", "mới chạy"], body: "Người mới thường nghĩ chạy ads là chọn vài sở thích, bật ngân sách và chờ đơn. Thực tế, kết quả đến từ toàn bộ hệ thống: mục tiêu, tệp, content, dữ liệu và tối ưu.", bullets: ["Không phải target càng chi tiết càng tốt trong mọi trường hợp.", "Nhiều inbox không đồng nghĩa chiến dịch có lợi nhuận.", "Tắt mở theo cảm tính dễ làm mất dữ liệu học máy.", "Một mẫu quảng cáo tốt ở ngành này chưa chắc hiệu quả ở ngành khác."] },
-      { page: 29, kind: "text", title: "Tổng kết phần 1", label: "Tổng kết", terms: ["tổng kết", "hết phần"], body: "Kết thúc phần 1, anh/chị cần nhìn Facebook Ads như một hệ thống vận hành chứ không phải một nút bật tắt.", bullets: ["Hiểu quảng cáo được phân phối qua đấu giá và dữ liệu.", "Biết vai trò của các tài sản Meta trong vận hành ads.", "Nắm cấu trúc Campaign - Ad Set - Ad để không sửa sai tầng.", "Sẵn sàng đi tiếp sang phần mục tiêu và hình thức quảng cáo."] }
+      { page: 1, kind: "image", title: "Bìa Chương 1", label: "Bìa", terms: ["bìa", "chương 1", "hiểu về facebook ads"] },
+      { page: 2, kind: "image", title: "Mục lục Chương 1", label: "Mục lục", terms: ["mục lục", "đề mục", "chương 1"] },
+      { page: 3, kind: "image", title: "Mở đầu Chương 1", label: "Mở đầu", terms: ["mở đầu", "nền tảng"] },
+      { page: 4, kind: "image", title: "Facebook Ads là gì và vì sao doanh nghiệp cần chạy quảng cáo", label: "Ads là gì", terms: ["facebook ads là gì", "doanh nghiệp"] },
+      { page: 5, kind: "image", title: "Vai trò của Facebook Ads trong kinh doanh", label: "Vai trò", terms: ["vai trò", "kinh doanh", "quảng cáo facebook"] },
+      { page: 6, kind: "image", title: "Facebook Ads trong hành trình khách hàng", label: "Hành trình", terms: ["hành trình khách hàng", "nhận biết"] },
+      { page: 7, kind: "image", title: "Khi nào doanh nghiệp cần chạy quảng cáo", label: "Khi cần chạy", terms: ["khi nào chạy", "doanh nghiệp cần chạy"] },
+      { page: 8, kind: "image", title: "Tư duy nền tảng trước khi chạy", label: "Tư duy", terms: ["tư duy", "nền tảng"] },
+      { page: 9, kind: "image", title: "Cách Facebook tính tiền nhà quảng cáo", label: "Tính tiền", terms: ["tính tiền", "cpm", "chi phí", "hiển thị"] },
+      { page: 10, kind: "image", title: "CPM và chi phí hiển thị", label: "CPM", terms: ["cpm", "1000 hiển thị"] },
+      { page: 11, kind: "image", title: "Các yếu tố làm chi phí thay đổi", label: "Chi phí", terms: ["chi phí", "giá quảng cáo"] },
+      { page: 12, kind: "image", title: "Cách hệ thống đấu giá quảng cáo hoạt động", label: "Đấu giá", terms: ["đấu giá", "giá thầu", "phân phối"] },
+      { page: 13, kind: "image", title: "Giá trị tổng trong phiên đấu giá", label: "Total value", terms: ["total value", "giá trị tổng"] },
+      { page: 14, kind: "image", title: "Vì sao quảng cáo thắng phiên đấu giá", label: "Thắng đấu giá", terms: ["thắng đấu giá", "chất lượng quảng cáo"] },
+      { page: 15, kind: "image", title: "Hệ sinh thái Meta Ads", label: "Meta Ads", terms: ["meta ads", "hệ sinh thái"] },
+      { page: 16, kind: "image", title: "Các tài sản trong hệ sinh thái Meta", label: "Tài sản", terms: ["tài sản meta", "ads manager"] },
+      { page: 17, kind: "image", title: "Quản lý tài sản quảng cáo", label: "Quản lý", terms: ["quản lý tài sản", "business settings"] },
+      { page: 18, kind: "image", title: "Fanpage, Instagram, Messenger và Business Suite", label: "Fanpage", terms: ["fanpage", "instagram", "messenger", "business suite"] },
+      { page: 19, kind: "image", title: "Fanpage và Instagram trong vận hành ads", label: "Fanpage/IG", terms: ["fanpage", "instagram"] },
+      { page: 20, kind: "image", title: "Messenger và Business Suite", label: "Messenger", terms: ["messenger", "business suite"] },
+      { page: 21, kind: "image", title: "Luồng quản lý kênh Meta", label: "Luồng quản lý", terms: ["quản lý kênh", "meta"] },
+      { page: 22, kind: "image", title: "Chuẩn bị trước khi tạo tài sản quảng cáo", label: "Chuẩn bị", terms: ["chuẩn bị", "tài sản quảng cáo"] },
+      { page: 23, kind: "image", title: "Tài khoản quảng cáo cá nhân", label: "TK cá nhân", terms: ["tài khoản quảng cáo cá nhân", "tkqc cá nhân"] },
+      { page: 24, kind: "image", title: "Ưu và nhược điểm tài khoản cá nhân", label: "Cá nhân", terms: ["tài khoản cá nhân", "ưu nhược điểm"] },
+      { page: 25, kind: "image", title: "Khi nào dùng tài khoản cá nhân", label: "Khi dùng", terms: ["tài khoản cá nhân", "người mới"] },
+      { page: 26, kind: "image", title: "Rủi ro khi phụ thuộc tài khoản cá nhân", label: "Rủi ro", terms: ["rủi ro", "tài khoản cá nhân"] },
+      { page: 27, kind: "image", title: "Tài khoản quảng cáo doanh nghiệp", label: "TK doanh nghiệp", terms: ["tài khoản quảng cáo doanh nghiệp", "business manager"] },
+      { page: 28, kind: "image", title: "Quản lý doanh nghiệp trong Meta", label: "Business", terms: ["business manager", "doanh nghiệp"] },
+      { page: 29, kind: "image", title: "Phân quyền và bảo mật tài sản", label: "Phân quyền", terms: ["phân quyền", "bảo mật"] },
+      { page: 30, kind: "image", title: "Khi nào cần tài khoản doanh nghiệp", label: "Khi cần BM", terms: ["tài khoản doanh nghiệp", "mở rộng"] },
+      { page: 31, kind: "image", title: "Cấu trúc Campaign - Ad Set - Ad", label: "Cấu trúc", terms: ["campaign", "ad set", "ad", "cấu trúc"] },
+      { page: 32, kind: "image", title: "Campaign là gì", label: "Campaign", terms: ["campaign", "chiến dịch"] },
+      { page: 33, kind: "image", title: "Ad Set là gì", label: "Ad Set", terms: ["ad set", "nhóm quảng cáo"] },
+      { page: 34, kind: "image", title: "Ad là gì", label: "Ad", terms: ["ad", "mẫu quảng cáo"] },
+      { page: 35, kind: "image", title: "Những hiểu lầm phổ biến khi mới chạy quảng cáo", label: "Hiểu lầm", terms: ["hiểu lầm", "mới chạy", "sai lầm"] },
+      { page: 36, kind: "image", title: "Sai lầm thường gặp khi đọc kết quả", label: "Sai lầm", terms: ["sai lầm", "đọc kết quả"] },
+      { page: 37, kind: "image", title: "Tổng kết Chương 1", label: "Tổng kết", terms: ["tổng kết", "hết chương 1"] }
     ];
     const keywordPages = previewPages.flatMap((item) => item.terms.map((term) => ({ term, page: item.page })));
-    let currentPreviewPage = 7;
+    let currentPreviewPage = 1;
     const pageFrame = document.getElementById("ebookPageFrame");
     const pageIndicator = document.getElementById("pageIndicator");
     const prevPageButton = document.getElementById("prevPage");
@@ -2285,7 +2530,7 @@
       currentPreviewPage = currentPage.page;
       pageFrame.classList.remove("is-text");
       pageFrame.innerHTML = `<img id="ebookMainImage" src="/ebook-facebook-ads-2026/phan-1/${currentPage.page}.png" alt="Trang ${currentPage.page} trong phần 1 ebook Facebook Ads 2026">`;
-      pageIndicator.textContent = `Trang ${String(currentPage.page).padStart(2, "0")}/29`;
+      pageIndicator.textContent = `Trang ${String(currentPage.page).padStart(2, "0")}/37`;
       prevPageButton.disabled = currentPage.page <= 1;
       nextPageButton.disabled = currentPage.page >= previewPages.length;
     }
@@ -2357,7 +2602,7 @@
 
       button.disabled = true;
       button.textContent = "Đang tạo mã thanh toán...";
-      statusEl.textContent = "Đang tạo đơn thanh toán 299.000đ cho thư viện Facebook Ads 2026.";
+      statusEl.textContent = "Đang tạo đơn thanh toán 399.000đ cho thư viện Facebook Ads 2026.";
 
       try {
         const response = await fetch("/api/orders", {

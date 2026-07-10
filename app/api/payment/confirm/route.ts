@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { sendMetaPurchaseEvent } from "@/lib/meta/conversions-api";
-import { syncOrderToGoogleSheet } from "@/lib/notifications/google-sheets";
+import { syncOrderToGoogleSheetWithActivity } from "@/lib/notifications/google-sheets-order-sync";
 import { verifySepayApiKey } from "@/lib/payments/sepay";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import { cleanEmail, cleanPhone, cleanText, isValidEmail, isValidPhone } from "@/lib/security/validation";
@@ -109,7 +109,7 @@ export async function POST(request: Request) {
       }
     }
 
-    await syncOrderToGoogleSheet(confirmation.order, {
+    await syncOrderToGoogleSheetWithActivity(confirmation.order, {
       source: "Manual payment confirm",
       landingPageUrl: `${siteConfig.url}/thanh-toan/${encodeURIComponent(confirmation.order.orderCode)}`,
     });

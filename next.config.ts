@@ -77,6 +77,11 @@ const nextConfig: NextConfig = {
         destination: "/academy/ebook-facebook-ads-2026",
         permanent: false,
       },
+      {
+        source: "/academy/ebook-facebook-ads-2026-premium.html",
+        destination: "/academy/ebook-facebook-ads-2026-premium",
+        permanent: false,
+      },
     ];
   },
   async rewrites() {
@@ -88,6 +93,10 @@ const nextConfig: NextConfig = {
       {
         source: "/academy/ebook-facebook-ads-2026",
         destination: "/academy/ebook-facebook-ads-2026.html",
+      },
+      {
+        source: "/academy/ebook-facebook-ads-2026-premium",
+        destination: "/academy/ebook-facebook-ads-2026-premium.html",
       },
       {
         source: "/academy/bo-kit-agent-doanh-nghiep",

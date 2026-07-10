@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import { trackMarketingEvent } from "@/lib/tracking/events";
 import type { PaymentOrder } from "@/services/orderService";
 
+const facebookEbookCourseSlug = "ebook-facebook-ads-2026";
+const facebookEbookThankYouPath = "/cam-on-thanh-toan/ebook-facebook-ads-2026";
+const facebookAdsCourseSlug = "facebook-ads-2026";
+const facebookAdsThankYouPath = "/cam-on-thanh-toan/facebook-ads-2026";
+
 function formatCountdown(totalSeconds: number) {
   const safe = Math.max(0, totalSeconds);
   const minutes = Math.floor(safe / 60)
@@ -19,6 +24,32 @@ function formatCountdown(totalSeconds: number) {
 function getContentIds(order: PaymentOrder) {
   const itemSlugs = order.orderItems.map((item) => item.slug).filter(Boolean);
   return itemSlugs.length ? itemSlugs : [order.courseSlug].filter(Boolean);
+}
+
+function isFacebookEbookOrder(order: PaymentOrder) {
+  return (
+    order.courseSlug === facebookEbookCourseSlug ||
+    order.orderItems.some((item) => item.slug === facebookEbookCourseSlug)
+  );
+}
+
+function isFacebookAdsCourseOrder(order: PaymentOrder) {
+  return (
+    order.courseSlug === facebookAdsCourseSlug ||
+    order.orderItems.some((item) => item.slug === facebookAdsCourseSlug)
+  );
+}
+
+function getPaidRedirectPath(order: PaymentOrder) {
+  if (isFacebookEbookOrder(order)) {
+    return facebookEbookThankYouPath;
+  }
+
+  if (isFacebookAdsCourseOrder(order)) {
+    return facebookAdsThankYouPath;
+  }
+
+  return "/dashboard";
 }
 
 export function PaymentStatusPoller({
@@ -78,13 +109,15 @@ export function PaymentStatusPoller({
 
     if (order.status === "paid") {
       const redirectTimer = window.setTimeout(() => {
-        router.push("/dashboard");
+        router.push(getPaidRedirectPath(order));
       }, 4500);
       return () => window.clearTimeout(redirectTimer);
     }
 
     const timer = window.setInterval(async () => {
-      const response = await fetch(`/api/orders/${order.orderCode}`, { cache: "no-store" });
+      const response = await fetch(`/api/orders/${order.orderCode}`, {
+        cache: "no-store",
+      });
 
       if (!response.ok) {
         return;
@@ -105,6 +138,11 @@ export function PaymentStatusPoller({
   }, [disablePolling, order, router]);
 
   const paid = order.status === "paid";
+  const paidStatusMessage = isFacebookEbookOrder(order)
+    ? "SePay đã báo tiền vào. Hệ thống sẽ gửi email tài khoản và link ebook. Đang chuyển bạn tới trang hướng dẫn nhận ebook..."
+    : isFacebookAdsCourseOrder(order)
+      ? "SePay đã báo tiền vào. Hệ thống sẽ gửi email tài khoản học viên. Đang chuyển bạn tới trang hướng dẫn vào khóa học Facebook Ads..."
+    : "SePay đã báo tiền vào. Hệ thống sẽ gửi email hướng dẫn, nếu chưa thấy hãy kiểm tra Spam hoặc Promotions/Khuyến mãi trước khi liên hệ hỗ trợ. Đang chuyển bạn tới khu học viên...";
 
   return (
     <div
@@ -118,20 +156,38 @@ export function PaymentStatusPoller({
             : "rounded-xl border border-white/10 bg-white/8 p-4"
       }
     >
-      <p className={isLight ? "text-sm font-bold text-slate-500" : "text-sm font-bold text-white/55"}>Trạng thái</p>
+      <p
+        className={
+          isLight ? "text-sm font-bold text-slate-500" : "text-sm font-bold text-white/55"
+        }
+      >
+        Trạng thái
+      </p>
       <p className="mt-1 text-2xl font-black tracking-[-0.03em]">
         {paid ? "Đã nhận thanh toán" : "Đang chờ chuyển khoản"}
       </p>
-      <p className={isLight ? "mt-2 text-sm font-semibold leading-6 text-slate-600" : "mt-2 text-sm leading-6 text-white/60"}>
+      <p
+        className={
+          isLight
+            ? "mt-2 text-sm font-semibold leading-6 text-slate-600"
+            : "mt-2 text-sm leading-6 text-white/60"
+        }
+      >
         {paid
-          ? "SePay đã báo tiền vào. Hệ thống sẽ gửi email hướng dẫn, nếu chưa thấy hãy kiểm tra Spam hoặc Promotions/Khuyến mãi trước khi liên hệ hỗ trợ. Đang chuyển bạn tới khu học viên..."
+          ? paidStatusMessage
           : disablePolling
             ? "Đây là bản demo giao diện checkout. Khi tạo đơn thật từ form đăng ký, hệ thống sẽ tự đối soát SePay theo mã đơn mới."
             : "Trang này tự kiểm tra mỗi vài giây. Sau khi chuyển khoản thành công, trạng thái sẽ đổi tự động."}
       </p>
 
       {!paid && !disablePolling ? (
-        <div className={isLight ? "mt-3 inline-flex items-center rounded-full border border-blue-100 bg-white px-3 py-1 text-xs font-black text-blue-600" : "mt-3 inline-flex items-center rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-bold text-white/65"}>
+        <div
+          className={
+            isLight
+              ? "mt-3 inline-flex items-center rounded-full border border-blue-100 bg-white px-3 py-1 text-xs font-black text-blue-600"
+              : "mt-3 inline-flex items-center rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-bold text-white/65"
+          }
+        >
           Thời gian giữ đơn: {formatCountdown(secondsLeft)}
         </div>
       ) : null}

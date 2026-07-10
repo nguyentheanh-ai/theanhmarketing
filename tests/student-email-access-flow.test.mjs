@@ -54,6 +54,17 @@ const paidOrder = {
   paymentEmailLastError: null,
 };
 
+const ebookPaidOrder = {
+  ...paidOrder,
+  id: "order-ebook-1",
+  orderCode: "TAMEBOOK123",
+  courseSlug: "ebook-facebook-ads-2026",
+  courseTitle: "Internal Ebook Title Should Not Leak",
+  amount: 399000,
+  amountLabel: "399.000d",
+  orderItems: [],
+};
+
 test("student access landing page is public and does not auto-redirect", () => {
   const page = read("app/vao-khoa-hoc/page.tsx");
 
@@ -93,13 +104,55 @@ test("paid student emails use the official access landing link", () => {
   }
 });
 
+test("ebook payment email sends clean reader and terms-gated PDF download links", () => {
+  const { buildPaymentSuccessEmailPayload } = loadTsModule("lib/notifications/payment-success-email.ts");
+
+  const payload = buildPaymentSuccessEmailPayload(ebookPaidOrder, {
+    siteUrl: "https://www.theanhmarketing.com",
+    account: {
+      email: "student@example.com",
+      temporaryPassword: "TempPass123",
+    },
+  });
+
+  assert.match(payload.subject, /Ebook Facebook Ads 2026/);
+  assert.match(payload.html, /thu-vien%2Ffacebook-ads/);
+  assert.match(payload.html, /thu-vien%2Ffacebook-ads%2Fpdf/);
+  assert.match(payload.text, /https:\/\/www\.theanhmarketing\.com\/thu-vien\/facebook-ads/);
+  assert.match(payload.text, /https:\/\/www\.theanhmarketing\.com\/thu-vien\/facebook-ads\/pdf/);
+  assert.match(payload.text, /Trước khi tải PDF/);
+  assert.doesNotMatch(payload.html, /Truy cập khu vực học viên/);
+  assert.doesNotMatch(payload.html, /Thư viện Facebook Ads/);
+  assert.doesNotMatch(payload.html, /zalo\.me\/g\/ye0dcyowbepyhnrtyacr/);
+  assert.doesNotMatch(`${payload.subject}\n${payload.html}\n${payload.text}`, /Ã|Â|Ä|Æ|â|ðŸ/);
+});
+
+test("ebook pending payment email uses clean Vietnamese copy", () => {
+  const { buildPendingPaymentEmailPayload } = loadTsModule("lib/notifications/pending-payment-email.ts");
+  const payload = buildPendingPaymentEmailPayload(
+    {
+      ...ebookPaidOrder,
+      status: "pending",
+      paidAt: null,
+      orderCode: "TAMEBOOKPENDING",
+    },
+    { siteUrl: "https://www.theanhmarketing.com" },
+  );
+
+  assert.match(payload.subject, /Ebook Facebook Ads 2026 - Chưa thanh toán/);
+  assert.match(payload.html, /Mở trang thanh toán/);
+  assert.match(payload.text, /Đơn Ebook Facebook Ads 2026 chưa thanh toán/);
+  assert.match(payload.text, /https:\/\/www\.theanhmarketing\.com\/thanh-toan\/TAMEBOOKPENDING/);
+  assert.doesNotMatch(`${payload.subject}\n${payload.html}\n${payload.text}`, /Ã|Â|Ä|Æ|â|ðŸ/);
+});
+
 test("canonical site config and proxy prefer non-www HTTPS", () => {
   const site = read("data/site.ts");
   const proxy = read("proxy.ts");
   const envExample = read(".env.example");
 
   assert.match(site, /url:\s*"https:\/\/theanhmarketing\.com"/);
-  assert.match(envExample, /APP_BASE_URL=https:\/\/theanhmarketing\.com/);
+  assert.match(envExample, /^APP_BASE_URL=$/m);
   assert.match(proxy, /canonicalHost\s*=\s*"theanhmarketing\.com"/);
   assert.match(proxy, /ENABLE_WWW_TO_APEX_REDIRECT/);
   assert.match(proxy, /www\.theanhmarketing\.com/);
@@ -113,8 +166,19 @@ test("student access landing is exempt from frame blocking headers", () => {
 
   assert.match(proxy, /function isStudentAccessBridgeRoute/);
   assert.match(proxy, /stripFrameAncestors/);
-  assert.match(proxy, /!isStudentAccessBridgeRoute\(request\.nextUrl\.pathname\)[\s\S]*?X-Frame-Options/);
+  assert.match(proxy, /!isStudentAccessBridgeRoute\(pathname\)[\s\S]*?X-Frame-Options/);
   assert.doesNotMatch(nextConfig, /key:\s*"X-Frame-Options"/);
+});
+
+test("admin routes allow canonical apex and www ancestors without X-Frame-Options", () => {
+  const proxy = read("proxy.ts");
+
+  assert.match(proxy, /function isAdminRoute/);
+  assert.match(proxy, /pathname === "\/admin" \|\| pathname\.startsWith\("\/admin\/"\)/);
+  assert.match(proxy, /function allowCanonicalFrameAncestors/);
+  assert.match(proxy, /frame-ancestors 'self' https:\/\/\$\{canonicalHost\} https:\/\/\$\{legacyHost\}/);
+  assert.match(proxy, /isAdminRoute\(pathname\)[\s\S]*?allowCanonicalFrameAncestors\(contentSecurityPolicy\)/);
+  assert.match(proxy, /!isStudentAccessBridgeRoute\(pathname\) && !isAdminRoute\(pathname\)[\s\S]*?X-Frame-Options/);
 });
 
 test("next parameter rejects external and encoded external redirects", () => {

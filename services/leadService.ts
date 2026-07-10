@@ -131,6 +131,10 @@ function isOrderOnlyLeadId(leadId: string) {
   return leadId.startsWith(orderOnlyLeadIdPrefix);
 }
 
+function isOrderOnlyLead(lead: Pick<LeadItem, "id">) {
+  return isOrderOnlyLeadId(lead.id ?? "");
+}
+
 function getOrderCodeFromOrderOnlyLeadId(leadId: string) {
   return leadId.slice(orderOnlyLeadIdPrefix.length).trim();
 }
@@ -681,23 +685,44 @@ export async function recordLeadEmailLog(input: {
   return error ? { ok: false, error: error.message } : { ok: true, error: null };
 }
 
-export async function resyncUnsyncedLeadsToGoogleSheet() {
+export type LeadSheetBackfillOptions = {
+  limit?: number;
+  force?: boolean;
+};
+
+export async function resyncUnsyncedLeadsToGoogleSheet(options: LeadSheetBackfillOptions = {}) {
+  return resyncLeadsToGoogleSheet(options);
+}
+
+export async function resyncLeadsToGoogleSheet(options: LeadSheetBackfillOptions = {}) {
+  const requestedLimit = Number.isFinite(options.limit) ? options.limit : undefined;
+  const shouldLimit = typeof requestedLimit === "number";
   const leads = await getLeads({ includeFallback: false });
-  let synced = 0;
-  let skipped = 0;
-  let failed = 0;
+  const sheetEligibleLeads = leads.filter((lead) => !isOrderOnlyLead(lead));
+  const filteredLeads = options.force
+    ? sheetEligibleLeads
+    : sheetEligibleLeads.filter((lead) => !lead.googleSheetSyncedAt || !!lead.googleSheetSyncError);
+  const resolvedLimit = options.force ? (shouldLimit ? requestedLimit : filteredLeads.length) : Math.max(1, Math.min(shouldLimit ? requestedLimit : 500, 500));
+  const limitedLeads = filteredLeads.slice(0, Math.min(resolvedLimit, 10000));
+
+  const result = {
+    scanned: sheetEligibleLeads.length,
+    orderOnlySkipped: leads.length - sheetEligibleLeads.length,
+    alreadySynced: sheetEligibleLeads.length - filteredLeads.length,
+    attempted: 0,
+    synced: 0,
+    skipped: 0,
+    failed: 0,
+    errors: [] as Array<{ leadId?: string; error: string }>,
+  };
   const errors: Array<{ leadId?: string; error: string }> = [];
 
-  for (const lead of leads) {
-    if (lead.googleSheetSyncedAt && !lead.googleSheetSyncError) {
-      skipped += 1;
-      continue;
-    }
+  for (const lead of limitedLeads) {
+    result.attempted += 1;
+    const sheetSync = await syncLeadToGoogleSheet(lead, { source: lead.source });
 
-    const result = await syncLeadToGoogleSheet(lead, { source: lead.source });
-
-    if (result.ok && !result.skipped) {
-      synced += 1;
+    if (sheetSync.ok && !sheetSync.skipped) {
+      result.synced += 1;
       await updateLeadSheetState(lead.id, { googleSheetSyncedAt: new Date().toISOString(), googleSheetSyncError: null });
       await logStudentActivity({
         leadId: lead.id ?? null,
@@ -710,11 +735,11 @@ export async function resyncUnsyncedLeadsToGoogleSheet() {
         actorType: "system",
         metadata: { source: lead.source, manualBackfill: true },
       });
-    } else if (result.skipped) {
-      skipped += 1;
+    } else if (sheetSync.skipped) {
+      result.skipped += 1;
     } else {
-      failed += 1;
-      const error = result.reason ?? "Google Sheet sync failed";
+      result.failed += 1;
+      const error = sheetSync.reason ?? "Google Sheet sync failed";
       errors.push({ leadId: lead.id, error });
       await updateLeadSheetState(lead.id, { googleSheetSyncError: error });
       await logStudentActivity({
@@ -731,10 +756,15 @@ export async function resyncUnsyncedLeadsToGoogleSheet() {
     }
   }
 
-  return { synced, skipped, failed, errors };
+  result.errors.push(...errors);
+  return result;
 }
 
 export async function syncLeadByIdToGoogleSheet(leadId: string) {
+  if (isOrderOnlyLeadId(leadId)) {
+    return { ok: true, skipped: true, reason: "Order-only fallback leads are synced through the Orders sheet." };
+  }
+
   const lead = await getLeadById(leadId);
 
   if (!lead) {

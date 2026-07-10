@@ -11,9 +11,9 @@ import {
 } from "@/lib/security/validation";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import { sendMetaLeadEvent } from "@/lib/meta/conversions-api";
-import { syncOrderToGoogleSheet } from "@/lib/notifications/google-sheets";
+import { syncOrderToGoogleSheetWithActivity } from "@/lib/notifications/google-sheets-order-sync";
 import { invalidateAdminModules } from "@/services/adminDataService";
-import { createLeadAdmin, syncLeadByIdToGoogleSheet, updateLeadAdmin } from "@/services/leadService";
+import { createLeadAdmin, updateLeadAdmin } from "@/services/leadService";
 import { createPaymentOrder, type PaymentOrder } from "@/services/orderService";
 
 function determineLeadSource(order: PaymentOrder, landingPage?: string) {
@@ -192,19 +192,6 @@ export async function POST(request: Request) {
     };
 
     after(async () => {
-      const syncedLeadId = leadSync.ok ? leadSync.lead?.id ?? databaseLeadId : "";
-
-      if (syncedLeadId) {
-        const updatedLeadSheetSync = await syncLeadByIdToGoogleSheet(syncedLeadId);
-
-        if (!updatedLeadSheetSync.ok && !updatedLeadSheetSync.skipped) {
-          console.warn("[orders] Google Sheets lead update sync failed:", {
-            reason: updatedLeadSheetSync.reason,
-            status: updatedLeadSheetSync.status,
-          });
-        }
-      }
-
       try {
         metaLead = await sendMetaLeadEvent({
           orderCode: order.orderCode,
@@ -233,6 +220,7 @@ export async function POST(request: Request) {
           fbclid: attribution.fbclid,
           fbp: cleanText(body.fbp, 180),
           fbc: cleanText(body.fbc, 220),
+          eventId: incomingLeadId,
           leadId: leadSync.ok ? leadSync.lead?.id ?? incomingLeadId : incomingLeadId,
           ipAddress,
           userAgent,
@@ -249,7 +237,7 @@ export async function POST(request: Request) {
       }
 
       try {
-        const sheetSync = await syncOrderToGoogleSheet(order, {
+        const sheetSync = await syncOrderToGoogleSheetWithActivity(order, {
           source: leadSource,
           landingPageUrl: cleanText(body.pageUrl, 500),
         });

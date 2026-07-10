@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { canAccessAdminRole, getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
 import { sendStudentAccessEmail } from "@/lib/notifications/student-access-email";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
@@ -43,32 +42,6 @@ async function getLatestPaidOrder(email: string) {
   }
 
   return (data ?? null) as PaidOrderForPasswordReset | null;
-}
-
-async function verifyStudentPasswordLogin(email: string, password: string) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return { ok: false, reason: "Thiếu cấu hình kiểm tra đăng nhập Supabase." };
-  }
-
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
-
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error || !data.user) {
-    return { ok: false, reason: error?.message ?? "Không xác thực được tài khoản học viên." };
-  }
-
-  await supabase.auth.signOut();
-
-  return { ok: true };
 }
 
 export async function POST(request: Request) {
@@ -165,23 +138,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const loginVerification = await verifyStudentPasswordLogin(email, studentAccount.temporaryPassword);
-
-    if (!loginVerification.ok) {
-      return NextResponse.json(
-        {
-          ok: false,
-          message: `Đã cấp lại mật khẩu nhưng chưa gửi email vì kiểm tra đăng nhập thất bại: ${
-            loginVerification.reason ?? "không rõ lý do"
-          }`,
-        },
-        { status: 500 },
-      );
-    }
-
     const emailResult = await sendStudentAccessEmail(
       {
-        action: "grant",
+        action: "password_reset",
         studentName: name,
         email,
         courseTitles,

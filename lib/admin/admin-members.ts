@@ -188,3 +188,46 @@ export async function updateAdminMemberRole({
 
   return data.user;
 }
+
+export async function createAdminMember({
+  email,
+  role,
+}: {
+  email: string;
+  role: AdminRole;
+}) {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error("Thiếu SUPABASE_SERVICE_ROLE_KEY nên chưa thể thêm nhân viên admin.");
+  }
+
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) {
+    throw new Error("Chưa cấu hình Supabase để thêm nhân viên admin.");
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!normalizedEmail || !normalizedEmail.includes("@")) {
+    throw new Error("Email nhân viên không hợp lệ.");
+  }
+
+  const { data: listData, error: listError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  if (listError) throw new Error(listError.message);
+  const existing = listData.users.find((user) => user.email?.toLowerCase() === normalizedEmail);
+
+  const appMetadata = { ...(existing?.app_metadata ?? {}), admin_role: role };
+  const result = existing
+    ? await supabase.auth.admin.updateUserById(existing.id, { app_metadata: appMetadata })
+    : await supabase.auth.admin.createUser({
+        email: normalizedEmail,
+        email_confirm: true,
+        app_metadata: appMetadata,
+        user_metadata: { created_from: "crm_v2_team" },
+      });
+
+  if (result.error || !result.data.user) {
+    throw new Error(result.error?.message ?? "Không thêm được nhân viên admin.");
+  }
+
+  clearAdminMembersCache();
+  return result.data.user;
+}

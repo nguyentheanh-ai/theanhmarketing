@@ -5,6 +5,10 @@
       "schedule": "0 17 * * *"
     },
     {
+      "path": "/api/orders/sync-google-sheet",
+      "schedule": "45 16 * * *"
+    },
+    {
       "path": "/api/admin/purge-deleted",
       "schedule": "30 17 * * *"
     }

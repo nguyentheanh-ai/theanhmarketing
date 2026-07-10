@@ -17,6 +17,7 @@ export type MarketingSettings = {
 };
 
 export const PRIMARY_META_PIXEL_ID = "1315653423712065";
+export const FACEBOOK_DOMAIN_VERIFICATION = "rx0h2xuwlyy1b5vd6ge5f60gm10b2c";
 const RETIRED_META_PIXEL_IDS = new Set(["1966683547571929", "1297209809285103", "2364261364083192"]);
 
 export const fallbackMarketingSettings: MarketingSettings = {
@@ -25,7 +26,7 @@ export const fallbackMarketingSettings: MarketingSettings = {
     "AI Performance Marketing System giúp SME và Solopreneur xây hệ thống tăng trưởng bằng AI Marketing, Performance Ads, Funnel, Automation và CRM/Data.",
   socialImageUrl: "",
   googleSiteVerification: "",
-  facebookDomainVerification: "",
+  facebookDomainVerification: FACEBOOK_DOMAIN_VERIFICATION,
   trackingEnabled: false,
   facebookPixelEnabled: false,
   facebookPixelId: "",
@@ -119,7 +120,9 @@ export function normalizeMarketingSettings(value: Partial<MarketingSettings> | n
     seoDescription: String(merged.seoDescription || fallbackMarketingSettings.seoDescription).trim().slice(0, 220),
     socialImageUrl: normalizeUrl(merged.socialImageUrl),
     googleSiteVerification: normalizeVerification(merged.googleSiteVerification),
-    facebookDomainVerification: normalizeVerification(merged.facebookDomainVerification),
+    facebookDomainVerification: normalizeVerification(
+      merged.facebookDomainVerification || fallbackMarketingSettings.facebookDomainVerification,
+    ),
     trackingEnabled: Boolean(merged.trackingEnabled || facebookPixelIds.length > 0),
     facebookPixelEnabled: Boolean((merged.facebookPixelEnabled || facebookPixelIds.length > 0) && effectiveFacebookPixelId),
     facebookPixelId: effectiveFacebookPixelId,

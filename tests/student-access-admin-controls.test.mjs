@@ -219,6 +219,33 @@ test("student access emails include account details for grant notifications", ()
   assert.match(payload.text, /https:\/\/www\.theanhmarketing\.com\/vao-khoa-hoc/);
 });
 
+test("password reset emails are distinct from course access grant emails", () => {
+  const emailModule = loadTsModule("lib/notifications/student-access-email.ts");
+  const payload = emailModule.buildStudentAccessEmailPayload(
+    {
+      action: "password_reset",
+      studentName: "Nguyen Nhu",
+      email: "student@example.com",
+      courseTitles: ["Quang cao Facebook Master 2026"],
+    },
+    {
+      account: {
+        email: "student@example.com",
+        temporaryPassword: "Hidden123",
+        created: false,
+        mustChangePassword: true,
+      },
+    },
+  );
+
+  assert.equal(payload.to, "student@example.com");
+  assert.match(payload.subject, /Cấp lại mật khẩu/);
+  assert.match(payload.html, /Mật khẩu mới/);
+  assert.match(payload.text, /Mật khẩu mới/);
+  assert.doesNotMatch(payload.subject, /cấp quyền học/i);
+  assert.doesNotMatch(payload.html, /Đã cấp quyền học/);
+});
+
 test("admin operator can issue a fresh student password email without recovery links", () => {
   const route = read("app/api/admin/students/password-reset/route.ts");
   const actions = read("components/admin/student-access-actions.tsx");
@@ -227,9 +254,11 @@ test("admin operator can issue a fresh student password email without recovery l
   assert.match(route, /ensureStudentAccountForAccessGrant/);
   assert.match(route, /forcePasswordUpdate:\s*true/);
   assert.match(route, /temporaryPassword/);
-  assert.match(route, /verifyStudentPasswordLogin/);
-  assert.match(route, /signInWithPassword/);
+  assert.doesNotMatch(route, /verifyStudentPasswordLogin/);
+  assert.doesNotMatch(route, /signInWithPassword/);
+  assert.match(read("services/studentAccountService.ts"), /completeProvisionedPasswordLogin/);
   assert.match(route, /sendStudentAccessEmail/);
+  assert.match(route, /action:\s*"password_reset"/);
   assert.match(route, /getLatestPaidOrder/);
   assert.doesNotMatch(route, /generateLink/);
   assert.doesNotMatch(route, /action_link/);

@@ -79,6 +79,40 @@ test("payment helper components support the light checkout design while keeping 
   assert.match(poller, /Đang chờ chuyển khoản/);
 });
 
+test("paid Facebook ebook checkout redirects to a thank-you access guide instead of dashboard", () => {
+  const poller = read("components/payment/payment-status-poller.tsx");
+  const thankYouPage = read("app/cam-on-thanh-toan/ebook-facebook-ads-2026/page.tsx");
+
+  assert.match(poller, /ebook-facebook-ads-2026/);
+  assert.match(poller, /getPaidRedirectPath/);
+  assert.match(poller, /\/cam-on-thanh-toan\/ebook-facebook-ads-2026/);
+  assert.match(poller, /router\.push\(getPaidRedirectPath\(order\)\)/);
+  assert.doesNotMatch(poller, /router\.push\("\/dashboard"\)/);
+  assert.match(thankYouPage, /Check mail/);
+  assert.match(thankYouPage, /Đăng nhập/);
+  assert.match(thankYouPage, /Tải Ebook hoặc học Online/);
+  assert.match(thankYouPage, /\/dang-nhap\?next=%2Fthu-vien%2Ffacebook-ads/);
+  assert.match(thankYouPage, /\/dang-nhap\?next=%2Fthu-vien%2Ffacebook-ads%2Fpdf/);
+});
+
+test("paid Facebook Ads course checkout redirects to a course thank-you guide instead of ebook guide", () => {
+  const poller = read("components/payment/payment-status-poller.tsx");
+  const thankYouPage = read("app/cam-on-thanh-toan/facebook-ads-2026/page.tsx");
+
+  assert.match(poller, /facebook-ads-2026/);
+  assert.match(poller, /\/cam-on-thanh-toan\/facebook-ads-2026/);
+  assert.match(poller, /router\.push\(getPaidRedirectPath\(order\)\)/);
+  assert.doesNotMatch(poller, /router\.push\("\/dashboard"\)/);
+  assert.match(thankYouPage, /Facebook Ads Master 2026/);
+  assert.match(thankYouPage, /Check mail/);
+  assert.match(thankYouPage, /Dang nhap|Đăng nhập/);
+  assert.match(thankYouPage, /Vao khoa hoc|Vào khóa học/);
+  assert.match(thankYouPage, /\/dang-nhap\?next=%2Fdashboard/);
+  assert.doesNotMatch(thankYouPage, /Ebook Facebook Ads 2026/i);
+  assert.doesNotMatch(thankYouPage, /Tải Ebook/i);
+  assert.doesNotMatch(thankYouPage, /%2Fthu-vien%2Ffacebook-ads/);
+});
+
 test("payment offer block renders the locked discount without a hard-coded 359K", () => {
   const countdown = read("components/payment/payment-offer-countdown.tsx");
 

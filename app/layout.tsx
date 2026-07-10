@@ -5,6 +5,7 @@ import { OrganizationJsonLd, WebsiteJsonLd } from "@/components/seo/json-ld";
 import { MarketingScripts } from "@/components/site/marketing-scripts";
 import { RouteProgress } from "@/components/site/route-progress";
 import { siteConfig } from "@/data/site";
+import { FACEBOOK_DOMAIN_VERIFICATION } from "@/lib/marketing-settings";
 import { getAbsoluteSocialImage, getMarketingSettings } from "@/services/marketingSettingsService";
 import "./globals.css";
 
@@ -55,9 +56,7 @@ export async function generateMetadata(): Promise<Metadata> {
       google: marketing.googleSiteVerification || undefined,
     },
     other: {
-      ...(marketing.facebookDomainVerification
-        ? { "facebook-domain-verification": marketing.facebookDomainVerification }
-        : {}),
+      "facebook-domain-verification": FACEBOOK_DOMAIN_VERIFICATION,
     },
   };
 }

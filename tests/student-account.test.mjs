@@ -80,11 +80,36 @@ test("redirects first-login students to the password change screen", () => {
 
 test("auto-created paid student accounts do not depend on listing auth users", async () => {
   const previousServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const previousSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const previousSupabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-role";
+  process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
   let listUsersCalls = 0;
   let createUserCalls = 0;
+  let normalizeCalls = 0;
+  let signInCalls = 0;
 
   const { ensureStudentAccountForPaidOrder } = loadTsModuleWithMocks("services/studentAccountService.ts", {
+    "@supabase/supabase-js": {
+      createClient() {
+        return {
+          auth: {
+            async signInWithPassword(credentials) {
+              signInCalls += 1;
+              assert.deepEqual(credentials, {
+                email: "student@example.com",
+                password: "Anh0900000000",
+              });
+              return { data: { user: { id: "user-1" } }, error: null };
+            },
+            async signOut() {
+              return { error: null };
+            },
+          },
+        };
+      },
+    },
     "@/lib/auth/student-account": {
       buildAutoStudentAccountCredentials() {
         return {
@@ -96,6 +121,40 @@ test("auto-created paid student accounts do not depend on listing auth users", a
     "@/lib/supabase/admin": {
       createSupabaseAdminClient() {
         return {
+          schema(schemaName) {
+            assert.equal(schemaName, "auth");
+            return {
+              from(tableName) {
+                assert.equal(tableName, "users");
+                return {
+                  update(payload) {
+                    normalizeCalls += 1;
+                    assert.equal(payload.confirmation_token, "");
+                    assert.equal(payload.email_change_token_current, "");
+                    assert.equal(payload.email_change, "");
+                    assert.equal(payload.aud, "authenticated");
+                    assert.equal(payload.role, "authenticated");
+                    return {
+                      eq(columnName, userId) {
+                        assert.equal(columnName, "id");
+                        assert.equal(userId, "user-1");
+                        return {
+                          select(columns) {
+                            assert.equal(columns, "id");
+                            return {
+                              async maybeSingle() {
+                                return { data: { id: userId }, error: null };
+                              },
+                            };
+                          },
+                        };
+                      },
+                    };
+                  },
+                };
+              },
+            };
+          },
           auth: {
             admin: {
               async listUsers() {
@@ -133,25 +192,63 @@ test("auto-created paid student accounts do not depend on listing auth users", a
     assert.equal(result.created, true);
     assert.equal(result.temporaryPassword, "Anh0900000000");
     assert.equal(result.userId, "user-1");
+    assert.equal(result.loginVerified, true);
     assert.equal(createUserCalls, 1);
     assert.equal(listUsersCalls, 0);
+    assert.equal(normalizeCalls, 1);
+    assert.equal(signInCalls, 1);
   } finally {
     if (previousServiceRole) {
       process.env.SUPABASE_SERVICE_ROLE_KEY = previousServiceRole;
     } else {
       delete process.env.SUPABASE_SERVICE_ROLE_KEY;
     }
+    if (previousSupabaseUrl) {
+      process.env.NEXT_PUBLIC_SUPABASE_URL = previousSupabaseUrl;
+    } else {
+      delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+    }
+    if (previousSupabaseAnonKey) {
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = previousSupabaseAnonKey;
+    } else {
+      delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    }
   }
 });
 
 test("paid order provisioning resets password for existing auth users", async () => {
   const previousServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const previousSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const previousSupabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-role";
+  process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
   let createUserCalls = 0;
   let listUsersCalls = 0;
   let updateUserByIdCalls = 0;
+  let normalizeCalls = 0;
+  let signInCalls = 0;
 
   const { ensureStudentAccountForPaidOrder } = loadTsModuleWithMocks("services/studentAccountService.ts", {
+    "@supabase/supabase-js": {
+      createClient() {
+        return {
+          auth: {
+            async signInWithPassword(credentials) {
+              signInCalls += 1;
+              assert.deepEqual(credentials, {
+                email: "oauth-student@example.com",
+                password: "Tinh0344123443",
+              });
+              return { data: { user: { id: "oauth-user-1" } }, error: null };
+            },
+            async signOut() {
+              return { error: null };
+            },
+          },
+        };
+      },
+    },
     "@/lib/auth/student-account": {
       buildAutoStudentAccountCredentials() {
         return {
@@ -163,6 +260,40 @@ test("paid order provisioning resets password for existing auth users", async ()
     "@/lib/supabase/admin": {
       createSupabaseAdminClient() {
         return {
+          schema(schemaName) {
+            assert.equal(schemaName, "auth");
+            return {
+              from(tableName) {
+                assert.equal(tableName, "users");
+                return {
+                  update(payload) {
+                    normalizeCalls += 1;
+                    assert.equal(payload.recovery_token, "");
+                    assert.equal(payload.phone_change_token, "");
+                    assert.equal(payload.reauthentication_token, "");
+                    assert.equal(payload.aud, "authenticated");
+                    assert.equal(payload.role, "authenticated");
+                    return {
+                      eq(columnName, userId) {
+                        assert.equal(columnName, "id");
+                        assert.equal(userId, "oauth-user-1");
+                        return {
+                          select(columns) {
+                            assert.equal(columns, "id");
+                            return {
+                              async maybeSingle() {
+                                return { data: { id: userId }, error: null };
+                              },
+                            };
+                          },
+                        };
+                      },
+                    };
+                  },
+                };
+              },
+            };
+          },
           auth: {
             admin: {
               async createUser() {
@@ -221,16 +352,156 @@ test("paid order provisioning resets password for existing auth users", async ()
     assert.equal(result.created, false);
     assert.equal(result.temporaryPassword, "Tinh0344123443");
     assert.equal(result.userId, "oauth-user-1");
+    assert.equal(result.loginVerified, true);
     assert.equal(createUserCalls, 1);
     assert.equal(listUsersCalls, 1);
     assert.equal(updateUserByIdCalls, 1);
+    assert.equal(normalizeCalls, 1);
+    assert.equal(signInCalls, 1);
   } finally {
     if (previousServiceRole) {
       process.env.SUPABASE_SERVICE_ROLE_KEY = previousServiceRole;
     } else {
       delete process.env.SUPABASE_SERVICE_ROLE_KEY;
     }
+    if (previousSupabaseUrl) {
+      process.env.NEXT_PUBLIC_SUPABASE_URL = previousSupabaseUrl;
+    } else {
+      delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+    }
+    if (previousSupabaseAnonKey) {
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = previousSupabaseAnonKey;
+    } else {
+      delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    }
   }
+});
+
+test("paid order provisioning fails closed when the issued password cannot log in", async () => {
+  const previousServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const previousSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const previousSupabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-role";
+  process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
+  let activityLogCalls = 0;
+
+  const { ensureStudentAccountForPaidOrder } = loadTsModuleWithMocks("services/studentAccountService.ts", {
+    "@supabase/supabase-js": {
+      createClient() {
+        return {
+          auth: {
+            async signInWithPassword() {
+              return { data: { user: null }, error: { message: "Database error querying schema" } };
+            },
+            async signOut() {
+              return { error: null };
+            },
+          },
+        };
+      },
+    },
+    "@/lib/auth/student-account": {
+      buildAutoStudentAccountCredentials() {
+        return {
+          email: "broken-auth@example.com",
+          password: "Anh0900000000",
+        };
+      },
+    },
+    "@/lib/supabase/admin": {
+      createSupabaseAdminClient() {
+        return {
+          schema() {
+            return {
+              from() {
+                return {
+                  update() {
+                    return {
+                      eq() {
+                        return {
+                          select() {
+                            return {
+                              async maybeSingle() {
+                                return { data: { id: "user-1" }, error: null };
+                              },
+                            };
+                          },
+                        };
+                      },
+                    };
+                  },
+                };
+              },
+            };
+          },
+          auth: {
+            admin: {
+              async createUser() {
+                return { data: { user: { id: "user-1" } }, error: null };
+              },
+            },
+          },
+        };
+      },
+    },
+    "@/services/activityLogService": {
+      async logStudentActivity() {
+        activityLogCalls += 1;
+        return { ok: true, skipped: false, error: null };
+      },
+    },
+  });
+
+  try {
+    const result = await ensureStudentAccountForPaidOrder({
+      studentName: "Nguyen Van A",
+      email: "broken-auth@example.com",
+      phone: "0900000000",
+      status: "paid",
+      orderCode: "TAM123",
+      courseSlug: "facebook-ads-2026",
+      courseTitle: "Facebook Ads Master",
+    });
+
+    assert.equal(result.ok, false);
+    assert.equal(result.created, false);
+    assert.equal(result.temporaryPassword, null);
+    assert.equal(result.loginVerified, false);
+    assert.match(result.reason ?? "", /Password login verification failed/);
+    assert.equal(activityLogCalls, 0);
+  } finally {
+    if (previousServiceRole) {
+      process.env.SUPABASE_SERVICE_ROLE_KEY = previousServiceRole;
+    } else {
+      delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+    }
+    if (previousSupabaseUrl) {
+      process.env.NEXT_PUBLIC_SUPABASE_URL = previousSupabaseUrl;
+    } else {
+      delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+    }
+    if (previousSupabaseAnonKey) {
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = previousSupabaseAnonKey;
+    } else {
+      delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    }
+  }
+});
+
+test("student account provisioning centralizes auth normalization and password login verification", () => {
+  const service = read("services/studentAccountService.ts");
+  const resetRoute = read("app/api/admin/students/password-reset/route.ts");
+
+  assert.match(service, /normalizeAuthUserForPasswordLogin/);
+  assert.match(service, /confirmation_token/);
+  assert.match(service, /email_change_token_current/);
+  assert.match(service, /email_change_token_new/);
+  assert.match(service, /reauthentication_token/);
+  assert.match(service, /schema\("auth"\)/);
+  assert.match(service, /signInWithPassword/);
+  assert.match(service, /loginVerified/);
+  assert.doesNotMatch(resetRoute, /signInWithPassword/);
 });
 
 test("SePay paid email includes account password when an existing user was reset", () => {
@@ -238,4 +509,16 @@ test("SePay paid email includes account password when an existing user was reset
 
   assert.match(route, /studentAccount\.temporaryPassword/);
   assert.doesNotMatch(route, /account:\s*studentAccount\.created/);
+});
+
+test("SePay ebook success email is blocked until a verified login account is available", () => {
+  const route = read("app/api/sepay/webhook/route.ts");
+
+  assert.match(route, /function isFacebookEbookPaidOrder/);
+  assert.match(route, /const requiresVerifiedLoginAccount = isFacebookEbookPaidOrder\(\s*confirmation\.order,\s*\)/);
+  assert.match(route, /requiresVerifiedLoginAccount && !studentAccount\.temporaryPassword/);
+  assert.match(
+    route,
+    /requiresVerifiedLoginAccount && !studentAccount\.temporaryPassword[\s\S]*?markPaymentEmailError[\s\S]*?else \{[\s\S]*?sendPaymentSuccessEmail/,
+  );
 });

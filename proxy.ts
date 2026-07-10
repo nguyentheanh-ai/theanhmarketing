@@ -20,7 +20,9 @@ function isLadiPageRoute(pathname: string) {
     pathname === "/academy/facebook-ads-master-2026" ||
     pathname === "/academy/facebook-ads-master-2026.html" ||
     pathname === "/academy/ebook-facebook-ads-2026" ||
-    pathname === "/academy/ebook-facebook-ads-2026.html"
+    pathname === "/academy/ebook-facebook-ads-2026.html" ||
+    pathname === "/academy/ebook-facebook-ads-2026-premium" ||
+    pathname === "/academy/ebook-facebook-ads-2026-premium.html"
   );
 }
 
@@ -35,11 +37,28 @@ function isStudentAccessBridgeRoute(pathname: string) {
   return pathname === "/vao-khoa-hoc" || pathname === "/go";
 }
 
+function isAdminRoute(pathname: string) {
+  return pathname === "/admin" || pathname.startsWith("/admin/");
+}
+
 function stripFrameAncestors(policy: string) {
   return policy
     .split(";")
     .map((part) => part.trim())
     .filter((part) => part && !part.startsWith("frame-ancestors"))
+    .join("; ");
+}
+
+function allowCanonicalFrameAncestors(policy: string) {
+  return policy
+    .split(";")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((part) =>
+      part.startsWith("frame-ancestors")
+        ? `frame-ancestors 'self' https://${canonicalHost} https://${legacyHost}`
+        : part,
+    )
     .join("; ");
 }
 
@@ -134,14 +153,16 @@ export function proxy(request: NextRequest) {
     ? buildLadiPageContentSecurityPolicy()
     : buildContentSecurityPolicy(nonce);
 
-  response.headers.set(
-    "Content-Security-Policy",
-    isStudentAccessBridgeRoute(request.nextUrl.pathname)
-      ? stripFrameAncestors(contentSecurityPolicy)
-      : contentSecurityPolicy,
-  );
+  const pathname = request.nextUrl.pathname;
+  const responseContentSecurityPolicy = isStudentAccessBridgeRoute(pathname)
+    ? stripFrameAncestors(contentSecurityPolicy)
+    : isAdminRoute(pathname)
+      ? allowCanonicalFrameAncestors(contentSecurityPolicy)
+      : contentSecurityPolicy;
 
-  if (!isStudentAccessBridgeRoute(request.nextUrl.pathname)) {
+  response.headers.set("Content-Security-Policy", responseContentSecurityPolicy);
+
+  if (!isStudentAccessBridgeRoute(pathname) && !isAdminRoute(pathname)) {
     response.headers.set("X-Frame-Options", "SAMEORIGIN");
   }
 

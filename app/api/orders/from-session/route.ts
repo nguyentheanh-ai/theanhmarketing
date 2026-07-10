@@ -1,7 +1,7 @@
 import { after, NextResponse } from "next/server";
 import { getCurrentAuth } from "@/lib/auth/session";
 import { sendMetaLeadEvent } from "@/lib/meta/conversions-api";
-import { syncOrderToGoogleSheet } from "@/lib/notifications/google-sheets";
+import { syncOrderToGoogleSheetWithActivity } from "@/lib/notifications/google-sheets-order-sync";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import {
   cleanEmail,
@@ -120,7 +120,7 @@ export async function POST(request: Request) {
       }
 
       try {
-        const sheetSync = await syncOrderToGoogleSheet(order, {
+        const sheetSync = await syncOrderToGoogleSheetWithActivity(order, {
           source: "Logged-in checkout",
           landingPageUrl: `${siteConfig.url}/gio-hang`,
         });

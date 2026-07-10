@@ -30,6 +30,10 @@ const agentGuideUrl =
 const adsSupportAgentName = "Agent Hỗ Trợ Quảng Cáo";
 const adsSupportAgentUrl =
   "https://chatgpt.com/g/g-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner";
+const facebookEbookCourseSlug = "ebook-facebook-ads-2026";
+const facebookEbookProductTitle = "Ebook Facebook Ads 2026";
+const facebookEbookReaderPath = "/thu-vien/facebook-ads";
+const facebookEbookPdfPath = "/thu-vien/facebook-ads/pdf";
 
 function escapeHtml(value: string) {
   return value
@@ -78,7 +82,18 @@ function getCourseList(order: PaymentOrder) {
 }
 
 function getProductTitle(order: PaymentOrder) {
+  if (isFacebookEbookOrder(order)) {
+    return facebookEbookProductTitle;
+  }
+
   return getCourseList(order)[0] || order.courseTitle || "Khóa học tại The Anh Marketing";
+}
+
+function isFacebookEbookOrder(order: PaymentOrder) {
+  return (
+    order.courseSlug === facebookEbookCourseSlug ||
+    order.orderItems.some((item) => item.slug === facebookEbookCourseSlug)
+  );
 }
 
 function getPaymentFailedTitle(order: PaymentOrder) {
@@ -87,6 +102,16 @@ function getPaymentFailedTitle(order: PaymentOrder) {
 
 function getBenefitItems(order: PaymentOrder) {
   const productTitle = getProductTitle(order);
+
+  if (isFacebookEbookOrder(order)) {
+    return [
+      "Quyền đọc ebook online",
+      "File PDF đầy đủ để tải về sau khi đồng ý điều khoản",
+      "10 phần nội dung từ nền tảng, mục tiêu, target, content, Pixel/CAPI đến tối ưu và chính sách",
+      "Tài khoản học viên để quay lại đọc bất cứ khi nào cần tra cứu",
+    ];
+  }
+
   const courseIdentity = `${order.courseSlug} ${productTitle}`.toLowerCase();
   const isAiMaster = courseIdentity.includes("ai-master-x10") || courseIdentity.includes("ai master x10");
   const isAdvancedFacebookAdsPlan = /1\.299|1299|chuyên sâu|zoom sửa|hệ thống quảng cáo chuyên sâu/i.test(productTitle);
@@ -177,6 +202,40 @@ function renderAccountBlock(account: PaymentEmailOptions["account"]) {
   `;
 }
 
+function renderEbookAccountBlock(account: PaymentEmailOptions["account"]) {
+  if (!account?.temporaryPassword) {
+    return "";
+  }
+
+  const safeAccountEmail = escapeHtml(account.email);
+  const safePassword = escapeHtml(account.temporaryPassword);
+
+  return `
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;border:1px solid #5b3a23;border-radius:14px;background:#211913">
+      <tr>
+        <td style="padding:22px 24px">
+          <p style="margin:0 0 18px;color:#d8b653;font-size:15px;font-weight:900">
+            Thông tin đăng nhập
+          </p>
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+            <tr>
+              <td style="padding:12px 0;border-top:1px solid #3a3024;color:#9d978c;font-size:14px">Email</td>
+              <td align="right" style="padding:12px 0;border-top:1px solid #3a3024;color:#ffffff;font-size:14px;font-weight:800">${safeAccountEmail}</td>
+            </tr>
+            <tr>
+              <td style="padding:12px 0;border-top:1px solid #3a3024;color:#9d978c;font-size:14px">Mật khẩu tạm</td>
+              <td align="right" style="padding:12px 0;border-top:1px solid #3a3024;color:#d8b653;font-size:17px;font-weight:900">${safePassword}</td>
+            </tr>
+          </table>
+          <p style="margin:14px 0 0;color:#bdb7a9;font-size:13px;line-height:1.7">
+            Sau lần đăng nhập đầu tiên, hệ thống có thể yêu cầu anh/chị đổi mật khẩu để bảo vệ tài khoản.
+          </p>
+        </td>
+      </tr>
+    </table>
+  `;
+}
+
 function shouldShowAgentGuide(items: string[]) {
   return items.some((item) => item.includes("Tặng AI Agent lên kế hoạch quảng cáo"));
 }
@@ -205,15 +264,20 @@ export function buildPaymentSuccessEmailPayload(
   const siteUrl = normalizeSiteUrl(options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL);
   const accessUrl = `${siteUrl}/vao-khoa-hoc`;
   const dashboardUrl = `${siteUrl}/dashboard`;
+  const isFacebookEbook = isFacebookEbookOrder(order);
+  const facebookEbookReaderUrl = `${siteUrl}${facebookEbookReaderPath}`;
+  const facebookEbookPdfUrl = `${siteUrl}${facebookEbookPdfPath}`;
   const accessEmailUrl = buildEmailLink(accessUrl, siteUrl);
   const dashboardEmailUrl = buildEmailLink(dashboardUrl, siteUrl);
+  const facebookEbookReaderEmailUrl = buildEmailLink(facebookEbookReaderUrl, siteUrl);
+  const facebookEbookPdfEmailUrl = buildEmailLink(facebookEbookPdfUrl, siteUrl);
   const zaloEmailUrl = buildEmailLink(zaloGroupUrl, siteUrl);
   const courseList = getCourseList(order);
   const productTitle = getProductTitle(order);
   const benefitItems = getBenefitItems(order);
   const showAgentGuide = shouldShowAgentGuide(benefitItems);
   const showAdsSupportAgent = isFacebookAdsSupportPlan(order);
-  const safeName = escapeHtml(order.studentName || "bạn");
+  const safeName = escapeHtml(order.studentName || (isFacebookEbook ? "anh/chị" : "bạn"));
   const safeEmail = escapeHtml(order.email);
   const safeOrderCode = escapeHtml(order.orderCode);
   const safeAmount = escapeHtml(order.amountLabel);
@@ -235,14 +299,174 @@ export function buildPaymentSuccessEmailPayload(
                     </a>
       `
     : "";
-  const accountBlock = renderAccountBlock(options.account);
+  const accountBlock = isFacebookEbook ? renderEbookAccountBlock(options.account) : renderAccountBlock(options.account);
   const accountIntro = options.account?.temporaryPassword
     ? `Hệ thống đã ghi nhận thanh toán và tạo tài khoản học cho bạn bằng email
                     <strong style="color:#ffffff">${safeEmail}</strong>.`
     : `Hệ thống đã ghi nhận thanh toán của bạn. Vui lòng dùng đúng email
                     <strong style="color:#ffffff">${safeEmail}</strong> để đăng nhập hoặc tạo tài khoản học.`;
 
-  const html = `
+  const ebookAccountIntro = options.account?.temporaryPassword
+    ? `Hệ thống đã ghi nhận thanh toán và tạo tài khoản đọc ebook cho anh/chị bằng email
+                    <strong style="color:#ffffff">${safeEmail}</strong>.`
+    : `Hệ thống đã ghi nhận thanh toán của anh/chị. Vui lòng dùng đúng email
+                    <strong style="color:#ffffff">${safeEmail}</strong> để đăng nhập và đọc ebook.`;
+
+  const deliveryInstructionsHtml = isFacebookEbook
+    ? `
+                        <p style="margin:0 0 12px;color:#e9e3d5;font-size:14px;line-height:1.7">
+                          <strong style="color:#d8b653">Bước 1:</strong> Đăng nhập bằng tài khoản học trong email này.
+                        </p>
+                        <p style="margin:0 0 12px;color:#e9e3d5;font-size:14px;line-height:1.7">
+                          <strong style="color:#d8b653">Bước 2:</strong> Bấm “Đọc ebook online” để mở Chương 1.
+                        </p>
+                        <p style="margin:0;color:#e9e3d5;font-size:14px;line-height:1.7">
+                          <strong style="color:#d8b653">Bước 3:</strong> Nếu muốn tải bản PDF, bấm “Tải file PDF”, đọc và tick đồng ý điều khoản trước khi tải.
+                        </p>
+                        <p style="margin:14px 0 0;color:#f6f1e7;font-size:14px;line-height:1.7;background:#2a2417;border:1px solid #514528;border-radius:10px;padding:12px">
+                          <strong style="color:#d8b653">Lưu ý:</strong> File PDF chỉ dành cho tài khoản đã mua quyền truy cập. Không chia sẻ, đăng tải lại hoặc bán lại nội dung ebook.
+                        </p>
+      `
+    : `
+                        <p style="margin:0 0 12px;color:#e9e3d5;font-size:14px;line-height:1.7">
+                          <strong style="color:#d8b653">Bước 1:</strong> Bấm nút bên dưới để vào nhóm Zalo nhận hướng dẫn.
+                        </p>
+                        <p style="margin:0 0 12px;color:#e9e3d5;font-size:14px;line-height:1.7">
+                          <strong style="color:#d8b653">Bước 2:</strong> Đăng nhập hoặc tạo tài khoản bằng đúng email đã thanh toán.
+                        </p>
+                        <p style="margin:0;color:#e9e3d5;font-size:14px;line-height:1.7">
+                          <strong style="color:#d8b653">Bước 3:</strong> Vào dashboard để mở khóa học, tài liệu và nhận hỗ trợ khi cần.
+                        </p>
+                        <p style="margin:14px 0 0;color:#f6f1e7;font-size:14px;line-height:1.7;background:#2a2417;border:1px solid #514528;border-radius:10px;padding:12px">
+                          <strong style="color:#d8b653">Lưu ý:</strong> Nếu chưa thấy email hướng dẫn sau vài phút, bạn kiểm tra thêm mục Spam, Quảng cáo/Promotions hoặc Khuyến mãi trong hộp thư.
+                        </p>
+      `;
+  const primaryActionsHtml = isFacebookEbook
+    ? `
+                    <a href="${escapeHtml(facebookEbookReaderEmailUrl)}" style="display:block;background:#d8b653;color:#111111;text-decoration:none;border-radius:10px;padding:17px 20px;font-size:15px;font-weight:900;letter-spacing:0.02em;text-transform:uppercase">
+                      Đọc ebook online
+                    </a>
+                    <a href="${escapeHtml(facebookEbookPdfEmailUrl)}" style="display:block;margin-top:14px;background:#f66628;color:#111111;text-decoration:none;border-radius:10px;padding:15px 20px;font-size:15px;font-weight:900">
+                      Tải file PDF
+                    </a>
+                    <p style="margin:20px 0 0;color:#8f887c;font-size:13px;line-height:1.7">
+                      Link đọc online: <a href="${escapeHtml(facebookEbookReaderEmailUrl)}" style="color:#d8b653">${escapeHtml(facebookEbookReaderUrl)}</a><br />
+                      Link tải PDF: <a href="${escapeHtml(facebookEbookPdfEmailUrl)}" style="color:#d8b653">${escapeHtml(facebookEbookPdfUrl)}</a>
+                    </p>
+      `
+    : `
+                    <a href="${escapeHtml(zaloEmailUrl)}" style="display:block;background:#d8b653;color:#111111;text-decoration:none;border-radius:10px;padding:17px 20px;font-size:15px;font-weight:900;letter-spacing:0.02em;text-transform:uppercase">
+                      Tham gia Zalo nhận hướng dẫn
+                    </a>
+                    <a href="${escapeHtml(accessEmailUrl)}" style="display:block;margin-top:14px;background:#f66628;color:#111111;text-decoration:none;border-radius:10px;padding:15px 20px;font-size:15px;font-weight:900">
+                      Truy cập khu vực học viên
+                    </a>
+                    ${agentGuideButton}
+                    ${adsSupportAgentButton}
+                    <p style="margin:20px 0 0;color:#8f887c;font-size:13px;line-height:1.7">
+                      Link dashboard: <a href="${escapeHtml(dashboardEmailUrl)}" style="color:#d8b653">${escapeHtml(dashboardUrl)}</a>
+                    </p>
+      `;
+
+  const html = isFacebookEbook
+    ? `
+    <div style="margin:0;padding:0;background:#080808;font-family:${emailFontFamily};color:#f6f1e7">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#080808;margin:0;padding:42px 14px">
+        <tr>
+          <td align="center">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;max-width:560px;background:#171717;border:1px solid #303030;border-radius:18px;overflow:hidden">
+              <tr>
+                <td align="center" style="padding:42px 34px 36px;background:#101827;border-bottom:1px solid #253653">
+                  <div style="width:76px;height:76px;border-radius:50%;background:#d8b653;color:#101010;font-size:42px;line-height:76px;font-weight:400;margin:0 auto 24px">
+                    ✓
+                  </div>
+                  <h1 style="margin:0;color:#d8b653;font-size:26px;line-height:1.25;font-weight:800">
+                    Đã mở quyền Ebook Facebook Ads 2026
+                  </h1>
+                  <p style="margin:16px 0 0;color:#e9e3d5;font-size:15px;line-height:1.7">
+                    Anh/chị có thể đọc online và tải file PDF sau khi đồng ý điều khoản.
+                  </p>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:34px">
+                  <p style="margin:0 0 18px;color:#e9e3d5;font-size:16px;line-height:1.7">
+                    Xin chào <strong style="color:#d8b653">${safeName}</strong>,
+                  </p>
+                  <p style="margin:0;color:#bdb7a9;font-size:15px;line-height:1.8">
+                    ${isFacebookEbook ? ebookAccountIntro : accountIntro}
+                  </p>
+
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:30px;border:1px solid #3a3a3a;border-radius:14px;background:#202020">
+                    <tr>
+                      <td style="padding:22px 24px">
+                        <p style="margin:0 0 18px;color:#d8b653;font-size:13px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase">
+                          Chi tiết đơn hàng
+                        </p>
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                          <tr>
+                            <td style="padding:13px 0;border-top:1px solid #343434;color:#9d978c;font-size:14px">Mã đơn hàng</td>
+                            <td align="right" style="padding:13px 0;border-top:1px solid #343434;color:#d8b653;font-size:14px;font-weight:900">${safeOrderCode}</td>
+                          </tr>
+                          <tr>
+                            <td style="padding:13px 0;border-top:1px solid #343434;color:#9d978c;font-size:14px">Sản phẩm</td>
+                            <td align="right" style="padding:13px 0;border-top:1px solid #343434;color:#f6f1e7;font-size:14px;font-weight:800">${safeProductTitle}</td>
+                          </tr>
+                          <tr>
+                            <td style="padding:13px 0;border-top:1px solid #343434;color:#9d978c;font-size:14px">Số tiền thanh toán</td>
+                            <td align="right" style="padding:13px 0;border-top:1px solid #343434;color:#26c56d;font-size:21px;font-weight:900">${safeAmount}</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+
+                  ${accountBlock}
+
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;border:1px solid #514528;border-radius:14px;background:#201d14">
+                    <tr>
+                      <td style="padding:22px 24px">
+                        <p style="margin:0 0 18px;color:#d8b653;font-size:15px;font-weight:900">
+                          Anh/chị nhận được:
+                        </p>
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                          ${benefitRows}
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;border:1px solid #3a3a3a;border-radius:14px;background:#202020">
+                    <tr>
+                      <td style="padding:22px 24px">
+                        <p style="margin:0 0 18px;color:#d8b653;font-size:15px;font-weight:900">
+                          Cách truy cập ebook:
+                        </p>
+                        ${deliveryInstructionsHtml}
+                      </td>
+                    </tr>
+                  </table>
+
+                  <div style="padding-top:30px;text-align:center">
+                    ${primaryActionsHtml}
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td align="center" style="padding:28px 20px;border-top:1px solid #2f2f2f;color:#8f887c;font-size:13px;line-height:1.7">
+                  Cần hỗ trợ? Fanpage <strong style="color:#d8b653">The Anh Marketing</strong><br />
+                  © 2026 The Anh Marketing. All rights reserved.
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  `
+    : `
     <div style="margin:0;padding:0;background:#080808;font-family:${emailFontFamily};color:#f6f1e7">
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#080808;margin:0;padding:42px 14px">
         <tr>
@@ -268,7 +492,7 @@ export function buildPaymentSuccessEmailPayload(
                     Xin chào <strong style="color:#d8b653">${safeName}</strong>,
                   </p>
                   <p style="margin:0;color:#bdb7a9;font-size:15px;line-height:1.8">
-                    ${accountIntro}
+                    ${isFacebookEbook ? ebookAccountIntro : accountIntro}
                   </p>
 
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:30px;border:1px solid #3a3a3a;border-radius:14px;background:#202020">
@@ -361,7 +585,25 @@ export function buildPaymentSuccessEmailPayload(
     </div>
   `;
 
-  const text = [
+  const text = isFacebookEbook
+    ? [
+        "Đã mở quyền Ebook Facebook Ads 2026 tại The Anh Marketing",
+        `Chào ${order.studentName || "bạn"},`,
+        `Mã đơn: ${order.orderCode}`,
+        `Số tiền: ${order.amountLabel}`,
+        `Sản phẩm: ${courseList.join(", ") || order.courseTitle}`,
+        `Bạn nhận được: ${benefitItems.join("; ")}`,
+        options.account?.temporaryPassword
+          ? `Tài khoản học: ${options.account.email}\nMật khẩu tạm: ${options.account.temporaryPassword}\nSau khi đăng nhập lần đầu, hệ thống sẽ yêu cầu bạn đổi mật khẩu.`
+          : "",
+        `Đọc online: ${facebookEbookReaderUrl}`,
+        `Tải PDF: ${facebookEbookPdfUrl}`,
+        "Trước khi tải PDF, vui lòng đọc và đồng ý điều khoản trên trang tải.",
+        `Dashboard: ${dashboardUrl}`,
+      ]
+        .filter(Boolean)
+        .join("\n")
+    : [
     "Thanh toán thành công tại The Anh Marketing",
     `Chào ${order.studentName || "bạn"},`,
     `Mã đơn: ${order.orderCode}`,

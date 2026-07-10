@@ -24,7 +24,10 @@ export function AdminLoginForm() {
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") ?? "");
     const password = String(formData.get("password") ?? "");
-    const supabase = createSupabaseBrowserClient();
+    const rememberLogin = formData.get("rememberLogin") === "on";
+    const supabase = createSupabaseBrowserClient({
+      persistence: rememberLogin ? "remember" : "session",
+    });
 
     if (!supabase) {
       setMessage("Chưa cấu hình Supabase. Không thể đăng nhập quản trị.");
@@ -75,6 +78,15 @@ export function AdminLoginForm() {
           type="password"
         />
       </div>
+      <label className="flex min-h-10 items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 text-sm font-semibold text-white/65">
+        <input
+          className="h-4 w-4 rounded border-white/20 bg-white/10 text-[#77d7ff] focus:ring-[#77d7ff]/30"
+          defaultChecked
+          name="rememberLogin"
+          type="checkbox"
+        />
+        Lưu đăng nhập trên thiết bị này
+      </label>
       {message ? (
         <p className="rounded-xl border border-red-300/20 bg-red-400/10 p-4 text-sm font-semibold text-red-100">
           {message}

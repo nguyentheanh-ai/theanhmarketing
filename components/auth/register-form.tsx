@@ -15,6 +15,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = getSafeNextPath(searchParams.get("next"), "/dashboard");
+  const selectedCourseParam = searchParams.get("course") ?? "";
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -136,16 +137,25 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
     }
 
     clearCart();
-    trackMarketingEvent("CompleteRegistration", {
-      event_id: orderData.order.orderCode,
-      order_id: orderData.order.orderCode,
-      content_ids: orderCourseSlugs,
-      content_name: interestedCourse,
-      content_type: "product",
-      method: "email",
-      value: orderData.order.amount ?? 0,
-      currency: orderData.order.currency || "VND",
-    });
+    const completeRegistrationValue = Number(orderData.order.amount);
+
+    if (completeRegistrationValue > 0) {
+      trackMarketingEvent("CompleteRegistration", {
+        event_id: orderData.order.orderCode,
+        order_id: orderData.order.orderCode,
+        content_ids: orderCourseSlugs,
+        content_name: interestedCourse,
+        content_type: "product",
+        method: "email",
+        value: completeRegistrationValue,
+        currency: orderData.order.currency || "VND",
+      });
+    } else {
+      console.warn("[tracking] Skipped CompleteRegistration without valid value", {
+        orderCode: orderData.order.orderCode,
+      });
+    }
+
     router.push(`/thanh-toan/${orderData.order.orderCode}`);
   }
 
@@ -233,6 +243,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
             <label className="text-sm font-semibold text-white/60">Chương trình quan tâm</label>
             <select
               className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none transition focus:border-[#77d7ff]/35"
+              defaultValue={selectedCourseParam || undefined}
               name="course"
             >
               {courses.map((course) => (

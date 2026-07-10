@@ -1,4 +1,5 @@
 import { courses as baseFallbackCourses, type Course, type CourseLesson, type CourseModule, type CourseStatus, type LessonAccess } from "@/data/courses";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { marketingCourses } from "@/data/marketing-courses";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { toYouTubeEmbedUrl } from "@/lib/youtube";
@@ -12,6 +13,8 @@ type DbCourse = {
   price: string | number | null;
   original_price: string | number | null;
   status: string | null;
+  lms_status?: string | null;
+  visibility?: string | null;
   duration: string | null;
   lesson_count: number | null;
   level: string | null;
@@ -249,21 +252,28 @@ type DbModule = {
   description: string | null;
   sort_order: number | null;
   lessons?: DbLesson[];
+  status?: string | null;
 };
 
 type DbLesson = {
   id: string;
   title: string;
+  slug?: string | null;
   description: string | null;
+  content?: string | null;
+  lesson_type?: string | null;
   duration: string | null;
   youtube_url: string | null;
   embed_url: string | null;
   access_type: string | null;
   sort_order: number | null;
+  status?: string | null;
+  published_at?: string | null;
   lesson_resources?: DbLessonResource[];
 };
 
 type DbLessonResource = {
+  lesson_id?: string | null;
   title: string;
   url: string;
 };
@@ -310,6 +320,14 @@ function toCourseStatus(status: string | null): CourseStatus {
   return "open";
 }
 
+function toLmsStatus(status: string | null | undefined): "draft" | "published" | "archived" {
+  if (status === "draft" || status === "published" || status === "archived") {
+    return status;
+  }
+
+  return "published";
+}
+
 export function toLessonAccess(accessType: string | null): LessonAccess {
   if (accessType === "free_preview") {
     return "free";
@@ -342,6 +360,7 @@ export function mapDbCourseToCourse(course: DbCourse): Course {
       id: module.id,
       title: module.title,
       description: module.description ?? "",
+      status: toLmsStatus(module.status),
       order: module.sort_order ?? 1,
       lessons: (module.lessons ?? [])
         .slice()
@@ -349,6 +368,12 @@ export function mapDbCourseToCourse(course: DbCourse): Course {
         .map<CourseLesson>((lesson) => ({
           id: lesson.id,
           title: lesson.title,
+          slug: lesson.slug ?? lesson.id,
+          description: lesson.description ?? "",
+          content: lesson.content ?? lesson.description ?? "",
+          lessonType: lesson.lesson_type === "text" || lesson.lesson_type === "file" || lesson.lesson_type === "link" || lesson.lesson_type === "live" ? lesson.lesson_type : "video",
+          status: toLmsStatus(lesson.status),
+          publishedAt: lesson.published_at ?? null,
           duration: toDisplayDuration(lesson.duration),
           order: lesson.sort_order ?? 1,
           youtubeUrl: lesson.youtube_url ?? "",
@@ -371,6 +396,8 @@ export function mapDbCourseToCourse(course: DbCourse): Course {
     price: toDisplayPrice(course.price),
     originalPrice: toDisplayPrice(course.original_price),
     status: toCourseStatus(course.status),
+    lmsStatus: toLmsStatus(course.lms_status ?? (course.status === "open" ? "published" : course.status === "closed" ? "archived" : "draft")),
+    visibility: course.visibility === "public" || course.visibility === "private" || course.visibility === "enrolled" ? course.visibility : "enrolled",
     statusLabel: toCourseStatus(course.status) === "coming-soon" ? "Sắp ra mắt" : "Đang mở đăng ký",
     ctaText: course.cta_text ?? "Vào chương trình",
     duration: toDisplayDuration(course.duration),
@@ -488,15 +515,24 @@ async function fetchCourses() {
   );
 
   if (lessonIds.length > 0) {
-    const { data: resources } = await supabase
+    const resourceClient = createSupabaseAdminClient() ?? supabase;
+    const [{ data: resources }, { data: managedResources }] = await Promise.all([
+      supabase
       .from("lesson_resources")
       .select("lesson_id,title,url")
-      .in("lesson_id", lessonIds);
+        .in("lesson_id", lessonIds),
+      resourceClient
+        .from("course_resources")
+        .select("lesson_id,title,url")
+        .in("lesson_id", lessonIds),
+    ]);
 
-    if (resources && resources.length > 0) {
+    const resourceRows = [...((resources ?? []) as DbLessonResource[]), ...((managedResources ?? []) as DbLessonResource[])];
+    if (resourceRows.length > 0) {
       const resourcesByLesson = new Map<string, { title: string; url: string }[]>();
 
-      for (const resource of resources as { lesson_id: string; title: string; url: string }[]) {
+      for (const resource of resourceRows) {
+        if (!resource.lesson_id) continue;
         const current = resourcesByLesson.get(resource.lesson_id) ?? [];
         current.push({ title: resource.title, url: resource.url });
         resourcesByLesson.set(resource.lesson_id, current);
@@ -557,6 +593,32 @@ export async function getCourseBySlug(slug: string) {
   }
 
   return course;
+}
+
+export function publishedLessonsOnly(course: Course): Course {
+  return {
+    ...course,
+    modules: course.modules
+      .filter((module) => (module.status ?? "published") === "published")
+      .map((module) => ({
+        ...module,
+        lessons: module.lessons.filter((lesson) => (lesson.status ?? "published") === "published" && isStudentReadyLesson(lesson)),
+      }))
+      .filter((module) => module.lessons.length > 0),
+  };
+}
+
+function isStudentReadyLesson(lesson: CourseLesson) {
+  return Boolean(lesson.youtubeUrl.trim() || lesson.embedUrl.trim() || lesson.content?.trim());
+}
+
+export async function getPublishedCourseForStudent(slug: string) {
+  const course = await getCourseBySlug(slug);
+  if (!course || (course.lmsStatus ?? "published") !== "published") {
+    return null;
+  }
+
+  return publishedLessonsOnly(course);
 }
 
 export async function getCourseStaticParams() {

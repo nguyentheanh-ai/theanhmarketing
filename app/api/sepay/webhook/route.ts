@@ -3,12 +3,19 @@ import {
   sendPaymentSuccessEmail,
   shouldSendPaymentSuccessEmail,
 } from "@/lib/notifications/payment-success-email";
-import { syncOrderToGoogleSheet } from "@/lib/notifications/google-sheets";
+import { syncOrderToGoogleSheetWithActivity } from "@/lib/notifications/google-sheets-order-sync";
 import { sendTelegramOrderNotification } from "@/lib/notifications/telegram";
 import { sendMetaPurchaseEvent } from "@/lib/meta/conversions-api";
-import { verifySepayApiKey, type SepayWebhookPayload } from "@/lib/payments/sepay";
+import {
+  verifySepayApiKey,
+  type SepayWebhookPayload,
+} from "@/lib/payments/sepay";
 import { logSecurityEvent } from "@/lib/security/audit-log";
-import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
+import {
+  checkRateLimit,
+  rateLimitKey,
+  rateLimitResponse,
+} from "@/lib/security/rate-limit";
 import { invalidateAdminModules } from "@/services/adminDataService";
 import { logStudentActivity } from "@/services/activityLogService";
 import {
@@ -16,12 +23,20 @@ import {
   markPaymentEmailError,
   markPaymentEmailSent,
   markPurchaseEventSent,
+  type PaymentOrder,
 } from "@/services/orderService";
 import { ensureStudentAccountForPaidOrder } from "@/services/studentAccountService";
 import { notifyStudentPortalProvisioning } from "@/services/studentPortalProvisioningService";
 import { siteConfig } from "@/data/site";
 
 export const runtime = "nodejs";
+
+function isFacebookEbookPaidOrder(order: PaymentOrder) {
+  return (
+    order.courseSlug === "ebook-facebook-ads-2026" ||
+    order.orderItems.some((item) => item.slug === "ebook-facebook-ads-2026")
+  );
+}
 
 export async function POST(request: Request) {
   const rateLimit = checkRateLimit({
@@ -37,7 +52,10 @@ export async function POST(request: Request) {
 
   if (!verifySepayApiKey(request.headers)) {
     logSecurityEvent({ action: "sepay_webhook_bad_api_key", request });
-    return NextResponse.json({ success: false, message: "Sai API key Sepay." }, { status: 401 });
+    return NextResponse.json(
+      { success: false, message: "Sai API key Sepay." },
+      { status: 401 },
+    );
   }
 
   let payload: SepayWebhookPayload;
@@ -62,22 +80,31 @@ export async function POST(request: Request) {
 
   try {
     const confirmation = await confirmOrderFromSepay(payload);
-    let paymentEmail: { ok: boolean; skipped: boolean; reason?: string | null } = {
+    let paymentEmail: {
+      ok: boolean;
+      skipped: boolean;
+      reason?: string | null;
+    } = {
       ok: true,
       skipped: true,
       reason: "not_sent",
     };
-    let metaPurchase: { ok: boolean; skipped: boolean; reason?: string; status?: number } = {
+    let metaPurchase: {
+      ok: boolean;
+      skipped: boolean;
+      reason?: string;
+      status?: number;
+    } = {
       ok: true,
       skipped: true,
       reason: "not_sent",
     };
-    let studentAccount:
-      | Awaited<ReturnType<typeof ensureStudentAccountForPaidOrder>>
-      | null = null;
-    let studentPortalProvisioning:
-      | Awaited<ReturnType<typeof notifyStudentPortalProvisioning>>
-      | null = null;
+    let studentAccount: Awaited<
+      ReturnType<typeof ensureStudentAccountForPaidOrder>
+    > | null = null;
+    let studentPortalProvisioning: Awaited<
+      ReturnType<typeof notifyStudentPortalProvisioning>
+    > | null = null;
 
     if (!confirmation.wasAlreadyPaid && !confirmation.order.purchaseEventSent) {
       try {
@@ -93,7 +120,8 @@ export async function POST(request: Request) {
           currency: confirmation.order.currency,
           status: confirmation.order.status,
           pageUrl: eventSourceUrl,
-          landingPage: confirmation.order.attribution.landingPage || eventSourceUrl,
+          landingPage:
+            confirmation.order.attribution.landingPage || eventSourceUrl,
           utmSource: confirmation.order.attribution.utmSource,
           utmMedium: confirmation.order.attribution.utmMedium,
           utmCampaign: confirmation.order.attribution.utmCampaign,
@@ -113,10 +141,15 @@ export async function POST(request: Request) {
         });
 
         if (metaPurchase.ok && !metaPurchase.skipped) {
-          const markResult = await markPurchaseEventSent(confirmation.order.orderCode);
+          const markResult = await markPurchaseEventSent(
+            confirmation.order.orderCode,
+          );
 
           if (!markResult.ok) {
-            console.warn("[sepay] Could not mark Purchase event as sent:", markResult.error);
+            console.warn(
+              "[sepay] Could not mark Purchase event as sent:",
+              markResult.error,
+            );
           }
         }
 
@@ -131,14 +164,25 @@ export async function POST(request: Request) {
       }
     }
 
-    if (!confirmation.wasAlreadyPaid && shouldSendPaymentSuccessEmail(confirmation.order)) {
-      studentAccount = await ensureStudentAccountForPaidOrder(confirmation.order);
+    if (
+      !confirmation.wasAlreadyPaid &&
+      shouldSendPaymentSuccessEmail(confirmation.order)
+    ) {
+      studentAccount = await ensureStudentAccountForPaidOrder(
+        confirmation.order,
+      );
+      const requiresVerifiedLoginAccount = isFacebookEbookPaidOrder(
+        confirmation.order,
+      );
 
       if (!studentAccount.ok) {
         logSecurityEvent({
           action: "student_account_auto_create_failed",
           request,
-          detail: { orderCode: confirmation.order.orderCode, reason: studentAccount.reason },
+          detail: {
+            orderCode: confirmation.order.orderCode,
+            reason: studentAccount.reason,
+          },
         });
       }
 
@@ -161,67 +205,131 @@ export async function POST(request: Request) {
         }
       }
 
-      const result = await sendPaymentSuccessEmail(confirmation.order, {
-        account: studentAccount.temporaryPassword
-          ? {
-              email: studentAccount.email,
-              temporaryPassword: studentAccount.temporaryPassword,
-              created: studentAccount.created,
-              mustChangePassword: true,
-            }
-          : undefined,
-      });
-      paymentEmail = { ok: result.ok, skipped: result.skipped, reason: result.reason };
+      if (requiresVerifiedLoginAccount && !studentAccount.temporaryPassword) {
+        const reason = studentAccount.ok
+          ? "Payment success email requires a verified ebook login account."
+          : `Payment success email blocked because ebook account provisioning failed: ${
+              studentAccount.reason ?? "unknown reason"
+            }`;
+        paymentEmail = { ok: false, skipped: false, reason };
 
-      if (result.ok && !result.skipped) {
-        const markResult = await markPaymentEmailSent(confirmation.order.orderCode);
-
-        if (!markResult.ok) {
-          logSecurityEvent({
-            action: "payment_success_email_mark_sent_failed",
-            request,
-            detail: { orderCode: confirmation.order.orderCode, reason: markResult.error },
-          });
-        }
-        await logStudentActivity({
-          userId: studentAccount?.userId ?? null,
-          studentEmail: confirmation.order.email,
-          studentPhone: confirmation.order.phone,
-          eventType: "payment_success_email_sent",
-          eventTitle: "Đã gửi email thanh toán thành công",
-          eventDescription: `Email xác nhận thanh toán đã gửi cho đơn ${confirmation.order.orderCode}.`,
-          status: "success",
-          actorType: "system",
-          metadata: { orderCode: confirmation.order.orderCode, courseSlug: confirmation.order.courseSlug },
-        });
-      } else {
-        const reason = result.reason ?? "Payment success email was skipped.";
-        const markResult = await markPaymentEmailError(confirmation.order.orderCode, reason);
+        const markResult = await markPaymentEmailError(
+          confirmation.order.orderCode,
+          reason,
+        );
 
         if (!markResult.ok) {
           logSecurityEvent({
             action: "payment_success_email_mark_error_failed",
             request,
-            detail: { orderCode: confirmation.order.orderCode, reason: markResult.error },
+            detail: {
+              orderCode: confirmation.order.orderCode,
+              reason: markResult.error,
+            },
           });
         }
+
         await logStudentActivity({
           userId: studentAccount?.userId ?? null,
           studentEmail: confirmation.order.email,
           studentPhone: confirmation.order.phone,
           eventType: "payment_success_email_failed",
-          eventTitle: "Gửi email thanh toán thành công thất bại",
+          eventTitle: "Chưa gửi email ebook vì chưa cấp được tài khoản",
           eventDescription: reason,
           status: "failed",
           actorType: "system",
-          metadata: { orderCode: confirmation.order.orderCode, courseSlug: confirmation.order.courseSlug },
+          metadata: {
+            orderCode: confirmation.order.orderCode,
+            courseSlug: confirmation.order.courseSlug,
+          },
         });
+      } else {
+        const result = await sendPaymentSuccessEmail(confirmation.order, {
+          account: studentAccount.temporaryPassword
+            ? {
+                email: studentAccount.email,
+                temporaryPassword: studentAccount.temporaryPassword,
+                created: studentAccount.created,
+                mustChangePassword: true,
+              }
+            : undefined,
+        });
+        paymentEmail = {
+          ok: result.ok,
+          skipped: result.skipped,
+          reason: result.reason,
+        };
+
+        if (result.ok && !result.skipped) {
+          const markResult = await markPaymentEmailSent(
+            confirmation.order.orderCode,
+          );
+
+          if (!markResult.ok) {
+            logSecurityEvent({
+              action: "payment_success_email_mark_sent_failed",
+              request,
+              detail: {
+                orderCode: confirmation.order.orderCode,
+                reason: markResult.error,
+              },
+            });
+          }
+          await logStudentActivity({
+            userId: studentAccount?.userId ?? null,
+            studentEmail: confirmation.order.email,
+            studentPhone: confirmation.order.phone,
+            eventType: "payment_success_email_sent",
+            eventTitle: "Đã gửi email thanh toán thành công",
+            eventDescription: `Email xác nhận thanh toán đã gửi cho đơn ${confirmation.order.orderCode}.`,
+            status: "success",
+            actorType: "system",
+            metadata: {
+              orderCode: confirmation.order.orderCode,
+              courseSlug: confirmation.order.courseSlug,
+            },
+          });
+        } else {
+          const reason = result.reason ?? "Payment success email was skipped.";
+          const markResult = await markPaymentEmailError(
+            confirmation.order.orderCode,
+            reason,
+          );
+
+          if (!markResult.ok) {
+            logSecurityEvent({
+              action: "payment_success_email_mark_error_failed",
+              request,
+              detail: {
+                orderCode: confirmation.order.orderCode,
+                reason: markResult.error,
+              },
+            });
+          }
+          await logStudentActivity({
+            userId: studentAccount?.userId ?? null,
+            studentEmail: confirmation.order.email,
+            studentPhone: confirmation.order.phone,
+            eventType: "payment_success_email_failed",
+            eventTitle: "Gửi email thanh toán thành công thất bại",
+            eventDescription: reason,
+            status: "failed",
+            actorType: "system",
+            metadata: {
+              orderCode: confirmation.order.orderCode,
+              courseSlug: confirmation.order.courseSlug,
+            },
+          });
+        }
       }
     }
 
     if (!confirmation.wasAlreadyPaid) {
       try {
-        const telegram = await sendTelegramOrderNotification(confirmation.order, "payment_paid");
+        const telegram = await sendTelegramOrderNotification(
+          confirmation.order,
+          "payment_paid",
+        );
 
         if (!telegram.ok && !telegram.skipped) {
           console.warn("[sepay] Telegram paid notification failed:", {
@@ -230,46 +338,24 @@ export async function POST(request: Request) {
           });
         }
       } catch (telegramError) {
-        console.warn("[sepay] Telegram paid notification failed:", telegramError);
+        console.warn(
+          "[sepay] Telegram paid notification failed:",
+          telegramError,
+        );
       }
     }
 
     if (!confirmation.wasAlreadyPaid) {
       try {
-        const sheetSync = await syncOrderToGoogleSheet(confirmation.order, {
+        await syncOrderToGoogleSheetWithActivity(confirmation.order, {
           source: "SePay paid webhook",
           landingPageUrl: `${siteConfig.url}/thanh-toan/${encodeURIComponent(confirmation.order.orderCode)}`,
         });
-
-        if (!sheetSync.ok && !sheetSync.skipped) {
-          console.warn("[sepay] Google Sheets paid order sync failed:", {
-            reason: sheetSync.reason,
-            status: sheetSync.status,
-          });
-          await logStudentActivity({
-            studentEmail: confirmation.order.email,
-            studentPhone: confirmation.order.phone,
-            eventType: "sheet_sync_failed",
-            eventTitle: "Đồng bộ Google Sheet đơn paid thất bại",
-            eventDescription: sheetSync.reason ?? "Google Sheets paid order sync failed",
-            status: "failed",
-            actorType: "system",
-            metadata: { orderCode: confirmation.order.orderCode, status: sheetSync.status ?? null },
-          });
-        } else if (sheetSync.ok && !sheetSync.skipped) {
-          await logStudentActivity({
-            studentEmail: confirmation.order.email,
-            studentPhone: confirmation.order.phone,
-            eventType: "sheet_sync_success",
-            eventTitle: "Đã đồng bộ Google Sheet đơn paid",
-            eventDescription: `Đơn ${confirmation.order.orderCode} đã được gửi sang Google Sheet sau webhook SePay.`,
-            status: "success",
-            actorType: "system",
-            metadata: { orderCode: confirmation.order.orderCode },
-          });
-        }
       } catch (sheetError) {
-        console.warn("[sepay] Google Sheets paid order sync failed:", sheetError);
+        console.warn(
+          "[sepay] Google Sheets paid order sync failed:",
+          sheetError,
+        );
       }
     }
 
@@ -302,7 +388,10 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: false,
-        message: error instanceof Error ? error.message : "Không xử lý được webhook Sepay.",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Không xử lý được webhook Sepay.",
       },
       { status: 422 },
     );

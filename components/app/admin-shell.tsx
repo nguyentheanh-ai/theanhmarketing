@@ -171,7 +171,7 @@ export function AdminShell({ children, adminRole }: { children: ReactNode; admin
 
                     return (
                       <Link
-                        key={item.href}
+                        key={`${item.href}:${item.label}`}
                         href={item.href}
                         aria-current={isActive ? "page" : undefined}
                         className={`flex items-center gap-3 rounded-md px-3 py-3 text-sm font-bold ${
@@ -238,7 +238,7 @@ export function AdminShell({ children, adminRole }: { children: ReactNode; admin
 
             return (
               <Link
-                key={item.href}
+                key={`${item.href}:${item.label}`}
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
                 className={`shrink-0 rounded-md px-3 py-2 text-sm font-semibold ${

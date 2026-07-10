@@ -1,5 +1,11 @@
 # PROJECT_CONTEXT.md
 
+Project ID: `theanh-main`
+
+Allowed source: `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`.
+
+Central registry: `E:\_workspace-control\projects.registry.json`.
+
 ## 1. Bối cảnh dự án
 
 Website hiện tại: https://theanhmarketing.com/

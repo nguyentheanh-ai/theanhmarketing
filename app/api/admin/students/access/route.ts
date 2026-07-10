@@ -7,6 +7,7 @@ import { invalidateAdminModules } from "@/services/adminDataService";
 import { logStudentActivity } from "@/services/activityLogService";
 import { getCourses } from "@/services/courseService";
 import { createLeadAdmin } from "@/services/leadService";
+import { addLmsEnrollment } from "@/services/lmsService";
 import { ensureStudentAccountForAccessGrant } from "@/services/studentAccountService";
 
 type AccessAction = "grant" | "revoke";
@@ -132,6 +133,15 @@ export async function POST(request: Request) {
           { status: 500 },
         );
       }
+
+      await addLmsEnrollment({
+        courseSlug: course.slug,
+        studentName: name,
+        email,
+        phone,
+        userId: studentAccount?.userId ?? null,
+        status: action === "grant" ? "active" : "revoked",
+      });
 
       await logStudentActivity({
         leadId: result.lead?.id ?? null,

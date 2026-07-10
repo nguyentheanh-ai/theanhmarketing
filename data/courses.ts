@@ -4,6 +4,12 @@ export type LessonAccess = "free" | "paid";
 export type CourseLesson = {
   id: string;
   title: string;
+  slug?: string;
+  description?: string;
+  content?: string;
+  lessonType?: "video" | "text" | "file" | "link" | "live";
+  status?: "draft" | "published" | "archived";
+  publishedAt?: string | null;
   duration: string;
   order: number;
   youtubeUrl: string;
@@ -20,6 +26,7 @@ export type CourseModule = {
   id: string;
   title: string;
   description: string;
+  status?: "draft" | "published" | "archived";
   order: number;
   lessons: CourseLesson[];
 };
@@ -45,6 +52,8 @@ export type Course = {
   price: string;
   originalPrice: string;
   status: CourseStatus;
+  lmsStatus?: "draft" | "published" | "archived";
+  visibility?: "public" | "private" | "enrolled";
   statusLabel: string;
   ctaText: string;
   duration: string;
@@ -117,7 +126,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     role: "Thư viện tra cứu thực hành cho người đang vận hành Facebook Ads",
     slug: "ebook-facebook-ads-2026",
     title: "Thư viện kiến thức Facebook Ads 2026",
-    price: "299K",
+    price: "399K",
     originalPrice: "799K",
     thumbnailImageUrl: "/ebook-facebook-ads-2026/phan-1/1.png",
     eyebrow: "Facebook Ads Library",
@@ -127,7 +136,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     topics: ["Facebook Ads", "Ebook", "Thư viện thực hành"],
     outcomes: [
       "Có một nơi tra cứu nhanh khi cần chạy, kiểm tra, sửa hoặc tối ưu quảng cáo.",
-      "Nắm bản đồ 12 phần nội dung từ nền tảng đến vận hành lâu dài.",
+      "Nắm bản đồ 10 phần nội dung từ nền tảng đến vận hành lâu dài.",
       "Biết mở đúng bài theo vấn đề đang gặp thay vì học lan man từ nhiều nguồn.",
     ],
   },

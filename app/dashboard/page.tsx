@@ -1,9 +1,11 @@
 import { StudentDashboard } from "@/components/app/student-dashboard";
 import { getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
 import { getCourseAccessSlugs } from "@/lib/course-access";
+import { getDashboardCourseOrderSlugs } from "@/lib/student-dashboard-courses";
 import { logStudentActivity } from "@/services/activityLogService";
 import { getCourses } from "@/services/courseService";
 import { getLeads } from "@/services/leadService";
+import { getStudentLmsAccess } from "@/services/lmsService";
 import { getPaymentOrders } from "@/services/orderService";
 import { getResources } from "@/services/resourceService";
 
@@ -28,7 +30,12 @@ export default async function DashboardPage() {
     getLeads({ includeFallback: false }),
   ]);
   const email = user?.email ?? "";
-  const allCourseSlugs = courses.map((course) => course.slug);
+  const allCourseSlugs = getDashboardCourseOrderSlugs(courses);
+  const lmsAccess = await getStudentLmsAccess({
+    email,
+    userId: user?.id,
+    isAdmin: Boolean(adminRole),
+  });
   const paidSlugs = getCourseAccessSlugs({
     allCourseSlugs,
     email,
@@ -36,10 +43,14 @@ export default async function DashboardPage() {
     leads,
     orders,
   });
+  const mergedOwnedSlugs = Array.from(new Set([...paidSlugs, ...lmsAccess.ownedSlugs]));
   const ownedSlugs =
-    paidSlugs.length > 0 || isAuthGuardEnabled()
-      ? Array.from(new Set(paidSlugs))
+    mergedOwnedSlugs.length > 0 || isAuthGuardEnabled()
+      ? mergedOwnedSlugs
       : ["facebook-ads-2026"];
+  const courseProgressBySlug = Object.fromEntries(
+    ownedSlugs.map((slug) => [slug, lmsAccess.progressBySlug[slug] ?? 0]),
+  );
 
   if (user?.email) {
     await logStudentActivity({
@@ -61,6 +72,7 @@ export default async function DashboardPage() {
     <StudentDashboard
       courses={courses}
       ownedSlugs={ownedSlugs}
+      progressBySlug={courseProgressBySlug}
       resources={resources}
       studentEmail={email}
       studentName={getDisplayName(email, user?.user_metadata?.full_name)}

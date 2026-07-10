@@ -20,6 +20,7 @@
     />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://www.theanhmarketing.com/course-thumbnails/quang-cao-facebook-master-2026.webp" />
+    <meta name="facebook-domain-verification" content="rx0h2xuwlyy1b5vd6ge5f60gm10b2c" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -2922,7 +2923,12 @@
 
         function track(eventName, payload) {
           if (typeof window.fbq === "function") {
-            window.fbq("track", eventName, payload || {});
+            var eventId = payload && (payload.event_id || payload.eventID);
+            if (eventId) {
+              window.fbq("track", eventName, payload || {}, { eventID: eventId });
+            } else {
+              window.fbq("track", eventName, payload || {});
+            }
           }
         }
 
@@ -3031,6 +3037,7 @@
           var studentName = getFormValue("name");
           var email = getFormValue("email");
           var phone = getFormValue("phone");
+          var leadId = "web." + Date.now() + "." + Math.random().toString(10).slice(2);
           var urlParams = new URLSearchParams(window.location.search);
           var fbclid = urlParams.get("fbclid") || "";
           var fbc = getCookie("_fbc") || (fbclid ? "fb.1." + Date.now() + "." + fbclid : "");
@@ -3050,7 +3057,6 @@
             fbp: getCookie("_fbp"),
             fbc: fbc,
           };
-          var leadId = "web." + Date.now() + "." + Math.random().toString(10).slice(2);
           var button = form.querySelector('button[type="submit"]');
           var oldText = button.textContent;
           var checkoutPlan = resolveSelectedPlan();
@@ -3058,6 +3064,13 @@
           button.disabled = true;
           button.textContent = "Đang tạo mã thanh toán...";
           showToast("Đang tạo đơn thanh toán " + new Intl.NumberFormat("vi-VN").format(checkoutPlan.amount) + "đ...");
+          track("Lead", {
+            content_name: course.title,
+            content_category: "Facebook Ads",
+            currency: "VND",
+            value: checkoutPlan.amount,
+            event_id: leadId,
+          });
 
           try {
             var response = await fetch("/api/orders", {

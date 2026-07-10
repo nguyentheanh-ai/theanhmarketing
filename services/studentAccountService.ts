@@ -1,3 +1,4 @@
+import { createClient } from "@supabase/supabase-js";
 import { buildAutoStudentAccountCredentials } from "@/lib/auth/student-account";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logStudentActivity } from "@/services/activityLogService";
@@ -16,6 +17,29 @@ export type StudentAccountProvisionResult = {
   temporaryPassword: string | null;
   reason: string | null;
   userId: string | null;
+  loginVerified?: boolean;
+  authNormalization?: AuthNormalizationResult;
+};
+
+type SupabaseAdminClient = NonNullable<ReturnType<typeof createSupabaseAdminClient>>;
+
+type AuthNormalizationResult = {
+  attempted: boolean;
+  ok: boolean;
+  reason: string | null;
+};
+
+const AUTH_USER_PASSWORD_LOGIN_NORMALIZATION = {
+  aud: "authenticated",
+  role: "authenticated",
+  confirmation_token: "",
+  recovery_token: "",
+  email_change_token_current: "",
+  email_change_token_new: "",
+  email_change: "",
+  phone_change: "",
+  phone_change_token: "",
+  reauthentication_token: "",
 };
 
 function isExistingUserError(message: string) {
@@ -23,7 +47,7 @@ function isExistingUserError(message: string) {
 }
 
 async function findAuthUserByEmail(
-  supabase: NonNullable<ReturnType<typeof createSupabaseAdminClient>>,
+  supabase: SupabaseAdminClient,
   email: string,
 ) {
   for (let page = 1; page <= 20; page += 1) {
@@ -48,7 +72,7 @@ async function findAuthUserByEmail(
 }
 
 async function updateExistingStudentPassword(
-  supabase: NonNullable<ReturnType<typeof createSupabaseAdminClient>>,
+  supabase: SupabaseAdminClient,
   input: {
     userId: string;
     existingUserMetadata?: Record<string, unknown> | null;
@@ -77,6 +101,111 @@ async function updateExistingStudentPassword(
       temporary_password_created_at: new Date().toISOString(),
     },
   });
+}
+
+async function normalizeAuthUserForPasswordLogin(
+  supabase: SupabaseAdminClient,
+  userId: string | null,
+): Promise<AuthNormalizationResult> {
+  if (!userId) {
+    return { attempted: false, ok: false, reason: "Missing Auth user id for login normalization." };
+  }
+
+  try {
+    const { error } = await supabase
+      .schema("auth")
+      .from("users")
+      .update(AUTH_USER_PASSWORD_LOGIN_NORMALIZATION)
+      .eq("id", userId)
+      .select("id")
+      .maybeSingle();
+
+    if (error) {
+      return { attempted: true, ok: false, reason: error.message };
+    }
+
+    return { attempted: true, ok: true, reason: null };
+  } catch (error) {
+    return {
+      attempted: true,
+      ok: false,
+      reason: error instanceof Error ? error.message : "Could not normalize Auth user login fields.",
+    };
+  }
+}
+
+async function verifyStudentPasswordLogin(email: string, password: string) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return { ok: false, reason: "Missing Supabase anon configuration for password login verification." };
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error || !data.user) {
+    return { ok: false, reason: error?.message ?? "Could not verify student password login." };
+  }
+
+  await supabase.auth.signOut();
+
+  return { ok: true, reason: null };
+}
+
+async function completeProvisionedPasswordLogin(
+  supabase: SupabaseAdminClient,
+  input: {
+    email: string;
+    password: string;
+    userId: string | null;
+    created: boolean;
+    successReason: string | null;
+  },
+): Promise<StudentAccountProvisionResult> {
+  const authNormalization = await normalizeAuthUserForPasswordLogin(supabase, input.userId);
+  const loginVerification = await verifyStudentPasswordLogin(input.email, input.password);
+
+  if (!loginVerification.ok) {
+    const normalizationDetail = authNormalization.ok
+      ? null
+      : ` Auth normalization ${authNormalization.attempted ? "failed" : "was skipped"}: ${
+          authNormalization.reason ?? "unknown reason"
+        }.`;
+
+    return {
+      ok: false,
+      skipped: false,
+      created: false,
+      email: input.email,
+      temporaryPassword: null,
+      reason: `Password login verification failed after account provisioning: ${
+        loginVerification.reason ?? "unknown reason"
+      }.${normalizationDetail ?? ""}`,
+      userId: input.userId,
+      loginVerified: false,
+      authNormalization,
+    };
+  }
+
+  return {
+    ok: true,
+    skipped: false,
+    created: input.created,
+    email: input.email,
+    temporaryPassword: input.password,
+    reason: input.successReason,
+    userId: input.userId,
+    loginVerified: true,
+    authNormalization,
+  };
 }
 
 export async function ensureStudentAccountForPaidOrder(
@@ -161,15 +290,13 @@ export async function ensureStudentAccountForPaidOrder(
         };
       }
 
-      return {
-        ok: true,
-        skipped: false,
-        created: false,
+      return completeProvisionedPasswordLogin(supabase, {
         email: credentials.email,
-        temporaryPassword: credentials.password,
-        reason: "Student account password updated.",
+        password: credentials.password,
         userId: existingUser.id,
-      };
+        created: false,
+        successReason: "Student account password updated.",
+      });
     }
   }
 
@@ -218,15 +345,13 @@ export async function ensureStudentAccountForPaidOrder(
           };
         }
 
-        return {
-          ok: true,
-          skipped: false,
-          created: false,
+        return completeProvisionedPasswordLogin(supabase, {
           email: credentials.email,
-          temporaryPassword: credentials.password,
-          reason: "Student account password updated.",
+          password: credentials.password,
           userId: existingUser.id,
-        };
+          created: false,
+          successReason: "Student account password updated.",
+        });
       }
 
       return {
@@ -247,8 +372,20 @@ export async function ensureStudentAccountForPaidOrder(
     };
   }
 
-  await logStudentActivity({
+  const provisionResult = await completeProvisionedPasswordLogin(supabase, {
+    email: credentials.email,
+    password: credentials.password,
     userId: data.user?.id ?? null,
+    created: true,
+    successReason: null,
+  });
+
+  if (!provisionResult.ok) {
+    return provisionResult;
+  }
+
+  await logStudentActivity({
+    userId: provisionResult.userId,
     studentEmail: credentials.email,
     studentPhone: order.phone,
     eventType: "student_account_created",
@@ -259,15 +396,7 @@ export async function ensureStudentAccountForPaidOrder(
     metadata: { orderCode: order.orderCode, courseSlug: order.courseSlug, courseTitle: order.courseTitle },
   });
 
-  return {
-    ok: true,
-    skipped: false,
-    created: true,
-    email: credentials.email,
-    temporaryPassword: credentials.password,
-    reason: null,
-    userId: data.user?.id ?? null,
-  };
+  return provisionResult;
 }
 
 export async function ensureStudentAccountForAccessGrant(
@@ -369,15 +498,13 @@ export async function ensureStudentAccountForAccessGrant(
       };
     }
 
-    return {
-      ok: true,
-      skipped: false,
-      created: false,
+    return completeProvisionedPasswordLogin(supabase, {
       email: credentials.email,
-      temporaryPassword: credentials.password,
-      reason: "Student account password updated.",
+      password: credentials.password,
       userId: existingUser.id,
-    };
+      created: false,
+      successReason: "Student account password updated.",
+    });
   }
 
   const { data, error } = await supabase.auth.admin.createUser({
@@ -418,8 +545,20 @@ export async function ensureStudentAccountForAccessGrant(
     };
   }
 
-  await logStudentActivity({
+  const provisionResult = await completeProvisionedPasswordLogin(supabase, {
+    email: credentials.email,
+    password: credentials.password,
     userId: data.user?.id ?? null,
+    created: true,
+    successReason: null,
+  });
+
+  if (!provisionResult.ok) {
+    return provisionResult;
+  }
+
+  await logStudentActivity({
+    userId: provisionResult.userId,
     studentEmail: credentials.email,
     studentPhone: input.phone,
     eventType: "student_account_created",
@@ -430,13 +569,5 @@ export async function ensureStudentAccountForAccessGrant(
     metadata: { sourceOrderCode: input.sourceOrderCode ?? null, courseSlug: input.courseSlug, courseTitle: input.courseTitle },
   });
 
-  return {
-    ok: true,
-    skipped: false,
-    created: true,
-    email: credentials.email,
-    temporaryPassword: credentials.password,
-    reason: null,
-    userId: data.user?.id ?? null,
-  };
+  return provisionResult;
 }

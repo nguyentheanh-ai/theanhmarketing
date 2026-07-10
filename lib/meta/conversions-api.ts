@@ -39,9 +39,12 @@ export type MetaConversionResult = {
   skipped: boolean;
   reason?: string;
   status?: number;
+  eventsReceived?: number;
+  fbtraceId?: string;
 };
 
 export type MetaLeadEventInput = {
+  eventId?: string;
   orderCode?: string;
   studentName?: string;
   email?: string;
@@ -205,7 +208,7 @@ export function buildMetaLeadEvent(input: MetaLeadEventInput, eventTime = nowUni
     event_name: "Lead",
     event_time: eventTime,
     action_source: "website",
-    event_id: cleanString(input.leadId, 120) || cleanString(input.orderCode, 80) || undefined,
+    event_id: cleanString(input.eventId, 120) || cleanString(input.leadId, 120) || cleanString(input.orderCode, 80) || undefined,
     event_source_url: pageUrl || undefined,
     user_data: buildUserData(input),
     custom_data: buildBaseCustomData(input),
@@ -237,7 +240,7 @@ export function buildMetaPurchaseEvent(input: MetaPurchaseEventInput, eventTime 
 
 function getMetaConfig() {
   const accessToken = cleanString(process.env.META_CAPI_ACCESS_TOKEN, 2000);
-  const datasetId = normalizePixelId(PRIMARY_META_PIXEL_ID);
+  const datasetId = normalizePixelId(process.env.META_CAPI_DATASET_ID) || normalizePixelId(PRIMARY_META_PIXEL_ID);
   const apiVersion = /^v\d+\.\d+$/.test(cleanString(process.env.META_CAPI_API_VERSION, 20))
     ? cleanString(process.env.META_CAPI_API_VERSION, 20)
     : DEFAULT_API_VERSION;
@@ -254,6 +257,11 @@ function getMetaConfig() {
 function sanitizeMetaError(body: string) {
   return body.replace(/access_token=[^&"'\s]+/gi, "access_token=[redacted]").slice(0, MAX_LOG_BODY_LENGTH);
 }
+
+type MetaSuccessResponse = {
+  events_received?: number;
+  fbtrace_id?: string;
+};
 
 export async function sendMetaConversionEvent(event: MetaServerEvent): Promise<MetaConversionResult> {
   const config = getMetaConfig();
@@ -287,7 +295,21 @@ export async function sendMetaConversionEvent(event: MetaServerEvent): Promise<M
       return { ok: false, skipped: false, status: response.status, reason: "Meta CAPI request failed" };
     }
 
-    return { ok: true, skipped: false };
+    const body = (await response.json().catch(() => ({}))) as MetaSuccessResponse;
+    const eventsReceived = typeof body.events_received === "number" ? body.events_received : undefined;
+    const fbtraceId = cleanString(body.fbtrace_id, 120) || undefined;
+
+    if (config.testEventCode) {
+      console.info("[meta] Meta Conversion API event accepted:", {
+        event_name: event.event_name,
+        event_id: event.event_id,
+        events_received: eventsReceived,
+        fbtrace_id: fbtraceId,
+        has_test_event_code: true,
+      });
+    }
+
+    return { ok: true, skipped: false, eventsReceived, fbtraceId };
   } catch (error) {
     return {
       ok: false,

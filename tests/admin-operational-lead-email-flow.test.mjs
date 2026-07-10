@@ -27,14 +27,18 @@ test("Supabase password reset flow verifies account email before sending reset l
   const adminLoginForm = read("components/auth/admin-login-form.tsx");
 
   assert.match(route, /generateLink/);
+  assert.match(route, /type:\s*"recovery"/);
   assert.match(route, /getPasswordResetConfirmUrl/);
   assert.match(route, /hashed_token/);
   assert.doesNotMatch(route, /new URL\("\/doi-mat-khau[\s\S]*request\.url/);
   assert.match(route, /sendPasswordResetEmailViaResend/);
+  assert.match(route, /emailResult\.ok/);
+  assert.match(route, /status:\s*"sent"/);
   assert.match(route, /recordEmailLog/);
   assert.match(confirmRoute, /verifyOtp/);
   assert.match(confirmRoute, /token_hash/);
   assert.match(confirmRoute, /type !== "recovery"/);
+  assert.match(read("components/auth/change-password-form.tsx"), /updateUser\(\{[\s\S]*password/);
   assert.match(urlHelper, /isLocalhost/);
   assert.match(urlHelper, /defaultSiteUrl = "https:\/\/theanhmarketing\.com"/);
   assert.match(urlHelper, /api\/auth\/recovery\/confirm/);
@@ -53,6 +57,28 @@ test("Supabase password reset flow verifies account email before sending reset l
   assert.match(form, /result\?\.message/);
   assert.match(loginForm, /\/quen-mat-khau/);
   assert.match(adminLoginForm, /\/quen-mat-khau/);
+});
+
+test("student and admin login can choose whether to remember the browser session", () => {
+  const supabaseClient = read("lib/supabase/client.ts");
+  const loginForm = read("components/auth/login-form.tsx");
+  const adminLoginForm = read("components/auth/admin-login-form.tsx");
+
+  assert.match(supabaseClient, /type SupabaseBrowserPersistence/);
+  assert.match(supabaseClient, /remember/);
+  assert.match(supabaseClient, /session/);
+  assert.match(supabaseClient, /cookieOptions/);
+  assert.match(supabaseClient, /maxAge:\s*60 \* 60 \* 24 \* 30/);
+  assert.match(supabaseClient, /isSingleton:\s*false/);
+  assert.match(supabaseClient, /sessionStorage/);
+  assert.match(supabaseClient, /localStorage/);
+
+  for (const form of [loginForm, adminLoginForm]) {
+    assert.match(form, /name="rememberLogin"/);
+    assert.match(form, /type="checkbox"/);
+    assert.match(form, /formData\.get\("rememberLogin"\) === "on"/);
+    assert.match(form, /createSupabaseBrowserClient\(\{[\s\S]*persistence:\s*rememberLogin \? "remember" : "session"/);
+  }
 });
 
 test("lead operations have database-backed notes, activities, email logs, and cache invalidation", () => {

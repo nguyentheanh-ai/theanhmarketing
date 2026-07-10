@@ -12,6 +12,7 @@ async function recordStudentLoginActivity() {
   try {
     await fetch("/api/student/activity", {
       method: "POST",
+      keepalive: true,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         eventType: "student_login_success",
@@ -38,7 +39,10 @@ export function LoginForm() {
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") ?? "").trim().toLowerCase();
     const password = String(formData.get("password") ?? "");
-    const supabase = createSupabaseBrowserClient();
+    const rememberLogin = formData.get("rememberLogin") === "on";
+    const supabase = createSupabaseBrowserClient({
+      persistence: rememberLogin ? "remember" : "session",
+    });
 
     if (!supabase) {
       setMessage("Chưa cấu hình Supabase. Vui lòng kiểm tra biến môi trường.");
@@ -57,7 +61,7 @@ export function LoginForm() {
       return;
     }
 
-    await recordStudentLoginActivity();
+    void recordStudentLoginActivity();
     router.push(getPostLoginRedirect(data.user, nextPath));
     router.refresh();
   }
@@ -119,6 +123,15 @@ export function LoginForm() {
             type="password"
           />
         </div>
+        <label className="flex min-h-10 items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 text-sm font-semibold text-white/65">
+          <input
+            className="h-4 w-4 rounded border-white/20 bg-white/10 text-[#77d7ff] focus:ring-[#77d7ff]/30"
+            defaultChecked
+            name="rememberLogin"
+            type="checkbox"
+          />
+          Lưu đăng nhập trên thiết bị này
+        </label>
         {message ? (
           <p className="rounded-xl bg-red-500/12 p-4 text-sm font-semibold text-red-100">
             {message}

@@ -1,0 +1,387 @@
+# CRM v2 Implementation Status
+
+## 2026-06-16 19:53 +07:00 - Perceived lag feedback deployed
+
+- Production deploy from the approved worktree:
+  - Deployment id `dpl_GAcZpGLMhL1nHMBaCwhoqX1zjyyv`
+  - URL `https://theanhmarketing-dj4cokqw2-theanhs-projects-509d0c97.vercel.app`
+  - Alias `https://www.theanhmarketing.com`
+  - Vercel inspect status `Ready`
+- Predeploy gate:
+  - `node --test tests\*.mjs` 198/198
+  - `npx.cmd tsc --noEmit --pretty false`
+  - `npm.cmd run lint`
+  - `git diff --check` with LF/CRLF warnings only
+  - `npm.cmd run build`
+  - `npx.cmd playwright test crm-v2.spec.ts --project=chromium` 32/32
+- Live smoke:
+  - `/admin` redirects to `/admin/crm-v2`
+  - `/admin/dashboard` redirects to `/admin/crm-v2`
+  - `/admin/crm-v2` unauth redirects to `/admin/login?next=%2Fadmin%2Fcrm-v2`
+  - `/admin/crm-v2/reports?range=today&view=period` unauth redirects to login next
+  - `/api/admin/crm-v2/reports?range=today` unauth returns 403
+  - `/vao-khoa-hoc` returns 200
+  - `/go?to=.../vao-khoa-hoc` returns 200
+  - Vercel error logs for the last 15 minutes returned no logs
+- No database migration/backfill and no legacy data mutation in this deploy.
+
+## 2026-06-16 19:38 +07:00 - Perceived lag feedback pass local
+
+- Added CRM-specific route feedback in `CrmShell`:
+  - CRM v2 links, topbar range links, search submit, filter changes, and refresh now show immediate pending feedback.
+  - The feedback is a thin CRM progress bar plus compact status chip, and clears after URL/search params change or a fallback timeout.
+- Added `app/admin/crm-v2/loading.tsx` with skeletons for header controls, KPI cards, dense table, and right insight panel.
+- Exported `CrmRouteFeedback` from `components/crm-v2/index.ts`.
+- Added contract guards so CRM v2 keeps route feedback and loading skeleton in future edits.
+- Verification:
+  - `node --test tests\*.mjs` 198/198
+  - `npx.cmd tsc --noEmit --pretty false`
+  - `npm.cmd run lint`
+  - `git diff --check` (LF/CRLF warnings only)
+  - `npm.cmd run build`
+  - `npx.cmd playwright test crm-v2.spec.ts --project=chromium` 32/32
+- Local performance check:
+  - Overview TTFB `0.160s`
+  - Reports today/period TTFB `0.139s`
+  - Orders TTFB `0.152s`
+  - Leads TTFB `0.153s`
+  - Students TTFB `0.187s`
+- Playwright DOM check confirmed `data-crm-route-pending=true` appears immediately during a Reports range change and clears after navigation; horizontal overflow stayed `0`.
+- Not deployed in this pass. No DB migration/backfill and no legacy data mutation.
+
+## 2026-06-16 15:20 +07:00 - Functional completion pass deployed
+
+- Fixed real filters across CRM v2 pages:
+  - Shared `FilterBar` now renders selectable controls that update route query and reset page.
+  - Leads/Orders/Students send `courseSlug` and `ownerId` where backend expects slug/UUID.
+  - Segments filters status/channel, Email filters type/status, Automation filters status.
+- Kept the course-management entry inside CRM v2 with `/admin/crm-v2/students?view=courses`; it no longer jumps to legacy `/admin/khoa-hoc`.
+- Reports no longer use demo attribution rows for live report snapshot; `/admin/crm-v2/reports` now passes `range/searchParams` to `getCrmV2ReportSnapshot(query)`.
+- Team permissions now have API-backed `grant_role` and `revoke_role`, using the existing admin metadata service plus `crm_v2.audit_logs`.
+- Remarketing Email now has a composer for campaign name, type, segment recipient, subject, and HTML body. `create_campaign` creates both `crm_v2.email_templates` and `crm_v2.email_campaigns`.
+- Email page now shows legacy email configuration context for registration, pending-payment reminder, and payment-success notification.
+- Automation now includes `WorkflowRecipePanel` with operational recipes, including `payment_reminder_recipe`, and can apply recipes into the React Flow builder.
+- Mobile topbar no longer hides the range control or collapses search input.
+- Verification:
+  - `node --test tests\crm-v2-contract.test.mjs` 18/18
+  - `node --test tests\*.mjs` 198/198
+  - `npx.cmd tsc --noEmit --pretty false`
+  - `npm.cmd run lint`
+  - `git diff --check` (LF/CRLF warnings only)
+  - `npm.cmd run build`
+  - `npx.cmd playwright test crm-v2.spec.ts` 62/62
+- Production deploy:
+  - `dpl_87Mj1i7kDo8Q9HYgh1CmFQrXCsES`
+  - `https://theanhmarketing-hgf7zw44m-theanhs-projects-509d0c97.vercel.app`
+  - alias `https://www.theanhmarketing.com`
+  - Vercel inspect status Ready
+- Post-deploy smoke:
+  - `/admin/dashboard` returns 307 to `/admin/crm-v2`
+  - `/admin/crm-v2/email` unauth redirects to `/admin/login?next=%2Fadmin%2Fcrm-v2`
+  - `/api/admin/crm-v2/leads?range=30d` unauth returns 403
+  - Vercel error logs for the last 15 minutes returned no logs
+
+Date: 2026-06-15
+
+Branch/worktree: `feature/crm-v2-parallel-build` in `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-crm-v2`
+
+## Done In This Build
+
+- Created CRM v2 in a separate feature worktree.
+- Copied all 10 supplied mockups into `docs/crm-v2/mockups`.
+- Added required docs: schema audit, data migration plan, visual spec, status, README.
+- Added additive private-schema Supabase migration under `supabase/migrations`.
+- Added dry-run-first audit/backfill/verify/seed scripts.
+- Extended backfill to map legacy leads, order-only leads, contacts, orders, payments, paid-order enrollments, legacy email history, and CRM timeline events through `crm_v2.legacy_id_map`.
+- Extended backfill to map `public.lead_activities`, `public.activity_logs`, and `public.lead_notes` into `crm_v2.crm_events` / `crm_v2.notes` with idempotent legacy maps.
+- Extended verification to fail closed on missing lead/order/payment/enrollment/activity/note mappings, duplicate normalized contacts, and order/payment count drift.
+- Added CRM v2 service layer, feature flag, server-side pagination helpers, scoring, segment evaluator, workflow evaluator, email suppression, email provider adapter, and event destination adapters.
+- Added server-side list services for Leads, Orders, and Students with 10/20/50 pagination, live-schema filtering/search fallback, and demo fallback when CRM v2 is disabled locally.
+- Added team/integration list services with query-based server-side pagination and live/demo fallback logic (`listCrmV2TeamMembers`, `listCrmV2Integrations`), then wired both pages to the data layer.
+- Segment preview API is now feature-flag gated and uses a CRM v2 data service instead of hard-coded route demo rows.
+- Added feature-flagged API endpoints for Segments, Email, Automation, Reports, Team, and Integrations so all CRM v2 modules have a server route for data fetching/cache.
+- Added Automation action API for `test_workflow`, `save_draft`, `publish`, and `version_history`; workflow tests stay evaluation-only and do not run long automation in the browser.
+- Added Email action API for safe `create_campaign` and `schedule_broadcast`; create runs in Supabase `crm_v2.email_campaigns` when env is present and mock-safe mode when env is missing.
+- Replaced inert CRM v2 header/action controls with real route links, GET search forms, router refresh, and API-backed client actions; non-action filter chips now render as read-only status chips instead of fake buttons.
+- Fixed CRM v2 action-button hydration by rendering Email and Automation client action bars directly in their pages instead of passing them through the header action slot; Playwright now confirms the buttons call the APIs and render visible status.
+- Replaced the sample-only Automation canvas with an editable React Flow workflow builder: node palette, live canvas state, selected-node config panel, real test/save/publish/history actions, and version-history display.
+- Automation `save_draft` now persists the actual canvas payload to `workflow_versions.nodes/edges` and normalized `workflow_nodes` / `workflow_edges`.
+- Added CRM v2 workflow hardening migration with workflow run idempotency, workflow status constraints, step status constraints, and an immutable published-version trigger.
+- Added server-side workflow runner helpers that create idempotent `workflow_step_runs` from the active workflow version; lead bulk `add_workflow` now prepares step runs after creating a workflow run.
+- Workflow evaluator now recognizes all supported CRM v2 node types: triggers, condition, split, email, tag, stage, notify, webhook, delay, wait-until, and goal.
+- Added shared CRM v2 UI components.
+- Added all required `/admin/crm-v2/*` routes behind `CRM_V2_ENABLED`.
+- Added Resend webhook ingestion route at `/api/webhooks/resend`.
+- Resend webhook ingestion now preserves raw webhook payloads, writes normalized `email_events`, writes contact timeline `crm_events`, updates `email_sends`, and applies suppression for bounced, complained, and unsubscribed events.
+- Added source/contract tests and TypeScript unit tests for CRM v2 logic.
+- Added Playwright smoke test file for CRM v2 route coverage.
+- Completed final UI lint hygiene in shared CRM component layer (`components/crm-v2/crm-components.tsx`) by removing broad eslint disable rules and adding targeted compatibility annotation.
+- Fixed corrupted Vietnamese fallback strings in CRM v2 data/demo layer and added a contract guard to prevent mojibake regressions.
+- Added deploy-grade action APIs for the remaining non-workflow CRM v2 modules:
+  - `POST /api/admin/crm-v2/segments/actions` with `save_segment`, writing `crm_v2.segments` and `crm_v2.segment_rules`.
+  - `POST /api/admin/crm-v2/orders/actions` with `send_payment_reminder`, writing `crm_v2.tasks`.
+  - `POST /api/admin/crm-v2/students/actions` with `create_support_ticket`, writing `crm_v2.support_tickets`.
+  - `POST /api/admin/crm-v2/team/actions` with `record_permission_audit`, writing `crm_v2.audit_logs`.
+  - `POST /api/admin/crm-v2/integrations/actions` with `test_connection`, writing `crm_v2.integration_accounts` and `crm_v2.webhook_events`.
+- Added API-backed client action controls for Segments, Orders, Students, Team, and Integrations so those screens no longer rely on static shortcuts for their primary operations.
+
+## Data Safety Notes
+
+- Legacy CRM/admin routes were not modified.
+- Existing `public.orders` remains the payment source of truth.
+- CRM v2 uses private `crm_v2` schema and server-side routes by default.
+- Backfill defaults to dry-run and requires `--apply` to write.
+- Scripts mask PII in output.
+- Live-required script modes fail closed when Supabase env is missing instead of guessing from local/demo data.
+- New module action APIs only write to the private `crm_v2` schema when Supabase admin env is present and return explicit mock-safe responses when the local preview lacks Supabase admin env.
+
+## Pending Before Production Enablement
+
+- Automation Workflow is now deployable as a workflow builder + run/step preparation layer. Long-running execution workers for actually sending queued email/webhook/notify actions should still be connected through an approved background worker before enabling unattended automation at scale.
+- Run live `audit-current-data.ts --require-live` in a secure environment with Supabase service-role env.
+- Apply the CRM v2 migration to a staging or reviewed production database.
+- Run `backfill-crm-v2.ts --apply` only after dry-run review.
+- Run `verify-migration.ts --strict`.
+- Configure real Resend webhook delivery to `/api/webhooks/resend` if CRM v2 email event ingestion is enabled.
+- Configure Meta/Google/TikTok server-event env only after consent and hashing checks are reviewed.
+- Merge this feature worktree back into the approved deploy worktree only after unrelated dirty login-bridge changes are resolved.
+- Run a production/staging smoke with real Supabase env after migration apply to confirm module actions write rows in `crm_v2` and remain invisible to legacy admin routes.
+
+## Verification Log
+
+- `node --import=tsx --test tests\crm-v2-contract.test.mjs tests\crm-v2-core.unit.ts tests\crm-v2-migration-scripts.test.mjs` pass 17/17.
+- `node --test tests\*.mjs` pass 186/186.
+- `node --test tests/crm-v2-core.unit.ts` (requires `--import=tsx` in this repo for native Node TS resolution).
+- `npx.cmd tsc --noEmit --pretty false` pass.
+- `npm.cmd run lint` pass.
+- `git diff --check` pass.
+- `npm.cmd run build` pass.
+- `npx.cmd playwright test tests/playwright/crm-v2.spec.ts --project=chromium` pass 27/27.
+- Browser smoke on `/admin/crm-v2` + all required CRM v2 UI routes passed via Playwright:
+  - `/admin/crm-v2/outline`
+  - `/admin/crm-v2/leads`
+  - `/admin/crm-v2/leads/lead_demo_1`
+  - `/admin/crm-v2/segments`
+  - `/admin/crm-v2/email`
+  - `/admin/crm-v2/automation`
+  - `/admin/crm-v2/orders`
+  - `/admin/crm-v2/students`
+  - `/admin/crm-v2/reports`
+  - `/admin/crm-v2/team`
+  - `/admin/crm-v2/integrations`
+- Legacy `/admin/leads` remains resolvable; opening `/admin/leads` from the same smoke pass did not render CRM v2 content.
+- API smoke now covers:
+  - `/api/admin/crm-v2/leads`
+  - `/api/admin/crm-v2/orders`
+  - `/api/admin/crm-v2/students`
+  - `/api/admin/crm-v2/segments`
+  - `/api/admin/crm-v2/email`
+  - `POST /api/admin/crm-v2/email/actions` with `create_campaign`
+  - `/api/admin/crm-v2/automation`
+  - `/api/admin/crm-v2/reports`
+  - `/api/admin/crm-v2/team`
+  - `/api/admin/crm-v2/integrations`
+  - `POST /api/admin/crm-v2/automation/actions` with `test_workflow`
+- UI action smoke now covers real topbar search/refresh, Automation header API actions, Email campaign creation action, and a cross-route no-inert-buttons/no-hash-links guard.
+- 2026-06-15 follow-up verification after hydration fix:
+  - `npx.cmd playwright test tests/playwright/crm-v2.spec.ts --project=chromium --grep=automation` pass 4/4.
+  - `npx.cmd playwright test tests/playwright/crm-v2.spec.ts --project=chromium --grep=email` pass 3/3.
+  - `node --import=tsx --test tests\crm-v2-contract.test.mjs tests\crm-v2-core.unit.ts tests\crm-v2-migration-scripts.test.mjs` pass 17/17.
+  - `npx.cmd tsc --noEmit --pretty false` pass.
+  - `npm.cmd run lint` pass.
+- 2026-06-15 workflow completion verification:
+  - `node --import=tsx --test tests\crm-v2-contract.test.mjs tests\crm-v2-core.unit.ts` pass 18/18.
+  - `node --test tests\*.mjs` pass 187/187.
+  - `npx.cmd playwright test tests/playwright/crm-v2.spec.ts --project=chromium` pass 27/27.
+  - Manual Playwright smoke added a real `add_tag` node, changed its config to `vip-local-smoke`, then confirmed both `test_workflow` and `save_draft` posted that live canvas node to `/api/admin/crm-v2/automation/actions`.
+  - `npx.cmd tsc --noEmit --pretty false` pass.
+  - `npm.cmd run lint` pass.
+  - `npm.cmd run build` pass.
+- 2026-06-15 remaining module completion verification:
+  - RED contract check first failed on missing `segments/orders/students/team/integrations` action routes and missing page action components.
+  - `node --import=tsx --test tests\crm-v2-contract.test.mjs --test-name-pattern "route surface|shared controls"` pass 10/10.
+  - `npx.cmd playwright test tests/playwright/crm-v2.spec.ts --project=chromium --grep "remaining module"` pass 2/2.
+  - `node --test tests\*.mjs` pass 187/187.
+  - `npx.cmd playwright test tests/playwright/crm-v2.spec.ts --project=chromium` pass 29/29.
+  - `npx.cmd tsc --noEmit --pretty false` pass.
+  - `npm.cmd run lint` pass.
+  - `git diff --check` pass with LF/CRLF warnings only.
+  - `npm.cmd run build` pass.
+  - In-app browser preview checked `/admin/crm-v2/orders`: page rendered without application error and showed the real `Gui nhac thanh toan` action button.
+- 2026-06-16 production code deploy verification:
+  - CRM v2 changes were copied into the approved deploy worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix` without overwriting pre-existing login-bridge dirty changes.
+  - Deploy worktree predeploy gate passed: `node --test tests\*.mjs` 190/190, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `git diff --check`, `npm.cmd run build`, and Playwright CRM v2 29/29.
+  - `npm.cmd audit --omit=dev --json` reported 0 production vulnerabilities.
+  - Production deploy `dpl_kyZw65t5eWJ3Dj5sxwTDbzf2ZCxR` is Ready and aliased to `https://www.theanhmarketing.com`.
+  - Production env still has no `CRM_V2_ENABLED`; CRM v2 code is deployed but not enabled against live data.
+  - Live smoke passed for admin redirects, `/go`, `/vao-khoa-hoc`, `/app-login-bridge`, and Facebook Ads landing Pixel/no-Zoom/no-early-checkout guards.
+- 2026-06-16 Vietnamese copy hotfix:
+  - Fixed remaining no-diacritic CRM v2 visible copy in the shared shell, topbar, filters, pagination, module action buttons, lead 360 profile, outline, data fallback labels, and API action status messages.
+  - Added contract guard `crm v2 visible Vietnamese copy keeps diacritics`, scanning CRM v2 admin pages, admin APIs, shared components, data layer, and Playwright smoke tests.
+  - CRM v2 action APIs now respect `CRM_V2_USE_DEMO_DATA=true`, so local preview/demo mode returns mock-safe success instead of trying to write `crm_v2` tables when live schema/env is unavailable.
+  - Verification passed: CRM v2 contract 11/11, full Node tests 191/191, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `git diff --check`, `npm.cmd audit --omit=dev --json` with 0 production vulnerabilities, `npm.cmd run build`, and Playwright CRM v2 29/29.
+  - Redeployed production code behind the still-disabled production flag: `dpl_4Nu2ELMgXFc8mXfrVgEUJJcY6fmh`, URL `https://theanhmarketing-mzuzds8xd-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready.
+  - Local preview verified at `http://127.0.0.1:3020/admin/crm-v2/orders`: `Đơn hàng & Thanh toán`, `Gửi nhắc thanh toán`, `Tìm`, and `30 ngày` render with accents; known bad text such as `Gui nhac thanh toan`, `Tong quan CRM`, and `Tim ten` is absent.
+- 2026-06-16 Outline operator-copy hotfix:
+  - Removed implementation-only wording from `/admin/crm-v2/outline`, including `Blueprint`, `Data safe`, migration checklist copy, `crm_v2`, `legacy_id_map`, `read-model`, `UI route ready`, `Safety guard`, `webhook`, `owner`, `stage`, `task`, and `ticket`.
+  - Rewrote the screen as an operator-facing CRM map: `Bản đồ vận hành`, module descriptions, `Ưu tiên vận hành`, and business-safe data principles such as `CRM hiện tại: Giữ nguyên` and `Dữ liệu khách hàng: Không ghi đè`.
+  - Updated sidebar/topbar status copy from internal state labels to `Chế độ vận hành an toàn`, `CRM hiện tại vẫn giữ nguyên`, and `Bản CRM mới`.
+  - Added contract guard `crm v2 outline hides implementation-only language from operators`.
+  - Verification passed: CRM v2 contract 12/12, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `npm.cmd run build`, and local browser DOM verification on `http://127.0.0.1:3020/admin/crm-v2/outline`.
+  - Redeployed production code behind the still-disabled production flag: `dpl_2Hk6kEEjSoRn7wjFoXg2SJvEpAAY`, URL `https://theanhmarketing-n3bjlb4fu-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready. Production CRM v2 remains disabled because `CRM_V2_ENABLED` is absent/off.
+
+- 2026-06-16 live enablement and admin replacement:
+  - Applied the reviewed additive CRM v2 SQL to production Supabase project `vsxxgdzwtscuxcmjfckt` using private schema `crm_v2`; no legacy public tables were dropped, truncated, renamed, or bulk-deleted.
+  - Backfilled real production data into CRM v2 with run label `crm-v2-live-sql-backfill-20260616`; latest verify: `migration_status=success`, `drift_detected=false`.
+  - Verified live counts: public sources `leads=131`, `orders=138`, `activity_logs=536`, `lead_activities=19`, `email_logs=56`, `lead_email_logs=2`; CRM v2 targets `contacts=125`, `leads=264`, `orders=138`, `payments=138`, `enrollments=45`, `crm_events=882`, `email_sends=58`, `email_events=58`, `legacy_id_map=1583`.
+  - Updated `/admin` so `CRM_V2_ENABLED=true` redirects operators to `/admin/crm-v2`; direct legacy routes such as `/admin/dashboard` and `/admin/leads` remain available for rollback/inspection.
+  - Fixed Vercel production flag values after detecting blank env values; production env is now intentionally set as `CRM_V2_ENABLED=true`, `CRM_V2_USE_DEMO_DATA=false`, `CRM_V2_ALLOW_DEMO_SEED=false`.
+  - Production deploy `dpl_HriDnGzRaXTERRx2jWSL6oamyKJ4`, URL `https://theanhmarketing-mx5uxnxc5-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready.
+  - Production smoke: `/admin` returns `307 Location: /admin/crm-v2`; `/admin/crm-v2` redirects unauthenticated users to `/admin/login?next=%2Fadmin%2Fcrm-v2`; `/admin/dashboard` still redirects to its legacy login next path; `/vao-khoa-hoc` returns 200.
+  - Verification passed in deploy worktree: CRM v2 contract 13/13, full Node tests 193/193, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `npm.cmd run build`, `git diff --check`, Vercel inspect Ready, and no Vercel error logs in the 15-minute scan.
+  - Remaining manual check: owner-session browser smoke on production after login, because unauthenticated curl can verify redirects/auth guards but not the rendered authenticated CRM tables.
+
+- 2026-06-16 live data alignment follow-up:
+  - Root cause found for incorrect CRM v2 numbers:
+    - `crm_daily_metrics.new_leads` was counting order-derived opportunities from `crm_v2.leads` in addition to true legacy leads.
+    - Lead pipeline cards on `/admin/crm-v2/leads` counted only the current paginated page rows instead of the full pipeline.
+    - `course_id` is null in CRM v2 read models because production `public.courses` currently has only 1 row while real orders use multiple `course_slug` product values.
+  - Applied additive production SQL to refresh `crm_v2.crm_daily_metrics` with `new_leads` counted from true leads only, excluding `metadata.source_table = public.orders`.
+  - Verified production data after alignment: `public_leads_today=1`, `crm_real_leads_today=1`, `crm_order_opportunities_today=1`, `metric_new_leads_today=1`, `crm_visible_leads=258`, `crm_orders=138`, `crm_enrollments=45`, `orders_with_course_slug=138`, `enrollments_with_course_slug=45`, `leads_with_course_slug=133`.
+  - Normalized stage/status coverage remains: `not_contacted/open=106`, `pending_payment/open=70`, `paid/won=43`, `disqualified/lost=21`, `consulting/open=18`, `disqualified/archived=6`.
+  - Updated UI/data layer:
+    - Dashboard now reads live CRM v2 rows directly and does not fall back to demo when partial aggregate rows are empty.
+    - Leads stage summary uses a dedicated server-side total query.
+    - Leads, Orders, Students, and contact profile course display/search/filter now use `course_slug` read-model data.
+    - CRM v2 sidebar links to the real legacy course manager at `/admin/khoa-hoc`.
+  - Added contract guards for true lead counting, course_slug filtering, stage-summary totals, `/admin/khoa-hoc` access, and accented Vietnamese fallback strings.
+  - Verification passed: CRM v2 contract 14/14, full Node tests 194/194, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `npm.cmd run build`, `git diff --check`.
+  - Production redeploy `dpl_B5Lrn1XWG28By62DuWYHpnBRzr8H`, URL `https://theanhmarketing-5htl82uau-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready.
+  - Production smoke: `/admin` redirects to `/admin/crm-v2`; unauthenticated `/admin/crm-v2` redirects to `/admin/login?next=%2Fadmin%2Fcrm-v2`; `/admin/khoa-hoc` redirects to its login next path; unauthenticated `/api/admin/crm-v2/leads` returns 403 without leaking data; Vercel inspect Ready and error logs for the last 15 minutes returned no errors.
+  - Remaining manual check: authenticated owner browser smoke after login to inspect rendered CRM v2 tables/actions on production.
+
+- 2026-06-16 server-only RPC live-data fix:
+  - Root cause confirmed from the operator screenshot: CRM v2 was enabled, but server reads still used Supabase Data API `.schema("crm_v2")`; because `crm_v2` is intentionally private, read failures could fall back to demo numbers.
+  - Added additive migration `supabase/migrations/20260616143000_crm_v2_server_rpc.sql` with public RPC wrappers that read private `crm_v2` data through `service_role` only:
+    - `crm_v2_dashboard_raw`
+    - `crm_v2_stage_counts_raw`
+    - `crm_v2_leads_list_raw`
+    - `crm_v2_orders_list_raw`
+    - `crm_v2_students_list_raw`
+  - RPC execute grants are revoked from `public`, `anon`, and `authenticated`; CRM v2 tables remain private and are not exposed to browser clients.
+  - Updated `lib/crm-v2/data.ts` so Dashboard, Leads stage summary, Leads list, Orders list, and Students list use the RPC path. When live RPC fails, production returns empty live state instead of demo numbers.
+  - Production Supabase RPC verification returned true live counts: `new_leads_today=1`, `mql=131`, `paid_orders=45`, `revenue=30555000`, `leads_total=258`, `orders_total=138`, `students_total=45`.
+  - Added contract guards to prevent reverting Dashboard/Lists back to direct private-schema Data API fallback.
+  - Verification passed: CRM v2 contract 14/14, full Node tests 194/194, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `npm.cmd run build`, `git diff --check`.
+  - Production redeploy `dpl_FuxZ3VMCHwHNxKxg39z17THt4q5A`, URL `https://theanhmarketing-icjsljjhy-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready.
+  - Production smoke: `/admin/crm-v2` unauthenticated returns `307` to `/admin/login?next=%2Fadmin%2Fcrm-v2`, Vercel inspect Ready, and Vercel logs for the last 15 minutes returned no errors.
+  - Remaining manual check: authenticated owner-session browser smoke after hard refresh, because this Codex turn did not expose an in-app browser control session.
+
+- 2026-06-16 dedupe/layout hotfix for live CRM v2:
+  - Root cause confirmed from screenshots: CRM v2 Leads showed one row per `crm_v2.leads` opportunity, so the same contact could appear twice when both a lead-form row and an order-derived row existed. Orders/Leads tables also allowed long course/product text to expand the viewport.
+  - Updated shared CRM table layout to constrain the viewport, use fixed table layout with horizontal table scroll inside the content area, wrap long text cells, and keep compact cells only for status/value/date/action columns.
+  - Added phone to the Leads table and display Vietnamese stage/status labels instead of raw codes such as `not_contacted` and `pending_payment`.
+  - Applied additive production SQL migrations `20260616152000_crm_v2_dedupe_lead_rpc.sql` and `20260616153500_crm_v2_dedupe_dashboard_rpc.sql`.
+  - New server-only RPC behavior chooses one effective row per contact using `crm_v2.lead_stage_rank()`, so order/payment status can lift the operational stage while duplicate contact rows are hidden from operators.
+  - Production verify after migration: deduped leads total `125` instead of raw duplicate total `258`; stage counts are `consulting=4`, `disqualified=17`, `not_contacted=3`, `paid=42`, `pending_payment=59`; dashboard MQL is `105`; Quang/Nguyen Hien/Le Son sample searches each return 1 row; phone is present; Quang stage is `pending_payment`; Nguyen Hien stage is `paid`.
+  - Verification passed: CRM v2 contract 14/14, full Node tests 194/194, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `git diff --check` with LF/CRLF warnings only, and `npm.cmd run build`.
+  - Production redeploy `dpl_4tbu2R5PkaRMvnQsbLLYjLc518iy`, URL `https://theanhmarketing-f9xzh9zl4-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready.
+  - Production smoke: `/admin` redirects to `/admin/crm-v2`; unauthenticated `/admin/crm-v2/leads` and `/admin/crm-v2/orders` redirect to `/admin/login?next=%2Fadmin%2Fcrm-v2`; Vercel inspect Ready; Vercel logs for the last 15 minutes contain no errors.
+
+- 2026-06-16 CRM v2 mockup-aligned readability pass:
+  - Reworked Leads & Pipeline from the mockup `03-leads-pipeline.png`: seven stage cards stay on one desktop row, filter bar and pagination are compact, bulk action sits directly above the table, and the data table gets the full workspace width instead of being squeezed by a side panel.
+  - Reworked dense table behavior across CRM v2: explicit `colgroup` widths, fixed table layout, long course/product/next-action text clamps to two lines, and wide tables scroll only inside the table container so the page itself does not overflow.
+  - Leads table now renders a contact block with customer name plus email, keeps `SĐT` visible, and uses readable Vietnamese labels for raw status/email values such as `unknown`.
+  - Orders page keeps the recovery/insight panel but only places it beside the table on very wide screens; normal desktop widths keep the table readable first.
+  - Local Playwright visual check at 1620x900 on `/admin/crm-v2/leads`: `bodyOverflow=0`, all seven stage cards share one row, table wrapper has internal scroll, and the course cell reads as a normal course name instead of vertical word fragments. Screenshot artifact: `E:\Temp\UserTemp\crm-v2-leads-ui-fix-1620-v3.png`.
+  - Verification passed: CRM v2 contract 14/14, full Node tests 194/194, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `git diff --check` with LF/CRLF warnings only, and `npm.cmd run build`.
+  - Production redeploy `dpl_55W7jwfv4qYYuV4mBiY81MUhjrXT`, URL `https://theanhmarketing-qsejbu6pr-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready.
+  - Production smoke: unauthenticated `/admin/crm-v2/leads` and `/admin/crm-v2/orders` redirect to `/admin/login?next=%2Fadmin%2Fcrm-v2`; Vercel inspect Ready; Vercel logs for the last 15 minutes contain no errors.
+
+- 2026-06-16 functional audit and live-action hardening:
+  - Added `docs/crm-v2/FUNCTIONAL_AUDIT.md` with route-by-route, button-by-button, KPI/query, email safety, and deploy-blocker status.
+  - Converted the shared range control from a cosmetic `30 ngày` link into a real `7/30/90 ngày` query contract; dashboard/list RPC calls now receive `p_date_from` and `p_date_to`.
+  - Added additive migration `supabase/migrations/20260616161000_crm_v2_range_rpc.sql` with date-aware server-only RPC overloads for dashboard, leads, orders, and students.
+  - Added `lib/crm-v2/email-actions.ts` so test email, real campaign send, and payment reminders use the EmailProvider boundary, idempotency keys, suppression checks, `email_sends`, `email_events`, and `crm_events`.
+  - Hardened production behavior: `shouldUseCrmV2DemoData()` now allows demo only outside production; production action APIs return explicit configuration errors when Supabase live env is missing.
+  - Hardened real campaign send: `send_campaign_now` requires confirmation text `GUI THAT` and a campaign segment, so CRM v2 cannot accidentally send marketing email to all contacts.
+  - Hardened real payment reminders: live `send_payment_reminder` requires a valid CRM v2 order UUID, sends transactional email when Resend is configured, and records the recovery task with email result metadata.
+  - Removed fallback placeholder identities from live action paths: no default `manual` order ID and no default internal team email.
+  - Rewrote `docs/crm-v2/VISUAL_SPEC.md` with readable Vietnamese and operator-facing mockup requirements.
+  - Verification during this pass: `node --test tests\crm-v2-contract.test.mjs` pass 16/16, `node --import=tsx --test tests\crm-v2-core.unit.ts` pass 10/10, and `npx.cmd tsc --noEmit --pretty false` pass.
+  - Added contract guard `crm v2 production actions fail closed instead of silently mocking`; CRM v2 contract now passes 17/17.
+  - Applied additive Supabase production migration `crm_v2_range_rpc` on project `vsxxgdzwtscuxcmjfckt`; live date-RPC verification returned `dashboard_new_leads_today=1`, `leads_total_30d=124`, `orders_total_30d=138`, `students_total_30d=45`.
+  - Final gate passed after migration: `node --test tests\*.mjs` 197/197, `node --import=tsx --test tests\crm-v2-core.unit.ts tests\crm-v2-migration-scripts.test.mjs` 12/12, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `git diff --check`, `npm.cmd run build`, and Playwright CRM v2 29/29.
+  - Production redeploy `dpl_GSRxiqKyxxLt3YBR4WqAGqSkfpG9`, URL `https://theanhmarketing-mchjmgep6-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready.
+  - Production smoke: `/admin` redirects to `/admin/crm-v2`; unauthenticated `/admin/crm-v2`, `/admin/crm-v2/leads`, and `/admin/crm-v2/orders` redirect to `/admin/login?next=%2Fadmin%2Fcrm-v2`; unauthenticated `/api/admin/crm-v2/leads` returns 403; Vercel runtime logs for the last 15 minutes returned no errors.
+
+- 2026-06-16 CRM v2 admin replacement and side-panel overflow hotfix:
+  - User reported direct `/admin/dashboard` still showed the legacy Admin Panel while CRM v2 is the intended operator entrypoint, and multiple CRM v2 dashboards clipped their right-side preview/insight panels.
+  - Updated `/admin/dashboard` to honor `CRM_V2_ENABLED`; when the flag is on it redirects to `/admin/crm-v2`. Legacy dashboard code remains in place for rollback when the flag is off.
+  - Reworked CRM v2 side-panel layouts to use `minmax(0,1fr)`, `min-w-0`, and very-wide breakpoint sidebars. Normal desktop widths now stack insight panels below/after the main content instead of pushing content off-screen.
+  - Added contract guards so `/admin/dashboard` must redirect under CRM v2 and CRM v2 pages cannot reintroduce the old clipping grid patterns.
+  - Added Playwright coverage for every CRM v2 route at 1620x900 to fail if page-level horizontal overflow returns.
+  - Verification passed: CRM v2 contract 17/17, full Node tests 197/197, CRM unit/migration 12/12, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `git diff --check`, `npm.cmd run build`, and Playwright CRM v2 31/31.
+  - Production redeploy `dpl_CnHhSPVs1ALxEZurjTwohYa8Td1z`, URL `https://theanhmarketing-ey5rrt7tn-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, status Ready.
+  - Production smoke: `/admin/dashboard` returns `307 Location: /admin/crm-v2`; unauthenticated `/admin/crm-v2/segments`, `/leads`, and `/orders` redirect to `/admin/login?next=%2Fadmin%2Fcrm-v2`; Vercel runtime logs for the last 15 minutes returned no error/fatal logs.
+
+- 2026-06-16 CRM v2 Reports today/range follow-up:
+  - Added real `today` support to the shared CRM v2 range query contract and topbar, so `Hôm nay` becomes `range=today` instead of a visual-only control.
+  - Rebuilt `/admin/crm-v2/reports` controls with fixed ranges, custom `dateFrom/dateTo`, and view modes `Theo ngày`, `Theo giai đoạn`, and `Theo nguồn`.
+  - Changed report KPI snapshot to reuse `getCrmV2Dashboard(query)` live RPC summary, preventing Reports from showing zero/demo-prone totals while Overview has live numbers.
+  - Added `deriveReportAttributionRowsFromDashboard()` so attribution rows can come from live dashboard sources when pipeline metric rows are unavailable.
+  - Local preview verified in the in-app browser at `http://127.0.0.1:3020/admin/crm-v2/reports?range=today&view=period`: correct title, `Hôm nay`, period chart, two date inputs, and no page-level overflow.
+  - Verification passed: CRM v2 contract 18/18, migration+contract 20/20, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `git diff --check`, `npm.cmd run build`, and Playwright CRM v2 chromium 32/32.
+  - Production deployment `dpl_AHVFsiZcu1WFsC2JEtZoxpA2E5oG` is Ready and aliased to `https://www.theanhmarketing.com`.
+  - Production smoke: `/admin/dashboard` redirects to `/admin/crm-v2`; unauthenticated `/admin/crm-v2/reports?range=today` redirects to `/admin/login?next=%2Fadmin%2Fcrm-v2`; unauthenticated `/api/admin/crm-v2/reports?range=today` returns 403; Vercel error logs for the last 10 minutes returned no logs.
+
+- 2026-06-16 CRM v2 lag/action hardening follow-up:
+  - Status: local-ready in the deploy worktree, not deployed to production yet.
+  - Fixed a real performance issue on Reports: `getCrmV2ReportSnapshot(query)` now returns the dashboard payload, so `/admin/crm-v2/reports` and `/api/admin/crm-v2/reports` no longer call `getCrmV2Dashboard(query)` a second time.
+  - Fixed report KPI drift by falling back to live attribution totals when dashboard report summary is zero or missing.
+  - Fixed the legacy direct-data dashboard path to resolve `today` through `getCrmDateRange({ range: "today" })`, keeping the day boundary in `Asia/Ho_Chi_Minh` instead of UTC.
+  - Hardened lead operations: bulk owner/stage/tag/email/workflow/export now expands selected deduped leads to all active CRM v2 leads with the same `contact_id`; Lead table links open Contact 360 via `contactId`.
+  - Hardened email composer: after creating a campaign, the UI stores the returned campaign id and uses it for confirmed real sends.
+  - Hardened module actions: Orders, Students, and Team use the first visible row as action context when the operator has not selected a row, so buttons do not appear broken while data is visible.
+  - Cleaned mojibake in Students and Team CRM v2 client screens.
+  - Local performance measurement via `curl.exe` after the patch: Reports TTFB `0.435s`, Overview `0.444s`, Orders `0.679s`, Students `0.537s`; Reports was measured at about `3.216s` before removing the duplicate dashboard fetch.
+  - Verification passed: `node --test tests\crm-v2-contract.test.mjs` 18/18, `node --test tests\*.mjs` 198/198, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `npm.cmd run build`, `git diff --check` with LF/CRLF warnings only, and `npx.cmd playwright test crm-v2.spec.ts --project=chromium` 32/32.
+
+- 2026-06-16 CRM v2 Remarketing Email rebuilt as CRM-native Email MKT workspace:
+  - Replaced the old one-form campaign action UI with `EmailMarketingWorkspace`, including tabs `Chiến dịch`, `Soạn email`, `Template`, `Lịch gửi`, `Log gửi`, and `Suppression`.
+  - Added block composer fields for campaign goal, type, segment, subject, preheader, main body, CTA text/url, footer/unsubscribe, schedule, and optional advanced HTML.
+  - Added `EmailPreviewPanel`, `AudiencePreviewPanel`, `EmailTemplatePicker`, and `EmailSendResultPanel`; legacy registration, pending-payment, and payment-success email contexts can be imported into the composer.
+  - Expanded `/api/admin/crm-v2/email/actions` with `save_draft`, `preview_audience`, `refresh_audience`, `send_test_email`, `schedule_campaign`, `send_campaign_now`, and `cancel_schedule`; old `create_campaign` and `schedule_broadcast` remain as safe aliases.
+  - Added email service helpers for rendered HTML/text output, masked audience summaries, campaign recipient idempotency keys, segment-rule audience preview, segment membership refresh, and audience snapshot guard.
+  - Real send now requires `GUI THAT`, a refreshed `metadata.audience_snapshot`, current segment rule version, sendable memberships, suppression checks, and production Resend config.
+  - Data layer now lists campaign subject/preheader, segment/template IDs, schedule, and audience snapshot stats for the email workspace/table.
+  - Verification passed: CRM v2 unit 12/12, CRM v2 contract 18/18, full Node tests 198/198, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `git diff --check`, `npm.cmd run build`, and `npx.cmd playwright test crm-v2.spec.ts --project=chromium` 32/32.
+
+- 2026-06-16 CRM v2 Email MKT operational card templates imported from legacy mails:
+  - Added `lib/crm-v2/operational-email-templates.ts` with three complete order/customer email templates: `registration_payment`, `payment_success_access`, and `pending_payment_reminder`.
+  - The Email MKT screen now starts with three cards: `Mail báo thanh toán`, `Mail thanh toán thành công + khóa học`, and `Mail nhắc thanh toán`. Operators click a card to create/fill the composer instead of seeing a long raw form by default.
+  - Each card declares its audience, payment status, course-specific scope, source legacy flow, subject template, required variables, CTA, footer, and safe unsubscribe context.
+  - The composer stores `templateKey`, `audienceLabel`, `paymentStatus`, and `courseScope`; `save_draft` persists that metadata into `crm_v2.email_templates` and `crm_v2.email_campaigns`.
+  - Browser verification at `http://127.0.0.1:3020/admin/crm-v2/email`: all three cards visible, main flow no longer uses raw HTML, no horizontal overflow, and clicking `Mail thanh toán thành công + khóa học` fills the subject/body/preview.
+  - Verification passed: CRM v2 unit 13/13, CRM v2 contract 18/18, full Node tests 198/198, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `git diff --check`, `npm.cmd run build`, and `npx.cmd playwright test tests/playwright/crm-v2.spec.ts --project=chromium` 32/32.
+  - Production deployment `dpl_d9YuCERoqoQJc253ezfY3JcGQ4m7` is Ready and aliased to `https://www.theanhmarketing.com`; smoke checks confirmed admin redirect, CRM v2 email login guard, admin API 403 when unauthenticated, and clean Vercel logs.
+
+- 2026-06-17 CRM v2 unified operations, reports, LMS, and owner-permission follow-up:
+  - Removed `Outline CRM chuyên sâu` from the operator sidebar and promoted `Báo cáo` directly under `Tổng quan CRM`.
+  - Added one global date control in the CRM topbar with `Hôm nay`, `Hôm qua`, `7 ngày`, `30 ngày`, `90 ngày`, and custom date range. Reports no longer owns a separate date form.
+  - Extended the shared query contract with `range=yesterday`.
+  - Dashboard now counts `Lead mới trong ngày` from `public.leads.created_at` using the Vietnam day boundary and reads paid/revenue/course summaries from `public.orders` rather than stale CRM read models.
+  - Recent activity now merges real CRM events, email events, legacy activity logs, lead activities, and public orders into Vietnamese operator labels.
+  - Rebuilt Leads & Pipeline as a unified customer/order pipeline with required columns: `Ngày`, `Tên khách`, `SĐT`, `Khóa học quan tâm`, `Mail`, `Tình trạng thanh toán`, and `Hoạt động gần nhất`; extra fields are in expandable details.
+  - Added Facebook source normalization for `facebook`, `fb`, `meta`, `facebook_ads`, and `fbclid`.
+  - Hardened unified row merging so order data lifts payment/stage context without replacing the selected CRM lead id used by bulk actions.
+  - Email MKT preview now renders a normal inbox-style preview through the same `renderCrmV2EmailPreview()` path used for real sends and injects sample recipient/order/course variables from the composer scope.
+  - Automation now defaults to a Vietnamese `Công thức vận hành` explanation before the advanced React Flow canvas.
+  - Added focused LMS course manager at `/admin/crm-v2/students?view=courses` with course list and selected-course tabs: `Tổng quan`, `Module`, `Bài học`, `Học viên`, `Tài nguyên`, `Cài đặt`.
+  - Owner permissions now include `theanhnguyen.marketing@gmail.com` by default, and Team API can create/invite/add admin members through Supabase Auth app metadata while protecting configured owners from demotion.
+  - Reports now include an inverted funnel `Khách đăng ký -> MQL -> Chờ thanh toán -> Đã thanh toán -> Vào học` and use the global date range.
+  - Browser verification on local CRM v2 confirmed no page-level horizontal overflow, no sidebar Outline item, global date controls visible, Reports funnel visible, Email/LMS screens readable, and no mojibake after reload.
+  - Local shell has only `RESEND_API_KEY` in `.env.local`, so local preview cannot verify production Supabase counts. Code was hardened to query stable `public.orders` fields from the existing `orderService` contract and avoid optional `product_name` on public orders.
+  - Verification passed: `node --test tests\crm-v2-contract.test.mjs` 20/20, `node --test tests\*.mjs` 200/200, `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, `git diff --check`, CRM v2 source mojibake scan, and `npm.cmd run build`.
+  - Production deployment `dpl_FyRHByRwF8bhH35shWGomcLEAZ2V` is Ready at `https://theanhmarketing-gtn2hbye0-theanhs-projects-509d0c97.vercel.app` and aliased to `https://www.theanhmarketing.com`.
+  - Production smoke: `/admin` redirects to `/admin/crm-v2`; unauthenticated `/admin/crm-v2`, `/reports`, `/leads`, `/email`, and `/students?view=courses` redirect to `/admin/login?next=%2Fadmin%2Fcrm-v2`; unauthenticated `/api/admin/crm-v2/reports?range=today` returns 403; Vercel logs for the last 15 minutes returned no logs.

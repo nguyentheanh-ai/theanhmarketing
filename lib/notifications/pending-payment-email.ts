@@ -29,6 +29,8 @@ const emailFontFamily = `'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif`;
 const adsSupportAgentName = "Agent Hỗ Trợ Quảng Cáo";
 const adsSupportAgentUrl =
   "https://chatgpt.com/g/g-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner";
+const facebookEbookCourseSlug = "ebook-facebook-ads-2026";
+const facebookEbookProductTitle = "Ebook Facebook Ads 2026";
 
 const bankNameMap: Record<string, string> = {
   VCB: "Vietcombank",
@@ -122,6 +124,13 @@ function getCourseList(order: PaymentOrder) {
   return [order.courseTitle].filter(Boolean);
 }
 
+function isFacebookEbookOrder(order: PaymentOrder) {
+  return (
+    order.courseSlug === facebookEbookCourseSlug ||
+    order.orderItems.some((item) => item.slug === facebookEbookCourseSlug)
+  );
+}
+
 function getFacebookAdsProductTitle(order: PaymentOrder) {
   const isFacebookAdsOrder =
     order.courseSlug === "facebook-ads-2026" ||
@@ -139,6 +148,10 @@ function getFacebookAdsProductTitle(order: PaymentOrder) {
 }
 
 function getProductTitle(order: PaymentOrder) {
+  if (isFacebookEbookOrder(order)) {
+    return facebookEbookProductTitle;
+  }
+
   return getFacebookAdsProductTitle(order) || getCourseList(order)[0] || order.courseTitle || "Khóa học tại The Anh Marketing";
 }
 
@@ -322,10 +335,120 @@ export function buildAdminNewLeadEmailPayload(
   };
 }
 
+function buildFacebookEbookPendingPaymentEmailPayload(
+  order: PaymentOrder,
+  options: PendingPaymentEmailOptions = {},
+): ResendEmailPayload {
+  const siteUrl = normalizeSiteUrl(options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL);
+  const paymentUrl = `${siteUrl}/thanh-toan/${encodeURIComponent(order.orderCode)}`;
+  const paymentEmailUrl = buildEmailLink(paymentUrl, siteUrl);
+  const safeName = escapeHtml(order.studentName || "anh/chị");
+  const safeOrderCode = escapeHtml(order.orderCode);
+  const safeAmount = escapeHtml(order.amountLabel);
+  const safePaymentUrl = escapeHtml(paymentEmailUrl);
+  const safeRawPaymentUrl = escapeHtml(paymentUrl);
+
+  const html = `
+    <div style="margin:0;padding:0;background:#080808;font-family:${emailFontFamily};color:#f6f1e7">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#080808;margin:0;padding:42px 14px">
+        <tr>
+          <td align="center">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;max-width:560px;background:#171717;border:1px solid #303030;border-radius:18px;overflow:hidden">
+              <tr>
+                <td align="center" style="padding:42px 34px 36px;background:#161616;border-bottom:1px solid #39352a">
+                  <div style="width:76px;height:76px;border-radius:50%;background:#f66628;color:#101010;font-size:42px;line-height:76px;font-weight:900;margin:0 auto 24px">
+                    !
+                  </div>
+                  <h1 style="margin:0;color:#f66628;font-size:26px;line-height:1.25;font-weight:800">
+                    Đơn Ebook chưa thanh toán
+                  </h1>
+                  <p style="margin:16px 0 0;color:#e9e3d5;font-size:15px;line-height:1.7">
+                    Đơn đăng ký Ebook Facebook Ads 2026 đã được ghi nhận, nhưng hệ thống chưa xác nhận thanh toán.
+                  </p>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:34px">
+                  <p style="margin:0 0 18px;color:#e9e3d5;font-size:16px;line-height:1.7">
+                    Xin chào <strong style="color:#f66628">${safeName}</strong>,
+                  </p>
+                  <p style="margin:0;color:#bdb7a9;font-size:15px;line-height:1.8">
+                    Anh/chị có thể hoàn tất thanh toán để hệ thống gửi quyền đọc online và link tải file PDF.
+                  </p>
+
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:30px;border:1px solid #3a3a3a;border-radius:14px;background:#202020">
+                    <tr>
+                      <td style="padding:22px 24px">
+                        <p style="margin:0 0 18px;color:#f66628;font-size:13px;font-weight:800;letter-spacing:0.03em">
+                          Chi tiết đơn hàng
+                        </p>
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                          <tr>
+                            <td style="padding:14px 0;border-top:1px solid #343434;color:#9d978c;font-size:14px">Mã đơn hàng</td>
+                            <td align="right" style="padding:14px 0;border-top:1px solid #343434;color:#f6f1e7;font-size:14px;font-weight:800">${safeOrderCode}</td>
+                          </tr>
+                          <tr>
+                            <td style="padding:14px 0;border-top:1px solid #343434;color:#9d978c;font-size:14px">Sản phẩm</td>
+                            <td align="right" style="padding:14px 0;border-top:1px solid #343434;color:#f6f1e7;font-size:14px;font-weight:800">${facebookEbookProductTitle}</td>
+                          </tr>
+                          <tr>
+                            <td style="padding:14px 0;border-top:1px solid #343434;color:#9d978c;font-size:14px">Số tiền</td>
+                            <td align="right" style="padding:14px 0;border-top:1px solid #343434;color:#26c56d;font-size:18px;font-weight:900">${safeAmount}</td>
+                          </tr>
+                          <tr>
+                            <td style="padding:14px 0;border-top:1px solid #343434;color:#9d978c;font-size:14px">Nội dung chuyển khoản</td>
+                            <td align="right" style="padding:14px 0;border-top:1px solid #343434;color:#f66628;font-size:14px;font-weight:900">${safeOrderCode}</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <div style="padding-top:28px;text-align:center">
+                    <a href="${safePaymentUrl}" style="display:block;background:#f66628;color:#111111;text-decoration:none;border-radius:10px;padding:17px 20px;font-size:15px;font-weight:900">
+                      Mở trang thanh toán
+                    </a>
+                    <p style="margin:20px 0 0;color:#8f887c;font-size:13px;line-height:1.7">
+                      Trang thanh toán: <a href="${safePaymentUrl}" style="color:#f66628">${safeRawPaymentUrl}</a>
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  `;
+
+  const text = [
+    "Đơn Ebook Facebook Ads 2026 chưa thanh toán",
+    `Chào ${order.studentName || "anh/chị"},`,
+    `Mã đơn: ${order.orderCode}`,
+    `Sản phẩm: ${facebookEbookProductTitle}`,
+    `Số tiền: ${order.amountLabel}`,
+    `Nội dung chuyển khoản: ${order.orderCode}`,
+    `Trang thanh toán: ${paymentUrl}`,
+  ].join("\n");
+
+  return {
+    from: getSender(options),
+    to: order.email,
+    subject: `${facebookEbookProductTitle} - Chưa thanh toán - ${order.orderCode}`,
+    html: withEmailDocument(html),
+    text,
+  };
+}
+
 export function buildPendingPaymentEmailPayload(
   order: PaymentOrder,
   options: PendingPaymentEmailOptions = {},
 ): ResendEmailPayload {
+  if (isFacebookEbookOrder(order)) {
+    return buildFacebookEbookPendingPaymentEmailPayload(order, options);
+  }
+
   const siteUrl = normalizeSiteUrl(options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL);
   const paymentUrl = `${siteUrl}/thanh-toan/${encodeURIComponent(order.orderCode)}`;
   const paymentEmailUrl = buildEmailLink(paymentUrl, siteUrl);

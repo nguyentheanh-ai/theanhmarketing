@@ -1,6 +1,12 @@
 # The Anh Marketing Website Rules
 
-Applies to this repo: `E:\TheAnh-Business-Workspace\02_Website\landing-page`
+Project ID: `theanh-main`
+
+Allowed production source: `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`
+
+Forbidden deploy roots include `E:\TheAnh-Business-Workspace\02_Website\landing-page`, all temp candidates, downloaded sites, LadiPage exports and every other project in `E:\_workspace-control\projects.registry.json`.
+
+Before work, read `E:\_workspace-control\PROJECT_REGISTRY.md`, then this file, `CURRENT_STATE.md` and `FEATURE_MAP.md`. Do not scan the workspace or another project.
 
 Before editing the main website `theanhmarketing.com`, every Codex/agent session must read:
 
@@ -30,7 +36,7 @@ This is a production webapp. Before coding, understand the current architecture 
 - Use Serena first for semantic code retrieval, symbol/component/function lookup, reference tracing, precise TypeScript/JavaScript edits, and preserving existing behavior.
 - Use GitNexus when repo-scale context helps: route/module relationships, dependency graph, execution flow, blast-radius analysis, stale-index checks, or merge/refactor planning.
 - Do not use both tools mechanically for every small task. Prefer Serena for exact edits; add GitNexus when graph context reduces risk.
-- If GitNexus has no index or appears stale, run `gitnexus analyze` from this repo root before relying on graph context.
+- If GitNexus has no index or appears stale, ask before running `gitnexus analyze` because it writes `.gitnexus/`; do not rely on a missing/stale index.
 - Do not run `gitnexus publish` or send code graph data outside the local machine unless explicitly asked.
 - Do not rewrite working systems, duplicate components, duplicate data access logic, or bypass existing services.
 - Preserve existing business logic, Supabase schema, auth flow, payment/email/tracking flow, API contracts, and UI/design system unless the user explicitly approves a change.

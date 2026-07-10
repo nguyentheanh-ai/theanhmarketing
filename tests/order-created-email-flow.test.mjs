@@ -55,8 +55,9 @@ test("public order route does not wait for lead Google Sheet sync before returni
 
   assert.match(publicOrderRoute, /syncGoogleSheet: false/);
   assert.match(publicOrderRoute, /after\(async \(\) => \{/);
-  assert.match(publicOrderRoute, /const syncedLeadId = leadSync\.ok/);
-  assert.match(publicOrderRoute, /await syncLeadByIdToGoogleSheet\(syncedLeadId\)/);
+  assert.doesNotMatch(publicOrderRoute, /syncLeadByIdToGoogleSheet/);
+  assert.doesNotMatch(publicOrderRoute, /Google Sheets lead update sync failed/);
+  assert.match(publicOrderRoute, /syncOrderToGoogleSheetWithActivity/);
   assert.match(leadService, /input\.syncGoogleSheet === false/);
   assert.match(leadService, /scheduled_after_response/);
 });
