@@ -18,7 +18,7 @@ test("crm v2 LMS uses a real shared service instead of placeholder UI", () => {
   assert.ok(exists("components/crm-v2/lms-management-client.tsx"), "CRM v2 LMS manager component must exist");
 
   const service = read("services/lmsService.ts");
-  const studentsPage = read("app/admin/crm-v2/students/page.tsx");
+  const coursesPage = read("app/admin/crm-v2/courses/page.tsx");
   const studentsClient = read("components/crm-v2/students-page-client.tsx");
   const manager = read("components/crm-v2/lms-management-client.tsx");
 
@@ -48,15 +48,30 @@ test("crm v2 LMS uses a real shared service instead of placeholder UI", () => {
     assert.match(service, new RegExp(`export\\s+async\\s+function\\s+${exportedName}\\b`), `${exportedName} must be exported`);
   }
 
-  assert.match(studentsPage, /getAdminLmsSnapshot/, "CRM v2 students page must load the real LMS snapshot server-side");
-  assert.match(studentsClient, /lmsSnapshot/, "students client must receive real LMS data");
-  assert.match(studentsClient, /CourseLmsManager/, "course view must render the real LMS manager");
-  assert.match(studentsClient, /LmsStudentsOverview/, "student view must expose enrollment operations");
+  assert.match(coursesPage, /getAdminLmsSnapshot/, "Course Hub must load the real LMS snapshot server-side");
+  assert.match(studentsClient, /StudentCreateDialog/, "student view must use the safe provisioning flow");
   assert.doesNotMatch(studentsClient, /LmsPlaceholder/, "CRM v2 LMS must not leave dead placeholder tabs");
   assert.doesNotMatch(manager, /\b(mock|demo)\b|LmsPlaceholder/gi, "LMS manager must not implement mock-only behavior");
   assert.match(manager, /\/api\/admin\/crm-v2\/lms\/actions/, "admin LMS UI must call the real mutation route");
   assert.match(manager, /router\.refresh\(\)/, "admin LMS UI must refresh server data after mutations");
   assert.match(manager, /confirm\(/, "dangerous LMS actions must ask for confirmation");
+});
+
+test("course management uses a progressive Course Hub and dedicated workspace", () => {
+  assert.ok(exists("app/admin/crm-v2/courses/page.tsx"), "Course Hub route must exist");
+  assert.ok(exists("app/admin/crm-v2/courses/[courseSlug]/page.tsx"), "dedicated course workspace route must exist");
+  assert.ok(exists("components/crm-v2/course-hub.tsx"), "Course Hub component must exist");
+
+  const hub = read("components/crm-v2/course-hub.tsx");
+  const manager = read("components/crm-v2/lms-management-client.tsx");
+  const studentsClient = read("components/crm-v2/students-page-client.tsx");
+
+  assert.match(hub, /create_course/, "Course Hub must create real courses");
+  assert.match(hub, /\/admin\/crm-v2\/courses\/\$\{/, "Course Hub must open a dedicated workspace");
+  assert.doesNotMatch(manager, /function CourseListPanel/, "course list must not compete with the editor");
+  assert.doesNotMatch(manager, /function EnrollmentFormModal/, "course workspace must not bypass account provisioning");
+  assert.doesNotMatch(manager, /action:\s*"add_enrollment"/, "course UI must not create incomplete students");
+  assert.doesNotMatch(studentsClient, /CourseLmsManager|LmsStudentsOverview/, "student operations and course authoring must be separated");
 });
 
 test("course workspace uses free guided steps, real analytics, and visible save state", () => {
@@ -75,7 +90,7 @@ test("course workspace uses free guided steps, real analytics, and visible save 
     assert.match(manager, new RegExp(label), `guided workspace must include ${label}`);
   }
 
-  assert.match(manager, /Course Hub/);
+  assert.match(manager, /Course Workspace/);
   assert.match(manager, /Chuyển tự do giữa các bước/);
   assert.match(manager, /searchParams\.get\("step"\)/, "active step must be URL-backed");
   assert.match(manager, /Đang lưu|Đã lưu|Lỗi lưu/, "mutations must expose save state");

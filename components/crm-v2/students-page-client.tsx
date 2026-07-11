@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { StudentCreateDialog } from "@/components/admin/student-create-dialog";
 
 import {
   CrmDataTable,
@@ -12,21 +13,18 @@ import {
   RightInsightPanel,
   StudentActionButtons,
 } from "@/components/crm-v2";
-import { CourseLmsManager, LmsStudentsOverview } from "@/components/crm-v2/lms-management-client";
+import type { Course } from "@/data/courses";
 import type { CrmListQuery, CrmListResult, CrmStudentRow } from "@/lib/crm-v2/types";
-import type { AdminLmsSnapshot } from "@/lib/lms/types";
 
 type StudentsPageClientProps = {
   query: CrmListQuery;
   studentsResult: CrmListResult<CrmStudentRow>;
-  lmsSnapshot: AdminLmsSnapshot;
-  view?: "students" | "courses";
+  courses: Course[];
 };
 
-export default function StudentsPageClient({ query, studentsResult, lmsSnapshot, view = "students" }: StudentsPageClientProps) {
+export default function StudentsPageClient({ courses, query, studentsResult }: StudentsPageClientProps) {
   const students = studentsResult.rows;
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [selectedCourseSlug, setSelectedCourseSlug] = useState(lmsSnapshot.selectedCourseSlug || students[0]?.courseSlug || students[0]?.course || "");
 
   const pendingOrActive = students.filter((row) => row.status === "active").length;
   const completed = students.filter((row) => Number(String(row.progress).replace("%", "")) >= 100).length;
@@ -44,15 +42,11 @@ export default function StudentsPageClient({ query, studentsResult, lmsSnapshot,
   );
   const selectedStudent = students.find((row) => row.id === selectedIds[0]) ?? students[0];
 
-  if (view === "courses") {
-    return <CourseLmsManager lmsSnapshot={lmsSnapshot} selectedCourseSlug={selectedCourseSlug} setSelectedCourseSlug={setSelectedCourseSlug} />;
-  }
-
   return (
     <div className="space-y-4">
-      <PageHeader eyebrow="Student success" title="Học viên & Khóa học" />
+      <PageHeader eyebrow="Student success" title="Học viên" />
+      <StudentCreateDialog canReviewEmail courses={courses} />
       <StudentActionButtons contactId={selectedStudent?.contactId} />
-      <LmsStudentsOverview lmsSnapshot={lmsSnapshot} />
       <MetricGrid
         metrics={[
           { label: "Tổng học viên đã lọc", value: `${studentsResult.total}`, tone: "blue", series: [studentsResult.total] },

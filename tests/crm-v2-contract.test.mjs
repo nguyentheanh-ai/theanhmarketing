@@ -882,12 +882,13 @@ test("crm v2 dashboard and unified pipeline use production source-of-truth data"
 test("crm v2 LMS and permissions are focused and owner-safe", () => {
   const studentsClient = read("components/crm-v2/students-page-client.tsx");
   const lmsManager = read("components/crm-v2/lms-management-client.tsx");
+  const courseWorkspace = read("app/admin/crm-v2/courses/[courseSlug]/page.tsx");
   const teamActionsApi = read("app/api/admin/crm-v2/team/actions/route.ts");
   const adminEmails = read("lib/admin/admin-emails.ts");
   const adminMembers = read("lib/admin/admin-members.ts");
 
-  assert.match(studentsClient, /CourseLmsManager/, "course view must render a focused LMS manager");
-  assert.match(studentsClient, /selectedCourseSlug/, "LMS manager must edit one selected course at a time");
+  assert.match(courseWorkspace, /CourseLmsManager/, "dedicated course route must render a focused LMS manager");
+  assert.match(courseWorkspace, /selectedCourseSlug:\s*courseSlug/, "LMS manager must edit one selected course at a time");
   assert.match(lmsManager, /Tổng quan[\s\S]*Nội dung bán hàng[\s\S]*Curriculum[\s\S]*Media & tài liệu[\s\S]*Học viên & quyền học[\s\S]*Analytics[\s\S]*Kiểm tra & xuất bản/, "LMS manager must use the approved guided workspace");
   assert.doesNotMatch(studentsClient, /courses\.map[\s\S]*textarea[\s\S]*courses\.map/s, "LMS manager must not dump all course edit forms on one screen");
 

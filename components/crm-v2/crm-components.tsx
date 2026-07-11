@@ -11,6 +11,7 @@ import {
   AlertCircle,
   BarChart3,
   BookOpen,
+  Bot,
   CalendarDays,
   ChevronDown,
   CreditCard,
@@ -18,10 +19,14 @@ import {
   Gauge,
   GitBranch,
   Inbox,
+  Mail,
+  Plug,
   RefreshCw,
   Search,
   Settings2,
+  ShieldCheck,
   Sparkles,
+  Tags,
   Users,
 } from "lucide-react";
 import Link from "next/link";

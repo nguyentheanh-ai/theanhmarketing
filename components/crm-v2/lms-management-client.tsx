@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { PageHeader } from "@/components/crm-v2";
 import type {
@@ -237,15 +237,7 @@ function getFirstLessonHref(course: LmsCourse) {
   return firstLesson ? `/learn/${course.slug}/${firstLesson.id}` : `/khoa-hoc/${course.slug}`;
 }
 
-export function CourseLmsManager({
-  lmsSnapshot,
-  selectedCourseSlug,
-  setSelectedCourseSlug,
-}: {
-  lmsSnapshot: AdminLmsSnapshot;
-  selectedCourseSlug: string;
-  setSelectedCourseSlug: (value: string) => void;
-}) {
+export function CourseLmsManager({ lmsSnapshot }: { lmsSnapshot: AdminLmsSnapshot }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [message, setMessage] = useState("");
@@ -257,15 +249,11 @@ export function CourseLmsManager({
   const activeStep = courseSteps.some((step) => step.id === requestedStep) ? (requestedStep as CourseStep) : "overview";
   const setActiveStep = (step: CourseStep) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("view", "courses");
     params.set("step", step);
-    router.replace(`/admin/crm-v2/students?${params.toString()}`, { scroll: false });
+    router.replace(`/admin/crm-v2/courses/${selectedCourse?.slug}?${params.toString()}`, { scroll: false });
   };
 
-  const selectedCourse = useMemo(
-    () => lmsSnapshot.courses.find((course) => course.slug === selectedCourseSlug) ?? lmsSnapshot.selectedCourse ?? lmsSnapshot.courses[0] ?? null,
-    [lmsSnapshot.courses, lmsSnapshot.selectedCourse, selectedCourseSlug],
-  );
+  const selectedCourse = lmsSnapshot.selectedCourse ?? lmsSnapshot.courses[0] ?? null;
 
   const submitAction: SubmitAction = async (payload, confirmText) => {
     if (confirmText && !window.confirm(confirmText)) return;
@@ -280,7 +268,6 @@ export function CourseLmsManager({
       });
       const result = (await response.json().catch(() => null)) as { ok?: boolean; message?: string; course?: { slug?: string } } | null;
       if (!response.ok || !result?.ok) throw new Error(result?.message ?? "Không lưu được thay đổi LMS.");
-      if (result.course?.slug) setSelectedCourseSlug(result.course.slug);
       setMessage(result.message ?? "Đã cập nhật.");
       setSaveState("saved");
       router.refresh();
@@ -294,47 +281,33 @@ export function CourseLmsManager({
 
   return (
     <div className="space-y-4">
-      <PageHeader eyebrow="LMS · Course Hub" title="Không gian vận hành khóa học" />
+      <PageHeader eyebrow="LMS · Course Workspace" title={selectedCourse?.title || "Khóa học"} />
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
         <p className="text-sm font-bold text-blue-950">Chuyển tự do giữa các bước — không bắt buộc hoàn thành theo thứ tự.</p>
         <SaveStateBadge state={saveState} />
       </div>
       <ActionMessage message={message || lmsSnapshot.message || ""} />
-      <div className="grid min-h-[calc(100vh-190px)] min-w-0 gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
-        <CourseListPanel
-          courses={lmsSnapshot.courses}
-          selectedSlug={selectedCourse?.slug ?? ""}
-          busy={busyAction === "create_course"}
-          onCreate={(payload) => void submitAction(payload)}
-          onSelect={(slug) => setSelectedCourseSlug(slug)}
-        />
+      <Link className="inline-flex min-h-10 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 hover:bg-slate-50" href="/admin/crm-v2/courses">← Tất cả khóa học</Link>
+      <div className="min-w-0">
         <div className="min-w-0 space-y-4">
           {selectedCourse ? (
             <>
               <CourseHeader course={selectedCourse} />
-              <CourseSteps activeStep={activeStep} onChange={setActiveStep} />
-              <Panel className="min-h-[560px]">
-                {activeStep === "overview" ? <CourseOverview course={selectedCourse} onChangeStep={setActiveStep} /> : null}
-                {activeStep === "sales" ? <SalesContentTab busy={busyAction === "update_course"} course={selectedCourse} submitAction={submitAction} /> : null}
-                {activeStep === "curriculum" ? (
-                  <CurriculumWorkspace
-                    busyAction={busyAction}
-                    course={selectedCourse}
-                    submitAction={submitAction}
-                    onAddLesson={(moduleId) => {
-                      setLessonEditor({ mode: "create", moduleId });
-                    }}
-                    onEditLesson={setLessonEditor}
-                  />
-                ) : null}
-                {activeStep === "media" ? <ResourcesTab busyAction={busyAction} course={selectedCourse} submitAction={submitAction} /> : null}
-                {activeStep === "students" ? <StudentsTab busyAction={busyAction} course={selectedCourse} submitAction={submitAction} /> : null}
-                {activeStep === "analytics" ? <CourseAnalytics course={selectedCourse} /> : null}
-                {activeStep === "publish" ? <PublishReview busyAction={busyAction} course={selectedCourse} submitAction={submitAction} /> : null}
-              </Panel>
+              <div className="grid min-w-0 gap-4 lg:grid-cols-[230px_minmax(0,1fr)]">
+                <CourseSteps activeStep={activeStep} onChange={setActiveStep} />
+                <Panel className="min-h-[620px]">
+                  {activeStep === "overview" ? <CourseOverview course={selectedCourse} onChangeStep={setActiveStep} /> : null}
+                  {activeStep === "sales" ? <SalesContentTab busy={busyAction === "update_course"} course={selectedCourse} submitAction={submitAction} /> : null}
+                  {activeStep === "curriculum" ? <CurriculumWorkspace busyAction={busyAction} course={selectedCourse} submitAction={submitAction} onAddLesson={(moduleId) => setLessonEditor({ mode: "create", moduleId })} onEditLesson={setLessonEditor} /> : null}
+                  {activeStep === "media" ? <ResourcesTab busyAction={busyAction} course={selectedCourse} submitAction={submitAction} /> : null}
+                  {activeStep === "students" ? <StudentsTab busyAction={busyAction} course={selectedCourse} submitAction={submitAction} /> : null}
+                  {activeStep === "analytics" ? <CourseAnalytics course={selectedCourse} /> : null}
+                  {activeStep === "publish" ? <PublishReview busyAction={busyAction} course={selectedCourse} submitAction={submitAction} /> : null}
+                </Panel>
+              </div>
             </>
           ) : (
-            <EmptyState title="Chưa có khóa học" description="Tạo khóa đầu tiên ở cột bên trái để bắt đầu quản lý nội dung LMS." />
+            <EmptyState title="Chưa có khóa học" description="Quay lại Course Hub để chọn hoặc tạo khóa học." />
           )}
         </div>
       </div>
@@ -351,89 +324,6 @@ export function CourseLmsManager({
         />
       ) : null}
     </div>
-  );
-}
-
-function CourseListPanel({
-  busy,
-  courses,
-  selectedSlug,
-  onCreate,
-  onSelect,
-}: {
-  busy: boolean;
-  courses: LmsCourse[];
-  selectedSlug: string;
-  onCreate: (payload: ActionPayload) => void;
-  onSelect: (slug: string) => void;
-}) {
-  const [search, setSearch] = useState("");
-  const visibleCourses = courses.filter((course) => `${course.title} ${course.slug}`.toLowerCase().includes(search.toLowerCase().trim()));
-  return (
-    <aside className="min-h-0 rounded-lg border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-100 p-4">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <div className="text-sm font-black text-slate-950">Danh sách khóa</div>
-            <div className="mt-1 text-xs font-bold text-slate-500">{courses.length} khóa trong LMS</div>
-          </div>
-          <StatusBadge status="published" />
-        </div>
-        <div className="relative mt-3">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-          <input className={inputClass("pl-9")} onChange={(event) => setSearch(event.target.value)} placeholder="Tìm khóa..." value={search} />
-        </div>
-      </div>
-      <div className="max-h-[calc(100vh-360px)] min-h-[260px] space-y-2 overflow-y-auto p-3">
-        {visibleCourses.map((course) => (
-          <button
-            className={`w-full rounded-lg border p-3 text-left transition ${
-              selectedSlug === course.slug ? "border-blue-200 bg-blue-50 shadow-sm" : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
-            }`}
-            key={course.id}
-            onClick={() => onSelect(course.slug)}
-            type="button"
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="line-clamp-2 text-sm font-black leading-5 text-slate-950">{course.title}</div>
-              <StatusBadge status={course.status} />
-            </div>
-            <div className="mt-2 flex flex-wrap gap-2 text-xs font-bold text-slate-500">
-              <span>{course.stats.activeStudents} active</span>
-              <span>{course.stats.publishedLessons}/{course.stats.lessons} bài</span>
-              <span>{course.stats.modules} module</span>
-            </div>
-          </button>
-        ))}
-        {visibleCourses.length === 0 ? <EmptyState title="Không có khóa phù hợp" description="Thử đổi từ khóa tìm kiếm hoặc tạo khóa mới." /> : null}
-      </div>
-      <form
-        className="grid gap-3 border-t border-slate-100 p-4"
-        onSubmit={(event) => {
-          event.preventDefault();
-          const formData = new FormData(event.currentTarget);
-          const title = value(formData, "title");
-          onCreate({
-            action: "create_course",
-            title,
-            slug: value(formData, "slug") || slugifyVietnamese(title),
-            status: "draft",
-            visibility: "enrolled",
-          });
-          event.currentTarget.reset();
-        }}
-      >
-        <Field label="Tạo khóa mới">
-          <input className={inputClass()} name="title" placeholder="Tên khóa học" required />
-        </Field>
-        <Field label="Slug">
-          <input className={inputClass()} name="slug" placeholder="tu-dong-neu-de-trong" />
-        </Field>
-        <ActionButton busy={busy} tone="primary" type="submit">
-          <Plus className="size-4" /> Tạo khóa
-        </ActionButton>
-      </form>
-    </aside>
   );
 }
 
@@ -483,7 +373,7 @@ function SaveStateBadge({ state }: { state: SaveState }) {
 
 function CourseSteps({ activeStep, onChange }: { activeStep: CourseStep; onChange: (step: CourseStep) => void }) {
   return (
-    <div className="grid gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-sm sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-7">
+    <div aria-label="Các phần của khóa học" className="grid content-start gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-sm" role="navigation">
       {courseSteps.map((step, index) => {
         const Icon = step.icon;
         return (
@@ -1080,7 +970,6 @@ function LessonFormModal({
 }
 
 function StudentsTab({ busyAction, course, submitAction }: { busyAction: string; course: LmsCourse; submitAction: SubmitAction }) {
-  const [showAdd, setShowAdd] = useState(false);
   return (
     <div className="grid gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1088,66 +977,10 @@ function StudentsTab({ busyAction, course, submitAction }: { busyAction: string;
           <h3 className="text-base font-black text-slate-950">Học viên</h3>
           <p className="mt-1 text-sm font-semibold text-slate-500">Theo dõi enrollment, trạng thái và tiến độ học thật.</p>
         </div>
-        <ActionButton onClick={() => setShowAdd(true)} tone="primary">
-          <Plus className="size-4" /> Thêm học viên
-        </ActionButton>
+        <Link className={`inline-flex min-h-10 items-center rounded-lg px-3 text-sm font-black ${buttonClass("primary")}`} href="/admin/crm-v2/students">Quản lý học viên</Link>
       </div>
       <EnrollmentTable busyAction={busyAction} enrollments={course.enrollments} submitAction={submitAction} />
-      {showAdd ? (
-        <EnrollmentFormModal
-          busy={busyAction === "add_enrollment"}
-          course={course}
-          onClose={() => setShowAdd(false)}
-          submitAction={async (payload) => {
-            await submitAction(payload);
-            setShowAdd(false);
-          }}
-        />
-      ) : null}
     </div>
-  );
-}
-
-function EnrollmentFormModal({ busy, course, onClose, submitAction }: { busy: boolean; course: LmsCourse; onClose: () => void; submitAction: SubmitAction }) {
-  return (
-    <ModalShell onClose={onClose} title="Thêm học viên vào khóa" width="max-w-2xl">
-      <form
-        className="grid gap-4 p-5"
-        onSubmit={(event) => {
-          event.preventDefault();
-          const formData = new FormData(event.currentTarget);
-          void submitAction({
-            action: "add_enrollment",
-            courseId: course.id,
-            studentName: value(formData, "studentName"),
-            email: value(formData, "email"),
-            phone: value(formData, "phone"),
-            status: "active",
-          });
-        }}
-      >
-        <div className="grid gap-3 md:grid-cols-2">
-          <Field label="Tên học viên">
-            <input className={inputClass()} name="studentName" />
-          </Field>
-          <Field label="Email">
-            <input className={inputClass()} name="email" type="email" />
-          </Field>
-          <Field label="Số điện thoại">
-            <input className={inputClass()} name="phone" />
-          </Field>
-          <div className="rounded-lg bg-slate-50 p-3 text-sm font-bold text-slate-600">
-            Khóa: <span className="font-black text-slate-950">{course.title}</span>
-          </div>
-        </div>
-        <div className="flex justify-end gap-2 border-t border-slate-100 pt-4">
-          <ActionButton onClick={onClose}>Hủy</ActionButton>
-          <ActionButton busy={busy} tone="primary" type="submit">
-            Enroll học viên
-          </ActionButton>
-        </div>
-      </form>
-    </ModalShell>
   );
 }
 
@@ -1506,94 +1339,3 @@ function SettingsTab({ busyAction, course, submitAction }: { busyAction: string;
   );
 }
 
-export function LmsStudentsOverview({ lmsSnapshot }: { lmsSnapshot: AdminLmsSnapshot }) {
-  const router = useRouter();
-  const [message, setMessage] = useState("");
-  const [busyAction, setBusyAction] = useState("");
-  const submitAction: SubmitAction = async (payload, confirmText) => {
-    if (confirmText && !window.confirm(confirmText)) return;
-    setBusyAction(payload.action);
-    setMessage("");
-    try {
-      const response = await fetch("/api/admin/crm-v2/lms/actions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const result = (await response.json().catch(() => null)) as { ok?: boolean; message?: string } | null;
-      if (!response.ok || !result?.ok) throw new Error(result?.message ?? "Không cập nhật được học viên.");
-      setMessage(result.message ?? "Đã cập nhật.");
-      router.refresh();
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Không cập nhật được học viên.");
-    } finally {
-      setBusyAction("");
-    }
-  };
-
-  return (
-    <Panel>
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <div className="text-base font-black text-slate-950">Quản lý học viên LMS</div>
-          <p className="mt-1 text-sm font-semibold text-slate-600">Danh sách enrollment thật, liên kết với contact/user hiện có.</p>
-        </div>
-        <div className="rounded-lg bg-slate-50 px-3 py-2 text-sm font-black text-slate-700">{lmsSnapshot.enrollments.length} enrollment</div>
-      </div>
-      <div className="mt-4">
-        <ActionMessage message={message || lmsSnapshot.message || ""} />
-      </div>
-      <div className="mt-4">
-        <GlobalEnrollmentForm busy={busyAction === "add_enrollment"} courses={lmsSnapshot.courses} submitAction={submitAction} />
-      </div>
-      <div className="mt-4">
-        <EnrollmentTable busyAction={busyAction} enrollments={lmsSnapshot.enrollments} submitAction={submitAction} />
-      </div>
-    </Panel>
-  );
-}
-
-function GlobalEnrollmentForm({ busy, courses, submitAction }: { busy: boolean; courses: LmsCourse[]; submitAction: SubmitAction }) {
-  return (
-    <form
-      className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 md:grid-cols-[1.2fr_1fr_1fr_1fr_auto]"
-      onSubmit={(event) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-        void submitAction({
-          action: "add_enrollment",
-          courseSlug: value(formData, "courseSlug"),
-          studentName: value(formData, "studentName"),
-          email: value(formData, "email"),
-          phone: value(formData, "phone"),
-          status: "active",
-        });
-        event.currentTarget.reset();
-      }}
-    >
-      <Field label="Khóa học">
-        <select className={inputClass()} name="courseSlug" required>
-          {courses.map((course) => (
-            <option key={course.slug} value={course.slug}>
-              {course.title}
-            </option>
-          ))}
-        </select>
-      </Field>
-      <Field label="Tên học viên">
-        <input className={inputClass()} name="studentName" />
-      </Field>
-      <Field label="Email">
-        <input className={inputClass()} name="email" type="email" />
-      </Field>
-      <Field label="Số điện thoại">
-        <input className={inputClass()} name="phone" />
-      </Field>
-      <div className="flex items-end">
-        <ActionButton busy={busy} tone="primary" type="submit">
-          Enroll
-        </ActionButton>
-      </div>
-    </form>
-  );
-}
