@@ -59,9 +59,52 @@ Các điểm không lấy:
 - Quá nhiều setting và add-on trên cùng một màn hình.
 - Luồng bắt buộc tuần tự làm chậm việc sửa một bài học cũ.
 
-## 4. Kiến trúc trải nghiệm
+## 4. Giai đoạn tiên quyết: Admin Foundation, Dashboard và CRM
 
-### 4.1 Course Hub
+Không triển khai LMS ngay trên Admin Shell hiện tại. Trước LMS phải hoàn thành một chương trình nền tảng riêng để chốt dashboard và hợp nhất hướng vận hành admin.
+
+### 4.1 Audit bắt buộc
+
+- Đo thời gian tải và thời gian tương tác của Dashboard chính bằng browser và Vercel runtime evidence.
+- Liệt kê mọi KPI, biểu đồ, CTA và shortcut; phân loại `Hoạt động thật`, `Lỗi`, `Placeholder/ảo`, `Không còn cần`.
+- Lập ma trận chức năng giữa admin cũ và `/admin/crm-v2` theo route, dữ liệu, hành động, quyền, test và mức độ sử dụng thực tế.
+- Xác định module nào của CRM v2 đã tốt hơn và module nào của admin cũ vẫn phải giữ.
+- Truy vết nguồn dữ liệu của từng màn hình; không công nhận một tính năng chỉ vì UI tồn tại.
+
+### 4.2 Quyết định kiến trúc
+
+- CRM v2 là ứng viên nền chính vì hiện có nhiều chức năng hoạt động hơn, nhưng quyết định cuối phải dựa trên ma trận audit.
+- Chỉ có một Admin Shell, một navigation model, một design-token system và một nguồn component dùng chung.
+- Chỉ có một entry point rõ cho mỗi nghiệp vụ; không để hai menu cùng dẫn đến hai phiên bản cạnh tranh.
+- Route cũ được giữ làm compatibility route hoặc redirect có kiểm soát cho đến khi chức năng tương đương đã được xác minh.
+- Không xóa code admin cũ trong giai đoạn audit hoặc chuyển tiếp.
+
+### 4.3 Dashboard chuẩn làm nền
+
+Dashboard được hoàn thiện trước LMS theo hướng **Executive Operating System** đã duyệt:
+
+- Chỉ hiển thị dữ liệu thật và hành động có backend hoạt động.
+- Ưu tiên việc cần xử lý, doanh thu, học viên, đơn hàng, lead và sức khỏe vận hành.
+- Loại bỏ hoặc ẩn toàn bộ KPI, chart và CTA chưa có nguồn thật.
+- Sửa lag dựa trên profiling, query count, payload size, render cost và cache behavior; không tối ưu bằng cảm giác.
+- Shell, typography, contrast, spacing, card, table, filter, empty/error/loading state của Dashboard trở thành design foundation cho CRM và LMS.
+
+### 4.4 Điều kiện mở khóa LMS
+
+Chỉ bắt đầu implementation plan của LMS khi đã có:
+
+- Audit report Dashboard.
+- Feature/route matrix admin cũ và CRM v2.
+- Quyết định canonical admin architecture.
+- Dashboard design spec đã duyệt.
+- Shared Admin Shell và design tokens đã triển khai, kiểm thử và ổn định.
+- Kế hoạch compatibility/rollback cho các route admin cũ.
+
+Admin Foundation và Dashboard/CRM consolidation phải có spec và implementation plan riêng. LMS giữ spec riêng nhưng bắt buộc xây trên foundation đã chốt.
+
+## 5. Kiến trúc trải nghiệm
+
+### 5.1 Course Hub
 
 `/admin/khoa-hoc` trở thành màn hình trung tâm với:
 
@@ -74,7 +117,7 @@ Các điểm không lấy:
 
 Không hiển thị doanh thu, tỷ lệ hoàn thành hoặc cảnh báo nếu truy vấn tương ứng không tồn tại hoặc chưa được xác minh.
 
-### 4.2 Course Workspace
+### 5.2 Course Workspace
 
 Khi tạo hoặc mở một khóa, giao diện có thanh bước:
 
@@ -94,7 +137,7 @@ Quy tắc điều hướng:
 - Mỗi bước có trạng thái `Chưa làm`, `Đang làm`, `Đủ điều kiện` dựa trên dữ liệu thật.
 - Chỉ hành động `Xuất bản` kiểm tra các trường bắt buộc.
 
-### 4.3 Curriculum Builder
+### 5.3 Curriculum Builder
 
 Curriculum dùng bố cục hai cột:
 
@@ -110,7 +153,7 @@ Hành động được hỗ trợ:
 
 Xóa module hoặc bài học phải có xác nhận cụ thể và không được gây mất dữ liệu ngoài đối tượng được chọn.
 
-## 5. Visual system
+## 6. Visual system
 
 Hướng **Executive Operating System**:
 
@@ -123,7 +166,7 @@ Hướng **Executive Operating System**:
 - Trạng thái không chỉ phân biệt bằng màu; luôn có nhãn hoặc icon.
 - Body text nhỏ phải đạt tối thiểu WCAG 4.5:1.
 
-## 6. Thành phần kỹ thuật
+## 7. Thành phần kỹ thuật
 
 Tách `components/admin/course-editor.tsx` hiện tại thành các đơn vị có trách nhiệm rõ:
 
@@ -140,16 +183,16 @@ Tách `components/admin/course-editor.tsx` hiện tại thành các đơn vị c
 
 Các component giao tiếp qua type và action rõ ràng; không dùng một state object khổng lồ cho toàn bộ màn hình.
 
-## 7. Dữ liệu và lưu thay đổi
+## 8. Dữ liệu và lưu thay đổi
 
-### 7.1 Đọc dữ liệu
+### 8.1 Đọc dữ liệu
 
 - Supabase là nguồn chính.
 - Không dùng fallback giả cho màn admin nếu dữ liệu thật lỗi.
 - Mỗi khu vực có trạng thái loading, empty và error riêng.
 - Không để lỗi analytics làm khóa Course Builder.
 
-### 7.2 Ghi dữ liệu
+### 8.2 Ghi dữ liệu
 
 - Lưu course metadata riêng.
 - Module, lesson và resource dùng create/update/delete theo đối tượng thay đổi.
@@ -159,11 +202,11 @@ Các component giao tiếp qua type và action rõ ràng; không dùng một sta
 - Dữ liệu đang nhập không bị xóa khỏi UI khi request thất bại.
 - Publish là hành động riêng, có checklist và xác nhận.
 
-### 7.3 An toàn đồng thời
+### 8.3 An toàn đồng thời
 
 Vì hiện tại chủ yếu một người vận hành, không xây collaborative editing phức tạp. Tuy nhiên update phải dùng `updated_at` hoặc cơ chế tương đương để phát hiện dữ liệu đã thay đổi ở nơi khác trước khi ghi đè.
 
-## 8. Error handling
+## 9. Error handling
 
 - Lỗi theo từng phần, không biến toàn màn hình thành lỗi chung.
 - Message cho người dùng bằng tiếng Việt, nêu rõ đối tượng và hành động thất bại.
@@ -172,7 +215,7 @@ Vì hiện tại chủ yếu một người vận hành, không xây collaborati
 - Reorder lỗi phải rollback thứ tự trên UI hoặc tải lại thứ tự từ server.
 - Publish lỗi giữ nguyên draft và hiển thị checklist chưa đạt.
 
-## 9. Kiểm thử và tiêu chí hoàn thành
+## 10. Kiểm thử và tiêu chí hoàn thành
 
 ### Automated
 
@@ -203,25 +246,28 @@ Vì hiện tại chủ yếu một người vận hành, không xây collaborati
 - Smoke toàn bộ route protected theo Website Deploy Contract.
 - Không push Git nếu chưa được yêu cầu.
 
-## 10. Trình tự triển khai
+## 11. Trình tự chương trình
 
-1. Thiết lập design tokens và shell Executive Operating System cho khu vực LMS.
-2. Tách Course Hub khỏi editor cũ.
-3. Tạo Course Workspace và điều hướng bước tự do.
-4. Chuyển metadata, sales và media sang các bước riêng.
-5. Thay curriculum save-all bằng cập nhật theo đối tượng.
-6. Thêm autosave, error recovery và publish checklist.
-7. Kết nối học viên/tiến độ và analytics thật.
-8. Browser QA, full gate và deploy production có kiểm soát.
+### Chương trình 1 — Admin Foundation
 
-## 11. Công việc kế tiếp ngoài spec này
+1. Audit Dashboard chính.
+2. Audit admin cũ và `/admin/crm-v2`.
+3. Chốt canonical admin architecture và route/function mapping.
+4. Viết và duyệt Dashboard/CRM foundation spec.
+5. Triển khai Shared Admin Shell, design tokens và Dashboard thật.
+6. Hợp nhất navigation và entry point; giữ compatibility route có rollback.
+7. Browser QA, performance verification, full gate và deploy có kiểm soát.
 
-Sau khi LMS hoàn tất và ổn định:
+### Chương trình 2 — LMS Course Workspace
 
-1. Audit Dashboard chính để đo lag, xác định dữ liệu hoặc hành động ảo và loại bỏ/fix từng mục.
-2. Audit song song admin cũ và `/admin/crm-v2`.
-3. Lấy CRM v2 làm nền hợp nhất vì chức năng thực tế hiện tốt hơn.
-4. Lập mapping route, chức năng và dữ liệu trước khi chuyển người dùng từ admin cũ.
-5. Không xóa admin cũ cho đến khi mọi chức năng cần giữ đã có bằng chứng tương đương trong CRM v2 và có kế hoạch rollback.
+1. Tách Course Hub khỏi editor cũ trên Shared Admin Shell đã chốt.
+2. Tạo Course Workspace và điều hướng bước tự do.
+3. Chuyển metadata, sales và media sang các bước riêng.
+4. Thay curriculum save-all bằng cập nhật theo đối tượng.
+5. Thêm autosave, error recovery và publish checklist.
+6. Kết nối học viên/tiến độ và analytics thật.
+7. Browser QA, full gate và deploy production có kiểm soát.
 
-Dashboard performance repair và CRM consolidation là hai spec riêng, không được gộp vào implementation plan của LMS.
+### Chương trình 3 — Các module admin còn lại
+
+Sau khi Dashboard foundation và LMS ổn định, học viên, đơn hàng, lead, báo cáo và cài đặt được chuẩn hóa lần lượt trên cùng shell, tokens, table/filter patterns và quy tắc chỉ dùng dữ liệu/hành động thật.
