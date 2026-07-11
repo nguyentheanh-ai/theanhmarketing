@@ -4,7 +4,7 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 import test from "node:test";
 
-const read = (file) => fs.readFileSync(path.resolve(file), "utf8");
+const read = (file) => fs.readFileSync(path.resolve(file), "utf8").replace(/\r\n/g, "\n");
 
 function parseAdminNavItems(shell) {
   const navGroupsSource = shell.match(/const adminNavGroups = \[([\s\S]*?)\] satisfies Array</)?.[1];
