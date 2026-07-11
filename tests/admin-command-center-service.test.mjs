@@ -145,6 +145,7 @@ test("command center preserves sanitized runtime diagnostics for rejected source
   assert.match(service, /console\.error\("\[command-center\] source unavailable",/);
   assert.match(service, /source: sourceName/);
   assert.match(service, /message: reason instanceof Error \? reason\.message : "Unknown source error"/);
+  assert.match(service, /console\.error\("\[command-center\] source mapping failed",/);
 });
 
 test("enrollment adapter requires paid course identity or explicit trial provenance", () => {

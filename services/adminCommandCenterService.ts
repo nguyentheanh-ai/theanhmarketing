@@ -256,6 +256,7 @@ function mapActivity(activity: ActivityLog): CommandCenterActivityInput | null {
 }
 
 function resolveRows<T, U>(
+  sourceName: string,
   result: PromiseSettledResult<T[]>,
   mapper: (row: T) => U | null,
 ): { rows: U[]; status: CommandCenterDataStatus } {
@@ -265,7 +266,11 @@ function resolveRows<T, U>(
       rows: result.value.map(mapper).filter((row): row is U => row !== null),
       status: "ready",
     };
-  } catch {
+  } catch (error) {
+    console.error("[command-center] source mapping failed", {
+      source: sourceName,
+      message: error instanceof Error ? error.message : "Unknown mapping error",
+    });
     return { rows: [], status: "error" };
   }
 }
@@ -302,17 +307,18 @@ export function resolveCommandCenterSettledSources(results: CommandCenterSettled
   (Object.keys(results) as Array<keyof CommandCenterSettledSources>).forEach((sourceName) => {
     reportCommandCenterSourceFailure(sourceName, results[sourceName]);
   });
-  const orders = resolveRows(results.orders, mapOrder);
-  const leads = resolveRows(results.leads, mapLead);
-  const courses = resolveRows(results.courses, mapCourse);
+  const orders = resolveRows("orders", results.orders, mapOrder);
+  const leads = resolveRows("leads", results.leads, mapLead);
+  const courses = resolveRows("courses", results.courses, mapCourse);
   const students = resolveRows(
+    "students",
     results.students,
     (student) => mapCommandCenterEnrollment(
       student,
       results.orders.status === "fulfilled" ? results.orders.value : [],
     ),
   );
-  const activities = resolveRows(results.activities, mapActivity);
+  const activities = resolveRows("activities", results.activities, mapActivity);
   return {
     orders: orders.rows,
     leads: leads.rows,
