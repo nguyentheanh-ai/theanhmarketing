@@ -124,6 +124,21 @@ test("crm v2 shell exposes the executive operating system navigation", () => {
   assert.doesNotMatch(components, /CRM hiện tại vẫn giữ nguyên\./);
 });
 
+test("canonical dashboard renders only real actionable operating data", () => {
+  const dashboardPage = read("app/admin/crm-v2/page.tsx");
+  const dataLayer = read("lib/crm-v2/data.ts");
+
+  assert.match(dashboardPage, /getCrmV2Dashboard\(query\)/);
+  assert.match(dashboardPage, /Trung tâm điều hành/);
+  assert.match(dashboardPage, /Việc cần xử lý/);
+  assert.match(dashboardPage, /href="\/admin\/crm-v2\/students\?view=courses"/);
+  assert.match(dashboardPage, /Hiệu quả khóa học/);
+  assert.doesNotMatch(dashboardPage, /data\.campaigns\.map/);
+  assert.doesNotMatch(dashboardPage, /data\.workflows\.map/);
+  assert.match(dataLayer, /label: "Doanh thu đã thanh toán"/);
+  assert.match(dataLayer, /if \(error \|\| !data\) return getCrmV2DashboardDirectDataApi\(\)/);
+});
+
 test("crm v2 source strings remain readable Vietnamese without mojibake", () => {
   const pathsToScan = [
     "app/admin/crm-v2",
@@ -440,7 +455,7 @@ test("crm v2 live data mapping uses true source counts and course slugs", () => 
   assert.match(dataLayer, /rpc\("crm_v2_leads_list_raw"/, "leads list must read live private-schema data through server-only RPC");
   assert.match(dataLayer, /rpc\("crm_v2_orders_list_raw"/, "orders list must read live private-schema data through server-only RPC");
   assert.match(dataLayer, /rpc\("crm_v2_students_list_raw"/, "students list must read live private-schema data through server-only RPC");
-  assert.match(dataLayer, /if \(error \|\| !data\) return buildEmptyLiveDashboard\(\)/, "live RPC errors must return empty live dashboard, not demo numbers");
+  assert.match(dataLayer, /if \(error \|\| !data\) return getCrmV2DashboardDirectDataApi\(\)/, "live RPC errors must fall back to direct production queries, not demo numbers");
   assert.match(leadsPage, /getCrmV2LeadStageSummary/, "leads page must use total stage summary");
   assert.doesNotMatch(leadsPage, /leads\.rows\.filter\(\(lead\) => lead\.stage === stage\)/, "stage cards must not count only the current page");
   assert.match(dataLayer, /from\("leads"\)[\s\S]*course_slug[\s\S]*builder = builder\.eq\("course_slug", query\.filters\.course\)/, "leads filters must use course_slug");

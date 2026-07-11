@@ -800,7 +800,7 @@ export async function getCrmV2Dashboard(query = normalizeCrmListQuery()): Promis
     p_date_from: dateRange.from,
     p_date_to: dateRange.to,
   });
-  if (error || !data) return buildEmptyLiveDashboard();
+  if (error || !data) return getCrmV2DashboardDirectDataApi();
 
   const payload = asRecord(data);
   const dailyRows = recordArray(payload.daily).sort((a, b) => String(a.metric_date).localeCompare(String(b.metric_date)));
@@ -841,7 +841,7 @@ export async function getCrmV2Dashboard(query = normalizeCrmListQuery()): Promis
       { label: "Lead mới hôm nay", value: formatIntWithDot(newLeadsToday), tone: "blue", series: dailySeries.map((row) => numericValue(row.new_leads)) },
       { label: "MQL", value: formatIntWithDot(mqlCount), tone: "purple", series: dailySeries.map((row) => numericValue(row.mql)) },
       { label: "Đã thanh toán", value: formatIntWithDot(paidOrders), tone: "green", series: dailySeries.map((row) => numericValue(row.paid_orders)) },
-      { label: "Doanh thu 30 ngày", value: formatMoney(revenue30), tone: "green", series: dashboardDailyRevenue.map((row) => row.value) },
+      { label: "Doanh thu đã thanh toán", value: formatMoney(revenue30), tone: "green", series: dashboardDailyRevenue.map((row) => row.value) },
       { label: "Doanh thu từ email", value: formatMoney(emailRevenue30), tone: "orange", series: dailySeries.map((row) => Math.round(numericValue(row.email_revenue) / 1_000_000)) },
       { label: "Automation đang chạy", value: formatIntWithDot(activeAutomation), tone: "purple", series: [activeAutomation] },
     ],

@@ -1,6 +1,7 @@
 import {
   Activity,
   BarChart3,
+  BookOpen,
   ChartCard,
   IconButton,
   InsightRow,
@@ -34,11 +35,11 @@ export default async function CrmV2DashboardPage({ searchParams }: PageProps) {
   return (
     <div className="space-y-4">
       <PageHeader
-        eyebrow="CRM v2"
-        title="Tổng quan CRM"
+        eyebrow="Tổng quan CRM · Executive overview"
+        title="Trung tâm điều hành"
         actions={
           <>
-            <IconButton href="/api/admin/crm-v2/reports" label="Xuất báo cáo">
+            <IconButton href="/admin/crm-v2/reports" label="Mở báo cáo">
               <BarChart3 className="h-4 w-4" />
             </IconButton>
             <IconButton href="/admin/crm-v2/activity" label="Hoạt động mới">
@@ -64,6 +65,18 @@ export default async function CrmV2DashboardPage({ searchParams }: PageProps) {
           <ChartCard title="Hiệu quả Remarketing Email">
             {emailRows.length ? <SimpleBars rows={emailRows} /> : <p className="text-sm font-semibold text-slate-500">Chưa có dữ liệu email trong khoảng thời gian này.</p>}
           </ChartCard>
+          <ChartCard title="Hiệu quả khóa học">
+            {data.courses.length ? (
+              <SimpleBars rows={data.courses.map((course) => ({ label: course.name, value: course.paid, displayValue: course.revenue, tone: "blue" }))} />
+            ) : (
+              <p className="text-sm font-semibold text-slate-600">Chưa có đơn hàng khóa học đã thanh toán trong giai đoạn này.</p>
+            )}
+            <div className="mt-4">
+              <IconButton href="/admin/crm-v2/students?view=courses" label="Quản lý khóa học">
+                <BookOpen className="h-4 w-4" />
+              </IconButton>
+            </div>
+          </ChartCard>
           <ChartCard title="Hoạt động gần đây">
             {data.activity.length ? <Timeline events={data.activity} /> : <p className="text-sm font-semibold text-slate-500">Chưa có hoạt động mới.</p>}
             <div className="mt-4">
@@ -73,19 +86,21 @@ export default async function CrmV2DashboardPage({ searchParams }: PageProps) {
             </div>
           </ChartCard>
         </div>
-        <RightInsightPanel title="Việc cần chú ý">
-          {data.tasks.map((task) => (
-            <InsightRow key={`${task.title}:${task.owner}`} label={`${task.title} - ${task.owner}`} value={task.due} tone={toInsightTone(task.tone)} />
-          ))}
-          {data.campaigns.map((campaign) => (
-            <InsightRow key={campaign.name} label={campaign.name} value={campaign.status} tone="orange" />
-          ))}
-          {data.workflows.map((workflow) => (
-            <InsightRow key={workflow.name} label={workflow.name} value={workflow.status} tone="green" />
-          ))}
-          {data.courses.map((course) => (
-            <InsightRow key={course.name} label={course.name} value={course.revenue} tone="blue" />
-          ))}
+        <RightInsightPanel title="Việc cần xử lý">
+          {data.tasks.length ? (
+            data.tasks.map((task) => (
+              <InsightRow key={`${task.title}:${task.owner}`} label={`${task.title} - ${task.owner}`} value={task.due} tone={toInsightTone(task.tone)} />
+            ))
+          ) : (
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold leading-6 text-emerald-900">
+              Không có công việc CRM tồn đọng trong giai đoạn đang xem.
+            </div>
+          )}
+          <div className="pt-2">
+            <IconButton href="/admin/viec-can-xu-ly" label="Mở danh sách việc cần xử lý">
+              <Activity className="h-4 w-4" />
+            </IconButton>
+          </div>
         </RightInsightPanel>
       </div>
     </div>
