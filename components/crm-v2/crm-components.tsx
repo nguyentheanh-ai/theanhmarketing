@@ -23,6 +23,7 @@ import {
   Plug,
   RefreshCw,
   Search,
+  Settings2,
   ShieldCheck,
   Sparkles,
   Tags,
@@ -34,19 +35,26 @@ import { useEffect, useRef, useState } from "react";
 import type { MouseEventHandler, ReactNode } from "react";
 import type { CrmEvent, CrmListQuery, CrmTableColumn, KpiMetric } from "@/lib/crm-v2/types";
 
-const navItems = [
-  { href: "/admin/crm-v2", label: "Tổng quan CRM", icon: Gauge, exact: true },
+const primaryNavItems = [
+  { href: "/admin/crm-v2", label: "Tổng quan", icon: Gauge, exact: true },
+  { href: "/admin/crm-v2/leads", label: "Khách hàng", icon: GitBranch },
+  { href: "/admin/crm-v2/orders", label: "Đơn hàng", icon: CreditCard },
+  { href: "/admin/crm-v2/students", label: "Học viên", icon: Users, excludeView: "courses" },
+  { href: "/admin/crm-v2/students?view=courses", label: "Khóa học", icon: BookOpen, requiredView: "courses" },
+  { href: "/admin/crm-v2/email", label: "Email", icon: Mail },
+  { href: "/admin/crm-v2/automation", label: "Automation", icon: Bot },
   { href: "/admin/crm-v2/reports", label: "Báo cáo", icon: BarChart3 },
-  { href: "/admin/crm-v2/activity", label: "Hoạt động CRM", icon: Activity },
-  { href: "/admin/crm-v2/leads", label: "Leads & Pipeline", icon: GitBranch },
-  { href: "/admin/crm-v2/email", label: "Remarketing Email", icon: Mail },
-  { href: "/admin/crm-v2/automation", label: "Automation Workflow", icon: Bot },
-  { href: "/admin/crm-v2/students", label: "Học viên/LMS", icon: BookOpen },
-  { href: "/admin/crm-v2/students?view=courses", label: "Quản lý khóa học", icon: BookOpen },
+  { href: "/admin/cai-dat", label: "Cài đặt", icon: Settings2 },
+];
+
+const advancedNavItems = [
+  { href: "/admin/crm-v2/activity", label: "Lịch sử hoạt động", icon: Activity },
   { href: "/admin/crm-v2/segments", label: "Phân khúc & Tag", icon: Tags },
-  { href: "/admin/crm-v2/team", label: "Team & Phân quyền", icon: Users },
+  { href: "/admin/crm-v2/team", label: "Team & Phân quyền", icon: ShieldCheck },
   { href: "/admin/crm-v2/integrations", label: "Tích hợp", icon: Plug },
 ];
+
+type CrmNavItem = (typeof primaryNavItems)[number] | (typeof advancedNavItems)[number];
 
 const toneClasses = {
   blue: "border-blue-200 bg-blue-50 text-blue-700",
@@ -99,12 +107,13 @@ function announceCrmRouteFeedback(detail: CrmRouteFeedbackDetail = {}) {
 
 export function CrmShell({ children, disabled = false }: { children: ReactNode; disabled?: boolean }) {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#f6f8fb] text-slate-950">
+    <div className="min-h-screen overflow-x-hidden bg-[#f4f6f9] text-slate-950">
       <CrmRouteFeedback />
       <div className="flex min-h-screen">
         <CrmSidebar />
         <div className="min-w-0 flex-1 overflow-x-hidden">
           <CrmTopbar disabled={disabled} />
+          <CrmMobileNav />
           <main className="mx-auto w-full min-w-0 max-w-[1560px] px-4 py-4 sm:px-6 lg:px-8">{children}</main>
         </div>
       </div>
@@ -249,39 +258,85 @@ export function CrmRouteFeedback() {
 
 export function CrmSidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const isActive = (item: CrmNavItem) => {
+    const itemPath = item.href.split("?")[0];
+    const pathMatches = "exact" in item && item.exact ? pathname === itemPath : pathname === itemPath || pathname.startsWith(`${itemPath}/`);
+    if (!pathMatches) return false;
+    if ("requiredView" in item && item.requiredView) return searchParams.get("view") === item.requiredView;
+    if ("excludeView" in item && item.excludeView) return searchParams.get("view") !== item.excludeView;
+    return true;
+  };
+
+  const renderItem = (item: CrmNavItem) => {
+    const Icon = item.icon;
+    const active = isActive(item);
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        className={`group flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm font-bold transition ${
+          active
+            ? "bg-blue-600 text-white shadow-sm shadow-blue-600/20"
+            : "text-slate-700 hover:bg-slate-100 hover:text-slate-950"
+        }`}
+      >
+        <Icon className={`h-4 w-4 ${active ? "text-white" : "text-slate-500 group-hover:text-slate-800"}`} />
+        <span className="truncate">{item.label}</span>
+      </Link>
+    );
+  };
+
   return (
-    <aside className="hidden w-[248px] shrink-0 border-r border-slate-200 bg-white lg:block">
+    <aside className="hidden w-[260px] shrink-0 border-r border-slate-200 bg-white lg:block">
       <div className="sticky top-0 flex h-screen flex-col">
         <div className="border-b border-slate-200 px-5 py-5">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">The Anh Marketing</div>
-          <div className="mt-1 text-lg font-black text-slate-950">CRM v2</div>
+          <div className="flex items-center gap-3">
+            <div className="grid size-10 place-items-center rounded-xl bg-slate-950 text-sm font-black text-white">TA</div>
+            <div>
+              <div className="text-[10px] font-black uppercase tracking-[0.12em] text-blue-700">Executive Operating System</div>
+              <div className="mt-0.5 text-base font-black text-slate-950">The Anh Marketing</div>
+            </div>
+          </div>
         </div>
-        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm font-semibold transition ${
-                  active ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                <span className="truncate">{item.label}</span>
-              </Link>
-            );
-          })}
+        <nav className="flex-1 overflow-y-auto px-3 py-4">
+          <div className="space-y-1">{primaryNavItems.map(renderItem)}</div>
+          <div className="my-4 border-t border-slate-200" />
+          <p className="mb-2 px-3 text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">Nâng cao</p>
+          <div className="space-y-1">{advancedNavItems.map(renderItem)}</div>
         </nav>
         <div className="border-t border-slate-200 p-4">
-          <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800">
-            <div className="font-bold">Chế độ vận hành an toàn</div>
-            <div className="mt-1 leading-5">CRM hiện tại vẫn giữ nguyên.</div>
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900">
+            <div className="flex items-center gap-2 font-black"><ShieldCheck className="size-4" /> Chế độ vận hành an toàn</div>
+            <div className="mt-1.5 leading-5 text-emerald-800">Mọi chỉ số trên màn hình được đọc từ dữ liệu thật.</div>
           </div>
         </div>
       </div>
     </aside>
+  );
+}
+
+export function CrmMobileNav() {
+  const pathname = usePathname();
+  return (
+    <nav className="border-b border-slate-200 bg-white px-4 py-2 lg:hidden" aria-label="Điều hướng quản trị">
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {primaryNavItems.map((item) => {
+          const itemPath = item.href.split("?")[0];
+          const active = pathname === itemPath;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`whitespace-nowrap rounded-lg px-3 py-2 text-xs font-black ${active ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700"}`}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
   );
 }
 

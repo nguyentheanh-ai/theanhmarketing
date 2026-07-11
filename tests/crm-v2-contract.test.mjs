@@ -101,6 +101,29 @@ test("crm v2 is the canonical admin destination with compatibility redirects", (
   assert.match(crmDashboard, /getCrmV2Dashboard/, "CRM v2 dashboard must remain available behind its route gate");
 });
 
+test("crm v2 shell exposes the executive operating system navigation", () => {
+  const components = read("components/crm-v2/crm-components.tsx");
+
+  for (const href of [
+    "/admin/crm-v2",
+    "/admin/crm-v2/leads",
+    "/admin/crm-v2/orders",
+    "/admin/crm-v2/students",
+    "/admin/crm-v2/students?view=courses",
+    "/admin/crm-v2/email",
+    "/admin/crm-v2/automation",
+    "/admin/crm-v2/reports",
+    "/admin/cai-dat",
+  ]) {
+    assert.ok(components.includes(`href: "${href}"`), `primary navigation must include ${href}`);
+  }
+
+  assert.match(components, /Executive Operating System/);
+  assert.match(components, /bg-\[#f4f6f9\]/);
+  assert.match(components, /Nâng cao/);
+  assert.doesNotMatch(components, /CRM hiện tại vẫn giữ nguyên\./);
+});
+
 test("crm v2 source strings remain readable Vietnamese without mojibake", () => {
   const pathsToScan = [
     "app/admin/crm-v2",
