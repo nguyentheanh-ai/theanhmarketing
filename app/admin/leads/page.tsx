@@ -2,6 +2,8 @@ import { LeadManager } from "@/components/admin/lead-manager";
 import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { getAdminLeads } from "@/services/adminDataService";
 import type { LeadItem } from "@/services/leadService";
+import { requireAdminAuth } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
 
 const visualPreviewLeads: LeadItem[] = [
   {
@@ -158,6 +160,8 @@ const visualPreviewLeads: LeadItem[] = [
 ];
 
 export default async function AdminLeadsPage() {
+  await requireAdminAuth("/admin/leads", ["owner"]);
+  redirect("/admin/crm-v2/leads");
   const leads = await getAdminLeads();
   const visibleLeads = leads.length > 0 || process.env.NODE_ENV !== "development" ? leads : visualPreviewLeads;
 

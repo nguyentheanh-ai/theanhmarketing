@@ -3,6 +3,8 @@ import { CopyPhoneButton } from "@/components/admin/copy-phone-button";
 import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { formatAdminDate, getOrderStatusMeta } from "@/lib/admin/crm-dashboard";
 import { getAdminPaymentOrders } from "@/services/adminDataService";
+import { requireAdminAuth } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
 
 function formatVnd(amount: number) {
   return new Intl.NumberFormat("vi-VN", {
@@ -13,6 +15,8 @@ function formatVnd(amount: number) {
 }
 
 export default async function AdminOrdersPage() {
+  await requireAdminAuth("/admin/don-hang", ["owner"]);
+  redirect("/admin/crm-v2/orders");
   const orders = await getAdminPaymentOrders();
   const paidOrders = orders.filter((order) => order.status === "paid");
   const pendingOrders = orders.filter((order) => order.status === "pending");

@@ -1,8 +1,14 @@
 import { CourseEditor } from "@/components/admin/course-editor";
 import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { getAdminCourses } from "@/services/adminDataService";
+import { getCurrentAuth } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
 
 export default async function AdminCoursesPage() {
+  const { adminRole } = await getCurrentAuth();
+  if (adminRole === "owner") {
+    redirect("/admin/crm-v2/students?view=courses");
+  }
   const courses = await getAdminCourses();
 
   return (

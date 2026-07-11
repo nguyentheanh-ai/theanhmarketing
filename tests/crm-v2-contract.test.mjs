@@ -77,15 +77,25 @@ test("crm v2 production actions fail closed instead of silently mocking", () => 
   }
 });
 
-test("crm v2 stays gated and available without hijacking the admin index", () => {
+test("crm v2 is the canonical admin destination with compatibility redirects", () => {
   const adminIndex = read("app/admin/page.tsx");
   const adminDashboard = read("app/admin/dashboard/page.tsx");
+  const legacyLeads = read("app/admin/leads/page.tsx");
+  const legacyOrders = read("app/admin/don-hang/page.tsx");
+  const legacyStudents = read("app/admin/hoc-vien/page.tsx");
+  const legacyCourses = read("app/admin/khoa-hoc/page.tsx");
+  const legacyReports = read("app/admin/bao-cao/page.tsx");
   const crmLayout = read("app/admin/crm-v2/layout.tsx");
   const crmDashboard = read("app/admin/crm-v2/page.tsx");
 
-  assert.match(adminIndex, /redirect\(\"\/admin\/dashboard\"\)/, "admin index must default owners to the solo dashboard");
-  assert.doesNotMatch(adminIndex, /isCrmV2Enabled|\/admin\/crm-v2/, "CRM v2 must not hijack the admin index");
-  assert.doesNotMatch(adminDashboard, /isCrmV2Enabled|\/admin\/crm-v2/, "CRM v2 must not hijack the solo dashboard");
+  assert.match(adminIndex, /redirect\(\"\/admin\/crm-v2\"\)/, "admin index must default owners to CRM v2");
+  assert.match(adminIndex, /redirect\(\"\/admin\/khoa-hoc\"\)/, "editor must keep the role-safe legacy course workspace");
+  assert.match(adminDashboard, /redirect\(\"\/admin\/crm-v2\"\)/, "old dashboard must redirect to the canonical overview");
+  assert.match(legacyLeads, /redirect\(\"\/admin\/crm-v2\/leads\"\)/);
+  assert.match(legacyOrders, /redirect\(\"\/admin\/crm-v2\/orders\"\)/);
+  assert.match(legacyStudents, /redirect\(\"\/admin\/crm-v2\/students\"\)/);
+  assert.match(legacyCourses, /redirect\(\"\/admin\/crm-v2\/students\?view=courses\"\)/);
+  assert.match(legacyReports, /redirect\(\"\/admin\/crm-v2\/reports\"\)/);
   assert.match(crmLayout, /requireAdminAuth\(\"\/admin\/crm-v2\", \[\"owner\"\]\)/, "CRM v2 routes must remain owner-gated");
   assert.match(crmLayout, /isCrmV2Enabled/, "CRM v2 routes must keep their availability gate");
   assert.match(crmDashboard, /getCrmV2Dashboard/, "CRM v2 dashboard must remain available behind its route gate");

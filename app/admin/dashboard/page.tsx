@@ -1,6 +1,7 @@
 import { CommandCenterDashboard } from "@/components/admin/solo-command-center/command-center-dashboard";
 import { AdminShell } from "@/components/app/admin-shell";
 import { requireAdminAuth } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
 import {
   getSoloCommandCenterModel,
   resolveCommandCenterRange,
@@ -22,6 +23,7 @@ export default async function AdminDashboardPage({
   searchParams?: Promise<DashboardSearchParams>;
 }) {
   const auth = await requireAdminAuth("/admin/dashboard", ["owner"]);
+  redirect("/admin/crm-v2");
   const query = (await searchParams) ?? {};
   const range = resolveCommandCenterRange({
     from: firstValue(query.from),

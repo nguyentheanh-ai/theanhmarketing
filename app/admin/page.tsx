@@ -8,5 +8,5 @@ export default async function AdminIndexPage() {
     redirect("/admin/khoa-hoc");
   }
 
-  redirect("/admin/dashboard");
+  redirect("/admin/crm-v2");
 }

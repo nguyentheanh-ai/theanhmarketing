@@ -5,6 +5,7 @@ import {
   getSoloCommandCenterModel,
   resolveCommandCenterRange,
 } from "@/services/adminCommandCenterService";
+import { redirect } from "next/navigation";
 
 type ReportSearchParams = {
   from?: string | string[];
@@ -21,6 +22,7 @@ export default async function AdminReportPage({
   searchParams?: Promise<ReportSearchParams>;
 }) {
   const auth = await requireAdminAuth("/admin/bao-cao", ["owner"]);
+  redirect("/admin/crm-v2/reports");
   const query = (await searchParams) ?? {};
   const range = resolveCommandCenterRange({
     from: firstValue(query.from),

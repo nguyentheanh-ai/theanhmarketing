@@ -7,6 +7,7 @@ import { canAccessAdminRole, getCurrentAuth } from "@/lib/auth/session";
 import { isAdminEmail } from "@/lib/course-access";
 import { getAdminCourses, getAdminStudentAccessRecords } from "@/services/adminDataService";
 import type { StudentAccessRecord } from "@/services/studentAccessService";
+import { redirect } from "next/navigation";
 
 function MetricIcon({ tone, children }: { tone: "slate" | "green" | "amber"; children: string }) {
   const toneClass = {
@@ -94,6 +95,9 @@ export default async function AdminStudentsPage({
     ? params.operation_id
     : undefined;
   const { adminRole } = await getCurrentAuth();
+  if (adminRole === "owner") {
+    redirect("/admin/crm-v2/students");
+  }
   const canReviewEmail = canAccessAdminRole(adminRole, ["owner"]);
   const [courses, students] = await Promise.all([getAdminCourses(), getAdminStudentAccessRecords()]);
   const visibleStudents = query ? students.filter((student) => getSearchText(student).includes(query)) : students;
