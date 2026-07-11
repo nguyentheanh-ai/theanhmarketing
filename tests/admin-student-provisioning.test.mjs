@@ -232,6 +232,37 @@ test("fingerprint rejects malformed runtime input instead of coercing it", () =>
   assert.doesNotMatch(inputType, /Date/);
 });
 
+test("safe operation recovery reads through the service-role RPC and fails closed", withServiceRole(async () => {
+  let args;
+  const service = loadService(() => ({
+    async rpc(name, input) {
+      assert.equal(name, "get_admin_student_provisioning_operation");
+      args = input;
+      return { data: dbRow({ status: "partial", current_step: "send_email", safe_result: {
+        student: { state: "existing" },
+        order: { state: "created", orderCode: "ORDER-100" },
+        access: { state: "granted", courseSlugs: ["course-a"] },
+        email: { state: "failed" },
+        nextActions: ["review_email"], errorCode: "EMAIL_SEND_FAILED",
+      } }), error: null };
+    },
+  }));
+  const operation = await service.readProvisioningOperation("operation-123");
+  assert.equal(args.p_operation_id, "operation-123");
+  assert.equal(operation.status, "partial");
+  assert.deepEqual(operation.safeResult.nextActions, ["review_email"]);
+  assert.equal("email" in operation, false);
+
+  const missing = loadService(() => ({ rpc: async () => ({ data: null, error: null }) }));
+  assert.equal(await missing.readProvisioningOperation("operation-404"), null);
+
+  const malformed = loadService(() => ({ rpc: async () => ({ data: { operation_id: "operation-123" }, error: null }) }));
+  await assert.rejects(
+    malformed.readProvisioningOperation("operation-123"),
+    (error) => error.code === "PROVISIONING_INVALID_ROW",
+  );
+}));
+
 test("claim creates a lease for new work and completed work returns without one", withServiceRole(async () => {
   let claimArgs;
   const newClient = {

@@ -93,6 +93,11 @@ export function PriorityQueue({
             <p className="text-sm font-black text-slate-950">Hướng xử lý</p>
             <p className="mt-2 text-sm font-semibold leading-6 text-slate-700">{selectedDetail.guidance}</p>
           </div>
+          {selectedDetail.task.actionHref ? (
+            <Link className="mt-4 inline-flex min-h-11 items-center rounded-full bg-slate-950 px-5 text-sm font-black text-white" href={selectedDetail.task.actionHref}>
+              Mở thao tác khôi phục
+            </Link>
+          ) : null}
         </aside>
       ) : null}
 

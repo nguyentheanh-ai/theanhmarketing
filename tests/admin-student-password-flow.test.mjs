@@ -7,22 +7,22 @@ function read(relativePath) {
   return fs.readFileSync(path.resolve(relativePath), "utf8");
 }
 
-test("admin student grant can create credentials and send the paid access email", () => {
+test("admin student grant delegates credential and paid email work without exposing credentials", () => {
   const route = read("app/api/admin/students/grant/route.ts");
+  const orchestrator = read("services/studentProvisioningService.ts");
 
-  assert.match(route, /temporaryPassword/);
-  assert.match(route, /ensureStudentAccountForPaidOrder/);
-  assert.match(route, /sendPaymentSuccessEmail/);
-  assert.match(route, /markPaymentEmailSent/);
-  assert.match(route, /markPaymentEmailError/);
-  assert.match(route, /forcePasswordUpdate:\s*true/);
+  assert.match(route, /provisionStudent/);
+  assert.match(route, /delete safeResult\.temporaryCredential/);
+  assert.doesNotMatch(route, /temporaryPassword|ensureStudentAccountForPaidOrder|sendPaymentSuccessEmail/);
+  assert.match(orchestrator, /ensurePaidAccount/);
+  assert.match(orchestrator, /sendPaidEmail/);
+  assert.match(orchestrator, /markPaidEmailSent/);
+  assert.match(orchestrator, /preserveExistingAuth:\s*true/);
 });
 
-test("admin student intake form exposes an optional password field", () => {
+test("legacy student intake entry delegates to the unified wizard without a password field", () => {
   const form = read("components/admin/student-intake-form.tsx");
 
-  assert.match(form, /name="temporaryPassword"/);
-  assert.match(form, /temporaryPassword/);
-  assert.match(form, /Mật khẩu/);
-  assert.match(form, /để trống/i);
+  assert.match(form, /StudentProvisioningWizard/);
+  assert.doesNotMatch(form, /temporaryPassword|Mật khẩu/);
 });

@@ -1,5 +1,14 @@
 # Session Log
 
+## 2026-07-11 - Unified student provisioning wizard
+
+Phạm vi: thay form tạo học viên cũ bằng wizard paid/free/trial và kết nối khôi phục an toàn theo operation ID.
+Các file đã thay đổi: admin student dialog/wizard, grant/review APIs, strict request parser, command-center queue adapter/model, tests and required handoff docs.
+Kết quả: một luồng tạo học viên có chống gửi trùng, kết quả tách tài khoản/đơn/quyền/email, retry hẹp và owner review cho email không rõ trạng thái; không hiển thị mật khẩu.
+Kiểm tra đã chạy: focused 73/73; full Node 394/394; TypeScript, lint, Next production build và diff check đều pass.
+Việc còn lại: apply hai migration pending và chạy authenticated owner preview smoke trong Task 9 trước khi bật luồng trên production.
+Cảnh báo: không deploy hoặc dùng API provisioning trên production khi migrations chưa được apply và xác minh.
+
 ## 2026-07-10 - Verify recovery release candidate
 
 Phạm vi: integrate the preserved recovery checkpoint into the canonical production branch.

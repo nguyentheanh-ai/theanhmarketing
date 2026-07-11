@@ -13,6 +13,9 @@ export type ActivityEventType =
   | "student_account_created"
   | "course_access_granted"
   | "course_access_revoked"
+  | "student_provisioning_partial"
+  | "student_provisioning_failed"
+  | "student_provisioning_completed"
   | "student_login_success"
   | "student_login_failed"
   | "student_entered_learning"
@@ -84,6 +87,9 @@ const commandCenterEventTypes: ActivityEventType[] = [
   "student_account_created",
   "course_access_granted",
   "course_access_revoked",
+  "student_provisioning_partial",
+  "student_provisioning_failed",
+  "student_provisioning_completed",
 ];
 
 const blockedMetadataKeys = new Set([

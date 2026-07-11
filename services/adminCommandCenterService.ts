@@ -231,6 +231,7 @@ function getActivityKind(eventType: ActivityLog["eventType"]): CommandCenterActi
   }
   if (eventType === "student_account_created") return "account";
   if (eventType === "course_access_granted" || eventType === "course_access_revoked") return "access";
+  if (eventType.startsWith("student_provisioning_")) return "provisioning";
   return null;
 }
 
@@ -245,6 +246,9 @@ function mapActivity(activity: ActivityLog): CommandCenterActivityInput | null {
     orderId: safeMetadataValue(activity.metadata, ["orderId", "order_id"]),
     orderCode: safeMetadataValue(activity.metadata, ["orderCode", "order_code"]),
     accessId: safeMetadataValue(activity.metadata, ["accessId", "access_id"]),
+    operationId: safeMetadataValue(activity.metadata, ["operationId", "operation_id"]),
+    outcomeStatus: safeMetadataValue(activity.metadata, ["outcomeStatus", "outcome_status"]),
+    errorCode: safeMetadataValue(activity.metadata, ["errorCode", "error_code"]),
     studentId: activity.studentId,
     email: activity.studentEmail,
     phone: activity.studentPhone,

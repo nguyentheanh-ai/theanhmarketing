@@ -4,15 +4,17 @@
 
 Description: Safely coordinate paid, free, or trial account creation, access grants, email dispatch, and replay recovery through one durable operation journal.
 
-Main files: `services/studentProvisioningService.ts`, `services/studentProvisioningOperationService.ts`, `services/studentProvisioningControlService.ts`, `services/studentAccountService.ts`, `services/lmsService.ts`.
+Routes: `/admin/hoc-vien?add_student=1`, `POST /api/admin/students/grant`, `GET /api/admin/students/provisioning-status`, `POST /api/admin/students/provisioning-review`.
+
+Main files: `components/admin/student-provisioning-wizard.tsx`, `lib/admin/student-provisioning-request.ts`, `services/studentProvisioningService.ts`, `services/studentProvisioningOperationService.ts`, `services/studentProvisioningControlService.ts`, `services/studentAccountService.ts`, `services/lmsService.ts`.
 
 Database: `public.admin_student_provisioning_operations`, `public.orders`, `public.leads`, `public.activity_logs`, `crm_v2.enrollments`.
 
 Migration: `supabase/migrations/20260711110000_admin_student_provisioning_operations.sql`, `supabase/migrations/20260711120000_student_provisioning_idempotency.sql`.
 
-Search: `provisionStudent`, `finalizeProvisioningOutcome`, `manual_review`, `finalize_admin_student_provisioning_operation`.
+Search: `StudentProvisioningWizard`, `provisionStudent`, `finalizeProvisioningOutcome`, `manual_review`, `resolveProvisioningEmailReview`, `finalize_admin_student_provisioning_operation`.
 
-Guard: never retry an attempted/ambiguous email provider call automatically; owner review must use the canonical current auth role. Never finalize without the current operation lease. Apply the pending migration before enabling this flow in production.
+Guard: the create route accepts strict bounded JSON and derives its actor from the authenticated session. It never accepts or returns a password. Never retry an attempted/ambiguous email provider call automatically; owner review must use the canonical current auth role and one of the two explicit decisions. Never finalize without the current operation lease. Apply the pending migration before enabling this flow in production.
 
 ## Authentication and account recovery
 

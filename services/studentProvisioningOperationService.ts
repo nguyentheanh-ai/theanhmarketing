@@ -361,6 +361,18 @@ function mapProvisioningOperation(row: unknown): ProvisioningOperation {
   }
 }
 
+export async function readProvisioningOperation(operationIdInput: string): Promise<ProvisioningOperation | null> {
+  const operationId = cleanOperationId(operationIdInput);
+  const client = getAdminClient();
+  const result = parseQueryResult<unknown>(await runQuery(() => client
+    .rpc("get_admin_student_provisioning_operation", { p_operation_id: operationId })));
+  if (result.error) throw new ProvisioningOperationServiceError("PROVISIONING_QUERY_FAILED");
+  if (!result.data) return null;
+  const operation = mapProvisioningOperation(result.data);
+  if (operation.operationId !== operationId) throw new ProvisioningOperationServiceError("PROVISIONING_INVALID_ROW");
+  return operation;
+}
+
 function parseClaimPayload(value: unknown): {
   state: "new" | "resume" | "complete" | "conflict" | "busy";
   operation?: unknown;

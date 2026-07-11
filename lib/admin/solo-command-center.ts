@@ -16,6 +16,7 @@ export type PriorityTask = {
   title: string;
   detail: string;
   href: string;
+  actionHref?: string;
   createdAt: string;
 };
 
@@ -90,6 +91,9 @@ export type CommandCenterActivityInput = {
   studentId?: string | null;
   email?: string | null;
   phone?: string | null;
+  operationId?: string | null;
+  outcomeStatus?: string | null;
+  errorCode?: string | null;
 };
 
 export type CommandCenterInput = {
@@ -552,6 +556,7 @@ function buildFunnel(
 function buildPriorityTasks(
   orders: CommandCenterOrderInput[],
   accessRecords: CommandCenterAccessInput[],
+  activities: CommandCenterActivityInput[],
   latestOperationalActivities: Map<string, CommandCenterActivityInput>,
   accessOperationalState: ReturnType<typeof resolveAccessOperationalState>,
   latestEmailActivities: Map<string, CommandCenterActivityInput>,
@@ -559,6 +564,35 @@ function buildPriorityTasks(
 ) {
   const tasks: PriorityTask[] = [];
   const nowTime = now.getTime();
+
+  const latestProvisioningByOperation = new Map<string, CommandCenterActivityInput>();
+  for (const activity of activities) {
+    if (activity.kind !== "provisioning" || !activity.operationId || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(activity.operationId)) continue;
+    const current = latestProvisioningByOperation.get(activity.operationId);
+    if (!current || (timestamp(activity.createdAt) ?? 0) > (timestamp(current.createdAt) ?? 0)) {
+      latestProvisioningByOperation.set(activity.operationId, activity);
+    }
+  }
+  for (const [operationId, activity] of latestProvisioningByOperation) {
+    const outcome = activity.outcomeStatus?.trim().toLowerCase();
+    if (outcome !== "partial" && outcome !== "failed") continue;
+    const errorCode = activity.errorCode?.trim().toUpperCase() ?? "OPERATION_FAILED";
+    const kind: PriorityTask["kind"] = errorCode === "EMAIL_SEND_FAILED"
+      ? "email"
+      : errorCode === "ACCESS_GRANT_FAILED"
+        ? "access"
+        : "account";
+    tasks.push({
+      id: `provisioning-${operationId}`,
+      severity: "critical",
+      kind,
+      title: outcome === "partial" ? "Tạo học viên chưa hoàn tất" : "Tạo học viên thất bại",
+      detail: `Thao tác ${operationId} cần được kiểm tra và tiếp tục an toàn`,
+      href: `/admin/dashboard?task=${encodeURIComponent(`provisioning-${operationId}`)}#viec-can-xu-ly`,
+      actionHref: `/admin/hoc-vien?add_student=1&operation_id=${encodeURIComponent(operationId)}`,
+      createdAt: activity.createdAt,
+    });
+  }
 
   for (const [key, activity] of latestOperationalActivities) {
     if (activity.status.trim().toLowerCase() !== "failed") continue;
@@ -798,6 +832,7 @@ export function buildSoloCommandCenterModel(input: CommandCenterInput): SoloComm
     priorityTasks: buildPriorityTasks(
       input.orders,
       accessRecords,
+      input.activities,
       latestOperationalActivities,
       accessOperationalState,
       latestEmailActivities,

@@ -3,6 +3,7 @@ import { StudentCreateDialog } from "@/components/admin/student-create-dialog";
 import { AdminPanel, EmptyState, StatusBadge } from "@/components/admin/crm-ui";
 import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
 import { getAccessStatusMeta } from "@/lib/admin/crm-dashboard";
+import { canAccessAdminRole, getCurrentAuth } from "@/lib/auth/session";
 import { isAdminEmail } from "@/lib/course-access";
 import { getAdminCourses, getAdminStudentAccessRecords } from "@/services/adminDataService";
 import type { StudentAccessRecord } from "@/services/studentAccessService";
@@ -84,11 +85,16 @@ function getSearchText(student: StudentAccessRecord) {
 export default async function AdminStudentsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ q?: string; add_student?: string }>;
+  searchParams?: Promise<{ q?: string; add_student?: string; operation_id?: string }>;
 }) {
   const params = await searchParams;
   const query = normalizeSearchQuery(params?.q);
   const shouldOpenStudentDialog = params?.add_student === "1";
+  const resumeOperationId = typeof params?.operation_id === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(params.operation_id)
+    ? params.operation_id
+    : undefined;
+  const { adminRole } = await getCurrentAuth();
+  const canReviewEmail = canAccessAdminRole(adminRole, ["owner"]);
   const [courses, students] = await Promise.all([getAdminCourses(), getAdminStudentAccessRecords()]);
   const visibleStudents = query ? students.filter((student) => getSearchText(student).includes(query)) : students;
   const grantedCount = students.filter((student) => getAccessStatusMeta(student.accessStatus).tone === "success").length;
@@ -98,7 +104,7 @@ export default async function AdminStudentsPage({
     <ProtectedAdminShell nextPath="/admin/hoc-vien" allowedRoles={["owner", "editor"]}>
       <div className="mx-auto max-w-[1480px]">
         <div className="mb-4 flex justify-end">
-          <StudentCreateDialog courses={courses} defaultOpen={shouldOpenStudentDialog} />
+          <StudentCreateDialog canReviewEmail={canReviewEmail} courses={courses} defaultOpen={shouldOpenStudentDialog} resumeOperationId={resumeOperationId} />
         </div>
 
         <section className="grid gap-4 md:grid-cols-3">
