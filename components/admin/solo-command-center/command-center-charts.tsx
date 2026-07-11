@@ -15,6 +15,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { toSafeTopCourseDisplayRows } from "@/lib/admin/course-display";
 import type {
   CommandCenterDataStatus,
   SoloCommandCenterModel,
@@ -175,7 +176,7 @@ function TopCoursesChart({
   rows: SoloCommandCenterModel["topCourses"];
   status: CommandCenterDataStatus;
 }) {
-  const visibleRows = rows.slice(0, 8);
+  const visibleRows = toSafeTopCourseDisplayRows(rows).slice(0, 8);
   return (
     <ChartCard className="xl:col-span-7" description="Xếp theo doanh thu paid trong kỳ." title="Khóa học bán tốt">
       {status === "error" || visibleRows.length === 0 ? (

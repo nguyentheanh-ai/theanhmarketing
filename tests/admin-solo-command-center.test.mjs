@@ -46,6 +46,9 @@ test("command center service performs bounded independent real-data reads", () =
   const adminData = read("services/adminDataService.ts");
 
   assert.match(service, /Promise\.allSettled\(/);
+  assert.match(service, /getCommandCenterAnalysisWindow/);
+  assert.match(service, /COMMAND_CENTER_PAGE_SIZE/);
+  assert.match(service, /MAX_COMMAND_CENTER_SOURCE_ROWS/);
   for (const readName of [
     "getAdminPaymentOrdersStrict",
     "getAdminCommandCenterLeadsStrict",
@@ -72,10 +75,48 @@ test("command center service performs bounded independent real-data reads", () =
   assert.match(service, /courses:\s*courses\.status/);
 
   const strictLeadReader = leads.match(/export async function getCommandCenterLeadsStrict[\s\S]*?\n}(?=\n\nexport async function getLeads)/)?.[0] ?? "";
-  assert.match(strictLeadReader, /select\("id,email,phone,created_at"\)/);
+  assert.match(strictLeadReader, /select\("id,email,phone,created_at",\s*\{\s*count:\s*"exact"\s*\}\)/);
   assert.match(strictLeadReader, /createSupabaseAdminClient/);
   assert.doesNotMatch(strictLeadReader, /getLeads\(|getPaymentOrders|emailLogs|buildLeadFromOrder|fallbackLeads/);
-  assert.match(adminData, /getAdminCommandCenterLeadsStrict[\s\S]*?getCommandCenterLeadsStrict\(\)/);
+  assert.match(adminData, /getAdminCommandCenterLeadsStrict[\s\S]*?getCommandCenterLeadsStrict\(window\)/);
+});
+
+test("strict command-center readers paginate bounded source windows without raw LMS fallback", () => {
+  const orders = read("services/orderService.ts");
+  const leads = read("services/leadService.ts");
+  const courses = read("services/courseService.ts");
+  const lms = read("services/lmsService.ts");
+  const adminData = read("services/adminDataService.ts");
+  const migration = read("supabase/migrations/20260711100000_command_center_reporting.sql");
+
+  assert.match(orders, /getCommandCenterOrdersStrict/);
+  assert.match(orders, /paid_at/);
+  assert.match(orders, /created_at/);
+  assert.match(orders, /\.eq\("status",\s*"pending"\)/);
+  assert.match(orders, /\.range\(/);
+  assert.match(orders, /select\(orderBaseSelectFields,\s*\{\s*count:\s*"exact"\s*\}\)/);
+  assert.match(orders, /getCommandCenterOrdersStrict[\s\S]*?\.order\("id",\s*\{\s*ascending:\s*true\s*\}\)/);
+  assert.match(leads, /getCommandCenterLeadsStrict[\s\S]*?\.gte\("created_at"/);
+  assert.match(leads, /getCommandCenterLeadsStrict[\s\S]*?\.lt\("created_at"/);
+  assert.match(leads, /getCommandCenterLeadsStrict[\s\S]*?\.range\(/);
+  assert.match(leads, /select\("id,email,phone,created_at",\s*\{\s*count:\s*"exact"\s*\}\)/);
+  assert.match(leads, /getCommandCenterLeadsStrict[\s\S]*?\.order\("id",\s*\{\s*ascending:\s*true\s*\}\)/);
+  assert.match(courses, /getCourseSummariesStrict[\s\S]*?\.range\(/);
+  assert.match(courses, /select\("id,slug,title",\s*\{\s*count:\s*"exact"\s*\}\)/);
+  assert.match(courses, /getCourseSummariesStrict[\s\S]*?\.order\("id",\s*\{\s*ascending:\s*true\s*\}\)/);
+  assert.match(lms, /crm_v2_command_center_enrollments_page/);
+  const commandReader = lms.match(/export async function getCommandCenterEnrollmentsStrict[\s\S]*?\n}/)?.[0] ?? "";
+  assert.doesNotMatch(commandReader, /crm_v2_lms_enrollments_raw/);
+  assert.match(adminData, /getCommandCenterOrdersStrict/);
+
+  assert.match(migration, /security definer/i);
+  assert.match(migration, /set search_path = public, crm_v2/i);
+  assert.match(migration, /grant execute[\s\S]*service_role/i);
+  assert.match(migration, /revoke all[\s\S]*public, anon, authenticated/i);
+  assert.match(migration, /total_count/);
+  assert.match(migration, /has_more/);
+  assert.doesNotMatch(migration, /course_progress|lessons|resources/i);
+  assert.doesNotMatch(migration, /crm_v2_lms_enrollments_raw/);
 });
 
 test("command center range resolves Vietnam days and rejects invalid query ranges", () => {
@@ -149,6 +190,7 @@ test("visual command center renders truthful lazy chart and queue contracts", ()
   assert.match(charts, /Không tải được dữ liệu/);
   assert.match(charts, /height=\{320\}/);
   assert.match(charts, /TopCoursesChart[\s\S]*?combinedStatus\(model\.dataStatus\.orders,\s*model\.dataStatus\.courses\)/);
+  assert.match(charts, /toSafeTopCourseDisplayRows/);
 
   assert.match(queue, /id="viec-can-xu-ly"/);
   assert.match(queue, /model\.priorityTasks/);
@@ -210,14 +252,66 @@ test("editor shell and settings preserve the approved role boundaries", () => {
   assert.match(settings, /allowedRoles=\{\["owner"\]\}/);
 });
 
-test("transition routes preserve task selection until full pages land", () => {
-  const queueTransition = read("app/admin/viec-can-xu-ly/page.tsx");
-  assert.match(queueTransition, /searchParams/);
-  assert.match(queueTransition, /task/);
-  assert.match(queueTransition, /\/admin\/dashboard\?task=/);
-  assert.match(queueTransition, /#viec-can-xu-ly/);
-  const reportTransition = read("app/admin/bao-cao/page.tsx");
-  assert.match(reportTransition, /redirect\("\/admin\/dashboard#bao-cao"\)/);
+test("queue and report are real owner pages with auth before range and one strict model read", () => {
+  for (const [route, file] of [
+    ["/admin/viec-can-xu-ly", "app/admin/viec-can-xu-ly/page.tsx"],
+    ["/admin/bao-cao", "app/admin/bao-cao/page.tsx"],
+  ]) {
+    const source = read(file);
+    assert.match(source, new RegExp(`requireAdminAuth\\(\"${route.replaceAll("/", "\\/")}\", \\[\"owner\"\\]\\)`));
+    assert.ok(source.indexOf("await requireAdminAuth") < source.indexOf("await searchParams"));
+    assert.ok(source.indexOf("await requireAdminAuth") < source.indexOf("const range = resolveCommandCenterRange"));
+    assert.equal(source.match(/getSoloCommandCenterModel\(range\)/g)?.length, 1);
+    assert.match(source, /<AdminShell adminRole=/);
+    assert.doesNotMatch(source, /redirect\(/);
+  }
+
+  const queue = read("app/admin/viec-can-xu-ly/page.tsx");
+  assert.match(queue, /filterPriorityQueue/);
+  assert.match(queue, /selectedTaskId/);
+  assert.match(queue, /<PriorityQueue/);
+  assert.match(queue, /basePath="\/admin\/viec-can-xu-ly"/);
+
+  const report = read("app/admin/bao-cao/page.tsx");
+  assert.match(report, /<CommandCenterReport/);
+  assert.match(report, /from/);
+  assert.match(report, /to/);
+});
+
+test("detailed report reuses lazy accessible charts and exposes only truthful aggregates", () => {
+  const report = read("components/admin/solo-command-center/command-center-report.tsx");
+  assert.match(report, /dynamic\(/);
+  assert.match(report, /ssr:\s*false/);
+  assert.match(report, /<ChartErrorBoundary/);
+  assert.match(report, /router\.refresh\(\)/);
+  assert.match(report, /<CommandCenterCharts model=\{model\}/);
+  assert.match(report, /Asia\/Ho_Chi_Minh/);
+  assert.match(report, /model\.generatedAt/);
+  assert.match(report, /model\.topCourses/);
+  assert.match(report, /row\.revenue/);
+  assert.match(report, /row\.paidOrders/);
+  assert.match(report, /safeCourseDisplayTitle\(row\)/);
+  assert.doesNotMatch(report, /\{row\.title\}/);
+  assert.match(report, /model\.funnel\.rows/);
+  assert.match(report, /model\.funnel\.unlinkedCount/);
+  assert.match(report, /\/api\/admin\/reports\/export/);
+  assert.doesNotMatch(report, /\bCAC\b|\bROI\b|\bROAS\b|ad spend|ad profit|Deliverability|demo data/i);
+});
+
+test("CSV export authenticates owner before query parsing or model reads and fails closed", () => {
+  const route = read("app/api/admin/reports/export/route.ts");
+  assert.match(route, /getCurrentAuth\(\)/);
+  assert.match(route, /canAccessAdminRole\(adminRole, \["owner"\]\)/);
+  assert.ok(route.indexOf("await getCurrentAuth") < route.indexOf("new URL(request.url)"));
+  assert.ok(route.indexOf("await getCurrentAuth") < route.indexOf("const range = resolveCommandCenterRange"));
+  assert.ok(route.indexOf("await getCurrentAuth") < route.indexOf("getSoloCommandCenterModel(range)"));
+  assert.match(route, /createPrivateNoStoreJson\([\s\S]*?,\s*403,/);
+  assert.match(route, /createPrivateNoStoreJson\([\s\S]*?,\s*503,/);
+  assert.match(route, /text\/csv; charset=utf-8/);
+  assert.match(route, /Content-Disposition/);
+  assert.match(route, /attachment;/);
+  assert.match(route, /createPrivateNoStoreJson/);
+  assert.doesNotMatch(route, /isAuthGuardEnabled/);
 });
 
 test("date navigation owns pending state and remounts custom date values", () => {

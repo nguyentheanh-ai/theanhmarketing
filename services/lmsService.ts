@@ -16,6 +16,11 @@ import { cleanEmail, cleanPhone, cleanSlug, cleanText, isValidEmail, isValidSlug
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { toYouTubeEmbedUrl } from "@/lib/youtube";
 import { logStudentActivity } from "@/services/activityLogService";
+import {
+  collectCommandCenterPages,
+  MAX_COMMAND_CENTER_SOURCE_ROWS,
+  type CommandCenterAnalysisWindow,
+} from "@/lib/admin/command-center-source";
 
 type SupabaseClient = NonNullable<ReturnType<typeof createSupabaseAdminClient>>;
 type Row = Record<string, unknown>;
@@ -385,12 +390,34 @@ async function fetchEnrollmentRows(client: SupabaseClient) {
   };
 }
 
-export async function getCommandCenterEnrollmentsStrict(): Promise<CommandCenterEnrollment[]> {
+export async function getCommandCenterEnrollmentsStrict(
+  window: CommandCenterAnalysisWindow,
+): Promise<CommandCenterEnrollment[]> {
   const client = getClientOrThrow();
-  const { data, error } = await client.rpc("crm_v2_lms_enrollments_raw");
-  if (error) throw new Error(`Could not read command center enrollments: ${error.message}`);
+  const rows = await collectCommandCenterPages({
+    getId: (row: Row) => text(row.id),
+    fetchPage: async ({ offset, limit }) => {
+      const { data, error } = await client.rpc("crm_v2_command_center_enrollments_page", {
+        p_analysis_from: window.analysisFrom,
+        p_analysis_to: window.analysisToExclusive,
+        p_offset: offset,
+        p_limit: limit,
+      });
+      if (error) throw new Error(`Could not read command center enrollments: ${error.message}`);
+      const payload = asRecord(data);
+      const pageRows = asArray(payload.rows);
+      const totalCount = numberValue(payload.total_count, -1);
+      if (totalCount < pageRows.length || typeof payload.has_more !== "boolean") {
+        throw new Error("Command center enrollment page is invalid");
+      }
+      if (totalCount > MAX_COMMAND_CENTER_SOURCE_ROWS) {
+        throw new Error("Command center enrollment source is incomplete at the safety cap");
+      }
+      return { rows: pageRows, hasMore: payload.has_more };
+    },
+  });
 
-  return asArray(asRecord(data).enrollments).map((row) => {
+  return rows.map((row) => {
     const contact = firstRelation(row.contacts);
     const metadata = asRecord(row.metadata);
     const accessKindValue = text(metadata.access_kind).trim().toLowerCase();

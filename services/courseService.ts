@@ -1,5 +1,6 @@
 import { courses as baseFallbackCourses, type Course, type CourseLesson, type CourseModule, type CourseStatus, type LessonAccess } from "@/data/courses";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { collectCommandCenterPages } from "@/lib/admin/command-center-source";
 import { marketingCourses } from "@/data/marketing-courses";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { toYouTubeEmbedUrl } from "@/lib/youtube";
@@ -572,13 +573,23 @@ export async function getCourseSummariesStrict(): Promise<CourseSummary[]> {
   const supabase = createSupabaseAdminClient();
   if (!supabase) throw new Error("Course source is unavailable");
 
-  const { data, error } = await supabase
-    .from("courses")
-    .select("id,slug,title")
-    .order("created_at", { ascending: false });
-
-  if (error) throw new Error(`Could not read course summaries: ${error.message}`);
-  return ((data ?? []) as Array<{ id: string; slug: string; title: string }>).map((course) => ({
+  const rows = await collectCommandCenterPages({
+    getId: (course: { id: string }) => course.id,
+    fetchPage: async ({ offset, limit }) => {
+      const { data, error, count } = await supabase
+        .from("courses")
+        .select("id,slug,title", { count: "exact" })
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true })
+        .range(offset, offset + limit);
+      if (error) throw new Error(`Could not read course summaries: ${error.message}`);
+      if (count === null) throw new Error("Command center course source count is unavailable");
+      const rows = (data ?? []) as Array<{ id: string; slug: string; title: string }>;
+      const pageRows = rows.slice(0, limit);
+      return { rows: pageRows, hasMore: offset + pageRows.length < count };
+    },
+  });
+  return rows.map((course) => ({
     id: course.id,
     slug: course.slug,
     title: course.title,

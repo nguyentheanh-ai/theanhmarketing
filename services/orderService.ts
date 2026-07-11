@@ -14,6 +14,11 @@ import {
 } from "@/lib/payments/sepay";
 import { attributionToDbColumns, normalizeAttribution, type Attribution, type AttributionInput } from "@/lib/tracking/attribution";
 import { getCourseBySlug, getCourses } from "@/services/courseService";
+import {
+  collectCommandCenterPages,
+  MAX_COMMAND_CENTER_SOURCE_ROWS,
+  type CommandCenterAnalysisWindow,
+} from "@/lib/admin/command-center-source";
 
 export type OrderStatus = "pending" | "paid" | "failed" | "expired";
 
@@ -583,6 +588,56 @@ export async function getPaymentOrders(options: { includeFallback?: boolean; str
   }
 
   return rows.map(mapDbOrder);
+}
+
+export async function getCommandCenterOrdersStrict(window: CommandCenterAnalysisWindow): Promise<PaymentOrder[]> {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Command center order source is unavailable");
+  const client = supabase;
+
+  async function readPage(
+    kind: "created" | "paid" | "stale-pending",
+    { offset, limit }: { offset: number; limit: number },
+  ) {
+    let query = client.from("orders").select(orderBaseSelectFields, { count: "exact" });
+    if (kind === "created") {
+      query = query
+        .gte("created_at", window.analysisFrom)
+        .lt("created_at", window.analysisToExclusive)
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true });
+    } else if (kind === "paid") {
+      query = query
+        .gte("paid_at", window.analysisFrom)
+        .lt("paid_at", window.analysisToExclusive)
+        .order("paid_at", { ascending: true })
+        .order("id", { ascending: true });
+    } else {
+      query = query
+        .eq("status", "pending")
+        .lt("created_at", window.stalePendingBefore)
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true });
+    }
+    const { data, error, count } = await query.range(offset, offset + limit);
+    if (error) throw new Error(`Could not read command center orders: ${error.message}`);
+    if (count === null) throw new Error("Command center order source count is unavailable");
+    const rows = (data ?? []) as DbOrder[];
+    const pageRows = rows.slice(0, limit);
+    return { rows: pageRows, hasMore: offset + pageRows.length < count };
+  }
+
+  const groups = await Promise.all(
+    (["created", "paid", "stale-pending"] as const).map((kind) => collectCommandCenterPages({
+      fetchPage: (page) => readPage(kind, page),
+      getId: (row: DbOrder) => row.id,
+    })),
+  );
+  const byId = new Map(groups.flat().map((row) => [row.id, row]));
+  if (byId.size > MAX_COMMAND_CENTER_SOURCE_ROWS) {
+    throw new Error("Command center order source is incomplete at the safety cap");
+  }
+  return [...byId.values()].map(mapDbOrder);
 }
 
 async function findLatestLeadForPayment(input: { phone?: string; email?: string }) {

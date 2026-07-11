@@ -1,6 +1,7 @@
 import { getCourses } from "@/services/courseService";
 import { getCommandCenterLeadsStrict, getLeads } from "@/services/leadService";
-import { getPaymentOrders } from "@/services/orderService";
+import { getCommandCenterOrdersStrict, getPaymentOrders } from "@/services/orderService";
+import type { CommandCenterAnalysisWindow } from "@/lib/admin/command-center-source";
 import { getStudentAccessRecords } from "@/services/studentAccessService";
 import { invalidateAdminDataCache, readAdminDataCache } from "@/services/adminDataCache";
 import { getRecentLeadActivities } from "@/services/leadActivityService";
@@ -28,12 +29,12 @@ export function getAdminPaymentOrders() {
   return readAdminDataCache(adminDataCacheKeys.orders, () => getPaymentOrders({ includeFallback: false }), adminCacheTtlMs);
 }
 
-export function getAdminPaymentOrdersStrict() {
-  return getPaymentOrders({ strict: true });
+export function getAdminPaymentOrdersStrict(window: CommandCenterAnalysisWindow) {
+  return getCommandCenterOrdersStrict(window);
 }
 
-export function getAdminCommandCenterLeadsStrict() {
-  return getCommandCenterLeadsStrict();
+export function getAdminCommandCenterLeadsStrict(window: CommandCenterAnalysisWindow) {
+  return getCommandCenterLeadsStrict(window);
 }
 
 export function getAdminStudentAccessRecords() {

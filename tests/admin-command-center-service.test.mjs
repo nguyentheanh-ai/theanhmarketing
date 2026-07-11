@@ -27,6 +27,100 @@ test("range cap accepts 366 inclusive days and defaults a 367 day query", () => 
   });
 });
 
+test("analysis window includes the selected range and immediately preceding equal period in Vietnam", () => {
+  const result = runTs(`
+    import { getCommandCenterAnalysisWindow } from "./lib/admin/command-center-source.ts";
+    console.log(JSON.stringify(getCommandCenterAnalysisWindow(
+      { from: "2026-07-10", to: "2026-07-11" },
+      new Date("2026-07-11T05:00:00Z"),
+    )));
+  `);
+  assert.deepEqual(result, {
+    analysisFrom: "2026-07-08T00:00:00+07:00",
+    analysisToExclusive: "2026-07-12T00:00:00+07:00",
+    stalePendingBefore: "2026-07-10T05:00:00.000Z",
+  });
+});
+
+test("pagination merges every page, deduplicates stable ids, and accepts an exact complete cap", () => {
+  const result = runTs(`
+    import { collectCommandCenterPages } from "./lib/admin/command-center-source.ts";
+    const pages = [
+      { rows: [{ id: "a" }, { id: "b" }], hasMore: true },
+      { rows: [{ id: "b" }, { id: "c" }], hasMore: false },
+    ];
+    let calls = 0;
+    const merged = await collectCommandCenterPages({
+      pageSize: 2, maxRows: 4, getId: (row) => row.id,
+      fetchPage: async () => pages[calls++],
+    });
+    const exactPages = [
+      { rows: [{ id: "a" }, { id: "b" }], hasMore: true },
+      { rows: [{ id: "c" }, { id: "d" }], hasMore: false },
+    ];
+    let exactCalls = 0;
+    const exact = await collectCommandCenterPages({
+      pageSize: 2, maxRows: 4, getId: (row) => row.id,
+      fetchPage: async () => exactPages[exactCalls++],
+    });
+    console.log(JSON.stringify({ merged, calls, exact, exactCalls }));
+  `);
+  assert.deepEqual(result, {
+    merged: [{ id: "a" }, { id: "b" }, { id: "c" }],
+    calls: 2,
+    exact: [{ id: "a" }, { id: "b" }, { id: "c" }, { id: "d" }],
+    exactCalls: 2,
+  });
+});
+
+test("pagination throws instead of returning a misleading capped partial source", () => {
+  const result = runTs(`
+    import { collectCommandCenterPages } from "./lib/admin/command-center-source.ts";
+    let message = "";
+    try {
+      const pages = [
+        { rows: [{ id: "a" }, { id: "b" }], hasMore: true },
+        { rows: [{ id: "c" }, { id: "d" }], hasMore: true },
+      ];
+      let calls = 0;
+      await collectCommandCenterPages({
+        pageSize: 2, maxRows: 4, getId: (row) => row.id,
+        fetchPage: async () => pages[calls++],
+      });
+    } catch (error) { message = error instanceof Error ? error.message : "unknown"; }
+    console.log(JSON.stringify({ message }));
+  `);
+  assert.match(result.message, /incomplete/i);
+});
+
+test("every command-center provider receives the resolved range and shared analysis window", () => {
+  const result = runTs(`
+    import { getSoloCommandCenterModel } from "./services/adminCommandCenterService.ts";
+    const seen = {};
+    const providers = Object.fromEntries(["orders", "leads", "courses", "students", "activities"].map((name) => [
+      name,
+      async (context) => { seen[name] = context; return []; },
+    ]));
+    await getSoloCommandCenterModel(
+      { from: "2026-07-10", to: "2026-07-11" },
+      providers,
+      new Date("2026-07-11T05:00:00Z"),
+    );
+    console.log(JSON.stringify(seen));
+  `);
+  const expected = {
+    range: { from: "2026-07-10", to: "2026-07-11" },
+    window: {
+      analysisFrom: "2026-07-08T00:00:00+07:00",
+      analysisToExclusive: "2026-07-12T00:00:00+07:00",
+      stalePendingBefore: "2026-07-10T05:00:00.000Z",
+    },
+  };
+  for (const source of ["orders", "leads", "courses", "students", "activities"]) {
+    assert.deepEqual(result[source], expected);
+  }
+});
+
 test("settled source adapter isolates every rejected source and treats empty success as ready", () => {
   const result = runTs(`
     import { resolveCommandCenterSettledSources } from "./services/adminCommandCenterService.ts";

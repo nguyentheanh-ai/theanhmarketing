@@ -1,6 +1,7 @@
 import { fallbackLeads } from "@/data/platform";
 import { syncLeadToGoogleSheet } from "@/lib/notifications/google-sheets";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { collectCommandCenterPages, type CommandCenterAnalysisWindow } from "@/lib/admin/command-center-source";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { attributionToDbColumns, normalizeAttribution, type Attribution, type AttributionInput } from "@/lib/tracking/attribution";
 import { logStudentActivity } from "@/services/activityLogService";
@@ -582,29 +583,30 @@ async function createLeadFromOrderSaleStatus(orderCode: string, saleStatus: Lead
   };
 }
 
-export async function getCommandCenterLeadsStrict(): Promise<CommandCenterLeadSummary[]> {
+export async function getCommandCenterLeadsStrict(window: CommandCenterAnalysisWindow): Promise<CommandCenterLeadSummary[]> {
   const supabase = createSupabaseAdminClient();
   if (!supabase) throw new Error("Command center lead source is unavailable");
 
-  const primary = await supabase
-    .from("leads")
-    .select("id,email,phone,created_at")
-    .is("deleted_at", null)
-    .order("created_at", { ascending: false });
-  let data = primary.data;
-  let error = primary.error;
-
-  if (error) {
-    const fallback = await supabase
-      .from("leads")
-      .select("id,email,phone,created_at")
-      .order("created_at", { ascending: false });
-    data = fallback.data;
-    error = fallback.error;
-  }
-
-  if (error) throw new Error(`Could not read command center leads: ${error.message}`);
-  return ((data ?? []) as Array<{ id: string; email: string | null; phone: string | null; created_at: string }>).map((lead) => ({
+  const rows = await collectCommandCenterPages({
+    getId: (lead: { id: string }) => lead.id,
+    fetchPage: async ({ offset, limit }) => {
+      const { data, error, count } = await supabase
+        .from("leads")
+        .select("id,email,phone,created_at", { count: "exact" })
+        .is("deleted_at", null)
+        .gte("created_at", window.analysisFrom)
+        .lt("created_at", window.analysisToExclusive)
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true })
+        .range(offset, offset + limit);
+      if (error) throw new Error(`Could not read command center leads: ${error.message}`);
+      if (count === null) throw new Error("Command center lead source count is unavailable");
+      const rows = (data ?? []) as Array<{ id: string; email: string | null; phone: string | null; created_at: string }>;
+      const pageRows = rows.slice(0, limit);
+      return { rows: pageRows, hasMore: offset + pageRows.length < count };
+    },
+  });
+  return rows.map((lead) => ({
     id: lead.id,
     email: lead.email,
     phone: lead.phone,

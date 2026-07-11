@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { SoloCommandCenterModel } from "@/lib/admin/solo-command-center";
 import { buildPriorityTaskHref, getSelectedPriorityTaskDetail } from "@/lib/admin/priority-task-detail";
+import { getPriorityQueueAvailability } from "@/lib/admin/priority-queue-view";
 
 const severityStyles = {
   critical: "border-red-200 bg-red-50 text-red-800",
@@ -34,11 +35,27 @@ function safeTaskDomId(taskId: string) {
   return taskId.replace(/[^a-zA-Z0-9_-]/g, "-");
 }
 
-export function PriorityQueue({ model, selectedTaskId }: { model: SoloCommandCenterModel; selectedTaskId?: string }) {
-  const queueSourcesReady = ["orders", "students", "activities"].every(
-    (source) => model.dataStatus[source as "orders" | "students" | "activities"] === "ready",
+export function PriorityQueue({
+  model,
+  selectedTaskId,
+  basePath = "/admin/dashboard",
+  emptyLabel = "Không có việc khẩn cấp",
+  extraQuery = {},
+}: {
+  model: SoloCommandCenterModel;
+  selectedTaskId?: string;
+  basePath?: string;
+  emptyLabel?: string;
+  extraQuery?: Record<string, string>;
+}) {
+  const availability = getPriorityQueueAvailability(model.dataStatus, model.priorityTasks.length);
+  const selectedDetail = getSelectedPriorityTaskDetail(
+    model.priorityTasks,
+    selectedTaskId,
+    model.range,
+    basePath,
+    extraQuery,
   );
-  const selectedDetail = getSelectedPriorityTaskDetail(model.priorityTasks, selectedTaskId, model.range);
 
   return (
     <section
@@ -79,22 +96,22 @@ export function PriorityQueue({ model, selectedTaskId }: { model: SoloCommandCen
         </aside>
       ) : null}
 
-      {!queueSourcesReady ? (
+      {availability === "error" ? (
         <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-800" role="status">
           Không tải đủ dữ liệu đơn hàng, học viên hoặc hoạt động để xác định hàng đợi.
         </div>
       ) : null}
 
-      {queueSourcesReady && model.priorityTasks.length === 0 ? (
+      {availability === "empty" ? (
         <div className="mt-5 rounded-2xl bg-emerald-50 p-5 text-sm font-bold text-emerald-800">
-          Không có việc khẩn cấp
+          {emptyLabel}
         </div>
       ) : null}
 
       {model.priorityTasks.length > 0 ? (
         <div className="mt-5 grid gap-3">
           {model.priorityTasks.map((task) => {
-            const href = buildPriorityTaskHref(task.id, model.range);
+            const href = buildPriorityTaskHref(task.id, model.range, basePath, extraQuery);
             const selected = task.id === selectedTaskId;
             return (
               <article

@@ -22,6 +22,14 @@ import { normalizeEmail, normalizePhone } from "@/lib/crm-v2/normalize";
 import { getCommandCenterEnrollmentsStrict, type CommandCenterEnrollment } from "@/services/lmsService";
 import type { CommandCenterLeadSummary } from "@/services/leadService";
 import type { PaymentOrder } from "@/services/orderService";
+import {
+  COMMAND_CENTER_PAGE_SIZE,
+  getCommandCenterAnalysisWindow,
+  MAX_COMMAND_CENTER_SOURCE_ROWS,
+  type CommandCenterProviderContext,
+} from "@/lib/admin/command-center-source";
+
+export { COMMAND_CENTER_PAGE_SIZE, MAX_COMMAND_CENTER_SOURCE_ROWS };
 
 const VIETNAM_TIME_ZONE = "Asia/Ho_Chi_Minh";
 const ZONED_TIMESTAMP = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/;
@@ -267,11 +275,11 @@ type CommandCenterSettledSources = {
 };
 
 export type CommandCenterProviders = {
-  orders: () => Promise<PaymentOrder[]>;
-  leads: () => Promise<CommandCenterLeadSummary[]>;
-  courses: () => Promise<CourseSummary[]>;
-  students: () => Promise<CommandCenterEnrollment[]>;
-  activities: () => Promise<ActivityLog[]>;
+  orders: (context: CommandCenterProviderContext) => Promise<PaymentOrder[]>;
+  leads: (context: CommandCenterProviderContext) => Promise<CommandCenterLeadSummary[]>;
+  courses: (context: CommandCenterProviderContext) => Promise<CourseSummary[]>;
+  students: (context: CommandCenterProviderContext) => Promise<CommandCenterEnrollment[]>;
+  activities: (context: CommandCenterProviderContext) => Promise<ActivityLog[]>;
 };
 
 export function resolveCommandCenterSettledSources(results: CommandCenterSettledSources) {
@@ -307,20 +315,24 @@ export async function getSoloCommandCenterModel(
   providers?: CommandCenterProviders,
   generatedAt = new Date(),
 ): Promise<SoloCommandCenterModel> {
+  const context: CommandCenterProviderContext = {
+    range,
+    window: getCommandCenterAnalysisWindow(range, generatedAt),
+  };
   const activeProviders: CommandCenterProviders = providers ?? {
-    orders: getAdminPaymentOrdersStrict,
-    leads: getAdminCommandCenterLeadsStrict,
-    courses: getCourseSummariesStrict,
-    students: getCommandCenterEnrollmentsStrict,
-    activities: () => getCommandCenterStudentActivities(range),
+    orders: ({ window }) => getAdminPaymentOrdersStrict(window),
+    leads: ({ window }) => getAdminCommandCenterLeadsStrict(window),
+    courses: () => getCourseSummariesStrict(),
+    students: ({ window }) => getCommandCenterEnrollmentsStrict(window),
+    activities: ({ range }) => getCommandCenterStudentActivities(range),
   };
   const [ordersResult, leadsResult, coursesResult, studentsResult, activitiesResult] =
     await Promise.allSettled([
-      activeProviders.orders(),
-      activeProviders.leads(),
-      activeProviders.courses(),
-      activeProviders.students(),
-      activeProviders.activities(),
+      activeProviders.orders(context),
+      activeProviders.leads(context),
+      activeProviders.courses(context),
+      activeProviders.students(context),
+      activeProviders.activities(context),
     ]);
 
   const sources = resolveCommandCenterSettledSources({

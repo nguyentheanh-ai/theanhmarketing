@@ -8,27 +8,35 @@ const guidanceByKind: Record<PriorityTask["kind"], string> = {
   "pending-order": "Kiểm tra giao dịch và liên hệ xác nhận nhu cầu thanh toán trước khi thay đổi trạng thái đơn.",
 };
 
-export function buildPriorityTaskHref(taskId: string, range: CommandCenterRange) {
+export function buildPriorityTaskHref(
+  taskId: string,
+  range: CommandCenterRange,
+  basePath = "/admin/dashboard",
+  extraQuery: Record<string, string> = {},
+) {
   const query = new URLSearchParams({
     from: range.from,
     to: range.to,
+    ...extraQuery,
     task: taskId,
   });
-  return `/admin/dashboard?${query.toString()}#viec-can-xu-ly`;
+  return `${basePath}?${query.toString()}#viec-can-xu-ly`;
 }
 
 export function getSelectedPriorityTaskDetail(
   tasks: PriorityTask[],
   selectedTaskId?: string,
   range?: CommandCenterRange,
+  basePath = "/admin/dashboard",
+  extraQuery: Record<string, string> = {},
 ) {
   if (!selectedTaskId) return null;
   const task = tasks.find((item) => item.id === selectedTaskId);
   if (!task) return null;
-  const query = range ? `?${new URLSearchParams(range).toString()}` : "";
+  const query = range ? `?${new URLSearchParams({ ...range, ...extraQuery }).toString()}` : "";
   return {
     task,
     guidance: guidanceByKind[task.kind],
-    closeHref: `/admin/dashboard${query}#viec-can-xu-ly`,
+    closeHref: `${basePath}${query}#viec-can-xu-ly`,
   };
 }
