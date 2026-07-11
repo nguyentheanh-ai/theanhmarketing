@@ -278,6 +278,18 @@ type CommandCenterSettledSources = {
   activities: PromiseSettledResult<ActivityLog[]>;
 };
 
+function reportCommandCenterSourceFailure(
+  sourceName: keyof CommandCenterSettledSources,
+  result: PromiseSettledResult<unknown>,
+) {
+  if (result.status !== "rejected") return;
+  const reason = result.reason;
+  console.error("[command-center] source unavailable", {
+    source: sourceName,
+    message: reason instanceof Error ? reason.message : "Unknown source error",
+  });
+}
+
 export type CommandCenterProviders = {
   orders: (context: CommandCenterProviderContext) => Promise<PaymentOrder[]>;
   leads: (context: CommandCenterProviderContext) => Promise<CommandCenterLeadSummary[]>;
@@ -287,6 +299,9 @@ export type CommandCenterProviders = {
 };
 
 export function resolveCommandCenterSettledSources(results: CommandCenterSettledSources) {
+  (Object.keys(results) as Array<keyof CommandCenterSettledSources>).forEach((sourceName) => {
+    reportCommandCenterSourceFailure(sourceName, results[sourceName]);
+  });
   const orders = resolveRows(results.orders, mapOrder);
   const leads = resolveRows(results.leads, mapLead);
   const courses = resolveRows(results.courses, mapCourse);

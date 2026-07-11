@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 
 function runTs(source) {
@@ -137,6 +138,13 @@ test("settled source adapter isolates every rejected source and treats empty suc
     assert.deepEqual(result[failed].dataStatus, expected);
     for (const source of Object.keys(expected)) assert.deepEqual(result[failed][source], []);
   }
+});
+
+test("command center preserves sanitized runtime diagnostics for rejected sources", () => {
+  const service = readFileSync("services/adminCommandCenterService.ts", "utf8");
+  assert.match(service, /console\.error\("\[command-center\] source unavailable",/);
+  assert.match(service, /source: sourceName/);
+  assert.match(service, /message: reason instanceof Error \? reason\.message : "Unknown source error"/);
 });
 
 test("enrollment adapter requires paid course identity or explicit trial provenance", () => {
