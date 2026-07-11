@@ -53,7 +53,7 @@ import type {
 import { getEmailProvider } from "./email-provider";
 import { canSendMarketingEmail } from "./suppression";
 import { buildAdaptiveRevenueSeries } from "./revenue-series";
-import { buildCrmOrderSummary, type CrmOrderSummary } from "./order-summary";
+import { buildCrmOrderSummary, selectCanonicalOrderMetricRows, type CrmOrderSummary } from "./order-summary";
 
 function paginate<T>(rows: T[], query: CrmListQuery): CrmListResult<T> {
   const start = (query.page - 1) * query.pageSize;
@@ -1457,12 +1457,21 @@ export async function getCrmV2OrderSummary(query: CrmListQuery): Promise<CrmOrde
   if (searchFilter) builder = builder.or(searchFilter);
 
   const { data, error } = await builder;
-  if (error || !data) return empty();
-  return buildCrmOrderSummary(data.map((row) => ({
+  const crmRows = error || !data ? [] : data.map((row) => ({
     status: String(row.status ?? "pending"),
     amount: numericValue(row.net_amount) || numericValue(row.amount),
     createdAt: String(row.created_at ?? ""),
-  })), dateRange);
+  }));
+  const hasScopedFilters = Boolean(query.search || Object.values(query.filters ?? {}).some(Boolean));
+  const publicRows = hasScopedFilters ? [] : (await listPublicOrdersForRange(client, dateRange)).map((row) => {
+    const status = String(row.status ?? row.payment_status ?? "pending");
+    return {
+      status,
+      amount: numericValue(row.amount),
+      createdAt: String(isPaidStatus(status) ? row.paid_at ?? row.created_at ?? "" : row.created_at ?? ""),
+    };
+  });
+  return buildCrmOrderSummary(selectCanonicalOrderMetricRows(crmRows, publicRows), dateRange);
 }
 
 export async function listCrmV2Students(query: CrmListQuery): Promise<CrmListResult<CrmStudentRow>> {

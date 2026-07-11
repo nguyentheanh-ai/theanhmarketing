@@ -5,7 +5,7 @@
 Phạm vi: tách Course Studio khỏi CRM shell, sửa số lead/đơn theo kỳ, tăng biểu đồ BI, sửa chồng nhãn khóa học và chuẩn hóa Meta Ads theo ngày kinh doanh Việt Nam.
 Các file đã thay đổi: route Course Studio/redirect, Course Hub/LMS service/API, CRM dashboard/data/order summary/charts, Meta timezone/report adapter, tests, AGENTS và tài liệu audit/trạng thái.
 Kết quả: Course Studio mở ở tab riêng; khóa học sắp xếp được; biểu đồ khóa học dùng nhãn hai dòng/chiều cao động; KPI đơn hàng không phụ thuộc phân trang; Meta Ads có trạng thái partial/final và không bịa số.
-Kiểm tra đã chạy: Node 403/403, TS unit 18/18, TypeScript, ESLint, Next production build, protected-route preflight và Chromium CRM 33/33.
+Kiểm tra đã chạy: Node 403/403, TS unit 19/19, TypeScript, ESLint, Next production build, protected-route preflight và Chromium CRM 33/33.
 Việc còn lại: hoàn tất release gate, deploy bằng protected command, smoke production owner và toàn bộ landing page quảng cáo đang hoạt động.
 Cảnh báo: không sửa cổng học viên trong release này; các link tải placeholder ở app học viên chỉ được ghi nhận cho maintenance riêng. Token Meta production hiện tại vẫn hết hạn; không đưa token người dùng dán trong chat vào code, log hoặc tài liệu.
 

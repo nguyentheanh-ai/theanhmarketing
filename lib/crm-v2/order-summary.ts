@@ -16,6 +16,13 @@ export type CrmOrderSummary = {
   series: Array<{ label: string; orders: number; revenue: number }>;
 };
 
+export function selectCanonicalOrderMetricRows(
+  crmRows: CrmOrderMetricRow[],
+  publicRows: CrmOrderMetricRow[],
+) {
+  return publicRows.length ? publicRows : crmRows;
+}
+
 type DateRange = { range: string; from: string; to: string };
 
 const paidStatuses = new Set(["paid", "success", "completed"]);

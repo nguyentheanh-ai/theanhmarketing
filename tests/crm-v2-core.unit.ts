@@ -14,7 +14,7 @@ import {
 } from "../lib/crm-v2/email-actions";
 import { buildCrmV2OperationalEmailTemplates } from "../lib/crm-v2/operational-email-templates";
 import { buildAdaptiveRevenueSeries } from "../lib/crm-v2/revenue-series";
-import { buildCrmOrderSummary } from "../lib/crm-v2/order-summary";
+import { buildCrmOrderSummary, selectCanonicalOrderMetricRows } from "../lib/crm-v2/order-summary";
 
 test("order summary is independent from table pagination and uses the selected Vietnam range", () => {
   const rows = [
@@ -33,6 +33,12 @@ test("order summary is independent from table pagination and uses the selected V
   assert.equal(summary.successRate, 66.7);
   assert.equal(summary.series.length, 24);
   assert.equal(summary.series[1]?.revenue, 100_000);
+});
+
+test("order summary prefers canonical public orders when CRM v2 is not synchronized", () => {
+  const publicRows = [{ status: "paid", amount: 399_000, createdAt: "2026-07-11T17:00:00.000Z" }];
+  const crmRows: typeof publicRows = [];
+  assert.deepEqual(selectCanonicalOrderMetricRows(crmRows, publicRows), publicRows);
 });
 
 test("dashboard revenue uses hourly buckets for today and weekly buckets for 90 days", () => {
