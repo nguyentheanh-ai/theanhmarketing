@@ -28,6 +28,7 @@ test("crm v2 LMS uses a real shared service instead of placeholder UI", () => {
     "createLmsCourse",
     "updateLmsCourse",
     "deleteLmsCourse",
+    "reorderLmsCourses",
     "createLmsModule",
     "updateLmsModule",
     "deleteLmsModule",
@@ -70,6 +71,9 @@ test("course management uses a progressive Course Hub and dedicated workspace", 
   const studentsClient = read("components/crm-v2/students-page-client.tsx");
 
   assert.match(hub, /create_course/, "Course Hub must create real courses");
+  assert.match(hub, /reorder_courses/, "Course Hub must persist course order through the owner-only LMS action route");
+  assert.match(hub, /aria-label={`Đưa \$\{course\.title\} lên`}/, "Course order must be keyboard accessible");
+  assert.match(hub, /aria-label={`Đưa \$\{course\.title\} xuống`}/, "Course order must be keyboard accessible");
   assert.match(hub, /\/admin\/course-studio\/\$\{/, "Course Hub must open the focused Course Studio route");
   assert.match(hub, /target="_blank"/, "existing courses must open Course Studio in a new browser tab");
   assert.match(studioPage, /requireAdminAuth/, "Course Studio must enforce owner auth in the server route");
@@ -122,6 +126,7 @@ test("crm v2 LMS admin and student API routes are server guarded", () => {
   assert.match(adminRead, /requireCrmV2OwnerRequest/, "admin reads must use CRM v2 owner guard");
   assert.match(adminActions, /z\./, "admin LMS mutations must validate payloads with zod");
   assert.match(adminActions, /createLmsCourse[\s\S]*updateLmsLesson[\s\S]*addLmsEnrollment[\s\S]*removeLmsEnrollment/, "admin action route must cover course, lesson, and enrollment operations");
+  assert.match(adminActions, /body\.action === "reorder_courses"[\s\S]*reorderLmsCourses/, "admin action route must validate and persist course order");
   assert.match(progress, /getCurrentAuth/, "student progress route must require the current auth user");
   assert.match(progress, /markLessonCompleted/, "student progress route must update LMS progress through the service");
   assert.match(progress, /courseSlug[\s\S]*lessonId/, "student progress route must validate course and lesson identity");

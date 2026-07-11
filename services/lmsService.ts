@@ -267,6 +267,7 @@ function mapCourse(
   const courseEnrollments = enrollments.filter((enrollment) => enrollment.courseSlug === courseSlug || enrollment.courseId === courseId);
   const course: Omit<LmsCourse, "stats"> = {
     id: courseId,
+    position: numberValue(row.sort_order ?? row.position, 1),
     title: text(row.title, "Khóa học"),
     slug: courseSlug,
     description: text(row.description),
@@ -357,6 +358,7 @@ async function fetchCourseRows(client: SupabaseClient) {
   const { data, error } = await client
     .from("courses")
     .select("*,course_modules(*,lessons(*,lesson_resources(*)))")
+    .order("sort_order", { ascending: true })
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -619,6 +621,24 @@ export async function updateLmsCourse(input: {
   const { error } = await client.from("courses").update(updates).eq("id", text(course.id));
   if (error) throw new Error(`Không lưu được khóa học: ${error.message}`);
   return { ok: true };
+}
+
+export async function reorderLmsCourses(input: { courseIds: string[] }) {
+  const client = getClientOrThrow();
+  const ids = [...new Set(input.courseIds)];
+  if (!ids.length || ids.length !== input.courseIds.length) throw new Error("Danh sách khóa học sắp xếp không hợp lệ.");
+
+  const { data, error } = await client.from("courses").select("id,sort_order").in("id", ids);
+  if (error) throw new Error(`Không kiểm tra được khóa học: ${error.message}`);
+  const rows = asArray(data);
+  if (rows.length !== ids.length) throw new Error("Danh sách khóa học sắp xếp có khóa không tồn tại.");
+
+  const currentPositions = new Map(rows.map((row) => [text(row.id), numberValue(row.sort_order, 0)]));
+  const changed = ids.flatMap((id, index) => (currentPositions.get(id) === index + 1 ? [] : [{ id, position: index + 1 }]));
+  const results = await Promise.all(changed.map(({ id, position }) => client.from("courses").update({ sort_order: position, updated_at: nowIso() }).eq("id", id)));
+  const failed = results.find((result) => result.error)?.error;
+  if (failed) throw new Error(`Không lưu được thứ tự khóa học: ${failed.message}`);
+  return { ok: true, changed: changed.length };
 }
 
 export async function deleteLmsCourse(input: { courseId: string; archiveIfUnsafe?: boolean }) {

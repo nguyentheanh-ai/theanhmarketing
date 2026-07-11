@@ -13,6 +13,7 @@ import {
   deleteLmsModule,
   deleteLmsResource,
   removeLmsEnrollment,
+  reorderLmsCourses,
   reorderLmsLessons,
   reorderLmsModules,
   updateLmsCourse,
@@ -35,6 +36,7 @@ const requiredText = z.string().trim().min(1);
 const idListSchema = z.array(z.string().uuid()).min(1).max(200);
 
 function ok(payload: Record<string, unknown> = {}) {
+  revalidatePath("/admin/crm-v2/courses");
   revalidatePath("/admin/crm-v2/students");
   revalidatePath("/dashboard");
   return NextResponse.json({ ok: true, ...payload });
@@ -103,6 +105,12 @@ export async function POST(request: Request) {
         previewVideoUrl: input.previewVideoUrl ?? undefined,
       });
       return ok({ message: "Đã lưu khóa học." });
+    }
+
+    if (body.action === "reorder_courses") {
+      const input = z.object({ courseIds: idListSchema }).parse(body);
+      await reorderLmsCourses(input);
+      return ok({ message: "Đã sắp xếp khóa học." });
     }
 
     if (body.action === "delete_course" || body.action === "archive_course") {

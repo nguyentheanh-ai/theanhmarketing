@@ -84,6 +84,7 @@ export type LmsCourseStats = {
 
 export type LmsCourse = {
   id: string;
+  position: number;
   title: string;
   slug: string;
   description: string;

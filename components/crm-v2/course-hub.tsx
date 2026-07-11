@@ -1,9 +1,9 @@
 "use client";
 
-import { BookOpen, Plus, Search, X } from "lucide-react";
+import { ArrowDown, ArrowUp, BookOpen, Plus, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { PageHeader } from "@/components/crm-v2";
 import type { AdminLmsSnapshot } from "@/lib/lms/types";
@@ -23,11 +23,43 @@ export function CourseHub({ snapshot }: { snapshot: AdminLmsSnapshot }) {
   const [search, setSearch] = useState("");
   const [creating, setCreating] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [reorderMode, setReorderMode] = useState(false);
+  const [reorderBusy, setReorderBusy] = useState(false);
+  const [orderedCourses, setOrderedCourses] = useState(snapshot.courses);
   const [error, setError] = useState("");
+  useEffect(() => setOrderedCourses(snapshot.courses), [snapshot.courses]);
   const courses = useMemo(
-    () => snapshot.courses.filter((course) => `${course.title} ${course.slug}`.toLowerCase().includes(search.trim().toLowerCase())),
-    [search, snapshot.courses],
+    () => orderedCourses.filter((course) => `${course.title} ${course.slug}`.toLowerCase().includes(search.trim().toLowerCase())),
+    [orderedCourses, search],
   );
+
+  async function moveCourse(courseId: string, direction: -1 | 1) {
+    const index = orderedCourses.findIndex((course) => course.id === courseId);
+    const nextIndex = index + direction;
+    if (index < 0 || nextIndex < 0 || nextIndex >= orderedCourses.length || reorderBusy) return;
+
+    const previous = orderedCourses;
+    const next = [...orderedCourses];
+    [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
+    setOrderedCourses(next);
+    setReorderBusy(true);
+    setError("");
+    try {
+      const response = await fetch("/api/admin/crm-v2/lms/actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reorder_courses", courseIds: next.map((course) => course.id) }),
+      });
+      const result = (await response.json().catch(() => null)) as { ok?: boolean; message?: string } | null;
+      if (!response.ok || !result?.ok) throw new Error(result?.message || "Không lưu được thứ tự khóa học.");
+      router.refresh();
+    } catch (cause) {
+      setOrderedCourses(previous);
+      setError(cause instanceof Error ? cause.message : "Không lưu được thứ tự khóa học.");
+    } finally {
+      setReorderBusy(false);
+    }
+  }
 
   async function createCourse(formData: FormData) {
     const title = String(formData.get("title") ?? "").trim();
@@ -60,14 +92,20 @@ export function CourseHub({ snapshot }: { snapshot: AdminLmsSnapshot }) {
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
           <input className="min-h-11 w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3 text-sm font-semibold text-slate-950 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => setSearch(event.target.value)} placeholder="Tìm theo tên hoặc slug..." value={search} />
         </label>
-        <button className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-black text-white hover:bg-blue-700" onClick={() => setCreating(true)} type="button">
-          <Plus className="size-4" /> Tạo khóa học
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-black text-slate-800 hover:bg-slate-50" onClick={() => { setSearch(""); setReorderMode((value) => !value); }} type="button">
+            {reorderMode ? "Xong sắp xếp" : "Sắp xếp khóa học"}
+          </button>
+          <button className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-black text-white hover:bg-blue-700" onClick={() => setCreating(true)} type="button">
+            <Plus className="size-4" /> Tạo khóa học
+          </button>
+        </div>
       </div>
+      {error && !creating ? <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-700">{error}</p> : null}
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {courses.map((course) => (
-          <Link className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md" href={`/admin/course-studio/${course.slug}`} key={course.id} rel="noopener noreferrer" target="_blank">
+          <article className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md" key={course.id}>
             <div className="flex items-start justify-between gap-3">
               <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-700"><BookOpen className="size-5" /></span>
               <span className={`rounded-full px-2.5 py-1 text-xs font-black ${course.status === "published" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{course.status === "published" ? "Đang xuất bản" : "Bản nháp"}</span>
@@ -79,7 +117,15 @@ export function CourseHub({ snapshot }: { snapshot: AdminLmsSnapshot }) {
               <div><b className="block text-base text-slate-950">{course.stats.publishedLessons}/{course.stats.lessons}</b><span className="text-xs font-semibold text-slate-500">Bài học</span></div>
               <div><b className="block text-base text-slate-950">{course.stats.activeStudents}</b><span className="text-xs font-semibold text-slate-500">Học viên</span></div>
             </div>
-          </Link>
+            {reorderMode ? (
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <button aria-label={`Đưa ${course.title} lên`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 font-black text-slate-700 disabled:opacity-40" disabled={reorderBusy || orderedCourses[0]?.id === course.id} onClick={() => moveCourse(course.id, -1)} type="button"><ArrowUp className="size-4" /> Lên</button>
+                <button aria-label={`Đưa ${course.title} xuống`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 font-black text-slate-700 disabled:opacity-40" disabled={reorderBusy || orderedCourses.at(-1)?.id === course.id} onClick={() => moveCourse(course.id, 1)} type="button"><ArrowDown className="size-4" /> Xuống</button>
+              </div>
+            ) : (
+              <Link className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-xl bg-slate-950 px-3 text-sm font-black text-white hover:bg-blue-700" href={`/admin/course-studio/${course.slug}`} rel="noopener noreferrer" target="_blank">Mở Course Studio</Link>
+            )}
+          </article>
         ))}
       </div>
       {courses.length === 0 ? <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center font-bold text-slate-600">Không có khóa học phù hợp.</div> : null}
