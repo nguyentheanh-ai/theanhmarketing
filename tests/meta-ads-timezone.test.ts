@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { aggregateMetaAdsForVietnam, buildExpandedMetaDateWindow, metaHourToVietnamBucket } from "../lib/meta-ads/timezone.ts";
+import { aggregateMetaAdsForVietnam, buildExpandedMetaDateWindow, metaHourToVietnamBucket } from "../lib/meta-ads/timezone";
 
 test("Meta advertiser hours convert to Vietnam with US daylight saving time", () => {
   assert.deepEqual(metaHourToVietnamBucket("2026-07-11", 10, "America/Los_Angeles"), { date: "2026-07-12", hour: 0 });

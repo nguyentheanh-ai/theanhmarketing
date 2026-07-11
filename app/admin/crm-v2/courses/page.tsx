@@ -5,5 +5,5 @@ export const metadata = { title: "Khóa học" };
 
 export default async function CoursesPage() {
   const snapshot = await getAdminLmsSnapshot({});
-  return <CourseHub snapshot={snapshot} />;
+  return <CourseHub key={snapshot.generatedAt} snapshot={snapshot} />;
 }

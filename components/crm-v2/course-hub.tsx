@@ -3,7 +3,7 @@
 import { ArrowDown, ArrowUp, BookOpen, Plus, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { PageHeader } from "@/components/crm-v2";
 import type { AdminLmsSnapshot } from "@/lib/lms/types";
@@ -27,7 +27,6 @@ export function CourseHub({ snapshot }: { snapshot: AdminLmsSnapshot }) {
   const [reorderBusy, setReorderBusy] = useState(false);
   const [orderedCourses, setOrderedCourses] = useState(snapshot.courses);
   const [error, setError] = useState("");
-  useEffect(() => setOrderedCourses(snapshot.courses), [snapshot.courses]);
   const courses = useMemo(
     () => orderedCourses.filter((course) => `${course.title} ${course.slug}`.toLowerCase().includes(search.trim().toLowerCase())),
     [orderedCourses, search],

@@ -37,8 +37,10 @@ export function DashboardCharts({ data, ads, orderSummary }: { data: CrmDashboar
   const revenueTitle = data.revenueResolution === "hour" ? "Doanh thu theo giờ" : data.revenueResolution === "week" ? "Doanh thu theo tuần" : "Doanh thu theo ngày";
   const revenueByLabel = new Map(data.revenue.map((row) => [row.label, row.value]));
   const adsRevenue = ads.rows.map((row) => ({ ...row, revenue: revenueByLabel.get(row.label) ?? 0 }));
-  let cumulativeValue = 0;
-  const cumulativeRevenue = data.revenue.map((row) => ({ ...row, cumulative: (cumulativeValue += row.value) }));
+  const cumulativeRevenue = data.revenue.reduce<Array<(typeof data.revenue)[number] & { cumulative: number }>>((series, row) => [
+    ...series,
+    { ...row, cumulative: (series.at(-1)?.cumulative ?? 0) + row.value },
+  ], []);
   const orderStatuses = [
     { label: "Đã thanh toán", value: orderSummary.paid },
     { label: "Chờ thanh toán", value: orderSummary.pending },
