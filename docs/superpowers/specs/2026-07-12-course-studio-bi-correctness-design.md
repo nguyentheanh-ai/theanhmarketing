@@ -15,6 +15,14 @@ Release này phải giải quyết đồng thời bốn vấn đề vận hành:
 
 Không thêm tính năng email, automation, chart hoặc KPI nếu backend tương ứng chưa hoạt động và chưa kiểm chứng được.
 
+### Protected scope — landing page đang chạy quảng cáo
+
+- Không sửa landing page source, public assets, nội dung offer, giá, form, tracking, checkout, payment redirect, `/go`, `/vao-khoa-hoc` hoặc CSP liên quan trong release này.
+- Không sửa các route Ebook/academy đang được bảo vệ trong `WEBSITE_DEPLOY_CONTRACT.md`.
+- Audit website chính chỉ được đọc/đo và viết đề xuất; không áp dụng tối ưu sang landing page đang có traffic quảng cáo.
+- Trước deploy phải chạy route preflight và live DOM/render smoke cho landing/product routes; HTTP 200 đơn thuần không đủ.
+- Nếu diff ngoài ý muốn chạm landing page, asset hoặc luồng conversion thì dừng deploy và tách thay đổi đó khỏi candidate.
+
 ## 2. Course Studio mở tab mới
 
 ### 2.1 Route và navigation
