@@ -11,7 +11,6 @@ import {
   AlertCircle,
   BarChart3,
   BookOpen,
-  Bot,
   CalendarDays,
   ChevronDown,
   CreditCard,
@@ -19,14 +18,10 @@ import {
   Gauge,
   GitBranch,
   Inbox,
-  Mail,
-  Plug,
   RefreshCw,
   Search,
   Settings2,
-  ShieldCheck,
   Sparkles,
-  Tags,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -40,18 +35,13 @@ const primaryNavItems = [
   { href: "/admin/crm-v2/leads", label: "Khách hàng", icon: GitBranch },
   { href: "/admin/crm-v2/orders", label: "Đơn hàng", icon: CreditCard },
   { href: "/admin/crm-v2/students", label: "Học viên", icon: Users, excludeView: "courses" },
-  { href: "/admin/crm-v2/students?view=courses", label: "Khóa học", icon: BookOpen, requiredView: "courses" },
-  { href: "/admin/crm-v2/email", label: "Email", icon: Mail },
-  { href: "/admin/crm-v2/automation", label: "Automation", icon: Bot },
+  { href: "/admin/crm-v2/courses", label: "Khóa học", icon: BookOpen },
   { href: "/admin/crm-v2/reports", label: "Báo cáo", icon: BarChart3 },
-  { href: "/admin/cai-dat", label: "Cài đặt", icon: Settings2 },
+  { href: "/admin/crm-v2/settings", label: "Cài đặt", icon: Settings2 },
 ];
 
 const advancedNavItems = [
   { href: "/admin/crm-v2/activity", label: "Lịch sử hoạt động", icon: Activity },
-  { href: "/admin/crm-v2/segments", label: "Phân khúc & Tag", icon: Tags },
-  { href: "/admin/crm-v2/team", label: "Team & Phân quyền", icon: ShieldCheck },
-  { href: "/admin/crm-v2/integrations", label: "Tích hợp", icon: Plug },
 ];
 
 type CrmNavItem = (typeof primaryNavItems)[number] | (typeof advancedNavItems)[number];

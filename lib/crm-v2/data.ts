@@ -575,9 +575,9 @@ function filterUnifiedCustomerRows(rows: CrmUnifiedCustomerRow[], query: CrmList
 
 function courseShortName(value: string) {
   const text = value || "Chưa rõ";
+  if (/ebook/i.test(text)) return "Ebook";
   if (/facebook/i.test(text)) return "FB Ads";
   if (/growth|x10/i.test(text)) return "AI Growth";
-  if (/ebook/i.test(text)) return "Ebook";
   return text.split(/\s+/).slice(0, 3).join(" ");
 }
 

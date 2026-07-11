@@ -109,11 +109,9 @@ test("crm v2 shell exposes the executive operating system navigation", () => {
     "/admin/crm-v2/leads",
     "/admin/crm-v2/orders",
     "/admin/crm-v2/students",
-    "/admin/crm-v2/students?view=courses",
-    "/admin/crm-v2/email",
-    "/admin/crm-v2/automation",
+    "/admin/crm-v2/courses",
     "/admin/crm-v2/reports",
-    "/admin/cai-dat",
+    "/admin/crm-v2/settings",
   ]) {
     assert.ok(components.includes(`href: "${href}"`), `primary navigation must include ${href}`);
   }
@@ -122,6 +120,28 @@ test("crm v2 shell exposes the executive operating system navigation", () => {
   assert.match(components, /bg-\[#f4f6f9\]/);
   assert.match(components, /Nâng cao/);
   assert.doesNotMatch(components, /CRM hiện tại vẫn giữ nguyên\./);
+});
+
+test("lean solo admin keeps only verified modules and CRM-owned settings", () => {
+  const shell = read("components/crm-v2/crm-components.tsx");
+  const dataLayer = read("lib/crm-v2/data.ts");
+
+  for (const href of [
+    "/admin/crm-v2",
+    "/admin/crm-v2/leads",
+    "/admin/crm-v2/orders",
+    "/admin/crm-v2/students",
+    "/admin/crm-v2/courses",
+    "/admin/crm-v2/reports",
+    "/admin/crm-v2/settings",
+  ]) assert.ok(shell.includes(`href: "${href}"`), `lean navigation must include ${href}`);
+
+  for (const hiddenHref of ["/admin/crm-v2/email", "/admin/crm-v2/automation", "/admin/crm-v2/segments", "/admin/crm-v2/team", "/admin/crm-v2/integrations", "/admin/cai-dat"]) {
+    assert.ok(!shell.includes(`href: "${hiddenHref}"`), `operator navigation must hide ${hiddenHref}`);
+  }
+
+  assert.ok(exists("app/admin/crm-v2/settings/page.tsx"));
+  assert.ok(dataLayer.indexOf('if (/ebook/i.test(text)) return "Ebook"') < dataLayer.indexOf('if (/facebook/i.test(text)) return "FB Ads"'));
 });
 
 test("canonical dashboard renders only real actionable operating data", () => {
@@ -480,7 +500,7 @@ test("crm v2 live data mapping uses true source counts and course slugs", () => 
   assert.match(shell, /line-clamp-2/, "CRM long table text must clamp instead of forcing vertical word wrapping");
   assert.match(shell, /displayStatusLabel/, "CRM stage/status badges must display operator labels, not raw stage codes");
   assert.doesNotMatch(shell, /href: "\/admin\/khoa-hoc"/, "CRM v2 course manager must not jump back to the legacy admin dashboard");
-  assert.match(shell, /href: "\/admin\/crm-v2\/students\?view=courses"/, "CRM v2 course manager must stay inside the CRM v2 shell");
+  assert.match(shell, /href: "\/admin\/crm-v2\/courses"/, "CRM v2 course manager must stay inside the CRM v2 shell");
   for (const relativePath of walkFiles("app/admin/crm-v2", new Set([".tsx"]))) {
     const source = fs.readFileSync(relativePath, "utf8");
     assert.doesNotMatch(source, /xl:grid-cols-\[1fr_360px\]/, `${path.relative(root, relativePath)} must not squeeze right panels at normal desktop widths`);
@@ -633,7 +653,7 @@ test("crm v2 operator modules use real filters, live reports, permissions, email
   assert.match(segmentsPage, /segmentStatusOptions/, "Segments status filter must be selectable");
 
   assert.doesNotMatch(shell, /href:\s*"\/admin\/khoa-hoc"/, "CRM v2 course menu must not jump to the legacy admin dashboard");
-  assert.match(shell, /href:\s*"\/admin\/crm-v2\/students\?view=courses"/, "CRM v2 course menu must stay inside CRM v2");
+  assert.match(shell, /href:\s*"\/admin\/crm-v2\/courses"/, "CRM v2 course menu must stay inside CRM v2");
   assert.doesNotMatch(shell, /Outline CRM chuyên sâu|\/admin\/crm-v2\/outline/, "CRM v2 sidebar must remove internal Outline from operator navigation");
   assert.match(shell, /label:\s*"Báo cáo"/, "CRM v2 sidebar must keep Reports in the operator menu");
   assert.match(reportsPage, /searchParams/, "Reports page must accept the shared query contract");
