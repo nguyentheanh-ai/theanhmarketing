@@ -4,9 +4,10 @@ import {
   Archive,
   ArrowDown,
   ArrowUp,
+  BarChart3,
   BookOpen,
+  CheckCircle2,
   ExternalLink,
-  FileText,
   Layers3,
   Pencil,
   Plus,
@@ -17,7 +18,7 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { PageHeader } from "@/components/crm-v2";
@@ -33,15 +34,17 @@ import type {
 
 type ActionPayload = Record<string, unknown> & { action: string };
 type SubmitAction = (payload: ActionPayload, confirmText?: string) => Promise<void>;
-type CourseTab = "overview" | "modules" | "lessons" | "students" | "resources" | "settings";
+type CourseStep = "overview" | "sales" | "curriculum" | "media" | "students" | "analytics" | "publish";
+type SaveState = "idle" | "saving" | "saved" | "error";
 
-const courseTabs: Array<{ id: CourseTab; label: string; icon: React.ComponentType<{ className?: string }> }> = [
+const courseSteps: Array<{ id: CourseStep; label: string; icon: React.ComponentType<{ className?: string }> }> = [
   { id: "overview", label: "Tổng quan", icon: BookOpen },
-  { id: "modules", label: "Module", icon: Layers3 },
-  { id: "lessons", label: "Bài học", icon: FileText },
-  { id: "students", label: "Học viên", icon: Users },
-  { id: "resources", label: "Tài nguyên", icon: Archive },
-  { id: "settings", label: "Cài đặt", icon: Settings },
+  { id: "sales", label: "Nội dung bán hàng", icon: Pencil },
+  { id: "curriculum", label: "Curriculum", icon: Layers3 },
+  { id: "media", label: "Media & tài liệu", icon: Archive },
+  { id: "students", label: "Học viên & quyền học", icon: Users },
+  { id: "analytics", label: "Analytics", icon: BarChart3 },
+  { id: "publish", label: "Kiểm tra & xuất bản", icon: Settings },
 ];
 
 const publishStatuses: Array<[LmsPublishStatus, string]> = [
@@ -244,10 +247,20 @@ export function CourseLmsManager({
   setSelectedCourseSlug: (value: string) => void;
 }) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<CourseTab>("overview");
+  const searchParams = useSearchParams();
   const [message, setMessage] = useState("");
   const [busyAction, setBusyAction] = useState("");
+  const [saveState, setSaveState] = useState<SaveState>("idle");
   const [lessonEditor, setLessonEditor] = useState<{ mode: "create" | "edit"; lesson?: LmsLesson; moduleId?: string } | null>(null);
+
+  const requestedStep = searchParams.get("step");
+  const activeStep = courseSteps.some((step) => step.id === requestedStep) ? (requestedStep as CourseStep) : "overview";
+  const setActiveStep = (step: CourseStep) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("view", "courses");
+    params.set("step", step);
+    router.replace(`/admin/crm-v2/students?${params.toString()}`, { scroll: false });
+  };
 
   const selectedCourse = useMemo(
     () => lmsSnapshot.courses.find((course) => course.slug === selectedCourseSlug) ?? lmsSnapshot.selectedCourse ?? lmsSnapshot.courses[0] ?? null,
@@ -257,6 +270,7 @@ export function CourseLmsManager({
   const submitAction: SubmitAction = async (payload, confirmText) => {
     if (confirmText && !window.confirm(confirmText)) return;
     setBusyAction(payload.action);
+    setSaveState("saving");
     setMessage("");
     try {
       const response = await fetch("/api/admin/crm-v2/lms/actions", {
@@ -268,9 +282,11 @@ export function CourseLmsManager({
       if (!response.ok || !result?.ok) throw new Error(result?.message ?? "Không lưu được thay đổi LMS.");
       if (result.course?.slug) setSelectedCourseSlug(result.course.slug);
       setMessage(result.message ?? "Đã cập nhật.");
+      setSaveState("saved");
       router.refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Không lưu được thay đổi LMS.");
+      setSaveState("error");
     } finally {
       setBusyAction("");
     }
@@ -278,7 +294,11 @@ export function CourseLmsManager({
 
   return (
     <div className="space-y-4">
-      <PageHeader eyebrow="LMS" title="Quản lý khóa học" />
+      <PageHeader eyebrow="LMS · Course Hub" title="Không gian vận hành khóa học" />
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+        <p className="text-sm font-bold text-blue-950">Chuyển tự do giữa các bước — không bắt buộc hoàn thành theo thứ tự.</p>
+        <SaveStateBadge state={saveState} />
+      </div>
       <ActionMessage message={message || lmsSnapshot.message || ""} />
       <div className="grid min-h-[calc(100vh-190px)] min-w-0 gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
         <CourseListPanel
@@ -292,26 +312,25 @@ export function CourseLmsManager({
           {selectedCourse ? (
             <>
               <CourseHeader course={selectedCourse} />
-              <CourseTabs activeTab={activeTab} onChange={setActiveTab} />
+              <CourseSteps activeStep={activeStep} onChange={setActiveStep} />
               <Panel className="min-h-[560px]">
-                {activeTab === "overview" ? <OverviewTab busy={busyAction === "update_course"} course={selectedCourse} submitAction={submitAction} /> : null}
-                {activeTab === "modules" ? (
-                  <ModulesTab
+                {activeStep === "overview" ? <CourseOverview course={selectedCourse} onChangeStep={setActiveStep} /> : null}
+                {activeStep === "sales" ? <SalesContentTab busy={busyAction === "update_course"} course={selectedCourse} submitAction={submitAction} /> : null}
+                {activeStep === "curriculum" ? (
+                  <CurriculumWorkspace
                     busyAction={busyAction}
                     course={selectedCourse}
                     submitAction={submitAction}
                     onAddLesson={(moduleId) => {
-                      setActiveTab("lessons");
                       setLessonEditor({ mode: "create", moduleId });
                     }}
+                    onEditLesson={setLessonEditor}
                   />
                 ) : null}
-                {activeTab === "lessons" ? (
-                  <LessonsTab busyAction={busyAction} course={selectedCourse} onEditLesson={setLessonEditor} submitAction={submitAction} />
-                ) : null}
-                {activeTab === "students" ? <StudentsTab busyAction={busyAction} course={selectedCourse} submitAction={submitAction} /> : null}
-                {activeTab === "resources" ? <ResourcesTab busyAction={busyAction} course={selectedCourse} submitAction={submitAction} /> : null}
-                {activeTab === "settings" ? <SettingsTab busyAction={busyAction} course={selectedCourse} submitAction={submitAction} /> : null}
+                {activeStep === "media" ? <ResourcesTab busyAction={busyAction} course={selectedCourse} submitAction={submitAction} /> : null}
+                {activeStep === "students" ? <StudentsTab busyAction={busyAction} course={selectedCourse} submitAction={submitAction} /> : null}
+                {activeStep === "analytics" ? <CourseAnalytics course={selectedCourse} /> : null}
+                {activeStep === "publish" ? <PublishReview busyAction={busyAction} course={selectedCourse} submitAction={submitAction} /> : null}
               </Panel>
             </>
           ) : (
@@ -448,25 +467,78 @@ function CourseHeader({ course }: { course: LmsCourse }) {
   );
 }
 
-function CourseTabs({ activeTab, onChange }: { activeTab: CourseTab; onChange: (tab: CourseTab) => void }) {
+function SaveStateBadge({ state }: { state: SaveState }) {
+  const config = {
+    idle: { label: "Sẵn sàng", className: "border-slate-200 bg-white text-slate-700" },
+    saving: { label: "Đang lưu", className: "border-blue-200 bg-white text-blue-700" },
+    saved: { label: "Đã lưu", className: "border-emerald-200 bg-emerald-50 text-emerald-800" },
+    error: { label: "Lỗi lưu", className: "border-red-200 bg-red-50 text-red-800" },
+  }[state];
   return (
-    <div className="flex gap-1 overflow-x-auto rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
-      {courseTabs.map((tab) => {
-        const Icon = tab.icon;
+    <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-black ${config.className}`} aria-live="polite">
+      <CheckCircle2 className="size-4" /> {config.label}
+    </span>
+  );
+}
+
+function CourseSteps({ activeStep, onChange }: { activeStep: CourseStep; onChange: (step: CourseStep) => void }) {
+  return (
+    <div className="grid gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-sm sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-7">
+      {courseSteps.map((step, index) => {
+        const Icon = step.icon;
         return (
           <button
-            className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-md px-3 text-sm font-black transition ${
-              activeTab === tab.id ? "bg-slate-950 text-white shadow-sm" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
+            className={`flex min-h-14 items-center gap-2 rounded-lg px-3 text-left text-xs font-black transition ${
+              activeStep === step.id ? "bg-blue-600 text-white shadow-sm shadow-blue-600/20" : "bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-950"
             }`}
-            key={tab.id}
-            onClick={() => onChange(tab.id)}
+            key={step.id}
+            onClick={() => onChange(step.id)}
             type="button"
           >
-            <Icon className="size-4" />
-            {tab.label}
+            <span className={`grid size-7 shrink-0 place-items-center rounded-md ${activeStep === step.id ? "bg-white/15" : "bg-white"}`}>
+              <Icon className="size-4" />
+            </span>
+            <span><span className="block text-[10px] opacity-70">Bước {index + 1}</span>{step.label}</span>
           </button>
         );
       })}
+    </div>
+  );
+}
+
+function CourseOverview({ course, onChangeStep }: { course: LmsCourse; onChangeStep: (step: CourseStep) => void }) {
+  const lessonCount = getCourseLessons(course).length;
+  const averageProgress = course.enrollments.length
+    ? Math.round(course.enrollments.reduce((sum, enrollment) => sum + enrollment.progressPercent, 0) / course.enrollments.length)
+    : 0;
+  const healthChecks = [
+    { label: "Thông tin bán hàng", ready: Boolean(course.title && (course.shortDescription || course.description)), step: "sales" as CourseStep },
+    { label: "Curriculum", ready: course.modules.length > 0 && lessonCount > 0, step: "curriculum" as CourseStep },
+    { label: "Media & tài liệu", ready: Boolean(course.thumbnailImage || course.bannerImage || course.resources.length), step: "media" as CourseStep },
+    { label: "Thiết lập xuất bản", ready: course.status === "published", step: "publish" as CourseStep },
+  ];
+  return (
+    <div className="grid gap-5">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <MiniStat label="Học viên active" value={course.stats.activeStudents} />
+        <MiniStat label="Bài đã xuất bản" value={`${course.stats.publishedLessons}/${lessonCount}`} />
+        <MiniStat label="Module" value={course.stats.modules} />
+        <MiniStat label="Tiến độ trung bình" value={`${averageProgress}%`} />
+      </div>
+      <div>
+        <h3 className="text-base font-black text-slate-950">Sức khỏe khóa học</h3>
+        <p className="mt-1 text-sm font-semibold text-slate-600">Các bước là gợi ý kiểm tra nhanh, không khóa thao tác của anh.</p>
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          {healthChecks.map((item) => (
+            <button key={item.label} className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-4 text-left hover:border-blue-200 hover:bg-blue-50" onClick={() => onChangeStep(item.step)} type="button">
+              <span className="font-black text-slate-900">{item.label}</span>
+              <span className={`rounded-full px-2.5 py-1 text-xs font-black ${item.ready ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
+                {item.ready ? "Sẵn sàng" : "Cần bổ sung"}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -480,17 +552,9 @@ function MiniStat({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-function OverviewTab({ busy, course, submitAction }: { busy: boolean; course: LmsCourse; submitAction: SubmitAction }) {
-  const averageProgress =
-    course.enrollments.length > 0 ? Math.round(course.enrollments.reduce((sum, enrollment) => sum + enrollment.progressPercent, 0) / course.enrollments.length) : 0;
+function SalesContentTab({ busy, course, submitAction }: { busy: boolean; course: LmsCourse; submitAction: SubmitAction }) {
   return (
     <div className="grid gap-4">
-      <div className="grid gap-3 md:grid-cols-4">
-        <MiniStat label="Học viên active" value={course.stats.activeStudents} />
-        <MiniStat label="Bài published" value={`${course.stats.publishedLessons}/${course.stats.lessons}`} />
-        <MiniStat label="Module" value={course.stats.modules} />
-        <MiniStat label="Progress TB" value={`${averageProgress}%`} />
-      </div>
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
         <form
           className="grid gap-4 rounded-lg border border-slate-200 bg-white p-4"
@@ -577,6 +641,33 @@ function OverviewTab({ busy, course, submitAction }: { busy: boolean; course: Lm
           <div className="mt-3 line-clamp-2 text-sm font-black text-slate-950">{course.title}</div>
           <div className="mt-1 line-clamp-3 text-sm font-semibold text-slate-500">{course.shortDescription || course.description || "Chưa có mô tả."}</div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function CurriculumWorkspace({
+  busyAction,
+  course,
+  onAddLesson,
+  onEditLesson,
+  submitAction,
+}: {
+  busyAction: string;
+  course: LmsCourse;
+  onAddLesson: (moduleId: string) => void;
+  onEditLesson: (editor: { mode: "create" | "edit"; lesson?: LmsLesson; moduleId?: string }) => void;
+  submitAction: SubmitAction;
+}) {
+  return (
+    <div className="grid min-w-0 gap-5 2xl:grid-cols-[minmax(340px,0.85fr)_minmax(560px,1.4fr)]">
+      <div className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <p className="mb-4 text-xs font-black uppercase tracking-[0.12em] text-slate-500">Cấu trúc module</p>
+        <ModulesTab busyAction={busyAction} course={course} onAddLesson={onAddLesson} submitAction={submitAction} />
+      </div>
+      <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
+        <p className="mb-4 text-xs font-black uppercase tracking-[0.12em] text-slate-500">Bài học trong curriculum</p>
+        <LessonsTab busyAction={busyAction} course={course} onEditLesson={onEditLesson} submitAction={submitAction} />
       </div>
     </div>
   );
@@ -1279,6 +1370,70 @@ function ResourceFormModal({
         </div>
       </form>
     </ModalShell>
+  );
+}
+
+function CourseAnalytics({ course }: { course: LmsCourse }) {
+  const total = course.enrollments.length;
+  const active = course.enrollments.filter((item) => item.status === "active").length;
+  const completed = course.enrollments.filter((item) => item.status === "completed" || item.progressPercent >= 100).length;
+  const averageProgress = total ? Math.round(course.enrollments.reduce((sum, item) => sum + item.progressPercent, 0) / total) : 0;
+  const progressBands = [
+    { label: "Chưa bắt đầu", count: course.enrollments.filter((item) => item.progressPercent === 0).length, color: "bg-slate-500" },
+    { label: "Đang học", count: course.enrollments.filter((item) => item.progressPercent > 0 && item.progressPercent < 100).length, color: "bg-blue-600" },
+    { label: "Hoàn thành", count: completed, color: "bg-emerald-600" },
+  ];
+  return (
+    <div className="grid gap-5">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <MiniStat label="Tổng enrollment" value={total} />
+        <MiniStat label="Đang học" value={active} />
+        <MiniStat label="Hoàn thành" value={completed} />
+        <MiniStat label="Tiến độ trung bình" value={`${averageProgress}%`} />
+      </div>
+      <div className="rounded-xl border border-slate-200 bg-white p-5">
+        <h3 className="text-base font-black text-slate-950">Phân bố tiến độ thực tế</h3>
+        <p className="mt-1 text-sm font-semibold text-slate-600">Tính trực tiếp từ enrollment và phần trăm tiến độ của khóa đang chọn.</p>
+        <div className="mt-5 grid gap-4">
+          {progressBands.map((band) => (
+            <div key={band.label}>
+              <div className="flex items-center justify-between text-sm font-bold text-slate-700"><span>{band.label}</span><span>{band.count}</span></div>
+              <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-slate-100">
+                <div className={`h-full rounded-full ${band.color}`} style={{ width: `${total ? Math.round((band.count / total) * 100) : 0}%` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PublishReview({ busyAction, course, submitAction }: { busyAction: string; course: LmsCourse; submitAction: SubmitAction }) {
+  const lessons = getCourseLessons(course);
+  const checks = [
+    { label: "Tên và mô tả khóa học", ready: Boolean(course.title && (course.shortDescription || course.description)) },
+    { label: "Có ít nhất một module", ready: course.modules.length > 0 },
+    { label: "Có bài học sẵn sàng", ready: lessons.some(({ lesson }) => lesson.status === "published") },
+    { label: "Có hình ảnh khóa học", ready: Boolean(course.thumbnailImage || course.bannerImage) },
+  ];
+  return (
+    <div className="grid gap-5">
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <h3 className="text-base font-black text-slate-950">Kiểm tra trước khi xuất bản</h3>
+        <div className="mt-4 grid gap-2 md:grid-cols-2">
+          {checks.map((check) => (
+            <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-3" key={check.label}>
+              <span className="text-sm font-bold text-slate-800">{check.label}</span>
+              <span className={`rounded-full px-2.5 py-1 text-xs font-black ${check.ready ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
+                {check.ready ? "Đạt" : "Cần bổ sung"}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <SettingsTab busyAction={busyAction} course={course} submitAction={submitAction} />
+    </div>
   );
 }
 

@@ -59,6 +59,33 @@ test("crm v2 LMS uses a real shared service instead of placeholder UI", () => {
   assert.match(manager, /confirm\(/, "dangerous LMS actions must ask for confirmation");
 });
 
+test("course workspace uses free guided steps, real analytics, and visible save state", () => {
+  const manager = read("components/crm-v2/lms-management-client.tsx");
+  const studentsClient = read("components/crm-v2/students-page-client.tsx");
+
+  for (const label of [
+    "Tổng quan",
+    "Nội dung bán hàng",
+    "Curriculum",
+    "Media & tài liệu",
+    "Học viên & quyền học",
+    "Analytics",
+    "Kiểm tra & xuất bản",
+  ]) {
+    assert.match(manager, new RegExp(label), `guided workspace must include ${label}`);
+  }
+
+  assert.match(manager, /Course Hub/);
+  assert.match(manager, /Chuyển tự do giữa các bước/);
+  assert.match(manager, /searchParams\.get\("step"\)/, "active step must be URL-backed");
+  assert.match(manager, /Đang lưu|Đã lưu|Lỗi lưu/, "mutations must expose save state");
+  assert.match(manager, /CurriculumWorkspace/);
+  assert.match(manager, /CourseAnalytics/);
+  assert.doesNotMatch(manager, /localStorage/);
+  assert.doesNotMatch(studentsClient, /NPS\/đánh giá[\s\S]*8\.7/);
+  assert.doesNotMatch(studentsClient, /Ticket hỗ trợ[\s\S]*2 mở/);
+});
+
 test("crm v2 LMS admin and student API routes are server guarded", () => {
   assert.ok(exists("app/api/admin/crm-v2/lms/actions/route.ts"), "admin LMS action route must exist");
   assert.ok(exists("app/api/admin/crm-v2/lms/route.ts"), "admin LMS read route must exist");

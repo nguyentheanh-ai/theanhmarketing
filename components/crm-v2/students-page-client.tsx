@@ -23,8 +23,6 @@ type StudentsPageClientProps = {
   view?: "students" | "courses";
 };
 
-const lmsFocusedTabs = "Tổng quan Module Bài học Học viên Tài nguyên Cài đặt";
-
 export default function StudentsPageClient({ query, studentsResult, lmsSnapshot, view = "students" }: StudentsPageClientProps) {
   const students = studentsResult.rows;
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -34,7 +32,7 @@ export default function StudentsPageClient({ query, studentsResult, lmsSnapshot,
   const completed = students.filter((row) => Number(String(row.progress).replace("%", "")) >= 100).length;
   const upsell = students.reduce((sum, row) => {
     const value = Number(row.upsell);
-    return sum + (Number.isFinite(value) ? 1 : 0);
+    return sum + (Number.isFinite(value) && value > 0 ? 1 : 0);
   }, 0);
 
   const courseOptions = Array.from(
@@ -47,11 +45,7 @@ export default function StudentsPageClient({ query, studentsResult, lmsSnapshot,
   const selectedStudent = students.find((row) => row.id === selectedIds[0]) ?? students[0];
 
   if (view === "courses") {
-    return (
-      <div data-lms-tabs={lmsFocusedTabs}>
-        <CourseLmsManager lmsSnapshot={lmsSnapshot} selectedCourseSlug={selectedCourseSlug} setSelectedCourseSlug={setSelectedCourseSlug} />
-      </div>
-    );
+    return <CourseLmsManager lmsSnapshot={lmsSnapshot} selectedCourseSlug={selectedCourseSlug} setSelectedCourseSlug={setSelectedCourseSlug} />;
   }
 
   return (
@@ -61,17 +55,16 @@ export default function StudentsPageClient({ query, studentsResult, lmsSnapshot,
       <LmsStudentsOverview lmsSnapshot={lmsSnapshot} />
       <MetricGrid
         metrics={[
-          { label: "Học viên đang học", value: `${studentsResult.total}`, tone: "blue", series: [220, 310, 390, 430, studentsResult.total] },
-          { label: "Học viên mới kích hoạt", value: `${students.length}`, tone: "green", series: [8, 12, 18, 24, students.length] },
-          { label: "Học viên không hoạt động", value: `${students.length - pendingOrActive}`, tone: "orange", series: [80, 76, 70, 68, students.length - pendingOrActive] },
+          { label: "Tổng học viên đã lọc", value: `${studentsResult.total}`, tone: "blue", series: [studentsResult.total] },
+          { label: "Đang học trên trang", value: `${pendingOrActive}`, tone: "green", series: [pendingOrActive] },
+          { label: "Không hoạt động trên trang", value: `${students.length - pendingOrActive}`, tone: "orange", series: [students.length - pendingOrActive] },
           {
             label: "Tỷ lệ hoàn thành khóa",
             value: `${students.length > 0 ? Math.round((completed / Math.max(students.length, 1)) * 100) : 0}%`,
             tone: "purple",
-            series: [22, 28, 35, 39, students.length > 0 ? Math.round((completed / students.length) * 100) : 0],
+            series: [students.length > 0 ? Math.round((completed / students.length) * 100) : 0],
           },
-          { label: "Upsell opportunity", value: `${upsell}`, tone: "green", series: [30, 48, 62, 80, upsell] },
-          { label: "NPS/đánh giá", value: "8.7", tone: "blue", series: [7, 7.4, 8.1, 8.4, 8.7] },
+          { label: "Có dữ liệu upsell", value: `${upsell}`, tone: "green", series: [upsell] },
         ]}
       />
       <CrmPaginationBar
@@ -88,10 +81,7 @@ export default function StudentsPageClient({ query, studentsResult, lmsSnapshot,
             items={[
               { label: "Khóa học", value: query.filters?.course, param: "course", options: courseOptions },
               { label: "Trạng thái học", value: query.filters?.status, param: "status", options: statusOptions },
-              { label: "Tiến độ", value: undefined, param: "progress" },
               { label: "Owner CSKH", value: query.filters?.owner, param: "owner", options: ownerOptions },
-              { label: "Nguy cơ rời bỏ" },
-              { label: "Gói sản phẩm" },
             ]}
           />
           <CrmDataTable<CrmStudentRow>
@@ -116,10 +106,9 @@ export default function StudentsPageClient({ query, studentsResult, lmsSnapshot,
         <RightInsightPanel title="Tiến độ & gợi ý">
           <InsightRow label="Dòng/trang" value={`${studentsResult.pageSize}`} tone="blue" />
           <InsightRow label="Tổng học viên lọc" value={`${studentsResult.total}`} tone="green" />
-          <InsightRow label="Module hoàn thành" value={`${completed}/${students.length}`} tone="green" />
-          <InsightRow label="Chứng chỉ" value="Chưa có" tone="orange" />
-          <InsightRow label="Ticket hỗ trợ" value="2 mở" tone="blue" />
-          <InsightRow label="Đề xuất chăm sóc" value="Gợi ý check-in" tone="purple" />
+          <InsightRow label="Hoàn thành trên trang" value={`${completed}/${students.length}`} tone="green" />
+          <InsightRow label="Đang học trên trang" value={`${pendingOrActive}`} tone="blue" />
+          <InsightRow label="Không hoạt động trên trang" value={`${students.length - pendingOrActive}`} tone="orange" />
         </RightInsightPanel>
       </div>
     </div>
