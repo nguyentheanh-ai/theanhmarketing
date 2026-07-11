@@ -1,6 +1,6 @@
 import { Activity, BarChart3, BookOpen, IconButton, InsightRow, MetricGrid, PageHeader, RightInsightPanel, Timeline } from "@/components/crm-v2";
 import { DashboardCharts } from "@/components/crm-v2/dashboard-charts";
-import { getCrmDateRange, getCrmV2Dashboard, normalizeCrmListQuery } from "@/lib/crm-v2/data";
+import { getCrmDateRange, getCrmV2Dashboard, getCrmV2OrderSummary, normalizeCrmListQuery } from "@/lib/crm-v2/data";
 import type { KpiMetric } from "@/lib/crm-v2/types";
 import { getMetaAdsReport } from "@/services/metaAdsReportService";
 
@@ -19,7 +19,7 @@ function compactMoney(value: number) {
 export default async function CrmV2DashboardPage({ searchParams }: PageProps) {
   const query = normalizeCrmListQuery(await searchParams);
   const range = getCrmDateRange(query);
-  const [data, ads] = await Promise.all([getCrmV2Dashboard(query), getMetaAdsReport(range)]);
+  const [data, ads, orderSummary] = await Promise.all([getCrmV2Dashboard(query), getMetaAdsReport(range), getCrmV2OrderSummary(query)]);
   const operatingKpis = data.kpis.filter((kpi) => !/email|automation/i.test(kpi.label));
   const adsKpis: KpiMetric[] = ads.available
     ? [
@@ -35,7 +35,7 @@ export default async function CrmV2DashboardPage({ searchParams }: PageProps) {
     <div className="space-y-4">
       <PageHeader eyebrow="Tổng quan CRM · Executive Operating System" title="Trung tâm điều hành" actions={<><IconButton href="/admin/crm-v2/reports" label="Mở báo cáo"><BarChart3 className="h-4 w-4" /></IconButton><IconButton href="/admin/crm-v2/activity" label="Hoạt động mới"><Activity className="h-4 w-4" /></IconButton></>} />
       <MetricGrid metrics={[...operatingKpis, ...adsKpis]} />
-      <DashboardCharts ads={ads} data={data} />
+      <DashboardCharts ads={ads} data={data} orderSummary={orderSummary} />
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">

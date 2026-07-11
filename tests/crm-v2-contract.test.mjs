@@ -187,6 +187,10 @@ test("solo dashboard uses adaptive charts and a fail-closed Meta Ads adapter", (
   assert.match(meta, /META_ADS_AD_ACCOUNT_ID/);
   assert.match(meta, /hourly_stats_aggregated_by_advertiser_time_zone/);
   assert.doesNotMatch(meta, /mock|demo/i);
+  assert.match(charts, /function CourseRankingTick/, "long course names need a dedicated non-overlapping axis renderer");
+  assert.match(charts, /Math\.max\(288,\s*data\.courses\.length \* 64\)/, "course chart height must grow with the number of courses");
+  assert.match(charts, /Doanh thu lũy kế/, "BI dashboard must include cumulative revenue");
+  assert.match(charts, /Trạng thái đơn hàng/, "BI dashboard must include a real order-status mix");
 });
 
 test("crm v2 source strings remain readable Vietnamese without mojibake", () => {
