@@ -186,6 +186,9 @@ test("solo dashboard uses adaptive charts and a fail-closed Meta Ads adapter", (
   assert.match(meta, /META_ADS_ACCESS_TOKEN/);
   assert.match(meta, /META_ADS_AD_ACCOUNT_ID/);
   assert.match(meta, /hourly_stats_aggregated_by_advertiser_time_zone/);
+  assert.match(meta, /timezone_name/, "Meta adapter must read the account timezone instead of hard-coding a US offset");
+  assert.match(meta, /aggregateMetaAdsForVietnam/, "Meta adapter must aggregate advertiser hours into Vietnam business buckets");
+  assert.match(meta, /paging\?\.next/, "Meta adapter must follow pagination for long report ranges");
   assert.doesNotMatch(meta, /mock|demo/i);
   assert.match(charts, /function CourseRankingTick/, "long course names need a dedicated non-overlapping axis renderer");
   assert.match(charts, /Math\.max\(288,\s*data\.courses\.length \* 64\)/, "course chart height must grow with the number of courses");

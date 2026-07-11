@@ -23,8 +23,8 @@ export default async function CrmV2DashboardPage({ searchParams }: PageProps) {
   const operatingKpis = data.kpis.filter((kpi) => !/email|automation/i.test(kpi.label));
   const adsKpis: KpiMetric[] = ads.available
     ? [
-        { label: "Chi phí quảng cáo", value: compactMoney(ads.totals.spend), tone: "orange", series: ads.rows.map((row) => row.spend) },
-        { label: "ROAS", value: ads.totals.spend ? `${((data.reportSummary?.revenue ?? 0) / ads.totals.spend).toFixed(2)}x` : "—", tone: "purple", series: [] },
+        { label: ads.quality.status === "partial" ? "Chi phí Ads tạm tính" : "Chi phí quảng cáo", value: compactMoney(ads.totals.spend), tone: "orange", series: ads.rows.map((row) => row.spend) },
+        { label: ads.quality.status === "partial" ? "ROAS tạm tính" : "ROAS", value: ads.totals.spend ? `${((data.reportSummary?.revenue ?? 0) / ads.totals.spend).toFixed(2)}x` : "—", tone: "purple", series: [] },
         { label: "CAC", value: (data.reportSummary?.paidOrders ?? 0) ? compactMoney(ads.totals.spend / (data.reportSummary?.paidOrders ?? 1)) : "—", tone: "orange", series: [] },
         { label: "CPC", value: compactMoney(ads.totals.cpc), tone: "blue", series: [] },
         { label: "CTR", value: `${ads.totals.ctr.toFixed(2)}%`, tone: "green", series: [] },
