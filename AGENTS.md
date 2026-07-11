@@ -6,6 +6,8 @@ Allowed production source: `E:\TheAnh-Business-Workspace\02_Website\worktrees\th
 
 Forbidden deploy roots include `E:\TheAnh-Business-Workspace\02_Website\landing-page`, all temp candidates, downloaded sites, LadiPage exports and every other project in `E:\_workspace-control\projects.registry.json`.
 
+Active Ads landing pages are release-protected. Do not change their routes, copy, prices, tracking, assets, redirects, checkout links, or deployment configuration as part of admin/CRM/LMS work. Before production deploy, prove the diff excludes landing-page surfaces and smoke-test every active Ads landing URL; any mismatch blocks or rolls back the release.
+
 Before work, read `E:\_workspace-control\PROJECT_REGISTRY.md`, then this file, `CURRENT_STATE.md` and `FEATURE_MAP.md`. Do not scan the workspace or another project.
 
 Before editing the main website `theanhmarketing.com`, every Codex/agent session must read:
