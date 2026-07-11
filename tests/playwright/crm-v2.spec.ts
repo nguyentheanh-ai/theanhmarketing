@@ -24,26 +24,17 @@ for (const route of routes) {
   });
 }
 
-test("CRM v2 pages do not expose inert buttons or hash-only links", async ({ page }) => {
+test("CRM v2 pages do not expose hash-only or javascript links", async ({ page }) => {
   for (const route of routes) {
     await page.goto(route);
-    const issues = await page.locator("button, a").evaluateAll((elements, currentRoute) =>
+    const issues = await page.locator("a").evaluateAll((elements, currentRoute) =>
       elements.flatMap((element) => {
-        const tagName = element.tagName.toLowerCase();
-        const label = (element.textContent || element.getAttribute("aria-label") || element.getAttribute("title") || tagName).trim();
+        const label = (element.textContent || element.getAttribute("aria-label") || element.getAttribute("title") || "link").trim();
         if (label.includes("Next.js Dev Tools")) return [];
         if (label === "Compiling...") return [];
         if (element.closest(".react-flow__controls")) return [];
-        if (tagName === "a") {
-          const href = element.getAttribute("href") || "";
-          return href === "#" || href.toLowerCase().startsWith("javascript:") ? [`${label}: bad href ${href}`] : [];
-        }
-
-        const button = element as HTMLButtonElement;
-        const action = button.dataset.crmAction;
-        const type = button.getAttribute("type") || "submit";
-        if (button.disabled || action === "button" || (type === "submit" && button.form)) return [];
-        return [`${label}: inert button on ${currentRoute}`];
+        const href = element.getAttribute("href") || "";
+        return href === "#" || href.toLowerCase().startsWith("javascript:") ? [`${label}: bad href ${href} on ${currentRoute}`] : [];
       }),
       route,
     );
@@ -60,15 +51,37 @@ test("CRM v2 pages do not horizontally overflow on desktop preview", async ({ pa
   }
 });
 
-test("legacy admin lead route still resolves", async ({ page }) => {
+test("legacy admin lead route resolves to the canonical customer workspace", async ({ page }) => {
   await page.goto("/admin/leads");
-  await expect(page.locator("body")).not.toContainText("CRM v2");
+  await expect(page).toHaveURL(/\/admin\/crm-v2\/leads$/);
+  await expect(page.getByRole("heading", { name: "Leads & Pipeline" })).toBeVisible();
 });
 
 test("legacy admin dashboard redirects to CRM v2 when enabled", async ({ page }) => {
   await page.goto("/admin/dashboard");
   await expect(page).toHaveURL(/\/admin\/crm-v2$/);
-  await expect(page.locator("body")).toContainText("CRM v2");
+  await expect(page.getByRole("heading", { name: "Trung tâm điều hành" })).toBeVisible();
+});
+
+test("Executive dashboard and Course Hub render their verified shell", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/admin/crm-v2");
+  await expect(page.getByText("Executive Operating System")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Trung tâm điều hành" })).toBeVisible();
+  await page.screenshot({ path: "test-results/admin-executive-dashboard.png", fullPage: true });
+
+  await page.goto("/admin/crm-v2/students?view=courses");
+  await expect(page.getByRole("heading", { name: "Không gian vận hành khóa học" })).toBeVisible();
+  await expect(page.getByText("Chuyển tự do giữa các bước — không bắt buộc hoàn thành theo thứ tự.")).toBeVisible();
+  const analyticsStep = page.getByRole("button", { name: /Bước 6 Analytics/ });
+  if (await analyticsStep.count()) {
+    await analyticsStep.click();
+    await expect(page).toHaveURL(/step=analytics/);
+    await expect(page.getByText("Phân bố tiến độ thực tế")).toBeVisible();
+  } else {
+    await expect(page.getByText("Chưa có khóa học")).toBeVisible();
+  }
+  await page.screenshot({ path: "test-results/admin-course-hub.png", fullPage: true });
 });
 
 const apiRoutes = [

@@ -25,6 +25,7 @@ Current deploy source after 2026-06-11 incident: `E:\TheAnh-Business-Workspace\0
 - The canonical course manager remains `components/crm-v2/lms-management-client.tsx`; no third LMS was introduced. Its URL-backed `step` workflow has seven freely navigable steps: Overview, Sales Content, Curriculum, Media & Resources, Students & Access, Analytics, and Review & Publish.
 - Curriculum reuses the existing module/lesson mutations in a two-column workspace. Analytics is calculated from real enrollments/progress. The publish review is advisory and never blocks free navigation. Save state is explicitly visible as ready/saving/saved/error.
 - Legacy page source is retained for compatibility and editor safety; no database schema, production course content, enrollment or student account is changed by this UI release.
+- Production release: `dpl_HSVVTGv7VPeRPbpGcX8dZawWAZQc`, project `theanhmarketing`, target production, Ready and aliased to `https://www.theanhmarketing.com`. Verification passed full Node `399/399`, Chromium CRM `33/33`, TypeScript, ESLint, local/Vercel build, protected preflight, live route smoke and post-release error-log scan.
 - Production status: fail-closed; do not enable or call provisioning APIs in production before the database and authenticated smoke gates pass.
 
 ## 2026-07-11 - Solo Admin Command Center production release
