@@ -312,6 +312,7 @@ export type CrmDashboardData = {
   kpis: KpiMetric[];
   funnel: Array<{ label: string; value: number; tone: string }>;
   revenue: Array<{ label: string; value: number; displayValue?: string }>;
+  revenueResolution?: "hour" | "day" | "week";
   sources: Array<{ label: string; value: number; tone: string }>;
   emailPerformance: Array<{ label: string; open: number; click: number }>;
   activity: CrmEvent[];

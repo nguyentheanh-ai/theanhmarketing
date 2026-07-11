@@ -94,7 +94,7 @@ test("crm v2 is the canonical admin destination with compatibility redirects", (
   assert.match(legacyLeads, /redirect\(\"\/admin\/crm-v2\/leads\"\)/);
   assert.match(legacyOrders, /redirect\(\"\/admin\/crm-v2\/orders\"\)/);
   assert.match(legacyStudents, /redirect\(\"\/admin\/crm-v2\/students\"\)/);
-  assert.match(legacyCourses, /redirect\(\"\/admin\/crm-v2\/students\?view=courses\"\)/);
+  assert.match(legacyCourses, /redirect\(\"\/admin\/crm-v2\/courses\"\)/);
   assert.match(legacyReports, /redirect\(\"\/admin\/crm-v2\/reports\"\)/);
   assert.match(crmLayout, /requireAdminAuth\(\"\/admin\/crm-v2\", \[\"owner\"\]\)/, "CRM v2 routes must remain owner-gated");
   assert.match(crmLayout, /isCrmV2Enabled/, "CRM v2 routes must keep their availability gate");
@@ -146,17 +146,32 @@ test("lean solo admin keeps only verified modules and CRM-owned settings", () =>
 
 test("canonical dashboard renders only real actionable operating data", () => {
   const dashboardPage = read("app/admin/crm-v2/page.tsx");
+  const dashboardCharts = read("components/crm-v2/dashboard-charts.tsx");
   const dataLayer = read("lib/crm-v2/data.ts");
 
   assert.match(dashboardPage, /getCrmV2Dashboard\(query\)/);
   assert.match(dashboardPage, /Trung tâm điều hành/);
   assert.match(dashboardPage, /Việc cần xử lý/);
-  assert.match(dashboardPage, /href="\/admin\/crm-v2\/students\?view=courses"/);
-  assert.match(dashboardPage, /Hiệu quả khóa học/);
+  assert.match(dashboardPage, /href="\/admin\/crm-v2\/courses"/);
+  assert.match(dashboardCharts, /Hiệu quả khóa học/);
   assert.doesNotMatch(dashboardPage, /data\.campaigns\.map/);
   assert.doesNotMatch(dashboardPage, /data\.workflows\.map/);
   assert.match(dataLayer, /label: "Doanh thu đã thanh toán"/);
-  assert.match(dataLayer, /if \(error \|\| !data\) return getCrmV2DashboardDirectDataApi\(\)/);
+  assert.match(dataLayer, /if \(error \|\| !data\) return getCrmV2DashboardDirectDataApi\(query\)/);
+});
+
+test("solo dashboard uses adaptive charts and a fail-closed Meta Ads adapter", () => {
+  const page = read("app/admin/crm-v2/page.tsx");
+  const charts = read("components/crm-v2/dashboard-charts.tsx");
+  const meta = read("services/metaAdsReportService.ts");
+
+  assert.doesNotMatch(page, /SimpleBars|Hiệu quả Remarketing Email|Automation đang chạy/);
+  assert.match(page, /getMetaAdsReport/);
+  for (const chart of ["AreaChart", "BarChart", "PieChart", "ComposedChart", "ResponsiveContainer"]) assert.match(charts, new RegExp(chart));
+  assert.match(meta, /META_ADS_ACCESS_TOKEN/);
+  assert.match(meta, /META_ADS_AD_ACCOUNT_ID/);
+  assert.match(meta, /hourly_stats_aggregated_by_advertiser_time_zone/);
+  assert.doesNotMatch(meta, /mock|demo/i);
 });
 
 test("crm v2 source strings remain readable Vietnamese without mojibake", () => {
@@ -475,7 +490,7 @@ test("crm v2 live data mapping uses true source counts and course slugs", () => 
   assert.match(dataLayer, /rpc\("crm_v2_leads_list_raw"/, "leads list must read live private-schema data through server-only RPC");
   assert.match(dataLayer, /rpc\("crm_v2_orders_list_raw"/, "orders list must read live private-schema data through server-only RPC");
   assert.match(dataLayer, /rpc\("crm_v2_students_list_raw"/, "students list must read live private-schema data through server-only RPC");
-  assert.match(dataLayer, /if \(error \|\| !data\) return getCrmV2DashboardDirectDataApi\(\)/, "live RPC errors must fall back to direct production queries, not demo numbers");
+  assert.match(dataLayer, /if \(error \|\| !data\) return getCrmV2DashboardDirectDataApi\(query\)/, "live RPC errors must fall back to direct production queries, not demo numbers");
   assert.match(leadsPage, /getCrmV2LeadStageSummary/, "leads page must use total stage summary");
   assert.doesNotMatch(leadsPage, /leads\.rows\.filter\(\(lead\) => lead\.stage === stage\)/, "stage cards must not count only the current page");
   assert.match(dataLayer, /from\("leads"\)[\s\S]*course_slug[\s\S]*builder = builder\.eq\("course_slug", query\.filters\.course\)/, "leads filters must use course_slug");
@@ -764,20 +779,12 @@ test("crm v2 date range is a real dashboard/list query input", () => {
 test("crm v2 overview daily revenue uses live public orders with clear money labels", () => {
   const dataLayer = read("lib/crm-v2/data.ts");
   const dashboardPage = read("app/admin/crm-v2/page.tsx");
-  const components = read("components/crm-v2/crm-components.tsx");
+  const dashboardCharts = read("components/crm-v2/dashboard-charts.tsx");
   const types = read("lib/crm-v2/types.ts");
 
-  assert.match(dataLayer, /buildDashboardDailyRevenueSeries/, "overview must build its daily revenue chart from the live order source");
-  assert.match(
-    dataLayer,
-    /buildDashboardDailyRevenueSeries\(paidPublicOrders,\s*dateRange\)\.slice\(-7\)/,
-    "overview must show the latest days from the selected range instead of stale CRM daily metric dates",
-  );
-  assert.match(
-    dataLayer,
-    /buildDashboardDailyRevenueSeries\(paidPublicOrders,\s*dateRange\)\.slice\(-7\)\.reverse\(\)/,
-    "overview daily revenue must put the latest date, including today, at the top",
-  );
+  assert.match(dataLayer, /buildDashboardRevenueSeries/, "overview must build its adaptive revenue chart from the live order source");
+  assert.match(dataLayer, /buildAdaptiveRevenueSeries\(rows, dateRange\)/, "overview must use the selected range for adaptive aggregation");
+  assert.match(dataLayer, /revenueResolution:/, "overview must tell the chart whether it is hourly, daily, or weekly");
   assert.doesNotMatch(
     dataLayer,
     /revenue:\s*dailySeries\.map\(\(row\)\s*=>\s*\(\{\s*label:\s*String\(row\.metric_date\)/,
@@ -787,17 +794,17 @@ test("crm v2 overview daily revenue uses live public orders with clear money lab
   assert.match(dataLayer, /formatExactVnd/, "overview daily revenue labels must use exact VND amounts, not rounded compact labels");
   assert.doesNotMatch(
     dataLayer,
-    /buildDashboardDailyRevenueSeries[\s\S]*displayValue:\s*formatMoney\(row\.value\)/,
+    /buildDashboardRevenueSeries[\s\S]*displayValue:\s*formatMoney\(row\.value\)/,
     "overview daily revenue labels must not use rounded compact formatMoney labels",
   );
   assert.doesNotMatch(
     dataLayer,
-    /dashboardDailyRevenue\.map\(\(row\)\s*=>\s*Math\.round/,
+    /dashboardRevenue\.rows\.map\(\(row\)\s*=>\s*Math\.round/,
     "overview daily revenue KPI series must keep real values instead of rounded million buckets",
   );
   assert.match(types, /displayValue\?: string/, "CRM dashboard bar rows must support a separate display label");
-  assert.match(components, /row\.displayValue\s*\?\?\s*row\.value/, "SimpleBars must render clear value labels when provided");
-  assert.match(dashboardPage, /displayValue:\s*row\.displayValue/, "overview revenue bars must pass money labels to SimpleBars");
+  assert.match(dashboardCharts, /formatter=\{\(value\) => money\(Number\(value\)\)\}/, "revenue tooltip must display exact VND");
+  assert.match(dashboardPage, /DashboardCharts/, "overview must pass live data to the adaptive chart surface");
   assert.doesNotMatch(dashboardPage, /value:\s*Math\.round\(row\.value\)/, "overview revenue bars must keep the real amount, not round it before rendering");
 });
 

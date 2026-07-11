@@ -13,6 +13,22 @@ import {
   summarizeCrmV2Audience,
 } from "../lib/crm-v2/email-actions";
 import { buildCrmV2OperationalEmailTemplates } from "../lib/crm-v2/operational-email-templates";
+import { buildAdaptiveRevenueSeries } from "../lib/crm-v2/revenue-series";
+
+test("dashboard revenue uses hourly buckets for today and weekly buckets for 90 days", () => {
+  const rows = [
+    { status: "paid", amount: 1_000_000, paid_at: "2026-07-11T01:15:00+07:00" },
+    { status: "completed", amount: 2_000_000, paid_at: "2026-07-11T01:50:00+07:00" },
+  ];
+  const hourly = buildAdaptiveRevenueSeries(rows, { range: "today", from: "2026-07-11", to: "2026-07-11" });
+  assert.equal(hourly.resolution, "hour");
+  assert.equal(hourly.rows.length, 24);
+  assert.equal(hourly.rows[1]?.value, 3_000_000);
+
+  const weekly = buildAdaptiveRevenueSeries(rows, { range: "90d", from: "2026-04-13", to: "2026-07-11" });
+  assert.equal(weekly.resolution, "week");
+  assert.ok(weekly.rows.length >= 12 && weekly.rows.length <= 14);
+});
 
 test("normalization dedupes email and Vietnamese phone values", () => {
   assert.equal(normalizeEmail("  USER+Lead@Gmail.COM  "), "user+lead@gmail.com");

@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 export default async function AdminCoursesPage() {
   const { adminRole } = await getCurrentAuth();
   if (adminRole === "owner") {
-    redirect("/admin/crm-v2/students?view=courses");
+    redirect("/admin/crm-v2/courses");
   }
   const courses = await getAdminCourses();
 

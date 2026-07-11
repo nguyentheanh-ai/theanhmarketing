@@ -52,6 +52,7 @@ import type {
 } from "./types";
 import { getEmailProvider } from "./email-provider";
 import { canSendMarketingEmail } from "./suppression";
+import { buildAdaptiveRevenueSeries } from "./revenue-series";
 
 function paginate<T>(rows: T[], query: CrmListQuery): CrmListResult<T> {
   const start = (query.page - 1) * query.pageSize;
@@ -771,6 +772,7 @@ function buildEmptyLiveDashboard(): CrmDashboardData {
     kpis: demoDashboard.kpis.map((kpi) => ({ ...kpi, value: "0", delta: undefined, series: [0] })),
     funnel: CRM_STAGE_ORDER.map((stage) => ({ label: stageLabel(stage), value: 0, tone: stageTone(stage) })),
     revenue: demoDashboard.revenue.map((row) => ({ ...row, value: 0 })),
+    revenueResolution: "day",
     sources: [],
     emailPerformance: [],
     activity: [],
@@ -790,7 +792,7 @@ function buildEmptyLiveDashboard(): CrmDashboardData {
 }
 
 export async function getCrmV2Dashboard(query = normalizeCrmListQuery()): Promise<CrmDashboardData> {
-  if (!canQueryLiveCrmV2()) return demoDashboard;
+  if (!canQueryLiveCrmV2()) return buildEmptyLiveDashboard();
 
   const client = createSupabaseAdminClient();
   if (!client) return buildEmptyLiveDashboard();
@@ -800,7 +802,7 @@ export async function getCrmV2Dashboard(query = normalizeCrmListQuery()): Promis
     p_date_from: dateRange.from,
     p_date_to: dateRange.to,
   });
-  if (error || !data) return getCrmV2DashboardDirectDataApi();
+  if (error || !data) return getCrmV2DashboardDirectDataApi(query);
 
   const payload = asRecord(data);
   const dailyRows = recordArray(payload.daily).sort((a, b) => String(a.metric_date).localeCompare(String(b.metric_date)));
@@ -833,7 +835,7 @@ export async function getCrmV2Dashboard(query = normalizeCrmListQuery()): Promis
   const clicked = (emailEventCounts.get("clicked") ?? 0) + (emailEventCounts.get("click") ?? 0);
   const delivered = Math.max(1, emailEventCounts.get("delivered") ?? emailEventCounts.get("sent") ?? opened + clicked);
   const dailySeries = dailyRows.slice(-7);
-  const dashboardDailyRevenue = buildDashboardDailyRevenueSeries(paidPublicOrders, dateRange).slice(-7).reverse();
+  const dashboardRevenue = buildDashboardRevenueSeries(paidPublicOrders, dateRange);
 
   return {
     ...buildEmptyLiveDashboard(),
@@ -841,12 +843,13 @@ export async function getCrmV2Dashboard(query = normalizeCrmListQuery()): Promis
       { label: "Lead mới hôm nay", value: formatIntWithDot(newLeadsToday), tone: "blue", series: dailySeries.map((row) => numericValue(row.new_leads)) },
       { label: "MQL", value: formatIntWithDot(mqlCount), tone: "purple", series: dailySeries.map((row) => numericValue(row.mql)) },
       { label: "Đã thanh toán", value: formatIntWithDot(paidOrders), tone: "green", series: dailySeries.map((row) => numericValue(row.paid_orders)) },
-      { label: "Doanh thu đã thanh toán", value: formatMoney(revenue30), tone: "green", series: dashboardDailyRevenue.map((row) => row.value) },
+      { label: "Doanh thu đã thanh toán", value: formatMoney(revenue30), tone: "green", series: dashboardRevenue.rows.map((row) => row.value) },
       { label: "Doanh thu từ email", value: formatMoney(emailRevenue30), tone: "orange", series: dailySeries.map((row) => Math.round(numericValue(row.email_revenue) / 1_000_000)) },
       { label: "Automation đang chạy", value: formatIntWithDot(activeAutomation), tone: "purple", series: [activeAutomation] },
     ],
     funnel: CRM_STAGE_ORDER.map((stage) => ({ label: stageLabel(stage), value: stageCounts.get(stage) ?? 0, tone: stageTone(stage) })),
-    revenue: dashboardDailyRevenue,
+    revenue: dashboardRevenue.rows,
+    revenueResolution: dashboardRevenue.resolution,
     sources: sourceRows.slice(0, 4).map((row, index) => ({ label: String(row.source ?? "unknown"), value: numericValue(row.count), tone: sourceTones[index] ?? "blue" })),
     emailPerformance:
       opened || clicked
@@ -886,25 +889,27 @@ export async function getCrmV2Dashboard(query = normalizeCrmListQuery()): Promis
   };
 }
 
-export async function getCrmV2DashboardDirectDataApi(): Promise<CrmDashboardData> {
-  if (!canQueryLiveCrmV2()) return demoDashboard;
+export async function getCrmV2DashboardDirectDataApi(query = normalizeCrmListQuery()): Promise<CrmDashboardData> {
+  if (!canQueryLiveCrmV2()) return buildEmptyLiveDashboard();
 
   const client = createSupabaseAdminClient();
-  if (!client) return demoDashboard;
+  if (!client) return buildEmptyLiveDashboard();
 
+  const dateRange = getCrmDateRange(query);
   const today = getCrmDateRange({ range: "today" }).from;
-  const since30 = new Date(Date.now() - 29 * 86_400_000).toISOString();
+  const since30 = `${dateRange.from}T00:00:00.000Z`;
 
-  const [dailyResult, leadsResult, ordersResult, eventsResult, workflowsResult, emailEventsResult] = await Promise.all([
+  const [dailyResult, leadsResult, ordersResult, eventsResult, workflowsResult, emailEventsResult, publicOrders] = await Promise.all([
     client.schema("crm_v2").from("crm_daily_metrics").select("metric_date,new_leads,mql,paid_orders,revenue,email_revenue,active_automation").gte("metric_date", since30.slice(0, 10)),
     client.schema("crm_v2").from("leads").select("id,stage,status,source,potential_value,created_at,metadata").neq("status", "archived").gte("created_at", since30).limit(5000),
     client.schema("crm_v2").from("orders").select("id,status,net_amount,amount,product_name,created_at,paid_at,metadata,course_slug").gte("created_at", since30).limit(5000),
     client.schema("crm_v2").from("crm_events").select("id,event_type,event_source,occurred_at,metadata").order("occurred_at", { ascending: false }).limit(10),
     client.schema("crm_v2").from("workflows").select("id,name,status").in("status", ["active", "published", "running"]).limit(20),
     client.schema("crm_v2").from("email_events").select("event_type,occurred_at").gte("occurred_at", since30).limit(5000),
+    listPublicOrdersForRange(client, dateRange),
   ]);
 
-  if (dailyResult.error && leadsResult.error && ordersResult.error) return demoDashboard;
+  if (dailyResult.error && leadsResult.error && ordersResult.error && !publicOrders.length) return buildEmptyLiveDashboard();
 
   const dailyRows = [...(dailyResult.data ?? [])].sort((a, b) => String(a.metric_date).localeCompare(String(b.metric_date)));
   const leadRows = (leadsResult.data ?? []).map((row) => ({
@@ -927,14 +932,14 @@ export async function getCrmV2DashboardDirectDataApi(): Promise<CrmDashboardData
   const todayMetric = dailyRows.find((row) => String(row.metric_date).startsWith(today));
   const newLeadsToday = liveLeadToday || Number(todayMetric?.new_leads ?? 0);
   const mqlCount = leadRows.filter((row) => ["consulting", "high_intent", "pending_payment", "paid"].includes(row.stage)).length;
+  const paidPublicOrders = publicOrders.filter((row) => isPaidStatus(String(row.status ?? row.payment_status ?? "")));
   const paidOrders = orderRows.filter((row) => isPaidStatus(row.status));
-  const revenue30 = paidOrders.reduce((sum, row) => sum + row.amount, 0);
+  const effectivePaidOrders = paidPublicOrders.length ? paidPublicOrders : paidOrders;
+  const revenue30 = effectivePaidOrders.reduce((sum, row) => sum + numericValue(row.amount), 0);
   const emailRevenue30 = dailyRows.reduce((sum, row) => sum + Number(row.email_revenue ?? 0), 0);
   const activeAutomation = workflowsResult.data?.length ?? Number(todayMetric?.active_automation ?? 0);
 
-  const dailyRevenue = dailyRows.length
-    ? dailyRows.slice(-7).map((row) => ({ label: String(row.metric_date).slice(5), value: Number(row.revenue ?? 0) / 1_000_000 }))
-    : demoDashboard.revenue.map((row) => ({ ...row, value: 0 }));
+  const adaptiveRevenue = buildDashboardRevenueSeries(paidPublicOrders, dateRange);
 
   const stageCounts = countBy(leadRows, (row) => row.stage);
   const sourceCounts = countBy(leadRows, (row) => row.source);
@@ -956,7 +961,7 @@ export async function getCrmV2DashboardDirectDataApi(): Promise<CrmDashboardData
     kpis: [
       { label: "Lead mới hôm nay", value: formatIntWithDot(newLeadsToday), tone: "blue", series: dailyRows.slice(-7).map((row) => Number(row.new_leads ?? 0)) },
       { label: "MQL", value: formatIntWithDot(mqlCount), tone: "purple", series: dailyRows.slice(-7).map((row) => Number(row.mql ?? 0)) },
-      { label: "Đã thanh toán", value: formatIntWithDot(paidOrders.length), tone: "green", series: dailyRows.slice(-7).map((row) => Number(row.paid_orders ?? 0)) },
+      { label: "Đã thanh toán", value: formatIntWithDot(effectivePaidOrders.length), tone: "green", series: dailyRows.slice(-7).map((row) => Number(row.paid_orders ?? 0)) },
       { label: "Doanh thu 30 ngày", value: formatMoney(revenue30), tone: "green", series: dailyRows.slice(-7).map((row) => Math.round(Number(row.revenue ?? 0) / 1_000_000)) },
       { label: "Doanh thu từ email", value: formatMoney(emailRevenue30), tone: "orange", series: dailyRows.slice(-7).map((row) => Math.round(Number(row.email_revenue ?? 0) / 1_000_000)) },
       { label: "Automation đang chạy", value: formatIntWithDot(activeAutomation), tone: "purple", series: [activeAutomation] },
@@ -966,7 +971,8 @@ export async function getCrmV2DashboardDirectDataApi(): Promise<CrmDashboardData
       value: stageCounts.get(stage) ?? 0,
       tone: stageTone(stage),
     })),
-    revenue: dailyRevenue,
+    revenue: adaptiveRevenue.rows,
+    revenueResolution: adaptiveRevenue.resolution,
     sources: [...sourceCounts.entries()]
       .sort((a, b) => b[1] - a[1])
       .slice(0, 4)
@@ -995,14 +1001,14 @@ export async function getCrmV2DashboardDirectDataApi(): Promise<CrmDashboardData
       status: String(workflow.status ?? "active"),
       runs: "Đang bật",
     })),
-    courses: [...courseCounts.entries()]
+    courses: paidPublicOrders.length ? buildCourseSummaryFromPublicOrders(paidPublicOrders, []) : [...courseCounts.entries()]
       .sort((a, b) => b[1].revenue - a[1].revenue)
       .slice(0, 5)
       .map(([name, metric]) => ({ name, revenue: formatMoney(metric.revenue), paid: metric.paid })),
     reportSummary: {
       newLeads: newLeadsToday,
       mql: mqlCount,
-      paidOrders: paidOrders.length,
+      paidOrders: effectivePaidOrders.length,
       revenue: revenue30,
       emailRevenue: emailRevenue30,
     },
@@ -4094,15 +4100,12 @@ async function buildReportAttributionRows(client: NonNullable<ReturnType<typeof 
   };
 }
 
-function buildDashboardDailyRevenueSeries(
+function buildDashboardRevenueSeries(
   rows: Array<Record<string, unknown>>,
   dateRange: ReturnType<typeof getCrmDateRange>,
-): Array<{ label: string; value: number; displayValue: string }> {
-  const paidStatuses = new Set(["paid", "success", "completed"]);
-  return buildReportDailyRevenueSeries(rows, dateRange, paidStatuses).map((row) => ({
-    ...row,
-    displayValue: formatExactVnd(row.value),
-  }));
+): { resolution: "hour" | "day" | "week"; rows: Array<{ label: string; value: number; displayValue: string }> } {
+  const series = buildAdaptiveRevenueSeries(rows, dateRange);
+  return { ...series, rows: series.rows.map((row) => ({ ...row, displayValue: formatExactVnd(row.value) })) };
 }
 
 function buildReportDailyRevenueSeries(
