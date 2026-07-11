@@ -53,6 +53,15 @@ describe("admin performance guardrails", () => {
     assert.match(dashboard, /h-\[320px\]/);
   });
 
+  it("keeps student activity out of the initial admin student page payload", () => {
+    const page = read("app/admin/hoc-vien/page.tsx");
+    const actions = read("components/admin/student-access-actions.tsx");
+
+    assert.doesNotMatch(page, /getStudentActivityLogs|activityLogsByStudentId|activityLogEntries/);
+    assert.doesNotMatch(actions, /activityLogs\??:/);
+    assert.match(actions, /StudentActivityTimeline/);
+  });
+
   it("keeps order mutations invalidating admin caches", () => {
     const routes = [
       "app/api/orders/route.ts",

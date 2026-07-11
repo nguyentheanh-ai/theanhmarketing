@@ -66,14 +66,18 @@ test("real student auth and learning flows write activity only after success", (
   assert.match(dashboardPage, /student_login_success/);
 });
 
-test("admin student detail shows real activity timeline instead of fake mail/progress history", () => {
+test("admin student detail lazy-loads a safe activity timeline instead of eager raw history", () => {
   const page = read("app/admin/hoc-vien/page.tsx");
   const actions = read("components/admin/student-access-actions.tsx");
+  const timeline = read("components/admin/student-activity-timeline.tsx");
+  const route = read("app/api/admin/students/activity/route.ts");
 
-  assert.match(page, /getStudentActivityLogs/);
-  assert.match(actions, /activityLogs/);
-  assert.match(actions, /Lịch sử hoạt động học viên/);
-  assert.match(actions, /Chưa có hoạt động nào được ghi nhận/);
+  assert.doesNotMatch(page, /getStudentActivityLogs/);
+  assert.doesNotMatch(actions, /activityLogs/);
+  assert.match(actions, /StudentActivityTimeline/);
+  assert.match(timeline, /Lịch sử hoạt động học viên/);
+  assert.match(timeline, /Chưa có hoạt động/);
+  assert.match(route, /getStudentActivityTimelineStrict\(\{ studentEmail: email, limit: 20 \}\)/);
   assert.doesNotMatch(actions, /Lịch sử mail/);
   assert.doesNotMatch(actions, /Chưa có log học tập/);
 });
