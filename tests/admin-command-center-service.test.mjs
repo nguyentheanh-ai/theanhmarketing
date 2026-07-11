@@ -140,6 +140,22 @@ test("settled source adapter isolates every rejected source and treats empty suc
   }
 });
 
+test("command center accepts Supabase microsecond timestamps", () => {
+  const result = runTs(`
+    import { getSoloCommandCenterModel } from "./services/adminCommandCenterService.ts";
+    const providers = {
+      orders: async () => [],
+      leads: async () => [{ id: "lead-1", email: null, phone: null, createdAt: "2026-06-19T06:53:59.535312+00:00" }],
+      courses: async () => [],
+      students: async () => [],
+      activities: async () => [],
+    };
+    const model = await getSoloCommandCenterModel({ from: "2026-06-12", to: "2026-07-11" }, providers);
+    console.log(JSON.stringify(model.dataStatus));
+  `);
+  assert.equal(result.leads, "ready");
+});
+
 test("command center preserves sanitized runtime diagnostics for rejected sources", () => {
   const service = readFileSync("services/adminCommandCenterService.ts", "utf8");
   assert.match(service, /console\.error\("\[command-center\] source unavailable",/);

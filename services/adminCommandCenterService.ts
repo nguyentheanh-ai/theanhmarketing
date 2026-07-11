@@ -32,7 +32,7 @@ import {
 export { COMMAND_CENTER_PAGE_SIZE, MAX_COMMAND_CENTER_SOURCE_ROWS };
 
 const VIETNAM_TIME_ZONE = "Asia/Ho_Chi_Minh";
-const ZONED_TIMESTAMP = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/;
+const ZONED_TIMESTAMP = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/;
 export const MAX_COMMAND_CENTER_RANGE_DAYS = 366;
 
 function parseDateKey(value: string) {
