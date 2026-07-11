@@ -77,6 +77,14 @@ Không thêm tính năng email, automation, chart hoặc KPI nếu backend tươ
 - Ads vs revenue: composed chart cùng timeline; panel fail-closed nếu Meta không khả dụng.
 - Bảng chi tiết KPI luôn đi kèm chart để đọc được số chính xác và hỗ trợ accessibility.
 
+Sửa riêng biểu đồ `Hiệu quả khóa học` trên Tổng quan:
+
+- Tên khóa dài không được chồng lên nhau, chồng trục hoặc tràn sang vùng biểu đồ.
+- Dùng horizontal bar với chiều cao tăng theo số khóa; không ép nhiều khóa vào một chart cao cố định.
+- Nhãn khóa có vùng rộng ổn định, tối đa hai dòng; tên dài được rút gọn có chủ đích và tooltip hiển thị tên đầy đủ.
+- Mobile chuyển sang danh sách xếp hạng compact hoặc vùng cuộn dọc, không thu nhỏ chữ đến mức khó đọc.
+- Tooltip, giá trị và màu phải đủ tương phản; không dùng text và box cùng tông nhạt.
+
 Không dùng nhiều chart chỉ để lấp chỗ. Mỗi chart phải trả lời một câu hỏi vận hành cụ thể.
 
 ### 3.4 Meta Ads — Greezhub 01 và ngày kinh doanh Việt Nam
@@ -161,6 +169,7 @@ Thiết kế sửa:
 - Test KPI aggregate không phụ thuộc page size.
 - Test nhãn lead theo range.
 - Test Ads unavailable không làm hỏng revenue report.
+- Visual regression cho biểu đồ `Hiệu quả khóa học` với tên khóa ngắn/dài và nhiều khóa ở desktop/mobile; không có text overlap.
 - Test DST và chuyển ngày cho timezone Meta của Greezhub 01.
 - Test một ngày Việt Nam hoàn tất có đúng 24 bucket, gồm cả giờ chi phí bằng 0.
 - Test ngày thiếu bucket bị đánh dấu partial và không tạo ROAS/lợi nhuận final.
