@@ -22,7 +22,7 @@ function loadTsModule(relativePath) {
 
 const { buildStudentPortalProvisioningPayload } = loadTsModule("services/studentPortalProvisioningService.ts");
 
-test("builds the app provisioning payload from a paid website order and auth user", () => {
+test("never forwards a website auth user id to the separate student portal", () => {
   const payload = buildStudentPortalProvisioningPayload({
     order: {
       orderCode: "TAM123",
@@ -35,7 +35,6 @@ test("builds the app provisioning payload from a paid website order and auth use
   });
 
   assert.deepEqual(payload, {
-    userId: "8b8bd69a-c4f8-4a65-a5e2-1e6f6c6d80bf",
     email: "hocvien@example.com",
     fullName: "Nguyễn Văn A",
     phone: "0901000001",

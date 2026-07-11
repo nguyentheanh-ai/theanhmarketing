@@ -8,11 +8,10 @@ type StudentPortalOrderInput = {
 
 type BuildStudentPortalProvisioningPayloadInput = {
   order: StudentPortalOrderInput;
-  userId: string | null;
+  userId?: string | null;
 };
 
 export type StudentPortalProvisioningPayload = {
-  userId?: string;
   email: string;
   fullName: string;
   phone: string;
@@ -30,7 +29,6 @@ export type StudentPortalProvisioningResult = {
 
 export function buildStudentPortalProvisioningPayload({
   order,
-  userId,
 }: BuildStudentPortalProvisioningPayloadInput): StudentPortalProvisioningPayload {
   const payload: StudentPortalProvisioningPayload = {
     email: order.email.trim().toLowerCase(),
@@ -41,16 +39,11 @@ export function buildStudentPortalProvisioningPayload({
     source: "theanhmarketing.com",
   };
 
-  if (userId) {
-    payload.userId = userId;
-  }
-
   return payload;
 }
 
 export async function notifyStudentPortalProvisioning({
   order,
-  userId,
 }: BuildStudentPortalProvisioningPayloadInput): Promise<StudentPortalProvisioningResult> {
   const endpoint = process.env.STUDENT_PORTAL_PROVISION_URL?.trim();
   const secret = process.env.STUDENT_PORTAL_PROVISION_SECRET?.trim();
@@ -63,7 +56,7 @@ export async function notifyStudentPortalProvisioning({
     };
   }
 
-  const payload = buildStudentPortalProvisioningPayload({ order, userId });
+  const payload = buildStudentPortalProvisioningPayload({ order });
 
   const response = await fetch(endpoint, {
     method: "POST",
