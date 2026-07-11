@@ -1,13 +1,13 @@
 # Session Log
 
-## 2026-07-11 - Unified student provisioning wizard
+## 2026-07-11 - Solo Admin Command Center
 
-Phạm vi: thay form tạo học viên cũ bằng wizard paid/free/trial và kết nối khôi phục an toàn theo operation ID.
-Các file đã thay đổi: admin student dialog/wizard, grant/review APIs, strict request parser, command-center queue adapter/model, tests and required handoff docs.
-Kết quả: một luồng tạo học viên có chống gửi trùng, kết quả tách tài khoản/đơn/quyền/email, retry hẹp và owner review cho email không rõ trạng thái; không hiển thị mật khẩu.
-Kiểm tra đã chạy: focused 73/73; full Node 394/394; TypeScript, lint, Next production build và diff check đều pass.
-Việc còn lại: apply hai migration pending và chạy authenticated owner preview smoke trong Task 9 trước khi bật luồng trên production.
-Cảnh báo: không deploy hoặc dùng API provisioning trên production khi migrations chưa được apply và xác minh.
+Phạm vi: làm lại admin thành command center trực quan; thêm báo cáo/queue, activity lazy và wizard paid/free/trial có chống tạo/gửi trùng.
+Các file đã thay đổi: admin routes/components/model/services, provisioning journal/orchestrator/migrations, protected APIs, tests và tài liệu handoff.
+Kết quả: 6 nhóm biểu đồ thật; queue recovery theo operation ID; tạo học viên không qua code; email mơ hồ bắt buộc owner xác nhận; không hiển thị mật khẩu hoặc PII trong journal/URL.
+Kiểm tra đã chạy: focused provisioning 73/73; full Node 394/394; TypeScript, lint, Next build, diff check; local no-PII visual desktop/mobile/wizard; unauth redirect và POST 403.
+Việc còn lại: compile/test/apply 3 migration theo thứ tự reporting → journal → idempotency trên staging/disposable DB; owner smoke bằng tài khoản test; deploy preview qua guard.
+Cảnh báo: production chưa đổi và chưa an toàn để deploy cho tới khi hoàn tất các bước database/authenticated smoke trên.
 
 ## 2026-07-10 - Verify recovery release candidate
 
