@@ -33,8 +33,17 @@ export async function getMetaAdsReport(range: ReportRange): Promise<MetaAdsRepor
 
   try {
     const response = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(12_000) });
-    const payload = (await response.json().catch(() => null)) as { data?: Array<Record<string, unknown>>; error?: { message?: string } } | null;
-    if (!response.ok || !payload?.data) return empty("Meta Ads từ chối truy vấn hoặc tài khoản chưa cấp đủ quyền.");
+    const payload = (await response.json().catch(() => null)) as {
+      data?: Array<Record<string, unknown>>;
+      error?: { code?: number; error_subcode?: number; type?: string };
+    } | null;
+    if (!response.ok || !payload?.data) {
+      const code = payload?.error?.code;
+      console.warn("[meta-ads] insights unavailable", { code, subcode: payload?.error?.error_subcode, type: payload?.error?.type });
+      if (code === 190) return empty("Token Meta Ads đã hết hạn hoặc không còn hợp lệ.");
+      if (code === 200 || code === 10) return empty("Token Meta Ads chưa có quyền ads_read cho tài khoản quảng cáo.");
+      return empty("Meta Ads từ chối truy vấn hoặc tài khoản chưa cấp đủ quyền.");
+    }
 
     const rows = payload.data.map((row) => {
       const hourly = String(row.hourly_stats_aggregated_by_advertiser_time_zone ?? "");
