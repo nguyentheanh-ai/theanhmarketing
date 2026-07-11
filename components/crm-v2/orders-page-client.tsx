@@ -14,21 +14,23 @@ import {
   OrderActionButtons,
 } from "@/components/crm-v2";
 import type { CrmListQuery, CrmListResult, CrmOrderRow } from "@/lib/crm-v2/types";
+import type { CrmOrderSummary } from "@/lib/crm-v2/order-summary";
 
 type OrdersPageClientProps = {
   query: CrmListQuery;
   ordersResult: CrmListResult<CrmOrderRow>;
+  orderSummary: CrmOrderSummary;
 };
 
-export default function OrdersPageClient({ query, ordersResult }: OrdersPageClientProps) {
+export default function OrdersPageClient({ query, ordersResult, orderSummary }: OrdersPageClientProps) {
   const rows = ordersResult.rows;
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  const pending = rows.filter((row) => row.status.toLowerCase().includes("pending")).length;
-  const paid = rows.filter((row) => row.status.toLowerCase().includes("paid")).length;
-  const refund = rows.filter((row) => row.status.toLowerCase().includes("refund") || row.status.toLowerCase().includes("fail")).length;
-  const revenue = rows.reduce((sum, row) => sum + Number(row.value || 0), 0);
-  const successRate = rows.length > 0 ? `${Math.round((paid / rows.length) * 100)}%` : "0%";
+  const pending = orderSummary.pending;
+  const paid = orderSummary.paid;
+  const refund = orderSummary.refunded;
+  const revenue = orderSummary.revenue;
+  const successRate = `${orderSummary.successRate}%`;
 
   const statusOptions = useMemo(
     () => Array.from(new Set(["pending", "paid", "expired", "failed", ...rows.map((row) => row.status).filter(Boolean)])).map((value) => ({ label: value, value })),
@@ -73,12 +75,12 @@ export default function OrdersPageClient({ query, ordersResult }: OrdersPageClie
 
       <MetricGrid
         metrics={[
-          { label: "Đơn hàng mới", value: `${ordersResult.total}`, tone: "blue", series: [8, 12, 20, 31, ordersResult.total] },
-          { label: "Chờ thanh toán", value: `${pending}`, tone: "orange", series: [12, 14, 18, 19, pending] },
-          { label: "Đã thanh toán", value: `${paid}`, tone: "green", series: [9, 12, 18, 24, paid] },
-          { label: "Tỷ lệ thành công", value: successRate, tone: "green", series: [44, 51, 58, 63, Number.parseInt(successRate)] },
-          { label: "Doanh thu thuần", value: `${new Intl.NumberFormat("vi-VN").format(revenue)}đ`, tone: "green", series: [80, 110, 130, 160, Math.round(revenue / 1_000_000)] },
-          { label: "Hoàn tiền", value: `${refund}`, tone: "slate", series: [0, 0, 0, 0, 0] },
+          { label: "Đơn hàng mới", value: `${orderSummary.total}`, tone: "blue", series: orderSummary.series.map((row) => row.orders) },
+          { label: "Chờ thanh toán", value: `${pending}`, tone: "orange" },
+          { label: "Đã thanh toán", value: `${paid}`, tone: "green" },
+          { label: "Tỷ lệ thành công", value: successRate, tone: "green" },
+          { label: "Doanh thu thuần", value: `${new Intl.NumberFormat("vi-VN").format(revenue)}đ`, tone: "green", series: orderSummary.series.map((row) => row.revenue) },
+          { label: "Hoàn tiền", value: `${refund}`, tone: "slate" },
         ]}
       />
 

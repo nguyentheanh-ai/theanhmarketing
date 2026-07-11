@@ -53,6 +53,7 @@ import type {
 import { getEmailProvider } from "./email-provider";
 import { canSendMarketingEmail } from "./suppression";
 import { buildAdaptiveRevenueSeries } from "./revenue-series";
+import { buildCrmOrderSummary, type CrmOrderSummary } from "./order-summary";
 
 function paginate<T>(rows: T[], query: CrmListQuery): CrmListResult<T> {
   const start = (query.page - 1) * query.pageSize;
@@ -821,7 +822,7 @@ export async function getCrmV2Dashboard(query = normalizeCrmListQuery()): Promis
     buildCrmV2RecentActivity(client, dateRange),
   ]);
 
-  const newLeadsToday = publicLeadCount || numericValue(counts.new_leads_today);
+  const newLeadsInRange = publicLeadCount || numericValue(counts.new_leads_today);
   const mqlCount = numericValue(counts.mql);
   const paidPublicOrders = publicOrders.filter((row) => isPaidStatus(String(row.status ?? row.payment_status ?? "")));
   const paidOrders = paidPublicOrders.length || numericValue(orderSummary.paid_orders);
@@ -840,7 +841,7 @@ export async function getCrmV2Dashboard(query = normalizeCrmListQuery()): Promis
   return {
     ...buildEmptyLiveDashboard(),
     kpis: [
-      { label: "Lead mới hôm nay", value: formatIntWithDot(newLeadsToday), tone: "blue", series: dailySeries.map((row) => numericValue(row.new_leads)) },
+      { label: query.range === "today" ? "Lead mới hôm nay" : "Lead mới trong kỳ", value: formatIntWithDot(newLeadsInRange), tone: "blue", series: dailySeries.map((row) => numericValue(row.new_leads)) },
       { label: "MQL", value: formatIntWithDot(mqlCount), tone: "purple", series: dailySeries.map((row) => numericValue(row.mql)) },
       { label: "Đã thanh toán", value: formatIntWithDot(paidOrders), tone: "green", series: dailySeries.map((row) => numericValue(row.paid_orders)) },
       { label: "Doanh thu đã thanh toán", value: formatMoney(revenue30), tone: "green", series: dashboardRevenue.rows.map((row) => row.value) },
@@ -856,7 +857,7 @@ export async function getCrmV2Dashboard(query = normalizeCrmListQuery()): Promis
         ? [{ label: "Email 30 ngày", open: Math.round((opened / delivered) * 100), click: Math.round((clicked / delivered) * 100) }]
         : [],
     reportSummary: {
-      newLeads: newLeadsToday,
+      newLeads: newLeadsInRange,
       mql: mqlCount,
       paidOrders,
       revenue: revenue30,
@@ -896,16 +897,16 @@ export async function getCrmV2DashboardDirectDataApi(query = normalizeCrmListQue
   if (!client) return buildEmptyLiveDashboard();
 
   const dateRange = getCrmDateRange(query);
-  const today = getCrmDateRange({ range: "today" }).from;
-  const since30 = `${dateRange.from}T00:00:00.000Z`;
+  const lowerBound = dateLowerBound(dateRange.from);
+  const upperBound = dateUpperBoundExclusive(dateRange.to);
 
   const [dailyResult, leadsResult, ordersResult, eventsResult, workflowsResult, emailEventsResult, publicOrders] = await Promise.all([
-    client.schema("crm_v2").from("crm_daily_metrics").select("metric_date,new_leads,mql,paid_orders,revenue,email_revenue,active_automation").gte("metric_date", since30.slice(0, 10)),
-    client.schema("crm_v2").from("leads").select("id,stage,status,source,potential_value,created_at,metadata").neq("status", "archived").gte("created_at", since30).limit(5000),
-    client.schema("crm_v2").from("orders").select("id,status,net_amount,amount,product_name,created_at,paid_at,metadata,course_slug").gte("created_at", since30).limit(5000),
+    client.schema("crm_v2").from("crm_daily_metrics").select("metric_date,new_leads,mql,paid_orders,revenue,email_revenue,active_automation").gte("metric_date", dateRange.from).lte("metric_date", dateRange.to),
+    client.schema("crm_v2").from("leads").select("id,stage,status,source,potential_value,created_at,metadata").neq("status", "archived").gte("created_at", lowerBound).lt("created_at", upperBound).limit(5000),
+    client.schema("crm_v2").from("orders").select("id,status,net_amount,amount,product_name,created_at,paid_at,metadata,course_slug").gte("created_at", lowerBound).lt("created_at", upperBound).limit(5000),
     client.schema("crm_v2").from("crm_events").select("id,event_type,event_source,occurred_at,metadata").order("occurred_at", { ascending: false }).limit(10),
     client.schema("crm_v2").from("workflows").select("id,name,status").in("status", ["active", "published", "running"]).limit(20),
-    client.schema("crm_v2").from("email_events").select("event_type,occurred_at").gte("occurred_at", since30).limit(5000),
+    client.schema("crm_v2").from("email_events").select("event_type,occurred_at").gte("occurred_at", lowerBound).lt("occurred_at", upperBound).limit(5000),
     listPublicOrdersForRange(client, dateRange),
   ]);
 
@@ -928,16 +929,15 @@ export async function getCrmV2DashboardDirectDataApi(query = normalizeCrmListQue
     createdAt: String(row.paid_at ?? row.created_at ?? ""),
   }));
 
-  const liveLeadToday = leadRows.filter((row) => row.createdAt.startsWith(today) && !isOrderDerivedLead(row.metadata)).length;
-  const todayMetric = dailyRows.find((row) => String(row.metric_date).startsWith(today));
-  const newLeadsToday = liveLeadToday || Number(todayMetric?.new_leads ?? 0);
+  const liveLeadsInRange = leadRows.filter((row) => !isOrderDerivedLead(row.metadata)).length;
+  const newLeadsInRange = liveLeadsInRange || dailyRows.reduce((sum, row) => sum + Number(row.new_leads ?? 0), 0);
   const mqlCount = leadRows.filter((row) => ["consulting", "high_intent", "pending_payment", "paid"].includes(row.stage)).length;
   const paidPublicOrders = publicOrders.filter((row) => isPaidStatus(String(row.status ?? row.payment_status ?? "")));
   const paidOrders = orderRows.filter((row) => isPaidStatus(row.status));
   const effectivePaidOrders = paidPublicOrders.length ? paidPublicOrders : paidOrders;
   const revenue30 = effectivePaidOrders.reduce((sum, row) => sum + numericValue(row.amount), 0);
   const emailRevenue30 = dailyRows.reduce((sum, row) => sum + Number(row.email_revenue ?? 0), 0);
-  const activeAutomation = workflowsResult.data?.length ?? Number(todayMetric?.active_automation ?? 0);
+  const activeAutomation = workflowsResult.data?.length ?? Number(dailyRows.at(-1)?.active_automation ?? 0);
 
   const adaptiveRevenue = buildDashboardRevenueSeries(paidPublicOrders, dateRange);
 
@@ -959,10 +959,10 @@ export async function getCrmV2DashboardDirectDataApi(query = normalizeCrmListQue
   return {
     ...demoDashboard,
     kpis: [
-      { label: "Lead mới hôm nay", value: formatIntWithDot(newLeadsToday), tone: "blue", series: dailyRows.slice(-7).map((row) => Number(row.new_leads ?? 0)) },
+      { label: query.range === "today" ? "Lead mới hôm nay" : "Lead mới trong kỳ", value: formatIntWithDot(newLeadsInRange), tone: "blue", series: dailyRows.slice(-7).map((row) => Number(row.new_leads ?? 0)) },
       { label: "MQL", value: formatIntWithDot(mqlCount), tone: "purple", series: dailyRows.slice(-7).map((row) => Number(row.mql ?? 0)) },
       { label: "Đã thanh toán", value: formatIntWithDot(effectivePaidOrders.length), tone: "green", series: dailyRows.slice(-7).map((row) => Number(row.paid_orders ?? 0)) },
-      { label: "Doanh thu 30 ngày", value: formatMoney(revenue30), tone: "green", series: dailyRows.slice(-7).map((row) => Math.round(Number(row.revenue ?? 0) / 1_000_000)) },
+      { label: "Doanh thu đã thanh toán", value: formatMoney(revenue30), tone: "green", series: dailyRows.slice(-7).map((row) => Math.round(Number(row.revenue ?? 0) / 1_000_000)) },
       { label: "Doanh thu từ email", value: formatMoney(emailRevenue30), tone: "orange", series: dailyRows.slice(-7).map((row) => Math.round(Number(row.email_revenue ?? 0) / 1_000_000)) },
       { label: "Automation đang chạy", value: formatIntWithDot(activeAutomation), tone: "purple", series: [activeAutomation] },
     ],
@@ -1006,7 +1006,7 @@ export async function getCrmV2DashboardDirectDataApi(query = normalizeCrmListQue
       .slice(0, 5)
       .map(([name, metric]) => ({ name, revenue: formatMoney(metric.revenue), paid: metric.paid })),
     reportSummary: {
-      newLeads: newLeadsToday,
+      newLeads: newLeadsInRange,
       mql: mqlCount,
       paidOrders: effectivePaidOrders.length,
       revenue: revenue30,
@@ -1343,7 +1343,7 @@ export async function listCrmV2Orders(query: CrmListQuery): Promise<CrmListResul
     p_date_from: dateRange.from,
     p_date_to: dateRange.to,
   });
-  if (error || !data) return emptyCrmListResult(query);
+  if (error || !data) return listCrmV2OrdersDirectDataApi(query);
 
   const payload = asRecord(data);
   const rows: CrmOrderRow[] = recordArray(payload.rows).map((row) => {
@@ -1381,11 +1381,16 @@ export async function listCrmV2OrdersDirectDataApi(query: CrmListQuery): Promise
   const end = start + query.pageSize - 1;
   const searchContactIds = query.search ? await findMatchingLeadContactIds(client, query.search) : [];
   const searchFilter = buildCrmOrderSearchOrFilter(query.search, searchContactIds);
+  const dateRange = getCrmDateRange(query);
+  const lowerBound = dateLowerBound(dateRange.from);
+  const upperBound = dateUpperBoundExclusive(dateRange.to);
   let builder = client
     .schema("crm_v2")
     .from("orders")
     .select("id,contact_id,order_code,product_name,amount,discount_amount,net_amount,currency,status,payment_gateway,source,owner_id,due_at,created_at,course_slug,metadata,contacts(full_name,email,phone)", { count: "exact" })
     .range(start, end)
+    .gte("created_at", lowerBound)
+    .lt("created_at", upperBound)
     .order(query.sortBy === "value" ? "net_amount" : "created_at", { ascending: query.sortDirection === "asc" });
 
   if (query.filters?.status) builder = builder.eq("status", query.filters.status);
@@ -1425,6 +1430,39 @@ export async function listCrmV2OrdersDirectDataApi(query: CrmListQuery): Promise
     total: count ?? rows.length,
     pageCount: Math.max(1, Math.ceil((count ?? rows.length) / query.pageSize)),
   };
+}
+
+export async function getCrmV2OrderSummary(query: CrmListQuery): Promise<CrmOrderSummary> {
+  const dateRange = getCrmDateRange(query);
+  const empty = () => buildCrmOrderSummary([], dateRange);
+  if (!canQueryLiveCrmV2()) return empty();
+
+  const client = createSupabaseAdminClient();
+  if (!client) return empty();
+
+  const searchContactIds = query.search ? await findMatchingLeadContactIds(client, query.search) : [];
+  const searchFilter = buildCrmOrderSearchOrFilter(query.search, searchContactIds);
+  let builder = client
+    .schema("crm_v2")
+    .from("orders")
+    .select("status,net_amount,amount,created_at,source,owner_id,course_slug,contact_id,order_code,product_name")
+    .gte("created_at", dateLowerBound(dateRange.from))
+    .lt("created_at", dateUpperBoundExclusive(dateRange.to))
+    .limit(10000);
+
+  if (query.filters?.status) builder = builder.eq("status", query.filters.status);
+  if (query.filters?.source) builder = builder.eq("source", query.filters.source);
+  if (query.filters?.owner) builder = builder.eq("owner_id", query.filters.owner);
+  if (query.filters?.course) builder = builder.eq("course_slug", query.filters.course);
+  if (searchFilter) builder = builder.or(searchFilter);
+
+  const { data, error } = await builder;
+  if (error || !data) return empty();
+  return buildCrmOrderSummary(data.map((row) => ({
+    status: String(row.status ?? "pending"),
+    amount: numericValue(row.net_amount) || numericValue(row.amount),
+    createdAt: String(row.created_at ?? ""),
+  })), dateRange);
 }
 
 export async function listCrmV2Students(query: CrmListQuery): Promise<CrmListResult<CrmStudentRow>> {

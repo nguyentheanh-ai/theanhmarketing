@@ -14,6 +14,26 @@ import {
 } from "../lib/crm-v2/email-actions";
 import { buildCrmV2OperationalEmailTemplates } from "../lib/crm-v2/operational-email-templates";
 import { buildAdaptiveRevenueSeries } from "../lib/crm-v2/revenue-series";
+import { buildCrmOrderSummary } from "../lib/crm-v2/order-summary";
+
+test("order summary is independent from table pagination and uses the selected Vietnam range", () => {
+  const rows = [
+    { status: "paid", amount: 100_000, createdAt: "2026-07-12T01:00:00+07:00" },
+    { status: "paid", amount: 200_000, createdAt: "2026-07-12T02:00:00+07:00" },
+    { status: "pending", amount: 300_000, createdAt: "2026-07-12T03:00:00+07:00" },
+    { status: "failed", amount: 400_000, createdAt: "2026-07-11T23:00:00+07:00" },
+  ];
+  const summary = buildCrmOrderSummary(rows, { range: "today", from: "2026-07-12", to: "2026-07-12" });
+
+  assert.equal(summary.total, 3);
+  assert.equal(summary.paid, 2);
+  assert.equal(summary.pending, 1);
+  assert.equal(summary.failed, 0);
+  assert.equal(summary.revenue, 300_000);
+  assert.equal(summary.successRate, 66.7);
+  assert.equal(summary.series.length, 24);
+  assert.equal(summary.series[1]?.revenue, 100_000);
+});
 
 test("dashboard revenue uses hourly buckets for today and weekly buckets for 90 days", () => {
   const rows = [

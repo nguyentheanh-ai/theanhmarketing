@@ -158,6 +158,21 @@ test("canonical dashboard renders only real actionable operating data", () => {
   assert.doesNotMatch(dashboardPage, /data\.workflows\.map/);
   assert.match(dataLayer, /label: "Doanh thu đã thanh toán"/);
   assert.match(dataLayer, /if \(error \|\| !data\) return getCrmV2DashboardDirectDataApi\(query\)/);
+  assert.doesNotMatch(dataLayer, /const newLeadsToday = publicLeadCount/, "range lead count must not be mislabeled as today's count");
+  assert.match(dataLayer, /query\.range === "today" \? "Lead mới hôm nay" : "Lead mới trong kỳ"/);
+});
+
+test("orders use selected-range aggregates instead of the current page and fake series", () => {
+  const page = read("app/admin/crm-v2/orders/page.tsx");
+  const client = read("components/crm-v2/orders-page-client.tsx");
+  const dataLayer = read("lib/crm-v2/data.ts");
+
+  assert.match(page, /getCrmV2OrderSummary\(query\)/);
+  assert.match(client, /orderSummary/);
+  assert.doesNotMatch(client, /rows\.reduce\(\(sum, row\).*row\.value/);
+  assert.doesNotMatch(client, /series:\s*\[8,\s*12,\s*20/);
+  assert.match(dataLayer, /dateLowerBound\(dateRange\.from\)[\s\S]*dateUpperBoundExclusive\(dateRange\.to\)/);
+  assert.match(dataLayer, /export async function getCrmV2OrderSummary/);
 });
 
 test("solo dashboard uses adaptive charts and a fail-closed Meta Ads adapter", () => {
@@ -889,7 +904,7 @@ test("crm v2 dashboard and unified pipeline use production source-of-truth data"
 test("crm v2 LMS and permissions are focused and owner-safe", () => {
   const studentsClient = read("components/crm-v2/students-page-client.tsx");
   const lmsManager = read("components/crm-v2/lms-management-client.tsx");
-  const courseWorkspace = read("app/admin/crm-v2/courses/[courseSlug]/page.tsx");
+  const courseWorkspace = read("app/admin/course-studio/[courseSlug]/page.tsx");
   const teamActionsApi = read("app/api/admin/crm-v2/team/actions/route.ts");
   const adminEmails = read("lib/admin/admin-emails.ts");
   const adminMembers = read("lib/admin/admin-members.ts");
