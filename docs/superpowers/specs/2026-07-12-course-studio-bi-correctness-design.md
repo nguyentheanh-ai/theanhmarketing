@@ -79,6 +79,44 @@ Không thêm tính năng email, automation, chart hoặc KPI nếu backend tươ
 
 Không dùng nhiều chart chỉ để lấp chỗ. Mỗi chart phải trả lời một câu hỏi vận hành cụ thể.
 
+### 3.4 Meta Ads — Greezhub 01 và ngày kinh doanh Việt Nam
+
+Nguồn Ads được chốt cho dashboard:
+
+- Ad account ID: `1255736315302940` (`act_1255736315302940` ở tầng lưu trữ).
+- Tên xác minh: `Greezhub 01`.
+- Tiền tệ: VND.
+- Tài khoản đang ACTIVE và có thể truy vấn.
+- Credential chỉ nằm ở server runtime/Vercel env; không ghi token vào source, tài liệu, log hoặc Git.
+
+Tài khoản dùng múi giờ Mỹ, trong khi doanh thu và báo cáo vận hành chốt theo `Asia/Ho_Chi_Minh`. Vì vậy không được dùng tổng ngày do Meta trả về làm chi phí ngày Việt Nam.
+
+Pipeline đúng:
+
+1. Đọc `timezone_name`/offset hiện hành của ad account từ Meta; không hard-code chênh lệch giờ vì Mỹ có DST.
+2. Với một khoảng ngày Việt Nam, mở rộng cửa sổ truy vấn Meta sang ngày trước và ngày sau để bao phủ đủ 24 giờ Việt Nam.
+3. Lấy Insights theo `hourly_stats_aggregated_by_advertiser_time_zone`.
+4. Ghép `meta_date + meta_hour` với timezone của account thành timestamp thật.
+5. Chuyển timestamp sang `Asia/Ho_Chi_Minh`, rồi mới tạo `local_date`, `local_hour`, `local_start_at` và aggregate.
+6. Upsert idempotent vào `public.ad_hourly_facts` theo account + local hour.
+7. Dashboard đọc `local_date/local_hour`, cùng ranh giới ngày với doanh thu `public.orders.paid_at`.
+
+Quality gate bắt buộc:
+
+- Ngày Việt Nam đã kết thúc chỉ được coi là `final` khi đủ 24 bucket giờ `00–23`, kể cả bucket chi phí bằng 0.
+- Ngày hiện tại là `partial` cho đến khi kết thúc và được backfill.
+- Không coi tất cả row có `data_status = final` là đủ nếu coverage chưa đủ 24 giờ.
+- Nếu thiếu giờ, dashboard vẫn có thể hiển thị chi phí đã ghi nhận nhưng phải gắn `Dữ liệu Ads chưa hoàn tất`; không kết luận ROAS/lợi nhuận cuối cùng.
+- Chạy backfill rolling ít nhất ba ngày gần nhất để hấp thụ dữ liệu Meta cập nhật trễ.
+
+Phát hiện read-only ngày 2026-07-12 cần xử lý khi triển khai:
+
+- `public.ad_hourly_facts` đã có mapping Meta hour sang giờ Việt Nam cho account này.
+- Các ngày gần nhất đang chỉ có 18 bucket `00–17`, chưa có `18–23`, dù các row hiện có mang trạng thái `final`.
+- Adapter website hiện chỉ dùng breakdown theo advertiser timezone cho `today` và chưa chuyển lại sang ngày Việt Nam; với tài khoản giờ Mỹ, đường Ads và doanh thu có thể lệch nhãn/ngày.
+
+Do đó release phải ưu tiên sửa ingestion/coverage và dùng hourly fact đã kiểm định làm nguồn báo cáo. Gọi Meta trực tiếp từ website chỉ là fallback có trạng thái rõ, không được âm thầm thay nguồn bằng tổng ngày theo timezone Mỹ.
+
 ## 4. Sửa data correctness
 
 ### 4.1 Lead mới
@@ -123,6 +161,9 @@ Thiết kế sửa:
 - Test KPI aggregate không phụ thuộc page size.
 - Test nhãn lead theo range.
 - Test Ads unavailable không làm hỏng revenue report.
+- Test DST và chuyển ngày cho timezone Meta của Greezhub 01.
+- Test một ngày Việt Nam hoàn tất có đúng 24 bucket, gồm cả giờ chi phí bằng 0.
+- Test ngày thiếu bucket bị đánh dấu partial và không tạo ROAS/lợi nhuận final.
 - TypeScript, lint, Node test suite, production build và Playwright Chromium.
 
 ### Browser/live verification
