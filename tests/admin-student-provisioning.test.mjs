@@ -6,13 +6,31 @@ import test from "node:test";
 import ts from "typescript";
 
 const servicePath = "services/studentProvisioningOperationService.ts";
-const migrationPath = "supabase/migrations/20260711110000_admin_student_provisioning_operations.sql";
+const migrationPaths = [
+  "supabase/migrations/20260711110000_admin_student_provisioning_operations.sql",
+  "supabase/migrations/20260711110050_admin_student_provisioning_operation_safe_json.sql",
+  "supabase/migrations/20260711110060_admin_student_provisioning_completed_result_validation.sql",
+  "supabase/migrations/20260711110100_admin_student_provisioning_operation_claim.sql",
+  "supabase/migrations/20260711110200_admin_student_provisioning_operation_outcome.sql",
+];
 const orchestratorPath = "services/studentProvisioningService.ts";
-const idempotencyMigrationPath = "supabase/migrations/20260711120000_student_provisioning_idempotency.sql";
+const idempotencyMigrationPaths = [
+  "supabase/migrations/20260711120000_student_provisioning_idempotency.sql",
+  "supabase/migrations/20260711120100_student_provisioning_enrollment.sql",
+  "supabase/migrations/20260711120200_student_provisioning_email_dispatch.sql",
+  "supabase/migrations/20260711120300_student_provisioning_email_review.sql",
+  "supabase/migrations/20260711120400_student_provisioning_finalization.sql",
+  "supabase/migrations/20260711120500_student_provisioning_function_grants.sql",
+  "supabase/migrations/20260711120600_student_provisioning_operation_read.sql",
+];
 const controlServicePath = "services/studentProvisioningControlService.ts";
 
 function read(relativePath) {
   return fs.readFileSync(path.resolve(relativePath), "utf8");
+}
+
+function readMigrations(relativePaths) {
+  return relativePaths.map(read).join("\n");
 }
 
 function loadService(createSupabaseAdminClient) {
@@ -121,7 +139,7 @@ function withServiceRole(fn) {
 }
 
 test("migration creates a service-role-only provisioning journal without sensitive columns", () => {
-  const sql = read(migrationPath);
+  const sql = readMigrations(migrationPaths);
   assert.match(sql, /create table if not exists public\.admin_student_provisioning_operations/i);
   assert.match(sql, /operation_id text not null unique/i);
   assert.match(sql, /mode text not null[\s\S]*check \(mode in \('paid', 'free', 'trial'\)\)/i);
@@ -148,6 +166,7 @@ test("migration creates a service-role-only provisioning journal without sensiti
   assert.match(sql, /check \(order_code is null[\s\S]*length\(order_code\)[\s\S]*order_code ~ /i);
   const claimSql = sql.match(/create or replace function public\.claim_admin_student_provisioning_operation[\s\S]*?(?=revoke all on function public\.claim_admin_student_provisioning_operation)/i)?.[0] ?? "";
   const saveSql = sql.match(/create or replace function public\.save_admin_student_provisioning_outcome[\s\S]*?(?=revoke all on function public\.save_admin_student_provisioning_outcome)/i)?.[0] ?? "";
+  const completedResultValidator = sql.match(/create or replace function public\.admin_student_provisioning_completed_result_is_valid[\s\S]*?(?=revoke all on function public\.admin_student_provisioning_completed_result_is_valid)/i)?.[0] ?? "";
   assert.doesNotMatch(claimSql, /\bnow\(\)/i);
   assert.doesNotMatch(saveSql, /\bnow\(\)/i);
   assert.match(claimSql, /v_now \+ make_interval\(secs => p_lease_seconds\)/i);
@@ -160,15 +179,14 @@ test("migration creates a service-role-only provisioning journal without sensiti
   const replayClockIndex = claimSql.indexOf("v_now := clock_timestamp()", claimLockIndex);
   assert.ok(claimLockIndex < replayClockIndex);
   assert.ok(saveSql.indexOf("for update") < saveSql.indexOf("v_now := clock_timestamp()"));
-  assert.match(saveSql, /jsonb_array_length\(p_safe_result->'nextActions'\) <> 0/i);
-  assert.match(saveSql, /case[\s\S]*jsonb_typeof\(p_safe_result->'nextActions'\) = 'array'[\s\S]*jsonb_array_length/i);
+  assert.match(saveSql, /admin_student_provisioning_completed_result_is_valid\(p_safe_result\)/i);
+  assert.match(completedResultValidator, /jsonb_typeof\(p_safe_result->'nextActions'\) = 'array'/i);
+  assert.match(completedResultValidator, /jsonb_array_length\(p_safe_result->'nextActions'\) = 0/i);
   assert.match(saveSql, /p_status = 'completed'[\s\S]*p_current_step <> 'complete'/i);
-  assert.match(saveSql, /#>> '\{student,state\}'[\s\S]*= 'failed'/i);
-  assert.match(saveSql, /p_safe_result \? 'errorCode'/i);
+  assert.match(completedResultValidator, /#>> '\{student,state\}'[\s\S]*in \('created', 'existing', 'skipped', 'not_applicable'\)/i);
+  assert.match(completedResultValidator, /not \(p_safe_result \? 'errorCode'\)/i);
   const replayCompleteSql = claimSql.match(/if v_operation\.status = 'completed' then[\s\S]*?return jsonb_build_object\('claim_state', 'complete'/i)?.[0] ?? "";
-  assert.match(replayCompleteSql, /jsonb_typeof\(v_operation\.safe_result->'student'\)/i);
-  assert.match(replayCompleteSql, /jsonb_array_length\(v_operation\.safe_result->'nextActions'\) <> 0/i);
-  assert.match(replayCompleteSql, /v_operation\.safe_result \? 'errorCode'/i);
+  assert.match(replayCompleteSql, /admin_student_provisioning_completed_result_is_valid\(v_operation\.safe_result\)/i);
   assert.match(sql, /enable row level security/i);
   assert.match(sql, /revoke all on table public\.admin_student_provisioning_operations from public, anon, authenticated/i);
   assert.match(sql, /grant select, insert, update on table public\.admin_student_provisioning_operations to service_role/i);
@@ -750,7 +768,7 @@ function makeHarness({ claim, overrides = {} } = {}) {
 }
 
 test("Task 7 idempotency migration gives paid orders and free leads durable operation identities", () => {
-  const sql = read(idempotencyMigrationPath);
+  const sql = readMigrations(idempotencyMigrationPaths);
   assert.match(sql, /alter table public\.orders[\s\S]*provisioning_operation_id text/i);
   assert.match(sql, /create unique index[\s\S]*orders[\s\S]*provisioning_operation_id/i);
   assert.match(sql, /alter table public\.leads[\s\S]*provisioning_operation_id text/i);
@@ -763,7 +781,7 @@ test("Task 7 idempotency migration gives paid orders and free leads durable oper
 });
 
 test("Task 7 migration atomically provisions marked enrollments and fail-closed email dispatches", () => {
-  const sql = read(idempotencyMigrationPath);
+  const sql = readMigrations(idempotencyMigrationPaths);
   assert.match(sql, /create or replace function public\.provision_admin_student_enrollment/i);
   const enrollmentRpc = sql.match(/create or replace function public\.provision_admin_student_enrollment[\s\S]*?(?=revoke all on function public\.provision_admin_student_enrollment)/i)?.[0] ?? "";
   assert.match(enrollmentRpc, /pg_advisory_xact_lock/i);
@@ -814,7 +832,7 @@ test("changed canonical name conflicts on replay before account recovery", async
 });
 
 test("owner email review resolution is explicit and authorizes one numbered retry attempt", () => {
-  const sql = read(idempotencyMigrationPath);
+  const sql = readMigrations(idempotencyMigrationPaths);
   const resolveRpc = sql.match(/create or replace function public\.resolve_admin_student_provisioning_email_review[\s\S]*?(?=revoke all on function public\.begin_admin_student_provisioning_email_dispatch)/i)?.[0] ?? "";
   assert.doesNotMatch(resolveRpc, /auth\.users|raw_user_meta_data|raw_app_meta_data/i);
   assert.match(resolveRpc, /p_owner_id is null/i);
@@ -880,7 +898,7 @@ test("owner email review uses the canonical resolved role and rejects user metad
 }));
 
 test("paid enrollment provenance is preserved for both free and trial requests", () => {
-  const sql = read(idempotencyMigrationPath);
+  const sql = readMigrations(idempotencyMigrationPaths);
   const rpc = sql.match(/create or replace function public\.provision_admin_student_enrollment[\s\S]*?(?=revoke all on function public\.provision_admin_student_enrollment)/i)?.[0] ?? "";
   assert.match(rpc, /v_operation\.mode <> p_mode/i);
   assert.match(rpc, /v_enrollment\.order_id is not null or v_enrollment\.metadata->>'access_kind' = 'paid'/i);
@@ -1064,7 +1082,7 @@ test("every attempted provider HTTP or network failure requires owner review", a
 });
 
 test("terminal audit and journal save are one lease-fenced database transaction", () => {
-  const sql = read(idempotencyMigrationPath);
+  const sql = readMigrations(idempotencyMigrationPaths);
   const finalizer = sql.match(/create or replace function public\.finalize_admin_student_provisioning_operation[\s\S]*?(?=revoke all on function public\.finalize_admin_student_provisioning_operation)/i)?.[0] ?? "";
   assert.match(finalizer, /for update/i);
   assert.ok(finalizer.indexOf("for update") < finalizer.indexOf("clock_timestamp()"));
@@ -1081,7 +1099,7 @@ test("terminal audit and journal save are one lease-fenced database transaction"
 });
 
 test("journal dispatch constraint requires a non-null state attempt key tuple", () => {
-  const sql = read(idempotencyMigrationPath);
+  const sql = readMigrations(idempotencyMigrationPaths);
   assert.match(sql, /email_dispatch_state is not null[\s\S]*email_dispatch_attempt >= 1[\s\S]*email_dispatch_idempotency_key is not null[\s\S]*email_dispatch_idempotency_key ~/i);
 });
 
@@ -1120,7 +1138,7 @@ test("an atomic finalization failure prevents a false completed result", async (
 });
 
 test("atomic SQL preserves unlimited access, promotes expired trial to free, and marks in the same transaction", () => {
-  const sql = read(idempotencyMigrationPath);
+  const sql = readMigrations(idempotencyMigrationPaths);
   const rpc = sql.match(/create or replace function public\.provision_admin_student_enrollment[\s\S]*?(?=revoke all on function public\.provision_admin_student_enrollment)/i)?.[0] ?? "";
   assert.match(rpc, /p_mode = 'trial'[\s\S]*v_enrollment\.expires_at is null[\s\S]*v_outcome := 'already_unlimited'/i);
   assert.match(rpc, /elsif p_mode = 'free'[\s\S]*status = 'active'[\s\S]*expires_at = null[\s\S]*'access_kind', 'free'/i);

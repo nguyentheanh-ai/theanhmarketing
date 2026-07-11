@@ -5,6 +5,15 @@ import test from "node:test";
 import ts from "typescript";
 
 const read = (file) => fs.readFileSync(path.resolve(file), "utf8");
+const idempotencyMigration = () => [
+  "supabase/migrations/20260711120000_student_provisioning_idempotency.sql",
+  "supabase/migrations/20260711120100_student_provisioning_enrollment.sql",
+  "supabase/migrations/20260711120200_student_provisioning_email_dispatch.sql",
+  "supabase/migrations/20260711120300_student_provisioning_email_review.sql",
+  "supabase/migrations/20260711120400_student_provisioning_finalization.sql",
+  "supabase/migrations/20260711120500_student_provisioning_function_grants.sql",
+  "supabase/migrations/20260711120600_student_provisioning_operation_read.sql",
+].map(read).join("\n");
 
 function loadRequestParser() {
   const source = read("lib/admin/student-provisioning-request.ts");
@@ -93,7 +102,7 @@ test("wizard exposes one idempotent three-step paid free trial workflow", () => 
 
 test("manual email review is an owner-only explicit decision endpoint", () => {
   const route = read("app/api/admin/students/provisioning-review/route.ts");
-  const migration = read("supabase/migrations/20260711120000_student_provisioning_idempotency.sql");
+  const migration = idempotencyMigration();
   assert.match(route, /canAccessAdminRole\(adminRole, \["owner"\]\)/);
   assert.match(route, /resolveProvisioningEmailReview/);
   assert.match(route, /content-length/);
@@ -163,5 +172,5 @@ test("partial provisioning outcomes enter the safe recovery queue by operation i
   assert.match(read("components/admin/student-provisioning-wizard.tsx"), /provisioning-status\?operationId=/);
   assert.match(read("components/admin/student-provisioning-wizard.tsx"), /Nhập lại thông tin để tiếp tục/);
   assert.match(read("components/admin/student-provisioning-wizard.tsx"), /Tiếp tục cùng mã thao tác/);
-  assert.match(read("supabase/migrations/20260711120000_student_provisioning_idempotency.sql"), /'errorCode', p_safe_result->>'errorCode'/);
+  assert.match(idempotencyMigration(), /'errorCode', p_safe_result->>'errorCode'/);
 });
