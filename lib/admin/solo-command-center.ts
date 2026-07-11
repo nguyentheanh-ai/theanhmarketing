@@ -245,7 +245,7 @@ function studentIdentityKey(input: { studentId?: string | null; email?: string |
 
 function timestamp(value?: string | null) {
   if (!value) return null;
-  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,3}))?(Z|([+-])(\d{2}):(\d{2}))$/.exec(value);
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,6}))?(Z|([+-])(\d{2}):(\d{2}))$/.exec(value);
   if (!match) {
     throw new RangeError("Invalid record timestamp");
   }
