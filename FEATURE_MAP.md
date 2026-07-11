@@ -68,17 +68,31 @@ Guard: do not create a second order/payment/email flow; keep notification marker
 
 ## Student access and LMS Course Hub
 
-Routes: `/dashboard`, `/learn/[course]/[lesson]`, `/admin/crm-v2/students`, `/admin/crm-v2/students?view=courses&step=<step-id>`, `/api/admin/crm-v2/lms`, `/api/student/progress`.
+Routes: `/dashboard`, `/learn/[course]/[lesson]`, `/admin/crm-v2/students`, `/admin/crm-v2/courses`, `/admin/crm-v2/courses/[courseSlug]?step=<step-id>`, `/api/admin/crm-v2/lms`, `/api/student/progress`.
 
-Files: `services/lmsService.ts`, `services/studentAccessService.ts`, `services/studentAccountService.ts`, `components/crm-v2/lms-management-client.tsx`, `lib/student-dashboard-courses.ts`.
+Files: `services/lmsService.ts`, `services/studentAccessService.ts`, `services/studentAccountService.ts`, `components/crm-v2/course-hub.tsx`, `components/crm-v2/lms-management-client.tsx`, `components/admin/student-create-dialog.tsx`, `lib/student-dashboard-courses.ts`.
 
 Database: `public.courses`, `public.course_modules`, `public.lessons`, `public.lesson_resources`, `crm_v2.enrollments`, `crm_v2.course_progress`.
 
-Feature map: Course Hub → Overview → Sales Content → Curriculum → Media & Resources → Students & Access → Analytics → Review & Publish. Steps are URL-backed, freely navigable and reuse existing focused mutation APIs.
+Feature map: Course Hub lists/searches/creates courses. Selecting a course opens a dedicated Workspace → Overview → Sales Content → Curriculum → Media & Resources → Students & Access → Analytics → Review & Publish. Only the active section renders; lesson work opens in a modal. Student creation belongs to `/students` and uses the provisioning wizard, never raw enrollment.
 
 Search: `CourseLmsManager`, `courseSteps`, `CurriculumWorkspace`, `CourseAnalytics`, `PublishReview`, `lmsService`, `enrollments`, `course_progress`, `publishedLessonsOnly`.
 
 Guard: private/draft lessons must not leak before authentication/entitlement checks.
+
+## Solo executive dashboard and Meta Ads reporting
+
+Routes: `/admin/crm-v2?range=today|7d|30d|90d`, `/admin/crm-v2/reports`.
+
+Files: `app/admin/crm-v2/page.tsx`, `components/crm-v2/dashboard-charts.tsx`, `lib/crm-v2/revenue-series.ts`, `lib/crm-v2/data.ts`, `services/metaAdsReportService.ts`.
+
+Data: paid `public.orders`, CRM lead/source/event rows and Meta Marketing API Insights. Today uses 24 Vietnam-time hourly buckets; 7/30 days use daily buckets; 90 days use weekly buckets.
+
+Environment names: `META_ADS_ACCESS_TOKEN`, `META_ADS_AD_ACCOUNT_ID`, optional `META_API_VERSION`.
+
+Search: `DashboardCharts`, `buildAdaptiveRevenueSeries`, `getMetaAdsReport`, `hourly_stats_aggregated_by_advertiser_time_zone`, `revenueResolution`.
+
+Guard: never synthesize Ads or revenue. If Supabase or Meta is unavailable, show an explicit unavailable/empty state and do not calculate profit from zeros.
 
 ## CRM V2
 

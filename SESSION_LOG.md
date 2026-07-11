@@ -1,5 +1,14 @@
 # Session Log
 
+## 2026-07-11 - Lean Solo Admin v3
+
+Phạm vi: thu gọn admin một người vận hành, tách LMS progressive disclosure, thay dashboard bằng biểu đồ thích ứng và kết nối Meta Ads thật.
+Các file đã thay đổi: CRM shell/settings/dashboard/data/types, Course Hub/Workspace/student provisioning entry, Meta Ads adapter, revenue series, tests, specs và tài liệu dự án.
+Kết quả: navigation còn 7 module chính; LMS dùng Hub → Workspace; enrollment thô bị xóa; Ebook map đúng; dashboard có area/horizontal bar/donut/course ranking/Ads-revenue và không dùng số demo.
+Kiểm tra đã chạy: full Node 402/402, CRM Chromium 33/33, TypeScript, focused ESLint, Next.js production build và ảnh QA local không PII.
+Việc còn lại: guarded production deploy, live route/data smoke và Vercel error-log scan.
+Cảnh báo: transactional email trong provisioning được giữ vì là luồng cấp tài khoản thật; module marketing email/automation chỉ bị loại khỏi operator navigation, backend không bị xóa phá vỡ.
+
 ## 2026-07-11 - Hợp nhất Admin/CRM và hiện đại hóa LMS
 
 Phạm vi: đưa CRM v2 thành admin owner duy nhất, sửa dashboard dữ liệu thật và nâng cấp trình quản lý khóa học theo Course Hub có hướng dẫn tự do.
