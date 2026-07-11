@@ -66,20 +66,23 @@ test("legacy admin dashboard redirects to CRM v2 when enabled", async ({ page })
 test("Executive dashboard and Course Hub render their verified shell", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/admin/crm-v2");
-  await expect(page.getByText("Executive Operating System")).toBeVisible();
+  await expect(page.getByText("Executive Operating System", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Trung tâm điều hành" })).toBeVisible();
   await page.screenshot({ path: "test-results/admin-executive-dashboard.png", fullPage: true });
 
-  await page.goto("/admin/crm-v2/students?view=courses");
-  await expect(page.getByRole("heading", { name: "Không gian vận hành khóa học" })).toBeVisible();
-  await expect(page.getByText("Chuyển tự do giữa các bước — không bắt buộc hoàn thành theo thứ tự.")).toBeVisible();
-  const analyticsStep = page.getByRole("button", { name: /Bước 6 Analytics/ });
-  if (await analyticsStep.count()) {
+  await page.goto("/admin/crm-v2/courses");
+  await expect(page.getByRole("heading", { name: "Khóa học" })).toBeVisible();
+  const firstCourse = page.locator('a[href^="/admin/crm-v2/courses/"]').first();
+  if (await firstCourse.count()) {
+    await firstCourse.click();
+    await expect(page.getByText("LMS · Course Workspace")).toBeVisible();
+    await expect(page.getByText("Chuyển tự do giữa các bước — không bắt buộc hoàn thành theo thứ tự.")).toBeVisible();
+    const analyticsStep = page.getByRole("button", { name: /Bước 6 Analytics/ });
     await analyticsStep.click();
     await expect(page).toHaveURL(/step=analytics/);
     await expect(page.getByText("Phân bố tiến độ thực tế")).toBeVisible();
   } else {
-    await expect(page.getByText("Chưa có khóa học")).toBeVisible();
+    await expect(page.getByText("Không có khóa học phù hợp.")).toBeVisible();
   }
   await page.screenshot({ path: "test-results/admin-course-hub.png", fullPage: true });
 });
