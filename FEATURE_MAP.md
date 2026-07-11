@@ -1,5 +1,19 @@
 # Feature Map - theanh-main
 
+## Admin student provisioning orchestration
+
+Description: Safely coordinate paid, free, or trial account creation, access grants, email dispatch, and replay recovery through one durable operation journal.
+
+Main files: `services/studentProvisioningService.ts`, `services/studentProvisioningOperationService.ts`, `services/studentProvisioningControlService.ts`, `services/studentAccountService.ts`, `services/lmsService.ts`.
+
+Database: `public.admin_student_provisioning_operations`, `public.orders`, `public.leads`, `public.activity_logs`, `crm_v2.enrollments`.
+
+Migration: `supabase/migrations/20260711110000_admin_student_provisioning_operations.sql`, `supabase/migrations/20260711120000_student_provisioning_idempotency.sql`.
+
+Search: `provisionStudent`, `finalizeProvisioningOutcome`, `manual_review`, `finalize_admin_student_provisioning_operation`.
+
+Guard: never retry an attempted/ambiguous email provider call automatically; owner review must use the canonical current auth role. Never finalize without the current operation lease. Apply the pending migration before enabling this flow in production.
+
 ## Authentication and account recovery
 
 Routes: `/dang-nhap`, `/dang-ky`, `/quen-mat-khau`, `/doi-mat-khau`, `/api/auth/forgot-password`, `/api/auth/recovery/confirm`.

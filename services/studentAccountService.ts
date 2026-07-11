@@ -7,6 +7,8 @@ import type { PaymentOrder } from "@/services/orderService";
 type EnsureStudentAccountOptions = {
   temporaryPassword?: string;
   forcePasswordUpdate?: boolean;
+  preserveExistingAuth?: boolean;
+  provisioningOperationId?: string;
 };
 
 export type StudentAccountProvisionResult = {
@@ -315,6 +317,7 @@ export async function ensureStudentAccountForPaidOrder(
       enrolled_course_title: order.courseTitle,
       temporary_password_strategy: options.temporaryPassword ? "manual-admin" : "given_name_phone",
       temporary_password_created_at: new Date().toISOString(),
+      provisioning_operation_id: options.provisioningOperationId,
     },
   });
 
@@ -323,6 +326,28 @@ export async function ensureStudentAccountForPaidOrder(
       const existingUser = await findAuthUserByEmail(supabase, credentials.email);
 
       if (existingUser) {
+        if (options.preserveExistingAuth && !options.forcePasswordUpdate) {
+          if (
+            options.provisioningOperationId
+            && existingUser.user_metadata?.provisioning_operation_id === options.provisioningOperationId
+          ) {
+            return completeProvisionedPasswordLogin(supabase, {
+              email: credentials.email,
+              password: credentials.password,
+              userId: existingUser.id,
+              created: false,
+              successReason: "Student account provisioning resumed.",
+            });
+          }
+          return {
+            ...baseResult,
+            ok: true,
+            skipped: true,
+            created: false,
+            reason: "Student account already exists; existing authentication method was preserved.",
+            userId: existingUser.id,
+          };
+        }
         const { error: updateError } = await updateExistingStudentPassword(supabase, {
           userId: existingUser.id,
           existingUserMetadata: existingUser.user_metadata,
@@ -462,6 +487,19 @@ export async function ensureStudentAccountForAccessGrant(
 
   if (existingUser) {
     if (!options.forcePasswordUpdate) {
+      if (
+        options.preserveExistingAuth
+        && options.provisioningOperationId
+        && existingUser.user_metadata?.provisioning_operation_id === options.provisioningOperationId
+      ) {
+        return completeProvisionedPasswordLogin(supabase, {
+          email: credentials.email,
+          password: credentials.password,
+          userId: existingUser.id,
+          created: false,
+          successReason: "Student account provisioning resumed.",
+        });
+      }
       return {
         ...baseResult,
         ok: true,
@@ -522,6 +560,7 @@ export async function ensureStudentAccountForAccessGrant(
       enrolled_course_title: input.courseTitle,
       temporary_password_strategy: options.temporaryPassword ? "manual-admin" : "given_name_phone",
       temporary_password_created_at: new Date().toISOString(),
+      provisioning_operation_id: options.provisioningOperationId,
     },
   });
 

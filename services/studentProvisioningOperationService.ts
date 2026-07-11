@@ -16,7 +16,7 @@ export type StudentProvisioningState = Extract<StepState, "created" | "existing"
 export type OrderProvisioningState = Extract<StepState, "created" | "existing" | "skipped" | "failed" | "not_applicable">;
 export type AccessProvisioningState = Extract<StepState, "existing" | "granted" | "skipped" | "failed" | "not_applicable">;
 export type EmailProvisioningState = Extract<StepState, "sent" | "skipped" | "failed" | "not_applicable">;
-export type ProvisioningNextAction = "retry_access" | "retry_email";
+export type ProvisioningNextAction = "retry_access" | "retry_email" | "review_email";
 export type ProvisioningErrorCode =
   | "VALIDATION_FAILED"
   | "STUDENT_RESOLUTION_FAILED"
@@ -51,6 +51,7 @@ export type ProvisioningOperation = {
 
 export type ProvisioningRequestFingerprintInput = {
   mode: ProvisioningMode;
+  name: string;
   email: string;
   phone: string;
   courseSlugs: string[];
@@ -115,7 +116,7 @@ const studentStates = new Set<StudentProvisioningState>(["created", "existing", 
 const orderStates = new Set<OrderProvisioningState>(["created", "existing", "skipped", "failed", "not_applicable"]);
 const accessStates = new Set<AccessProvisioningState>(["existing", "granted", "skipped", "failed", "not_applicable"]);
 const emailStates = new Set<EmailProvisioningState>(["sent", "skipped", "failed", "not_applicable"]);
-const nextActions = new Set<ProvisioningNextAction>(["retry_access", "retry_email"]);
+const nextActions = new Set<ProvisioningNextAction>(["retry_access", "retry_email", "review_email"]);
 const errorCodes = new Set<ProvisioningErrorCode>([
   "VALIDATION_FAILED", "STUDENT_RESOLUTION_FAILED", "ORDER_CREATION_FAILED", "ACCOUNT_SETUP_FAILED",
   "ACCESS_GRANT_FAILED", "EMAIL_SEND_FAILED", "OPERATION_FAILED",
@@ -276,15 +277,17 @@ function normalizeTrialExpiry(value: string | null | undefined) {
 
 export function createProvisioningRequestFingerprint(input: ProvisioningRequestFingerprintInput) {
   const source = assertObject(input);
-  if (typeof source.email !== "string" || typeof source.phone !== "string") invalidInput();
+  if (typeof source.name !== "string" || typeof source.email !== "string" || typeof source.phone !== "string") invalidInput();
   if (!Array.isArray(source.courseSlugs)) invalidInput();
   if (typeof source.sendEmail !== "boolean") invalidInput();
   if (source.trialExpiresAt !== undefined && source.trialExpiresAt !== null && typeof source.trialExpiresAt !== "string") invalidInput();
   const email = source.email.trim().toLowerCase();
   const phone = source.phone.replace(/\D/g, "");
-  if (!email && !phone) invalidInput();
+  const name = source.name.normalize("NFKC").trim().replace(/\s+/g, " ").toLocaleLowerCase("vi");
+  if (!name || name.length > 160 || (!email && !phone)) invalidInput();
   const normalized = {
     mode: cleanMode(source.mode),
+    name,
     email,
     phone,
     courseSlugs: cleanCourseSlugs(source.courseSlugs),
@@ -388,6 +391,19 @@ function parseSavePayload(value: unknown): { state: "saved" | "lost_lease"; oper
   }
 }
 
+function parseFinalizePayload(value: unknown): { state: "finalized" | "lost_lease"; operation?: unknown } {
+  try {
+    const source = assertObject(value);
+    assertNoExtraKeys(source, ["finalize_state", "operation"]);
+    const state = source.finalize_state;
+    if (state !== "finalized" && state !== "lost_lease") invalidInput();
+    if ((state === "finalized") !== (source.operation !== undefined)) invalidInput();
+    return { state, operation: source.operation };
+  } catch {
+    throw new ProvisioningOperationServiceError("PROVISIONING_QUERY_FAILED");
+  }
+}
+
 export async function claimProvisioningOperation(input: {
   operationId: string;
   requestFingerprint: string;
@@ -468,6 +484,53 @@ export async function saveProvisioningOutcome(input: {
   const saved = parseSavePayload(result.data);
   if (saved.state === "lost_lease") throw new ProvisioningOperationLostLeaseError();
   const operation = mapProvisioningOperation(saved.operation);
+  if (
+    operation.operationId !== operationId
+    || operation.status !== status
+    || operation.currentStep !== currentStep
+    || operation.orderCode !== orderCode
+    || JSON.stringify(operation.safeResult) !== JSON.stringify(safeResult)
+  ) {
+    throw new ProvisioningOperationServiceError("PROVISIONING_INVALID_ROW");
+  }
+  return operation;
+}
+
+export async function finalizeProvisioningOutcome(input: {
+  operationId: string;
+  leaseToken: string;
+  status: Exclude<ProvisioningOperationStatus, "running">;
+  currentStep: ProvisioningStep;
+  orderCode?: string | null;
+  safeResult: SafeProvisioningResult;
+  courseSlugs: string[];
+}): Promise<ProvisioningOperation> {
+  const operationId = cleanOperationId(input.operationId);
+  const leaseToken = cleanUuid(input.leaseToken, false)!;
+  const status = cleanStatus(input.status);
+  if (status === "running") invalidInput();
+  const currentStep = cleanStep(input.currentStep);
+  const orderCode = cleanSafeCode(input.orderCode, true);
+  const safeResult = rebuildSafeResult(input.safeResult, false);
+  const courseSlugs = cleanCourseSlugs(input.courseSlugs);
+  if (courseSlugs.length === 0) invalidInput();
+  validateCompletedOutcome(status, currentStep, safeResult);
+  const client = getAdminClient();
+  const result = parseQueryResult<unknown>(await runQuery(() => client
+    .rpc("finalize_admin_student_provisioning_operation", {
+      p_operation_id: operationId,
+      p_lease_token: leaseToken,
+      p_status: status,
+      p_current_step: currentStep,
+      p_order_code: orderCode,
+      p_safe_result: safeResult,
+      p_course_slugs: courseSlugs,
+    })));
+
+  if (result.error || !result.data) throw new ProvisioningOperationServiceError("PROVISIONING_QUERY_FAILED");
+  const finalized = parseFinalizePayload(result.data);
+  if (finalized.state === "lost_lease") throw new ProvisioningOperationLostLeaseError();
+  const operation = mapProvisioningOperation(finalized.operation);
   if (
     operation.operationId !== operationId
     || operation.status !== status

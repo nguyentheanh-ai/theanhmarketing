@@ -7,6 +7,9 @@ import ts from "typescript";
 
 const servicePath = "services/studentProvisioningOperationService.ts";
 const migrationPath = "supabase/migrations/20260711110000_admin_student_provisioning_operations.sql";
+const orchestratorPath = "services/studentProvisioningService.ts";
+const idempotencyMigrationPath = "supabase/migrations/20260711120000_student_provisioning_idempotency.sql";
+const controlServicePath = "services/studentProvisioningControlService.ts";
 
 function read(relativePath) {
   return fs.readFileSync(path.resolve(relativePath), "utf8");
@@ -26,6 +29,49 @@ function loadService(createSupabaseAdminClient) {
     if (specifier === "@/lib/supabase/admin") return { createSupabaseAdminClient };
     if (specifier === "node:crypto") return crypto;
     throw new Error(`Unexpected test import: ${specifier}`);
+  });
+  return cjsModule.exports;
+}
+
+function loadOrchestrator(runtimeDependencies) {
+  const compiled = ts.transpileModule(read(orchestratorPath), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, esModuleInterop: true },
+  }).outputText;
+  const cjsModule = { exports: {} };
+  const runner = new Function("exports", "module", "require", compiled);
+  runner(cjsModule.exports, cjsModule, (specifier) => {
+    if (specifier === "@/services/studentProvisioningOperationService") return runtimeDependencies.operationModule;
+    if (specifier === "@/services/orderService") return runtimeDependencies.orderModule ?? {};
+    if (specifier === "@/services/studentAccountService") return runtimeDependencies.accountModule ?? {};
+    if (specifier === "@/services/lmsService") return runtimeDependencies.lmsModule ?? {};
+    if (specifier === "@/services/courseService") return runtimeDependencies.courseModule ?? {};
+    if (specifier === "@/services/leadService") return runtimeDependencies.leadModule ?? {};
+    if (specifier === "@/lib/notifications/payment-success-email") return runtimeDependencies.paymentEmailModule ?? {};
+    if (specifier === "@/lib/notifications/student-access-email") return runtimeDependencies.accessEmailModule ?? {};
+    if (specifier === "@/lib/course-access") return runtimeDependencies.courseAccessModule ?? {};
+    if (specifier === "@/services/studentProvisioningControlService") return runtimeDependencies.controlModule ?? {};
+    if (specifier === "@/services/activityLogService") return runtimeDependencies.activityModule ?? {};
+    throw new Error(`Unexpected orchestrator import: ${specifier}`);
+  });
+  return cjsModule.exports;
+}
+
+function loadControlService(createSupabaseAdminClient, getCurrentAuth = async () => ({
+  user: { id: "20000000-0000-4000-8000-000000000002" }, isAdmin: true, adminRole: "owner",
+})) {
+  const compiled = ts.transpileModule(read(controlServicePath), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, esModuleInterop: true },
+  }).outputText;
+  const cjsModule = { exports: {} };
+  new Function("exports", "module", "require", compiled)(cjsModule.exports, cjsModule, (specifier) => {
+    if (specifier === "@/lib/supabase/admin") return { createSupabaseAdminClient };
+    if (specifier === "@/lib/auth/session") {
+      return { getCurrentAuth, canAccessAdminRole: (role, allowed) => Boolean(role && allowed.includes(role)) };
+    }
+    if (specifier === "@/services/studentProvisioningOperationService") {
+      return { ProvisioningOperationLostLeaseError: class extends Error { constructor() { super("lost"); this.code = "PROVISIONING_OPERATION_LOST_LEASE"; } } };
+    }
+    throw new Error(`Unexpected control import: ${specifier}`);
   });
   return cjsModule.exports;
 }
@@ -136,30 +182,34 @@ test("migration creates a service-role-only provisioning journal without sensiti
 test("fingerprint normalizes equivalent intent and changes when relevant intent changes", () => {
   const { createProvisioningRequestFingerprint } = loadService(() => null);
   const first = createProvisioningRequestFingerprint({
-    mode: " PAID ", email: " Student@Example.COM ", phone: "+84 901-234-567",
+    mode: " PAID ", name: "  Nguyễn   Văn A ", email: " Student@Example.COM ", phone: "+84 901-234-567",
     courseSlugs: [" Course-B ", "course-a", "COURSE-A"], sendEmail: true,
     trialExpiresAt: "2026-07-20T07:00:00+07:00",
   });
   const equivalent = createProvisioningRequestFingerprint({
-    mode: "paid", email: "student@example.com", phone: "84901234567",
+    mode: "paid", name: "nguyễn văn a", email: "student@example.com", phone: "84901234567",
     courseSlugs: ["course-a", "course-b"], sendEmail: true,
     trialExpiresAt: "2026-07-20T00:00:00.000Z",
   });
   const changed = createProvisioningRequestFingerprint({
-    mode: "paid", email: "student@example.com", phone: "84901234567",
+    mode: "paid", name: "Nguyễn Văn A", email: "student@example.com", phone: "84901234567",
     courseSlugs: ["course-a", "course-b"], sendEmail: false,
     trialExpiresAt: "2026-07-20T00:00:00.000Z",
   });
   assert.match(first, /^[a-f0-9]{64}$/);
   assert.equal(first, equivalent);
   assert.notEqual(first, changed);
+  assert.notEqual(first, createProvisioningRequestFingerprint({
+    mode: "paid", name: "Nguyễn Văn B", email: "student@example.com", phone: "84901234567",
+    courseSlugs: ["course-a", "course-b"], sendEmail: true, trialExpiresAt: "2026-07-20T00:00:00.000Z",
+  }));
   assert.doesNotMatch(read(servicePath), /temporaryPassword/);
 });
 
 test("fingerprint rejects malformed runtime input instead of coercing it", () => {
   const service = loadService(() => null);
   const valid = {
-    mode: "paid", email: "student@example.com", phone: "", courseSlugs: ["course-a"],
+    mode: "paid", name: "Student A", email: "student@example.com", phone: "", courseSlugs: ["course-a"],
     sendEmail: true, trialExpiresAt: null,
   };
   for (const input of [
@@ -440,12 +490,15 @@ test("save rejects invalid terminal state and malformed status, step, or order c
   failed.email.state = "failed";
   const retrying = completedSafeResult();
   retrying.nextActions = ["retry_email"];
+  const reviewing = completedSafeResult();
+  reviewing.nextActions = ["review_email"];
   const codedFailure = { ...completedSafeResult(), errorCode: "EMAIL_SEND_FAILED" };
   for (const input of [
     { ...valid, currentStep: "validate" },
     { ...valid, safeResult: { student: { state: "existing" }, nextActions: [] } },
     { ...valid, safeResult: failed },
     { ...valid, safeResult: retrying },
+    { ...valid, safeResult: reviewing },
     { ...valid, safeResult: codedFailure },
     { ...valid, status: "done" },
     { ...valid, currentStep: "unknown" },
@@ -476,6 +529,59 @@ test("save rejects RPC success when the stored order code or safe result differs
       (error) => error.code === "PROVISIONING_INVALID_ROW",
     );
   }
+}));
+
+test("terminal finalizer sends only safe fields and accepts the matching atomic result", withServiceRole(async () => {
+  const safeResult = completedSafeResult();
+  let rpcArgs;
+  const operation = dbRow({
+    status: "completed", current_step: "complete", order_code: "ORDER-100", safe_result: safeResult,
+  });
+  const service = loadService(() => ({ rpc: async (name, args) => {
+    assert.equal(name, "finalize_admin_student_provisioning_operation");
+    rpcArgs = args;
+    return { data: { finalize_state: "finalized", operation }, error: null };
+  } }));
+  const result = await service.finalizeProvisioningOutcome({
+    operationId: "operation-123",
+    leaseToken: "30000000-0000-4000-8000-000000000003",
+    status: "completed",
+    currentStep: "complete",
+    orderCode: "ORDER-100",
+    safeResult,
+    courseSlugs: [" course-a ", "course-a"],
+  });
+  assert.equal(result.status, "completed");
+  assert.deepEqual(rpcArgs.p_course_slugs, ["course-a"]);
+  assert.deepEqual(rpcArgs.p_safe_result, safeResult);
+  assert.doesNotMatch(JSON.stringify(rpcArgs), /student@example|090123|Temp-Secret/);
+}));
+
+test("terminal finalizer fails closed on lost lease, malformed payload, or running status", withServiceRole(async () => {
+  const input = {
+    operationId: "operation-123",
+    leaseToken: "30000000-0000-4000-8000-000000000003",
+    status: "failed",
+    currentStep: "send_email",
+    orderCode: null,
+    safeResult: { email: { state: "failed" }, nextActions: ["review_email"], errorCode: "EMAIL_SEND_FAILED" },
+    courseSlugs: ["course-a"],
+  };
+  const lost = loadService(() => ({ rpc: async () => ({ data: { finalize_state: "lost_lease" }, error: null }) }));
+  await assert.rejects(lost.finalizeProvisioningOutcome(input),
+    (error) => error.code === "PROVISIONING_OPERATION_LOST_LEASE");
+
+  const malformed = loadService(() => ({ rpc: async () => ({ data: { finalize_state: "finalized" }, error: null }) }));
+  await assert.rejects(malformed.finalizeProvisioningOutcome(input),
+    (error) => error.code === "PROVISIONING_QUERY_FAILED");
+
+  let rpcCalls = 0;
+  const invalid = loadService(() => ({ rpc: async () => { rpcCalls += 1; } }));
+  await assert.rejects(invalid.finalizeProvisioningOutcome({ ...input, status: "running" }),
+    (error) => error.code === "PROVISIONING_INVALID_INPUT");
+  await assert.rejects(invalid.finalizeProvisioningOutcome({ ...input, courseSlugs: [] }),
+    (error) => error.code === "PROVISIONING_INVALID_INPUT");
+  assert.equal(rpcCalls, 0);
 }));
 
 test("malformed Supabase RPC responses fail safely for claim and save", withServiceRole(async () => {
@@ -542,3 +648,495 @@ test("safe result rejects step states that are impossible for a field", withServ
     );
   }
 }));
+
+function provisioningInput(overrides = {}) {
+  return {
+    operationId: "operation-task7-123",
+    actorId: "20000000-0000-4000-8000-000000000002",
+    mode: "paid",
+    name: "Hoc Vien",
+    email: "student@example.com",
+    phone: "0901234567",
+    courseSlugs: ["course-a"],
+    source: "Admin",
+    note: "",
+    sendEmail: true,
+    ...overrides,
+  };
+}
+
+function operationRow(overrides = {}) {
+  return {
+    id: "10000000-0000-4000-8000-000000000001",
+    operationId: "operation-task7-123",
+    requestFingerprint: "a".repeat(64),
+    mode: "paid",
+    status: "running",
+    currentStep: "validate",
+    orderCode: null,
+    safeResult: {},
+    actorId: "20000000-0000-4000-8000-000000000002",
+    createdAt: "2026-07-11T01:00:00.000Z",
+    updatedAt: "2026-07-11T01:00:00.000Z",
+    ...overrides,
+  };
+}
+
+function makeHarness({ claim, overrides = {} } = {}) {
+  const calls = [];
+  const order = {
+    id: "order-id", orderCode: "ORDER-100", status: "paid", studentName: "Hoc Vien",
+    email: "student@example.com", phone: "0901234567", courseSlug: "course-a",
+    courseTitle: "Course A", orderItems: [{ slug: "course-a", title: "Course A", price: 100 }],
+    paymentEmailSentAt: null,
+  };
+  const dependencies = {
+    createFingerprint: () => "a".repeat(64),
+    claimOperation: async () => claim ?? ({ state: "new", operation: operationRow(), leaseToken: "30000000-0000-4000-8000-000000000003" }),
+    saveOutcome: async (input) => { calls.push(["save", input]); return operationRow({ currentStep: input.currentStep, status: input.status, safeResult: input.safeResult, orderCode: input.orderCode ?? null }); },
+    findOrderByOperationId: async () => null,
+    createPaidOrder: async (input) => { calls.push(["create-order", input]); return order; },
+    ensurePaidAccount: async (_order, options) => { calls.push(["paid-account", options]); return { ok: true, skipped: false, created: true, email: "student@example.com", temporaryPassword: "Temp-Secret", userId: "user-1", loginVerified: true }; },
+    ensureAccessAccount: async (_input, options) => { calls.push(["access-account", options]); return { ok: true, skipped: false, created: true, email: "student@example.com", temporaryPassword: "Temp-Secret", userId: "user-1", loginVerified: true }; },
+    getCourses: async () => [{ slug: "course-a", title: "Course A" }],
+    provisionEnrollment: async (input) => { calls.push(["atomic-enrollment", input]); return { id: "enrollment-1", outcome: "granted", accessKind: input.mode, expiresAt: input.expiresAt }; },
+    verifyPaidAccess: (_order, slugs) => { calls.push(["verify-paid-access", slugs]); return true; },
+    findLeadByOperationId: async () => null,
+    createLead: async (input) => { calls.push(["create-lead", input]); return { ok: true, lead: { id: "lead-1" } }; },
+    sendPaidEmail: async (_order, options) => { calls.push(["paid-email", options]); return { ok: true, skipped: false, reason: null, resendEmailId: "resend-1" }; },
+    sendAccessEmail: async (_input, options) => { calls.push(["access-email", options]); return { ok: true, skipped: false, reason: null, resendEmailId: "resend-1" }; },
+    markPaidEmailSent: async () => { calls.push(["mark-paid-email"]); return { ok: true }; },
+    beginEmailDispatch: async (input) => { calls.push(["begin-email-dispatch", input]); return { state: "send", idempotencyKey: "student-provisioning/operation-task7-123/email/1", attempt: 1 }; },
+    finishEmailDispatch: async (input) => { calls.push(["finish-email-dispatch", input]); return { state: input.state }; },
+    finalizeOutcome: async (input) => {
+      calls.push(["finalize", input]);
+      return operationRow({ currentStep: input.currentStep, status: input.status, safeResult: input.safeResult, orderCode: input.orderCode ?? null });
+    },
+    ...overrides,
+  };
+  const service = loadOrchestrator({ operationModule: {}, orderModule: {}, accountModule: {}, lmsModule: {}, courseModule: {}, leadModule: {}, paymentEmailModule: {}, accessEmailModule: {}, courseAccessModule: {}, controlModule: {} });
+  return { service, dependencies, calls, order };
+}
+
+test("Task 7 idempotency migration gives paid orders and free leads durable operation identities", () => {
+  const sql = read(idempotencyMigrationPath);
+  assert.match(sql, /alter table public\.orders[\s\S]*provisioning_operation_id text/i);
+  assert.match(sql, /create unique index[\s\S]*orders[\s\S]*provisioning_operation_id/i);
+  assert.match(sql, /alter table public\.leads[\s\S]*provisioning_operation_id text/i);
+  assert.match(sql, /create unique index[\s\S]*leads[\s\S]*provisioning_operation_id/i);
+  assert.match(sql, /create or replace function public\.provision_admin_student_enrollment/i);
+  assert.match(sql, /security definer[\s\S]*set search_path = public, crm_v2, pg_temp/i);
+  assert.match(sql, /revoke all on function public\.provision_admin_student_enrollment[\s\S]*from public, anon, authenticated/i);
+  assert.match(sql, /grant execute on function public\.provision_admin_student_enrollment[\s\S]*to service_role/i);
+  assert.doesNotMatch(sql, /password|access_token|api_key/i);
+});
+
+test("Task 7 migration atomically provisions marked enrollments and fail-closed email dispatches", () => {
+  const sql = read(idempotencyMigrationPath);
+  assert.match(sql, /create or replace function public\.provision_admin_student_enrollment/i);
+  const enrollmentRpc = sql.match(/create or replace function public\.provision_admin_student_enrollment[\s\S]*?(?=revoke all on function public\.provision_admin_student_enrollment)/i)?.[0] ?? "";
+  assert.match(enrollmentRpc, /pg_advisory_xact_lock/i);
+  assert.match(enrollmentRpc, /for update/i);
+  assert.match(enrollmentRpc, /p_lease_token uuid/i);
+  assert.match(enrollmentRpc, /lease_token is distinct from p_lease_token/i);
+  assert.ok(enrollmentRpc.indexOf("for update") < enrollmentRpc.indexOf("v_now := clock_timestamp()"));
+  assert.match(enrollmentRpc, /provisioning_operation_id/i);
+  assert.match(enrollmentRpc, /access_kind/i);
+  assert.match(enrollmentRpc, /already_unlimited/i);
+  assert.match(enrollmentRpc, /p_mode = 'free'[\s\S]*expires_at = null/i);
+  assert.match(enrollmentRpc, /p_mode = 'trial'[\s\S]*expires_at is null[\s\S]*already_unlimited/i);
+  assert.match(sql, /alter table public\.admin_student_provisioning_operations[\s\S]*email_dispatch_state text/i);
+  assert.match(sql, /create or replace function public\.begin_admin_student_provisioning_email_dispatch/i);
+  assert.match(sql, /create or replace function public\.finish_admin_student_provisioning_email_dispatch/i);
+  assert.match(sql, /create or replace function public\.resolve_admin_student_provisioning_email_review/i);
+  assert.doesNotMatch(sql, /create table if not exists public\.admin_student_provisioning_(email_dispatches|audits)/i);
+});
+
+test("orchestrator validates courses before claiming and uses real paid entitlement verification", () => {
+  const source = read(orchestratorPath);
+  assert.ok(source.indexOf("dependencies.getCourses") < source.indexOf("dependencies.claimOperation"));
+  assert.match(source, /verifyPaidAccess/);
+  assert.match(source, /getCourseAccessSlugs/);
+  assert.doesNotMatch(source, /findEnrollment|addEnrollment/);
+  assert.doesNotMatch(source, /account\.reason|emailResult\.reason/);
+});
+
+test("changed canonical name conflicts on replay before account recovery", async () => {
+  const fingerprint = loadService(() => null).createProvisioningRequestFingerprint;
+  let claimedFingerprint = null;
+  let accountCalls = 0;
+  const harness = makeHarness({ overrides: {
+    createFingerprint: fingerprint,
+    claimOperation: async (input) => {
+      if (claimedFingerprint && claimedFingerprint !== input.requestFingerprint) {
+        throw Object.assign(new Error("PROVISIONING_OPERATION_CONFLICT"), { code: "PROVISIONING_OPERATION_CONFLICT" });
+      }
+      claimedFingerprint = input.requestFingerprint;
+      return { state: "new", operation: operationRow({ requestFingerprint: input.requestFingerprint }), leaseToken: "30000000-0000-4000-8000-000000000003" };
+    },
+    ensurePaidAccount: async () => { accountCalls += 1; return { ok: true, skipped: false, created: true, email: "student@example.com", temporaryPassword: "Temp-Secret", userId: "user-1" }; },
+  } });
+  await harness.service.provisionStudent(provisioningInput({ name: "Nguyễn Văn A" }), harness.dependencies);
+  await assert.rejects(harness.service.provisionStudent(provisioningInput({ name: "Nguyễn Văn B" }), harness.dependencies),
+    (error) => error.code === "PROVISIONING_OPERATION_CONFLICT");
+  assert.equal(accountCalls, 1);
+});
+
+test("owner email review resolution is explicit and authorizes one numbered retry attempt", () => {
+  const sql = read(idempotencyMigrationPath);
+  const resolveRpc = sql.match(/create or replace function public\.resolve_admin_student_provisioning_email_review[\s\S]*?(?=revoke all on function public\.begin_admin_student_provisioning_email_dispatch)/i)?.[0] ?? "";
+  assert.doesNotMatch(resolveRpc, /auth\.users|raw_user_meta_data|raw_app_meta_data/i);
+  assert.match(resolveRpc, /p_owner_id is null/i);
+  assert.match(resolveRpc, /confirm_delivered[\s\S]*confirm_not_delivered/i);
+  assert.match(resolveRpc, /retry_authorized/i);
+  const beginRpc = sql.match(/create or replace function public\.begin_admin_student_provisioning_email_dispatch[\s\S]*?(?=create or replace function public\.finish_admin_student_provisioning_email_dispatch)/i)?.[0] ?? "";
+  assert.match(beginRpc, /email_dispatch_state = 'manual_review'[\s\S]*manual_review/i);
+  assert.match(beginRpc, /email_dispatch_state <> 'retry_authorized'/i);
+  assert.match(beginRpc, /v_attempt := v_operation\.email_dispatch_attempt \+ 1/i);
+  assert.match(beginRpc, /'\/email\/' \|\| v_attempt::text/i);
+  const control = read("services/studentProvisioningControlService.ts");
+  assert.match(control, /export async function resolveProvisioningEmailReview/);
+  assert.match(control, /"confirm_delivered" \| "confirm_not_delivered"/);
+  assert.match(control, /getCurrentAuth/);
+  assert.doesNotMatch(control, /export async function resolveProvisioningEmailReview\(input:\s*\{[\s\S]*ownerId:/);
+  assert.doesNotMatch(sql, /raw_user_meta_data|raw_app_meta_data|from auth\.users/i);
+});
+
+test("control service validates numbered dispatch and explicit owner resolution RPC outcomes", withServiceRole(async () => {
+  const calls = [];
+  const service = loadControlService(() => ({ rpc: async (name, args) => {
+    calls.push([name, args]);
+    if (name === "begin_admin_student_provisioning_email_dispatch") return { data: {
+      dispatch_state: "send", idempotency_key: "student-provisioning/operation-task7-123/email/2", attempt: 2,
+    }, error: null };
+    if (name === "finish_admin_student_provisioning_email_dispatch") return { data: { dispatch_state: "retryable" }, error: null };
+    return { data: { resolution_state: "retry_authorized" }, error: null };
+  } }));
+  const begin = await service.beginProvisioningEmailDispatch({ operationId: "operation-task7-123", leaseToken: "30000000-0000-4000-8000-000000000003" });
+  assert.equal(begin.attempt, 2);
+  assert.match(begin.idempotencyKey, /\/email\/2$/);
+  assert.equal((await service.finishProvisioningEmailDispatch({ operationId: "operation-task7-123", leaseToken: "30000000-0000-4000-8000-000000000003", state: "retryable" })).state, "retryable");
+  assert.equal((await service.resolveProvisioningEmailReview({ operationId: "operation-task7-123", resolution: "confirm_not_delivered" })).state, "retry_authorized");
+  assert.deepEqual(calls.map(([name]) => name), [
+    "begin_admin_student_provisioning_email_dispatch",
+    "finish_admin_student_provisioning_email_dispatch",
+    "resolve_admin_student_provisioning_email_review",
+  ]);
+}));
+
+test("owner email review uses the canonical resolved role and rejects user metadata alone", withServiceRole(async () => {
+  let rpcCalls = 0;
+  const createClient = () => ({ rpc: async () => {
+    rpcCalls += 1;
+    return { data: { resolution_state: "retry_authorized" }, error: null };
+  } });
+  const envOwner = loadControlService(createClient, async () => ({
+    user: { id: "20000000-0000-4000-8000-000000000002", user_metadata: {} }, isAdmin: true, adminRole: "owner",
+  }));
+  assert.equal((await envOwner.resolveProvisioningEmailReview({
+    operationId: "operation-task7-123", resolution: "confirm_not_delivered",
+  })).state, "retry_authorized");
+
+  const metadataOnly = loadControlService(createClient, async () => ({
+    user: { id: "20000000-0000-4000-8000-000000000003", user_metadata: { admin_role: "owner" } },
+    isAdmin: false,
+    adminRole: null,
+  }));
+  await assert.rejects(metadataOnly.resolveProvisioningEmailReview({
+    operationId: "operation-task7-123", resolution: "confirm_not_delivered",
+  }), (error) => error.code === "PROVISIONING_OWNER_REQUIRED");
+  assert.equal(rpcCalls, 1);
+}));
+
+test("paid enrollment provenance is preserved for both free and trial requests", () => {
+  const sql = read(idempotencyMigrationPath);
+  const rpc = sql.match(/create or replace function public\.provision_admin_student_enrollment[\s\S]*?(?=revoke all on function public\.provision_admin_student_enrollment)/i)?.[0] ?? "";
+  assert.match(rpc, /v_operation\.mode <> p_mode/i);
+  assert.match(rpc, /v_enrollment\.order_id is not null or v_enrollment\.metadata->>'access_kind' = 'paid'/i);
+  assert.match(rpc, /'access_kind', 'paid'[\s\S]*'requested_access_kind', p_mode/i);
+  assert.match(rpc, /v_outcome := 'already_paid'/i);
+  const paidBranch = rpc.match(/elsif v_enrollment\.order_id is not null[\s\S]*?v_outcome := 'already_paid'/i)?.[0] ?? "";
+  assert.doesNotMatch(paidBranch, /order_id\s*=|expires_at\s*=|status\s*=/i);
+});
+
+test("paid provisioning uses durable order identity, preserves an existing account, and sends once with a stable key", async () => {
+  const { service, dependencies, calls } = makeHarness();
+  const result = await service.provisionStudent(provisioningInput(), dependencies);
+  assert.equal(result.ok, true);
+  assert.equal(calls.filter(([name]) => name === "create-order").length, 1);
+  assert.equal(calls.filter(([name]) => name === "paid-account").length, 1);
+  assert.equal(calls.filter(([name]) => name === "paid-email").length, 1);
+  assert.equal(calls.filter(([name]) => name === "verify-paid-access").length, 1);
+  assert.equal(calls.find(([name]) => name === "create-order")[1].provisioningOperationId, "operation-task7-123");
+  assert.equal(calls.find(([name]) => name === "paid-account")[1].forcePasswordUpdate, false);
+  assert.equal(calls.find(([name]) => name === "paid-account")[1].preserveExistingAuth, true);
+  assert.equal(calls.find(([name]) => name === "paid-account")[1].provisioningOperationId, "operation-task7-123");
+  assert.equal(calls.find(([name]) => name === "paid-email")[1].idempotencyKey, "student-provisioning/operation-task7-123/email/1");
+  assert.equal(result.order.orderCode, "ORDER-100");
+  assert.equal(result.access.state, "granted");
+  assert.ok(result.temporaryCredential?.temporaryPassword);
+  const persisted = calls.filter(([name]) => name === "save").map(([, value]) => value.safeResult);
+  assert.doesNotMatch(JSON.stringify(persisted), /Temp-Secret|student@example\.com|0901234567/);
+});
+
+test("completed replay returns the safe result and performs no business side effect", async () => {
+  const safeResult = completedSafeResult();
+  const { service, dependencies, calls } = makeHarness({
+    claim: { state: "complete", operation: operationRow({ status: "completed", currentStep: "complete", safeResult, orderCode: "ORDER-100" }) },
+  });
+  const result = await service.provisionStudent(provisioningInput(), dependencies);
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.nextActions, []);
+  assert.equal(calls.length, 0);
+});
+
+test("retry after paid-order side effect reconciles by operation id instead of creating a duplicate", async () => {
+  const harness = makeHarness();
+  harness.dependencies.findOrderByOperationId = async () => harness.order;
+  await harness.service.provisionStudent(provisioningInput(), harness.dependencies);
+  assert.equal(harness.calls.filter(([name]) => name === "create-order").length, 0);
+});
+
+test("paid provisioning uses the real entitlement verifier and fails closed before email", async () => {
+  const harness = makeHarness({ overrides: { verifyPaidAccess: () => false } });
+  const result = await harness.service.provisionStudent(provisioningInput(), harness.dependencies);
+  assert.equal(result.ok, false);
+  assert.equal(result.access.reason, "PAID_ORDER_ACCESS_NOT_VERIFIED");
+  assert.deepEqual(result.nextActions, ["retry_access"]);
+  assert.equal(harness.calls.some(([name]) => name === "paid-email"), false);
+});
+
+test("a lost lease after order creation fails closed and the next worker reconciles the created order", async () => {
+  const first = makeHarness();
+  let saves = 0;
+  first.dependencies.saveOutcome = async (input) => {
+    saves += 1;
+    if (input.currentStep === "ensure_account") {
+      const error = new Error("PROVISIONING_OPERATION_LOST_LEASE");
+      error.code = "PROVISIONING_OPERATION_LOST_LEASE";
+      throw error;
+    }
+    return operationRow({ currentStep: input.currentStep, safeResult: input.safeResult });
+  };
+  await assert.rejects(first.service.provisionStudent(provisioningInput(), first.dependencies),
+    (error) => error.code === "PROVISIONING_OPERATION_LOST_LEASE");
+  assert.equal(first.calls.filter(([name]) => name === "create-order").length, 1);
+  assert.ok(saves >= 2);
+
+  const retry = makeHarness();
+  retry.dependencies.findOrderByOperationId = async () => retry.order;
+  const result = await retry.service.provisionStudent(provisioningInput(), retry.dependencies);
+  assert.equal(result.ok, true);
+  assert.equal(retry.calls.filter(([name]) => name === "create-order").length, 0);
+});
+
+test("atomic enrollment lease loss is fenced and never converted into an ordinary access failure", async () => {
+  const error = Object.assign(new Error("PROVISIONING_OPERATION_LOST_LEASE"), { code: "PROVISIONING_OPERATION_LOST_LEASE" });
+  const harness = makeHarness({ overrides: { provisionEnrollment: async () => { throw error; } } });
+  await assert.rejects(harness.service.provisionStudent(provisioningInput({ mode: "free" }), harness.dependencies),
+    (caught) => caught === error);
+  assert.equal(harness.calls.some(([name, value]) => name === "save" && value.status === "partial"), false);
+});
+
+test("free and trial never create revenue orders, upsert access, and trial requires future expiry", async () => {
+  for (const mode of ["free", "trial"]) {
+    const { service, dependencies, calls } = makeHarness();
+    const result = await service.provisionStudent(provisioningInput({
+      mode,
+      trialExpiresAt: mode === "trial" ? "2027-01-01T00:00:00.000Z" : undefined,
+    }), dependencies);
+    assert.equal(result.ok, true);
+    assert.equal(calls.some(([name]) => name === "create-order"), false);
+    assert.equal(calls.some(([name]) => name === "create-lead"), true);
+    const enrollment = calls.find(([name]) => name === "atomic-enrollment")[1];
+    assert.equal(enrollment.expiresAt, mode === "trial" ? "2027-01-01T00:00:00.000Z" : null);
+    assert.equal(enrollment.mode, mode);
+  }
+  const { service, dependencies } = makeHarness();
+  await assert.rejects(
+    service.provisionStudent(provisioningInput({ mode: "trial", trialExpiresAt: "2020-01-01T00:00:00.000Z" }), dependencies),
+    (error) => error.code === "PROVISIONING_VALIDATION_FAILED",
+  );
+});
+
+test("attempted provider failure is persisted truthfully as partial and requires review", async () => {
+  const { service, dependencies, calls } = makeHarness({ overrides: {
+    sendPaidEmail: async () => ({ ok: false, skipped: false, reason: "provider unavailable" }),
+  } });
+  const result = await service.provisionStudent(provisioningInput(), dependencies);
+  assert.equal(result.ok, false);
+  assert.equal(result.email.state, "failed");
+  assert.deepEqual(result.nextActions, ["review_email"]);
+  const finalization = calls.filter(([name]) => name === "finalize").at(-1)[1];
+  assert.equal(finalization.status, "partial");
+  assert.equal(finalization.safeResult.errorCode, "EMAIL_SEND_FAILED");
+});
+
+test("thrown access and email provider failures become stable partial outcomes", async () => {
+  const access = makeHarness({ overrides: { provisionEnrollment: async () => { throw new Error("raw database detail"); } } });
+  const accessResult = await access.service.provisionStudent(provisioningInput({ mode: "free" }), access.dependencies);
+  assert.equal(accessResult.access.state, "failed");
+  assert.deepEqual(accessResult.nextActions, ["retry_access"]);
+  assert.doesNotMatch(JSON.stringify(accessResult), /raw database detail/);
+
+  const email = makeHarness({ overrides: { sendPaidEmail: async () => { throw new Error("raw provider detail"); } } });
+  const emailResult = await email.service.provisionStudent(provisioningInput(), email.dependencies);
+  assert.equal(emailResult.email.state, "failed");
+  assert.deepEqual(emailResult.nextActions, ["review_email"]);
+  assert.doesNotMatch(JSON.stringify(emailResult), /raw provider detail/);
+});
+
+test("email provider success with a failed local marker remains truthful and retryable", async () => {
+  for (const markPaidEmailSent of [
+    async () => { throw new Error("database unavailable"); },
+    async () => ({ ok: false, error: "database unavailable" }),
+  ]) {
+    const harness = makeHarness({ overrides: { markPaidEmailSent } });
+    const result = await harness.service.provisionStudent(provisioningInput(), harness.dependencies);
+    assert.equal(result.ok, false);
+    assert.equal(result.email.state, "sent");
+    assert.equal(result.email.reason, "EMAIL_CONFIRMATION_PENDING");
+    assert.deepEqual(result.nextActions, ["retry_email"]);
+    assert.doesNotMatch(JSON.stringify(result), /database unavailable/);
+  }
+});
+
+test("definitive provider skip is retryable while ambiguous dispatch replay requires owner review", async () => {
+  const skipped = makeHarness({ overrides: { sendPaidEmail: async () => ({ ok: true, skipped: true, reason: "missing provider" }) } });
+  const skippedResult = await skipped.service.provisionStudent(provisioningInput(), skipped.dependencies);
+  assert.equal(skippedResult.ok, false);
+  assert.equal(skippedResult.email.reason, "EMAIL_RETRY_AVAILABLE");
+  assert.equal(skipped.calls.filter(([name]) => name === "finish-email-dispatch").at(-1)[1].state, "retryable");
+
+  const replay = makeHarness({ overrides: { beginEmailDispatch: async () => ({ state: "manual_review" }) } });
+  const replayResult = await replay.service.provisionStudent(provisioningInput(), replay.dependencies);
+  assert.equal(replayResult.email.reason, "EMAIL_MANUAL_REVIEW_REQUIRED");
+  assert.deepEqual(replayResult.nextActions, ["review_email"]);
+  assert.equal(replay.calls.some(([name]) => name === "paid-email"), false);
+});
+
+test("every attempted provider HTTP or network failure requires owner review", async () => {
+  for (const failure of [
+    { ok: false, skipped: false, reason: "HTTP 400" },
+    { ok: false, skipped: false, reason: "HTTP 409" },
+    { ok: false, skipped: false, reason: "HTTP 500" },
+  ]) {
+    const harness = makeHarness({ overrides: { sendPaidEmail: async () => failure } });
+    const result = await harness.service.provisionStudent(provisioningInput(), harness.dependencies);
+    assert.deepEqual(result.nextActions, ["review_email"]);
+    assert.equal(result.email.reason, "EMAIL_MANUAL_REVIEW_REQUIRED");
+    assert.equal(harness.calls.filter(([name]) => name === "finish-email-dispatch").at(-1)[1].state, "manual_review");
+  }
+  const network = makeHarness({ overrides: { sendPaidEmail: async () => { throw new Error("network timeout"); } } });
+  const result = await network.service.provisionStudent(provisioningInput(), network.dependencies);
+  assert.deepEqual(result.nextActions, ["review_email"]);
+});
+
+test("terminal audit and journal save are one lease-fenced database transaction", () => {
+  const sql = read(idempotencyMigrationPath);
+  const finalizer = sql.match(/create or replace function public\.finalize_admin_student_provisioning_operation[\s\S]*?(?=revoke all on function public\.finalize_admin_student_provisioning_operation)/i)?.[0] ?? "";
+  assert.match(finalizer, /for update/i);
+  assert.ok(finalizer.indexOf("for update") < finalizer.indexOf("clock_timestamp()"));
+  assert.match(finalizer, /lease_token is distinct from p_lease_token/i);
+  assert.match(finalizer, /lease_token is distinct from p_lease_token[\s\S]*'finalize_state', 'lost_lease'[\s\S]*insert into public\.activity_logs/i);
+  assert.match(finalizer, /insert into public\.activity_logs/i);
+  assert.match(finalizer, /not exists[\s\S]*operationId[\s\S]*outcomeStatus/i);
+  assert.match(finalizer, /update public\.admin_student_provisioning_operations/i);
+  assert.match(finalizer, /p_status = 'completed'[\s\S]*p_current_step <> 'complete'/i);
+  assert.match(sql, /revoke all on function public\.finalize_admin_student_provisioning_operation[\s\S]*from public, anon, authenticated/i);
+  assert.match(sql, /grant execute on function public\.finalize_admin_student_provisioning_operation[\s\S]*to service_role/i);
+  assert.doesNotMatch(read(orchestratorPath), /recordAudit|logProvisioningOutcomeAudit/);
+  assert.match(read(orchestratorPath), /finalizeOutcome/);
+});
+
+test("journal dispatch constraint requires a non-null state attempt key tuple", () => {
+  const sql = read(idempotencyMigrationPath);
+  assert.match(sql, /email_dispatch_state is not null[\s\S]*email_dispatch_attempt >= 1[\s\S]*email_dispatch_idempotency_key is not null[\s\S]*email_dispatch_idempotency_key ~/i);
+});
+
+test("invalid courses and custom passwords fail before operation claim", async () => {
+  for (const scenario of [
+    { input: provisioningInput({ courseSlugs: ["missing-course"] }), courses: [{ slug: "course-a", title: "Course A" }] },
+    { input: provisioningInput({ temporaryPassword: "UserChosenSecret" }), courses: [{ slug: "course-a", title: "Course A" }] },
+  ]) {
+    let claims = 0;
+    const harness = makeHarness({ overrides: {
+      getCourses: async () => scenario.courses,
+      claimOperation: async () => { claims += 1; throw new Error("must not claim"); },
+    } });
+    await assert.rejects(harness.service.provisionStudent(scenario.input, harness.dependencies),
+      (error) => error.code === "PROVISIONING_VALIDATION_FAILED");
+    assert.equal(claims, 0);
+  }
+});
+
+test("terminal outcomes use one no-PII atomic finalization", async () => {
+  const harness = makeHarness();
+  await harness.service.provisionStudent(provisioningInput(), harness.dependencies);
+  const terminalCalls = harness.calls.filter(([name]) => name === "finalize");
+  assert.equal(terminalCalls.length, 1);
+  assert.equal(terminalCalls[0][1].status, "completed");
+  assert.deepEqual(terminalCalls[0][1].courseSlugs, ["course-a"]);
+  assert.doesNotMatch(JSON.stringify(terminalCalls[0][1]), /student@example|090123|Temp-Secret/);
+  assert.equal(harness.calls.some(([name, value]) => name === "save" && value.status === "completed"), false);
+});
+
+test("an atomic finalization failure prevents a false completed result", async () => {
+  const harness = makeHarness({ overrides: { finalizeOutcome: async () => { throw new Error("finalizer unavailable"); } } });
+  await assert.rejects(harness.service.provisionStudent(provisioningInput(), harness.dependencies),
+    (error) => error.code === "PROVISIONING_STEP_FAILED" && !error.message.includes("finalizer unavailable"));
+  assert.equal(harness.calls.some(([name, value]) => name === "save" && value.status === "completed"), false);
+});
+
+test("atomic SQL preserves unlimited access, promotes expired trial to free, and marks in the same transaction", () => {
+  const sql = read(idempotencyMigrationPath);
+  const rpc = sql.match(/create or replace function public\.provision_admin_student_enrollment[\s\S]*?(?=revoke all on function public\.provision_admin_student_enrollment)/i)?.[0] ?? "";
+  assert.match(rpc, /p_mode = 'trial'[\s\S]*v_enrollment\.expires_at is null[\s\S]*v_outcome := 'already_unlimited'/i);
+  assert.match(rpc, /elsif p_mode = 'free'[\s\S]*status = 'active'[\s\S]*expires_at = null[\s\S]*'access_kind', 'free'/i);
+  assert.match(rpc, /insert into crm_v2\.enrollments[\s\S]*'provisioning_operation_id', p_operation_id/i);
+  const finalizer = sql.match(/create or replace function public\.finalize_admin_student_provisioning_operation[\s\S]*?(?=revoke all on function public\.finalize_admin_student_provisioning_operation)/i)?.[0] ?? "";
+  assert.match(finalizer, /'operationId',[\s\S]*'outcomeStatus',[\s\S]*'mode',[\s\S]*'courseSlugs'/i);
+  assert.doesNotMatch(finalizer, /student_email|student_phone|actor_email|temporary_password/i);
+  assert.doesNotMatch(read("services/studentProvisioningService.ts"), /crm_v2_lms_upsert_enrollment|mark_admin_student_provisioning_enrollment/);
+});
+
+test("atomic enrollment repairs its marker on retry and preserves unlimited access", async () => {
+  const { service, dependencies, calls } = makeHarness({ overrides: {
+    provisionEnrollment: async (input) => {
+      calls.push(["atomic-enrollment", input]);
+      return { id: "existing", outcome: "already_unlimited", accessKind: "free", expiresAt: null };
+    },
+  } });
+  const result = await service.provisionStudent(provisioningInput({ mode: "trial", trialExpiresAt: "2027-01-01T00:00:00.000Z" }), dependencies);
+  assert.equal(result.access.state, "existing");
+  assert.equal(calls.filter(([name]) => name === "atomic-enrollment").length, 1);
+});
+
+test("orchestrator source fences every journal save and renews before external calls", () => {
+  const source = read(orchestratorPath);
+  assert.match(source, /leaseToken/);
+  assert.match(source, /saveOutcome[\s\S]*leaseToken/);
+  assert.match(source, /renewLease/);
+  assert.doesNotMatch(source, /console\.(log|info|debug)/);
+});
+
+test("LMS entitlement denies expired trials and allows future trials", () => {
+  const compiled = ts.transpileModule(read("services/lmsService.ts"), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, esModuleInterop: true },
+  }).outputText;
+  const cjsModule = { exports: {} };
+  new Function("exports", "module", "require", compiled)(cjsModule.exports, cjsModule, (specifier) => {
+    if (specifier === "@/lib/crm-v2/normalize") return { normalizeEmail: (value) => String(value ?? "").trim().toLowerCase() };
+    return {};
+  });
+  const { isEnrollmentCurrentlyActive } = cjsModule.exports;
+  const now = Date.parse("2026-07-11T00:00:00.000Z");
+  assert.equal(isEnrollmentCurrentlyActive({ status: "active", expiresAt: "2026-07-10T23:59:59.000Z" }, now), false);
+  assert.equal(isEnrollmentCurrentlyActive({ status: "active", expiresAt: "2026-07-12T00:00:00.000Z" }, now), true);
+  assert.equal(isEnrollmentCurrentlyActive({ status: "revoked", expiresAt: "2026-07-12T00:00:00.000Z" }, now), false);
+});
+
+test("student provisioning email adapters pass Resend idempotency keys", () => {
+  assert.match(read("lib/notifications/payment-success-email.ts"), /"Idempotency-Key": options\.idempotencyKey/);
+  assert.match(read("lib/notifications/student-access-email.ts"), /"Idempotency-Key": idempotencyKey/);
+});

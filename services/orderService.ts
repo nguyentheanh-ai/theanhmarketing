@@ -116,6 +116,7 @@ export type CreatePaymentOrderInput = {
 
 export type CreateManualPaidOrderInput = CreatePaymentOrderInput & {
   note?: string;
+  provisioningOperationId?: string;
 };
 
 export type ConfirmPaymentInput = {
@@ -444,6 +445,11 @@ export async function createManualPaidOrder(input: CreateManualPaidOrderInput) {
     throw new Error("Chưa cấu hình Supabase để cấp quyền học viên.");
   }
 
+  if (input.provisioningOperationId) {
+    const existing = await findManualPaidOrderByProvisioningOperationId(input.provisioningOperationId);
+    if (existing) return existing;
+  }
+
   const selectedCourses = await resolveCourses(input);
 
   if (selectedCourses.length === 0) {
@@ -475,6 +481,7 @@ export async function createManualPaidOrder(input: CreateManualPaidOrderInput) {
       paid_at: paidAt,
       order_items: orderItems,
       purchase_event_sent: false,
+      provisioning_operation_id: input.provisioningOperationId ?? null,
       ...attributionToDbColumns(attribution),
     })
     .select(orderSelectFields)
@@ -499,11 +506,16 @@ export async function createManualPaidOrder(input: CreateManualPaidOrderInput) {
       payment_method: "manual-admin",
       payment_qr_url: "",
       paid_at: paidAt,
+      provisioning_operation_id: input.provisioningOperationId ?? null,
     })
     .select(orderSelectFields)
     .single();
 
   if (fallbackInsert.error || !fallbackInsert.data) {
+    if (input.provisioningOperationId) {
+      const existing = await findManualPaidOrderByProvisioningOperationId(input.provisioningOperationId);
+      if (existing) return existing;
+    }
     throw new Error(
       fallbackInsert.error?.message ?? firstInsert.error?.message ?? "Không cấp được quyền học viên.",
     );
@@ -828,6 +840,20 @@ export async function confirmPaymentManually(input: ConfirmPaymentInput): Promis
   if (error || !data) throw new Error(error?.message ?? "Khong tao duoc don thanh toan.");
   await markLeadPaid(lead?.id ?? null, orderCode, paidAt);
   return { order: mapDbOrder(data as DbOrder), wasAlreadyPaid: false };
+}
+
+export async function findManualPaidOrderByProvisioningOperationId(operationId: string) {
+  const cleanOperationId = operationId.trim();
+  if (!cleanOperationId) return null;
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Chưa cấu hình Supabase để kiểm tra đơn provisioning.");
+  const { data, error } = await supabase
+    .from("orders")
+    .select(orderSelectFields)
+    .eq("provisioning_operation_id", cleanOperationId)
+    .maybeSingle();
+  if (error) throw new Error(`Không kiểm tra được đơn provisioning: ${error.message}`);
+  return data ? mapDbOrder(data as DbOrder) : null;
 }
 
 export async function expirePendingPaymentOrders(now = new Date()) {

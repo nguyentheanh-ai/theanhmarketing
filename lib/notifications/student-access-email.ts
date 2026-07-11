@@ -3,6 +3,7 @@ import { buildEmailLink } from "@/lib/notifications/email-link-bridge";
 type StudentAccessEmailOptions = {
   from?: string;
   siteUrl?: string;
+  idempotencyKey?: string;
   account?: {
     email: string;
     temporaryPassword?: string | null;
@@ -117,7 +118,7 @@ function renderAccountBlock(account?: StudentAccessEmailOptions["account"], mode
     </table>`;
 }
 
-async function sendPayload(payload: ResendEmailPayload, fallbackReason: string) {
+async function sendPayload(payload: ResendEmailPayload, fallbackReason: string, idempotencyKey?: string) {
   const apiKey = process.env.RESEND_API_KEY?.trim().replace(/^\uFEFF/, "") ?? "";
 
   if (!apiKey) {
@@ -130,6 +131,7 @@ async function sendPayload(payload: ResendEmailPayload, fallbackReason: string) 
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json; charset=utf-8",
+        ...(idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {}),
       },
       body: Buffer.from(JSON.stringify(payload), "utf8"),
     });
@@ -139,7 +141,8 @@ async function sendPayload(payload: ResendEmailPayload, fallbackReason: string) 
       return { ok: false, skipped: false, reason: text || fallbackReason, status: response.status };
     }
 
-    return { ok: true, skipped: false, reason: null };
+    const result = typeof response.json === "function" ? await response.json().catch(() => null) as { id?: unknown } | null : null;
+    return { ok: true, skipped: false, reason: null, resendEmailId: typeof result?.id === "string" ? result.id : null };
   } catch (error) {
     return {
       ok: false,
@@ -259,5 +262,5 @@ export async function sendStudentAccessEmail(
   }
 
   const payload = buildStudentAccessEmailPayload(input, options);
-  return sendPayload(payload, "Failed to send student access email.");
+  return sendPayload(payload, "Failed to send student access email.", options.idempotencyKey);
 }

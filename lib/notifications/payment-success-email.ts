@@ -5,6 +5,7 @@ type PaymentEmailOptions = {
   from?: string;
   siteUrl?: string;
   force?: boolean;
+  idempotencyKey?: string;
   account?: {
     email: string;
     temporaryPassword?: string | null;
@@ -764,6 +765,7 @@ export async function sendPaymentSuccessEmail(
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
+        ...(options.idempotencyKey ? { "Idempotency-Key": options.idempotencyKey } : {}),
       },
       body: JSON.stringify(payload),
     });
@@ -772,6 +774,8 @@ export async function sendPaymentSuccessEmail(
       const errorText = await response.text();
       return { ok: false, skipped: false, reason: errorText || response.statusText };
     }
+    const result = typeof response.json === "function" ? await response.json().catch(() => null) as { id?: unknown } | null : null;
+    return { ok: true, skipped: false, reason: null, resendEmailId: typeof result?.id === "string" ? result.id : null };
   } catch (error) {
     return {
       ok: false,
@@ -780,7 +784,6 @@ export async function sendPaymentSuccessEmail(
     };
   }
 
-  return { ok: true, skipped: false, reason: null };
 }
 
 export async function sendPaymentFailedEmail(

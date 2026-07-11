@@ -15,6 +15,7 @@ export type LeadInput = {
   source?: string;
   attribution?: AttributionInput;
   syncGoogleSheet?: boolean;
+  provisioningOperationId?: string;
 };
 
 export const leadSaleStatuses = ["Chưa liên hệ", "Đã liên hệ", "Đã liên hệ lần 2", "Đã liên hệ lần 3", "K nhu cầu"] as const;
@@ -413,6 +414,11 @@ export async function createLeadAdmin(input: LeadInput) {
     return { ok: false, fallback: true, error: "Supabase env is missing" };
   }
 
+  if (input.provisioningOperationId) {
+    const existing = await findLeadByProvisioningOperationId(input.provisioningOperationId);
+    if (existing) return { ok: true, fallback: false, error: null, lead: existing };
+  }
+
   const attribution = normalizeAttribution(input.attribution);
   const insertPayload = {
     name: input.name,
@@ -423,6 +429,7 @@ export async function createLeadAdmin(input: LeadInput) {
     source: input.source ?? attribution.source,
     status: "new",
     sale_status: "Chưa liên hệ",
+    provisioning_operation_id: input.provisioningOperationId ?? null,
   };
 
   Object.assign(insertPayload, {
@@ -442,12 +449,17 @@ export async function createLeadAdmin(input: LeadInput) {
         email: input.email ?? "",
         message: input.message ?? "",
         source: input.source ?? attribution.source,
+        provisioning_operation_id: input.provisioningOperationId ?? null,
       })
       .select(fallbackLeadSelectFields)
       .single();
   }
 
   if (insert.error || !insert.data) {
+    if (input.provisioningOperationId) {
+      const existing = await findLeadByProvisioningOperationId(input.provisioningOperationId);
+      if (existing) return { ok: true, fallback: false, error: null, lead: existing };
+    }
     return { ok: false, fallback: true, error: insert.error?.message ?? "Could not insert lead" };
   }
 
@@ -493,6 +505,20 @@ export async function createLeadAdmin(input: LeadInput) {
   }
 
   return { ok: true, fallback: false, error: null, lead, sheetSync };
+}
+
+export async function findLeadByProvisioningOperationId(operationId: string) {
+  const cleanOperationId = operationId.trim();
+  if (!cleanOperationId) return null;
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Chưa cấu hình Supabase để kiểm tra lead provisioning.");
+  const { data, error } = await supabase
+    .from("leads")
+    .select(leadSelectFields)
+    .eq("provisioning_operation_id", cleanOperationId)
+    .maybeSingle();
+  if (error) throw new Error(`Không kiểm tra được lead provisioning: ${error.message}`);
+  return data ? mapDbLead(data as DbLead, [], new Map()) : null;
 }
 
 export async function updateLeadAdmin(

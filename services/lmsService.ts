@@ -21,6 +21,7 @@ import {
   MAX_COMMAND_CENTER_SOURCE_ROWS,
   type CommandCenterAnalysisWindow,
 } from "@/lib/admin/command-center-source";
+import { ProvisioningOperationLostLeaseError } from "@/services/studentProvisioningOperationService";
 
 type SupabaseClient = NonNullable<ReturnType<typeof createSupabaseAdminClient>>;
 type Row = Record<string, unknown>;
@@ -944,6 +945,42 @@ export async function addLmsEnrollment(input: {
   if (error) throw new Error(`Không thêm được học viên vào khóa: ${error.message}`);
   return asRecord(data);
 }
+
+export async function provisionLmsEnrollmentAtomically(input: {
+  operationId: string;
+  leaseToken: string;
+  mode: "free" | "trial";
+  studentName: string;
+  email: string;
+  phone: string;
+  userId: string | null;
+  courseSlug: string;
+  expiresAt: string | null;
+}) {
+  const client = getClientOrThrow();
+  const course = await findCourseRow(client, input.courseSlug);
+  const { data, error } = await client.rpc("provision_admin_student_enrollment", {
+    p_operation_id: input.operationId,
+    p_lease_token: input.leaseToken,
+    p_course_id: text(course.id), p_course_slug: text(course.slug), p_course_title: text(course.title),
+    p_student_name: cleanText(input.studentName, 160), p_email: cleanEmail(input.email), p_phone: cleanPhone(input.phone),
+    p_user_id: isUuid(input.userId) ? input.userId : null, p_mode: input.mode, p_expires_at: input.expiresAt,
+  });
+  if (error) throw new Error(`Không cấp được quyền học nguyên tử: ${error.message}`);
+  const row = asRecord(data);
+  const outcome = text(row.outcome);
+  if (outcome === "lost_lease") throw new ProvisioningOperationLostLeaseError();
+  const accessKind = text(row.access_kind);
+  if (!isUuid(text(row.id)) || !["granted", "already_unlimited", "already_paid"].includes(outcome)
+      || !["paid", "free", "trial"].includes(accessKind)
+      || text(row.provisioning_operation_id) !== input.operationId) {
+    throw new Error("Kết quả cấp quyền học không hợp lệ.");
+  }
+  if (input.mode === "trial" && outcome === "already_unlimited" && accessKind === "trial") {
+    throw new Error("Kết quả bảo toàn quyền không giới hạn không hợp lệ.");
+  }
+  return { id: text(row.id), outcome: outcome as "granted" | "already_unlimited" | "already_paid", accessKind, expiresAt: text(row.expires_at) || null };
+}
 export async function updateLmsEnrollment(input: {
   enrollmentId: string;
   status?: LmsEnrollmentStatus;
@@ -979,13 +1016,20 @@ function findMatchingEnrollments(
   for (const course of courses) {
     if (input.courseSlug && course.slug !== input.courseSlug) continue;
     for (const enrollment of course.enrollments) {
-      if (!enrollmentAccessStatuses.has(enrollment.status)) continue;
+      if (!isEnrollmentCurrentlyActive(enrollment)) continue;
       const matchesUser = Boolean(input.userId && enrollment.userId === input.userId);
       const matchesEmail = Boolean(normalizedEmail && normalizeEmail(enrollment.email) === normalizedEmail);
       if (matchesUser || matchesEmail) rows.set(enrollment.id, enrollment);
     }
   }
   return Array.from(rows.values());
+}
+
+export function isEnrollmentCurrentlyActive(enrollment: Pick<LmsEnrollment, "status" | "expiresAt">, now = Date.now()) {
+  if (!enrollmentAccessStatuses.has(enrollment.status)) return false;
+  if (!enrollment.expiresAt) return true;
+  const expiry = Date.parse(enrollment.expiresAt);
+  return Number.isFinite(expiry) && expiry > now;
 }
 function activePublishedCourses(courses: LmsCourse[]) {
   return courses.filter((course) => course.status === "published");
