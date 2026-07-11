@@ -59,15 +59,23 @@ test("crm v2 LMS uses a real shared service instead of placeholder UI", () => {
 
 test("course management uses a progressive Course Hub and dedicated workspace", () => {
   assert.ok(exists("app/admin/crm-v2/courses/page.tsx"), "Course Hub route must exist");
-  assert.ok(exists("app/admin/crm-v2/courses/[courseSlug]/page.tsx"), "dedicated course workspace route must exist");
+  assert.ok(exists("app/admin/course-studio/[courseSlug]/page.tsx"), "focused course studio route must exist outside the CRM shell");
+  assert.ok(exists("app/admin/crm-v2/courses/[courseSlug]/page.tsx"), "legacy course workspace route must remain as a compatibility redirect");
   assert.ok(exists("components/crm-v2/course-hub.tsx"), "Course Hub component must exist");
 
   const hub = read("components/crm-v2/course-hub.tsx");
+  const studioPage = read("app/admin/course-studio/[courseSlug]/page.tsx");
+  const legacyWorkspace = read("app/admin/crm-v2/courses/[courseSlug]/page.tsx");
   const manager = read("components/crm-v2/lms-management-client.tsx");
   const studentsClient = read("components/crm-v2/students-page-client.tsx");
 
   assert.match(hub, /create_course/, "Course Hub must create real courses");
-  assert.match(hub, /\/admin\/crm-v2\/courses\/\$\{/, "Course Hub must open a dedicated workspace");
+  assert.match(hub, /\/admin\/course-studio\/\$\{/, "Course Hub must open the focused Course Studio route");
+  assert.match(hub, /target="_blank"/, "existing courses must open Course Studio in a new browser tab");
+  assert.match(studioPage, /requireAdminAuth/, "Course Studio must enforce owner auth in the server route");
+  assert.match(studioPage, /CourseLmsManager[\s\S]*studioMode/, "Course Studio must render the focused manager mode");
+  assert.doesNotMatch(studioPage, /CrmShell/, "Course Studio must not render the CRM shell");
+  assert.match(legacyWorkspace, /redirect\(/, "legacy CRM workspace URL must redirect to Course Studio");
   assert.doesNotMatch(manager, /function CourseListPanel/, "course list must not compete with the editor");
   assert.doesNotMatch(manager, /function EnrollmentFormModal/, "course workspace must not bypass account provisioning");
   assert.doesNotMatch(manager, /action:\s*"add_enrollment"/, "course UI must not create incomplete students");

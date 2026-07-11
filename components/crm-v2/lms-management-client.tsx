@@ -237,7 +237,7 @@ function getFirstLessonHref(course: LmsCourse) {
   return firstLesson ? `/learn/${course.slug}/${firstLesson.id}` : `/khoa-hoc/${course.slug}`;
 }
 
-export function CourseLmsManager({ lmsSnapshot }: { lmsSnapshot: AdminLmsSnapshot }) {
+export function CourseLmsManager({ lmsSnapshot, studioMode = false }: { lmsSnapshot: AdminLmsSnapshot; studioMode?: boolean }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [message, setMessage] = useState("");
@@ -280,14 +280,14 @@ export function CourseLmsManager({ lmsSnapshot }: { lmsSnapshot: AdminLmsSnapsho
   };
 
   return (
-    <div className="space-y-4">
+    <div className={studioMode ? "min-h-screen space-y-4 bg-slate-100 p-4 lg:p-6" : "space-y-4"}>
       <PageHeader eyebrow="LMS · Course Workspace" title={selectedCourse?.title || "Khóa học"} />
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
         <p className="text-sm font-bold text-blue-950">Chuyển tự do giữa các bước — không bắt buộc hoàn thành theo thứ tự.</p>
         <SaveStateBadge state={saveState} />
       </div>
       <ActionMessage message={message || lmsSnapshot.message || ""} />
-      <Link className="inline-flex min-h-10 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 hover:bg-slate-50" href="/admin/crm-v2/courses">← Tất cả khóa học</Link>
+      <Link className="inline-flex min-h-10 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 hover:bg-slate-50" href="/admin/crm-v2/courses">← Về Course Hub</Link>
       <div className="min-w-0">
         <div className="min-w-0 space-y-4">
           {selectedCourse ? (

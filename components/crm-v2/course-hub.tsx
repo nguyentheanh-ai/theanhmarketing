@@ -42,7 +42,9 @@ export function CourseHub({ snapshot }: { snapshot: AdminLmsSnapshot }) {
       });
       const result = (await response.json().catch(() => null)) as { ok?: boolean; message?: string; course?: { slug?: string } } | null;
       if (!response.ok || !result?.ok || !result.course?.slug) throw new Error(result?.message || "Không tạo được khóa học.");
-      router.push(`/admin/crm-v2/courses/${result.course.slug}`);
+      window.open(`/admin/course-studio/${result.course.slug}`, "_blank", "noopener,noreferrer");
+      setCreating(false);
+      router.refresh();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Không tạo được khóa học.");
     } finally {
@@ -65,7 +67,7 @@ export function CourseHub({ snapshot }: { snapshot: AdminLmsSnapshot }) {
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {courses.map((course) => (
-          <Link className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md" href={`/admin/crm-v2/courses/${course.slug}`} key={course.id}>
+          <Link className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md" href={`/admin/course-studio/${course.slug}`} key={course.id} rel="noopener noreferrer" target="_blank">
             <div className="flex items-start justify-between gap-3">
               <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-700"><BookOpen className="size-5" /></span>
               <span className={`rounded-full px-2.5 py-1 text-xs font-black ${course.status === "published" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{course.status === "published" ? "Đang xuất bản" : "Bản nháp"}</span>
