@@ -1,5 +1,47 @@
 # Feature Map - theanh-main
 
+## Solo Admin Command Center
+
+Description: Owner-focused operating view for paid revenue, orders, leads, student growth, access health and the small set of actions that need attention.
+
+Routes: `/admin`, `/admin/dashboard`, `/admin/viec-can-xu-ly`, `/admin/bao-cao`, `GET /api/admin/reports/export`.
+
+Main files: `lib/admin/solo-command-center.ts`, `services/adminCommandCenterService.ts`, `components/admin/solo-command-center/command-center-dashboard.tsx`, `components/admin/solo-command-center/command-center-charts.tsx`, `components/admin/solo-command-center/priority-queue.tsx`.
+
+Chart groups: paid revenue by day, order status, paid revenue by course, lead-to-student funnel, student growth by paid/free/trial, and access health.
+
+Data: `public.orders`, `public.leads`, official course catalog, `crm_v2.enrollments`, bounded `public.activity_logs`.
+
+Migration/RPC: `supabase/migrations/20260711100000_command_center_reporting.sql` provides the bounded service-role `crm_v2_command_center_enrollments_page` reader. It must be compiled, verified and applied before this command-center build can use LMS reporting in preview/production.
+
+Search: `buildSoloCommandCenterModel`, `getSoloCommandCenterModel`, `PriorityQueue`, `CommandCenterCharts`, `resolveCommandCenterRange`.
+
+Guard: never infer revenue from free/trial access; never synthesize leads; preserve Vietnam calendar boundaries; fail each source independently; never put contact PII in task text or URLs; do not replace bounded reads with workspace-wide or unpaginated scans.
+
+## Lazy student activity timeline
+
+Route: `POST /api/admin/students/activity` with one student email in a bounded JSON body.
+
+Main files: `components/admin/student-activity-timeline.tsx`, `services/activityLogService.ts`, `app/api/admin/students/activity/route.ts`.
+
+Guard: initial student-list render must not issue per-row activity requests. Timeline opens on demand, selects only allowlisted fields, returns at most 20 records and aborts stale/cross-student responses.
+
+## Admin student provisioning orchestration
+
+Description: Safely coordinate paid, free, or trial account creation, access grants, email dispatch, and replay recovery through one durable operation journal.
+
+Routes: `/admin/hoc-vien?add_student=1`, `POST /api/admin/students/grant`, `GET /api/admin/students/provisioning-status`, `POST /api/admin/students/provisioning-review`.
+
+Main files: `components/admin/student-provisioning-wizard.tsx`, `lib/admin/student-provisioning-request.ts`, `services/studentProvisioningService.ts`, `services/studentProvisioningOperationService.ts`, `services/studentProvisioningControlService.ts`, `services/studentAccountService.ts`, `services/lmsService.ts`.
+
+Database: `public.admin_student_provisioning_operations`, `public.orders`, `public.leads`, `public.activity_logs`, `crm_v2.enrollments`.
+
+Migration: after the reporting migration, apply `supabase/migrations/20260711110000_admin_student_provisioning_operations.sql`, then `supabase/migrations/20260711120000_student_provisioning_idempotency.sql`.
+
+Search: `StudentProvisioningWizard`, `provisionStudent`, `finalizeProvisioningOutcome`, `manual_review`, `resolveProvisioningEmailReview`, `finalize_admin_student_provisioning_operation`.
+
+Guard: the create route accepts strict bounded JSON and derives its actor from the authenticated session. It never accepts or returns a password. Never retry an attempted/ambiguous email provider call automatically; owner review must use the canonical current auth role and one of the two explicit decisions. Never finalize without the current operation lease. Apply the pending migration before enabling this flow in production.
+
 ## Authentication and account recovery
 
 Routes: `/dang-nhap`, `/dang-ky`, `/quen-mat-khau`, `/doi-mat-khau`, `/api/auth/forgot-password`, `/api/auth/recovery/confirm`.

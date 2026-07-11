@@ -1,6 +1,7 @@
 import { fallbackLeads } from "@/data/platform";
 import { syncLeadToGoogleSheet } from "@/lib/notifications/google-sheets";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { collectCommandCenterPages, type CommandCenterAnalysisWindow } from "@/lib/admin/command-center-source";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { attributionToDbColumns, normalizeAttribution, type Attribution, type AttributionInput } from "@/lib/tracking/attribution";
 import { logStudentActivity } from "@/services/activityLogService";
@@ -14,6 +15,7 @@ export type LeadInput = {
   source?: string;
   attribution?: AttributionInput;
   syncGoogleSheet?: boolean;
+  provisioningOperationId?: string;
 };
 
 export const leadSaleStatuses = ["Chưa liên hệ", "Đã liên hệ", "Đã liên hệ lần 2", "Đã liên hệ lần 3", "K nhu cầu"] as const;
@@ -47,6 +49,13 @@ export type LeadItem = {
   resendEmailCount: number;
   lastResendEmailAt?: string | null;
   attribution?: Attribution;
+};
+
+export type CommandCenterLeadSummary = {
+  id: string;
+  email: string | null;
+  phone: string | null;
+  createdAt: string;
 };
 
 export type LeadEmailLog = {
@@ -405,6 +414,11 @@ export async function createLeadAdmin(input: LeadInput) {
     return { ok: false, fallback: true, error: "Supabase env is missing" };
   }
 
+  if (input.provisioningOperationId) {
+    const existing = await findLeadByProvisioningOperationId(input.provisioningOperationId);
+    if (existing) return { ok: true, fallback: false, error: null, lead: existing };
+  }
+
   const attribution = normalizeAttribution(input.attribution);
   const insertPayload = {
     name: input.name,
@@ -415,6 +429,7 @@ export async function createLeadAdmin(input: LeadInput) {
     source: input.source ?? attribution.source,
     status: "new",
     sale_status: "Chưa liên hệ",
+    provisioning_operation_id: input.provisioningOperationId ?? null,
   };
 
   Object.assign(insertPayload, {
@@ -434,12 +449,17 @@ export async function createLeadAdmin(input: LeadInput) {
         email: input.email ?? "",
         message: input.message ?? "",
         source: input.source ?? attribution.source,
+        provisioning_operation_id: input.provisioningOperationId ?? null,
       })
       .select(fallbackLeadSelectFields)
       .single();
   }
 
   if (insert.error || !insert.data) {
+    if (input.provisioningOperationId) {
+      const existing = await findLeadByProvisioningOperationId(input.provisioningOperationId);
+      if (existing) return { ok: true, fallback: false, error: null, lead: existing };
+    }
     return { ok: false, fallback: true, error: insert.error?.message ?? "Could not insert lead" };
   }
 
@@ -485,6 +505,20 @@ export async function createLeadAdmin(input: LeadInput) {
   }
 
   return { ok: true, fallback: false, error: null, lead, sheetSync };
+}
+
+export async function findLeadByProvisioningOperationId(operationId: string) {
+  const cleanOperationId = operationId.trim();
+  if (!cleanOperationId) return null;
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Chưa cấu hình Supabase để kiểm tra lead provisioning.");
+  const { data, error } = await supabase
+    .from("leads")
+    .select(leadSelectFields)
+    .eq("provisioning_operation_id", cleanOperationId)
+    .maybeSingle();
+  if (error) throw new Error(`Không kiểm tra được lead provisioning: ${error.message}`);
+  return data ? mapDbLead(data as DbLead, [], new Map()) : null;
 }
 
 export async function updateLeadAdmin(
@@ -575,11 +609,44 @@ async function createLeadFromOrderSaleStatus(orderCode: string, saleStatus: Lead
   };
 }
 
-export async function getLeads(options: { includeFallback?: boolean } = {}): Promise<LeadItem[]> {
+export async function getCommandCenterLeadsStrict(window: CommandCenterAnalysisWindow): Promise<CommandCenterLeadSummary[]> {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Command center lead source is unavailable");
+
+  const rows = await collectCommandCenterPages({
+    getId: (lead: { id: string }) => lead.id,
+    fetchPage: async ({ offset, limit }) => {
+      const { data, error, count } = await supabase
+        .from("leads")
+        .select("id,email,phone,created_at", { count: "exact" })
+        .is("deleted_at", null)
+        .gte("created_at", window.analysisFrom)
+        .lt("created_at", window.analysisToExclusive)
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true })
+        .range(offset, offset + limit);
+      if (error) throw new Error(`Could not read command center leads: ${error.message}`);
+      if (count === null) throw new Error("Command center lead source count is unavailable");
+      const rows = (data ?? []) as Array<{ id: string; email: string | null; phone: string | null; created_at: string }>;
+      const pageRows = rows.slice(0, limit);
+      return { rows: pageRows, hasMore: offset + pageRows.length < count };
+    },
+  });
+  return rows.map((lead) => ({
+    id: lead.id,
+    email: lead.email,
+    phone: lead.phone,
+    createdAt: lead.created_at,
+  }));
+}
+
+export async function getLeads(options: { includeFallback?: boolean; strict?: boolean } = {}): Promise<LeadItem[]> {
   const includeFallback = options.includeFallback ?? false;
+  const strict = options.strict ?? false;
   const supabase = createSupabaseAdminClient();
 
   if (!supabase) {
+    if (strict) throw new Error("Lead source is unavailable");
     return includeFallback
       ? fallbackLeads.map((lead) => ({
           ...lead,
@@ -607,7 +674,12 @@ export async function getLeads(options: { includeFallback?: boolean } = {}): Pro
     error = fallback.error;
   }
 
+  if (error && strict) {
+    throw new Error(`Could not read leads: ${error.message}`);
+  }
+
   if (error || !data || data.length === 0) {
+    if (strict) return [];
     if (!includeFallback) {
       return [];
     }
@@ -621,7 +693,7 @@ export async function getLeads(options: { includeFallback?: boolean } = {}): Pro
   }
 
   const [orders, emailLogsByLeadId] = await Promise.all([
-    getPaymentOrders({ includeFallback: false }),
+    getPaymentOrders({ includeFallback: false, strict }),
     getEmailLogsByLeadId(),
   ]);
 

@@ -14,6 +14,11 @@ import {
 } from "@/lib/payments/sepay";
 import { attributionToDbColumns, normalizeAttribution, type Attribution, type AttributionInput } from "@/lib/tracking/attribution";
 import { getCourseBySlug, getCourses } from "@/services/courseService";
+import {
+  collectCommandCenterPages,
+  MAX_COMMAND_CENTER_SOURCE_ROWS,
+  type CommandCenterAnalysisWindow,
+} from "@/lib/admin/command-center-source";
 
 export type OrderStatus = "pending" | "paid" | "failed" | "expired";
 
@@ -111,6 +116,7 @@ export type CreatePaymentOrderInput = {
 
 export type CreateManualPaidOrderInput = CreatePaymentOrderInput & {
   note?: string;
+  provisioningOperationId?: string;
 };
 
 export type ConfirmPaymentInput = {
@@ -439,6 +445,11 @@ export async function createManualPaidOrder(input: CreateManualPaidOrderInput) {
     throw new Error("Chưa cấu hình Supabase để cấp quyền học viên.");
   }
 
+  if (input.provisioningOperationId) {
+    const existing = await findManualPaidOrderByProvisioningOperationId(input.provisioningOperationId);
+    if (existing) return existing;
+  }
+
   const selectedCourses = await resolveCourses(input);
 
   if (selectedCourses.length === 0) {
@@ -470,6 +481,7 @@ export async function createManualPaidOrder(input: CreateManualPaidOrderInput) {
       paid_at: paidAt,
       order_items: orderItems,
       purchase_event_sent: false,
+      provisioning_operation_id: input.provisioningOperationId ?? null,
       ...attributionToDbColumns(attribution),
     })
     .select(orderSelectFields)
@@ -494,11 +506,16 @@ export async function createManualPaidOrder(input: CreateManualPaidOrderInput) {
       payment_method: "manual-admin",
       payment_qr_url: "",
       paid_at: paidAt,
+      provisioning_operation_id: input.provisioningOperationId ?? null,
     })
     .select(orderSelectFields)
     .single();
 
   if (fallbackInsert.error || !fallbackInsert.data) {
+    if (input.provisioningOperationId) {
+      const existing = await findManualPaidOrderByProvisioningOperationId(input.provisioningOperationId);
+      if (existing) return existing;
+    }
     throw new Error(
       fallbackInsert.error?.message ?? firstInsert.error?.message ?? "Không cấp được quyền học viên.",
     );
@@ -539,13 +556,15 @@ export async function getPaymentOrder(orderCode: string) {
   return mapDbOrder(data as DbOrder);
 }
 
-export async function getPaymentOrders(options: { includeFallback?: boolean } = {}) {
+export async function getPaymentOrders(options: { includeFallback?: boolean; strict?: boolean } = {}) {
   const includeFallback = options.includeFallback ?? false;
+  const strict = options.strict ?? false;
   const supabase = process.env.SUPABASE_SERVICE_ROLE_KEY
     ? createSupabaseAdminClient()
     : await (await import("@/lib/auth/session")).createSupabaseAuthServerClient();
 
   if (!supabase) {
+    if (strict) throw new Error("Payment order source is unavailable");
     return includeFallback ? getFallbackOrders() : [];
   }
 
@@ -565,9 +584,14 @@ export async function getPaymentOrders(options: { includeFallback?: boolean } = 
     error = fallback.error;
   }
 
+  if (error && strict) {
+    throw new Error(`Could not read payment orders: ${error.message}`);
+  }
+
   const rows = (data ?? []) as DbOrder[];
 
   if (error || rows.length === 0) {
+    if (strict) return [];
     if (!includeFallback) {
       return [];
     }
@@ -576,6 +600,56 @@ export async function getPaymentOrders(options: { includeFallback?: boolean } = 
   }
 
   return rows.map(mapDbOrder);
+}
+
+export async function getCommandCenterOrdersStrict(window: CommandCenterAnalysisWindow): Promise<PaymentOrder[]> {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Command center order source is unavailable");
+  const client = supabase;
+
+  async function readPage(
+    kind: "created" | "paid" | "stale-pending",
+    { offset, limit }: { offset: number; limit: number },
+  ) {
+    let query = client.from("orders").select(orderBaseSelectFields, { count: "exact" });
+    if (kind === "created") {
+      query = query
+        .gte("created_at", window.analysisFrom)
+        .lt("created_at", window.analysisToExclusive)
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true });
+    } else if (kind === "paid") {
+      query = query
+        .gte("paid_at", window.analysisFrom)
+        .lt("paid_at", window.analysisToExclusive)
+        .order("paid_at", { ascending: true })
+        .order("id", { ascending: true });
+    } else {
+      query = query
+        .eq("status", "pending")
+        .lt("created_at", window.stalePendingBefore)
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true });
+    }
+    const { data, error, count } = await query.range(offset, offset + limit);
+    if (error) throw new Error(`Could not read command center orders: ${error.message}`);
+    if (count === null) throw new Error("Command center order source count is unavailable");
+    const rows = (data ?? []) as DbOrder[];
+    const pageRows = rows.slice(0, limit);
+    return { rows: pageRows, hasMore: offset + pageRows.length < count };
+  }
+
+  const groups = await Promise.all(
+    (["created", "paid", "stale-pending"] as const).map((kind) => collectCommandCenterPages({
+      fetchPage: (page) => readPage(kind, page),
+      getId: (row: DbOrder) => row.id,
+    })),
+  );
+  const byId = new Map(groups.flat().map((row) => [row.id, row]));
+  if (byId.size > MAX_COMMAND_CENTER_SOURCE_ROWS) {
+    throw new Error("Command center order source is incomplete at the safety cap");
+  }
+  return [...byId.values()].map(mapDbOrder);
 }
 
 async function findLatestLeadForPayment(input: { phone?: string; email?: string }) {
@@ -766,6 +840,20 @@ export async function confirmPaymentManually(input: ConfirmPaymentInput): Promis
   if (error || !data) throw new Error(error?.message ?? "Khong tao duoc don thanh toan.");
   await markLeadPaid(lead?.id ?? null, orderCode, paidAt);
   return { order: mapDbOrder(data as DbOrder), wasAlreadyPaid: false };
+}
+
+export async function findManualPaidOrderByProvisioningOperationId(operationId: string) {
+  const cleanOperationId = operationId.trim();
+  if (!cleanOperationId) return null;
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Chưa cấu hình Supabase để kiểm tra đơn provisioning.");
+  const { data, error } = await supabase
+    .from("orders")
+    .select(orderSelectFields)
+    .eq("provisioning_operation_id", cleanOperationId)
+    .maybeSingle();
+  if (error) throw new Error(`Không kiểm tra được đơn provisioning: ${error.message}`);
+  return data ? mapDbOrder(data as DbOrder) : null;
 }
 
 export async function expirePendingPaymentOrders(now = new Date()) {

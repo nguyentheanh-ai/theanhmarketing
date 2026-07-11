@@ -9,13 +9,16 @@ function read(relativePath) {
 
 test("admin shell uses the light management workspace and avoids fixed logout overlap", () => {
   const source = read("components/app/admin-shell.tsx");
+  const settings = read("app/admin/cai-dat/page.tsx");
 
   assert.match(source, /data-admin-theme="light"/);
   assert.match(source, /bg-\[#f7f8fb\]/);
   assert.match(source, /\/brand\/ta-logo\.svg/);
   assert.match(source, /Admin Panel/);
   assert.match(source, /\/admin\/leads/);
-  assert.match(source, /\/admin\/thanh-vien-admin/);
+  assert.match(source, /\/admin\/cai-dat/);
+  assert.doesNotMatch(source, /\/admin\/thanh-vien-admin/);
+  assert.match(settings, /\/admin\/thanh-vien-admin/);
   assert.match(source, /lg:flex/);
   assert.match(source, /lg:ml-\[244px\]/);
   assert.match(source, /lg:px-8/);

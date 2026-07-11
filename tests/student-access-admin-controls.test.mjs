@@ -52,22 +52,24 @@ test("admin users always receive every course slug", () => {
 
 test("admin student access controls can update multiple courses for one student", () => {
   const grantRoute = read("app/api/admin/students/grant/route.ts");
+  const requestParser = read("lib/admin/student-provisioning-request.ts");
+  const orchestrator = read("services/studentProvisioningService.ts");
   const accessRoute = read("app/api/admin/students/access/route.ts");
   const intakeForm = read("components/admin/student-intake-form.tsx");
   const paymentForm = read("components/admin/payment-link-form.tsx");
   const actions = read("components/admin/student-access-actions.tsx");
 
-  assert.match(grantRoute, /courseSlugs/);
-  assert.match(grantRoute, /createManualPaidOrder\(\{\s*studentName:[\s\S]*courseSlugs/s);
-  assert.match(grantRoute, /ensureStudentAccountForPaidOrder/);
-  assert.match(grantRoute, /sendPaymentSuccessEmail/);
-  assert.match(grantRoute, /markPaymentEmailSent/);
+  assert.match(grantRoute, /parseStudentProvisioningRequest/);
+  assert.match(requestParser, /courseSlugs/);
+  assert.match(grantRoute, /provisionStudent/);
+  assert.doesNotMatch(grantRoute, /createManualPaidOrder|ensureStudentAccountForPaidOrder|sendPaymentSuccessEmail/);
+  assert.match(orchestrator, /createPaidOrder/);
+  assert.match(orchestrator, /ensurePaidAccount/);
+  assert.match(orchestrator, /sendPaidEmail/);
   assert.match(accessRoute, /courseSlugs/);
   assert.match(accessRoute, /Promise\.all|for \(const course/);
-  assert.match(intakeForm, /getAll\("courseSlugs"\)/);
-  assert.match(intakeForm, /type="checkbox"/);
-  assert.match(intakeForm, /lg:grid-cols-4/);
-  assert.match(intakeForm, /xl:grid-cols-3/);
+  assert.match(intakeForm, /StudentProvisioningWizard/);
+  assert.doesNotMatch(intakeForm, /temporaryPassword/);
   assert.match(paymentForm, /\/api\/admin\/payment-links/);
   assert.match(paymentForm, /Gửi form thanh toán/);
   assert.match(paymentForm, /name="paymentPlan"/);
@@ -90,12 +92,11 @@ test("admin student page follows the compact student-management layout", () => {
   assert.match(page, /StudentCreateDialog/);
   assert.doesNotMatch(page, /StudentIntakeForm/);
   assert.doesNotMatch(page, /PaymentLinkForm/);
-  assert.match(createDialog, /Thêm học viên/);
-  assert.match(createDialog, /Preview trước khi lưu/);
-  assert.match(createDialog, /StudentIntakeForm/);
+  assert.match(createDialog, /Tạo học viên/);
+  assert.match(createDialog, /Thao tác có kiểm soát/);
+  assert.match(createDialog, /StudentProvisioningWizard/);
   assert.match(createDialog, /PaymentLinkForm/);
-  assert.match(createDialog, /database thật/);
-  assert.match(createDialog, /email thật/);
+  assert.match(createDialog, /Gửi form thanh toán/);
   assert.match(page, /Danh sách học viên/);
   assert.match(page, /Tên\/liên hệ/);
   assert.match(page, /Thao tác/);

@@ -6,6 +6,32 @@ Repo chinh: `E:\TheAnh-Business-Workspace\02_Website\landing-page`
 
 Current deploy source after 2026-06-11 incident: `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`
 
+## 2026-07-11 - Solo Admin Command Center release candidate
+
+- Branch/commits: `feat/solo-command-center-20260710`, Tasks 1-8 end at `c42f3c6`; production was not deployed or changed.
+- Admin entry: `/admin` and `/admin/dashboard` render the Solo Command Center. Queue, report and aggregate CSV use the same bounded model and Vietnam date range.
+- Visuals: six real-data chart groups cover paid revenue trend, order status, paid course revenue, funnel, paid/free/trial growth and access health. No ad-profit/demo metric is mixed into the production model.
+- Student operations: list activity is lazy; one wizard handles paid/free/trial; partial/failed operations enter the queue by safe operation ID; owner email review is explicit and race-fenced.
+- Local gates: full Node 394/394, focused provisioning 73/73, TypeScript, ESLint, Next production build and diff check passed. Spec and quality reviews approved.
+- Browser smoke: unauthenticated `/admin` redirected to `/admin/login?next=%2Fadmin%2Fdashboard`; unauthenticated grant/review POST returned 403; no error overlay. Synthetic/no-PII visual captures are in `E:\TheAnh-Business-Workspace\02_Website\artifacts\solo-command-center-20260711\`.
+- Captures: `dashboard-desktop.png`, `dashboard-mobile.png`, `wizard-paid-confirmation.png`, `wizard-trial-mode.png`, `wizard-partial-email-review.png`.
+- Release blockers: three migrations are unapplied and were only statically reviewed because local PostgreSQL, Docker and Supabase CLI are unavailable. Verify/apply in order: `20260711100000_command_center_reporting.sql` (bounded LMS reporting RPC), `20260711110000_admin_student_provisioning_operations.sql` (journal/lease RPCs), then `20260711120000_student_provisioning_idempotency.sql` (idempotency, enrollment, email review and safe status RPCs). Compile and concurrency-test on disposable/staging PostgreSQL, apply with review, run owner smoke using a designated test account, then deploy preview via the protected project guard.
+- Production status: fail-closed; do not enable or call provisioning APIs in production before the database and authenticated smoke gates pass.
+
+## 2026-07-11 - Idempotent student provisioning orchestration
+
+- Core flow: `services/studentProvisioningService.ts` orchestrates paid, free, and trial student provisioning. It validates the real course catalog before claiming one durable operation, preserves account state, uses paid-order entitlement for paid access, and uses the lease-fenced LMS RPC for free/trial access.
+- Journal: `services/studentProvisioningOperationService.ts` owns request fingerprints, claims, lease renewals, safe-result allowlisting, and terminal finalization against `public.admin_student_provisioning_operations`. Fingerprints include the canonicalized student name, so a reused operation ID cannot silently provision a different person.
+- Email safety: the journal stores one numbered dispatch attempt and idempotency key. Only a definitive local pre-provider skip is retryable. Any attempted provider HTTP/network failure or uncertain replay becomes `manual_review`; an owner must explicitly confirm delivery or non-delivery before another attempt.
+- Owner boundary: `resolveProvisioningEmailReview()` derives the current owner through `getCurrentAuth()` and `canAccessAdminRole()`. Callers cannot supply an arbitrary owner ID, and the service-role-only SQL RPC does not authorize from user-editable auth metadata.
+- Atomic terminal truth: `finalize_admin_student_provisioning_operation()` locks the journal row, checks the current lease with database time, inserts/deduplicates the no-PII `activity_logs` audit, and updates the terminal journal state in one transaction. A lost lease writes neither record.
+- Migration: `supabase/migrations/20260711120000_student_provisioning_idempotency.sql`. It remains unapplied in this branch; do not use the orchestration in production until migration rollout and authenticated owner smoke are explicitly approved.
+- Guard: `tests/admin-student-provisioning.test.mjs` covers canonical replay identity, paid provenance, owner auth, numbered email dispatch, provider failure review, lease loss, and atomic terminal audit+journal behavior.
+- Admin UI: `/admin/hoc-vien?add_student=1` opens the single three-step paid/free/trial wizard in `components/admin/student-provisioning-wizard.tsx`; the dashboard links to this entry. `StudentCreateDialog` keeps the separate payment-link form as a secondary tab, while the legacy intake component delegates to the same wizard.
+- API boundary: `POST /api/admin/students/grant` authenticates owner/editor, bounds and strictly parses JSON through `lib/admin/student-provisioning-request.ts`, passes the canonical actor ID to `provisionStudent()`, strips any one-time credential, and returns structured account/order/access/email outcomes. It never accepts a caller-selected password.
+- Recovery: partial/failed provisioning audit events enter the command-center queue by safe operation ID. The recovery link reloads the allowlisted journal result through `GET /api/admin/students/provisioning-status` without PII, then reopens the wizard with that same operation ID; matching data resumes, while a changed fingerprint fails closed. Ambiguous email uses owner-only `POST /api/admin/students/provisioning-review` with exactly `confirm_delivered` or `confirm_not_delivered`; only the latter can authorize one numbered attempt.
+- UI guard: result cards never display generated passwords. Narrow retry buttons appear only from `nextActions`; ambiguous provider state has no generic retry.
+
 ## 2026-07-10 - Facebook Ads post-payment access guide
 
 - Page: `app/cam-on-thanh-toan/facebook-ads-2026/page.tsx` remains the public/noindex thank-you route for paid `facebook-ads-2026` orders.

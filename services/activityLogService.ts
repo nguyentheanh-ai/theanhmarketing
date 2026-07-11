@@ -1,4 +1,5 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { normalizeStudentActivityTimelineLimit } from "@/lib/admin/student-activity";
 import { cleanEmail, cleanPhone, cleanText } from "@/lib/security/validation";
 
 export type ActivityLogStatus = "success" | "failed" | "pending" | "info";
@@ -12,6 +13,9 @@ export type ActivityEventType =
   | "student_account_created"
   | "course_access_granted"
   | "course_access_revoked"
+  | "student_provisioning_partial"
+  | "student_provisioning_failed"
+  | "student_provisioning_completed"
   | "student_login_success"
   | "student_login_failed"
   | "student_entered_learning"
@@ -67,8 +71,26 @@ type DbActivityLog = {
   created_at: string;
 };
 
+type DbStudentActivityTimeline = Pick<
+  DbActivityLog,
+  "id" | "event_type" | "status" | "actor_type" | "created_at"
+>;
+
 const activityLogSelect =
   "id,student_id,lead_id,user_id,student_email,student_phone,event_type,event_title,event_description,status,actor_type,actor_id,actor_email,actor_name,metadata,ip_address,user_agent,created_at";
+
+const commandCenterEventTypes: ActivityEventType[] = [
+  "payment_email_sent",
+  "payment_email_failed",
+  "payment_success_email_sent",
+  "payment_success_email_failed",
+  "student_account_created",
+  "course_access_granted",
+  "course_access_revoked",
+  "student_provisioning_partial",
+  "student_provisioning_failed",
+  "student_provisioning_completed",
+];
 
 const blockedMetadataKeys = new Set([
   "authorization",
@@ -242,6 +264,68 @@ export async function getStudentActivityLogs(input: {
   if (error || !data) {
     if (error) console.error("[activity-log] Could not read activity logs", { error: error.message });
     return [];
+  }
+
+  return (data as DbActivityLog[]).map(mapActivityLog);
+}
+
+export async function getStudentActivityTimelineStrict(input: {
+  studentEmail: string;
+  limit?: number;
+}) {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Student activity source is unavailable");
+
+  const studentEmail = cleanEmail(input.studentEmail);
+  if (!studentEmail) throw new Error("Student email is invalid");
+
+  const limit = normalizeStudentActivityTimelineLimit(input.limit);
+  const { data, error } = await supabase
+    .from("activity_logs")
+    .select("id,event_type,status,actor_type,created_at")
+    .eq("student_email", studentEmail)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error || !data) throw new Error("Could not read student activity timeline");
+
+  return (data as DbStudentActivityTimeline[]).map((row) => ({
+    id: row.id,
+    eventType: row.event_type,
+    status: row.status,
+    actorType: row.actor_type,
+    createdAt: row.created_at,
+  }));
+}
+
+export function getCommandCenterActivityQuery(input: { from: string; to: string; limit?: number }) {
+  const limit = Math.max(1, Math.min(input.limit ?? 200, 200));
+  return {
+    from: new Date(`${input.from}T00:00:00+07:00`).toISOString(),
+    to: new Date(`${input.to}T23:59:59.999+07:00`).toISOString(),
+    limit,
+  };
+}
+
+export async function getCommandCenterStudentActivities(input: { from: string; to: string; limit?: number }) {
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    throw new Error("Command center activity source is unavailable");
+  }
+
+  const bounds = getCommandCenterActivityQuery(input);
+  const { data, error } = await supabase
+    .from("activity_logs")
+    .select(activityLogSelect)
+    .in("event_type", commandCenterEventTypes)
+    .gte("created_at", bounds.from)
+    .lte("created_at", bounds.to)
+    .order("created_at", { ascending: false })
+    .limit(bounds.limit);
+
+  if (error || !data) {
+    throw new Error("Could not read command center activities");
   }
 
   return (data as DbActivityLog[]).map(mapActivityLog);
