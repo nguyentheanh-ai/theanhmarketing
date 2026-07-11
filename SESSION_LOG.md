@@ -1,5 +1,14 @@
 # Session Log
 
+## 2026-07-11 - Deploy Solo Admin Command Center
+
+Phạm vi: áp migration production theo guarded rollout, đóng gói release candidate và deploy website chính.
+Các file đã thay đổi: migration provisioning được tách theo boundary; test discovery migration được chuẩn hóa; CURRENT_STATE.md, handoff và registry được cập nhật.
+Kết quả: production deployment dpl_9BxXpsmV25dXmHzAYoyzjddfJDdJ Ready trên Vercel Project theanhmarketing; không tạo tài khoản, đơn hàng, quyền học hoặc email khách hàng trong rollout.
+Kiểm tra đã chạy: focused 52/52, full Node 394/394, TypeScript, ESLint, local/Vercel build, central verify, protected preflight, live route smoke và error-log check.
+Việc còn lại: owner smoke bằng tài khoản test không phải khách hàng trước lần provision học viên thật đầu tiên.
+Cảnh báo: preview bị Vercel SSO nên không dùng public preview request để kết luận app route; production live smoke đã pass.
+
 ## 2026-07-11 - Solo Admin Command Center
 
 Phạm vi: làm lại admin thành command center trực quan; thêm báo cáo/queue, activity lazy và wizard paid/free/trial có chống tạo/gửi trùng.

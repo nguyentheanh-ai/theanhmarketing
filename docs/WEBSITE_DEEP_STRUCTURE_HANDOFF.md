@@ -18,6 +18,14 @@ Current deploy source after 2026-06-11 incident: `E:\TheAnh-Business-Workspace\0
 - Release blockers: three migrations are unapplied and were only statically reviewed because local PostgreSQL, Docker and Supabase CLI are unavailable. Verify/apply in order: `20260711100000_command_center_reporting.sql` (bounded LMS reporting RPC), `20260711110000_admin_student_provisioning_operations.sql` (journal/lease RPCs), then `20260711120000_student_provisioning_idempotency.sql` (idempotency, enrollment, email review and safe status RPCs). Compile and concurrency-test on disposable/staging PostgreSQL, apply with review, run owner smoke using a designated test account, then deploy preview via the protected project guard.
 - Production status: fail-closed; do not enable or call provisioning APIs in production before the database and authenticated smoke gates pass.
 
+## 2026-07-11 - Solo Admin Command Center production release
+
+- Production deployment: dpl_9BxXpsmV25dXmHzAYoyzjddfJDdJ, Ready on Vercel Project theanhmarketing; aliases include https://www.theanhmarketing.com and https://theanhmarketing.com.
+- Database: reporting, provisioning journal/lease, durable idempotency, enrollment, email dispatch/review, finalization and safe recovery RPCs are applied and metadata-verified. No customer record or outbound email was created by rollout verification.
+- Migration packaging: the provider migration transport truncated large PL/pgSQL payloads, so the original two large provisioning migration files are now short schema migrations plus ordered function migrations. Tests aggregate the ordered migration set, preserving source-level regression coverage.
+- Live smoke: /admin routes redirect as expected without a session; CRM V2 API returns 403; /go, /vao-khoa-hoc, /academy/facebook-ads-master-2026 return 200; protected library redirects to login; obsolete /admin/facebook-ads is 404. Vercel error logs after smoke are empty.
+- Remaining manual gate: authenticate a designated non-customer owner test account, open /admin, and create/recover only a clearly marked test student before operational use. Do not test against a real customer.
+
 ## 2026-07-11 - Idempotent student provisioning orchestration
 
 - Core flow: `services/studentProvisioningService.ts` orchestrates paid, free, and trial student provisioning. It validates the real course catalog before claiming one durable operation, preserves account state, uses paid-order entitlement for paid access, and uses the lease-fenced LMS RPC for free/trial access.
