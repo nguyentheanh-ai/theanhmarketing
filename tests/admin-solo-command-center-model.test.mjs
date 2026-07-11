@@ -595,11 +595,8 @@ test("emits one safe task for an unlinked operational failure", () => {
   assert.ok(!JSON.stringify(tasks).includes("Bearer hidden"));
 });
 
-test("rejects sub-millisecond timestamps and resolves equal milliseconds by stable activity id", () => {
-  assert.throws(
-    () => build({ leads: [{ id: "too-precise", createdAt: "2026-07-09T00:00:00.1234Z" }] }),
-    { name: "RangeError", message: "Invalid record timestamp" },
-  );
+test("accepts Supabase microsecond timestamps and resolves equal milliseconds by stable activity id", () => {
+  assert.doesNotThrow(() => build({ leads: [{ id: "microsecond", createdAt: "2026-07-09T00:00:00.123456Z" }] }));
   const activities = [
     { id: "activity-a", kind: "access", status: "failed", accessId: "tie-access", createdAt: "2026-07-09T01:00:00.123Z" },
     { id: "activity-b", kind: "access", status: "success", accessId: "tie-access", createdAt: "2026-07-09T01:00:00.123Z" },

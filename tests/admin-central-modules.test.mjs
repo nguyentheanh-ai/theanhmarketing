@@ -34,7 +34,7 @@ test("admin navigation is centralized into focused management modules without un
     assert.match(shell, new RegExp(item));
   }
 
-  assert.match(index, /\/admin\/dashboard/);
+  assert.match(index, /\/admin\/crm-v2/);
   assert.match(index, /\/admin\/khoa-hoc/);
   assert.doesNotMatch(shell, /Ads & doanh thu/);
   assert.doesNotMatch(shell, /Báo cáo ads/);

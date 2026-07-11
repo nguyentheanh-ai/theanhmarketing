@@ -19,24 +19,15 @@ function parseAdminNavItems(shell) {
   }));
 }
 
-test("the complete admin entry chain defaults to the solo command center", () => {
+test("the complete admin entry chain defaults owners to canonical CRM v2", () => {
   const index = read("app/admin/page.tsx");
   const dashboard = read("app/admin/dashboard/page.tsx");
 
-  assert.match(index, /redirect\("\/admin\/dashboard"\)/);
-  assert.match(dashboard, /getSoloCommandCenterModel\(range\)/);
+  assert.match(index, /redirect\("\/admin\/crm-v2"\)/);
+  assert.match(index, /redirect\("\/admin\/khoa-hoc"\)/);
   assert.match(dashboard, /await requireAdminAuth\("\/admin\/dashboard", \["owner"\]\)/);
-  assert.ok(dashboard.indexOf("await requireAdminAuth") < dashboard.indexOf("await searchParams"));
-  assert.ok(dashboard.indexOf("await requireAdminAuth") < dashboard.indexOf("getSoloCommandCenterModel(range)"));
-  assert.match(dashboard, /<CommandCenterDashboard model=\{model\} selectedTaskId=\{selectedTaskId\}/);
-  assert.match(dashboard, /<AdminShell adminRole=/);
-
-  for (const [file, source] of [
-    ["app/admin/page.tsx", index],
-    ["app/admin/dashboard/page.tsx", dashboard],
-  ]) {
-    assert.doesNotMatch(source, /isCrmV2Enabled|\/admin\/crm-v2/, `${file} must not redirect the solo entry chain to CRM V2`);
-  }
+  assert.ok(dashboard.indexOf("await requireAdminAuth") < dashboard.indexOf('redirect("/admin/crm-v2")'));
+  assert.match(dashboard, /redirect\("\/admin\/crm-v2"\)/);
 });
 
 test("command center service performs bounded independent real-data reads", () => {
@@ -252,30 +243,21 @@ test("editor shell and settings preserve the approved role boundaries", () => {
   assert.match(settings, /allowedRoles=\{\["owner"\]\}/);
 });
 
-test("queue and report are real owner pages with auth before range and one strict model read", () => {
-  for (const [route, file] of [
-    ["/admin/viec-can-xu-ly", "app/admin/viec-can-xu-ly/page.tsx"],
-    ["/admin/bao-cao", "app/admin/bao-cao/page.tsx"],
-  ]) {
-    const source = read(file);
-    assert.match(source, new RegExp(`requireAdminAuth\\(\"${route.replaceAll("/", "\\/")}\", \\[\"owner\"\\]\\)`));
-    assert.ok(source.indexOf("await requireAdminAuth") < source.indexOf("await searchParams"));
-    assert.ok(source.indexOf("await requireAdminAuth") < source.indexOf("const range = resolveCommandCenterRange"));
-    assert.equal(source.match(/getSoloCommandCenterModel\(range\)/g)?.length, 1);
-    assert.match(source, /<AdminShell adminRole=/);
-    assert.doesNotMatch(source, /redirect\(/);
-  }
-
+test("queue remains real while legacy report redirects to canonical CRM reports", () => {
   const queue = read("app/admin/viec-can-xu-ly/page.tsx");
+  assert.match(queue, /requireAdminAuth\("\/admin\/viec-can-xu-ly", \["owner"\]\)/);
+  assert.ok(queue.indexOf("await requireAdminAuth") < queue.indexOf("await searchParams"));
+  assert.equal(queue.match(/getSoloCommandCenterModel\(range\)/g)?.length, 1);
+  assert.doesNotMatch(queue, /redirect\(/);
   assert.match(queue, /filterPriorityQueue/);
   assert.match(queue, /selectedTaskId/);
   assert.match(queue, /<PriorityQueue/);
   assert.match(queue, /basePath="\/admin\/viec-can-xu-ly"/);
 
   const report = read("app/admin/bao-cao/page.tsx");
-  assert.match(report, /<CommandCenterReport/);
-  assert.match(report, /from/);
-  assert.match(report, /to/);
+  assert.match(report, /requireAdminAuth\("\/admin\/bao-cao", \["owner"\]\)/);
+  assert.ok(report.indexOf("await requireAdminAuth") < report.indexOf('redirect("/admin/crm-v2/reports")'));
+  assert.match(report, /redirect\("\/admin\/crm-v2\/reports"\)/);
 });
 
 test("detailed report reuses lazy accessible charts and exposes only truthful aggregates", () => {

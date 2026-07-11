@@ -1,5 +1,14 @@
 # Session Log
 
+## 2026-07-11 - Hợp nhất Admin/CRM và hiện đại hóa LMS
+
+Phạm vi: đưa CRM v2 thành admin owner duy nhất, sửa dashboard dữ liệu thật và nâng cấp trình quản lý khóa học theo Course Hub có hướng dẫn tự do.
+Các file đã thay đổi: route admin tương thích, CRM shell/dashboard/data fallback, LMS manager/student metrics, contract tests và tài liệu nguồn sự thật.
+Kết quả: 9 khu vực vận hành chính; dashboard bỏ insight không có đích; LMS có 7 bước, curriculum hai cột, save state, analytics thật; editor không bị mở quyền CRM ngoài ý muốn.
+Kiểm tra đã chạy: TDD contract CRM/LMS 28/28, TypeScript và ESLint; full test/build/preflight/deploy đang thực hiện ở cuối phiên.
+Việc còn lại: hoàn thành full gate, production deploy qua central guard, browser QA và log scan.
+Cảnh báo: không thay schema, course content, enrollment hay tài khoản học viên trong thay đổi giao diện này.
+
 ## 2026-07-11 - Deploy Solo Admin Command Center
 
 Phạm vi: áp migration production theo guarded rollout, đóng gói release candidate và deploy website chính.

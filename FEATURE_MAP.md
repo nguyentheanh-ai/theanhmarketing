@@ -1,20 +1,20 @@
 # Feature Map - theanh-main
 
-## Solo Admin Command Center
+## Canonical Admin Executive Operating System
 
-Description: Owner-focused operating view for paid revenue, orders, leads, student growth, access health and the small set of actions that need attention.
+Description: Single owner-facing admin shell for paid revenue, orders, customers, students, courses, email, automation, reports and operational actions. CRM v2 is canonical; the previous Solo Command Center remains legacy source, not a separate owner destination.
 
-Routes: `/admin`, `/admin/dashboard`, `/admin/viec-can-xu-ly`, `/admin/bao-cao`, `GET /api/admin/reports/export`.
+Routes: `/admin` and `/admin/dashboard` redirect to `/admin/crm-v2`; legacy `/admin/leads`, `/admin/don-hang`, `/admin/hoc-vien`, `/admin/khoa-hoc`, `/admin/bao-cao` redirect owners to matching CRM v2 destinations. `/admin/viec-can-xu-ly` remains until queue parity.
 
-Main files: `lib/admin/solo-command-center.ts`, `services/adminCommandCenterService.ts`, `components/admin/solo-command-center/command-center-dashboard.tsx`, `components/admin/solo-command-center/command-center-charts.tsx`, `components/admin/solo-command-center/priority-queue.tsx`.
+Main files: `app/admin/crm-v2/page.tsx`, `components/crm-v2/crm-components.tsx`, `lib/crm-v2/data.ts`, `lib/crm-v2/query.ts`. Legacy Solo Command Center files are retained for rollback/reference only.
 
-Chart groups: paid revenue by day, order status, paid revenue by course, lead-to-student funnel, student growth by paid/free/trial, and access health.
+Chart groups: conversion funnel, paid revenue by day, lead source, email performance and paid course performance. KPI and task panels use production data; RPC failure falls back to direct production queries.
 
 Data: `public.orders`, `public.leads`, official course catalog, `crm_v2.enrollments`, bounded `public.activity_logs`.
 
 Migration/RPC: `supabase/migrations/20260711100000_command_center_reporting.sql` provides the bounded service-role `crm_v2_command_center_enrollments_page` reader. It must be compiled, verified and applied before this command-center build can use LMS reporting in preview/production.
 
-Search: `buildSoloCommandCenterModel`, `getSoloCommandCenterModel`, `PriorityQueue`, `CommandCenterCharts`, `resolveCommandCenterRange`.
+Search: `getCrmV2Dashboard`, `CrmShell`, `primaryNavItems`, `CrmRouteFeedback`, `CourseLmsManager`.
 
 Guard: never infer revenue from free/trial access; never synthesize leads; preserve Vietnam calendar boundaries; fail each source independently; never put contact PII in task text or URLs; do not replace bounded reads with workspace-wide or unpaginated scans.
 
@@ -66,15 +66,17 @@ Environment: `SEPAY_BANK_CODE`, `SEPAY_BANK_ACCOUNT_NUMBER`, `SEPAY_BANK_ACCOUNT
 
 Guard: do not create a second order/payment/email flow; keep notification markers and idempotency.
 
-## Student access and LMS
+## Student access and LMS Course Hub
 
-Routes: `/dashboard`, `/learn/[course]/[lesson]`, `/admin/crm-v2/students`, `/api/admin/crm-v2/lms`, `/api/student/progress`.
+Routes: `/dashboard`, `/learn/[course]/[lesson]`, `/admin/crm-v2/students`, `/admin/crm-v2/students?view=courses&step=<step-id>`, `/api/admin/crm-v2/lms`, `/api/student/progress`.
 
 Files: `services/lmsService.ts`, `services/studentAccessService.ts`, `services/studentAccountService.ts`, `components/crm-v2/lms-management-client.tsx`, `lib/student-dashboard-courses.ts`.
 
 Database: `public.courses`, `public.course_modules`, `public.lessons`, `public.lesson_resources`, `crm_v2.enrollments`, `crm_v2.course_progress`.
 
-Search: `lmsService`, `enrollments`, `course_progress`, `publishedLessonsOnly`.
+Feature map: Course Hub → Overview → Sales Content → Curriculum → Media & Resources → Students & Access → Analytics → Review & Publish. Steps are URL-backed, freely navigable and reuse existing focused mutation APIs.
+
+Search: `CourseLmsManager`, `courseSteps`, `CurriculumWorkspace`, `CourseAnalytics`, `PublishReview`, `lmsService`, `enrollments`, `course_progress`, `publishedLessonsOnly`.
 
 Guard: private/draft lessons must not leak before authentication/entitlement checks.
 

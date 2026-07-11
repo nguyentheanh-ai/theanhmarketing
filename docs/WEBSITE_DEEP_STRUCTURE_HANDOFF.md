@@ -9,13 +9,22 @@ Current deploy source after 2026-06-11 incident: `E:\TheAnh-Business-Workspace\0
 ## 2026-07-11 - Solo Admin Command Center release candidate
 
 - Branch/commits: `feat/solo-command-center-20260710`, Tasks 1-8 end at `c42f3c6`; production was not deployed or changed.
-- Admin entry: `/admin` and `/admin/dashboard` render the Solo Command Center. Queue, report and aggregate CSV use the same bounded model and Vietnam date range.
+- Admin entry: owner `/admin` and `/admin/dashboard` redirect to the canonical CRM v2 Executive Operating System at `/admin/crm-v2`; editor remains on the role-safe legacy course editor until CRM v2 has an editor-only layout boundary.
 - Visuals: six real-data chart groups cover paid revenue trend, order status, paid course revenue, funnel, paid/free/trial growth and access health. No ad-profit/demo metric is mixed into the production model.
 - Student operations: list activity is lazy; one wizard handles paid/free/trial; partial/failed operations enter the queue by safe operation ID; owner email review is explicit and race-fenced.
 - Local gates: full Node 394/394, focused provisioning 73/73, TypeScript, ESLint, Next production build and diff check passed. Spec and quality reviews approved.
 - Browser smoke: unauthenticated `/admin` redirected to `/admin/login?next=%2Fadmin%2Fdashboard`; unauthenticated grant/review POST returned 403; no error overlay. Synthetic/no-PII visual captures are in `E:\TheAnh-Business-Workspace\02_Website\artifacts\solo-command-center-20260711\`.
 - Captures: `dashboard-desktop.png`, `dashboard-mobile.png`, `wizard-paid-confirmation.png`, `wizard-trial-mode.png`, `wizard-partial-email-review.png`.
 - Release blockers: three migrations are unapplied and were only statically reviewed because local PostgreSQL, Docker and Supabase CLI are unavailable. Verify/apply in order: `20260711100000_command_center_reporting.sql` (bounded LMS reporting RPC), `20260711110000_admin_student_provisioning_operations.sql` (journal/lease RPCs), then `20260711120000_student_provisioning_idempotency.sql` (idempotency, enrollment, email review and safe status RPCs). Compile and concurrency-test on disposable/staging PostgreSQL, apply with review, run owner smoke using a designated test account, then deploy preview via the protected project guard.
+
+## 2026-07-11 - Canonical Admin foundation and guided Course Workspace
+
+- CRM v2 is the single owner-facing admin foundation. Compatibility routes redirect after auth: `/admin/dashboard` → `/admin/crm-v2`, `/admin/leads` → `/admin/crm-v2/leads`, `/admin/don-hang` → `/admin/crm-v2/orders`, `/admin/bao-cao` → `/admin/crm-v2/reports`; owner student/course routes redirect to CRM v2 while editor access remains on the legacy role-safe pages.
+- `components/crm-v2/crm-components.tsx` owns the shared Executive Operating System shell. Primary navigation is Overview, Customers, Orders, Students, Courses, Email, Automation, Reports and Settings; Activity, Segments, Team and Integrations are secondary advanced tools.
+- `/admin/crm-v2` uses `getCrmV2Dashboard(query)` and production data only. RPC failure falls back to direct production queries instead of demo or empty synthetic metrics. Dashboard cards link only to verified destinations and no longer render disconnected campaign/workflow insight rows.
+- The canonical course manager remains `components/crm-v2/lms-management-client.tsx`; no third LMS was introduced. Its URL-backed `step` workflow has seven freely navigable steps: Overview, Sales Content, Curriculum, Media & Resources, Students & Access, Analytics, and Review & Publish.
+- Curriculum reuses the existing module/lesson mutations in a two-column workspace. Analytics is calculated from real enrollments/progress. The publish review is advisory and never blocks free navigation. Save state is explicitly visible as ready/saving/saved/error.
+- Legacy page source is retained for compatibility and editor safety; no database schema, production course content, enrollment or student account is changed by this UI release.
 - Production status: fail-closed; do not enable or call provisioning APIs in production before the database and authenticated smoke gates pass.
 
 ## 2026-07-11 - Solo Admin Command Center production release
