@@ -9,7 +9,7 @@ Kiểm tra đã chạy: Node 403/403, TS unit 19/19, TypeScript, ESLint, Next pr
 Việc còn lại: theo dõi chất lượng `partial/final`; xoay sang system-user token dài hạn trước khi mã từ Marketing API Tools hết hạn.
 Cảnh báo: không sửa cổng học viên trong release này; các link tải placeholder ở app học viên chỉ được ghi nhận cho maintenance riêng. Token Meta chỉ nằm trong Vercel sensitive env, không nằm trong code, log hoặc tài liệu.
 
-Deploy: `dpl_6SrsuEWkuKg8TrDbxRNpzaS26zFP` Ready và aliased tới `https://www.theanhmarketing.com`. Owner smoke xác nhận donut trạng thái đơn không còn rỗng, course labels không chồng, Course Studio độc lập tải 3 module/23 bài/98 học viên. Landing Ads chính khớp baseline title/H1/nội dung/CTA và 0 ảnh lỗi; sáu landing/bridge URL trả 200; Vercel error scan 10 phút không có log.
+Deploy: `dpl_2bzgufu6yvAMNdsfRAHcKL4EirV7` Ready và aliased tới `https://www.theanhmarketing.com`. Owner smoke xác nhận donut trạng thái đơn không còn rỗng, course labels không chồng, Course Studio độc lập tải 3 module/23 bài/98 học viên. Meta Ads Greezhub 01 live: hôm qua final 2,5 triệu/ROAS 0,80x; hôm nay hourly partial 392,6 nghìn; 30 ngày gồm hôm nay partial 30,8 triệu/ROAS 2,04x. Landing Ads chính khớp baseline title/H1/nội dung/CTA và 0 ảnh lỗi; sáu landing/bridge URL trả 200; Vercel error scan 10 phút không có log.
 
 ## 2026-07-11 - Lean Solo Admin v3
 

@@ -61,6 +61,9 @@ Private areas are intentionally excluded from indexing:
   - `SEPAY_BANK_ACCOUNT_NUMBER`
   - `SEPAY_BANK_ACCOUNT_NAME`
   - `SEPAY_WEBHOOK_API_KEY`
+- Set Meta Ads reporting environment variable names on the hosting provider; values must not be stored in this document:
+  - `META_ADS_ACCESS_TOKEN`
+  - `META_ADS_AD_ACCOUNT_ID`
 - Configure Sepay webhook URL: `https://theanhmarketing.com/api/sepay/webhook`.
 - Replace media placeholders with real images/videos.
 - Add social links in `components/seo/json-ld.tsx` when official channels are ready.

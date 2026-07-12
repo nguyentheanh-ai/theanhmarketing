@@ -2,7 +2,7 @@
 
 Updated: 2026-07-12
 
-- Production admin correctness release runs from runtime commit `3fea8b4` as Vercel deployment `dpl_6SrsuEWkuKg8TrDbxRNpzaS26zFP`; status is Ready and aliased to `https://www.theanhmarketing.com`.
+- Production admin/Meta reporting release runs from runtime commit `2561a4a` as Vercel deployment `dpl_2bzgufu6yvAMNdsfRAHcKL4EirV7`; status is Ready and aliased to `https://www.theanhmarketing.com`.
 - Implemented locally: owner `/admin` defaults to the canonical CRM v2 Executive Operating System; legacy owner module routes redirect to their CRM destinations; editor course access stays role-safe. The dashboard shows production KPIs/charts with direct-query fallback and verified actions only.
 - LMS: `/admin/crm-v2/courses` is a compact Course Hub; each course opens `/admin/crm-v2/courses/[courseSlug]` as a dedicated Course Workspace. Seven URL-backed sections remain freely navigable, lesson editing stays modal, and raw enrollment forms were removed in favor of the safe student provisioning wizard.
 - Dashboard: revenue is hourly for Today, daily for 7/30 days and weekly for 90 days. Recharts renders revenue area, horizontal funnel, source donut, course ranking and Meta Ads versus revenue. Meta data is read from the Graph API and fails closed without demo numbers; Ads KPIs include spend, ROAS, CAC, CPC and CTR.
