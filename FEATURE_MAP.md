@@ -96,13 +96,15 @@ Guard: never synthesize Ads or revenue. If Supabase or Meta is unavailable, show
 
 ## CRM V2
 
-Routes: `/admin/crm-v2`, `/admin/crm-v2/leads`, `/admin/crm-v2/orders`, `/admin/crm-v2/reports` and matching `/api/admin/crm-v2/*` routes.
+Routes: `/admin/crm-v2`, `/admin/crm-v2/leads`, customer profile `/admin/crm-v2/leads/[id]`, `/admin/crm-v2/reports` and matching `/api/admin/crm-v2/*` routes. Legacy `/admin/crm-v2/orders` and `/admin/don-hang` redirect to Customers; order history is visible only in each customer profile.
 
 Files: `lib/crm-v2/data.ts`, `lib/crm-v2/query.ts`, `lib/crm-v2/types.ts`, `components/crm-v2/leads-page-client.tsx`, `components/crm-v2/orders-page-client.tsx`.
 
 Database: `public.leads`, `public.orders`, CRM V2 schema/RPCs in `supabase/migrations`.
 
 Guard: protected routes must redirect/return 403 when unauthenticated, never become 404 after deploy.
+
+Course identity guard: keep `course`, `courseShort` and `courseSlug` atomic. Priority is paid public order, paid CRM order, other order, explicit mapped lead, inferred lead, unknown. Match Ebook as a standalone word; never match the `ebook` substring inside `Facebook`.
 
 ## Transactional email and bridge links
 

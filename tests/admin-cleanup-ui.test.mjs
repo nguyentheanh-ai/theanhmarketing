@@ -33,7 +33,7 @@ test("admin shell uses the light management workspace and avoids fixed logout ov
   assert.doesNotMatch(source, /SEO\/Tracking/);
 });
 
-test("admin panels and orders page use roomy dashboard spacing", () => {
+test("legacy orders page redirects into the roomy customer workspace", () => {
   const ui = read("components/admin/crm-ui.tsx");
   const uiShell = read("components/app/admin-shell.tsx");
   const ordersPage = read("app/admin/don-hang/page.tsx");
@@ -41,12 +41,7 @@ test("admin panels and orders page use roomy dashboard spacing", () => {
   assert.match(ui, /rounded-\[1\.35rem\]/);
   assert.match(ui, /shadow-\[0_22px_70px/);
   assert.match(uiShell, /w-\[244px\]/);
-  assert.match(ordersPage, /max-w-\[1440px\]/);
-  assert.doesNotMatch(ordersPage, /max-w-\[1180px\]/);
-  assert.match(ordersPage, /mt-8 grid gap-5/);
-  assert.match(ordersPage, /mt-7 p-6/);
-  assert.match(ordersPage, /\[\&_th\]:px-3/);
-  assert.match(ordersPage, /\[\&_td\]:px-3/);
+  assert.match(ordersPage, /redirect\(\"\/admin\/crm-v2\/leads\"\)/);
 });
 
 test("admin course page renders real official courses instead of empty blocks", () => {
@@ -111,15 +106,13 @@ test("course editor starts as a Tutor LMS style course list and opens editing on
   assert.doesNotMatch(source, /xl:grid-cols-\[320px_minmax\(0,1fr\)\]/);
 });
 
-test("admin orders page shows phone numbers with a copy action", () => {
+test("customer workspace owns contact details and order history", () => {
   const page = read("app/admin/don-hang/page.tsx");
-  const button = read("components/admin/copy-phone-button.tsx");
+  const customerProfile = read("app/admin/crm-v2/leads/[id]/page.tsx");
 
-  assert.match(page, /CopyPhoneButton/);
-  assert.match(page, /order\.phone/);
-  assert.match(page, /tel:\$\{order\.phone\}/);
-  assert.match(button, /navigator\.clipboard/);
-  assert.match(button, /Copy SĐT/);
+  assert.match(page, /redirect\(\"\/admin\/crm-v2\/leads\"\)/);
+  assert.match(customerProfile, /id: "orders"/);
+  assert.match(customerProfile, /profile\.contact\.phone/);
 });
 
 test("AI Master X10 course data has real modules for dashboard access", () => {

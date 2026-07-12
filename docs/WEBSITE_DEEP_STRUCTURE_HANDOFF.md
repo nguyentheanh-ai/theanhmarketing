@@ -6,6 +6,14 @@ Repo chinh: `E:\TheAnh-Business-Workspace\02_Website\landing-page`
 
 Current deploy source after 2026-06-11 incident: `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`
 
+## 2026-07-12 - Focused Course Studio, customer-owned orders and Ads BI
+
+- Course Studio step changes build URLs from `studioMode`, so `/admin/course-studio/[courseSlug]` never bounces through the legacy CRM course route. Curriculum uses a compact module outline and reveals lessons for one selected module; module management is collapsed until requested.
+- Unified customer course identity is merged atomically. Paid public orders outrank CRM orders, explicit lead mapping and inferred landing/UTM values. Ebook detection uses word boundaries because the old `/ebook/` matcher incorrectly matched the substring inside `Facebook`.
+- The standalone Orders navigation/table is retired. `/admin/crm-v2/orders` and `/admin/don-hang` redirect to Customers; the existing customer 360 profile remains the only order-history UI. Order services and APIs are preserved.
+- `/admin/crm-v2/reports` now combines the canonical paid-order report with Meta Ads. Today is labeled hourly in Vietnam time; source/course/funnel/unit-cost comparisons use horizontal bars. Undefined denominators render `Chưa đủ dữ liệu`; `Doanh thu sau Ads` is explicitly not accounting profit.
+- Protected scope remains unchanged: no landing, checkout/payment, email, student learning/access/progress, enrollment or course-content mutation belongs to this release.
+
 ## 2026-07-11 - Solo Admin Command Center release candidate
 
 - Branch/commits: `feat/solo-command-center-20260710`, Tasks 1-8 end at `c42f3c6`; production was not deployed or changed.

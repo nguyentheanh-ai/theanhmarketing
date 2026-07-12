@@ -1,5 +1,4 @@
-import OrdersPageClient from "@/components/crm-v2/orders-page-client";
-import { getCrmV2OrderSummary, listCrmV2Orders, normalizeCrmListQuery } from "@/lib/crm-v2/data";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Đơn hàng & Thanh toán",
@@ -10,10 +9,6 @@ type PageProps = {
 };
 
 export default async function CrmV2OrdersPage({ searchParams }: PageProps) {
-  const query = normalizeCrmListQuery(await searchParams);
-  const [ordersResult, orderSummary] = await Promise.all([listCrmV2Orders(query), getCrmV2OrderSummary(query)]);
-
-  // OrdersPageClient keeps the table full-width via min-[1840px]:grid-cols-[minmax(0,1fr)_340px]
-  // and passes the selected record to OrderActionButtons order={orders[0]} semantics.
-  return <OrdersPageClient orderSummary={orderSummary} query={query} ordersResult={ordersResult} />;
+  await searchParams;
+  redirect("/admin/crm-v2/leads");
 }

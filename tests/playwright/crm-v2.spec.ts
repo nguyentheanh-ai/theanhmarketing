@@ -8,7 +8,6 @@ const routes = [
   "/admin/crm-v2/segments",
   "/admin/crm-v2/email",
   "/admin/crm-v2/automation",
-  "/admin/crm-v2/orders",
   "/admin/crm-v2/students",
   "/admin/crm-v2/reports",
   "/admin/crm-v2/team",
@@ -57,6 +56,13 @@ test("legacy admin lead route resolves to the canonical customer workspace", asy
   await expect(page.getByRole("heading", { name: "Leads & Pipeline" })).toBeVisible();
 });
 
+test("legacy order routes resolve to the customer workspace", async ({ page }) => {
+  await page.goto("/admin/crm-v2/orders");
+  await expect(page).toHaveURL(/\/admin\/crm-v2\/leads$/);
+  await page.goto("/admin/don-hang");
+  await expect(page).toHaveURL(/\/admin\/crm-v2\/leads$/);
+});
+
 test("legacy admin dashboard redirects to CRM v2 when enabled", async ({ page }) => {
   await page.goto("/admin/dashboard");
   await expect(page).toHaveURL(/\/admin\/crm-v2$/);
@@ -72,7 +78,7 @@ test("Executive dashboard and Course Hub render their verified shell", async ({ 
 
   await page.goto("/admin/crm-v2/courses");
   await expect(page.getByRole("heading", { name: "Khóa học" })).toBeVisible();
-  const firstCourse = page.locator('a[href^="/admin/crm-v2/courses/"]').first();
+  const firstCourse = page.locator('a[href^="/admin/course-studio/"]').first();
   if (await firstCourse.count()) {
     await firstCourse.click();
     await expect(page.getByText("LMS · Course Workspace")).toBeVisible();
@@ -85,6 +91,29 @@ test("Executive dashboard and Course Hub render their verified shell", async ({ 
     await expect(page.getByText("Không có khóa học phù hợp.")).toBeVisible();
   }
   await page.screenshot({ path: "test-results/admin-course-hub.png", fullPage: true });
+});
+
+test("Customer workspace, Course Studio and BI report capture clean visual evidence", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/admin/crm-v2/leads");
+  await expect(page.getByRole("heading", { name: "Leads & Pipeline" })).toBeVisible();
+  await expect(page.getByRole("row").filter({ hasText: "Minh Anh" }).first()).toContainText("FB Ads");
+  await page.screenshot({ path: "test-results/admin-customers.png", fullPage: true });
+
+  await page.goto("/admin/crm-v2/courses");
+  const firstCourse = page.locator('a[href^="/admin/course-studio/"]').first();
+  if (await firstCourse.count()) {
+    await firstCourse.click();
+    await page.getByRole("button", { name: /Bước 3 Curriculum/ }).click();
+    await expect(page.getByText("Cấu trúc khóa học")).toBeVisible();
+    await expect(page.getByText("Bài học của module")).toBeVisible();
+    await page.screenshot({ path: "test-results/admin-course-studio.png", fullPage: true });
+  }
+
+  await page.goto("/admin/crm-v2/reports?range=today");
+  await expect(page.getByRole("heading", { name: "Báo cáo doanh thu & quảng cáo" })).toBeVisible();
+  await expect(page.getByText("Chi phí / đơn thanh toán", { exact: true })).toBeVisible();
+  await page.screenshot({ path: "test-results/admin-bi-report.png", fullPage: true });
 });
 
 const apiRoutes = [
@@ -182,7 +211,6 @@ test("CRM v2 remaining module action APIs respond safely", async ({ request }) =
 test("CRM v2 remaining module buttons call real action APIs", async ({ page }) => {
   const checks = [
     ["/admin/crm-v2/segments", /Lưu segment/, /save_segment|segment/i],
-    ["/admin/crm-v2/orders", /Gửi nhắc thanh toán/, /send_payment_reminder|payment/i],
     ["/admin/crm-v2/students", /Tạo ticket CSKH/, /create_support_ticket|ticket/i],
     ["/admin/crm-v2/team", /Ghi audit quyền/, /record_permission_audit|audit/i],
     ["/admin/crm-v2/integrations", /Kiểm tra kết nối/, /test_connection|connection/i],
@@ -195,16 +223,14 @@ test("CRM v2 remaining module buttons call real action APIs", async ({ page }) =
   }
 });
 
-test("CRM v2 reports range and view controls change real query state", async ({ page }) => {
+test("CRM v2 reports range controls drive the shared BI data window", async ({ page }) => {
   await page.goto("/admin/crm-v2/reports");
   await page.getByRole("link", { name: "Hôm nay" }).first().click();
   await expect(page).toHaveURL(/range=today/);
-  await page.getByRole("link", { name: "Theo giai đoạn" }).click();
-  await expect(page).toHaveURL(/view=period/);
-  await expect(page.getByText("Doanh thu theo giai đoạn")).toBeVisible();
+  await expect(page.getByText("Doanh thu và chi phí Ads theo giờ Việt Nam")).toBeVisible();
   await page.getByLabel("Từ ngày").fill("2026-06-01");
   await page.getByLabel("Đến ngày").fill("2026-06-16");
-  await page.getByRole("button", { name: "Xem giai đoạn" }).click();
+  await page.getByRole("button", { name: "Xem", exact: true }).click();
   await expect(page).toHaveURL(/range=custom/);
   await expect(page).toHaveURL(/dateFrom=2026-06-01/);
   await expect(page).toHaveURL(/dateTo=2026-06-16/);

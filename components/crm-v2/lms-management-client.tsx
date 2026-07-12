@@ -250,7 +250,8 @@ export function CourseLmsManager({ lmsSnapshot, studioMode = false }: { lmsSnaps
   const setActiveStep = (step: CourseStep) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("step", step);
-    router.replace(`/admin/crm-v2/courses/${selectedCourse?.slug}?${params.toString()}`, { scroll: false });
+    const basePath = studioMode ? `/admin/course-studio/${selectedCourse?.slug}` : `/admin/crm-v2/courses/${selectedCourse?.slug}`;
+    router.replace(`${basePath}?${params.toString()}`, { scroll: false });
   };
 
   const selectedCourse = lmsSnapshot.selectedCourse ?? lmsSnapshot.courses[0] ?? null;
@@ -549,15 +550,30 @@ function CurriculumWorkspace({
   onEditLesson: (editor: { mode: "create" | "edit"; lesson?: LmsLesson; moduleId?: string }) => void;
   submitAction: SubmitAction;
 }) {
+  const [selectedModuleId, setSelectedModuleId] = useState(course.modules[0]?.id ?? "");
+  const selectedModule = course.modules.find((module) => module.id === selectedModuleId) ?? course.modules[0];
   return (
-    <div className="grid min-w-0 gap-5 2xl:grid-cols-[minmax(340px,0.85fr)_minmax(560px,1.4fr)]">
-      <div className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-4">
-        <p className="mb-4 text-xs font-black uppercase tracking-[0.12em] text-slate-500">Cấu trúc module</p>
-        <ModulesTab busyAction={busyAction} course={course} onAddLesson={onAddLesson} submitAction={submitAction} />
+    <div className="grid min-w-0 gap-5 xl:grid-cols-[300px_minmax(0,1fr)]">
+      <div className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <p className="px-2 pb-3 text-xs font-black uppercase tracking-[0.12em] text-slate-500">Cấu trúc khóa học</p>
+        <div className="grid gap-2">
+          {course.modules.map((module, index) => (
+            <button className={`rounded-xl border p-3 text-left transition ${selectedModule?.id === module.id ? "border-blue-300 bg-white shadow-sm ring-2 ring-blue-100" : "border-transparent hover:border-slate-200 hover:bg-white"}`} key={module.id} onClick={() => setSelectedModuleId(module.id)} type="button">
+              <span className="text-[10px] font-black uppercase text-slate-400">Module {index + 1}</span>
+              <span className="mt-1 block line-clamp-2 text-sm font-black text-slate-950">{module.title}</span>
+              <span className="mt-1 block text-xs font-bold text-slate-500">{module.lessons.length} bài học</span>
+            </button>
+          ))}
+        </div>
+        <details className="mt-3 border-t border-slate-200 pt-3">
+          <summary className="cursor-pointer rounded-lg px-2 py-2 text-sm font-black text-blue-700 hover:bg-white">Quản lý module</summary>
+          <div className="mt-3"><ModulesTab busyAction={busyAction} course={course} onAddLesson={onAddLesson} submitAction={submitAction} /></div>
+        </details>
       </div>
       <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-        <p className="mb-4 text-xs font-black uppercase tracking-[0.12em] text-slate-500">Bài học trong curriculum</p>
-        <LessonsTab busyAction={busyAction} course={course} onEditLesson={onEditLesson} submitAction={submitAction} />
+        <p className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">Bài học của module</p>
+        <h3 className="mb-4 mt-1 text-xl font-black text-slate-950">{selectedModule?.title ?? "Chọn một module"}</h3>
+        <LessonsTab busyAction={busyAction} course={course} moduleId={selectedModule?.id} onEditLesson={onEditLesson} submitAction={submitAction} />
       </div>
     </div>
   );
@@ -712,20 +728,23 @@ function ModuleFormModal({
 function LessonsTab({
   busyAction,
   course,
+  moduleId,
   onEditLesson,
   submitAction,
 }: {
   busyAction: string;
   course: LmsCourse;
+  moduleId?: string;
   onEditLesson: (editor: { mode: "create" | "edit"; lesson?: LmsLesson; moduleId?: string }) => void;
   submitAction: SubmitAction;
 }) {
   const lessons = getCourseLessons(course);
-  const [moduleFilter, setModuleFilter] = useState("all");
+  const [moduleFilter, setModuleFilter] = useState(moduleId ?? "all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
   const visibleLessons = lessons.filter(({ lesson, module }) => {
-    if (moduleFilter !== "all" && module.id !== moduleFilter) return false;
+    const effectiveModule = moduleId ?? moduleFilter;
+    if (effectiveModule !== "all" && module.id !== effectiveModule) return false;
     if (statusFilter !== "all" && lesson.status !== statusFilter) return false;
     return `${lesson.title} ${lesson.slug} ${module.title}`.toLowerCase().includes(search.trim().toLowerCase());
   });
@@ -745,7 +764,7 @@ function LessonsTab({
           <h3 className="text-base font-black text-slate-950">Bài học</h3>
           <p className="mt-1 text-sm font-semibold text-slate-500">Danh sách compact, chỉ mở form khi thêm hoặc sửa một bài.</p>
         </div>
-        <ActionButton onClick={() => onEditLesson({ mode: "create", moduleId: course.modules[0]?.id })} tone="primary">
+        <ActionButton onClick={() => onEditLesson({ mode: "create", moduleId: moduleId ?? course.modules[0]?.id })} tone="primary">
           <Plus className="size-4" /> Thêm bài học
         </ActionButton>
       </div>

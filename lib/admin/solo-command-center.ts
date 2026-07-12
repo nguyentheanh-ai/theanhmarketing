@@ -641,7 +641,7 @@ function buildPriorityTasks(
         kind: "pending-order",
         title: `Đơn chờ thanh toán ${orderTarget}`,
         detail: `Đơn tạo lúc ${order.createdAt} vẫn chưa thanh toán`,
-        href: `/admin/crm-v2/orders?order=${encodeURIComponent(orderTarget)}`,
+        href: `/admin/crm-v2/leads?q=${encodeURIComponent(orderTarget)}`,
         createdAt: order.createdAt,
       });
     }
@@ -665,7 +665,7 @@ function buildPriorityTasks(
           detail: hasUnresolvedFailure && failedEmail
             ? `Hoạt động gửi email ${failedEmail.id} thất bại sau lần gửi thành công gần nhất`
             : "Chưa có dấu mốc gửi email thanh toán thành công",
-          href: `/admin/crm-v2/orders?order=${encodeURIComponent(orderTarget)}`,
+          href: `/admin/crm-v2/leads?q=${encodeURIComponent(orderTarget)}`,
           createdAt: failedEmail?.createdAt || order.paidAt || order.createdAt,
         });
       }

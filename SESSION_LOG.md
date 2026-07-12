@@ -80,3 +80,11 @@ Kết quả: local branch `chore/workspace-recovery-20260710`; `.env.example` co
 Kiểm tra đã chạy: 247/247 tests, typecheck, lint, build, staged secret scan and `git diff --cached --check`.
 Việc còn lại: review/split by feature before any merge; no push performed.
 Cảnh báo: production deploy is intentionally blocked by branch mismatch while customers are active.
+## 2026-07-12 - Course Studio focus, customer-owned orders and Ads BI
+
+Phạm vi: sửa route Course Studio, progressive curriculum, nhận diện khóa học, hợp nhất đơn vào hồ sơ khách hàng và xây lại báo cáo doanh thu/Ads.
+Các file đã thay đổi: CRM shell/routes/data, Course Studio manager, report BI charts/page, solo command links, tests và tài liệu trạng thái.
+Kết quả: Course Studio không quay về route cũ; mỗi lần chỉ thao tác một module; `Facebook` không còn bị regex nhận nhầm thành `Ebook`; menu/bảng đơn tổng được bỏ; lịch sử đơn vẫn nằm trong hồ sơ 360; báo cáo có Ads, ROAS, CR, CPL, cost/paid order, cost/distinct paid customer và biểu đồ ngang.
+Kiểm tra đã chạy: focused regression, TypeScript, ESLint, 407 Node tests, Next production build và Chromium visual flow; ảnh local không chứa PII thật.
+Việc còn lại: chạy full deploy guard, production deploy và owner smoke nếu mọi gate tiếp tục pass.
+Cảnh báo: không thay đổi landing page quảng cáo, checkout/payment, email, student access/progress hoặc course content.

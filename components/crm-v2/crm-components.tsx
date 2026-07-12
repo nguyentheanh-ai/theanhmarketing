@@ -38,7 +38,6 @@ import type { CrmEvent, CrmListQuery, CrmTableColumn, KpiMetric } from "@/lib/cr
 const primaryNavItems = [
   { href: "/admin/crm-v2", label: "Tổng quan", icon: Gauge, exact: true },
   { href: "/admin/crm-v2/leads", label: "Khách hàng", icon: GitBranch },
-  { href: "/admin/crm-v2/orders", label: "Đơn hàng", icon: CreditCard },
   { href: "/admin/crm-v2/students", label: "Học viên", icon: Users, excludeView: "courses" },
   { href: "/admin/crm-v2/courses", label: "Khóa học", icon: BookOpen },
   { href: "/admin/crm-v2/reports", label: "Báo cáo", icon: BarChart3 },
@@ -550,11 +549,9 @@ export function KpiCard({ metric }: { metric: KpiMetric }) {
           <div className="text-xs font-semibold text-slate-500">{metric.label}</div>
           <div className="mt-2 text-2xl font-black text-slate-950">{metric.value}</div>
         </div>
-        <span className={`rounded-md border px-2 py-1 text-xs font-bold ${toneClasses[tone]}`}>{metric.delta ?? "On track"}</span>
+        {metric.delta ? <span className={`rounded-md border px-2 py-1 text-xs font-bold ${toneClasses[tone]}`}>{metric.delta}</span> : null}
       </div>
-      <div className="mt-4">
-        <Sparkline values={metric.series ?? [1, 2, 3, 4, 5]} tone={tone} />
-      </div>
+      {metric.series?.length ? <div className="mt-4"><Sparkline values={metric.series} tone={tone} /></div> : null}
     </section>
   );
 }

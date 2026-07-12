@@ -469,7 +469,7 @@ function inferCourseFromPublicLead(row: Record<string, unknown>) {
     .join(" ")
     .toLowerCase();
 
-  if (/ebook/.test(text) && /facebook|fb/.test(text)) return { title: "Ebook Facebook Ads 2026", slug: "ebook-facebook-ads-2026" };
+  if (/(?:\bebook\b|\be-book\b|\be book\b)/.test(text) && /facebook|fb/.test(text)) return { title: "Ebook Facebook Ads 2026", slug: "ebook-facebook-ads-2026" };
   if (/facebook|fb/.test(text)) return { title: "Facebook Ads 2026", slug: "facebook-ads-2026" };
   if (/growth|x10/.test(text)) return { title: "AI Growth Master X10", slug: "ai-growth-master-x10" };
   return { title: "Chưa map khóa học", slug: undefined };
@@ -577,10 +577,47 @@ function filterUnifiedCustomerRows(rows: CrmUnifiedCustomerRow[], query: CrmList
 
 function courseShortName(value: string) {
   const text = value || "Chưa rõ";
-  if (/ebook/i.test(text)) return "Ebook";
+  if (/(?:\bebook\b|\be-book\b|\be book\b)/i.test(text)) return "Ebook";
   if (/facebook/i.test(text)) return "FB Ads";
   if (/growth|x10/i.test(text)) return "AI Growth";
   return text.split(/\s+/).slice(0, 3).join(" ");
+}
+
+export async function getCrmV2PaidCustomerCount(query: CrmListQuery) {
+  const client = canQueryLiveCrmV2() ? createSupabaseAdminClient() : null;
+  if (!client) return 0;
+  const orders = await listPublicOrdersForRange(client, getCrmDateRange(query));
+  const customerKeys = orders
+    .filter((row) => isPaidStatus(String(row.status ?? row.payment_status ?? "")))
+    .map((row) => {
+      const email = normalizeEmail(String(row.email ?? ""));
+      const phone = normalizePhone(String(row.phone ?? ""));
+      return email ? `email:${email}` : phone ? `phone:${phone}` : `order:${String(row.id ?? row.order_code ?? "")}`;
+    })
+    .filter(Boolean);
+  return new Set(customerKeys).size;
+}
+
+function courseIdentityPriority(row: CrmUnifiedCustomerRow) {
+  const fromPublicOrder = row.tags.includes("public.orders");
+  const fromOrder = fromPublicOrder || Boolean(row.orderCode);
+  const mapped = Boolean(row.courseSlug) && !/chưa map|chưa rõ/i.test(row.course);
+  if (fromPublicOrder && isPaidStatus(row.paymentStatus)) return 500;
+  if (fromOrder && isPaidStatus(row.paymentStatus)) return 400;
+  if (fromPublicOrder) return 350;
+  if (fromOrder) return 300;
+  if (mapped && !row.tags.includes("public.leads")) return 200;
+  if (mapped) return 100;
+  return 0;
+}
+
+function pickPreferredCourseIdentity(existing: CrmUnifiedCustomerRow, incoming: CrmUnifiedCustomerRow) {
+  const preferred = courseIdentityPriority(incoming) > courseIdentityPriority(existing) ? incoming : existing;
+  return {
+    course: preferred.course,
+    courseShort: courseShortName(preferred.course),
+    courseSlug: preferred.courseSlug,
+  };
 }
 
 function toActivityTitle(eventType: string) {
@@ -1163,9 +1200,11 @@ export async function listCrmV2UnifiedCustomers(query: CrmListQuery): Promise<Cr
       rowsByKey.set(key, row);
       return;
     }
+    const courseIdentity = pickPreferredCourseIdentity(existing, row);
     rowsByKey.set(key, {
       ...existing,
       ...row,
+      ...courseIdentity,
       id: existing.id || row.id,
       contactId: existing.contactId || row.contactId,
       phone: existing.phone || row.phone,

@@ -92,7 +92,7 @@ test("crm v2 is the canonical admin destination with compatibility redirects", (
   assert.match(adminIndex, /redirect\(\"\/admin\/khoa-hoc\"\)/, "editor must keep the role-safe legacy course workspace");
   assert.match(adminDashboard, /redirect\(\"\/admin\/crm-v2\"\)/, "old dashboard must redirect to the canonical overview");
   assert.match(legacyLeads, /redirect\(\"\/admin\/crm-v2\/leads\"\)/);
-  assert.match(legacyOrders, /redirect\(\"\/admin\/crm-v2\/orders\"\)/);
+  assert.match(legacyOrders, /redirect\(\"\/admin\/crm-v2\/leads\"\)/);
   assert.match(legacyStudents, /redirect\(\"\/admin\/crm-v2\/students\"\)/);
   assert.match(legacyCourses, /redirect\(\"\/admin\/crm-v2\/courses\"\)/);
   assert.match(legacyReports, /redirect\(\"\/admin\/crm-v2\/reports\"\)/);
@@ -107,7 +107,6 @@ test("crm v2 shell exposes the executive operating system navigation", () => {
   for (const href of [
     "/admin/crm-v2",
     "/admin/crm-v2/leads",
-    "/admin/crm-v2/orders",
     "/admin/crm-v2/students",
     "/admin/crm-v2/courses",
     "/admin/crm-v2/reports",
@@ -116,6 +115,7 @@ test("crm v2 shell exposes the executive operating system navigation", () => {
     assert.ok(components.includes(`href: "${href}"`), `primary navigation must include ${href}`);
   }
 
+  assert.ok(!components.includes('href: "/admin/crm-v2/orders"'), "orders must only appear inside customer profiles");
   assert.match(components, /Executive Operating System/);
   assert.match(components, /bg-\[#f4f6f9\]/);
   assert.match(components, /Nâng cao/);
@@ -129,7 +129,6 @@ test("lean solo admin keeps only verified modules and CRM-owned settings", () =>
   for (const href of [
     "/admin/crm-v2",
     "/admin/crm-v2/leads",
-    "/admin/crm-v2/orders",
     "/admin/crm-v2/students",
     "/admin/crm-v2/courses",
     "/admin/crm-v2/reports",
@@ -140,8 +139,9 @@ test("lean solo admin keeps only verified modules and CRM-owned settings", () =>
     assert.ok(!shell.includes(`href: "${hiddenHref}"`), `operator navigation must hide ${hiddenHref}`);
   }
 
+  assert.ok(!shell.includes('href: "/admin/crm-v2/orders"'), "lean navigation must not expose a separate orders table");
   assert.ok(exists("app/admin/crm-v2/settings/page.tsx"));
-  assert.ok(dataLayer.indexOf('if (/ebook/i.test(text)) return "Ebook"') < dataLayer.indexOf('if (/facebook/i.test(text)) return "FB Ads"'));
+  assert.ok(dataLayer.indexOf('\\bebook\\b') < dataLayer.indexOf('if (/facebook/i.test(text)) return "FB Ads"'));
 });
 
 test("canonical dashboard renders only real actionable operating data", () => {
@@ -164,13 +164,11 @@ test("canonical dashboard renders only real actionable operating data", () => {
 
 test("orders use selected-range aggregates instead of the current page and fake series", () => {
   const page = read("app/admin/crm-v2/orders/page.tsx");
-  const client = read("components/crm-v2/orders-page-client.tsx");
+  const profile = read("app/admin/crm-v2/leads/[id]/page.tsx");
   const dataLayer = read("lib/crm-v2/data.ts");
 
-  assert.match(page, /getCrmV2OrderSummary\(query\)/);
-  assert.match(client, /orderSummary/);
-  assert.doesNotMatch(client, /rows\.reduce\(\(sum, row\).*row\.value/);
-  assert.doesNotMatch(client, /series:\s*\[8,\s*12,\s*20/);
+  assert.match(page, /redirect\(\"\/admin\/crm-v2\/leads\"\)/);
+  assert.match(profile, /id:\s*"orders"/);
   assert.match(dataLayer, /dateLowerBound\(dateRange\.from\)[\s\S]*dateUpperBoundExclusive\(dateRange\.to\)/);
   assert.match(dataLayer, /export async function getCrmV2OrderSummary/);
 });
@@ -426,7 +424,7 @@ test("crm v2 route surface is gated and complete", () => {
     ["app/admin/crm-v2/automation/page.tsx", "Automation Workflow"],
     ["app/admin/crm-v2/orders/page.tsx", "Đơn hàng & Thanh toán"],
     ["app/admin/crm-v2/students/page.tsx", "Học viên & Khóa học"],
-    ["app/admin/crm-v2/reports/page.tsx", "Báo cáo & Attribution"],
+    ["app/admin/crm-v2/reports/page.tsx", "Báo cáo doanh thu & quảng cáo"],
     ["app/admin/crm-v2/team/page.tsx", "Team & Phân quyền"],
     ["app/admin/crm-v2/integrations/page.tsx", "Tích hợp"],
   ]);
@@ -532,7 +530,7 @@ test("crm v2 live data mapping uses true source counts and course slugs", () => 
   assert.match(leadsClient, /key: "phone",\s*label: "SĐT"/, "lead table must show phone numbers");
   assert.doesNotMatch(leadsClient, /RightInsightPanel title="Bulk action/, "leads list must keep the data table full-width like the mockup");
   assert.match(leadsClient, /key: "course",\s*label: "Khóa học quan tâm",\s*width: "260px"/, "lead course column must have enough width to avoid vertical word wrapping");
-  assert.match(ordersPage, /min-\[1840px\]:grid-cols-\[minmax\(0,1fr\)_340px\]/, "orders insight panel must not squeeze the table on normal desktop widths");
+  assert.match(ordersPage, /redirect\(\"\/admin\/crm-v2\/leads\"\)/, "orders table must redirect into the customer workspace");
   assert.match(`${leadsClient}\n${ordersPage}`, /minmax\(0,1fr\)/, "CRM grids must prevent table overflow from expanding the viewport");
   assert.match(shell, /getColumnWidth/, "CRM data table must use explicit column widths for dense mockup-like tables");
   assert.match(shell, /line-clamp-2/, "CRM long table text must clamp instead of forcing vertical word wrapping");
@@ -658,7 +656,7 @@ test("crm v2 shared controls expose real actions instead of inert buttons", () =
   assert.match(automationPage, /WorkflowBuilder/, "automation page must use the editable API-backed workflow builder");
   assert.match(emailPage, /EmailActionButtons/, "email campaign actions must be backed by an action API client");
   assert.match(segmentsPage, /SegmentActionPanel/, "segments page must expose API-backed segment actions");
-  assert.match(ordersPage, /OrderActionButtons/, "orders page must expose API-backed order actions");
+  assert.match(ordersPage, /redirect\(\"\/admin\/crm-v2\/leads\"\)/, "orders actions must live inside customer profiles");
   assert.match(studentsPage, /StudentActionButtons/, "students page must expose API-backed student actions");
   assert.match(teamPage, /TeamActionButtons/, "team page must expose API-backed team actions");
   assert.match(integrationsPage, /IntegrationActionButtons/, "integrations page must expose API-backed integration actions");
@@ -700,15 +698,10 @@ test("crm v2 operator modules use real filters, live reports, permissions, email
   assert.doesNotMatch(reportsPage, /ReportRangeControls/, "Reports must not own a separate date/range control");
   assert.doesNotMatch(reportsPage, /name="dateFrom"/, "Reports must use the global CRM date picker, not its own dateFrom input");
   assert.doesNotMatch(reportsPage, /name="dateTo"/, "Reports must use the global CRM date picker, not its own dateTo input");
-  assert.match(reportsPage, /Theo ngày/, "Reports must support daily view");
-  assert.match(reportsPage, /Theo giai đoạn/, "Reports must support period view");
-  assert.match(reportsPage, /Theo nguồn/, "Reports must support source view");
-  assert.match(reportsPage, /InvertedFunnelChart/, "Reports must render an inverted funnel chart");
-  assert.match(reportsPage, /aria-label="Phễu tam giác đăng ký đến vào học"/, "Reports funnel must render as a visual triangle funnel");
-  assert.match(reportsPage, /clipPath/, "Reports funnel segments must use clipped trapezoids instead of text-only pills");
-  assert.match(reportsPage, /ReportValueBars/, "Reports daily revenue chart must use a report-specific chart renderer");
-  assert.match(reportsPage, /Chưa có doanh thu trong bộ lọc này/, "Reports daily revenue chart must explain truly empty ranges");
-  assert.match(reportsPage, /Khách đăng ký[\s\S]*MQL[\s\S]*Chờ thanh toán[\s\S]*Đã thanh toán[\s\S]*Vào học/, "Reports funnel must use the requested business stages");
+  assert.match(reportsPage, /ReportBiCharts/, "Reports must render the live BI chart surface");
+  assert.match(reportsPage, /getMetaAdsReport/, "Reports must include live Meta Ads spend");
+  assert.match(reportsPage, /Chi phí \/ đơn thanh toán/, "Reports must expose paid-order acquisition cost");
+  assert.match(reportsPage, /Chưa đủ dữ liệu/, "Reports must fail closed when a KPI denominator is missing");
   assert.match(dataLayer, /getCrmV2ReportSnapshot[\s\S]*getCrmV2Dashboard\(query\)/, "Reports must reuse live dashboard RPC summary instead of isolated private-table reads");
   assert.match(dataLayer, /paid_at/, "Reports must include paid_at so paid-today orders are counted even if created earlier");
   assert.match(dataLayer, /dailyRevenue/, "Reports must carry daily revenue from the direct order attribution source");
@@ -964,7 +957,7 @@ test("crm v2 email and payment actions execute real server outcomes", () => {
   assert.match(ordersActionsApi, /sendCrmV2PaymentReminder/, "order reminder must call email service");
   assert.match(ordersActionsApi, /email_send_queued:\s*true/, "order reminder task metadata must record real email queue/send");
   assert.doesNotMatch(ordersActionsApi, /email_send_queued:\s*false/, "order reminder cannot stop at a task-only fake action");
-  assert.match(ordersPage, /OrderActionButtons order=\{orders\[0\]\}/, "orders UI must pass the real selected order, not only a string id");
+  assert.match(ordersPage, /redirect\(\"\/admin\/crm-v2\/leads\"\)/, "orders must be reviewed from the customer profile");
   assert.doesNotMatch(moduleButtons, /"manual"/, "module actions must not default to manual placeholder IDs");
   assert.doesNotMatch(moduleButtons, /ops@theanhmarketing\.com/, "team action must not hard-code a fake member");
 });
