@@ -96,5 +96,7 @@ Phạm vi: sửa bảy nút chuyển bước không phản hồi ổn định v�
 Các file đã thay đổi: Course Studio manager, LMS/admin regression tests và tài liệu trạng thái.
 Kết quả: chuyển bước cập nhật tức thời bằng local state, URL chỉ đồng bộ nền bằng History API; không còn hiển thị `lesson-1` hoặc slug dài trong danh sách bài.
 Kiểm tra đã chạy: 10/10 focused tests, TypeScript, ESLint và production build 105 routes.
-Việc còn lại: guarded production deploy và live owner check.
+Việc còn lại: anh kiểm tra lại thao tác bằng owner session sau một lần hard refresh; không còn blocker kỹ thuật đã biết.
 Cảnh báo: không thay đổi course content, quyền học, landing, checkout hoặc email.
+
+Deploy: runtime commit `60be5c0`, deployment `dpl_EiqfEfmJBJkQDZeEBKp6P7SAkVqU`, Ready và aliased tới `https://www.theanhmarketing.com`. Protected route redirect login đúng và error scan sau release không có log.
