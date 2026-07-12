@@ -90,3 +90,11 @@ Việc còn lại: anh kiểm tra trực quan bằng owner session; không còn 
 Cảnh báo: không thay đổi landing page quảng cáo, checkout/payment, email, student access/progress hoặc course content.
 
 Deploy: runtime commit `9cb1e82`, deployment `dpl_3ektSz6SHJWYKmG1sNrZfS2AEhyH`, trạng thái Ready và alias `https://www.theanhmarketing.com`. Post-deploy smoke: public/landing/bridge 200; admin protected redirect login; CRM API 403; protected library redirect login; error log 15 phút không có bản ghi.
+## 2026-07-12 - Course Studio step interaction hotfix
+
+Phạm vi: sửa bảy nút chuyển bước không phản hồi ổn định và ẩn slug kỹ thuật dưới tiêu đề bài học.
+Các file đã thay đổi: Course Studio manager, LMS/admin regression tests và tài liệu trạng thái.
+Kết quả: chuyển bước cập nhật tức thời bằng local state, URL chỉ đồng bộ nền bằng History API; không còn hiển thị `lesson-1` hoặc slug dài trong danh sách bài.
+Kiểm tra đã chạy: 10/10 focused tests, TypeScript, ESLint và production build 105 routes.
+Việc còn lại: guarded production deploy và live owner check.
+Cảnh báo: không thay đổi course content, quyền học, landing, checkout hoặc email.

@@ -246,12 +246,13 @@ export function CourseLmsManager({ lmsSnapshot, studioMode = false }: { lmsSnaps
   const [lessonEditor, setLessonEditor] = useState<{ mode: "create" | "edit"; lesson?: LmsLesson; moduleId?: string } | null>(null);
 
   const requestedStep = searchParams.get("step");
-  const activeStep = courseSteps.some((step) => step.id === requestedStep) ? (requestedStep as CourseStep) : "overview";
+  const [activeStep, setActiveStepState] = useState<CourseStep>(() => courseSteps.some((step) => step.id === requestedStep) ? (requestedStep as CourseStep) : "overview");
   const setActiveStep = (step: CourseStep) => {
+    setActiveStepState(step);
     const params = new URLSearchParams(searchParams.toString());
     params.set("step", step);
     const basePath = studioMode ? `/admin/course-studio/${selectedCourse?.slug}` : `/admin/crm-v2/courses/${selectedCourse?.slug}`;
-    router.replace(`${basePath}?${params.toString()}`, { scroll: false });
+    window.history.replaceState(window.history.state, "", `${basePath}?${params.toString()}`);
   };
 
   const selectedCourse = lmsSnapshot.selectedCourse ?? lmsSnapshot.courses[0] ?? null;
@@ -809,7 +810,6 @@ function LessonsTab({
               <div className="text-sm font-black text-slate-400">#{index + 1}</div>
               <div className="min-w-0">
                 <div className="line-clamp-2 text-sm font-black text-slate-950">{lesson.title}</div>
-                <div className="mt-1 truncate text-xs font-semibold text-slate-400">{lesson.slug}</div>
               </div>
               <div className="line-clamp-2 text-sm font-bold text-slate-600">{module.title}</div>
               <div className="text-sm font-bold text-slate-600">{lesson.lessonType}</div>

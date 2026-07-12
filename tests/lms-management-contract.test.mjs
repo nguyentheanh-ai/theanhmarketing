@@ -104,7 +104,10 @@ test("course workspace uses free guided steps, real analytics, and visible save 
 
   assert.match(manager, /Course Workspace/);
   assert.match(manager, /Chuyển tự do giữa các bước/);
-  assert.match(manager, /searchParams\.get\("step"\)/, "active step must be URL-backed");
+  assert.match(manager, /setActiveStepState\(step\)/, "step changes must update immediately without waiting for route navigation");
+  assert.match(manager, /window\.history\.replaceState/, "step state may synchronize its shareable URL without a server navigation");
+  assert.doesNotMatch(manager, /router\.replace\(`\$\{basePath\}/, "step clicks must not depend on a Next route transition");
+  assert.doesNotMatch(manager, />\{lesson\.slug\}</, "lesson slugs must not leak into the operator UI");
   assert.match(manager, /Đang lưu|Đã lưu|Lỗi lưu/, "mutations must expose save state");
   assert.match(manager, /CurriculumWorkspace/);
   assert.match(manager, /CourseAnalytics/);

@@ -10,6 +10,8 @@ test("Course Studio keeps all step navigation inside the independent studio", ()
   assert.doesNotMatch(manager, /router\.replace\(`\/admin\/crm-v2\/courses\/\$\{selectedCourse\?\.slug\}/);
   assert.match(manager, /selectedModuleId/);
   assert.match(manager, /Bài học của module/);
+  assert.match(manager, /setActiveStepState\(step\)/);
+  assert.doesNotMatch(manager, />\{lesson\.slug\}</);
 });
 
 test("customer course identity is merged atomically with paid order priority", () => {
