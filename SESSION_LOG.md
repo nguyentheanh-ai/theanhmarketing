@@ -86,5 +86,7 @@ Phạm vi: sửa route Course Studio, progressive curriculum, nhận diện khó
 Các file đã thay đổi: CRM shell/routes/data, Course Studio manager, report BI charts/page, solo command links, tests và tài liệu trạng thái.
 Kết quả: Course Studio không quay về route cũ; mỗi lần chỉ thao tác một module; `Facebook` không còn bị regex nhận nhầm thành `Ebook`; menu/bảng đơn tổng được bỏ; lịch sử đơn vẫn nằm trong hồ sơ 360; báo cáo có Ads, ROAS, CR, CPL, cost/paid order, cost/distinct paid customer và biểu đồ ngang.
 Kiểm tra đã chạy: focused regression, TypeScript, ESLint, 407 Node tests, Next production build và Chromium visual flow; ảnh local không chứa PII thật.
-Việc còn lại: chạy full deploy guard, production deploy và owner smoke nếu mọi gate tiếp tục pass.
+Việc còn lại: anh kiểm tra trực quan bằng owner session; không còn blocker kỹ thuật đã biết trong phạm vi release.
 Cảnh báo: không thay đổi landing page quảng cáo, checkout/payment, email, student access/progress hoặc course content.
+
+Deploy: runtime commit `9cb1e82`, deployment `dpl_3ektSz6SHJWYKmG1sNrZfS2AEhyH`, trạng thái Ready và alias `https://www.theanhmarketing.com`. Post-deploy smoke: public/landing/bridge 200; admin protected redirect login; CRM API 403; protected library redirect login; error log 15 phút không có bản ghi.
