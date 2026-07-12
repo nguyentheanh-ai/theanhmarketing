@@ -6,8 +6,8 @@ Phạm vi: tách Course Studio khỏi CRM shell, sửa số lead/đơn theo kỳ
 Các file đã thay đổi: route Course Studio/redirect, Course Hub/LMS service/API, CRM dashboard/data/order summary/charts, Meta timezone/report adapter, tests, AGENTS và tài liệu audit/trạng thái.
 Kết quả: Course Studio mở ở tab riêng; khóa học sắp xếp được; biểu đồ khóa học dùng nhãn hai dòng/chiều cao động; KPI đơn hàng không phụ thuộc phân trang; Meta Ads có trạng thái partial/final và không bịa số.
 Kiểm tra đã chạy: Node 403/403, TS unit 19/19, TypeScript, ESLint, Next production build, protected-route preflight và Chromium CRM 33/33.
-Việc còn lại: thay Meta Ads production token bằng long-lived/system-user token hợp lệ trong một maintenance riêng; dashboard tiếp tục fail-closed cho tới lúc đó.
-Cảnh báo: không sửa cổng học viên trong release này; các link tải placeholder ở app học viên chỉ được ghi nhận cho maintenance riêng. Token Meta production hiện tại vẫn hết hạn; không đưa token người dùng dán trong chat vào code, log hoặc tài liệu.
+Việc còn lại: theo dõi chất lượng `partial/final`; xoay sang system-user token dài hạn trước khi mã từ Marketing API Tools hết hạn.
+Cảnh báo: không sửa cổng học viên trong release này; các link tải placeholder ở app học viên chỉ được ghi nhận cho maintenance riêng. Token Meta chỉ nằm trong Vercel sensitive env, không nằm trong code, log hoặc tài liệu.
 
 Deploy: `dpl_6SrsuEWkuKg8TrDbxRNpzaS26zFP` Ready và aliased tới `https://www.theanhmarketing.com`. Owner smoke xác nhận donut trạng thái đơn không còn rỗng, course labels không chồng, Course Studio độc lập tải 3 module/23 bài/98 học viên. Landing Ads chính khớp baseline title/H1/nội dung/CTA và 0 ảnh lỗi; sáu landing/bridge URL trả 200; Vercel error scan 10 phút không có log.
 

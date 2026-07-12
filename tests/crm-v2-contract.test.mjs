@@ -186,6 +186,7 @@ test("solo dashboard uses adaptive charts and a fail-closed Meta Ads adapter", (
   assert.match(meta, /META_ADS_ACCESS_TOKEN/);
   assert.match(meta, /META_ADS_AD_ACCOUNT_ID/);
   assert.match(meta, /hourly_stats_aggregated_by_advertiser_time_zone/);
+  assert.match(meta, /time_increment["']\s*,\s*["']1["']/, "hourly breakdown must remain separated by advertiser calendar day");
   assert.match(meta, /timezone_name/, "Meta adapter must read the account timezone instead of hard-coding a US offset");
   assert.match(meta, /aggregateMetaAdsForVietnam/, "Meta adapter must aggregate advertiser hours into Vietnam business buckets");
   assert.match(meta, /paging\?\.next/, "Meta adapter must follow pagination for long report ranges");

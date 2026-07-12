@@ -55,6 +55,7 @@ export async function getMetaAdsReport(range: ReportRange): Promise<MetaAdsRepor
     const insightsUrl = new URL(`https://graph.facebook.com/${version}/${account}/insights`);
     insightsUrl.searchParams.set("fields", "spend,impressions,clicks,date_start,date_stop");
     insightsUrl.searchParams.set("time_range", JSON.stringify(window));
+    insightsUrl.searchParams.set("time_increment", "1");
     insightsUrl.searchParams.set("breakdowns", "hourly_stats_aggregated_by_advertiser_time_zone");
     insightsUrl.searchParams.set("limit", "500");
 
