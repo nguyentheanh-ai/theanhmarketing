@@ -1180,3 +1180,16 @@ Before changing these, run targeted tests and full build.
 | Tests | Adjusted `tests/lms-management-contract.test.mjs` so real input placeholders are allowed while mock/demo LMS behavior is still rejected. |
 | Deploy | Production deployment `dpl_BnRYUiinSWdsV5VkdzZuv5V7jHxs`, URL `https://theanhmarketing-gd5jh1nbm-theanhs-projects-509d0c97.vercel.app`, alias `https://www.theanhmarketing.com`, Ready. |
 | Verify | `npx.cmd tsc --noEmit --pretty false`, `npm.cmd run lint`, LMS contract, CRM v2 contract, student access admin controls, student activity log flow, `npm.cmd run build`, Vercel production build, and live unauth route smoke passed. Authenticated owner visual smoke still needs a real browser session. |
+
+## 2026-07-13 - CRM Ebook short-label production release
+
+| Hạng mục | Chi tiết |
+|---|---|
+| App/domain | `main-site` / `theanhmarketing.com`; canonical worktree `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`. |
+| Root cause | Ebook orders use `course_slug=ebook-facebook-ads-2026`, but their title is `Thư viện kiến thức Facebook Ads 2026`. The title-only `courseShortName` returned `FB Ads` and ignored the authoritative slug. |
+| Audit | Read-only production window 14/06-13/07 covered 228 orders, 237 leads and 191 unique contact keys. The old rule affected 26 Ebook orders across 24 unique customers. The six non-target orders were all `marketing-gioi-phai-kiem-duoc-tien`. |
+| Fix | Short labels use title plus slug for product detection, while non-target fallback still uses the title only. All public/CRM lead and order mappers plus atomic identity merge pass the slug. |
+| Test/gate | RED reproduced the issue and the added non-target regression; full production-branch suite 408/408, TypeScript, ESLint, diff check, session guard, candidate preflight, 105-page Next build and central production verify passed. |
+| Deploy | Runtime commit `d076218`; Vercel deployment `dpl_D2VAgV44iP4nLaAdRexUSbWtwzt1`; Ready and aliased to production domains. |
+| Live QA | Unauthenticated protected routes redirected/returned `403`, `/admin/facebook-ads` remained `404`, Ebook/academy/assets returned `200`, library redirected to login, Vercel error scan was empty. Owner Chrome verified `4 Ebook / 4 FB Ads` for the original 12/07 screenshot and all 205 rows across five 30-day pages (`23 Ebook`, `181 FB Ads`, `1 AI Growth`). |
+| Safety | No database row, schema, API contract, checkout, payment, email, student access, landing or tracking mutation. |

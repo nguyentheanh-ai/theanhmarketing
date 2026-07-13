@@ -1,6 +1,8 @@
 # Current State - theanh-main
 
-Updated: 2026-07-12
+Updated: 2026-07-13
+
+- CRM Ebook short-label hotfix is live in production deployment `dpl_D2VAgV44iP4nLaAdRexUSbWtwzt1` from runtime commit `d076218`. The unified Leads & Pipeline classifier now reads both the product title and authoritative `course_slug`: `ebook-facebook-ads-2026` displays `Ebook`, genuine `facebook-ads-2026` remains `FB Ads`, and non-target products keep the existing title-based fallback. A read-only 30-day production audit covered 228 orders, 237 leads and 191 unique contact keys; 26 Ebook orders belonging to 24 unique customers were affected by the old title-only rule. Authenticated owner QA then checked all 205 visible CRM rows across five 30-day pages (`23 Ebook`, `181 FB Ads`, `1 AI Growth`) and confirmed the original eight 12/07 rows now split exactly `4 Ebook / 4 FB Ads`. No database row or API shape changed.
 
 - Production admin consolidation release `dpl_3ektSz6SHJWYKmG1sNrZfS2AEhyH` is Ready and aliased to `https://www.theanhmarketing.com`; runtime code commit is `9cb1e82`.
 - Course Studio interaction hotfix is live in production deployment `dpl_EiqfEfmJBJkQDZeEBKp6P7SAkVqU` from runtime commit `60be5c0`: the seven step buttons update local UI state immediately and only synchronize browser history in the background; lesson slugs/internal URLs are no longer rendered under lesson titles. Deployment is Ready, aliased to `https://www.theanhmarketing.com`, protected route smoke passed and the post-release error scan was empty.

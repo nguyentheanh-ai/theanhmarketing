@@ -104,7 +104,7 @@ Database: `public.leads`, `public.orders`, CRM V2 schema/RPCs in `supabase/migra
 
 Guard: protected routes must redirect/return 403 when unauthenticated, never become 404 after deploy.
 
-Course identity guard: keep `course`, `courseShort` and `courseSlug` atomic. Priority is paid public order, paid CRM order, other order, explicit mapped lead, inferred lead, unknown. Match Ebook as a standalone word; never match the `ebook` substring inside `Facebook`.
+Course identity guard: keep `course`, `courseShort` and `courseSlug` atomic. Priority is paid public order, paid CRM order, other order, explicit mapped lead, inferred lead, unknown. Derive the short label from both title and slug: `ebook-facebook-ads-2026` must display `Ebook` even when its customer-facing title only says `Thư viện kiến thức Facebook Ads 2026`; `facebook-ads-2026` remains `FB Ads`. Match Ebook as a standalone word, never match the `ebook` substring inside `Facebook`, and preserve the title-only three-word fallback for non-target products.
 
 ## Transactional email and bridge links
 

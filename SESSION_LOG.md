@@ -100,3 +100,14 @@ Việc còn lại: anh kiểm tra lại thao tác bằng owner session sau một
 Cảnh báo: không thay đổi course content, quyền học, landing, checkout hoặc email.
 
 Deploy: runtime commit `60be5c0`, deployment `dpl_EiqfEfmJBJkQDZeEBKp6P7SAkVqU`, Ready và aliased tới `https://www.theanhmarketing.com`. Protected route redirect login đúng và error scan sau release không có log.
+
+## 2026-07-13 - CRM Ebook short-label production release
+
+Phạm vi: sửa nhãn `Khóa học quan tâm` trên `/admin/crm-v2/leads` khi đơn Ebook có tiêu đề chứa `Facebook Ads` nhưng slug là `ebook-facebook-ads-2026`.
+Căn nguyên: `courseShortName` chỉ đọc tiêu đề sản phẩm nên đơn `Thư viện kiến thức Facebook Ads 2026` bị rút gọn thành `FB Ads`; slug sản phẩm đã đúng nhưng bị bỏ qua.
+Audit production chỉ đọc từ 14/06 đến 13/07: 228 đơn, 237 lead, 191 contact key duy nhất; 26 đơn Ebook của 24 khách duy nhất bị quy tắc cũ phân loại sai. Sáu đơn sản phẩm `Marketing giỏi phải kiếm được tiền` không thuộc Ebook/FB Ads và được khóa test để giữ fallback theo tiêu đề.
+Thay đổi: `lib/crm-v2/data.ts` truyền `courseSlug` vào bộ rút gọn nhãn tại mọi mapper/merge point; `tests/admin-solo-ops-regression.test.mjs` thực thi trực tiếp helper cho Ebook, FB Ads và sản phẩm ngoài phạm vi.
+Kiểm tra trước deploy: session guard, candidate preflight, full Node 408/408, TypeScript, ESLint, diff check, Next production build 105 pages và central production verify đều đạt.
+Deploy: commit `d076218`, deployment `dpl_D2VAgV44iP4nLaAdRexUSbWtwzt1`, Ready và aliased tới `theanhmarketing.com`, `www.theanhmarketing.com` và Vercel production aliases.
+Live QA: toàn bộ route/API/Ebook smoke đạt, error log trống. Phiên owner xác nhận 8 dòng 12/07 là `4 Ebook / 4 FB Ads`; quét đủ 205 dòng trên 5 trang bộ lọc 30 ngày cho kết quả `23 Ebook / 181 FB Ads / 1 AI Growth`, không có nhãn lạ hoặc slug bị lộ.
+An toàn: không sửa database, API shape, checkout, payment, email, quyền học, landing hay tracking.
