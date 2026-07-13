@@ -499,7 +499,7 @@ function publicLeadToUnifiedCustomerRow(row: Record<string, unknown>): CrmUnifie
     name: String(row.name || row.email || row.phone || "Chưa rõ tên"),
     phone: row.phone ? String(row.phone) : undefined,
     email: row.email ? String(row.email) : undefined,
-    courseShort: courseShortName(course.title),
+    courseShort: courseShortName(course.title, course.slug),
     course: course.title,
     courseSlug: course.slug,
     paymentStatus: stage === "paid" ? "paid" : stage === "pending_payment" ? "pending" : "not_paid",
@@ -531,7 +531,7 @@ function publicOrderToUnifiedCustomerRow(row: Record<string, unknown>): CrmUnifi
     name: String(row.student_name || row.email || row.phone || "Chưa rõ khách"),
     phone: row.phone ? String(row.phone) : undefined,
     email: row.email ? String(row.email) : undefined,
-    courseShort: courseShortName(courseTitle),
+    courseShort: courseShortName(courseTitle, row.course_slug ? String(row.course_slug) : undefined),
     course: courseTitle,
     courseSlug: row.course_slug ? String(row.course_slug) : undefined,
     paymentStatus: status,
@@ -575,12 +575,13 @@ function filterUnifiedCustomerRows(rows: CrmUnifiedCustomerRow[], query: CrmList
   });
 }
 
-function courseShortName(value: string) {
-  const text = value || "Chưa rõ";
+function courseShortName(value: string, slug?: string) {
+  const title = value || "Chưa rõ";
+  const text = `${slug ?? ""} ${title}`;
   if (/(?:\bebook\b|\be-book\b|\be book\b)/i.test(text)) return "Ebook";
   if (/facebook/i.test(text)) return "FB Ads";
   if (/growth|x10/i.test(text)) return "AI Growth";
-  return text.split(/\s+/).slice(0, 3).join(" ");
+  return title.split(/\s+/).slice(0, 3).join(" ");
 }
 
 export async function getCrmV2PaidCustomerCount(query: CrmListQuery) {
@@ -615,7 +616,7 @@ function pickPreferredCourseIdentity(existing: CrmUnifiedCustomerRow, incoming: 
   const preferred = courseIdentityPriority(incoming) > courseIdentityPriority(existing) ? incoming : existing;
   return {
     course: preferred.course,
-    courseShort: courseShortName(preferred.course),
+    courseShort: courseShortName(preferred.course, preferred.courseSlug),
     courseSlug: preferred.courseSlug,
   };
 }
@@ -1230,7 +1231,7 @@ export async function listCrmV2UnifiedCustomers(query: CrmListQuery): Promise<Cr
       name: lead.name,
       phone: lead.phone,
       email: lead.email,
-      courseShort: courseShortName(lead.course),
+      courseShort: courseShortName(lead.course, lead.courseSlug),
       course: lead.course,
       courseSlug: lead.courseSlug,
       paymentStatus: lead.stage === "paid" ? "paid" : lead.stage === "pending_payment" ? "pending" : "not_paid",
@@ -1257,7 +1258,7 @@ export async function listCrmV2UnifiedCustomers(query: CrmListQuery): Promise<Cr
       name: order.customer,
       phone: undefined,
       email: undefined,
-      courseShort: courseShortName(order.product),
+      courseShort: courseShortName(order.product, order.courseSlug),
       course: order.product,
       courseSlug: order.courseSlug,
       paymentStatus: order.status,

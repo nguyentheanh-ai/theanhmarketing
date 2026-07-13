@@ -24,6 +24,32 @@ test("customer course identity is merged atomically with paid order priority", (
   assert.match(data, /\\bebook\\b/, "Ebook detection must use a real word boundary");
 });
 
+test("Ebook order slug determines the short CRM label when the product title only says Facebook Ads", () => {
+  const data = read("lib/crm-v2/data.ts");
+  const functionSource = data.match(/function courseShortName\([\s\S]*?\n\}/)?.[0];
+
+  assert.ok(functionSource, "courseShortName must remain available for CRM course labels");
+
+  const runnableSource = functionSource
+    .replace(/value:\s*string/g, "value")
+    .replace(/slug\?:\s*string/g, "slug");
+  const courseShortName = new Function(`${runnableSource}; return courseShortName;`)();
+
+  assert.equal(
+    courseShortName("Thư viện kiến thức Facebook Ads 2026", "ebook-facebook-ads-2026"),
+    "Ebook",
+  );
+  assert.equal(
+    courseShortName("Quảng cáo Facebook Master 2026", "facebook-ads-2026"),
+    "FB Ads",
+  );
+  assert.equal(
+    courseShortName("Marketing giỏi phải kiếm được tiền", "marketing-gioi-phai-kiem-duoc-tien"),
+    "Marketing giỏi phải",
+    "Non-target products must keep the existing title-based fallback label",
+  );
+});
+
 test("orders only live inside customer profiles", () => {
   const shell = read("components/crm-v2/crm-components.tsx");
   const ordersPage = read("app/admin/crm-v2/orders/page.tsx");
