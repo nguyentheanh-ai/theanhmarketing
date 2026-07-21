@@ -72,6 +72,8 @@ Routes: `/dashboard`, `/learn/[course]/[lesson]`, `/admin/crm-v2/students`, `/ad
 
 Files: `services/lmsService.ts`, `services/studentAccessService.ts`, `services/studentAccountService.ts`, `components/crm-v2/course-hub.tsx`, `components/crm-v2/lms-management-client.tsx`, `components/admin/student-create-dialog.tsx`, `lib/student-dashboard-courses.ts`.
 
+Student learning-room display: `components/course/learning-room.tsx` receives the already module-sorted flat lesson array from `/learn/[course]/[lesson]` and renders `Danh sách bài học` as one continuous `1..N` sequence without module-group headings. Module metadata remains available for the active lesson; lesson order, access and progress behavior are unchanged. Guard: `tests/learning-room-youtube-layout.test.mjs`.
+
 Database: `public.courses`, `public.course_modules`, `public.lessons`, `public.lesson_resources`, `crm_v2.enrollments`, `crm_v2.course_progress`.
 
 Feature map: Course Hub lists/searches/creates/reorders courses. Selecting a course opens the owner-only Course Studio in a new tab: Overview → Sales Content → Curriculum → Media & Resources → Students & Access → Analytics → Review & Publish. Only the active section renders; lesson work opens in a modal. Student creation belongs to `/students` and uses the provisioning wizard, never raw enrollment.

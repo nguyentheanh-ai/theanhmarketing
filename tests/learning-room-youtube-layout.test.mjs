@@ -23,3 +23,10 @@ test("lesson list no longer prints the video lesson label", () => {
   assert.doesNotMatch(source, /lesson\.duration/);
   assert.match(source, /\{getAccessLabel\(lesson\.access\)\}/);
 });
+
+test("lesson list is one flat sequence with continuous numbering", () => {
+  assert.doesNotMatch(source, /getModuleGroups/);
+  assert.doesNotMatch(source, /moduleGroups\.map/);
+  assert.match(source, /\{lessons\.map\(\(lesson, index\) =>/);
+  assert.match(source, /\{index \+ 1\}/);
+});

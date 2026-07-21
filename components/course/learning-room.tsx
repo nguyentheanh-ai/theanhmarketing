@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BrandMark } from "@/components/site/brand-mark";
 import type { Course, CourseLesson } from "@/data/courses";
@@ -31,22 +31,6 @@ function getAccessLabel(access: CourseLesson["access"]) {
   return access === "free" ? "Miễn phí" : "Premium";
 }
 
-function getModuleGroups(lessons: LearningLesson[]) {
-  const groups = new Map<string, LearningLesson[]>();
-
-  for (const lesson of lessons) {
-    const key = `${lesson.moduleOrder}-${lesson.moduleTitle}`;
-    groups.set(key, [...(groups.get(key) ?? []), lesson]);
-  }
-
-  return Array.from(groups.entries()).map(([key, items]) => ({
-    key,
-    moduleOrder: items[0]?.moduleOrder ?? 1,
-    title: items[0]?.moduleTitle ?? "Module",
-    lessons: items,
-  }));
-}
-
 export function LearningRoom({
   course,
   currentLesson,
@@ -59,14 +43,12 @@ export function LearningRoom({
   const [isCompleted, setIsCompleted] = useState(currentLessonCompleted);
   const [progressMessage, setProgressMessage] = useState("");
   const [isSavingProgress, setIsSavingProgress] = useState(false);
-  const moduleGroups = useMemo(() => getModuleGroups(lessons), [lessons]);
   const canWatchVideo = Boolean(currentLesson.embedUrl);
   const thumbnailUrl = toYouTubeThumbnailUrl(currentLesson.youtubeUrl);
   const shellClass = "ai-os-bg ai-grid text-white";
   const panelClass = "ai-panel text-white";
   const mutedText = "text-white/62";
   const subtlePanel = "border border-white/10 bg-white/8 text-white/72";
-  const dividerClass = "border-white/10";
 
   async function updateProgress() {
     setIsSavingProgress(true);
@@ -278,54 +260,47 @@ export function LearningRoom({
 
           <aside className={`max-h-[calc(100vh-96px)] overflow-y-auto rounded-2xl p-4 ring-1 ${panelClass}`}>
             <p className="ai-kicker">Danh sách bài học</p>
-            <div className="mt-4 grid gap-6">
-              {moduleGroups.map((module) => (
-                <section className={`border-t pt-4 first:border-t-0 first:pt-0 ${dividerClass}`} key={module.key}>
-                  <p className="text-base font-bold leading-6">{module.title}</p>
-                  <div className="mt-3 grid gap-3">
-                    {module.lessons.map((lesson, index) => {
-                      const isActive = lesson.id === currentLesson.id;
-                      const itemThumbnail = toYouTubeThumbnailUrl(lesson.youtubeUrl);
+            <div className="mt-4 grid gap-3">
+              {lessons.map((lesson, index) => {
+                const isActive = lesson.id === currentLesson.id;
+                const itemThumbnail = toYouTubeThumbnailUrl(lesson.youtubeUrl);
 
-                      return (
-                        <Link
-                          key={lesson.id}
-                          className={`grid grid-cols-[92px_1fr] gap-3 rounded-xl p-2 text-sm ${
-                            isActive
-                              ? "bg-[#159cfb] text-white"
-                              : "bg-white/5 text-white/78 hover:bg-white/10"
-                          }`}
-                          href={getLessonHref(course.slug, lesson.id)}
-                        >
-                          <span className="relative overflow-hidden rounded-lg bg-black">
-                            {itemThumbnail ? (
-                              <span
-                                aria-label={cleanLessonTitle(lesson.title)}
-                                className="block aspect-video bg-cover bg-center"
-                                role="img"
-                                style={{ backgroundImage: `url(${itemThumbnail})` }}
-                              />
-                            ) : (
-                              <span className="block aspect-video bg-black/20" />
-                            )}
-                            <span className="absolute right-1 top-1 rounded bg-black/72 px-1.5 py-0.5 text-[10px] font-black text-white">
-                              {index + 1}
-                            </span>
-                          </span>
-                          <span>
-                            <span className="line-clamp-2 font-semibold leading-5">
-                              {cleanLessonTitle(lesson.title)}
-                            </span>
-                            <span className={`mt-1 block text-xs font-semibold ${isActive ? "text-white/72" : mutedText}`}>
-                              {getAccessLabel(lesson.access)}
-                            </span>
-                          </span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </section>
-              ))}
+                return (
+                  <Link
+                    key={lesson.id}
+                    className={`grid grid-cols-[92px_1fr] gap-3 rounded-xl p-2 text-sm ${
+                      isActive
+                        ? "bg-[#159cfb] text-white"
+                        : "bg-white/5 text-white/78 hover:bg-white/10"
+                    }`}
+                    href={getLessonHref(course.slug, lesson.id)}
+                  >
+                    <span className="relative overflow-hidden rounded-lg bg-black">
+                      {itemThumbnail ? (
+                        <span
+                          aria-label={cleanLessonTitle(lesson.title)}
+                          className="block aspect-video bg-cover bg-center"
+                          role="img"
+                          style={{ backgroundImage: `url(${itemThumbnail})` }}
+                        />
+                      ) : (
+                        <span className="block aspect-video bg-black/20" />
+                      )}
+                      <span className="absolute right-1 top-1 rounded bg-black/72 px-1.5 py-0.5 text-[10px] font-black text-white">
+                        {index + 1}
+                      </span>
+                    </span>
+                    <span>
+                      <span className="line-clamp-2 font-semibold leading-5">
+                        {cleanLessonTitle(lesson.title)}
+                      </span>
+                      <span className={`mt-1 block text-xs font-semibold ${isActive ? "text-white/72" : mutedText}`}>
+                        {getAccessLabel(lesson.access)}
+                      </span>
+                    </span>
+                  </Link>
+                );
+              })}
             </div>
           </aside>
         </div>
