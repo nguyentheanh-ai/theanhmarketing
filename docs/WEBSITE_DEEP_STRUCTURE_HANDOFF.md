@@ -1,5 +1,10 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-07-22 - Facebook Ads 799K pending-email title
+
+- `lib/notifications/pending-payment-email.ts` normalizes 799,000 VND Facebook Ads pending orders to the current buyer-facing AI Agent package title.
+- Do not restore the retired `Zoom lên ads + Agent kit` wording for `zoom-kit`; the optional Ebook bundle keeps its combined title and 1,098,000 VND total.
+
 ## 2026-07-22 - Facebook Ads Ebook checkout add-on
 
 - Landing option: `ebookAddon`, positioned after phone and before submit.

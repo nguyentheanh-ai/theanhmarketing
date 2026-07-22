@@ -2,6 +2,8 @@
 
 Updated: 2026-07-22
 
+- Production email QA exposed stale 799K pending-email copy that still mentioned Zoom. The local follow-up now labels the package `Gói AI Agent 799K - Tặng AI Agent lên kế hoạch quảng cáo`, matching the live landing and server order plan. Focused landing/email regression passes `18/18`; follow-up deploy and resend are pending.
+
 - Facebook Ads Master 2026 pricing card no longer renders the redundant `Chọn gói 799K` button. The card remains selected/clickable, and the registration form plus sticky CTA remain the purchase actions. Source/published HTML are synchronized; checkout, Ebook add-on and tracking are unchanged. Production deployment pending final gate.
 
 - Facebook Ads Master 2026 local candidate now adds an optional Ebook checkbox directly below the phone field. The default order remains the 799,000 VND `zoom-kit`; checking the add-on selects server-known plan `zoom-kit-ebook-299`, creates one 1,098,000 VND SePay order with exact 799,000 + 299,000 VND line items, and grants both `facebook-ads-2026` and `ebook-facebook-ads-2026`. Checkout, paid redirect, pending/success email and fallback comma-slug handling preserve both products. Full Node `420/420`, TypeScript and ESLint pass; no database schema, standalone Ebook price or production deployment changed.

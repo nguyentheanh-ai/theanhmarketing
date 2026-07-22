@@ -128,7 +128,7 @@ test("builds a customer pending payment email with Sepay QR and payment page lin
   }
 });
 
-test("includes Ads support agent link only for the Facebook Ads 799K support package", () => {
+test("labels the Facebook Ads 799K pending email as the AI Agent package", () => {
   const payload = buildPendingPaymentEmailPayload(
     {
       ...pendingOrder,
@@ -149,8 +149,10 @@ test("includes Ads support agent link only for the Facebook Ads 799K support pac
     },
   );
 
-  assert.match(payload.subject, /Quảng cáo Facebook Master 2026 - Gói Hỗ Trợ 799K/);
-  assert.match(payload.html, /Quảng cáo Facebook Master 2026 - Gói Hỗ Trợ 799K/);
+  assert.match(payload.subject, /Quảng cáo Facebook Master 2026 - Gói AI Agent 799K/);
+  assert.match(payload.html, /Quảng cáo Facebook Master 2026 - Gói AI Agent 799K/);
+  assert.doesNotMatch(payload.subject, /Zoom lên ads/);
+  assert.doesNotMatch(payload.html, /Zoom lên ads/);
   assert.doesNotMatch(payload.subject, /Qu\?ng c\?o/);
   assert.doesNotMatch(payload.html, /Qu\?ng c\?o/);
   assert.match(payload.html, /Agent H/);

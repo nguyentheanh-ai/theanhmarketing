@@ -1,5 +1,11 @@
 # Session Log
 
+## 2026-07-22 - Correct stale 799K pending-email title found in live QA
+
+- The first production test email without Ebook arrived in Inbox but exposed the retired `Zoom lên ads + Agent kit` title.
+- Updated only the 799K pending-payment product-title override to the current AI Agent offer; Ebook bundle title remains unchanged.
+- Added RED/GREEN coverage that forbids Zoom in the 799K pending email. Focused landing/email tests pass `18/18`; follow-up production deploy and resend are pending.
+
 ## 2026-07-22 - Remove redundant 799K pricing-card button
 
 - Removed only the annotated `Chọn gói 799K` button from both synchronized Facebook Ads landing HTML files.

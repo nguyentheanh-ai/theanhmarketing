@@ -153,7 +153,7 @@ function getFacebookAdsProductTitle(order: PaymentOrder) {
   }
 
   if (order.amount === 799000 || order.orderItems.some((item) => item.price === 799000)) {
-    return "Quảng cáo Facebook Master 2026 - Gói Hỗ Trợ 799K - Zoom lên ads + Agent kit";
+    return "Quảng cáo Facebook Master 2026 - Gói AI Agent 799K - Tặng AI Agent lên kế hoạch quảng cáo";
   }
 
   return "Quảng cáo Facebook Master 2026 - Gói Video 399K";
