@@ -57,7 +57,7 @@ test("Facebook Ads landing no longer offers the 500K Zoom add-on in the registra
   assert.doesNotMatch(html, /amount: 1299000/);
   assert.doesNotMatch(html, /paymentPlan: checkoutPlan\.id[\s\S]{0,120}advanced-zoom/);
   assert.match(html, /function resolveSelectedPlan/);
-  assert.match(html, /function resolveSelectedPlan\(\)\s*\{\s*return selectedPlan;\s*\}/);
+  assert.doesNotMatch(html, /ebookAddon\.checked\s*\?\s*plans\["advanced-zoom"\]/);
   assert.match(html, /paymentPlan: checkoutPlan\.id/);
 });
 
@@ -78,11 +78,29 @@ test("Facebook Ads pricing keeps 799K featured and the registration button direc
 
   assert.match(
     html,
-    /<input id="phone"[\s\S]*?<\/div>\s*<button class="btn btn-primary" type="submit" id="payment-submit">Dang ky goi|<input id="phone"[\s\S]*?<\/div>\s*<button class="btn btn-primary" type="submit" id="payment-submit">Đăng ký gói/
+    /<input id="phone"[\s\S]*?<\/div>\s*<label class="ebook-addon"[\s\S]*?name="ebookAddon"[\s\S]*?<\/label>\s*<button class="btn btn-primary" type="submit" id="payment-submit">/
   );
   assert.match(html, /submitText: "Đăng ký gói AI Agent - 799\.000đ"/);
   assert.doesNotMatch(html, /Thanh toán gói AI Agent - 799\.000đ/);
   assert.doesNotMatch(html, /\.zoom-addon/);
+});
+
+test("Facebook Ads form offers an optional 299K Ebook add-on with a server-known bundle plan", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+  const orderService = read("services/orderService.ts");
+
+  assert.match(html, /<input id="ebook-addon" name="ebookAddon" type="checkbox" \/>/);
+  assert.match(html, /Mua kèm Ebook Facebook Ads/);
+  assert.match(html, /299\.000đ/);
+  assert.match(html, /<del>799\.000đ<\/del>/);
+  assert.match(html, /"zoom-kit-ebook-299":\s*\{[\s\S]*?amount:\s*1098000/);
+  assert.match(html, /ebookAddon\.checked\s*\?\s*plans\["zoom-kit-ebook-299"\]\s*:\s*selectedPlan/);
+  assert.match(html, /ebookAddon\.addEventListener\("change", syncCheckoutState\)/);
+
+  assert.match(orderService, /"zoom-kit-ebook-299":\s*\{[\s\S]*?amount:\s*1098000/);
+  assert.match(orderService, /slug:\s*"facebook-ads-2026"[\s\S]*?price:\s*799000/);
+  assert.match(orderService, /slug:\s*"ebook-facebook-ads-2026"[\s\S]*?price:\s*299000/);
+  assert.match(orderService, /plan\.orderItems\.map\(\(item\) => item\.slug\)\.join\(","\)/);
 });
 
 test("Facebook Ads mobile plan selection jumps straight to the payment form", () => {
@@ -123,4 +141,50 @@ test("Facebook Ads landing does not fire InitiateCheckout before a real order co
   assert.ok(submitHandler, "Missing Facebook Ads payment form submit handler");
   assert.doesNotMatch(submitHandler[1], /track\("InitiateCheckout"/);
   assert.match(html, /window\.location\.href = "\/thanh-toan\/" \+ encodeURIComponent\(payload\.order\.orderCode\);/);
+});
+
+test("Facebook Ads landing shows the Agent demo and exactly 12 Zalo support proofs before curriculum", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+  const outcomeIndex = html.indexOf('id="san-pham-thuc-te"');
+  const demoIndex = html.indexOf('id="agent-tu-dong-len-quang-cao"');
+  const curriculumIndex = html.indexOf('id="lo-trinh"');
+  const expectedAssets = [
+    "facebook-ads-agent-demo.gif",
+    "facebook-ads-agent-demo-poster.webp",
+    "zalo-support/zalo-proof-01-agent-plan.webp",
+    "zalo-support/zalo-proof-02-marketing-advice.webp",
+    "zalo-support/zalo-proof-03-course-feedback.webp",
+    "zalo-support/zalo-proof-04-call-34m09.webp",
+    "zalo-support/zalo-proof-05-call-55m50.webp",
+    "zalo-support/zalo-proof-06-calls-21m59-46m04.webp",
+    "zalo-support/zalo-proof-07-call-30m59.webp",
+    "zalo-support/zalo-proof-08-call-36m10.webp",
+    "zalo-support/zalo-proof-09-call-22m51.webp",
+    "zalo-support/zalo-proof-10-agent-consultation.webp",
+    "zalo-support/zalo-proof-11-call-23m59.webp",
+    "zalo-support/zalo-proof-12-support-schedule.webp",
+  ];
+
+  assert.ok(outcomeIndex >= 0, "Missing existing outcome section");
+  assert.ok(demoIndex > outcomeIndex, "Agent demo must follow the outcome section");
+  assert.ok(curriculumIndex > demoIndex, "Agent demo must precede curriculum");
+  assert.match(html, /Một câu lệnh\.\s*<span>Agent tự động lên toàn bộ quảng cáo\.<\/span>/);
+  assert.match(html, /Không chỉ xem video\. Vướng ở đâu, được hỗ trợ triển khai ở đó\./);
+  assert.match(html, /<source media="\(prefers-reduced-motion: reduce\)" srcset="\/ladipage\/assets\/facebook-ads-agent-demo-poster\.webp"/);
+  assert.match(html, /<img[^>]+src="\/ladipage\/assets\/facebook-ads-agent-demo\.gif"[^>]+loading="lazy"[^>]+decoding="async"/);
+  assert.doesNotMatch(html, /facebook-ads-agent-demo\.mp4/);
+  assert.equal((html.match(/data-zalo-proof=/g) || []).length, 12);
+  assert.doesNotMatch(html, /a1814dc3cf3103050c99a5f65d909d65/);
+  assert.match(html, /\.zalo-proof-sequence\s*\{[\s\S]*?gap:\s*12px/);
+  assert.match(html, /\.zalo-proof-card\s*\{[\s\S]*?width:\s*300px;[\s\S]*?aspect-ratio:\s*15\s*\/\s*32;[\s\S]*?overflow:\s*hidden/);
+  assert.match(html, /\.zalo-proof-card img\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*100%;[\s\S]*?object-fit:\s*cover/);
+  assert.match(html, /@media \(max-width:\s*680px\)[\s\S]*?\.zalo-proof-card\s*\{[\s\S]*?width:\s*244px/);
+
+  for (const asset of expectedAssets) {
+    assert.ok(fs.existsSync(path.resolve("public/ladipage/assets", asset)), `Missing asset: ${asset}`);
+    assert.match(html, new RegExp(asset.replaceAll(".", "\\.")));
+  }
+
+  const gifSize = fs.statSync(path.resolve("public/ladipage/assets/facebook-ads-agent-demo.gif")).size;
+  assert.ok(gifSize <= 12 * 1024 * 1024, `GIF is too large: ${gifSize} bytes`);
 });

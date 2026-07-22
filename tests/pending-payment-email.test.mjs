@@ -159,6 +159,33 @@ test("includes Ads support agent link only for the Facebook Ads 799K support pac
   assert.match(payload.text, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 });
 
+test("Facebook Ads Ebook bundle pending email keeps the combined product and total", () => {
+  const payload = buildPendingPaymentEmailPayload({
+    ...pendingOrder,
+    courseSlug: "facebook-ads-2026,ebook-facebook-ads-2026",
+    courseTitle: "Quảng cáo Facebook Master 2026 + Ebook Facebook Ads 2026",
+    amount: 1098000,
+    amountLabel: "1.098.000đ",
+    orderItems: [
+      {
+        slug: "facebook-ads-2026",
+        title: "Quảng cáo Facebook Master 2026 - Gói AI Agent 799K",
+        price: 799000,
+      },
+      {
+        slug: "ebook-facebook-ads-2026",
+        title: "Ebook Facebook Ads 2026 - Mua kèm 299K",
+        price: 299000,
+      },
+    ],
+  }, { siteUrl: "https://www.theanhmarketing.com" });
+
+  assert.match(payload.subject, /Facebook Ads Master 2026 \+ Ebook Facebook Ads 2026/);
+  assert.match(payload.html, /1\.098\.000đ/);
+  assert.match(payload.html, /Agent H/);
+  assert.doesNotMatch(payload.subject, /^Ebook Facebook Ads 2026 -/);
+});
+
 test("sends pending payment email only for pending orders with email", () => {
   assert.equal(shouldSendPendingPaymentEmail(pendingOrder), true);
   assert.equal(shouldSendPendingPaymentEmail({ ...pendingOrder, status: "paid" }), false);

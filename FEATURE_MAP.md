@@ -1,14 +1,24 @@
 # Feature Map - theanh-main
 
+## Facebook Ads 799K + Ebook 299K checkout add-on
+
+The Facebook Ads registration form defaults to `zoom-kit` at 799,000 VND and exposes one optional `ebookAddon` checkbox. When selected, the browser submits only the recognized plan ID `zoom-kit-ebook-299`; `services/orderService.ts` remains the price authority and emits two order items: `facebook-ads-2026` at 799,000 VND and `ebook-facebook-ads-2026` at 299,000 VND.
+
+The combined 1,098,000 VND order uses one SePay QR/order, renders the combined checkout offer, redirects paid customers through the Facebook Ads course thank-you route, grants both products, and sends combined pending/success emails with Ebook reader/PDF links. Exact item lookup also supports fallback rows whose `course_slug` contains comma-separated slugs. Standalone Ebook price and flows remain unchanged. No database migration or production deployment.
+
+Files: `public/ladipage/facebook-ads-2026.html`, `public/academy/facebook-ads-master-2026.html`, `services/orderService.ts`, `app/thanh-toan/[code]/page.tsx`, `components/payment/payment-status-poller.tsx`, `app/api/sepay/webhook/route.ts`, `lib/notifications/payment-success-email.ts`, `lib/notifications/pending-payment-email.ts`.
+
 ## Facebook Ads Master 2026 public offer
 
 Description: `/academy/facebook-ads-master-2026` exposes one active public package: the 799K AI Agent plan. The form defaults to and submits `paymentPlan=zoom-kit`; browser `ViewContent` and lead values use `799000`.
 
+Agent proof area: `#agent-tu-dong-len-quang-cao` sits after `#san-pham-thuc-te` and before `#lo-trinh`. It uses `/ladipage/assets/facebook-ads-agent-demo.gif` for automatic looping playback, a reduced-motion poster fallback, three execution-result cards, and exactly 12 Zalo proof cards in a duplicated CSS marquee. The accessible sequence is marked with `data-zalo-proof`; the visual duplicate is `aria-hidden`. Proof cards use a uniform `15:32` frame, `300px` desktop width, `244px` mobile width, `12px` gap and centered `object-fit: cover` crop.
+
 Routes: `/academy/facebook-ads-master-2026`, static compatibility route `/academy/facebook-ads-master-2026.html`, order API `/api/orders`, checkout `/thanh-toan/[code]`.
 
-Main files: `public/ladipage/facebook-ads-2026.html`, `public/academy/facebook-ads-master-2026.html`, `tests/facebook-ads-landing.test.mjs`.
+Main files: `public/ladipage/facebook-ads-2026.html`, `public/academy/facebook-ads-master-2026.html`, `public/ladipage/assets/facebook-ads-agent-demo.gif`, `public/ladipage/assets/facebook-ads-agent-demo-poster.webp`, `public/ladipage/assets/zalo-support/*.webp`, `tests/facebook-ads-landing.test.mjs`.
 
-Guard: keep source and published HTML byte-identical; do not restore the 399K card or `video` plan on this landing without owner approval. Preserve historical 399K order/checkout/email handling and do not alter the separate Ebook Facebook Ads 399K landing flows.
+Guard: keep source and published HTML byte-identical; do not restore the 399K card or `video` plan on this landing without owner approval. Preserve historical 399K order/checkout/email handling and do not alter the separate Ebook Facebook Ads 399K landing flows. Keep exactly 12 accessible Zalo proofs, the fitted `15:32` card geometry, visible call-duration highlights, privacy masks on support screenshots, and the GIF below 12 MB with its reduced-motion poster.
 
 Search: `data-plan-card="zoom-kit"`, `paymentPlan`, `799000`, `Facebook Ads landing offers only the 799K AI Agent plan`.
 

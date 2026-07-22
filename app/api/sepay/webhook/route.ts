@@ -33,7 +33,9 @@ export const runtime = "nodejs";
 
 function isFacebookEbookPaidOrder(order: PaymentOrder) {
   return (
-    order.courseSlug === "ebook-facebook-ads-2026" ||
+    order.courseSlug.split(",")
+      .map((item) => item.trim())
+      .includes("ebook-facebook-ads-2026") ||
     order.orderItems.some((item) => item.slug === "ebook-facebook-ads-2026")
   );
 }

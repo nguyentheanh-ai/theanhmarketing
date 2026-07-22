@@ -18,11 +18,11 @@
 - Modify: `tests/payment-success-email.test.mjs`
 - Modify: `tests/pending-payment-email.test.mjs`
 
-- [ ] **Step 1: Add failing landing assertions**
+- [x] **Step 1: Add failing landing assertions**
 
 Assert that the form contains `name="ebookAddon"`, the copy `299.000đ`, struck-through `799.000đ`, plan ID `zoom-kit-ebook-299`, amount `1098000`, and a resolver that returns the bundle only while the checkbox is checked. Replace the old phone-to-button assertion with phone-to-addon-to-button ordering.
 
-- [ ] **Step 2: Add failing order and checkout assertions**
+- [x] **Step 2: Add failing order and checkout assertions**
 
 Read `services/orderService.ts` and require this exact bundle shape:
 
@@ -39,11 +39,11 @@ Read `services/orderService.ts` and require this exact bundle shape:
 
 Require checkout to recognize the combined order before the standalone Ebook branch and render `3.389.000đ` to `1.098.000đ`. Require the paid redirect to prefer the Facebook Ads thank-you route when both exact slugs are present.
 
-- [ ] **Step 3: Add failing email assertions**
+- [x] **Step 3: Add failing email assertions**
 
 Create a paid/pending bundle fixture with two order items. Success email must contain the course, AI Agent benefits, `Ebook Facebook Ads 2026`, `/thu-vien/facebook-ads`, `/thu-vien/facebook-ads/pdf`, and `1.098.000đ`. Pending email must use a combined product title and must not collapse into the standalone Ebook-only template.
 
-- [ ] **Step 4: Run focused tests and verify RED**
+- [x] **Step 4: Run focused tests and verify RED**
 
 Run:
 
@@ -59,11 +59,11 @@ Expected: failures for missing add-on UI, missing server bundle, wrong checkout 
 - Modify: `public/ladipage/facebook-ads-2026.html`
 - Modify: `public/academy/facebook-ads-master-2026.html`
 
-- [ ] **Step 1: Add scoped add-on styles**
+- [x] **Step 1: Add scoped add-on styles**
 
 Add `.ebook-addon`, `.ebook-addon-control`, `.ebook-addon-price`, `.ebook-addon-original` and checked/focus-visible states. Keep a minimum 44px tap target and a single-column mobile layout.
 
-- [ ] **Step 2: Insert the option after phone**
+- [x] **Step 2: Insert the option after phone**
 
 Use accessible checkbox markup:
 
@@ -78,11 +78,11 @@ Use accessible checkbox markup:
 </label>
 ```
 
-- [ ] **Step 3: Resolve one of two plan IDs**
+- [x] **Step 3: Resolve one of two plan IDs**
 
 Add `plans["zoom-kit-ebook-299"]` with amount `1098000`. Cache `ebookAddon`, make `resolveSelectedPlan()` return the bundle only when checked, and add `syncCheckoutState()` to update `paymentPlan`, summary, note, button, cart and total copy. Call it on `change` and before submit.
 
-- [ ] **Step 4: Synchronize published HTML**
+- [x] **Step 4: Synchronize published HTML**
 
 Copy the source HTML byte-for-byte to `public/academy/facebook-ads-master-2026.html`.
 
@@ -91,7 +91,7 @@ Copy the source HTML byte-for-byte to `public/academy/facebook-ads-master-2026.h
 **Files:**
 - Modify: `services/orderService.ts`
 
-- [ ] **Step 1: Extend the payment-plan type**
+- [x] **Step 1: Extend the payment-plan type**
 
 Use:
 
@@ -103,11 +103,11 @@ type CoursePaymentPlan = {
 };
 ```
 
-- [ ] **Step 2: Register the bundle**
+- [x] **Step 2: Register the bundle**
 
 Add `zoom-kit-ebook-299` with total `1098000` and the two authoritative item prices `799000` and `299000`.
 
-- [ ] **Step 3: Emit both identities**
+- [x] **Step 3: Emit both identities**
 
 When `plan.orderItems` exists, return:
 
@@ -130,11 +130,11 @@ Keep the existing one-course behavior for all other plans. This also preserves b
 - Modify: `lib/notifications/payment-success-email.ts`
 - Modify: `lib/notifications/pending-payment-email.ts`
 
-- [ ] **Step 1: Add exact product helpers**
+- [x] **Step 1: Add exact product helpers**
 
 In each touched module, detect a product with exact comma-split `courseSlug` entries or exact `orderItems[].slug` values. Define bundle as both `facebook-ads-2026` and `ebook-facebook-ads-2026`.
 
-- [ ] **Step 2: Render bundle checkout pricing**
+- [x] **Step 2: Render bundle checkout pricing**
 
 In `getPaymentOffer()`, check the bundle first and return:
 
@@ -144,15 +144,15 @@ In `getPaymentOffer()`, check the bundle first and return:
 
 Standalone Ebook and existing Facebook Ads amounts keep their current branches.
 
-- [ ] **Step 3: Prefer the primary-course paid redirect**
+- [x] **Step 3: Prefer the primary-course paid redirect**
 
 In `getPaidRedirectPath()`, check the exact Facebook Ads course before standalone Ebook. A bundle goes to `/cam-on-thanh-toan/facebook-ads-2026`; an Ebook-only order still goes to `/cam-on-thanh-toan/ebook-facebook-ads-2026`.
 
-- [ ] **Step 4: Build a combined success email**
+- [x] **Step 4: Build a combined success email**
 
 For a bundle, use the course email layout, combined title, existing 799K benefits, one additional Ebook-access benefit, and add reader/PDF buttons and plain-text URLs. Keep Ebook account gating in the webhook because the order still contains the Ebook slug.
 
-- [ ] **Step 5: Build a combined pending email**
+- [x] **Step 5: Build a combined pending email**
 
 Route only standalone Ebook orders to `buildFacebookEbookPendingPaymentEmailPayload()`. Bundle orders use the generic payment template with combined title, item list, 1,098,000 VND and the existing support-agent block.
 
@@ -168,11 +168,11 @@ Route only standalone Ebook orders to `buildFacebookEbookPendingPaymentEmailPayl
 - Modify: `E:\Kinh doanh\docs\TASK_LOG.md`
 - Modify: `E:\Kinh doanh\docs\CHANGELOG.md`
 
-- [ ] **Step 1: Run focused GREEN verification**
+- [x] **Step 1: Run focused GREEN verification**
 
 Run the four focused test files and require zero failures.
 
-- [ ] **Step 2: Run repository verification**
+- [x] **Step 2: Run repository verification**
 
 Run full Node tests serially, TypeScript, ESLint, `git diff --check` and the Next production build.
 
@@ -180,10 +180,10 @@ Run full Node tests serially, TypeScript, ESLint, `git diff --check` and the Nex
 
 Check desktop and mobile states: unchecked 799,000 VND; checked 1,098,000 VND; checkbox tap/focus; no overflow; submitted payload uses only a recognized plan ID. Do not create a real order during local QA.
 
-- [ ] **Step 4: Update project knowledge**
+- [x] **Step 4: Update project knowledge**
 
 Record the new plan ID, two-item order model, entitlement behavior, verification totals and local-ready/no-deploy status.
 
-- [ ] **Step 5: Review scope**
+- [x] **Step 5: Review scope**
 
 Confirm no database schema, standalone Ebook price, unrelated landing, CRM, LMS lesson or production data changed.

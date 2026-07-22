@@ -149,6 +149,37 @@ test("Facebook Ads 799K success email includes the Ads Performance GPT", () => {
   assert.doesNotMatch(basicPayload.text, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 });
 
+test("Facebook Ads Ebook bundle success email delivers both products and both Ebook links", () => {
+  const payload = buildPaymentSuccessEmailPayload({
+    ...paidOrder,
+    courseSlug: "facebook-ads-2026,ebook-facebook-ads-2026",
+    courseTitle: "Quảng cáo Facebook Master 2026 + Ebook Facebook Ads 2026",
+    amount: 1098000,
+    amountLabel: "1.098.000đ",
+    orderItems: [
+      {
+        slug: "facebook-ads-2026",
+        title: "Quảng cáo Facebook Master 2026 - Gói AI Agent 799K",
+        price: 799000,
+      },
+      {
+        slug: "ebook-facebook-ads-2026",
+        title: "Ebook Facebook Ads 2026 - Mua kèm 299K",
+        price: 299000,
+      },
+    ],
+  }, { siteUrl: "https://www.theanhmarketing.com" });
+
+  assert.match(payload.subject, /Facebook Ads Master 2026 \+ Ebook Facebook Ads 2026/);
+  assert.match(payload.html, /1\.098\.000đ/);
+  assert.match(payload.html, /Tặng AI Agent lên kế hoạch quảng cáo/);
+  assert.match(payload.html, /Quyền đọc Ebook Facebook Ads 2026 online và tải PDF/);
+  assert.match(payload.html, /go\?to=https%3A%2F%2Fwww\.theanhmarketing\.com%2Fthu-vien%2Ffacebook-ads/);
+  assert.match(payload.html, /go\?to=https%3A%2F%2Fwww\.theanhmarketing\.com%2Fthu-vien%2Ffacebook-ads%2Fpdf/);
+  assert.match(payload.text, /Đọc Ebook online: https:\/\/www\.theanhmarketing\.com\/thu-vien\/facebook-ads/);
+  assert.match(payload.text, /Tải Ebook PDF: https:\/\/www\.theanhmarketing\.com\/thu-vien\/facebook-ads\/pdf/);
+});
+
 test("includes temporary login credentials when an account is auto-created", () => {
   const payload = buildPaymentSuccessEmailPayload(paidOrder, {
     siteUrl: "https://www.theanhmarketing.com",

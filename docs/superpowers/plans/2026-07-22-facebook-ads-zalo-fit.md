@@ -15,7 +15,7 @@
 **Files:**
 - Modify: `tests/facebook-ads-landing.test.mjs`
 
-- [ ] **Step 1: Extend the existing Agent proof regression**
+- [x] **Step 1: Extend the existing Agent proof regression**
 
 Add assertions to the existing `Facebook Ads landing shows the Agent demo and exactly 12 Zalo support proofs before curriculum` test:
 
@@ -23,10 +23,10 @@ Add assertions to the existing `Facebook Ads landing shows the Agent demo and ex
 assert.match(html, /\.zalo-proof-sequence\s*\{[\s\S]*?gap:\s*12px/);
 assert.match(html, /\.zalo-proof-card\s*\{[\s\S]*?width:\s*300px;[\s\S]*?aspect-ratio:\s*15\s*\/\s*32;[\s\S]*?overflow:\s*hidden/);
 assert.match(html, /\.zalo-proof-card img\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*100%;[\s\S]*?object-fit:\s*cover/);
-assert.match(html, /@media \(max-width:\s*640px\)[\s\S]*?\.zalo-proof-card\s*\{[\s\S]*?width:\s*244px/);
+assert.match(html, /@media \(max-width:\s*680px\)[\s\S]*?\.zalo-proof-card\s*\{[\s\S]*?width:\s*244px/);
 ```
 
-- [ ] **Step 2: Run the focused test and verify RED**
+- [x] **Step 2: Run the focused test and verify RED**
 
 Run:
 
@@ -43,7 +43,7 @@ Expected: the Agent/Zalo regression fails because the section/assets and fitted-
 - Verify: `public/ladipage/assets/facebook-ads-agent-demo-poster.webp`
 - Verify: `public/ladipage/assets/zalo-support/*.webp`
 
-- [ ] **Step 1: Verify the media contract**
+- [x] **Step 1: Verify the media contract**
 
 Expected: the existing GIF is 960x490 and no larger than 12 MB; exactly 12 Zalo WebPs exist; every WebP is 640px wide. Do not regenerate or overwrite approved media.
 
@@ -53,7 +53,7 @@ Expected: the existing GIF is 960x490 and no larger than 12 MB; exactly 12 Zalo 
 - Modify: `public/ladipage/facebook-ads-2026.html`
 - Modify: `public/academy/facebook-ads-master-2026.html`
 
-- [ ] **Step 1: Refine the scoped Zalo CSS**
+- [x] **Step 1: Refine the scoped Zalo CSS**
 
 Keep the existing Agent demo styles and replace only the proof-card geometry with this fitted core:
 
@@ -82,7 +82,7 @@ Keep the existing Agent demo styles and replace only the proof-card geometry wit
   object-position: center;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 680px) {
   .zalo-proof-card {
     width: 244px;
   }
@@ -91,15 +91,15 @@ Keep the existing Agent demo styles and replace only the proof-card geometry wit
 
 The source ratio is approximately 640:1385; the 15:32 card crops about 1.5% vertically.
 
-- [ ] **Step 2: Preserve the approved Agent/Zalo HTML**
+- [x] **Step 2: Preserve the approved Agent/Zalo HTML**
 
 Confirm `#agent-tu-dong-len-quang-cao` remains after `#san-pham-thuc-te` and before `#lo-trinh`. Do not add, remove or reorder the approved Agent headline, GIF `<picture>`, result cards, Zalo copy or 12 proof screenshots.
 
-- [ ] **Step 3: Synchronize the published HTML**
+- [x] **Step 3: Synchronize the published HTML**
 
 Copy `public/ladipage/facebook-ads-2026.html` byte-for-byte to `public/academy/facebook-ads-master-2026.html`.
 
-- [ ] **Step 4: Run the focused test and verify GREEN**
+- [x] **Step 4: Run the focused test and verify GREEN**
 
 Run:
 
@@ -121,18 +121,18 @@ Expected: all focused tests pass, including 799K-only offer, exact 12 proofs, fi
 - Modify: `E:\Kinh doanh\docs\TASK_LOG.md`
 - Modify: `E:\Kinh doanh\docs\CHANGELOG.md`
 
-- [ ] **Step 1: Run repository verification**
+- [x] **Step 1: Run repository verification**
 
 Run focused tests, full Node tests with `--test-concurrency=1`, TypeScript, ESLint, `git diff --check` and the Next production build.
 
-- [ ] **Step 2: Verify crop geometry without altering source media**
+- [x] **Step 2: Verify crop geometry without altering source media**
 
 Create a temporary contact sheet under `E:\Kinh doanh\temp` using the rendered 15:32 crop, inspect it with `view_image`, and confirm the highlighted call durations remain visible on all seven designed screenshots.
 
-- [ ] **Step 3: Update project knowledge**
+- [x] **Step 3: Update project knowledge**
 
 Record exact asset geometry, verification totals, local-ready status and that production is not deployed.
 
-- [ ] **Step 4: Review final scope**
+- [x] **Step 4: Review final scope**
 
 Confirm the diff contains only the approved landing, proof assets, tests, spec/plan and documentation. Confirm no checkout, payment, email, tracking, CRM, LMS or database file changed.

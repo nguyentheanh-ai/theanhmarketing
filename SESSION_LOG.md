@@ -1,5 +1,22 @@
 # Session Log
 
+## 2026-07-22 - Add optional Ebook to Facebook Ads checkout
+
+- Added the optional `Mua kèm Ebook Facebook Ads` checkbox after the phone field on both synchronized Facebook Ads landing HTML files.
+- Kept the default package at 799,000 VND. Checked state submits server-known plan `zoom-kit-ebook-299` for one 1,098,000 VND order containing `facebook-ads-2026` (799,000 VND) and `ebook-facebook-ads-2026` (299,000 VND).
+- Extended checkout pricing, paid redirect, entitlement identities, pending email, success email and SePay Ebook-account gating for the two-product order, including fallback comma-separated `course_slug` rows.
+- TDD evidence: focused RED was 5 failures; final focused suite passed `49/49`. Repository verification passed `420/420`, TypeScript and ESLint.
+- No database schema, standalone Ebook price, production data or deployment change. Candidate remains local.
+
+## 2026-07-22 - Facebook Ads Agent demo and 12 Zalo proofs
+
+Scope: public static landing `/academy/facebook-ads-master-2026`; no database, API, checkout, payment, email, student access or tracking change.
+Change: added `#agent-tu-dong-len-quang-cao` between outcomes and curriculum, with a looping 960x490 GIF titled “Agent tự động lên toàn bộ quảng cáo”, a reduced-motion WebP poster, three execution proofs, and a continuous 12-card Zalo support carousel. Seven approved call screenshots keep their highlighted 21–55 minute durations and privacy masks; five additional feedback/support screenshots complete the set. The weakest operational screenshot ending `a1814dc3cf3103050c99a5f65d909d65.jpg` was intentionally omitted.
+Assets: GIF is 4,124,531 bytes; all 12 Zalo assets are 640px-wide WebPs. The supplied MP4 and source Zalo files were not overwritten.
+Fit refinement: all Zalo cards now share a `15:32` frame at `300px` desktop and `244px` mobile, with a `12px` gap and centered cover crop of about 1.5%. A temporary 12-image contact sheet confirmed every highlighted 21-55 minute support-call duration remains visible.
+Verification: focused `10/10`; source/published HTML are byte-identical; full Node `415/415` with serial test concurrency; TypeScript, ESLint, `git diff --check`, 105-page Next build, desktop and 390px browser QA pass. No horizontal overflow or page-origin error.
+Deploy: not deployed. The shared production worktree remains intact with the complete local Agent/Zalo candidate, tests, plans and documentation; no merge, push or cleanup was attempted.
+
 ## 2026-07-22 - Remove the 399K option from Facebook Ads Master landing
 
 Scope: `theanh-main` public route `/academy/facebook-ads-master-2026` only.

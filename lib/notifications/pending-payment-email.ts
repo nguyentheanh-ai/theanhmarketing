@@ -31,6 +31,7 @@ const adsSupportAgentUrl =
   "https://chatgpt.com/g/g-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner";
 const facebookEbookCourseSlug = "ebook-facebook-ads-2026";
 const facebookEbookProductTitle = "Ebook Facebook Ads 2026";
+const facebookAdsEbookBundleTitle = "Facebook Ads Master 2026 + Ebook Facebook Ads 2026";
 
 const bankNameMap: Record<string, string> = {
   VCB: "Vietcombank",
@@ -124,11 +125,22 @@ function getCourseList(order: PaymentOrder) {
   return [order.courseTitle].filter(Boolean);
 }
 
-function isFacebookEbookOrder(order: PaymentOrder) {
+function hasExactCourseSlug(order: PaymentOrder, slug: string) {
   return (
-    order.courseSlug === facebookEbookCourseSlug ||
-    order.orderItems.some((item) => item.slug === facebookEbookCourseSlug)
+    order.courseSlug.split(",").map((item) => item.trim()).includes(slug) ||
+    order.orderItems.some((item) => item.slug === slug)
   );
+}
+
+function isFacebookAdsEbookBundle(order: PaymentOrder) {
+  return (
+    hasExactCourseSlug(order, "facebook-ads-2026") &&
+    hasExactCourseSlug(order, facebookEbookCourseSlug)
+  );
+}
+
+function isFacebookEbookOrder(order: PaymentOrder) {
+  return hasExactCourseSlug(order, facebookEbookCourseSlug);
 }
 
 function getFacebookAdsProductTitle(order: PaymentOrder) {
@@ -148,6 +160,10 @@ function getFacebookAdsProductTitle(order: PaymentOrder) {
 }
 
 function getProductTitle(order: PaymentOrder) {
+  if (isFacebookAdsEbookBundle(order)) {
+    return facebookAdsEbookBundleTitle;
+  }
+
   if (isFacebookEbookOrder(order)) {
     return facebookEbookProductTitle;
   }
@@ -163,7 +179,10 @@ function isFacebookAdsSupportPlan(order: PaymentOrder) {
     courseIdentity.includes("facebook ads") ||
     courseIdentity.includes("facebook master") ||
     courseIdentity.includes("quảng cáo facebook");
-  const isSupportPlan = order.amount === 799000 || /799|zoom|hỗ trợ|ho tro/i.test(productTitle);
+  const isSupportPlan =
+    order.amount === 799000 ||
+    order.orderItems.some((item) => item.price === 799000) ||
+    /799|zoom|hỗ trợ|ho tro/i.test(productTitle);
 
   return isFacebookAdsOrder && isSupportPlan;
 }
@@ -445,7 +464,7 @@ export function buildPendingPaymentEmailPayload(
   order: PaymentOrder,
   options: PendingPaymentEmailOptions = {},
 ): ResendEmailPayload {
-  if (isFacebookEbookOrder(order)) {
+  if (isFacebookEbookOrder(order) && !isFacebookAdsEbookBundle(order)) {
     return buildFacebookEbookPendingPaymentEmailPayload(order, options);
   }
 

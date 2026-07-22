@@ -113,6 +113,23 @@ test("paid Facebook Ads course checkout redirects to a course thank-you guide in
   assert.doesNotMatch(thankYouPage, /%2Fthu-vien%2Ffacebook-ads/);
 });
 
+test("Facebook Ads plus Ebook bundle keeps the course thank-you route and combined checkout price", () => {
+  const page = read("app/thanh-toan/[code]/page.tsx");
+  const poller = read("components/payment/payment-status-poller.tsx");
+
+  assert.match(page, /function isFacebookAdsEbookBundle/);
+  assert.match(page, /if \(isFacebookAdsEbookBundle\(order\)\)[\s\S]*?originalPriceLabel:\s*"3\.389\.000đ"[\s\S]*?currentPriceLabel:\s*"1\.098\.000đ"/);
+  assert.ok(
+    page.indexOf("if (isFacebookAdsEbookBundle(order))") < page.indexOf("if (isFacebookAdsEbook2026(order))"),
+    "bundle checkout branch must run before standalone Ebook",
+  );
+  assert.ok(
+    poller.indexOf("if (isFacebookAdsCourseOrder(order))") < poller.indexOf("if (isFacebookEbookOrder(order))"),
+    "bundle paid redirect must prefer the primary Facebook Ads course",
+  );
+  assert.match(poller, /order\.courseSlug\.split\(","\)/);
+});
+
 test("payment offer block renders the locked discount without a hard-coded 359K", () => {
   const countdown = read("components/payment/payment-offer-countdown.tsx");
 

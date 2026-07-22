@@ -285,7 +285,13 @@ async function resolveCourses(input: CreatePaymentOrderInput) {
   return course ? [course] : [];
 }
 
-const coursePaymentPlans: Record<string, Record<string, { title: string; amount: number }>> = {
+type CoursePaymentPlan = {
+  title: string;
+  amount: number;
+  orderItems?: OrderItem[];
+};
+
+const coursePaymentPlans: Record<string, Record<string, CoursePaymentPlan>> = {
   "facebook-ads-2026": {
     video: {
       title: "Gói Cơ Bản 399K",
@@ -294,6 +300,22 @@ const coursePaymentPlans: Record<string, Record<string, { title: string; amount:
     "zoom-kit": {
       title: "Gói AI Agent 799K - Tặng AI Agent lên kế hoạch quảng cáo",
       amount: 799000,
+    },
+    "zoom-kit-ebook-299": {
+      title: "Gói AI Agent 799K + Ebook Facebook Ads 299K",
+      amount: 1098000,
+      orderItems: [
+        {
+          slug: "facebook-ads-2026",
+          title: "Quảng cáo Facebook Master 2026 - Gói AI Agent 799K - Tặng AI Agent lên kế hoạch quảng cáo",
+          price: 799000,
+        },
+        {
+          slug: "ebook-facebook-ads-2026",
+          title: "Ebook Facebook Ads 2026 - Mua kèm ưu đãi 299K",
+          price: 299000,
+        },
+      ],
     },
     "advanced-zoom": {
       title: "Gói AI Agent 799K + 1 buổi Zoom chuyên sâu",
@@ -327,6 +349,15 @@ function buildOrderPackage(
     }
 
     const title = `${selectedCourse.title} - ${plan.title}`;
+
+    if (plan.orderItems?.length) {
+      return {
+        amount: plan.amount,
+        courseSlug: plan.orderItems.map((item) => item.slug).join(","),
+        courseTitle: plan.orderItems.map((item) => item.title).join(" | "),
+        orderItems: plan.orderItems.map((item) => ({ ...item })),
+      };
+    }
 
     return {
       amount: plan.amount,

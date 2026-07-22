@@ -561,6 +561,7 @@ test("SePay ebook success email is blocked until a verified login account is ava
   const route = read("app/api/sepay/webhook/route.ts");
 
   assert.match(route, /function isFacebookEbookPaidOrder/);
+  assert.match(route, /order\.courseSlug\.split\(","\)/);
   assert.match(route, /const requiresVerifiedLoginAccount = isFacebookEbookPaidOrder\(\s*confirmation\.order,\s*\)/);
   assert.match(route, /requiresVerifiedLoginAccount && !studentAccount\.temporaryPassword/);
   assert.match(

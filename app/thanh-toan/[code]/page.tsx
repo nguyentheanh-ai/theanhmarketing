@@ -89,7 +89,28 @@ function isFacebookAdsEbook2026(order: PaymentOrder) {
   return slugHaystack.includes("ebook-facebook-ads-2026");
 }
 
+function hasExactCourseSlug(order: PaymentOrder, slug: string) {
+  return (
+    order.courseSlug.split(",").map((item) => item.trim()).includes(slug) ||
+    order.orderItems.some((item) => item.slug === slug)
+  );
+}
+
+function isFacebookAdsEbookBundle(order: PaymentOrder) {
+  return (
+    hasExactCourseSlug(order, "facebook-ads-2026") &&
+    hasExactCourseSlug(order, "ebook-facebook-ads-2026")
+  );
+}
+
 function getPaymentOffer(order: PaymentOrder, amountLabel: string) {
+  if (isFacebookAdsEbookBundle(order)) {
+    return {
+      originalPriceLabel: "3.389.000đ",
+      currentPriceLabel: "1.098.000đ",
+    };
+  }
+
   if (isFacebookAdsEbook2026(order)) {
     return {
       originalPriceLabel: "799.000đ",
@@ -230,7 +251,7 @@ function getCheckoutContent(order: PaymentOrder) {
   }
 
   if (isFacebookAds2026(order)) {
-    if (isFacebookAdsEbook2026(order)) {
+    if (isFacebookAdsEbook2026(order) && !isFacebookAdsEbookBundle(order)) {
       return {
         eyebrow: "Bước cuối để mở khóa thư viện",
         title: "Thư viện kiến thức Facebook Ads 2026",

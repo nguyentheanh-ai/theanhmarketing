@@ -1306,6 +1306,200 @@
         line-height: 1.35;
       }
 
+      .agent-proof-section {
+        overflow: hidden;
+        border-block: 1px solid rgba(255, 255, 255, 0.08);
+        background: #111318;
+        color: #ffffff;
+      }
+
+      .agent-proof-head {
+        max-width: 880px;
+        margin: 0 auto 38px;
+        text-align: center;
+      }
+
+      .agent-proof-kicker {
+        margin: 0 0 12px;
+        color: var(--primary-2);
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .agent-proof-head h2,
+      .zalo-proof-head h3 {
+        margin: 0;
+        color: #ffffff;
+        font-weight: 950;
+        letter-spacing: -0.045em;
+        line-height: 1.03;
+      }
+
+      .agent-proof-head h2 {
+        font-size: clamp(36px, 5vw, 64px);
+      }
+
+      .agent-proof-head h2 span {
+        color: var(--primary-2);
+      }
+
+      .agent-proof-copy,
+      .zalo-proof-copy {
+        max-width: 780px;
+        margin: 18px auto 0;
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 18px;
+        line-height: 1.7;
+      }
+
+      .agent-demo-frame {
+        position: relative;
+        overflow: hidden;
+        max-width: 1120px;
+        margin: 0 auto;
+        border: 1px solid rgba(246, 102, 40, 0.34);
+        border-radius: 28px;
+        background: #ffffff;
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
+      }
+
+      .agent-demo-label {
+        position: absolute;
+        z-index: 2;
+        top: 16px;
+        left: 16px;
+        display: inline-flex;
+        align-items: center;
+        min-height: 34px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        background: rgba(14, 16, 22, 0.84);
+        color: #ffffff;
+        padding: 7px 12px;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        backdrop-filter: blur(10px);
+      }
+
+      .agent-demo-frame picture,
+      .agent-demo-frame img {
+        display: block;
+        width: 100%;
+      }
+
+      .agent-demo-frame img {
+        aspect-ratio: 96 / 49;
+        object-fit: cover;
+      }
+
+      .agent-proof-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        max-width: 1120px;
+        margin: 20px auto 0;
+      }
+
+      .agent-proof-item {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.045);
+        padding: 20px;
+      }
+
+      .agent-proof-item strong {
+        display: block;
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 900;
+      }
+
+      .agent-proof-item span {
+        display: block;
+        margin-top: 7px;
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .agent-proof-close {
+        margin: 26px auto 0;
+        color: rgba(255, 255, 255, 0.88);
+        font-size: 17px;
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .zalo-proof-block {
+        margin-top: 76px;
+        padding-top: 68px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .zalo-proof-head {
+        max-width: 860px;
+        margin: 0 auto 34px;
+        padding-inline: 16px;
+        text-align: center;
+      }
+
+      .zalo-proof-head h3 {
+        font-size: clamp(32px, 4vw, 50px);
+      }
+
+      .zalo-proof-marquee {
+        width: 100vw;
+        margin-left: calc(50% - 50vw);
+        overflow: hidden;
+      }
+
+      .zalo-proof-track {
+        display: flex;
+        width: max-content;
+        animation: zalo-proof-scroll 92s linear infinite;
+        will-change: transform;
+      }
+
+      .zalo-proof-marquee:hover .zalo-proof-track,
+      .zalo-proof-marquee:focus-within .zalo-proof-track {
+        animation-play-state: paused;
+      }
+
+      .zalo-proof-sequence {
+        display: flex;
+        align-items: stretch;
+        gap: 12px;
+        padding-right: 12px;
+      }
+
+      .zalo-proof-card {
+        flex: 0 0 auto;
+        width: 300px;
+        aspect-ratio: 15 / 32;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        border-radius: 18px;
+        background: #e9edf6;
+        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
+      }
+
+      .zalo-proof-card img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      @keyframes zalo-proof-scroll {
+        to {
+          transform: translateX(-50%);
+        }
+      }
+
       .pricing {
         padding-bottom: 112px;
       }
@@ -1597,6 +1791,94 @@
       .field input:focus {
         border-color: var(--primary);
         box-shadow: 0 0 0 4px rgba(246, 102, 40, 0.12);
+      }
+
+      .ebook-addon {
+        position: relative;
+        display: grid;
+        grid-template-columns: 24px minmax(0, 1fr);
+        min-height: 66px;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid rgba(246, 102, 40, 0.28);
+        border-radius: 16px;
+        background: #fff8f3;
+        color: #252a33;
+        padding: 13px 14px;
+        cursor: pointer;
+        transition:
+          border-color 160ms ease,
+          background 160ms ease,
+          box-shadow 160ms ease;
+      }
+
+      .ebook-addon:has(input:checked) {
+        border-color: var(--primary);
+        background: #fff0e7;
+        box-shadow: 0 0 0 4px rgba(246, 102, 40, 0.1);
+      }
+
+      .ebook-addon input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .ebook-addon-control {
+        display: grid;
+        width: 22px;
+        height: 22px;
+        place-items: center;
+        border: 2px solid #a9b0bc;
+        border-radius: 7px;
+        background: #ffffff;
+        transition:
+          border-color 160ms ease,
+          background 160ms ease;
+      }
+
+      .ebook-addon input:checked + .ebook-addon-control {
+        border-color: var(--primary);
+        background: var(--primary);
+      }
+
+      .ebook-addon input:checked + .ebook-addon-control::after {
+        width: 10px;
+        height: 6px;
+        border-bottom: 2px solid #ffffff;
+        border-left: 2px solid #ffffff;
+        content: "";
+        transform: translateY(-1px) rotate(-45deg);
+      }
+
+      .ebook-addon input:focus-visible + .ebook-addon-control {
+        outline: 3px solid rgba(246, 102, 40, 0.28);
+        outline-offset: 3px;
+      }
+
+      .ebook-addon > span:last-child {
+        display: grid;
+        gap: 3px;
+      }
+
+      .ebook-addon strong {
+        font-size: 14px;
+        line-height: 1.35;
+      }
+
+      .ebook-addon-price {
+        color: #d94f18;
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .ebook-addon-price del {
+        margin-left: 6px;
+        color: #7b8491;
+        font-size: 12px;
+        font-weight: 700;
       }
 
       .form .btn {
@@ -2002,6 +2284,18 @@
           scroll-behavior: auto !important;
           transition-duration: 0.001ms !important;
         }
+
+        .zalo-proof-marquee {
+          overflow-x: auto;
+        }
+
+        .zalo-proof-track {
+          animation: none !important;
+        }
+
+        .zalo-proof-sequence[aria-hidden="true"] {
+          display: none;
+        }
       }
 
       @media (max-width: 1020px) {
@@ -2040,6 +2334,10 @@
 
         .mechanism-steps {
           grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .agent-proof-grid {
+          grid-template-columns: 1fr;
         }
 
         .mechanism-step::after {
@@ -2100,6 +2398,31 @@
         .section-copy {
           max-width: 100%;
           font-size: 17px;
+        }
+
+        .agent-proof-copy,
+        .zalo-proof-copy {
+          font-size: 16px;
+        }
+
+        .agent-demo-frame {
+          border-radius: 18px;
+        }
+
+        .agent-demo-label {
+          top: 10px;
+          left: 10px;
+          min-height: 30px;
+          font-size: 9px;
+        }
+
+        .zalo-proof-block {
+          margin-top: 56px;
+          padding-top: 52px;
+        }
+
+        .zalo-proof-card {
+          width: 244px;
         }
 
         .hero-actions .btn {
@@ -2572,6 +2895,118 @@
           </div>
         </section>
 
+        <section class="section agent-proof-section" id="agent-tu-dong-len-quang-cao">
+          <div class="container">
+            <div class="agent-proof-head">
+              <p class="agent-proof-kicker">AI Agent thực chiến</p>
+              <h2>Một câu lệnh. <span>Agent tự động lên toàn bộ quảng cáo.</span></h2>
+              <p class="agent-proof-copy">
+                Agent tự phân tích yêu cầu, dựng Campaign - Ad set - mẫu quảng cáo, để PAUSED an toàn và trả lại đầy đủ ID để bạn kiểm tra trước khi bật.
+              </p>
+            </div>
+
+            <figure class="agent-demo-frame">
+              <figcaption class="agent-demo-label">DEMO THỰC TẾ • 6 CHIẾN DỊCH</figcaption>
+              <picture>
+                <source media="(prefers-reduced-motion: reduce)" srcset="/ladipage/assets/facebook-ads-agent-demo-poster.webp" />
+                <img
+                  src="/ladipage/assets/facebook-ads-agent-demo.gif"
+                  alt="Demo Agent tự động tạo sáu chiến dịch quảng cáo và để ở trạng thái PAUSED"
+                  width="960"
+                  height="490"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
+            </figure>
+
+            <div class="agent-proof-grid" aria-label="Kết quả Agent thực hiện">
+              <article class="agent-proof-item">
+                <strong>Tạo 6 chiến dịch</strong>
+                <span>Tự dựng Campaign, Ad set và mẫu quảng cáo.</span>
+              </article>
+              <article class="agent-proof-item">
+                <strong>PAUSED an toàn</strong>
+                <span>Không phát sinh chi tiêu trước khi bạn duyệt.</span>
+              </article>
+              <article class="agent-proof-item">
+                <strong>Đầy đủ ID</strong>
+                <span>Campaign ID, Ad set ID và Ad ID được trả về rõ ràng.</span>
+              </article>
+            </div>
+
+            <p class="agent-proof-close">Không chỉ lên kế hoạch. Agent trực tiếp triển khai vào tài khoản quảng cáo.</p>
+
+            <div class="zalo-proof-block">
+              <div class="zalo-proof-head">
+                <p class="agent-proof-kicker">Hỗ trợ thực tế</p>
+                <h3>Không chỉ xem video. Vướng ở đâu, được hỗ trợ triển khai ở đó.</h3>
+                <p class="zalo-proof-copy">
+                  Các buổi gọi hỗ trợ thực tế kéo dài từ 21 đến 55 phút khi học viên cần gỡ vướng về nội dung, thiết lập và vận hành quảng cáo.
+                </p>
+              </div>
+
+              <div class="zalo-proof-marquee" aria-label="Phản hồi và thời lượng hỗ trợ thực tế từ học viên">
+                <div class="zalo-proof-track">
+                  <div class="zalo-proof-sequence">
+                    <figure class="zalo-proof-card" data-zalo-proof="agent-plan">
+                      <img src="/ladipage/assets/zalo-support/zalo-proof-01-agent-plan.webp" alt="Phản hồi học viên về Agent lập kế hoạch và lên quảng cáo tự động" width="640" height="1385" loading="lazy" decoding="async" />
+                    </figure>
+                    <figure class="zalo-proof-card" data-zalo-proof="marketing-advice">
+                      <img src="/ladipage/assets/zalo-support/zalo-proof-02-marketing-advice.webp" alt="Trao đổi hỗ trợ tối ưu nội dung quảng cáo cho khách hàng" width="640" height="1385" loading="lazy" decoding="async" />
+                    </figure>
+                    <figure class="zalo-proof-card" data-zalo-proof="course-feedback">
+                      <img src="/ladipage/assets/zalo-support/zalo-proof-03-course-feedback.webp" alt="Phản hồi học viên sau khi học Facebook Ads Master" width="640" height="1385" loading="lazy" decoding="async" />
+                    </figure>
+                    <figure class="zalo-proof-card" data-zalo-proof="call-34m09">
+                      <img src="/ladipage/assets/zalo-support/zalo-proof-04-call-34m09.webp" alt="Cuộc gọi hỗ trợ thực tế 34 phút 9 giây" width="640" height="1384" loading="lazy" decoding="async" />
+                    </figure>
+                    <figure class="zalo-proof-card" data-zalo-proof="call-55m50">
+                      <img src="/ladipage/assets/zalo-support/zalo-proof-05-call-55m50.webp" alt="Cuộc gọi hỗ trợ thực tế 55 phút 50 giây" width="640" height="1386" loading="lazy" decoding="async" />
+                    </figure>
+                    <figure class="zalo-proof-card" data-zalo-proof="calls-21m59-46m04">
+                      <img src="/ladipage/assets/zalo-support/zalo-proof-06-calls-21m59-46m04.webp" alt="Hai cuộc gọi hỗ trợ thực tế 21 phút 59 giây và 46 phút 4 giây" width="640" height="1384" loading="lazy" decoding="async" />
+                    </figure>
+                    <figure class="zalo-proof-card" data-zalo-proof="call-30m59">
+                      <img src="/ladipage/assets/zalo-support/zalo-proof-07-call-30m59.webp" alt="Cuộc gọi hỗ trợ thực tế 30 phút 59 giây" width="640" height="1384" loading="lazy" decoding="async" />
+                    </figure>
+                    <figure class="zalo-proof-card" data-zalo-proof="call-36m10">
+                      <img src="/ladipage/assets/zalo-support/zalo-proof-08-call-36m10.webp" alt="Cuộc gọi hỗ trợ thực tế 36 phút 10 giây" width="640" height="1384" loading="lazy" decoding="async" />
+                    </figure>
+                    <figure class="zalo-proof-card" data-zalo-proof="call-22m51">
+                      <img src="/ladipage/assets/zalo-support/zalo-proof-09-call-22m51.webp" alt="Cuộc gọi hỗ trợ thực tế 22 phút 51 giây" width="640" height="1384" loading="lazy" decoding="async" />
+                    </figure>
+                    <figure class="zalo-proof-card" data-zalo-proof="agent-consultation">
+                      <img src="/ladipage/assets/zalo-support/zalo-proof-10-agent-consultation.webp" alt="Trao đổi tư vấn cách dùng Agent tối ưu video quảng cáo" width="640" height="1385" loading="lazy" decoding="async" />
+                    </figure>
+                    <figure class="zalo-proof-card" data-zalo-proof="call-23m59">
+                      <img src="/ladipage/assets/zalo-support/zalo-proof-11-call-23m59.webp" alt="Cuộc gọi hỗ trợ thực tế 23 phút 59 giây" width="640" height="1384" loading="lazy" decoding="async" />
+                    </figure>
+                    <figure class="zalo-proof-card" data-zalo-proof="support-schedule">
+                      <img src="/ladipage/assets/zalo-support/zalo-proof-12-support-schedule.webp" alt="Trao đổi hỗ trợ học viên và sắp xếp lịch hướng dẫn" width="640" height="1385" loading="lazy" decoding="async" />
+                    </figure>
+                  </div>
+
+                  <div class="zalo-proof-sequence" aria-hidden="true">
+                    <figure class="zalo-proof-card"><img src="/ladipage/assets/zalo-support/zalo-proof-01-agent-plan.webp" alt="" width="640" height="1385" loading="lazy" decoding="async" /></figure>
+                    <figure class="zalo-proof-card"><img src="/ladipage/assets/zalo-support/zalo-proof-02-marketing-advice.webp" alt="" width="640" height="1385" loading="lazy" decoding="async" /></figure>
+                    <figure class="zalo-proof-card"><img src="/ladipage/assets/zalo-support/zalo-proof-03-course-feedback.webp" alt="" width="640" height="1385" loading="lazy" decoding="async" /></figure>
+                    <figure class="zalo-proof-card"><img src="/ladipage/assets/zalo-support/zalo-proof-04-call-34m09.webp" alt="" width="640" height="1384" loading="lazy" decoding="async" /></figure>
+                    <figure class="zalo-proof-card"><img src="/ladipage/assets/zalo-support/zalo-proof-05-call-55m50.webp" alt="" width="640" height="1386" loading="lazy" decoding="async" /></figure>
+                    <figure class="zalo-proof-card"><img src="/ladipage/assets/zalo-support/zalo-proof-06-calls-21m59-46m04.webp" alt="" width="640" height="1384" loading="lazy" decoding="async" /></figure>
+                    <figure class="zalo-proof-card"><img src="/ladipage/assets/zalo-support/zalo-proof-07-call-30m59.webp" alt="" width="640" height="1384" loading="lazy" decoding="async" /></figure>
+                    <figure class="zalo-proof-card"><img src="/ladipage/assets/zalo-support/zalo-proof-08-call-36m10.webp" alt="" width="640" height="1384" loading="lazy" decoding="async" /></figure>
+                    <figure class="zalo-proof-card"><img src="/ladipage/assets/zalo-support/zalo-proof-09-call-22m51.webp" alt="" width="640" height="1384" loading="lazy" decoding="async" /></figure>
+                    <figure class="zalo-proof-card"><img src="/ladipage/assets/zalo-support/zalo-proof-10-agent-consultation.webp" alt="" width="640" height="1385" loading="lazy" decoding="async" /></figure>
+                    <figure class="zalo-proof-card"><img src="/ladipage/assets/zalo-support/zalo-proof-11-call-23m59.webp" alt="" width="640" height="1384" loading="lazy" decoding="async" /></figure>
+                    <figure class="zalo-proof-card"><img src="/ladipage/assets/zalo-support/zalo-proof-12-support-schedule.webp" alt="" width="640" height="1385" loading="lazy" decoding="async" /></figure>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section id="lo-trinh" class="section gold-section">
           <div class="container">
             <div class="section-head">
@@ -2751,6 +3186,14 @@
                   <label for="phone">Số điện thoại / Zalo</label>
                   <input id="phone" name="phone" type="tel" autocomplete="tel" required placeholder="09..." />
                 </div>
+                <label class="ebook-addon" for="ebook-addon">
+                  <input id="ebook-addon" name="ebookAddon" type="checkbox" />
+                  <span class="ebook-addon-control" aria-hidden="true"></span>
+                  <span>
+                    <strong>Mua kèm Ebook Facebook Ads</strong>
+                    <span class="ebook-addon-price">299.000đ <del>799.000đ</del></span>
+                  </span>
+                </label>
                 <button class="btn btn-primary" type="submit" id="payment-submit">Đăng ký gói AI Agent - 799.000đ</button>
               </form>
               <div class="secure-note">
@@ -2880,6 +3323,15 @@
             note: "Gói đang chọn: AI Agent 799.000đ - học video và nhận AI Agent lên kế hoạch quảng cáo.",
             submitText: "Đăng ký gói AI Agent - 799.000đ",
           },
+          "zoom-kit-ebook-299": {
+            id: "zoom-kit-ebook-299",
+            label: "Gói AI Agent + Ebook",
+            price: "1.098K",
+            amount: 1098000,
+            summary: "Đang chọn gói AI Agent 799.000đ + Ebook Facebook Ads 299.000đ. Tổng thanh toán 1.098.000đ.",
+            note: "Gói đang chọn: AI Agent + Ebook Facebook Ads - tổng 1.098.000đ, nhận quyền truy cập cả hai sản phẩm.",
+            submitText: "Đăng ký khóa học + Ebook - 1.098.000đ",
+          },
         };
         var selectedPlan = plans["zoom-kit"];
         var cartKey = "tam-cart-courses";
@@ -2889,6 +3341,7 @@
         var planSummary = document.getElementById("payment-plan-summary");
         var planNote = document.getElementById("selected-plan-note");
         var submitButton = document.getElementById("payment-submit");
+        var ebookAddon = document.getElementById("ebook-addon");
 
         function track(eventName, payload) {
           if (typeof window.fbq === "function") {
@@ -2902,7 +3355,7 @@
         }
 
         function resolveSelectedPlan() {
-          return selectedPlan;
+          return ebookAddon.checked ? plans["zoom-kit-ebook-299"] : selectedPlan;
         }
 
         function addCourseToCart() {
@@ -2910,16 +3363,21 @@
             var checkoutPlan = resolveSelectedPlan();
             var current = JSON.parse(localStorage.getItem(cartKey) || "[]");
             if (!Array.isArray(current)) current = [];
-            var cartItem = {
+            var courseCartItem = {
               slug: course.slug,
-              title: course.title + " - " + checkoutPlan.label,
-              price: checkoutPlan.price,
+              title: course.title + " - Gói AI Agent",
+              price: "799K",
             };
-            var existingIndex = current.findIndex(function (item) { return item && item.slug === course.slug; });
-            if (existingIndex >= 0) {
-              current[existingIndex] = cartItem;
-            } else {
-              current.push(cartItem);
+            current = current.filter(function (item) {
+              return item && item.slug !== course.slug && item.slug !== "ebook-facebook-ads-2026";
+            });
+            current.push(courseCartItem);
+            if (checkoutPlan.id === "zoom-kit-ebook-299") {
+              current.push({
+                slug: "ebook-facebook-ads-2026",
+                title: "Ebook Facebook Ads 2026 - Mua kèm ưu đãi",
+                price: "299K",
+              });
             }
             localStorage.setItem(cartKey, JSON.stringify(current));
             window.dispatchEvent(new CustomEvent("tam:cart-updated", { detail: "add" }));
@@ -2928,14 +3386,18 @@
 
         function setSelectedPlan(planId) {
           selectedPlan = plans[planId] || plans["zoom-kit"];
+          syncCheckoutState();
+          document.querySelectorAll("[data-plan-card]").forEach(function (card) {
+            card.classList.toggle("is-selected", card.getAttribute("data-plan-card") === selectedPlan.id);
+          });
+        }
+
+        function syncCheckoutState() {
           var checkoutPlan = resolveSelectedPlan();
           planInput.value = checkoutPlan.id;
           planSummary.textContent = checkoutPlan.summary;
           planNote.textContent = checkoutPlan.note;
           submitButton.textContent = checkoutPlan.submitText;
-          document.querySelectorAll("[data-plan-card]").forEach(function (card) {
-            card.classList.toggle("is-selected", card.getAttribute("data-plan-card") === selectedPlan.id);
-          });
         }
 
         function jumpToPaymentFormOnMobile() {
@@ -2997,8 +3459,11 @@
           });
         });
 
+        ebookAddon.addEventListener("change", syncCheckoutState);
+
         form.addEventListener("submit", async function (event) {
           event.preventDefault();
+          syncCheckoutState();
           addCourseToCart();
 
           if (!form.reportValidity()) return;

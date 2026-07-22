@@ -26,27 +26,29 @@ function getContentIds(order: PaymentOrder) {
   return itemSlugs.length ? itemSlugs : [order.courseSlug].filter(Boolean);
 }
 
-function isFacebookEbookOrder(order: PaymentOrder) {
+function hasExactCourseSlug(order: PaymentOrder, slug: string) {
   return (
-    order.courseSlug === facebookEbookCourseSlug ||
-    order.orderItems.some((item) => item.slug === facebookEbookCourseSlug)
+    order.courseSlug.split(",")
+      .map((item) => item.trim())
+      .includes(slug) || order.orderItems.some((item) => item.slug === slug)
   );
+}
+
+function isFacebookEbookOrder(order: PaymentOrder) {
+  return hasExactCourseSlug(order, facebookEbookCourseSlug);
 }
 
 function isFacebookAdsCourseOrder(order: PaymentOrder) {
-  return (
-    order.courseSlug === facebookAdsCourseSlug ||
-    order.orderItems.some((item) => item.slug === facebookAdsCourseSlug)
-  );
+  return hasExactCourseSlug(order, facebookAdsCourseSlug);
 }
 
 function getPaidRedirectPath(order: PaymentOrder) {
-  if (isFacebookEbookOrder(order)) {
-    return facebookEbookThankYouPath;
-  }
-
   if (isFacebookAdsCourseOrder(order)) {
     return facebookAdsThankYouPath;
+  }
+
+  if (isFacebookEbookOrder(order)) {
+    return facebookEbookThankYouPath;
   }
 
   return "/dashboard";
@@ -138,10 +140,10 @@ export function PaymentStatusPoller({
   }, [disablePolling, order, router]);
 
   const paid = order.status === "paid";
-  const paidStatusMessage = isFacebookEbookOrder(order)
-    ? "SePay đã báo tiền vào. Hệ thống sẽ gửi email tài khoản và link ebook. Đang chuyển bạn tới trang hướng dẫn nhận ebook..."
-    : isFacebookAdsCourseOrder(order)
-      ? "SePay đã báo tiền vào. Hệ thống sẽ gửi email tài khoản học viên. Đang chuyển bạn tới trang hướng dẫn vào khóa học Facebook Ads..."
+  const paidStatusMessage = isFacebookAdsCourseOrder(order)
+    ? "SePay đã báo tiền vào. Hệ thống sẽ gửi email tài khoản học viên. Đang chuyển bạn tới trang hướng dẫn vào khóa học Facebook Ads..."
+    : isFacebookEbookOrder(order)
+      ? "SePay đã báo tiền vào. Hệ thống sẽ gửi email tài khoản và link ebook. Đang chuyển bạn tới trang hướng dẫn nhận ebook..."
     : "SePay đã báo tiền vào. Hệ thống sẽ gửi email hướng dẫn, nếu chưa thấy hãy kiểm tra Spam hoặc Promotions/Khuyến mãi trước khi liên hệ hỗ trợ. Đang chuyển bạn tới khu học viên...";
 
   return (

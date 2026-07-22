@@ -1,10 +1,32 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-07-22 - Facebook Ads Ebook checkout add-on
+
+- Landing option: `ebookAddon`, positioned after phone and before submit.
+- Default plan: `zoom-kit`, 799,000 VND. Bundle plan: `zoom-kit-ebook-299`, 1,098,000 VND.
+- Server order items: `facebook-ads-2026` at 799,000 VND and `ebook-facebook-ads-2026` at 299,000 VND. Browser-provided amounts are not trusted.
+- One SePay order/QR grants both entitlements. The paid route prioritizes the primary Facebook Ads thank-you page, while the combined success email also provides Ebook online/PDF access.
+- Exact-slug helpers support both `order_items` and legacy/fallback comma-separated `course_slug` rows.
+- Standalone Ebook checkout remains unchanged. No schema or deploy change; local candidate only.
+
 Muc tieu cua file nay: giup cac phien Codex/Claude/agent khac vao repo la hieu duoc he thong website, khong phai lan vet tung file. File nay uu tien kien truc, luong du lieu, noi can sua, noi khong nen dung cham, va checklist verify.
 
 Repo chinh: `E:\TheAnh-Business-Workspace\02_Website\landing-page`
 
 Current deploy source after 2026-06-11 incident: `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`
+
+## 2026-07-22 - Facebook Ads landing Agent proof section
+
+| Hạng mục | Chi tiết |
+|---|---|
+| App/route | `main-site`, `/academy/facebook-ads-master-2026`; canonical static source `public/ladipage/facebook-ads-2026.html`, published copy `public/academy/facebook-ads-master-2026.html`. |
+| Placement | `#agent-tu-dong-len-quang-cao` is after `#san-pham-thuc-te` and before `#lo-trinh`. |
+| Demo | `/ladipage/assets/facebook-ads-agent-demo.gif` is a 960x490, 4,124,531-byte infinite-loop GIF. The `<picture>` serves `/ladipage/assets/facebook-ads-agent-demo-poster.webp` under reduced motion. |
+| Proof | Three result cards explain six campaigns, safe PAUSED state and returned IDs. The Zalo marquee contains one accessible 12-card sequence plus one `aria-hidden` visual duplicate; each WebP is 640px wide. Cards use `15:32`, `300px` desktop, `244px` mobile, a `12px` gap and centered cover crop of about 1.5%. |
+| Privacy | Seven designed support-call screenshots keep the existing privacy masks. The original screenshot ending `a1814dc3cf3103050c99a5f65d909d65.jpg` is excluded. |
+| Guard | `tests/facebook-ads-landing.test.mjs` enforces placement, copy, GIF/poster paths, asset existence/size, exactly 12 accessible proofs, source/published equality and continued absence of the 399K offer. |
+| Verification | Focused `10/10`, full Node `415/415` serial, TypeScript, ESLint, diff check, 105-page build, desktop/390px browser QA and a 12-image fitted-crop contact sheet pass; all seven call-duration highlights remain visible. |
+| Deploy | Local-ready only. The shared production worktree is preserved with the complete Agent/Zalo candidate; no merge, push, cleanup or production deployment occurred. |
 
 ## 2026-07-22 - Facebook Ads learning-room reference library
 

@@ -33,6 +33,7 @@ const adsSupportAgentUrl =
   "https://chatgpt.com/g/g-6a1ffa1efa308191b76782e0b93d4e30-ads-performance-planner";
 const facebookEbookCourseSlug = "ebook-facebook-ads-2026";
 const facebookEbookProductTitle = "Ebook Facebook Ads 2026";
+const facebookAdsEbookBundleTitle = "Facebook Ads Master 2026 + Ebook Facebook Ads 2026";
 const facebookEbookReaderPath = "/thu-vien/facebook-ads";
 const facebookEbookPdfPath = "/thu-vien/facebook-ads/pdf";
 
@@ -82,7 +83,25 @@ function getCourseList(order: PaymentOrder) {
   return [order.courseTitle].filter(Boolean);
 }
 
+function hasExactCourseSlug(order: PaymentOrder, slug: string) {
+  return (
+    order.courseSlug.split(",").map((item) => item.trim()).includes(slug) ||
+    order.orderItems.some((item) => item.slug === slug)
+  );
+}
+
+function isFacebookAdsEbookBundle(order: PaymentOrder) {
+  return (
+    hasExactCourseSlug(order, "facebook-ads-2026") &&
+    hasExactCourseSlug(order, facebookEbookCourseSlug)
+  );
+}
+
 function getProductTitle(order: PaymentOrder) {
+  if (isFacebookAdsEbookBundle(order)) {
+    return facebookAdsEbookBundleTitle;
+  }
+
   if (isFacebookEbookOrder(order)) {
     return facebookEbookProductTitle;
   }
@@ -91,10 +110,7 @@ function getProductTitle(order: PaymentOrder) {
 }
 
 function isFacebookEbookOrder(order: PaymentOrder) {
-  return (
-    order.courseSlug === facebookEbookCourseSlug ||
-    order.orderItems.some((item) => item.slug === facebookEbookCourseSlug)
-  );
+  return hasExactCourseSlug(order, facebookEbookCourseSlug);
 }
 
 function getPaymentFailedTitle(order: PaymentOrder) {
@@ -103,6 +119,16 @@ function getPaymentFailedTitle(order: PaymentOrder) {
 
 function getBenefitItems(order: PaymentOrder) {
   const productTitle = getProductTitle(order);
+
+  if (isFacebookAdsEbookBundle(order)) {
+    return [
+      "Toàn bộ nội dung khóa Facebook Ads Master 2026",
+      "Tặng AI Agent lên kế hoạch quảng cáo",
+      "Khung plan test quảng cáo 7 ngày và prompt phân tích angle ads",
+      "Quyền đọc Ebook Facebook Ads 2026 online và tải PDF",
+      "Tài khoản học viên dùng chung cho cả khóa học và Ebook",
+    ];
+  }
 
   if (isFacebookEbookOrder(order)) {
     return [
@@ -265,7 +291,8 @@ export function buildPaymentSuccessEmailPayload(
   const siteUrl = normalizeSiteUrl(options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL);
   const accessUrl = `${siteUrl}/vao-khoa-hoc`;
   const dashboardUrl = `${siteUrl}/dashboard`;
-  const isFacebookEbook = isFacebookEbookOrder(order);
+  const isFacebookEbookBundle = isFacebookAdsEbookBundle(order);
+  const isFacebookEbook = isFacebookEbookOrder(order) && !isFacebookEbookBundle;
   const facebookEbookReaderUrl = `${siteUrl}${facebookEbookReaderPath}`;
   const facebookEbookPdfUrl = `${siteUrl}${facebookEbookPdfPath}`;
   const accessEmailUrl = buildEmailLink(accessUrl, siteUrl);
@@ -342,6 +369,16 @@ export function buildPaymentSuccessEmailPayload(
                           <strong style="color:#d8b653">Lưu ý:</strong> Nếu chưa thấy email hướng dẫn sau vài phút, bạn kiểm tra thêm mục Spam, Quảng cáo/Promotions hoặc Khuyến mãi trong hộp thư.
                         </p>
       `;
+  const bundleEbookActionsHtml = isFacebookEbookBundle
+    ? `
+                    <a href="${escapeHtml(facebookEbookReaderEmailUrl)}" style="display:block;margin-top:14px;background:#159cfb;color:#ffffff;text-decoration:none;border-radius:10px;padding:15px 20px;font-size:15px;font-weight:900">
+                      Đọc Ebook Facebook Ads online
+                    </a>
+                    <a href="${escapeHtml(facebookEbookPdfEmailUrl)}" style="display:block;margin-top:14px;background:#ffffff;color:#161616;text-decoration:none;border-radius:10px;padding:15px 20px;font-size:15px;font-weight:900">
+                      Tải Ebook Facebook Ads PDF
+                    </a>
+      `
+    : "";
   const primaryActionsHtml = isFacebookEbook
     ? `
                     <a href="${escapeHtml(facebookEbookReaderEmailUrl)}" style="display:block;background:#d8b653;color:#111111;text-decoration:none;border-radius:10px;padding:17px 20px;font-size:15px;font-weight:900;letter-spacing:0.02em;text-transform:uppercase">
@@ -364,6 +401,7 @@ export function buildPaymentSuccessEmailPayload(
                     </a>
                     ${agentGuideButton}
                     ${adsSupportAgentButton}
+                    ${bundleEbookActionsHtml}
                     <p style="margin:20px 0 0;color:#8f887c;font-size:13px;line-height:1.7">
                       Link dashboard: <a href="${escapeHtml(dashboardEmailUrl)}" style="color:#d8b653">${escapeHtml(dashboardUrl)}</a>
                     </p>
@@ -566,6 +604,7 @@ export function buildPaymentSuccessEmailPayload(
                     </a>
                     ${agentGuideButton}
                     ${adsSupportAgentButton}
+                    ${bundleEbookActionsHtml}
                     <p style="margin:20px 0 0;color:#8f887c;font-size:13px;line-height:1.7">
                       Link dashboard: <a href="${escapeHtml(dashboardEmailUrl)}" style="color:#d8b653">${escapeHtml(dashboardUrl)}</a>
                     </p>
@@ -619,6 +658,8 @@ export function buildPaymentSuccessEmailPayload(
     `Link truy cập khu vực học viên: ${accessUrl}`,
     showAgentGuide ? `Hướng dẫn sử dụng AI Agent: ${agentGuideUrl}` : "",
     showAdsSupportAgent ? `${adsSupportAgentName}: ${adsSupportAgentUrl}` : "",
+    isFacebookEbookBundle ? `Đọc Ebook online: ${facebookEbookReaderUrl}` : "",
+    isFacebookEbookBundle ? `Tải Ebook PDF: ${facebookEbookPdfUrl}` : "",
     `Dashboard: ${dashboardUrl}`,
     "Nếu chưa thấy email hướng dẫn sau vài phút, vui lòng kiểm tra mục Spam, Quảng cáo/Promotions hoặc Khuyến mãi.",
   ].join("\n");
