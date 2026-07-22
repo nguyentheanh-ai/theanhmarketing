@@ -5,7 +5,7 @@
 Scope: `theanh-main` learning room only. Added three customer-safe reference ZIPs and previews below the video for `facebook-ads-2026`; no other course receives the section.
 Implementation: typed course config, focused reference-library component, server-route lookup and one insertion point before the existing lesson title/progress/navigation card. Existing lesson-specific resources remain unchanged.
 Safety: packages contain only audited research, planning and generic AI visual samples. Real Ads reports, customer/CRM data, account screenshots, internal Agent source, duplicate assets and the broken black poster were excluded.
-Verification: ZIP entry counts `3/5/3`; TDD RED then focused GREEN `8/8`; full Node `414/414`; TypeScript, ESLint, diff check, Next build 105 pages, canonical session guard and protected-surface preflight pass. Production deployment has not been executed.
+Verification: ZIP entry counts `3/5/3`; TDD RED then focused GREEN `8/8`; full Node `414/414`; TypeScript, ESLint, diff check, local/Vercel Next builds 105 pages, canonical session guard and protected-surface preflight pass. Production deployment `dpl_5cZkzRkTyFfNSiZBEYPhacheKHHg` is Ready and aliased to `https://www.theanhmarketing.com`. Authenticated Chrome QA confirmed the visible three-card region directly below the video, all previews loaded, all six public assets return `200`, protected route smoke passes and the Vercel error scan is empty.
 
 ## 2026-07-14 - Customer paid-order product correction
 
