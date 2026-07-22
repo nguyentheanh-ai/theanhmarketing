@@ -1,5 +1,12 @@
 # Session Log
 
+## 2026-07-22 - Remove the 399K option from Facebook Ads Master landing
+
+Scope: `theanh-main` public route `/academy/facebook-ads-master-2026` only.
+Change: removed the 399K basic card, all visible 399K references and the landing `video` plan; the only displayed/default/submitted offer is the 799K AI Agent package through `paymentPlan=zoom-kit`. Updated browser `ViewContent` value to `799000` and changed the plan grid to one column beside the existing registration form.
+Safety: historical 399K order, checkout and email logic remains available; course catalog data and separate Facebook Ads Ebook 399K landing pages are unchanged.
+Verification: TDD RED `7/9` then focused GREEN `9/9`; full Node `414/414`; TypeScript, ESLint, 105-page Next build, candidate preflight, source/published hash equality, zero stale 399 markers, and local Chromium desktop/mobile rendering pass. Intercepted form QA submitted `courseSlug=facebook-ads-2026`, `paymentPlan=zoom-kit` and redirected to the expected checkout path without creating a real order.
+
 ## 2026-07-22 - Facebook Ads lesson reference downloads
 
 Scope: `theanh-main` learning room only. Added three customer-safe reference ZIPs and previews below the video for `facebook-ads-2026`; no other course receives the section.

@@ -1,6 +1,6 @@
 # Danh sách LadiPage / landing page đã tạo
 
-Cập nhật: 2026-06-11
+Cập nhật: 2026-07-22
 
 Repo source: `E:\TheAnh-Business-Workspace\02_Website\landing-page`
 
@@ -9,7 +9,7 @@ Repo source: `E:\TheAnh-Business-Workspace\02_Website\landing-page`
 | Landing page | URL xem | Source chính | File publish | Ghi chú |
 |---|---|---|---|---|
 | AI Master X10 hiệu suất | `https://www.theanhmarketing.com/academy/ai-master-x10-hieu-suat` | `public/ladipage/ai-master-x10-hieu-suat.html` | `public/academy/ai-master-x10-hieu-suat.html` | LadiPage HTML có assets riêng trong `public/academy/ai-master-x10-assets`. Route được rewrite trong `next.config.ts`. |
-| Facebook Ads Master 2026 | `https://www.theanhmarketing.com/academy/facebook-ads-master-2026` | `public/ladipage/facebook-ads-2026.html` | `public/academy/facebook-ads-master-2026.html` | LadiPage HTML có form tạo đơn `/api/orders`, chỉ show 2 gói: 399K cơ bản không AI Agent/Zoom và 799K nổi bật/default tặng AI Agent lên kế hoạch quảng cáo. Form đăng ký không còn checkbox Zoom +500K và chỉ gửi payment plan `video` hoặc `zoom-kit` từ landing. Deploy production 2026-06-11 `dpl_4XJaKooseUbSSuLH7GERpyQH8UUr`; route được rewrite trong `next.config.ts`. |
+| Facebook Ads Master 2026 | `https://www.theanhmarketing.com/academy/facebook-ads-master-2026` | `public/ladipage/facebook-ads-2026.html` | `public/academy/facebook-ads-master-2026.html` | LadiPage HTML có form tạo đơn `/api/orders`; từ 2026-07-22 chỉ hiển thị gói AI Agent 799K và chỉ gửi `paymentPlan=zoom-kit`. Gói cơ bản 399K/plan `video` đã được bỏ khỏi landing, nhưng backend vẫn giữ tương thích đơn lịch sử. Route được rewrite trong `next.config.ts`. |
 | AI Agent Business / Bộ Kit AI Agent cho chủ doanh nghiệp | `https://www.theanhmarketing.com/academy/bo-kit-agent-doanh-nghiep` | `app/khoa-hoc/bo-kit-agent-doanh-nghiep/page.tsx` | Route academy rewrite sang Next.js page | Landing private/noindex cho ads, không nối vào website chính. Checkout dùng `courseSlug=bo-agent-kit-x10-hieu-suat-cong-viec`, `paymentPlan=agent-kit-ads-359`, giá 359K. |
 
 ## Trang thanh toán liên quan

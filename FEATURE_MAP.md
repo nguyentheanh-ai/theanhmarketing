@@ -1,5 +1,17 @@
 # Feature Map - theanh-main
 
+## Facebook Ads Master 2026 public offer
+
+Description: `/academy/facebook-ads-master-2026` exposes one active public package: the 799K AI Agent plan. The form defaults to and submits `paymentPlan=zoom-kit`; browser `ViewContent` and lead values use `799000`.
+
+Routes: `/academy/facebook-ads-master-2026`, static compatibility route `/academy/facebook-ads-master-2026.html`, order API `/api/orders`, checkout `/thanh-toan/[code]`.
+
+Main files: `public/ladipage/facebook-ads-2026.html`, `public/academy/facebook-ads-master-2026.html`, `tests/facebook-ads-landing.test.mjs`.
+
+Guard: keep source and published HTML byte-identical; do not restore the 399K card or `video` plan on this landing without owner approval. Preserve historical 399K order/checkout/email handling and do not alter the separate Ebook Facebook Ads 399K landing flows.
+
+Search: `data-plan-card="zoom-kit"`, `paymentPlan`, `799000`, `Facebook Ads landing offers only the 799K AI Agent plan`.
+
 ## Facebook Ads lesson reference downloads
 
 Description: The `facebook-ads-2026` learning room shows three customer-safe reference packs immediately below the lesson video and above the lesson title/progress actions: competitor research, campaign planning, and AI visual examples.

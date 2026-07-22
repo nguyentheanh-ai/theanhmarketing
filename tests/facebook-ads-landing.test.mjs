@@ -20,22 +20,20 @@ test("Facebook Ads landing keeps source and published HTML synced", () => {
   assert.equal(published, source);
 });
 
-test("Facebook Ads landing shows only 399K and 799K plan cards, with 799K as the selected primary offer", () => {
+test("Facebook Ads landing offers only the 799K AI Agent plan", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
 
-  assert.match(html, /data-plan-card="video"/);
   assert.match(html, /data-plan-card="zoom-kit"/);
+  assert.doesNotMatch(html, /data-plan-card="video"/);
+  assert.doesNotMatch(html, /data-plan-select="video"/);
   assert.doesNotMatch(html, /data-plan-card="advanced-zoom"/);
   assert.match(html, /<input type="hidden" name="paymentPlan" value="zoom-kit" \/>/);
   assert.match(html, /var selectedPlan = plans\["zoom-kit"\]/);
   assert.match(html, /AI Agent - 799\.000/);
+  assert.match(html, /value: 799000/);
+  assert.doesNotMatch(html, /399K|399\.000|399000/);
 
-  const videoCard = cardFor(html, "video");
   const agentCard = cardFor(html, "zoom-kit");
-
-  assert.match(videoCard, /399K/);
-  assert.match(videoCard, /AI Agent/);
-  assert.match(videoCard, /Zoom/);
 
   assert.match(agentCard, /is-selected/);
   assert.match(agentCard, /799K/);
@@ -63,21 +61,19 @@ test("Facebook Ads landing no longer offers the 500K Zoom add-on in the registra
   assert.match(html, /paymentPlan: checkoutPlan\.id/);
 });
 
-test("Facebook Ads pricing keeps the registration form on the same desktop row as the two plans", () => {
+test("Facebook Ads pricing keeps the single 799K plan beside the registration form on desktop", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
 
   assert.match(html, /\.pricing-grid\s*\{\s*display: grid;\s*grid-template-columns: minmax\(0, 1\.18fr\) minmax\(430px, 0\.92fr\)/);
-  assert.match(html, /\.plan-grid\s*\{\s*display: grid;\s*grid-template-columns: minmax\(150px, 0\.48fr\) minmax\(330px, 1\.52fr\)/);
+  assert.match(html, /\.plan-grid\s*\{\s*display: grid;\s*grid-template-columns: minmax\(0, 1fr\)/);
   assert.match(html, /@media \(max-width: 1020px\)[\s\S]*?\.hero-grid,[\s\S]*?\.pricing-grid\s*\{[\s\S]*?grid-template-columns: 1fr/);
   assert.match(html, /@media \(max-width: 1020px\)[\s\S]*?\.form-card\s*\{[\s\S]*?width: min\(720px, 100%\)/);
 });
 
-test("Facebook Ads pricing makes 399K compact, 799K/form larger, and keeps the registration button directly after phone", () => {
+test("Facebook Ads pricing keeps 799K featured and the registration button directly after phone", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
 
-  assert.match(html, /<article class="plan-card is-compact" data-plan-card="video">/);
   assert.match(html, /<article class="plan-card is-featured is-selected" data-plan-card="zoom-kit">/);
-  assert.match(html, /\.plan-card\.is-compact\s*\{[\s\S]*?padding: 18px/);
   assert.match(html, /\.plan-card\.is-featured\s*\{[\s\S]*?padding: 34px/);
 
   assert.match(
