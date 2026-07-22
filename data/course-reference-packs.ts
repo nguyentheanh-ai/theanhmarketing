@@ -84,7 +84,7 @@ const packsByCourseSlug: Record<string, CourseReferencePack[]> = {
     },
     {
       id: "video-script-sheet",
-      section: "prompt",
+      section: "plan",
       eyebrow: "07 · Kịch bản mẫu",
       title: "Demo kịch bản quảng cáo trên Google Sheet",
       description: "Kịch bản video quảng cáo 11 scene, có voice off, hướng dẫn hình ảnh và nguồn asset để tham khảo cách triển khai.",

@@ -1,21 +1,8 @@
-import type { CourseReferencePack, CourseReferenceSection } from "@/data/course-reference-packs";
+import type { CourseReferencePack } from "@/data/course-reference-packs";
 
 type CourseReferenceLibraryProps = {
   packs: CourseReferencePack[];
 };
-
-const tableSections: Array<{ key: Exclude<CourseReferenceSection, "prompt">; title: string; description: string }> = [
-  {
-    key: "plan",
-    title: "Google Sheet & bảng kế hoạch mẫu",
-    description: "Mở trực tiếp các Sheet mẫu hoặc tải những bảng kế hoạch đã dùng để tham khảo cách triển khai.",
-  },
-  {
-    key: "research",
-    title: "Nghiên cứu & visual mẫu",
-    description: "Workbook, phân tích và visual nghiên cứu có nguồn; dùng để học cách đọc dữ liệu, không thay cho số liệu ads hiện tại.",
-  },
-];
 
 function ResourceAction({ pack }: { pack: CourseReferencePack }) {
   return (
@@ -88,8 +75,6 @@ function ResourceTable({ packs, title, description }: { packs: CourseReferencePa
 export function CourseReferenceLibrary({ packs }: CourseReferenceLibraryProps) {
   if (packs.length === 0) return null;
 
-  const promptPacks = packs.filter((pack) => pack.section === "prompt");
-
   return (
     <section
       aria-labelledby="course-reference-library-title"
@@ -107,40 +92,11 @@ export function CourseReferenceLibrary({ packs }: CourseReferenceLibraryProps) {
         </p>
       </div>
 
-      <section aria-label="Prompt và kịch bản mẫu" className="mt-5">
-        <div className="flex items-center justify-between gap-4">
-          <h3 className="text-lg font-semibold text-white">Prompt & kịch bản mẫu</h3>
-          <span className="text-xs font-bold text-[#77d7ff]">{promptPacks.length} tài liệu</span>
-        </div>
-        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {promptPacks.map((pack) => (
-            <article className="flex min-w-0 flex-col rounded-xl border border-white/10 bg-white/[0.07] p-4" key={pack.id}>
-              <p className="text-[11px] font-black uppercase tracking-[0.12em] text-[#77d7ff]">{pack.eyebrow}</p>
-              <h4 className="mt-2 text-base font-semibold leading-snug text-white">{pack.title}</h4>
-              <p className="mt-2 flex-1 text-sm leading-6 text-white/68">{pack.description}</p>
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                {pack.formats.map((format) => (
-                  <span className="rounded-full border border-white/10 bg-black/20 px-2.5 py-1 text-[10px] font-bold text-white/68" key={format}>
-                    {format}
-                  </span>
-                ))}
-              </div>
-              <div className="mt-4">
-                <ResourceAction pack={pack} />
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {tableSections.map((section) => (
-        <ResourceTable
-          description={section.description}
-          key={section.key}
-          packs={packs.filter((pack) => pack.section === section.key)}
-          title={section.title}
-        />
-      ))}
+      <ResourceTable
+        description="Tải prompt để dùng với ChatGPT, mở trực tiếp Google Sheet, hoặc tải kế hoạch, nghiên cứu và visual mẫu để tham khảo cách triển khai."
+        packs={packs}
+        title="Tất cả tài liệu mẫu"
+      />
 
       <p className="mt-5 rounded-xl border border-amber-300/20 bg-amber-200/10 px-4 py-3 text-xs leading-5 text-amber-50/82">
         <strong>Cách dùng:</strong> tải từng Prompt về, mở bằng Notepad rồi sao chép toàn bộ vào một cuộc trò chuyện mới. Với Google Sheet, anh chị có thể xem trực tiếp hoặc tạo bản sao vào Drive cá nhân. Các mẫu nghiên cứu chỉ phản ánh phạm vi và thời điểm ghi trong tài liệu, không phải báo cáo hiệu quả ads hiện tại.

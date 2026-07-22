@@ -75,7 +75,7 @@ test("lesson route passes course-specific reference packs into the learning room
   assert.match(lessonPage, /referencePacks=\{referencePacks\}/);
 });
 
-test("reference library renders prompts plus compact plan and research download tables", () => {
+test("reference library puts every reference pack in one compact download table", () => {
   assert.ok(exists("components/course/course-reference-library.tsx"), "reference library component must exist");
   const component = read("components/course/course-reference-library.tsx");
   const configuration = read("data/course-reference-packs.ts");
@@ -87,7 +87,10 @@ test("reference library renders prompts plus compact plan and research download 
   assert.match(renderedContract, /Lập kế hoạch quảng cáo/);
   assert.match(renderedContract, /Demo kịch bản quảng cáo trên Google Sheet/);
   assert.doesNotMatch(component, /next\/image|<Image|previewUrl/);
-  assert.match(component, /<table/);
+  assert.equal((component.match(/<table/g) ?? []).length, 1);
+  assert.match(component, /packs=\{packs\}/);
+  assert.doesNotMatch(component, /const promptPacks/);
+  assert.doesNotMatch(component, /Prompt & kịch bản mẫu/);
   assert.match(component, /Google Sheet/);
   assert.match(component, /visual/);
   assert.match(configuration, /section:\s*"plan"/);
@@ -95,4 +98,13 @@ test("reference library renders prompts plus compact plan and research download 
   assert.match(component, /pack\.external/);
   assert.match(component, /target=\{pack\.external \? "_blank" : undefined\}/);
   assert.match(component, /\bdownload\b/);
+});
+
+test("Google Sheet script demo belongs in the plan table instead of prompt cards", () => {
+  const configuration = read("data/course-reference-packs.ts");
+  const scriptPack = configuration.match(/\{\s*id:\s*"video-script-sheet",[\s\S]*?\n\s*\},/);
+
+  assert.ok(scriptPack, "the video script Google Sheet pack must remain in the catalog");
+  assert.match(scriptPack[0], /section:\s*"plan"/);
+  assert.doesNotMatch(scriptPack[0], /section:\s*"prompt"/);
 });
