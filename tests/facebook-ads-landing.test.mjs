@@ -39,6 +39,8 @@ test("Facebook Ads landing offers only the 799K AI Agent plan", () => {
   assert.match(agentCard, /799K/);
   assert.match(agentCard, /AI Agent/);
   assert.doesNotMatch(agentCard, /Zoom/);
+  assert.doesNotMatch(agentCard, /Chọn gói 799K/);
+  assert.doesNotMatch(agentCard, /<button[^>]+data-plan-select="zoom-kit"/);
 
   assert.doesNotMatch(html, /gói 799\.000đ có thêm Zoom/i);
   assert.doesNotMatch(html, /Gói hỗ trợ Zoom lên ads/i);

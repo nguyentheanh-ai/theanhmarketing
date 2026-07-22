@@ -1,5 +1,11 @@
 # Session Log
 
+## 2026-07-22 - Remove redundant 799K pricing-card button
+
+- Removed only the annotated `Chọn gói 799K` button from both synchronized Facebook Ads landing HTML files.
+- Preserved the selected/clickable pricing card, registration submit, sticky CTA, 799K default plan, optional 299K Ebook add-on, payment and tracking behavior.
+- Added a regression assertion; focused test passed `11/11`. Production deploy and two pending-payment email test cases are the next gated steps.
+
 ## 2026-07-22 - Add optional Ebook to Facebook Ads checkout
 
 - Added the optional `Mua kèm Ebook Facebook Ads` checkbox after the phone field on both synchronized Facebook Ads landing HTML files.
