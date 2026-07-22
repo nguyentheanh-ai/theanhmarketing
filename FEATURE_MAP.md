@@ -1,5 +1,17 @@
 # Feature Map - theanh-main
 
+## Facebook Ads lesson reference downloads
+
+Description: The `facebook-ads-2026` learning room shows three customer-safe reference packs immediately below the lesson video and above the lesson title/progress actions: competitor research, campaign planning, and AI visual examples.
+
+Routes: `/learn/facebook-ads-2026/[lesson]` through the existing dynamic `/learn/[course]/[lesson]` route. Other courses receive an empty pack list and keep their current layout.
+
+Main files: `data/course-reference-packs.ts`, `components/course/course-reference-library.tsx`, `components/course/learning-room.tsx`, `app/learn/[course]/[lesson]/page.tsx`, `public/course-resources/facebook-ads-2026/*`.
+
+Guard: packs contain only audited sample files. Do not add real Ads reports, customer/CRM data, account screenshots, internal Agent/skill source, duplicated assets, or unlabelled performance claims. Preserve existing lesson-specific `currentLesson.resources`, auth, enrollment, progress, video, previous/next navigation, payment, email, and tracking flows.
+
+Search: `getCourseReferencePacks`, `CourseReferenceLibrary`, `referencePacks`.
+
 ## Canonical Admin Executive Operating System
 
 Description: Single owner-facing admin shell for paid revenue, orders, customers, students, courses, email, automation, reports and operational actions. CRM v2 is canonical; the previous Solo Command Center remains legacy source, not a separate owner destination.

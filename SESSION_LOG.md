@@ -1,5 +1,12 @@
 # Session Log
 
+## 2026-07-22 - Facebook Ads lesson reference downloads
+
+Scope: `theanh-main` learning room only. Added three customer-safe reference ZIPs and previews below the video for `facebook-ads-2026`; no other course receives the section.
+Implementation: typed course config, focused reference-library component, server-route lookup and one insertion point before the existing lesson title/progress/navigation card. Existing lesson-specific resources remain unchanged.
+Safety: packages contain only audited research, planning and generic AI visual samples. Real Ads reports, customer/CRM data, account screenshots, internal Agent source, duplicate assets and the broken black poster were excluded.
+Verification: ZIP entry counts `3/5/3`; TDD RED then focused GREEN `8/8`; full Node `414/414`; TypeScript, ESLint, diff check, Next build 105 pages, canonical session guard and protected-surface preflight pass. Production deployment has not been executed.
+
 ## 2026-07-12 - Course Studio, BI correctness and protected landing release
 
 Phạm vi: tách Course Studio khỏi CRM shell, sửa số lead/đơn theo kỳ, tăng biểu đồ BI, sửa chồng nhãn khóa học và chuẩn hóa Meta Ads theo ngày kinh doanh Việt Nam.

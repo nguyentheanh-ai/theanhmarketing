@@ -6,6 +6,15 @@ Repo chinh: `E:\TheAnh-Business-Workspace\02_Website\landing-page`
 
 Current deploy source after 2026-06-11 incident: `E:\TheAnh-Business-Workspace\02_Website\worktrees\theanhmarketing-email-account-hotfix`
 
+## 2026-07-22 - Facebook Ads learning-room reference library
+
+- `data/course-reference-packs.ts` is the only course-to-download configuration. It currently returns three packs only for `facebook-ads-2026`; every other course gets an empty array.
+- `app/learn/[course]/[lesson]/page.tsx` resolves packs after reading the published course and passes them to `LearningRoom`. This does not change auth, entitlement, progress or activity logging.
+- `components/course/course-reference-library.tsx` renders the responsive cards immediately after the video. The existing lesson title, completion, previous/next controls, content and lesson-specific resources remain below and unchanged.
+- Public files live at `public/course-resources/facebook-ads-2026/`: three preview PNGs plus three ZIPs. ZIP entry counts are research `3`, planning `5`, AI visual `3`; each includes a safety README.
+- Never add real Ads reports, Ads account IDs, customer/CRM data, account screenshots, Voice DNA, Agent/skill source, scratch/build files, duplicate images or performance claims to these downloads.
+- Verification: focused `8/8`, full Node `414/414`, TypeScript, ESLint, diff check, Next build 105 pages, canonical guard and protected-surface preflight pass. Production deploy remains pending.
+
 ## 2026-07-12 - Focused Course Studio, customer-owned orders and Ads BI
 
 - Course Studio step changes build URLs from `studioMode`, so `/admin/course-studio/[courseSlug]` never bounces through the legacy CRM course route. Curriculum uses a compact module outline and reveals lessons for one selected module; module management is collapsed until requested.
