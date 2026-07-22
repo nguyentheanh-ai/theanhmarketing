@@ -6,7 +6,7 @@ The Facebook Ads registration form defaults to `zoom-kit` at 799,000 VND and exp
 
 The 799K pricing card intentionally has no internal `Chọn gói 799K` button; the adjacent form submit and sticky CTA remain visible, while clicking the selected card still preserves the existing mobile jump behavior.
 
-The combined 1,098,000 VND order uses one SePay QR/order, renders the combined checkout offer, redirects paid customers through the Facebook Ads course thank-you route, grants both products, and sends combined pending/success emails with Ebook reader/PDF links. Exact item lookup also supports fallback rows whose `course_slug` contains comma-separated slugs. Standalone Ebook price and flows remain unchanged. No database migration or production deployment.
+The combined 1,098,000 VND order uses one SePay QR/order, renders the combined checkout offer, redirects paid customers through the Facebook Ads course thank-you route, grants both products, and sends combined pending/success emails with Ebook reader/PDF links. Exact item lookup also supports fallback rows whose `course_slug` contains comma-separated slugs. Standalone Ebook price and flows remain unchanged. No database migration. Live in production deployment `dpl_H1cBGPGCGyWbvkeXSPfs79Wh5f55`.
 
 Pending-payment subject normalization: a 799,000 VND Facebook Ads order is buyer-facing as `Gói AI Agent 799K - Tặng AI Agent lên kế hoạch quảng cáo`; the retired Zoom wording must not reappear. Bundle orders keep the combined Facebook Ads + Ebook title.
 

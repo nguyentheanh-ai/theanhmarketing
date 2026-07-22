@@ -4,6 +4,7 @@
 
 - `lib/notifications/pending-payment-email.ts` normalizes 799,000 VND Facebook Ads pending orders to the current buyer-facing AI Agent package title.
 - Do not restore the retired `Zoom lên ads + Agent kit` wording for `zoom-kit`; the optional Ebook bundle keeps its combined title and 1,098,000 VND total.
+- Live since production `dpl_H1cBGPGCGyWbvkeXSPfs79Wh5f55` from runtime commit `3a4f52d`; final no-Ebook and bundle test emails were confirmed in the approved Gmail Inbox.
 
 ## 2026-07-22 - Facebook Ads Ebook checkout add-on
 
@@ -12,7 +13,7 @@
 - Server order items: `facebook-ads-2026` at 799,000 VND and `ebook-facebook-ads-2026` at 299,000 VND. Browser-provided amounts are not trusted.
 - One SePay order/QR grants both entitlements. The paid route prioritizes the primary Facebook Ads thank-you page, while the combined success email also provides Ebook online/PDF access.
 - Exact-slug helpers support both `order_items` and legacy/fallback comma-separated `course_slug` rows.
-- Standalone Ebook checkout remains unchanged. No schema or deploy change; local candidate only.
+- Standalone Ebook checkout remains unchanged. No schema change. Live in production `dpl_H1cBGPGCGyWbvkeXSPfs79Wh5f55`.
 
 Muc tieu cua file nay: giup cac phien Codex/Claude/agent khac vao repo la hieu duoc he thong website, khong phai lan vet tung file. File nay uu tien kien truc, luong du lieu, noi can sua, noi khong nen dung cham, va checklist verify.
 
@@ -31,7 +32,7 @@ Current deploy source after 2026-06-11 incident: `E:\TheAnh-Business-Workspace\0
 | Privacy | Seven designed support-call screenshots keep the existing privacy masks. The original screenshot ending `a1814dc3cf3103050c99a5f65d909d65.jpg` is excluded. |
 | Guard | `tests/facebook-ads-landing.test.mjs` enforces placement, copy, GIF/poster paths, asset existence/size, exactly 12 accessible proofs, source/published equality and continued absence of the 399K offer. |
 | Verification | Focused `10/10`, full Node `415/415` serial, TypeScript, ESLint, diff check, 105-page build, desktop/390px browser QA and a 12-image fitted-crop contact sheet pass; all seven call-duration highlights remain visible. |
-| Deploy | Local-ready only. The shared production worktree is preserved with the complete Agent/Zalo candidate; no merge, push, cleanup or production deployment occurred. |
+| Deploy | Live in production deployment `dpl_H1cBGPGCGyWbvkeXSPfs79Wh5f55`, Ready and aliased to `https://www.theanhmarketing.com`. |
 
 ## 2026-07-22 - Facebook Ads learning-room reference library
 

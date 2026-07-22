@@ -4,13 +4,15 @@
 
 - The first production test email without Ebook arrived in Inbox but exposed the retired `Zoom lên ads + Agent kit` title.
 - Updated only the 799K pending-payment product-title override to the current AI Agent offer; Ebook bundle title remains unchanged.
-- Added RED/GREEN coverage that forbids Zoom in the 799K pending email. Focused landing/email tests pass `18/18`; follow-up production deploy and resend are pending.
+- Added RED/GREEN coverage that forbids Zoom in the 799K pending email. Focused landing/email tests pass `18/18`.
+- Deployed runtime commit `3a4f52d` as production `dpl_H1cBGPGCGyWbvkeXSPfs79Wh5f55` (Ready). Final orders `TAMMRVYILFFF4QHD` and `TAMMRVYIOZCPIUT0` both reached the approved Gmail Inbox; the no-Ebook subject contains `Gói AI Agent 799K` and no Zoom wording, while the bundle subject identifies Facebook Ads + Ebook.
 
 ## 2026-07-22 - Remove redundant 799K pricing-card button
 
 - Removed only the annotated `Chọn gói 799K` button from both synchronized Facebook Ads landing HTML files.
 - Preserved the selected/clickable pricing card, registration submit, sticky CTA, 799K default plan, optional 299K Ebook add-on, payment and tracking behavior.
-- Added a regression assertion; focused test passed `11/11`. Production deploy and two pending-payment email test cases are the next gated steps.
+- Added a regression assertion; focused test passed `11/11`. Production DOM QA confirms the removed button count is zero while the Ebook add-on and payment submit remain present.
+- Final gate passed `420/420`, TypeScript, ESLint, diff check and local/Vercel 105-page builds; route smoke and Vercel error scan passed.
 
 ## 2026-07-22 - Add optional Ebook to Facebook Ads checkout
 
