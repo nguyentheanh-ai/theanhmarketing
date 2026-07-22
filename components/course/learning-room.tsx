@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { CourseReferenceLibrary } from "@/components/course/course-reference-library";
 import { BrandMark } from "@/components/site/brand-mark";
+import type { CourseReferencePack } from "@/data/course-reference-packs";
 import type { Course, CourseLesson } from "@/data/courses";
 import { siteConfig } from "@/data/site";
 import { cleanLessonTitle } from "@/lib/lesson-title";
@@ -21,6 +23,7 @@ type LearningRoomProps = {
   lessons: LearningLesson[];
   previousLesson?: LearningLesson;
   nextLesson?: LearningLesson;
+  referencePacks?: CourseReferencePack[];
 };
 
 function getLessonHref(courseSlug: string, lessonId: string) {
@@ -38,6 +41,7 @@ export function LearningRoom({
   lessons,
   nextLesson,
   previousLesson,
+  referencePacks = [],
 }: LearningRoomProps) {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [isCompleted, setIsCompleted] = useState(currentLessonCompleted);
@@ -187,6 +191,8 @@ export function LearningRoom({
                 </div>
               )}
             </div>
+
+            <CourseReferenceLibrary packs={referencePacks} />
 
             <div className="mt-4 grid gap-4">
               <section className={`rounded-2xl p-4 ring-1 ${panelClass}`}>

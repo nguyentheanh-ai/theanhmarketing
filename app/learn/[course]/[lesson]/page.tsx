@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { LearningRoom } from "@/components/course/learning-room";
+import { getCourseReferencePacks } from "@/data/course-reference-packs";
 import { getCurrentAuth } from "@/lib/auth/session";
 import { getCourseAccessSlugs } from "@/lib/course-access";
 import { getOrderedCourseLessons } from "@/lib/course-learning";
@@ -25,6 +26,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
   }
 
   const lessons = getOrderedCourseLessons(course);
+  const referencePacks = getCourseReferencePacks(course.slug);
   const directIndex = lessons.findIndex((lesson) => lesson.id === lessonId);
   const legacyLessonMatch = /^lesson-(\d+)$/.exec(lessonId);
   const legacyLessonIndex = legacyLessonMatch ? Number(legacyLessonMatch[1]) - 1 : -1;
@@ -94,6 +96,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
       lessons={lessons}
       nextLesson={lessons[currentIndex + 1]}
       previousLesson={lessons[currentIndex - 1]}
+      referencePacks={referencePacks}
     />
   );
 }

@@ -48,13 +48,14 @@ test("lesson route passes course-specific reference packs into the learning room
 test("reference library renders the three approved packs and safety note", () => {
   assert.ok(exists("components/course/course-reference-library.tsx"), "reference library component must exist");
   const component = read("components/course/course-reference-library.tsx");
+  const configuration = read("data/course-reference-packs.ts");
+  const renderedContract = `${component}\n${configuration}`;
 
-  assert.match(component, /Tài liệu mẫu tham khảo/);
-  assert.match(component, /Bộ nghiên cứu đối thủ Facebook Ads/);
-  assert.match(component, /Bộ kế hoạch chiến dịch mẫu/);
-  assert.match(component, /Bộ hình ảnh AI tham khảo/);
+  assert.match(renderedContract, /Tài liệu mẫu tham khảo/);
+  assert.match(renderedContract, /Bộ nghiên cứu đối thủ Facebook Ads/);
+  assert.match(renderedContract, /Bộ kế hoạch chiến dịch mẫu/);
+  assert.match(renderedContract, /Bộ hình ảnh AI tham khảo/);
   assert.match(component, /case mẫu/);
   assert.match(component, /không phải cam kết hiệu quả/);
   assert.match(component, /\bdownload\b/);
 });
-

@@ -30,3 +30,16 @@ test("lesson list is one flat sequence with continuous numbering", () => {
   assert.match(source, /\{lessons\.map\(\(lesson, index\) =>/);
   assert.match(source, /\{index \+ 1\}/);
 });
+
+test("Facebook Ads reference library sits below the video and above lesson controls", () => {
+  const videoIndex = source.indexOf('className="aspect-video w-full bg-black"');
+  const referenceLibraryIndex = source.indexOf("<CourseReferenceLibrary");
+  const lessonControlsIndex = source.indexOf('<div className="mt-4 grid gap-4">');
+
+  assert.ok(videoIndex !== -1, "video player must remain in the learning room");
+  assert.ok(referenceLibraryIndex > videoIndex, "reference library must render after the video player");
+  assert.ok(
+    lessonControlsIndex > referenceLibraryIndex,
+    "lesson title, progress and navigation controls must remain below the reference library",
+  );
+});
