@@ -146,6 +146,16 @@ Change: moved the unique published exclusion lesson from global position 1 into 
 Verification: production query returned exactly 20 published lessons with the target exactly once at position 20; non-order lesson fields were unchanged. Authenticated live Chrome QA confirmed the sidebar starts with `Nền tảng Facebook Ads 2026 và tư duy phễu` and ends with the exclusion lesson numbered `20`.
 Safety: no content, video URL, access type, student entitlement, payment, email, or tracking change.
 
+## 2026-07-22 - Replace Facebook Ads lesson samples with approved Master Prompts
+
+Scope: `theanh-main` LMS presentation only. Replaced the three preview/ZIP cards below every `facebook-ads-2026` lesson video with six approved Master Prompt TXT download cards and one Google Sheet advertising-script demo action. Other courses still receive no course-level reference cards.
+
+Files: `data/course-reference-packs.ts`, `components/course/course-reference-library.tsx`, `tests/course-reference-library.test.mjs`, and six byte-identical TXT files under `public/course-resources/facebook-ads-2026/master-prompts/`.
+
+Verification before deployment: TDD RED confirmed the old three-pack implementation failed the new contract; GREEN focused test is `3/3`. Source/public SHA-256 hashes match; full Node is `415/415`; TypeScript, ESLint, diff check, protected-surface preflight and the 105-page local build pass. Production deploy and authenticated live UI/download smoke remain pending.
+
+Safety: no database, course content, lesson order, authentication, entitlement, progress, payment, email, tracking or customer data change.
+
 ## 2026-07-22 - Restore stable Facebook Ads course entry URL
 
 Scope: LMS routing only for `theanh-main`; no database, course content, entitlement, payment, email, landing or tracking change.

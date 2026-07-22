@@ -14,13 +14,13 @@ Search: `data-plan-card="zoom-kit"`, `paymentPlan`, `799000`, `Facebook Ads land
 
 ## Facebook Ads lesson reference downloads
 
-Description: The `facebook-ads-2026` learning room shows three customer-safe reference packs immediately below the lesson video and above the lesson title/progress actions: competitor research, campaign planning, and AI visual examples.
+Description: The `facebook-ads-2026` learning room shows seven customer-safe resources immediately below the lesson video and above the lesson title/progress actions: six independent Master Prompt TXT downloads and one external Google Sheet advertising-script demo.
 
 Routes: `/learn/facebook-ads-2026/[lesson]` through the existing dynamic `/learn/[course]/[lesson]` route. Other courses receive an empty pack list and keep their current layout.
 
-Main files: `data/course-reference-packs.ts`, `components/course/course-reference-library.tsx`, `components/course/learning-room.tsx`, `app/learn/[course]/[lesson]/page.tsx`, `public/course-resources/facebook-ads-2026/*`.
+Main files: `data/course-reference-packs.ts`, `components/course/course-reference-library.tsx`, `components/course/learning-room.tsx`, `app/learn/[course]/[lesson]/page.tsx`, `public/course-resources/facebook-ads-2026/master-prompts/*.txt`.
 
-Guard: packs contain only audited sample files. Do not add real Ads reports, customer/CRM data, account screenshots, internal Agent/skill source, duplicated assets, or unlabelled performance claims. Preserve existing lesson-specific `currentLesson.resources`, auth, enrollment, progress, video, previous/next navigation, payment, email, and tracking flows.
+Guard: resource cards are download/open actions only; do not restore inline previews unless the owner asks. TXT files must match the approved source artifacts byte-for-byte. External Sheet links open in a new tab and must not use the HTML `download` attribute. Do not add real Ads reports, customer/CRM data, account screenshots, secrets, duplicated assets or unlabelled performance claims. Preserve lesson-specific `currentLesson.resources`, auth, enrollment, progress, video, previous/next navigation, payment, email and tracking flows.
 
 Search: `getCourseReferencePacks`, `CourseReferenceLibrary`, `referencePacks`.
 

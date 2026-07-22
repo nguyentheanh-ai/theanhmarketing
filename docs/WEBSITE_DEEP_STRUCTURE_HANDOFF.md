@@ -8,12 +8,12 @@ Current deploy source after 2026-06-11 incident: `E:\TheAnh-Business-Workspace\0
 
 ## 2026-07-22 - Facebook Ads learning-room reference library
 
-- `data/course-reference-packs.ts` is the only course-to-download configuration. It currently returns three packs only for `facebook-ads-2026`; every other course gets an empty array.
+- `data/course-reference-packs.ts` is the only course-to-download configuration. It returns seven resources only for `facebook-ads-2026`: six Master Prompt TXT files and one Google Sheet demo; every other course gets an empty array.
 - `app/learn/[course]/[lesson]/page.tsx` resolves packs after reading the published course and passes them to `LearningRoom`. This does not change auth, entitlement, progress or activity logging.
-- `components/course/course-reference-library.tsx` renders the responsive cards immediately after the video. The existing lesson title, completion, previous/next controls, content and lesson-specific resources remain below and unchanged.
-- Public files live at `public/course-resources/facebook-ads-2026/`: three preview PNGs plus three ZIPs. ZIP entry counts are research `3`, planning `5`, AI visual `3`; each includes a safety README.
+- `components/course/course-reference-library.tsx` renders text-only responsive cards immediately after the video. Six local actions use `download`; the Google Sheet action opens in a new tab. The existing lesson title, completion, previous/next controls, content and lesson-specific resources remain below and unchanged.
+- Public prompt files live at `public/course-resources/facebook-ads-2026/master-prompts/` and must remain byte-identical to the approved customer-kit source files.
 - Never add real Ads reports, Ads account IDs, customer/CRM data, account screenshots, Voice DNA, Agent/skill source, scratch/build files, duplicate images or performance claims to these downloads.
-- Verification: focused `8/8`, full Node `414/414`, TypeScript, ESLint, diff check, local/Vercel Next builds 105 pages, canonical guard and protected-surface preflight pass. Production deployment `dpl_5cZkzRkTyFfNSiZBEYPhacheKHHg` is Ready and aliased to `https://www.theanhmarketing.com`. Authenticated Chrome QA confirmed the section is visible immediately below the video with three cards, loaded previews and three download links. All six public assets return `200`; protected route smoke passes and the Vercel error scan is empty.
+- Current local verification: copied-file SHA-256 comparison passes; focused `3/3`, full Node `415/415`, TypeScript, ESLint, diff check, protected-surface preflight and local Next build of 105 pages pass. Production deployment and authenticated live QA remain pending for this seven-resource revision.
 
 ## 2026-07-12 - Focused Course Studio, customer-owned orders and Ads BI
 
