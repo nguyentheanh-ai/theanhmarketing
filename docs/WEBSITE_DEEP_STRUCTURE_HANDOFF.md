@@ -1193,3 +1193,13 @@ Before changing these, run targeted tests and full build.
 | Deploy | Runtime commit `d076218`; Vercel deployment `dpl_D2VAgV44iP4nLaAdRexUSbWtwzt1`; Ready and aliased to production domains. |
 | Live QA | Unauthenticated protected routes redirected/returned `403`, `/admin/facebook-ads` remained `404`, Ebook/academy/assets returned `200`, library redirected to login, Vercel error scan was empty. Owner Chrome verified `4 Ebook / 4 FB Ads` for the original 12/07 screenshot and all 205 rows across five 30-day pages (`23 Ebook`, `181 FB Ads`, `1 AI Growth`). |
 | Safety | No database row, schema, API contract, checkout, payment, email, student access, landing or tracking mutation. |
+
+## 2026-07-22 - Stable LMS course-root entry route
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Symptom | `/learn/facebook-ads-2026/` normalized to `/learn/facebook-ads-2026` and then returned `404`, while direct lesson URLs worked. |
+| Root cause | App Router had `app/learn/[course]/[lesson]/page.tsx` but no page at `app/learn/[course]/page.tsx`. |
+| Fix | Added the course-root page, which reads the published student-visible course and redirects to its current first lesson ID. Extracted the existing module/lesson sort into `lib/course-learning.ts` so the root and lesson routes cannot disagree after Course Studio reordering. |
+| Access guard | The root route does not render lesson content. Missing/unpublished/empty courses stay `404`; the destination lesson route keeps the existing auth, enrollment, legacy paid-order, progress, and activity behavior. |
+| Regression | Added a contract guard for the root route, published-only lookup, dynamic first-lesson redirect, and shared ordering helper. RED reproduced the missing route; focused tests `21/21`, full Node `410/410`, TypeScript, ESLint, diff check, candidate preflight and 105-page production build pass. Production deploy/live smoke pending. |

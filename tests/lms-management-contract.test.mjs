@@ -154,6 +154,18 @@ test("student-facing LMS reads published enrollment data from the shared LMS sou
   assert.match(courseService, /lms_status|lesson_status|publishedLessonsOnly/, "course service must understand LMS publish status fields");
 });
 
+test("course learning root redirects to the current first published lesson", () => {
+  assert.ok(exists("app/learn/[course]/page.tsx"), "course learning root route must exist");
+
+  const courseRootPage = read("app/learn/[course]/page.tsx");
+  const lessonPage = read("app/learn/[course]/[lesson]/page.tsx");
+
+  assert.match(courseRootPage, /getPublishedCourseForStudent/, "course root must use published student-visible course data");
+  assert.match(courseRootPage, /getOrderedCourseLessons/, "course root must resolve the current first lesson dynamically");
+  assert.match(courseRootPage, /redirect\(`\/learn\/\$\{courseSlug\}\/\$\{firstPublishedLesson\.id\}`\)/, "course root must redirect to the first published lesson ID");
+  assert.match(lessonPage, /getOrderedCourseLessons/, "course root and lesson routes must share the same ordering logic");
+});
+
 test("LMS migration and backfill are additive and idempotent", () => {
   const migrationFiles = fs.readdirSync(path.join(root, "supabase/migrations")).filter((file) => /lms_management.*\.sql$/i.test(file));
   assert.equal(migrationFiles.length, 1, "one LMS management migration should be added");

@@ -1,8 +1,8 @@
 import { notFound, redirect } from "next/navigation";
-import { LearningRoom, type LearningLesson } from "@/components/course/learning-room";
-import type { Course } from "@/data/courses";
+import { LearningRoom } from "@/components/course/learning-room";
 import { getCurrentAuth } from "@/lib/auth/session";
 import { getCourseAccessSlugs } from "@/lib/course-access";
+import { getOrderedCourseLessons } from "@/lib/course-learning";
 import { logStudentActivity } from "@/services/activityLogService";
 import { getPublishedCourseForStudent } from "@/services/courseService";
 import { getLeads } from "@/services/leadService";
@@ -16,22 +16,6 @@ type LessonPageProps = {
   }>;
 };
 
-function getLessons(course: Course) {
-  return course.modules
-    .slice()
-    .sort((a, b) => a.order - b.order)
-    .flatMap((module) =>
-      module.lessons
-        .slice()
-        .sort((a, b) => a.order - b.order)
-        .map<LearningLesson>((lesson) => ({
-          ...lesson,
-          moduleTitle: module.title,
-          moduleOrder: module.order,
-        })),
-    );
-}
-
 export default async function LessonPage({ params }: LessonPageProps) {
   const { course: courseSlug, lesson: lessonId } = await params;
   const course = await getPublishedCourseForStudent(courseSlug);
@@ -40,7 +24,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
     notFound();
   }
 
-  const lessons = getLessons(course);
+  const lessons = getOrderedCourseLessons(course);
   const directIndex = lessons.findIndex((lesson) => lesson.id === lessonId);
   const legacyLessonMatch = /^lesson-(\d+)$/.exec(lessonId);
   const legacyLessonIndex = legacyLessonMatch ? Number(legacyLessonMatch[1]) - 1 : -1;
