@@ -7,6 +7,12 @@ Implementation: typed course config, focused reference-library component, server
 Safety: packages contain only audited research, planning and generic AI visual samples. Real Ads reports, customer/CRM data, account screenshots, internal Agent source, duplicate assets and the broken black poster were excluded.
 Verification: ZIP entry counts `3/5/3`; TDD RED then focused GREEN `8/8`; full Node `414/414`; TypeScript, ESLint, diff check, Next build 105 pages, canonical session guard and protected-surface preflight pass. Production deployment has not been executed.
 
+## 2026-07-14 - Customer paid-order product correction
+
+Scope: operational correction for one paid order; no application code or deploy change.
+Result: the paid 399,000 VND order was corrected from the basic Facebook Ads course to Ebook Facebook Ads 2026. The account credential hash was verified, the correct UTF-8 Ebook payment-success email was delivered through Resend API, and production email/activity logs were updated.
+Safety: this log contains no customer PII, passwords, tokens, or secret values.
+
 ## 2026-07-12 - Course Studio, BI correctness and protected landing release
 
 Phạm vi: tách Course Studio khỏi CRM shell, sửa số lead/đơn theo kỳ, tăng biểu đồ BI, sửa chồng nhãn khóa học và chuẩn hóa Meta Ads theo ngày kinh doanh Việt Nam.
@@ -118,3 +124,46 @@ Kiểm tra trước deploy: session guard, candidate preflight, full Node 408/40
 Deploy: commit `d076218`, deployment `dpl_D2VAgV44iP4nLaAdRexUSbWtwzt1`, Ready và aliased tới `theanhmarketing.com`, `www.theanhmarketing.com` và Vercel production aliases.
 Live QA: toàn bộ route/API/Ebook smoke đạt, error log trống. Phiên owner xác nhận 8 dòng 12/07 là `4 Ebook / 4 FB Ads`; quét đủ 205 dòng trên 5 trang bộ lọc 30 ngày cho kết quả `23 Ebook / 181 FB Ads / 1 AI Growth`, không có nhãn lạ hoặc slug bị lộ.
 An toàn: không sửa database, API shape, checkout, payment, email, quyền học, landing hay tracking.
+
+## 2026-07-22 - Flatten student lesson list numbering
+
+Phạm vi: giao diện học viên tại `components/course/learning-room.tsx`; không đổi nội dung khóa học, thứ tự dữ liệu, quyền truy cập, tiến độ, payment, email hay tracking.
+Thay đổi: bỏ nhóm module trong cột `Danh sách bài học`; render trực tiếp mảng bài học đã được sắp theo module/order để số thứ tự chạy liên tục từ `1` đến bài cuối.
+Guard: bổ sung regression trong `tests/learning-room-youtube-layout.test.mjs`; test đã được xem fail trước khi sửa vì còn `getModuleGroups`, sau đó pass 4/4.
+Kiểm tra: full Node 409/409, TypeScript, ESLint, `git diff --check` và Next production build 105 trang đều đạt.
+Deploy: runtime commit `464cd25`, production `dpl_6WdszCydXnT7LkMKjrY3nTqXtmE2`, trạng thái Ready và alias `https://www.theanhmarketing.com`. Authenticated Chrome QA xác nhận 20 bài published hiển thị đúng một lần, badge liên tục `1..20`, không còn tiêu đề nhóm module. Route/API/landing bảo vệ đều smoke đúng; Pixel Ads chỉ còn `1315653423712065`. URL gốc `/learn/facebook-ads-2026/` vẫn chuẩn hóa slash rồi trả 404; learning room thật nằm ở `/learn/[course]/[lesson]`.
+## 2026-07-22 - Move Facebook Ads exclusion lesson to the end
+
+Scope: production LMS data for `facebook-ads-2026`; no source-code, schema, migration, or deployment change.
+Change: moved the unique published exclusion lesson from global position 1 into the final published module at local `sort_order=10`, making it global position 20.
+Verification: production query returned exactly 20 published lessons with the target exactly once at position 20; non-order lesson fields were unchanged. Authenticated live Chrome QA confirmed the sidebar starts with `Nền tảng Facebook Ads 2026 và tư duy phễu` and ends with the exclusion lesson numbered `20`.
+Safety: no content, video URL, access type, student entitlement, payment, email, or tracking change.
+
+## 2026-07-22 - Restore stable Facebook Ads course entry URL
+
+Scope: LMS routing only for `theanh-main`; no database, course content, entitlement, payment, email, landing or tracking change.
+Root cause: direct lessons worked through `/learn/[course]/[lesson]`, but App Router had no `/learn/[course]` page, so the clean course URL returned `404` after trailing-slash normalization.
+Fix: added `/learn/[course]`, which reads the current published student-visible course and redirects to its first ordered lesson ID. Both course-root and lesson routes now reuse `lib/course-learning.ts`, avoiding a hard-coded first lesson and keeping Course Studio reorder behavior consistent.
+Test/gate: regression was observed RED before implementation; focused `21/21`, full Node `410/410`, TypeScript, ESLint, diff check, candidate preflight, central production verify and 105-page local/Vercel builds passed.
+Deploy: commit `9264957`, production `dpl_2fUT489jFwfozhPerCC9NRsHSJCe`, Ready and aliased to `https://www.theanhmarketing.com`.
+Live QA: `/learn/facebook-ads-2026/` now resolves through the clean root to lesson `47da65a2-c6c6-4a21-a109-c1feb1d64c8f`; authenticated browser QA showed the learning room and all 23 lessons, Dataset at 19–22, exclusion last at 23. Protected admin/Ebook/email-bridge/Ads routes passed smoke and Vercel returned no new error logs.
+
+## 2026-07-22 - Paid student account operation TAMMRVFSQ6NNSCFT
+
+Scope: production order/Auth/email operation only; no source, schema, migration or deploy change.
+Result: exact 799,000 VND order changed to owner-confirmed `paid/manual-admin`; matching `facebook-ads-2026` Auth account created and confirmed; login verified; existing reset/access email delivered by Resend.
+Safety: no fake SePay transaction/reference, password, secret or full customer contact stored in this log.
+Verification: production SQL readback, CRM success message, `activity_logs`, Auth metadata and Resend `delivered` status.
+Final customer evidence: student login succeeded, the temporary password was changed, and a `facebook-ads-2026` lesson was opened; `must_change_password=false`.
+## 2026-07-22 - Delete duplicate Facebook Ads lesson 2
+
+Scope: production LMS data for `facebook-ads-2026`; no source-code, schema, migration, or deployment change.
+Change: permanently deleted the duplicate published lesson `HỌC CHẠY QUẢNG CÁO FACEBOOK - CẬP NHẬT MỚI NHẤT 2026` and kept `Nền tảng Facebook Ads 2026 và tư duy phễu` as lesson 1. The two records used the same YouTube video.
+Safety: the deleted lesson had zero progress rows, comments, lesson resources, and course resources. No student entitlement, payment, email, or tracking data changed.
+Verification: production has 19 published lessons, the deleted ID is absent, the kept lesson is present, and authenticated live QA shows positions 1 through 19 with no duplicate title.
+## 2026-07-22 - Publish four Dataset lessons
+
+Scope: production LMS data for `facebook-ads-2026`; no source-code, schema, migration, or deployment change.
+Change: inserted four published `enrolled_only` video lessons for Dataset introduction, Business Suite, Pancake, and website/landing-page sales at local orders 10 through 13 in the final module. Shifted the exclusion lesson to local order 14 so it remains last.
+Verification: production has 23 published lessons; the four Dataset lessons are global positions 19 through 22 and the exclusion lesson is position 23. Authenticated live Chrome QA confirmed the same titles, order, Premium labels, and no site runtime errors.
+Safety: no existing lesson content/video/access was changed except the exclusion lesson order; no student progress, entitlement, payment, email, or tracking data changed.
