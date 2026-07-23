@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { clearCart, readCart, removeFromCart, subscribeCart, type CartItem } from "@/lib/cart";
 import { formatVnd, parseVndAmount } from "@/lib/payments/sepay";
+import { getClientAttribution } from "@/lib/tracking/client-attribution";
 import { trackMarketingEvent } from "@/lib/tracking/events";
 
 type CartPageClientProps = {
@@ -55,6 +56,7 @@ export function CartPageClient({ auth }: CartPageClientProps) {
       },
       body: JSON.stringify({
         courseSlugs: items.map((item) => item.slug),
+        attribution: getClientAttribution(),
       }),
     });
 

@@ -81,6 +81,8 @@ export type MetaPurchaseEventInput = MetaLeadEventInput & {
   orderItems?: Array<{ slug?: string; title?: string; price?: number }>;
 };
 
+export type MetaInitiateCheckoutEventInput = MetaLeadEventInput;
+
 const DEFAULT_API_VERSION = "v25.0";
 const MAX_LOG_BODY_LENGTH = 800;
 const PRIMARY_META_PIXEL_ID = "1315653423712065";
@@ -135,6 +137,13 @@ export function normalizeMetaPhone(value?: string | null) {
 function normalizePixelId(value?: string | null) {
   const id = cleanString(value, 40);
   return /^\d{6,32}$/.test(id) ? id : "";
+}
+
+export function resolveMetaDatasetId(configuredDatasetId?: string | null) {
+  const browserPixelId = normalizePixelId(PRIMARY_META_PIXEL_ID);
+  const datasetId = normalizePixelId(configuredDatasetId);
+
+  return datasetId === browserPixelId ? datasetId : browserPixelId;
 }
 
 function numericMetaLeadId(value?: string | null) {
@@ -215,6 +224,23 @@ export function buildMetaLeadEvent(input: MetaLeadEventInput, eventTime = nowUni
   };
 }
 
+export function buildMetaInitiateCheckoutEvent(
+  input: MetaInitiateCheckoutEventInput,
+  eventTime = nowUnixSeconds(),
+): MetaServerEvent {
+  const pageUrl = cleanUrl(input.pageUrl);
+
+  return {
+    event_name: "InitiateCheckout",
+    event_time: eventTime,
+    action_source: "website",
+    event_id: cleanString(input.eventId, 120) || cleanString(input.orderCode, 80) || undefined,
+    event_source_url: pageUrl || undefined,
+    user_data: buildUserData(input),
+    custom_data: buildBaseCustomData(input),
+  };
+}
+
 export function buildMetaPurchaseEvent(input: MetaPurchaseEventInput, eventTime = toUnixSeconds(input.paidAt)): MetaServerEvent {
   const pageUrl = cleanUrl(input.pageUrl);
   const itemSlugs = (input.orderItems ?? [])
@@ -240,7 +266,7 @@ export function buildMetaPurchaseEvent(input: MetaPurchaseEventInput, eventTime 
 
 function getMetaConfig() {
   const accessToken = cleanString(process.env.META_CAPI_ACCESS_TOKEN, 2000);
-  const datasetId = normalizePixelId(process.env.META_CAPI_DATASET_ID) || normalizePixelId(PRIMARY_META_PIXEL_ID);
+  const datasetId = resolveMetaDatasetId(process.env.META_CAPI_DATASET_ID);
   const apiVersion = /^v\d+\.\d+$/.test(cleanString(process.env.META_CAPI_API_VERSION, 20))
     ? cleanString(process.env.META_CAPI_API_VERSION, 20)
     : DEFAULT_API_VERSION;
@@ -321,6 +347,10 @@ export async function sendMetaConversionEvent(event: MetaServerEvent): Promise<M
 
 export function sendMetaLeadEvent(input: MetaLeadEventInput) {
   return sendMetaConversionEvent(buildMetaLeadEvent(input));
+}
+
+export function sendMetaInitiateCheckoutEvent(input: MetaInitiateCheckoutEventInput) {
+  return sendMetaConversionEvent(buildMetaInitiateCheckoutEvent(input));
 }
 
 export function sendMetaPurchaseEvent(input: MetaPurchaseEventInput) {

@@ -1,6 +1,6 @@
 # Meta CAPI Test Runbook
 
-Cap nhat: 2026-07-06
+Cap nhat: 2026-07-23
 
 Dung cho `theanhmarketing.com` / Pixel-Dataset `1315653423712065`.
 
@@ -8,9 +8,13 @@ Dung cho `theanhmarketing.com` / Pixel-Dataset `1315653423712065`.
 
 - Browser Pixel live: `NEXT_PUBLIC_META_PIXEL_ID=1315653423712065`.
 - Server CAPI live: `lib/meta/conversions-api.ts`.
-- Server `Lead`: tao qua `POST /api/orders`, chay nen sau khi order pending duoc tao.
+- Server `Lead`: tao qua `POST /api/orders`, `POST /api/orders/from-session` va `POST /api/leads`, chay nen sau khi response thanh cong.
+- Server `InitiateCheckout`: tao khi order pending duoc tao; dung `orderCode` lam `event_id` giong Browser Pixel.
 - Server `Purchase`: tao qua SePay/manual paid confirm lan dau, co marker chong trung `purchase_event_sent`.
 - Dedup `Lead`: landing page tao client `leadId`, gui cung ID vao Pixel `Lead` va `/api/orders`; server dung ID do lam `event_id`.
+- Dedup `InitiateCheckout`: Browser va Server deu dung `orderCode` lam `event_id`.
+- CAPI tu dong tu choi Dataset khac Pixel trinh duyet duy nhat va fallback ve `1315653423712065`.
+- Checkout da dang nhap gui `fbp`, `fbc`, `fbclid` va UTM vao order de su kien Server `InitiateCheckout`/`Purchase` tang EMQ.
 - Khong giu `META_CAPI_TEST_EVENT_CODE` trong Production khi khong test.
 
 ## Endpoint test nhanh trong Graph API Explorer

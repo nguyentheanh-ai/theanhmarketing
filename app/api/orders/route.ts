@@ -10,7 +10,7 @@ import {
   isValidSlug,
 } from "@/lib/security/validation";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
-import { sendMetaLeadEvent } from "@/lib/meta/conversions-api";
+import { sendMetaInitiateCheckoutEvent, sendMetaLeadEvent } from "@/lib/meta/conversions-api";
 import { syncOrderToGoogleSheetWithActivity } from "@/lib/notifications/google-sheets-order-sync";
 import { invalidateAdminModules } from "@/services/adminDataService";
 import { createLeadAdmin, updateLeadAdmin } from "@/services/leadService";
@@ -234,6 +234,48 @@ export async function POST(request: Request) {
         }
       } catch (metaError) {
         console.warn("[orders] Meta Lead event failed:", metaError);
+      }
+
+      try {
+        const metaCheckout = await sendMetaInitiateCheckoutEvent({
+          eventId: order.orderCode,
+          orderCode: order.orderCode,
+          studentName,
+          email,
+          phone,
+          courseSlug: order.courseSlug,
+          courseTitle: order.courseTitle,
+          amount: order.amount,
+          currency: order.currency,
+          status: order.status,
+          landingPage: cleanText(body.landingPage, 120),
+          pageUrl: cleanText(body.pageUrl, 500),
+          utmSource: cleanText(body.utmSource, 120),
+          utmMedium: cleanText(body.utmMedium, 120),
+          utmCampaign: cleanText(body.utmCampaign, 160),
+          utmContent: cleanText(body.utmContent, 160),
+          utmId: cleanText(body.utmId, 160),
+          utmTerm: cleanText(body.utmTerm, 160),
+          campaignId: attribution.campaignId,
+          campaignName: attribution.campaignName,
+          adsetId: attribution.adsetId,
+          adId: attribution.adId,
+          adName: attribution.adName,
+          fbclid: attribution.fbclid,
+          fbp: cleanText(body.fbp, 180),
+          fbc: cleanText(body.fbc, 220),
+          ipAddress,
+          userAgent,
+        });
+
+        if (!metaCheckout.ok && !metaCheckout.skipped) {
+          console.warn("[orders] Meta InitiateCheckout event failed:", {
+            reason: metaCheckout.reason,
+            status: metaCheckout.status,
+          });
+        }
+      } catch (metaError) {
+        console.warn("[orders] Meta InitiateCheckout event failed:", metaError);
       }
 
       try {

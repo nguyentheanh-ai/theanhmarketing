@@ -145,7 +145,30 @@ test("Meta Purchase uses paid time and raw order code for deduplication", () => 
   assert.equal(event.custom_data.ad_id, "ad-1");
 });
 
-test("order and payment routes emit Meta Lead and Purchase events without blocking core flow", () => {
+test("Meta InitiateCheckout uses the order code shared with the browser event", () => {
+  const { buildMetaInitiateCheckoutEvent } = loadTsModule("lib/meta/conversions-api.ts");
+  const event = buildMetaInitiateCheckoutEvent({
+    orderCode: "TAMCHECKOUT123",
+    email: "checkout@example.com",
+    phone: "0904160809",
+    courseSlug: "ebook-facebook-ads-2026",
+    courseTitle: "Ebook Facebook Ads 2026",
+    amount: 199000,
+    currency: "VND",
+    pageUrl: "https://www.theanhmarketing.com/thanh-toan/TAMCHECKOUT123",
+    fbp: "fb.1.1779.abc",
+    fbc: "fb.1.1779.click",
+  });
+
+  assert.equal(event.event_name, "InitiateCheckout");
+  assert.equal(event.event_id, "TAMCHECKOUT123");
+  assert.equal(event.action_source, "website");
+  assert.equal(event.custom_data.order_id, "TAMCHECKOUT123");
+  assert.equal(event.custom_data.value, 199000);
+  assert.equal(event.custom_data.currency, "VND");
+});
+
+test("order and payment routes emit Meta Lead, InitiateCheckout and Purchase events without blocking core flow", () => {
   const orderRoute = read("app/api/orders/route.ts");
   const sessionOrderRoute = read("app/api/orders/from-session/route.ts");
   const sepayRoute = read("app/api/sepay/webhook/route.ts");
@@ -158,15 +181,40 @@ test("order and payment routes emit Meta Lead and Purchase events without blocki
   assert.match(orderRoute, /body\.fbc/);
   assert.match(orderRoute, /body\.leadId/);
   assert.match(orderRoute, /eventId:\s*incomingLeadId/);
+  assert.match(orderRoute, /sendMetaInitiateCheckoutEvent/);
+  assert.match(orderRoute, /eventId:\s*order\.orderCode/);
 
   assert.match(sessionOrderRoute, /sendMetaLeadEvent/);
   assert.match(sessionOrderRoute, /await sendMetaLeadEvent\(/);
   assert.match(sessionOrderRoute, /Meta Lead event failed/);
+  assert.match(sessionOrderRoute, /sendMetaInitiateCheckoutEvent/);
+  assert.match(sessionOrderRoute, /eventId:\s*order\.orderCode/);
 
   assert.match(sepayRoute, /sendMetaPurchaseEvent/);
   assert.match(sepayRoute, /!confirmation\.wasAlreadyPaid/);
   assert.match(sepayRoute, /await sendMetaPurchaseEvent\(/);
   assert.match(sepayRoute, /Meta Purchase event failed/);
+});
+
+test("generic website lead route mirrors the browser Lead event to CAPI", () => {
+  const leadRoute = read("app/api/leads/route.ts");
+
+  assert.match(leadRoute, /sendMetaLeadEvent/);
+  assert.match(leadRoute, /eventId:\s*result\.lead\.id/);
+  assert.match(leadRoute, /ipAddress/);
+  assert.match(leadRoute, /userAgent/);
+  assert.match(leadRoute, /Meta Lead event failed/);
+});
+
+test("logged-in checkout preserves browser attribution for CAPI match quality", () => {
+  const cartClient = read("components/cart/cart-page-client.tsx");
+  const sessionOrderRoute = read("app/api/orders/from-session/route.ts");
+
+  assert.match(cartClient, /getClientAttribution/);
+  assert.match(cartClient, /attribution:\s*getClientAttribution\(\)/);
+  assert.match(sessionOrderRoute, /body\.attribution\?\.fbp/);
+  assert.match(sessionOrderRoute, /body\.attribution\?\.fbc/);
+  assert.match(sessionOrderRoute, /body\.attribution\?\.fbclid/);
 });
 
 test("environment and browser pixel fallback are documented without hard-coded secrets", () => {
@@ -193,6 +241,14 @@ test("environment and browser pixel fallback are documented without hard-coded s
   assert.match(rootLayout, /"facebook-domain-verification": FACEBOOK_DOMAIN_VERIFICATION/);
   assert.match(marketingSettingsService, /normalizeMarketingSettings\(fallbackMarketingSettings\)/);
   assert.doesNotMatch(capiSource, /EAA[A-Za-z0-9_-]{20,}/);
+});
+
+test("CAPI refuses a Dataset that differs from the single browser Pixel", () => {
+  const { resolveMetaDatasetId } = loadTsModule("lib/meta/conversions-api.ts");
+
+  assert.equal(resolveMetaDatasetId("1315653423712065"), "1315653423712065");
+  assert.equal(resolveMetaDatasetId("1344805870547924"), "1315653423712065");
+  assert.equal(resolveMetaDatasetId(""), "1315653423712065");
 });
 
 test("all sales landing surfaces include only primary browser Pixel and pass attribution into order CAPI", () => {

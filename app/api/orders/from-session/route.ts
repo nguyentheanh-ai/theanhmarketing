@@ -1,6 +1,6 @@
 import { after, NextResponse } from "next/server";
 import { getCurrentAuth } from "@/lib/auth/session";
-import { sendMetaLeadEvent } from "@/lib/meta/conversions-api";
+import { sendMetaInitiateCheckoutEvent, sendMetaLeadEvent } from "@/lib/meta/conversions-api";
 import { syncOrderToGoogleSheetWithActivity } from "@/lib/notifications/google-sheets-order-sync";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import {
@@ -42,6 +42,23 @@ export async function POST(request: Request) {
     const body = (await request.json()) as {
       courseSlug?: string;
       courseSlugs?: string[];
+      attribution?: {
+        utmSource?: string;
+        utmMedium?: string;
+        utmCampaign?: string;
+        utmContent?: string;
+        utmId?: string;
+        utmTerm?: string;
+        campaignId?: string;
+        campaignName?: string;
+        adsetId?: string;
+        adId?: string;
+        adName?: string;
+        fbclid?: string;
+        fbp?: string;
+        fbc?: string;
+        landingPage?: string;
+      };
     };
 
     const studentName =
@@ -54,6 +71,26 @@ export async function POST(request: Request) {
     const ipAddress =
       request.headers.get("cf-connecting-ip") ?? forwardedFor.split(",")[0]?.trim() ?? "";
     const userAgent = request.headers.get("user-agent") ?? "";
+    const attribution = {
+      utmSource: cleanText(body.attribution?.utmSource, 120),
+      utmMedium: cleanText(body.attribution?.utmMedium, 120),
+      utmCampaign: cleanText(body.attribution?.utmCampaign, 160),
+      utmContent: cleanText(body.attribution?.utmContent, 160),
+      utmId: cleanText(body.attribution?.utmId, 160),
+      utmTerm: cleanText(body.attribution?.utmTerm, 160),
+      campaignId:
+        cleanText(body.attribution?.campaignId, 120) || cleanText(body.attribution?.utmId, 160),
+      campaignName:
+        cleanText(body.attribution?.campaignName, 200) ||
+        cleanText(body.attribution?.utmCampaign, 160),
+      adsetId: cleanText(body.attribution?.adsetId, 120),
+      adId: cleanText(body.attribution?.adId, 120),
+      adName: cleanText(body.attribution?.adName, 200),
+      fbclid: cleanText(body.attribution?.fbclid, 220),
+      fbp: cleanText(body.attribution?.fbp, 180),
+      fbc: cleanText(body.attribution?.fbc, 220),
+      landingPage: cleanText(body.attribution?.landingPage, 500),
+    };
 
     if (!email || !isValidEmail(email)) {
       return NextResponse.json(
@@ -82,6 +119,7 @@ export async function POST(request: Request) {
       phone: phone || "Chưa cập nhật",
       courseSlug,
       courseSlugs,
+      attribution,
     });
 
     invalidateAdminModules(["orders", "students"]);
@@ -105,6 +143,21 @@ export async function POST(request: Request) {
           currency: order.currency,
           status: order.status,
           pageUrl: `${siteConfig.url}/gio-hang`,
+          landingPage: attribution.landingPage,
+          utmSource: attribution.utmSource,
+          utmMedium: attribution.utmMedium,
+          utmCampaign: attribution.utmCampaign,
+          utmContent: attribution.utmContent,
+          utmId: attribution.utmId,
+          utmTerm: attribution.utmTerm,
+          campaignId: attribution.campaignId,
+          campaignName: attribution.campaignName,
+          adsetId: attribution.adsetId,
+          adId: attribution.adId,
+          adName: attribution.adName,
+          fbclid: attribution.fbclid,
+          fbp: attribution.fbp,
+          fbc: attribution.fbc,
           ipAddress,
           userAgent,
         });
@@ -117,6 +170,48 @@ export async function POST(request: Request) {
         }
       } catch (metaError) {
         console.warn("[orders] Meta Lead event failed:", metaError);
+      }
+
+      try {
+        const metaCheckout = await sendMetaInitiateCheckoutEvent({
+          eventId: order.orderCode,
+          orderCode: order.orderCode,
+          studentName,
+          email,
+          phone: phone || "",
+          courseSlug: order.courseSlug,
+          courseTitle: order.courseTitle,
+          amount: order.amount,
+          currency: order.currency,
+          status: order.status,
+          pageUrl: `${siteConfig.url}/gio-hang`,
+          landingPage: attribution.landingPage,
+          utmSource: attribution.utmSource,
+          utmMedium: attribution.utmMedium,
+          utmCampaign: attribution.utmCampaign,
+          utmContent: attribution.utmContent,
+          utmId: attribution.utmId,
+          utmTerm: attribution.utmTerm,
+          campaignId: attribution.campaignId,
+          campaignName: attribution.campaignName,
+          adsetId: attribution.adsetId,
+          adId: attribution.adId,
+          adName: attribution.adName,
+          fbclid: attribution.fbclid,
+          fbp: attribution.fbp,
+          fbc: attribution.fbc,
+          ipAddress,
+          userAgent,
+        });
+
+        if (!metaCheckout.ok && !metaCheckout.skipped) {
+          console.warn("[orders] Meta InitiateCheckout event failed:", {
+            reason: metaCheckout.reason,
+            status: metaCheckout.status,
+          });
+        }
+      } catch (metaError) {
+        console.warn("[orders] Meta InitiateCheckout event failed:", metaError);
       }
 
       try {
