@@ -1242,3 +1242,13 @@ Before changing these, run targeted tests and full build.
 | Regression | Added a contract guard for the root route, published-only lookup, dynamic first-lesson redirect, and shared ordering helper. RED reproduced the missing route; focused tests `21/21`, full Node `410/410`, TypeScript, ESLint, diff check, candidate preflight, central production verify and 105-page local/Vercel builds pass. |
 | Deploy | Commit `9264957`; production deployment `dpl_2fUT489jFwfozhPerCC9NRsHSJCe`; Ready and aliased to `theanhmarketing.com` and `www.theanhmarketing.com`. |
 | Live QA | Trailing-slash root returns `308` to the clean URL; the clean URL returns `307` to current lesson 1 (`47da65a2-c6c6-4a21-a109-c1feb1d64c8f`). Authenticated browser QA rendered lesson 1 and all 23 sidebar lessons with Dataset at 19–22 and exclusion last at 23. Protected route smoke passed; Vercel error scan was empty. |
+
+## 2026-07-23 - SePay shorthand order-code fallback
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Incident | Giao dịch `69528778` gửi `code=DH707`, trong khi nội dung chuyển khoản chứa mã đầy đủ `TAMMRWSYDH707D7T`. Webhook tin `code` trước nên tra đơn `DH707`, trả `422` và dừng trước bước tạo tài khoản/gửi email. |
+| Fix | `getSepayOrderCode` chỉ nhận `payload.code` khi đúng định dạng `TAM[A-Z0-9]+`; nếu là mã rút gọn của ngân hàng thì tìm mã `TAM...` trong content/transaction content/description. Kiểm tra tài khoản, số tiền và email idempotency không đổi. |
+| Regression | `tests/sepay-order-code.test.mjs` khóa ba trường hợp: mã rút gọn + content đầy đủ, mã TAM trực tiếp, và mã rút gọn không có TAM. Full gate đạt `423/423`, TypeScript, ESLint và build 105 trang. |
+| Deploy | Commit `0a05711`; production deployment `dpl_8trUtvw1cv2bwTzzEyQgfApVzyQf`; status `Ready`, alias `www.theanhmarketing.com`. |
+| Customer recovery | Đơn gốc 799.000đ được xác nhận paid, tài khoản được kiểm tra đăng nhập và buộc đổi mật khẩu, email đúng đơn được Resend chấp nhận. Đơn 399.000đ phát sinh trong lúc phục hồi được đánh dấu `voided_duplicate`. |
