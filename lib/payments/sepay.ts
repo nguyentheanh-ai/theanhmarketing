@@ -192,8 +192,9 @@ export function isSepayAccountMatched(payload: SepayWebhookPayload) {
 
 export function getSepayOrderCode(payload: SepayWebhookPayload) {
   const directCode = String(payload.code ?? "").trim().toUpperCase();
+  const fullOrderCodePattern = new RegExp(`^${orderPrefix}[A-Z0-9]+$`);
 
-  if (directCode) {
+  if (fullOrderCodePattern.test(directCode)) {
     return directCode;
   }
 
