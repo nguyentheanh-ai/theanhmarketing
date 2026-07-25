@@ -37,15 +37,6 @@ import {
 
 export const runtime = "nodejs";
 
-function isFacebookEbookPaidOrder(order: PaymentOrder) {
-  return (
-    order.courseSlug.split(",")
-      .map((item) => item.trim())
-      .includes("ebook-facebook-ads-2026") ||
-    order.orderItems.some((item) => item.slug === "ebook-facebook-ads-2026")
-  );
-}
-
 function isSupportBookingOrder(order: PaymentOrder) {
   return order.courseSlug === SUPPORT_PRODUCT_SLUG ||
     order.orderItems.some((item) => item.slug === SUPPORT_PRODUCT_SLUG);
@@ -196,9 +187,6 @@ export async function POST(request: Request) {
       studentAccount = await ensureStudentAccountForPaidOrder(
         confirmation.order,
       );
-      const requiresVerifiedLoginAccount = isFacebookEbookPaidOrder(
-        confirmation.order,
-      );
 
       if (!studentAccount.ok) {
         logSecurityEvent({
@@ -230,10 +218,10 @@ export async function POST(request: Request) {
         }
       }
 
-      if (requiresVerifiedLoginAccount && !studentAccount.temporaryPassword) {
+      if (!studentAccount.temporaryPassword) {
         const reason = studentAccount.ok
-          ? "Payment success email requires a verified ebook login account."
-          : `Payment success email blocked because ebook account provisioning failed: ${
+          ? "Payment success email requires a verified student login account."
+          : `Payment success email blocked because student account provisioning failed: ${
               studentAccount.reason ?? "unknown reason"
             }`;
         paymentEmail = { ok: false, skipped: false, reason };
@@ -259,7 +247,7 @@ export async function POST(request: Request) {
           studentEmail: confirmation.order.email,
           studentPhone: confirmation.order.phone,
           eventType: "payment_success_email_failed",
-          eventTitle: "Chưa gửi email ebook vì chưa cấp được tài khoản",
+          eventTitle: "Chưa gửi email vì chưa cấp được tài khoản học viên",
           eventDescription: reason,
           status: "failed",
           actorType: "system",

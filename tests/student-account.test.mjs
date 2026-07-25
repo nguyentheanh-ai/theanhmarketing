@@ -557,15 +557,14 @@ test("SePay paid email includes account password when an existing user was reset
   assert.doesNotMatch(route, /account:\s*studentAccount\.created/);
 });
 
-test("SePay ebook success email is blocked until a verified login account is available", () => {
+test("SePay student success email is blocked until a verified login account is available", () => {
   const route = read("app/api/sepay/webhook/route.ts");
 
-  assert.match(route, /function isFacebookEbookPaidOrder/);
-  assert.match(route, /order\.courseSlug\.split\(","\)/);
-  assert.match(route, /const requiresVerifiedLoginAccount = isFacebookEbookPaidOrder\(\s*confirmation\.order,\s*\)/);
-  assert.match(route, /requiresVerifiedLoginAccount && !studentAccount\.temporaryPassword/);
+  assert.match(route, /if \(!studentAccount\.temporaryPassword\)/);
+  assert.match(route, /Payment success email requires a verified student login account\./);
+  assert.doesNotMatch(route, /requiresVerifiedLoginAccount/);
   assert.match(
     route,
-    /requiresVerifiedLoginAccount && !studentAccount\.temporaryPassword[\s\S]*?markPaymentEmailError[\s\S]*?else \{[\s\S]*?sendPaymentSuccessEmail/,
+    /if \(!studentAccount\.temporaryPassword\)[\s\S]*?markPaymentEmailError[\s\S]*?else \{[\s\S]*?sendPaymentSuccessEmail/,
   );
 });

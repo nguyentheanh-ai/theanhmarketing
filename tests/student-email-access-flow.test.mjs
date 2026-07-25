@@ -104,6 +104,16 @@ test("paid student emails use the official access landing link", () => {
   }
 });
 
+test("payment webhook blocks every student email when password provisioning fails", () => {
+  const webhook = read("app/api/sepay/webhook/route.ts");
+
+  assert.match(webhook, /if \(!studentAccount\.temporaryPassword\)/);
+  assert.match(webhook, /Payment success email requires a verified student login account\./);
+  assert.match(webhook, /Payment success email blocked because student account provisioning failed:/);
+  assert.doesNotMatch(webhook, /requiresVerifiedLoginAccount/);
+  assert.doesNotMatch(webhook, /ebook account provisioning failed/);
+});
+
 test("ebook payment email sends clean reader and terms-gated PDF download links", () => {
   const { buildPaymentSuccessEmailPayload } = loadTsModule("lib/notifications/payment-success-email.ts");
 
