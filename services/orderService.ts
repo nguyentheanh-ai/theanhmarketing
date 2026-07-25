@@ -15,6 +15,11 @@ import {
 import { attributionToDbColumns, normalizeAttribution, type Attribution, type AttributionInput } from "@/lib/tracking/attribution";
 import { getCourseBySlug, getCourses } from "@/services/courseService";
 import {
+  SUPPORT_PRICE_VND,
+  SUPPORT_PRODUCT_SLUG,
+  SUPPORT_PRODUCT_TITLE,
+} from "@/lib/support-booking/constants";
+import {
   collectCommandCenterPages,
   MAX_COMMAND_CENTER_SOURCE_ROWS,
   type CommandCenterAnalysisWindow,
@@ -117,6 +122,13 @@ export type CreatePaymentOrderInput = {
 export type CreateManualPaidOrderInput = CreatePaymentOrderInput & {
   note?: string;
   provisioningOperationId?: string;
+};
+
+export type CreateSupportPaymentOrderInput = {
+  studentName: string;
+  email: string;
+  phone: string;
+  expiresAt: string;
 };
 
 export type ConfirmPaymentInput = {
@@ -467,6 +479,52 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
   }
 
   return mapDbOrder(fallbackInsert.data as DbOrder);
+}
+
+export async function createSupportPaymentOrder(input: CreateSupportPaymentOrderInput) {
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    throw new Error("Chưa cấu hình Supabase để tạo đơn thanh toán.");
+  }
+
+  const orderCode = createOrderCode();
+  const paymentQrUrl = isSepayConfigured()
+    ? createSepayQrUrl({ amount: SUPPORT_PRICE_VND, orderCode })
+    : "";
+  const orderItems: OrderItem[] = [{
+    slug: SUPPORT_PRODUCT_SLUG,
+    title: SUPPORT_PRODUCT_TITLE,
+    price: SUPPORT_PRICE_VND,
+  }];
+
+  const result = await supabase
+    .from("orders")
+    .insert({
+      order_code: orderCode,
+      student_name: input.studentName,
+      email: input.email,
+      phone: input.phone,
+      course_slug: SUPPORT_PRODUCT_SLUG,
+      course_title: SUPPORT_PRODUCT_TITLE,
+      amount: SUPPORT_PRICE_VND,
+      currency: "VND",
+      status: "pending",
+      payment_status: "pending",
+      payment_method: "sepay",
+      payment_qr_url: paymentQrUrl,
+      expires_at: input.expiresAt,
+      order_items: orderItems,
+      purchase_event_sent: false,
+    })
+    .select(orderSelectFields)
+    .single();
+
+  if (result.error || !result.data) {
+    throw new Error(result.error?.message ?? "Không tạo được đơn thanh toán lịch hỗ trợ.");
+  }
+
+  return mapDbOrder(result.data as DbOrder);
 }
 
 export async function createManualPaidOrder(input: CreateManualPaidOrderInput) {
