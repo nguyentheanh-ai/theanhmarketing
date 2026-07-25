@@ -40,6 +40,7 @@ const primaryNavItems = [
   { href: "/admin/crm-v2/leads", label: "Khách hàng", icon: GitBranch },
   { href: "/admin/crm-v2/students", label: "Học viên", icon: Users, excludeView: "courses" },
   { href: "/admin/crm-v2/courses", label: "Khóa học", icon: BookOpen },
+  { href: "/admin/crm-v2/support-bookings", label: "Lịch hỗ trợ", icon: CalendarDays },
   { href: "/admin/crm-v2/reports", label: "Báo cáo", icon: BarChart3 },
   { href: "/admin/crm-v2/settings", label: "Cài đặt", icon: Settings2 },
 ];

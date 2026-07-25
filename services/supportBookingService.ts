@@ -40,6 +40,15 @@ export type ConfirmedSupportBooking = {
   status: SupportBookingRow["status"];
 };
 
+export type SupportBookingAdminRow = ConfirmedSupportBooking & {
+  customerName: string;
+  email: string;
+  phone: string;
+  amount: number;
+  orderCode: string;
+  paidAt: string;
+};
+
 export type SupportAvailabilityDay = {
   date: string;
   busy: boolean;
@@ -229,6 +238,68 @@ export async function markSupportBookingTelegram(
     : { telegram_last_error: (result.reason ?? "Telegram notification was skipped.").slice(0, 1000), updated_at: new Date().toISOString() };
   const update = await supabase.from("support_bookings").update(patch).eq("id", bookingId);
   return update.error ? { ok: false, error: update.error.message } : { ok: true, error: null };
+}
+
+export async function listConfirmedSupportBookings(now = new Date()): Promise<SupportBookingAdminRow[]> {
+  if (isLocalDemo()) {
+    const date = addDays(getSupportBookingWindow(now).minDate, 2);
+    return [{
+      id: "demo-confirmed-booking",
+      appointmentDate: date,
+      appointmentTime: "15:00",
+      startsAt: `${date}T08:00:00.000Z`,
+      endsAt: `${date}T08:30:00.000Z`,
+      topic: "Kiểm tra quảng cáo",
+      note: "Kiểm tra cấu trúc chiến dịch và đề xuất một mẫu quảng cáo để test trong 7 ngày.",
+      status: "confirmed",
+      customerName: "Nguyễn Minh Anh",
+      email: "minhanh.demo@gmail.com",
+      phone: "0900000000",
+      amount: 500_000,
+      orderCode: "SUPPORTDEMO",
+      paidAt: now.toISOString(),
+    }];
+  }
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Chưa cấu hình dữ liệu lịch hỗ trợ.");
+  const result = await supabase
+    .from("support_bookings")
+    .select("id,customer_name,email,phone,topic,note,appointment_date,appointment_time,starts_at,ends_at,status,amount,order_code,paid_at")
+    .eq("status", "confirmed")
+    .gte("starts_at", now.toISOString())
+    .order("starts_at", { ascending: true })
+    .limit(200);
+  if (result.error) throw new Error(result.error.message);
+  return (result.data ?? []).map((row) => ({
+    id: String(row.id), appointmentDate: String(row.appointment_date), appointmentTime: String(row.appointment_time).slice(0, 5),
+    startsAt: String(row.starts_at), endsAt: String(row.ends_at), topic: String(row.topic), note: String(row.note), status: "confirmed" as const,
+    customerName: String(row.customer_name), email: String(row.email), phone: String(row.phone), amount: Number(row.amount),
+    orderCode: String(row.order_code ?? ""), paidAt: String(row.paid_at ?? ""),
+  }));
+}
+
+export async function listSupportBusyDates(now = new Date()) {
+  const { minDate, maxDate } = getSupportBookingWindow(now);
+  if (isLocalDemo()) return [addDays(minDate, 4)];
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Chưa cấu hình dữ liệu lịch hỗ trợ.");
+  const result = await supabase.from("support_busy_dates").select("busy_date").gte("busy_date", minDate).lte("busy_date", maxDate);
+  if (result.error) throw new Error(result.error.message);
+  return (result.data ?? []).map((row) => String(row.busy_date));
+}
+
+export async function setSupportBusyDate(input: { date: string; busy: boolean; note?: string; actorId?: string | null }, now = new Date()) {
+  const { minDate, maxDate } = getSupportBookingWindow(now);
+  if (input.date < minDate && !input.busy) throw new Error("7 ngày gần nhất luôn bận và không thể mở lịch.");
+  if (input.date > maxDate || !/^\d{4}-\d{2}-\d{2}$/.test(input.date)) throw new Error("Ngày bận không hợp lệ.");
+  if (isLocalDemo()) return { ok: true, demo: true };
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Chưa cấu hình dữ liệu lịch hỗ trợ.");
+  const result = input.busy
+    ? await supabase.from("support_busy_dates").upsert({ busy_date: input.date, note: input.note?.slice(0, 500) || null, created_by: input.actorId ?? null, updated_at: new Date().toISOString() }, { onConflict: "busy_date" })
+    : await supabase.from("support_busy_dates").delete().eq("busy_date", input.date);
+  if (result.error) throw new Error(result.error.message);
+  return { ok: true, demo: false };
 }
 
 export type { SupportBookingInput };

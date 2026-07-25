@@ -367,16 +367,11 @@ export function StudentDashboard({
               </p>
               <h2 className="mt-2 text-xl font-black">Cần hỗ trợ khi triển khai?</h2>
               <p className={`mt-2 text-sm leading-6 ${mutedText}`}>
-                Gửi câu hỏi về bài học, tài khoản, thanh toán hoặc điểm nghẽn trong Growth System. Đội ngũ sẽ phản hồi theo kênh bạn chọn.
+                Đặt buổi làm việc riêng 30 phút để kiểm tra quảng cáo, lên quảng cáo mẫu hoặc tư vấn xây dựng hệ thống.
               </p>
-              <div className="mt-4 grid gap-2">
-                <Link href={siteConfig.emailHref} className="rounded-full bg-[#49b77a] px-4 py-3 text-center text-sm font-black text-white">
-                  Gửi email hỗ trợ
-                </Link>
-                <Link href={siteConfig.phoneHref} className={`rounded-full px-4 py-3 text-center text-sm font-black ring-1 ${isDark ? "bg-white/8 text-white ring-white/10" : "bg-white text-black ring-black/10"}`}>
-                  Liên hệ Zalo
-                </Link>
-              </div>
+              <Link href="/dat-lich-ho-tro" className="mt-4 block rounded-full bg-[#49b77a] px-4 py-3 text-center text-sm font-black text-white">
+                Đặt lịch hỗ trợ · 500.000đ
+              </Link>
             </section>
 
           </div>

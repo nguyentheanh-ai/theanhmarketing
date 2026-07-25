@@ -6,7 +6,7 @@ import { SiteFooter } from "@/components/site/footer";
 import { SiteHeader } from "@/components/site/header";
 import { getOfferSettings } from "@/services/offerService";
 
-export async function PageShell({ children }: { children: ReactNode }) {
+export async function PageShell({ children, showOfferPopup = true }: { children: ReactNode; showOfferPopup?: boolean }) {
   return (
     <main className="ai-os-bg ai-grid min-h-screen text-white">
       <Suspense fallback={<div className="h-14" />}>
@@ -17,9 +17,11 @@ export async function PageShell({ children }: { children: ReactNode }) {
         <SiteFooter />
       </Suspense>
       <CartToast />
-      <Suspense fallback={null}>
-        <OfferPopupFromSettings />
-      </Suspense>
+      {showOfferPopup ? (
+        <Suspense fallback={null}>
+          <OfferPopupFromSettings />
+        </Suspense>
+      ) : null}
     </main>
   );
 }
