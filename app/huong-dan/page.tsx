@@ -78,7 +78,7 @@ export default function CustomerGuidePage() {
         </div>
 
         <div className="mx-auto mt-10 flex max-w-5xl flex-col gap-3 rounded-[28px] bg-[#49b77a] p-7 text-[#07150e] sm:flex-row sm:items-center sm:justify-between">
-          <div><p className="text-xl font-black">Cần hỗ trợ trực tiếp?</p><p className="mt-1 text-sm font-semibold">Đặt lịch 30 phút, phí 500.000đ/buổi.</p></div>
+          <div><p className="text-xl font-black">Cần hỗ trợ trực tiếp?</p><p className="mt-1 text-sm font-semibold">Đặt lịch riêng để được tư vấn theo đúng nội dung anh/chị đang triển khai.</p></div>
           <div className="flex flex-wrap gap-3">
             <Link href="/dang-nhap" className="rounded-full bg-white px-5 py-3 text-sm font-black text-black">Đăng nhập</Link>
             <Link href="/dat-lich-ho-tro" className="rounded-full bg-[#10241a] px-5 py-3 text-sm font-black text-white">Đặt lịch hỗ trợ</Link>

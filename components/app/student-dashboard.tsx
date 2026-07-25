@@ -370,7 +370,7 @@ export function StudentDashboard({
                 Đặt buổi làm việc riêng 30 phút để kiểm tra quảng cáo, lên quảng cáo mẫu hoặc tư vấn xây dựng hệ thống.
               </p>
               <Link href="/dat-lich-ho-tro" className="mt-4 block rounded-full bg-[#49b77a] px-4 py-3 text-center text-sm font-black text-white">
-                Đặt lịch hỗ trợ · 500.000đ
+                Đặt lịch hỗ trợ
               </Link>
             </section>
 

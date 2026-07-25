@@ -18,5 +18,12 @@ test("student dashboard points support to the paid booking flow", () => {
   const dashboard = read("components/app/student-dashboard.tsx");
   assert.match(dashboard, /href="\/dat-lich-ho-tro"/);
   assert.match(dashboard, /Đặt lịch hỗ trợ/);
+  assert.doesNotMatch(dashboard, /Đặt lịch hỗ trợ[^\n]*500\.000/);
   assert.doesNotMatch(dashboard, /Gửi email hỗ trợ|Liên hệ Zalo/);
+});
+
+test("external guide CTA does not reveal support pricing before booking", () => {
+  const guide = read("app/huong-dan/page.tsx");
+  assert.match(guide, /href="\/dat-lich-ho-tro"/);
+  assert.doesNotMatch(guide, /500\.000|500k/i);
 });

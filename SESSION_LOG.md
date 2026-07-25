@@ -9,6 +9,7 @@
 - No deployment and no production migration were performed.
 - Replaced guide mockups with five Playwright-captured local screens using a clearly marked demo QR and the real payment-success email HTML. No account or transaction was created.
 - Full Node suite now passes 446/446; TypeScript and production build pass.
+- Removed the 500.000đ price from the student Dashboard CTA and public guide CTA; retained full price disclosure inside `/dat-lich-ho-tro`.
 
 ## 2026-07-22 - Correct stale 799K pending-email title found in live QA
 
