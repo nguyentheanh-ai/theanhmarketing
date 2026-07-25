@@ -4,7 +4,8 @@ import {
   shouldSendPaymentSuccessEmail,
 } from "@/lib/notifications/payment-success-email";
 import { syncOrderToGoogleSheetWithActivity } from "@/lib/notifications/google-sheets-order-sync";
-import { sendTelegramOrderNotification } from "@/lib/notifications/telegram";
+import { sendTelegramOrderNotification, sendTelegramSupportBookingNotification } from "@/lib/notifications/telegram";
+import { SUPPORT_PRODUCT_SLUG } from "@/lib/support-booking/constants";
 import { sendMetaPurchaseEvent } from "@/lib/meta/conversions-api";
 import {
   verifySepayApiKey,
@@ -28,6 +29,11 @@ import {
 import { ensureStudentAccountForPaidOrder } from "@/services/studentAccountService";
 import { notifyStudentPortalProvisioning } from "@/services/studentPortalProvisioningService";
 import { siteConfig } from "@/data/site";
+import {
+  confirmSupportBookingForPaidOrder,
+  markSupportBookingTelegram,
+  type ConfirmedSupportBooking,
+} from "@/services/supportBookingService";
 
 export const runtime = "nodejs";
 
@@ -38,6 +44,11 @@ function isFacebookEbookPaidOrder(order: PaymentOrder) {
       .includes("ebook-facebook-ads-2026") ||
     order.orderItems.some((item) => item.slug === "ebook-facebook-ads-2026")
   );
+}
+
+function isSupportBookingOrder(order: PaymentOrder) {
+  return order.courseSlug === SUPPORT_PRODUCT_SLUG ||
+    order.orderItems.some((item) => item.slug === SUPPORT_PRODUCT_SLUG);
 }
 
 export async function POST(request: Request) {
@@ -107,6 +118,17 @@ export async function POST(request: Request) {
     let studentPortalProvisioning: Awaited<
       ReturnType<typeof notifyStudentPortalProvisioning>
     > | null = null;
+    const supportBookingOrder = isSupportBookingOrder(confirmation.order);
+    let supportBooking: ConfirmedSupportBooking | null = null;
+
+    if (!confirmation.wasAlreadyPaid && supportBookingOrder) {
+      supportBooking = await confirmSupportBookingForPaidOrder(confirmation.order);
+      paymentEmail = {
+        ok: true,
+        skipped: true,
+        reason: "Support booking confirmation is shown on the website.",
+      };
+    }
 
     if (!confirmation.wasAlreadyPaid && !confirmation.order.purchaseEventSent) {
       try {
@@ -168,7 +190,8 @@ export async function POST(request: Request) {
 
     if (
       !confirmation.wasAlreadyPaid &&
-      shouldSendPaymentSuccessEmail(confirmation.order)
+      shouldSendPaymentSuccessEmail(confirmation.order) &&
+      !supportBookingOrder
     ) {
       studentAccount = await ensureStudentAccountForPaidOrder(
         confirmation.order,
@@ -328,10 +351,13 @@ export async function POST(request: Request) {
 
     if (!confirmation.wasAlreadyPaid) {
       try {
-        const telegram = await sendTelegramOrderNotification(
-          confirmation.order,
-          "payment_paid",
-        );
+        const telegram = supportBookingOrder && supportBooking
+          ? await sendTelegramSupportBookingNotification(confirmation.order, supportBooking)
+          : await sendTelegramOrderNotification(confirmation.order, "payment_paid");
+
+        if (supportBooking) {
+          await markSupportBookingTelegram(supportBooking.id, telegram);
+        }
 
         if (!telegram.ok && !telegram.skipped) {
           console.warn("[sepay] Telegram paid notification failed:", {

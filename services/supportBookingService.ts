@@ -14,6 +14,11 @@ import { createSupportPaymentOrder } from "@/services/orderService";
 
 type SupportBookingRow = {
   id: string;
+  customer_name?: string;
+  email?: string;
+  phone?: string;
+  topic?: string;
+  note?: string;
   appointment_date: string;
   appointment_time: string;
   starts_at: string;
@@ -22,6 +27,17 @@ type SupportBookingRow = {
   hold_expires_at: string;
   order_id?: string | null;
   order_code?: string | null;
+};
+
+export type ConfirmedSupportBooking = {
+  id: string;
+  appointmentDate: string;
+  appointmentTime: string;
+  startsAt: string;
+  endsAt: string;
+  topic: string;
+  note: string;
+  status: SupportBookingRow["status"];
 };
 
 export type SupportAvailabilityDay = {
@@ -175,6 +191,44 @@ export async function reserveSupportBooking(input: unknown, now = new Date()) {
       .eq("status", "held");
     throw error;
   }
+}
+
+export async function confirmSupportBookingForPaidOrder(order: { id: string; orderCode: string; paidAt: string | null }) {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Chưa cấu hình dữ liệu lịch hỗ trợ.");
+  const paidAt = order.paidAt ?? new Date().toISOString();
+  const result = await supabase.rpc("confirm_support_booking", {
+    p_order_id: order.id,
+    p_order_code: order.orderCode,
+    p_paid_at: paidAt,
+  });
+  if (result.error || !result.data) {
+    throw new Error(result.error?.message ?? "Không xác nhận được lịch hỗ trợ đã thanh toán.");
+  }
+  const row = result.data as SupportBookingRow;
+  return {
+    id: row.id,
+    appointmentDate: row.appointment_date,
+    appointmentTime: String(row.appointment_time).slice(0, 5),
+    startsAt: row.starts_at,
+    endsAt: row.ends_at,
+    topic: row.topic ?? "",
+    note: row.note ?? "",
+    status: row.status,
+  } satisfies ConfirmedSupportBooking;
+}
+
+export async function markSupportBookingTelegram(
+  bookingId: string,
+  result: { ok: boolean; skipped: boolean; reason?: string },
+) {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) return { ok: false, error: "Missing Supabase admin client" };
+  const patch = result.ok && !result.skipped
+    ? { telegram_sent_at: new Date().toISOString(), telegram_last_error: null, updated_at: new Date().toISOString() }
+    : { telegram_last_error: (result.reason ?? "Telegram notification was skipped.").slice(0, 1000), updated_at: new Date().toISOString() };
+  const update = await supabase.from("support_bookings").update(patch).eq("id", bookingId);
+  return update.error ? { ok: false, error: update.error.message } : { ok: true, error: null };
 }
 
 export type { SupportBookingInput };

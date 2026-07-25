@@ -2,6 +2,7 @@ import { sendPendingPaymentEmail } from "@/lib/notifications/pending-payment-ema
 import { sendTelegramOrderNotification } from "@/lib/notifications/telegram";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import type { PaymentOrder } from "@/services/orderService";
+import { SUPPORT_PRODUCT_SLUG } from "@/lib/support-booking/constants";
 
 type CheckoutNotificationMarkers = {
   pending_payment_email_sent_at: string | null;
@@ -27,6 +28,11 @@ const markerSelectFields =
 
 function skipped(reason: string): NotificationStepResult {
   return { ok: true, skipped: true, reason };
+}
+
+function isSupportBookingOrder(order: PaymentOrder) {
+  return order.courseSlug === SUPPORT_PRODUCT_SLUG ||
+    order.orderItems.some((item) => item.slug === SUPPORT_PRODUCT_SLUG);
 }
 
 async function getCheckoutNotificationMarkers(orderCode: string) {
@@ -200,7 +206,9 @@ export async function sendCheckoutEntryNotifications(order: PaymentOrder): Promi
   }
 
   const email = await sendPendingPaymentEmailOnce(order, markerResult.markers);
-  const telegram = await sendTelegramOrderCreatedOnce(order, markerResult.markers);
+  const telegram = isSupportBookingOrder(order)
+    ? skipped("Support booking Telegram is sent only after payment.")
+    : await sendTelegramOrderCreatedOnce(order, markerResult.markers);
 
   return {
     ok: email.ok && telegram.ok,

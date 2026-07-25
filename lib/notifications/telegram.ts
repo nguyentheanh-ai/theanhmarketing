@@ -101,3 +101,59 @@ export async function sendTelegramOrderNotification(
 
   return { ok: true, skipped: false, status: response.status };
 }
+
+type TelegramSupportBooking = {
+  appointmentDate: string;
+  appointmentTime: string;
+  topic: string;
+  note: string;
+  status: string;
+};
+
+export function buildTelegramSupportBookingMessage(
+  order: PaymentOrder,
+  booking: TelegramSupportBooking,
+) {
+  return [
+    "[PAID SUPPORT BOOKING] The Anh Marketing",
+    `Ma don: ${order.orderCode}`,
+    `Lich: ${booking.appointmentDate} ${booking.appointmentTime} (GMT+7)` ,
+    `Khach: ${order.studentName || "Chua co ten"}`,
+    `SDT: ${order.phone || "Chua co SDT"}`,
+    `Email: ${order.email || "Chua co email"}`,
+    `Chu de: ${booking.topic}`,
+    `Noi dung: ${booking.note}`,
+    `So tien: ${order.amountLabel}`,
+    `Trang thai: ${booking.status}`,
+    `Admin: ${normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL)}/admin/crm-v2/support-bookings`,
+  ].join("\n");
+}
+
+export async function sendTelegramSupportBookingNotification(
+  order: PaymentOrder,
+  booking: TelegramSupportBooking,
+  options: TelegramSendOptions = {},
+): Promise<TelegramSendResult> {
+  const botToken = cleanEnvValue(options.botToken) || cleanEnvValue(process.env.TELEGRAM_BOT_TOKEN);
+  const chatId = cleanEnvValue(options.chatId) || cleanEnvValue(process.env.TELEGRAM_CHAT_ID);
+
+  if (!botToken || !chatId) {
+    return { ok: true, skipped: true, reason: "Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID" };
+  }
+
+  const response = await (options.fetchImpl ?? fetch)(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: buildTelegramSupportBookingMessage(order, booking),
+      disable_web_page_preview: true,
+    }),
+  });
+
+  if (!response.ok) {
+    return { ok: false, skipped: false, reason: "Telegram Bot API rejected the message.", status: response.status };
+  }
+
+  return { ok: true, skipped: false, status: response.status };
+}

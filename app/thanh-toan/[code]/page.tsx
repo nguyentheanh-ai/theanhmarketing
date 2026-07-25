@@ -14,6 +14,11 @@ import {
   isSepayConfigured,
 } from "@/lib/payments/sepay";
 import { normalizeAttribution } from "@/lib/tracking/attribution";
+import {
+  SUPPORT_PRICE_VND,
+  SUPPORT_PRODUCT_SLUG,
+  SUPPORT_PRODUCT_TITLE,
+} from "@/lib/support-booking/constants";
 import { sendCheckoutEntryNotifications } from "@/services/checkoutNotificationService";
 import { getPaymentOrder, type PaymentOrder } from "@/services/orderService";
 
@@ -158,6 +163,34 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
   }
 
   const normalizedCode = code.toUpperCase();
+
+  if (normalizedCode === "SUPPORTDEMO") {
+    return {
+      id: "local-support-demo",
+      leadId: null,
+      orderCode: "SUPPORTDEMO",
+      studentName: "Nguyễn Minh Anh",
+      email: "minhanh.demo@gmail.com",
+      phone: "0900000000",
+      courseSlug: SUPPORT_PRODUCT_SLUG,
+      courseTitle: SUPPORT_PRODUCT_TITLE,
+      amount: SUPPORT_PRICE_VND,
+      amountLabel: "500.000đ",
+      currency: "VND",
+      status: "pending",
+      paymentMethod: "sepay",
+      paymentQrUrl: "",
+      paidAt: null,
+      expiresAt: new Date(Date.now() + 20 * 60 * 1000).toISOString(),
+      createdAt: new Date().toISOString(),
+      sepayReferenceCode: null,
+      orderItems: [{ slug: SUPPORT_PRODUCT_SLUG, title: SUPPORT_PRODUCT_TITLE, price: SUPPORT_PRICE_VND }],
+      paymentEmailSentAt: null,
+      paymentEmailLastError: null,
+      purchaseEventSent: false,
+      attribution: normalizeAttribution(),
+    };
+  }
 
   if (normalizedCode === "AGENTKITDEMO") {
     return {

@@ -9,6 +9,8 @@ const facebookEbookCourseSlug = "ebook-facebook-ads-2026";
 const facebookEbookThankYouPath = "/cam-on-thanh-toan/ebook-facebook-ads-2026";
 const facebookAdsCourseSlug = "facebook-ads-2026";
 const facebookAdsThankYouPath = "/cam-on-thanh-toan/facebook-ads-2026";
+const supportBookingSlug = "support-session-30m";
+const supportBookingThankYouPath = "/dat-lich-ho-tro/thanh-cong";
 
 function formatCountdown(totalSeconds: number) {
   const safe = Math.max(0, totalSeconds);
@@ -43,6 +45,10 @@ function isFacebookAdsCourseOrder(order: PaymentOrder) {
 }
 
 function getPaidRedirectPath(order: PaymentOrder) {
+  if (hasExactCourseSlug(order, supportBookingSlug)) {
+    return `${supportBookingThankYouPath}?order=${encodeURIComponent(order.orderCode)}`;
+  }
+
   if (isFacebookAdsCourseOrder(order)) {
     return facebookAdsThankYouPath;
   }
@@ -140,7 +146,9 @@ export function PaymentStatusPoller({
   }, [disablePolling, order, router]);
 
   const paid = order.status === "paid";
-  const paidStatusMessage = isFacebookAdsCourseOrder(order)
+  const paidStatusMessage = hasExactCourseSlug(order, supportBookingSlug)
+    ? "SePay đã báo tiền vào. Lịch hỗ trợ 30 phút của bạn đã được ghi nhận. Đang chuyển tới trang xác nhận..."
+    : isFacebookAdsCourseOrder(order)
     ? "SePay đã báo tiền vào. Hệ thống sẽ gửi email tài khoản học viên. Đang chuyển bạn tới trang hướng dẫn vào khóa học Facebook Ads..."
     : isFacebookEbookOrder(order)
       ? "SePay đã báo tiền vào. Hệ thống sẽ gửi email tài khoản và link ebook. Đang chuyển bạn tới trang hướng dẫn nhận ebook..."
