@@ -27,22 +27,38 @@ const steps = [
   },
   {
     number: "03",
-    title: "Lấy tài khoản và Mật khẩu",
-    text: "Trong email xác nhận có địa chỉ đăng nhập, email tài khoản và mật khẩu ban đầu. Không chia sẻ thông tin này cho người khác.",
-    visual: "Tài khoản: email của anh/chị  •  Mật khẩu: ••••••••",
+    title: "Lấy tài khoản và mật khẩu ở đây",
+    text: "Trong email thanh toán thành công, tìm đúng khung Tài khoản học. Sao chép dòng Tên tài khoản và dòng Mật khẩu tạm được khoanh đỏ.",
+    visual: "Khung Tài khoản học → Tên tài khoản + Mật khẩu tạm",
+    image: "/huong-dan/03-tai-khoan-phong-to.webp",
+    alt: "Khung tài khoản học được phóng lớn và khoanh đỏ trong email thanh toán thành công",
+  },
+  {
+    number: "04",
+    title: "Bấm đúng link để vào học",
+    text: "Kéo xuống gần cuối email và bấm nút màu cam Truy cập khu vực học viên. Nếu nút không mở, vào trực tiếp theanhmarketing.com/vao-khoa-hoc.",
+    visual: "Truy cập khu vực học viên → theanhmarketing.com/vao-khoa-hoc",
+    image: "/huong-dan/04-link-vao-hoc-phong-to.webp",
+    alt: "Nút Truy cập khu vực học viên được phóng lớn với mũi tên đỏ",
+  },
+  {
+    number: "05",
+    title: "Đăng nhập Growth Hub",
+    text: "Dán email và mật khẩu tạm vừa lấy vào đúng hai ô đăng nhập, sau đó bấm Vào Growth Hub.",
+    visual: "Email + Mật khẩu tạm → Vào Growth Hub",
     image: "/huong-dan/03-dang-nhap.webp",
     alt: "Màn hình đăng nhập bằng email và mật khẩu nhận trong thư",
   },
   {
-    number: "04",
-    title: "Đăng nhập và vào khóa học",
-    text: "Bấm nút đăng nhập trong email hoặc vào theanhmarketing.com/dang-nhap, nhập đúng tài khoản và mật khẩu rồi chọn khóa học đã sở hữu.",
-    visual: "Đăng nhập → Dashboard → Vào phòng học",
+    number: "06",
+    title: "Mở khóa học đã mua",
+    text: "Trong Dashboard, tìm đúng khóa học đã sở hữu và bấm Vào phòng học để mở bài học và xem tiến độ.",
+    visual: "Dashboard → Vào phòng học",
     image: "/huong-dan/04-dashboard-khoa-hoc.webp",
-    alt: "Dashboard học viên và nút vào khóa học",
+    alt: "Dashboard học viên với nút Vào phòng học",
   },
   {
-    number: "05",
+    number: "07",
     title: "Đọc và tải ebook",
     text: "Trong Dashboard, mở khóa Ebook Facebook. Chọn Đọc online để xem ngay hoặc Tải PDF để lưu ebook về thiết bị.",
     visual: "Ebook Facebook → Đọc online  |  Tải PDF",
@@ -58,7 +74,7 @@ export default function CustomerGuidePage() {
         <div className="mx-auto max-w-4xl text-center">
           <p className="ai-kicker">Hướng dẫn dành cho học viên</p>
           <h1 className="ai-glow-text mt-5 text-4xl font-black tracking-[-0.04em] sm:text-6xl">Từ thanh toán đến lúc vào học</h1>
-          <p className="ai-muted mx-auto mt-5 max-w-2xl text-lg leading-8">Trang này xem công khai, không cần tài khoản. Anh/chị làm lần lượt theo 5 bước dưới đây.</p>
+          <p className="ai-muted mx-auto mt-5 max-w-2xl text-lg leading-8">Trang này xem công khai, không cần tài khoản. Anh/chị làm lần lượt theo 7 bước dưới đây.</p>
         </div>
 
         <div className="mx-auto mt-12 grid max-w-5xl gap-6">
