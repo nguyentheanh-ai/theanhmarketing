@@ -26,7 +26,7 @@ function cleanText(value: unknown, maxLength: number) {
   return typeof value === "string" ? value.trim().replace(/\s+/g, " ").slice(0, maxLength) : "";
 }
 
-function getVietnamDate(now: Date) {
+export function getVietnamToday(now = new Date()) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: SUPPORT_TIME_ZONE,
     year: "numeric",
@@ -72,7 +72,7 @@ export function listSupportSlots() {
 }
 
 export function getSupportBookingWindow(now = new Date()) {
-  const today = getVietnamDate(now);
+  const today = getVietnamToday(now);
   return {
     minDate: addDays(today, SUPPORT_MIN_LEAD_DAYS),
     maxDate: addDays(today, SUPPORT_MAX_LEAD_DAYS),
