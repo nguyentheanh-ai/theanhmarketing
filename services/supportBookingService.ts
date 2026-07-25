@@ -2,6 +2,7 @@ import {
   SUPPORT_HOLD_MINUTES,
   SUPPORT_MAX_LEAD_DAYS,
   SUPPORT_MIN_LEAD_DAYS,
+  SUPPORT_PRODUCT_SLUG,
 } from "@/lib/support-booking/constants";
 import {
   getSupportBookingWindow,
@@ -10,7 +11,7 @@ import {
   type SupportBookingInput,
 } from "@/lib/support-booking/domain";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupportPaymentOrder } from "@/services/orderService";
+import { createSupportPaymentOrder, getPaymentOrders } from "@/services/orderService";
 
 type SupportBookingRow = {
   id: string;
@@ -55,7 +56,58 @@ export type SupportAvailabilityDay = {
   slots: Array<{ time: string; available: boolean }>;
 };
 
+export type EligibleSupportCustomer = {
+  customerName: string;
+  email: string;
+  phone: string;
+  purchasedCourseSlug: string;
+};
+
 export class SupportBookingConflictError extends Error {}
+
+function normalizeEmail(value: string | null | undefined) {
+  return (value ?? "").trim().toLowerCase();
+}
+
+function purchasedCourseSlugs(order: { courseSlug: string; orderItems: Array<{ slug: string }> }) {
+  const slugs = order.orderItems.length
+    ? order.orderItems.map((item) => item.slug)
+    : order.courseSlug.split(",");
+  return slugs.map((slug) => slug.trim()).filter((slug) => slug && slug !== SUPPORT_PRODUCT_SLUG);
+}
+
+export async function getEligibleSupportCustomer(
+  email: string,
+  metadata?: Record<string, unknown> | null,
+): Promise<EligibleSupportCustomer | null> {
+  if (isLocalDemo()) {
+    return {
+      customerName: "Nguyễn Minh Anh",
+      email: email.trim() || "minhanh.demo@gmail.com",
+      phone: "0900000000",
+      purchasedCourseSlug: "facebook-ads-2026",
+    };
+  }
+
+  const normalizedEmail = normalizeEmail(email);
+  if (!normalizedEmail) return null;
+  const orders = await getPaymentOrders({ includeFallback: false, strict: true });
+  const paidCourseOrders = orders
+    .filter((order) => order.status === "paid" && normalizeEmail(order.email) === normalizedEmail)
+    .map((order) => ({ order, slugs: purchasedCourseSlugs(order) }))
+    .filter((entry) => entry.slugs.length > 0)
+    .sort((a, b) => Date.parse(b.order.paidAt ?? b.order.createdAt) - Date.parse(a.order.paidAt ?? a.order.createdAt));
+
+  const latest = paidCourseOrders[0];
+  if (!latest) return null;
+  const customerName = latest.order.studentName.trim()
+    || (typeof metadata?.full_name === "string" ? metadata.full_name.trim() : "")
+    || normalizedEmail.split("@")[0];
+  const phone = latest.order.phone.trim()
+    || (typeof metadata?.phone === "string" ? metadata.phone.trim() : "");
+  if (!phone) return null;
+  return { customerName, email: normalizedEmail, phone, purchasedCourseSlug: latest.slugs[0] };
+}
 
 function isLocalDemo() {
   return process.env.NODE_ENV !== "production" && process.env.SUPPORT_BOOKING_DEMO !== "false";

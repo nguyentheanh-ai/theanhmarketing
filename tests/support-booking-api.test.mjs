@@ -29,9 +29,24 @@ test("public support booking APIs are bounded, no-store, and return conflict saf
   assert.match(availability, /Cache-Control.*no-store/);
   assert.match(availability, /checkRateLimit/);
   assert.match(create, /reserveSupportBooking/);
+  assert.match(create, /getCurrentAuth/);
+  assert.match(create, /getEligibleSupportCustomer/);
+  assert.match(create, /status: 401/);
+  assert.match(create, /status: 403/);
+  assert.match(create, /customerName: customer\.customerName/);
+  assert.match(create, /email: customer\.email/);
+  assert.match(create, /phone: customer\.phone/);
   assert.match(create, /await request\.json\(\)/);
   assert.match(create, /SupportBookingConflictError/);
   assert.match(create, /status: 409/);
   assert.match(create, /Cache-Control.*no-store/);
   assert.doesNotMatch(create, /SUPABASE_SERVICE_ROLE_KEY/);
+});
+
+test("support booking eligibility comes from a paid course order and excludes support orders", () => {
+  const service = read("services/supportBookingService.ts");
+  assert.match(service, /getEligibleSupportCustomer/);
+  assert.match(service, /order\.status === "paid"/);
+  assert.match(service, /SUPPORT_PRODUCT_SLUG/);
+  assert.match(service, /getPaymentOrders/);
 });

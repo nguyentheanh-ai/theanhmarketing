@@ -3,11 +3,12 @@
 import { CalendarDays, Check, Clock3, Loader2, ShieldCheck } from "lucide-react";
 import { useMemo, useState } from "react";
 import { SUPPORT_TOPICS } from "@/lib/support-booking/constants";
-import type { SupportAvailabilityDay } from "@/services/supportBookingService";
+import type { EligibleSupportCustomer, SupportAvailabilityDay } from "@/services/supportBookingService";
 
 type Props = {
   today: string;
   bookableDays: SupportAvailabilityDay[];
+  customer: EligibleSupportCustomer;
 };
 
 function addDays(value: string, days: number) {
@@ -19,7 +20,7 @@ function formatDate(value: string, options: Intl.DateTimeFormatOptions) {
   return new Intl.DateTimeFormat("vi-VN", { timeZone: "UTC", ...options }).format(new Date(`${value}T00:00:00Z`));
 }
 
-export function SupportBookingForm({ today, bookableDays }: Props) {
+export function SupportBookingForm({ today, bookableDays, customer }: Props) {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [error, setError] = useState("");
@@ -42,9 +43,6 @@ export function SupportBookingForm({ today, bookableDays }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customerName: form.get("customerName"),
-          email: form.get("email"),
-          phone: form.get("phone"),
           topic: form.get("topic"),
           note: form.get("note"),
           appointmentDate: selectedDate,
@@ -116,10 +114,12 @@ export function SupportBookingForm({ today, bookableDays }: Props) {
 
       <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_22px_70px_rgba(15,23,42,0.08)] sm:p-8">
         <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-2xl bg-emerald-50 text-emerald-600"><Check className="size-5" /></span><div><p className="text-xs font-black uppercase tracking-[0.14em] text-emerald-600">Bước 3</p><h2 className="text-xl font-black text-slate-950">Thông tin hỗ trợ</h2></div></div>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          <label className="grid gap-2 text-sm font-bold text-slate-700">Họ và tên<input className="min-h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-blue-500" name="customerName" required /></label>
-          <label className="grid gap-2 text-sm font-bold text-slate-700">Số điện thoại<input className="min-h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-blue-500" inputMode="tel" name="phone" required /></label>
-          <label className="grid gap-2 text-sm font-bold text-slate-700">Email<input className="min-h-12 rounded-2xl border border-slate-200 px-4 outline-none focus:border-blue-500" name="email" required type="email" /></label>
+        <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+          <p className="text-xs font-black uppercase tracking-[0.14em] text-emerald-700">Thông tin học viên đã xác thực</p>
+          <p className="mt-2 text-lg font-black text-slate-950">{customer.customerName}</p>
+          <p className="mt-1 text-sm font-semibold text-slate-600">{customer.email} · {customer.phone}</p>
+        </div>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <label className="grid gap-2 text-sm font-bold text-slate-700">Chủ đề hỗ trợ<select className="min-h-12 rounded-2xl border border-slate-200 bg-white px-4 outline-none focus:border-blue-500" defaultValue="kiem-tra-quang-cao" name="topic">{SUPPORT_TOPICS.map((topic) => <option key={topic.value} value={topic.value}>{topic.label}</option>)}</select></label>
           <label className="grid gap-2 text-sm font-bold text-slate-700 sm:col-span-2">Nội dung cần hỗ trợ<textarea className="min-h-32 rounded-2xl border border-slate-200 p-4 leading-6 outline-none focus:border-blue-500" minLength={10} name="note" placeholder="Ví dụ: kiểm tra cấu trúc chiến dịch, lên một mẫu quảng cáo, tư vấn hệ thống bán hàng..." required /></label>
         </div>

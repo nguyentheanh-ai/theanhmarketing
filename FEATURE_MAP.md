@@ -6,7 +6,7 @@ Routes: `/huong-dan`, `/dat-lich-ho-tro`, `/dat-lich-ho-tro/thanh-cong`, `/admin
 
 Database: local migration `20260725021737_support_booking.sql`; not applied to production.
 
-Guard: fixed 500.000đ/30 minutes, first seven days unavailable, paid-only admin/Telegram confirmation, no student-account provisioning for support orders.
+Guard: fixed 500.000đ/30 minutes, first seven days unavailable, authenticated paid-course student only, identity sourced from the paid order, paid-only admin/Telegram confirmation, no student-account provisioning for support orders.
 
 ## Facebook Ads 799K + Ebook 299K checkout add-on
 
