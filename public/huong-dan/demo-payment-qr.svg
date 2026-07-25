@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 520" role="img" aria-label="Mã QR thanh toán demo, không có giá trị giao dịch">
+  <rect width="520" height="520" rx="24" fill="#fff"/>
+  <g fill="#071525">
+    <path d="M38 38h150v150H38zm28 28v94h94V66zM332 38h150v150H332zm28 28v94h94V66zM38 332h150v150H38zm28 28v94h94v-94z"/>
+    <path d="M226 42h30v30h-30zm50 0h28v62h-28zm-54 84h34v30h-34zm54 10h30v54h-30zm-56 82h32v32h-32zm52-16h30v30h-30zm54 10h32v32h-32zm54 14h30v30h-30zm-164 50h30v30h-30zm54-10h34v34h-34zm60 20h28v62h-28zm50-8h30v30h-30zm54-10h30v72h-30zm-206 78h34v34h-34zm58 20h30v70h-30zm54-4h34v34h-34zm54 30h30v30h-30zm54-24h32v88h-32z"/>
+  </g>
+  <rect x="155" y="226" width="210" height="70" rx="14" fill="#159cfb"/>
+  <text x="260" y="255" text-anchor="middle" font-family="Arial,sans-serif" font-size="24" font-weight="800" fill="#fff">QR DEMO</text>
+  <text x="260" y="280" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="700" fill="#fff">KHÔNG THANH TOÁN</text>
+</svg>

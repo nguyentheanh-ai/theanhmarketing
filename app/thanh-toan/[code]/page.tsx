@@ -378,16 +378,20 @@ export default async function PaymentPage({
     notFound();
   }
 
+  const isLocalDemoOrder = order.id.startsWith("local-");
   const sepay = getSepayConfig();
-  const configured = isSepayConfigured();
+  const configured = isLocalDemoOrder || isSepayConfigured();
   const transferContent = (order.sepayReferenceCode || order.orderCode).toUpperCase();
   const bankName = getBankDisplayName(sepay.bankCode);
-  const qrUrl = configured ? createSepayQrUrl({ amount: order.amount, orderCode: transferContent }) : "";
+  const qrUrl = isLocalDemoOrder
+    ? "/huong-dan/demo-payment-qr.svg"
+    : configured
+      ? createSepayQrUrl({ amount: order.amount, orderCode: transferContent })
+      : "";
   const amountLabel = order.amountLabel || formatVnd(order.amount);
   const courseTitle = getDisplayCourseTitle(order);
   const content = getCheckoutContent(order);
   const paymentOffer = getPaymentOffer(order, amountLabel);
-  const isLocalDemoOrder = order.id.startsWith("local-");
   if (!isLocalDemoOrder) {
     after(async () => {
       const notifications = await sendCheckoutEntryNotifications(order);

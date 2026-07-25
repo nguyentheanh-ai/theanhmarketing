@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { PageShell } from "@/components/site/page-shell";
 
@@ -13,30 +14,40 @@ const steps = [
     title: "Hoàn tất thanh toán",
     text: "Sau khi chọn khóa học, anh/chị quét mã QR đúng số tiền và nội dung chuyển khoản hiển thị trên trang thanh toán.",
     visual: "QR thanh toán → Chờ hệ thống xác nhận",
+    image: "/huong-dan/01-thanh-toan.webp",
+    alt: "Màn hình thanh toán khóa học bằng mã QR",
   },
   {
     number: "02",
     title: "Kiểm tra email",
     text: "Mở Hộp thư đến (Inbox). Nếu chưa thấy email sau vài phút, kiểm tra thêm mục Spam, Thư rác hoặc Quảng cáo.",
     visual: "Email: Tài khoản học của anh/chị đã sẵn sàng",
+    image: "/huong-dan/02-email-tai-khoan.webp",
+    alt: "Email xác nhận thanh toán kèm tài khoản và mật khẩu học viên",
   },
   {
     number: "03",
     title: "Lấy tài khoản và Mật khẩu",
     text: "Trong email xác nhận có địa chỉ đăng nhập, email tài khoản và mật khẩu ban đầu. Không chia sẻ thông tin này cho người khác.",
     visual: "Tài khoản: email của anh/chị  •  Mật khẩu: ••••••••",
+    image: "/huong-dan/03-dang-nhap.webp",
+    alt: "Màn hình đăng nhập bằng email và mật khẩu nhận trong thư",
   },
   {
     number: "04",
     title: "Đăng nhập và vào khóa học",
     text: "Bấm nút đăng nhập trong email hoặc vào theanhmarketing.com/dang-nhap, nhập đúng tài khoản và mật khẩu rồi chọn khóa học đã sở hữu.",
     visual: "Đăng nhập → Dashboard → Vào phòng học",
+    image: "/huong-dan/04-dashboard-khoa-hoc.webp",
+    alt: "Dashboard học viên và nút vào khóa học",
   },
   {
     number: "05",
     title: "Đọc và tải ebook",
     text: "Trong Dashboard, mở khóa Ebook Facebook. Chọn Đọc online để xem ngay hoặc Tải PDF để lưu ebook về thiết bị.",
     visual: "Ebook Facebook → Đọc online  |  Tải PDF",
+    image: "/huong-dan/05-ebook.webp",
+    alt: "Khu vực ebook với nút đọc online và tải PDF",
   },
 ];
 
@@ -58,11 +69,9 @@ export default function CustomerGuidePage() {
                 <h2 className="mt-3 text-2xl font-black sm:text-3xl">{step.title}</h2>
                 <p className="ai-muted mt-4 leading-7">{step.text}</p>
               </div>
-              <div className="m-4 grid min-h-48 place-items-center rounded-[22px] border border-white/10 bg-[#12151b] p-8 text-center shadow-2xl">
-                <div>
-                  <div className="mx-auto mb-5 grid size-14 place-items-center rounded-2xl bg-[#49b77a] text-xl font-black">{step.number}</div>
-                  <p className="max-w-md text-lg font-bold leading-8">{step.visual}</p>
-                </div>
+              <div className="m-4 overflow-hidden rounded-[22px] border border-white/10 bg-[#12151b] shadow-2xl">
+                <Image alt={step.alt} className="h-full min-h-56 w-full object-cover object-top" height={720} src={step.image} unoptimized width={1120} />
+                <p className="border-t border-white/10 px-5 py-3 text-center text-sm font-bold text-white/75">{step.visual}</p>
               </div>
             </article>
           ))}

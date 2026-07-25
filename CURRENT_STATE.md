@@ -7,7 +7,8 @@
 - Admin/Telegram records are created only after SePay confirmation; owner manages busy dates at `/admin/crm-v2/support-bookings`.
 - Student Dashboard support now links to booking. Migration is local only; no deployment was made.
 - Booking requires an authenticated student with at least one paid non-support course order. Name, email and phone are loaded server-side from the paid order and cannot be overridden by the browser.
-- Verification: 443/443 Node tests, TypeScript and Next.js production build pass.
+- Public `/huong-dan` now uses five captured local journey screenshots: demo checkout, the real payment-success email template with demo credentials, filled login, student Dashboard and the owned Ebook card. The email preview route returns not-found in production.
+- Verification: 446/446 Node tests, TypeScript and Next.js production build pass.
 
 Updated: 2026-07-22
 

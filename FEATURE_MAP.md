@@ -8,6 +8,14 @@ Database: local migration `20260725021737_support_booking.sql`; not applied to p
 
 Guard: fixed 500.000đ/30 minutes, first seven days unavailable, authenticated paid-course student only, identity sourced from the paid order, paid-only admin/Telegram confirmation, no student-account provisioning for support orders.
 
+## Captured customer guide
+
+Route: `/huong-dan`.
+
+Assets: `public/huong-dan/01-thanh-toan.webp` through `05-ebook.webp`.
+
+Capture source: local-only checkout/email/login/Dashboard journey; the payment QR is visibly marked demo and the email preview uses the production email builder. No production account, order, payment or email is created.
+
 ## Facebook Ads 799K + Ebook 299K checkout add-on
 
 The Facebook Ads registration form defaults to `zoom-kit` at 799,000 VND and exposes one optional `ebookAddon` checkbox. When selected, the browser submits only the recognized plan ID `zoom-kit-ebook-299`; `services/orderService.ts` remains the price authority and emits two order items: `facebook-ads-2026` at 799,000 VND and `ebook-facebook-ads-2026` at 299,000 VND.

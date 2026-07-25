@@ -7,6 +7,8 @@
 - Restricted booking to authenticated paid-course students and removed editable identity fields; API derives identity from the paid course order.
 - Passed 443/443 Node tests, TypeScript and Next.js production build.
 - No deployment and no production migration were performed.
+- Replaced guide mockups with five Playwright-captured local screens using a clearly marked demo QR and the real payment-success email HTML. No account or transaction was created.
+- Full Node suite now passes 446/446; TypeScript and production build pass.
 
 ## 2026-07-22 - Correct stale 799K pending-email title found in live QA
 

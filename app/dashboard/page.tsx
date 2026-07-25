@@ -47,7 +47,7 @@ export default async function DashboardPage() {
   const ownedSlugs =
     mergedOwnedSlugs.length > 0 || isAuthGuardEnabled()
       ? mergedOwnedSlugs
-      : ["facebook-ads-2026"];
+      : ["facebook-ads-2026", "ebook-facebook-ads-2026"];
   const courseProgressBySlug = Object.fromEntries(
     ownedSlugs.map((slug) => [slug, lmsAccess.progressBySlug[slug] ?? 0]),
   );
