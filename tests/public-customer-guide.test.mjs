@@ -27,3 +27,9 @@ test("external guide CTA does not reveal support pricing before booking", () => 
   assert.match(guide, /href="\/dat-lich-ho-tro"/);
   assert.doesNotMatch(guide, /500\.000|500k/i);
 });
+
+test("public guide hides the login CTA for an authenticated customer", () => {
+  const guide = read("app/huong-dan/page.tsx");
+  assert.match(guide, /getCurrentAuth/);
+  assert.match(guide, /!user \? <Link href="\/dang-nhap"/);
+});

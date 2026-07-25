@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PageShell } from "@/components/site/page-shell";
+import { getCurrentAuth } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
   title: "Hướng dẫn nhận tài khoản và vào học",
@@ -67,7 +68,9 @@ const steps = [
   },
 ];
 
-export default function CustomerGuidePage() {
+export default async function CustomerGuidePage() {
+  const { user } = await getCurrentAuth();
+
   return (
     <PageShell showOfferPopup={false}>
       <section className="ai-shell pb-24 pt-32 sm:pt-40">
@@ -96,7 +99,7 @@ export default function CustomerGuidePage() {
         <div className="mx-auto mt-10 flex max-w-5xl flex-col gap-3 rounded-[28px] bg-[#49b77a] p-7 text-[#07150e] sm:flex-row sm:items-center sm:justify-between">
           <div><p className="text-xl font-black">Cần hỗ trợ trực tiếp?</p><p className="mt-1 text-sm font-semibold">Đặt lịch riêng để được tư vấn theo đúng nội dung anh/chị đang triển khai.</p></div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/dang-nhap" className="rounded-full bg-white px-5 py-3 text-sm font-black text-black">Đăng nhập</Link>
+            {!user ? <Link href="/dang-nhap" className="rounded-full bg-white px-5 py-3 text-sm font-black text-black">Đăng nhập</Link> : null}
             <Link href="/dat-lich-ho-tro" className="rounded-full bg-[#10241a] px-5 py-3 text-sm font-black text-white">Đặt lịch hỗ trợ</Link>
           </div>
         </div>
