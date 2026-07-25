@@ -1,5 +1,13 @@
 # Feature Map - theanh-main
 
+## Paid support booking
+
+Routes: `/huong-dan`, `/dat-lich-ho-tro`, `/dat-lich-ho-tro/thanh-cong`, `/admin/crm-v2/support-bookings`.
+
+Database: local migration `20260725021737_support_booking.sql`; not applied to production.
+
+Guard: fixed 500.000đ/30 minutes, first seven days unavailable, paid-only admin/Telegram confirmation, no student-account provisioning for support orders.
+
 ## Facebook Ads 799K + Ebook 299K checkout add-on
 
 The Facebook Ads registration form defaults to `zoom-kit` at 799,000 VND and exposes one optional `ebookAddon` checkbox. When selected, the browser submits only the recognized plan ID `zoom-kit-ebook-299`; `services/orderService.ts` remains the price authority and emits two order items: `facebook-ads-2026` at 799,000 VND and `ebook-facebook-ads-2026` at 299,000 VND.

@@ -1,5 +1,12 @@
 # Session Log
 
+## 2026-07-25 - Built public guide and paid support booking demo
+
+- Added public guide, slot selection, checkout, paid confirmation, CRM list/busy-date controls and student Dashboard CTA.
+- Captured local no-PII QA screenshots under `docs/qa-screenshots`.
+- Passed 442/442 Node tests, TypeScript and Next.js production build.
+- No deployment and no production migration were performed.
+
 ## 2026-07-22 - Correct stale 799K pending-email title found in live QA
 
 - The first production test email without Ebook arrived in Inbox but exposed the retired `Zoom lên ads + Agent kit` title.

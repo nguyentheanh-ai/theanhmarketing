@@ -1,5 +1,13 @@
 # Current State - theanh-main
 
+## 2026-07-25 - Public guide and paid support booking (local demo)
+
+- Public routes: `/huong-dan`, `/dat-lich-ho-tro`, `/dat-lich-ho-tro/thanh-cong`.
+- 500.000đ/30 minutes; today through day +6 is busy; booking horizon ends at day +30.
+- Admin/Telegram records are created only after SePay confirmation; owner manages busy dates at `/admin/crm-v2/support-bookings`.
+- Student Dashboard support now links to booking. Migration is local only; no deployment was made.
+- Verification: 442/442 Node tests, TypeScript and Next.js production build pass.
+
 Updated: 2026-07-22
 
 - Production email QA exposed stale 799K pending-email copy that still mentioned Zoom. The fix is live in deployment `dpl_H1cBGPGCGyWbvkeXSPfs79Wh5f55` from runtime commit `3a4f52d`: the package is now labeled `Gói AI Agent 799K - Tặng AI Agent lên kế hoạch quảng cáo`, matching the landing and server order plan. Final post-deploy orders `TAMMRVYILFFF4QHD` (799,000 VND) and `TAMMRVYIOZCPIUT0` (1,098,000 VND with Ebook) both reached the approved Gmail Inbox with the correct subjects.
