@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { CourseSalesPage } from "@/components/course/ai-marketing-sales-page";
 import { CourseJsonLd } from "@/components/seo/json-ld";
@@ -55,6 +55,10 @@ export default async function CourseDetailPage({
 
   if (!course) {
     notFound();
+  }
+
+  if (course.landingPageUrl) {
+    redirect(course.landingPageUrl);
   }
   const offer = await getOfferSettings();
 

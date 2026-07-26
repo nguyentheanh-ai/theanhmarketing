@@ -361,6 +361,7 @@ export function ModuleCatalogGrid({
   return (
     <div className="module-catalog-grid">
       {visibleCourses.map((course, index) => {
+        const courseHref = course.landingPageUrl || `/khoa-hoc/${course.slug}`;
         const moduleLabel = moduleTitles[index % moduleTitles.length] ?? "Marketing module";
         const timeline = course.modules.length > 0
           ? course.modules.slice(0, 3).map((module) => module.title)
@@ -371,11 +372,11 @@ export function ModuleCatalogGrid({
 
         return (
           <article key={course.slug} className="module-card-exact">
-            <Link href={`/khoa-hoc/${course.slug}`} className="module-card-title">
+            <Link href={courseHref} className="module-card-title">
               {course.title}
             </Link>
             <div className="module-card-body">
-              <Link href={`/khoa-hoc/${course.slug}`} aria-label={course.title}>
+              <Link href={courseHref} aria-label={course.title}>
                 <CoursePreview course={course} variant={index} />
               </Link>
               <div className="module-card-copy">
@@ -399,7 +400,11 @@ export function ModuleCatalogGrid({
                 <small>{moduleCount} module · {lessonCount} bài học<br />{course.duration || course.level}</small>
                 <div className="module-card-bottom">
                   <strong>{course.price || moduleMetrics[index % moduleMetrics.length]}</strong>
-                  <AddToCartButton slug={course.slug} title={course.title} price={course.price} label="Thêm" />
+                  {course.landingPageUrl ? (
+                    <Link href={course.landingPageUrl}>Đăng ký</Link>
+                  ) : (
+                    <AddToCartButton slug={course.slug} title={course.title} price={course.price} label="Thêm" />
+                  )}
                 </div>
               </div>
             </div>

@@ -45,6 +45,7 @@ export type CourseInstructor = {
 
 export type Course = {
   slug: string;
+  landingPageUrl?: string;
   title: string;
   eyebrow: string;
   description: string;
@@ -84,6 +85,7 @@ type FunnelCourseConfig = {
   tier: FunnelTier;
   role: string;
   slug: string;
+  landingPageUrl?: string;
   title: string;
   price: string;
   originalPrice: string;
@@ -106,9 +108,10 @@ const courseFunnel: FunnelCourseConfig[] = [
     tier: "Cơ bản",
     role: "Sản phẩm mồi, kéo khách mới, dễ chốt qua quảng cáo/livestream/inbox",
     slug: "facebook-ads-2026",
+    landingPageUrl: "/academy/facebook-ads-master-2026",
     title: "Quảng cáo Facebook Master 2026",
-    price: "399K",
-    originalPrice: "799K",
+    price: "799K",
+    originalPrice: "",
     thumbnailImageUrl: "/course-thumbnails/quang-cao-facebook-master-2026.webp",
     eyebrow: "Facebook Ads",
     shortDescription: "Khóa nhập môn giúp bạn hiểu cách chạy Facebook Ads 2026 theo dữ liệu, offer và funnel thay vì chỉ tăng ngân sách.",
@@ -491,6 +494,7 @@ function createCourse(config: FunnelCourseConfig, index: number): Course {
 
   return {
     slug: config.slug,
+    landingPageUrl: config.landingPageUrl,
     title: config.title,
     eyebrow: config.eyebrow,
     description: config.description,

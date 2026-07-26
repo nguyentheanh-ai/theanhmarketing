@@ -37,7 +37,7 @@ function unique(values: string[]) {
 }
 
 function getCourseHref(course: Course) {
-  return `/khoa-hoc/${course.slug}`;
+  return course.landingPageUrl || `/khoa-hoc/${course.slug}`;
 }
 
 export function CourseCatalogGrid({
@@ -189,13 +189,17 @@ export function CourseCatalogGrid({
                       {course.originalPrice ? <span>{course.originalPrice}</span> : null}
                     </div>
                     <div className="course-catalog-actions">
-                      <AddToCartButton
-                        slug={course.slug}
-                        title={course.title}
-                        price={course.price}
-                        label="Thêm giỏ"
-                        className="course-catalog-cart"
-                      />
+                      {course.landingPageUrl ? (
+                        <Link className="course-catalog-cart" href={course.landingPageUrl}>Đăng ký ngay</Link>
+                      ) : (
+                        <AddToCartButton
+                          slug={course.slug}
+                          title={course.title}
+                          price={course.price}
+                          label="Thêm giỏ"
+                          className="course-catalog-cart"
+                        />
+                      )}
                       <Link href={courseHref}>Chi tiết</Link>
                     </div>
                   </div>

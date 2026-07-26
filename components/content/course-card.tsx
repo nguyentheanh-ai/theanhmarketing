@@ -23,6 +23,8 @@ function getPosterStyle(course: Course) {
 }
 
 export function CourseCard({ course }: { course: Course }) {
+  const courseHref = course.landingPageUrl || `/khoa-hoc/${course.slug}`;
+
   return (
     <article className="surface-motion group ai-panel flex min-h-[390px] flex-col overflow-hidden">
       <div
@@ -35,7 +37,7 @@ export function CourseCard({ course }: { course: Course }) {
       </div>
 
       <div className="p-5 text-white">
-        <Link href={`/khoa-hoc/${course.slug}`} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]">
+        <Link href={courseHref} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]">
           <h2 className="text-2xl font-black tracking-[-0.04em] text-white">
             {course.title}
           </h2>
@@ -52,14 +54,23 @@ export function CourseCard({ course }: { course: Course }) {
           <span>{getCourseLessonCount(course)} bài học</span>
         </div>
         <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-          <AddToCartButton
-            slug={course.slug}
-            title={course.title}
-            price={course.price}
-            className="flex-1"
-          />
+          {course.landingPageUrl ? (
+            <Link
+              href={course.landingPageUrl}
+              className="tap-motion inline-flex min-h-11 flex-1 items-center justify-center rounded-xl bg-[#159cfb] px-5 text-sm font-bold text-white"
+            >
+              Đăng ký ngay
+            </Link>
+          ) : (
+            <AddToCartButton
+              slug={course.slug}
+              title={course.title}
+              price={course.price}
+              className="flex-1"
+            />
+          )}
           <Link
-            href={`/khoa-hoc/${course.slug}#lo-trinh`}
+            href={`${courseHref}#lo-trinh`}
             className="tap-motion inline-flex min-h-11 flex-1 items-center justify-center rounded-xl border border-white/12 bg-white/8 px-5 text-sm font-bold text-white/72 hover:border-[#77d7ff]/30 hover:text-white"
           >
             Học thử miễn phí

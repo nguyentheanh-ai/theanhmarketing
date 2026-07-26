@@ -453,6 +453,7 @@ function mergeOfficialCourseMetadata(course: Course) {
 
   return {
     ...course,
+    landingPageUrl: official.landingPageUrl,
     title: official.title,
     eyebrow: official.eyebrow,
     description: official.description,
