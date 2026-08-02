@@ -24,8 +24,8 @@ async function recordPasswordChangedActivity(mode: string | null) {
 export function ChangePasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nextPath = getSafeNextPath(searchParams.get("next"), "/dashboard");
   const mode = searchParams.get("mode");
+  const nextPath = getSafeNextPath(searchParams.get("next"), mode === "account" ? "/tai-khoan" : "/dashboard");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 

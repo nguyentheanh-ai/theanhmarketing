@@ -16,7 +16,7 @@ export default async function ResourcesPage() {
         <p className="mt-5 max-w-2xl text-base font-medium leading-8 text-[var(--tam-muted)]">Checklist, template và hướng dẫn ngắn để bạn áp dụng vào công việc.</p>
         <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {resources.map((resource) => {
-            const fileUrl = "fileUrl" in resource ? resource.fileUrl : "";
+            const fileUrl = "fileUrl" in resource && typeof resource.fileUrl === "string" ? resource.fileUrl : "";
             return (
             <article className="tam-card tam-lift p-6" key={resource.slug}>
               <FileText className="text-[var(--tam-accent-strong)]" aria-hidden="true" />

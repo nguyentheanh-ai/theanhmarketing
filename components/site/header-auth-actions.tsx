@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
@@ -46,11 +45,11 @@ export function HeaderAuthActions() {
   return (
     <div className="flex items-center gap-2 sm:gap-3">
       <ButtonLink href={isStudent ? "/dashboard" : "/dang-ky"} className="!hidden sm:!inline-flex">
-        {isStudent ? "Khóa học của tôi" : "Học thử ngay"}
+        {isStudent ? "Khóa học của tôi" : "Đăng ký"}
         <span aria-hidden="true">-&gt;</span>
       </ButtonLink>
       {isStudent ? (
-        <SignOutButton className="hidden min-h-10 rounded-full px-4 text-sm font-bold text-[var(--tam-muted)] transition hover:bg-[var(--tam-accent-soft)] hover:text-[var(--tam-ink)] disabled:opacity-50 md:inline-flex md:items-center" />
+        <ButtonLink href="/tai-khoan" variant="ghost" className="!hidden px-0 md:!inline-flex">Tài khoản</ButtonLink>
       ) : (
         <ButtonLink href="/dang-nhap" variant="ghost" className="!hidden px-0 md:!inline-flex">
           Đăng nhập
@@ -67,15 +66,15 @@ export function HeaderMobileActions() {
     return (
       <>
         <Link href="/dashboard">Khóa học của tôi</Link>
-        <Link href="/khoa-hoc">Khóa học</Link>
+        <Link href="/tai-khoan">Tài khoản</Link>
       </>
     );
   }
 
   return (
     <>
-      <Link href="/dang-ky">Học thử ngay</Link>
-      <Link href="/khoa-hoc">Xem khóa học</Link>
+      <Link href="/dang-ky">Đăng ký</Link>
+      <Link href="/dang-nhap">Đăng nhập</Link>
     </>
   );
 }

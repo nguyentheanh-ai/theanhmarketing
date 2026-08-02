@@ -24,13 +24,14 @@ export default async function ChangePasswordPage({
   const params = await searchParams;
   const nextPath = getSafeNextPath(params?.next, "/dashboard");
   const isPasswordResetMode = params?.mode === "reset";
+  const isAccountMode = params?.mode === "account";
   const { user } = await getCurrentAuth();
 
   if (!user && !isPasswordResetMode) {
     redirect(`/dang-nhap?next=${encodeURIComponent("/doi-mat-khau")}`);
   }
 
-  if (user && !isPasswordResetMode && !shouldRequirePasswordChange(user)) {
+  if (user && !isPasswordResetMode && !isAccountMode && !shouldRequirePasswordChange(user)) {
     redirect(nextPath);
   }
 
@@ -40,7 +41,7 @@ export default async function ChangePasswordPage({
         <div>
           <p className="ai-kicker">Bảo mật tài khoản</p>
           <h1 className="ai-glow-text mt-4 text-5xl font-black leading-[1.02] tracking-[-0.04em] sm:text-7xl">
-            Đổi mật khẩu lần đầu.
+            {isAccountMode ? "Đổi mật khẩu." : "Đổi mật khẩu lần đầu."}
           </h1>
           <p className="ai-muted mt-6 text-lg leading-9">
             Tài khoản của bạn đã được tạo tự động sau thanh toán. Hãy đổi mật khẩu

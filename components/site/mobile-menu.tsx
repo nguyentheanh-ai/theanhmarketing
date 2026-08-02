@@ -3,6 +3,7 @@
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useId, useState } from "react";
+import { HeaderMobileActions } from "@/components/site/header-auth-actions";
 
 export function MobileMenu({ items }: { items: Array<{ href: string; label: string }> }) {
   const [open, setOpen] = useState(false);
@@ -54,13 +55,9 @@ export function MobileMenu({ items }: { items: Array<{ href: string; label: stri
             >
               Giỏ hàng
             </Link>
-            <Link
-              className="rounded-xl bg-[var(--tam-accent)] px-4 py-3 text-center text-sm font-black text-white"
-              href="/dang-ky"
-              onClick={() => setOpen(false)}
-            >
-              Học thử ngay
-            </Link>
+            <div className="grid gap-1 rounded-xl bg-[var(--tam-accent-soft)] px-4 py-3 text-sm font-black text-[var(--tam-ink)]" onClick={() => setOpen(false)}>
+              <HeaderMobileActions />
+            </div>
           </nav>
         </div>
       ) : null}
