@@ -4,6 +4,10 @@ import path from "node:path";
 import test from "node:test";
 import ts from "typescript";
 
+function read(relativePath) {
+  return fs.readFileSync(path.resolve(relativePath), "utf8");
+}
+
 function compileTypeScript(relativePath, imports = {}) {
   const source = fs.readFileSync(path.resolve(relativePath), "utf8");
   const compiled = ts.transpileModule(source, {
@@ -73,4 +77,36 @@ test("invoice tax code accepts a three-digit branch suffix", () => {
     companyAddress: "Hà Nội",
     email: "ketoan@example.com",
   }).ok, true);
+});
+
+test("both order APIs validate and pass normalized invoice details", () => {
+  for (const file of ["app/api/orders/route.ts", "app/api/orders/from-session/route.ts"]) {
+    const source = read(file);
+    assert.match(source, /normalizeInvoiceInput\(body\.invoice\)/, file);
+    assert.match(source, /invoice:\s*invoiceResult\.value/, file);
+    assert.match(source, /status:\s*400/, file);
+  }
+});
+
+test("order service persists every invoice field and fails closed for invoice requests", () => {
+  const source = read("services/orderService.ts");
+  for (const column of [
+    "invoice_requested",
+    "invoice_tax_code",
+    "invoice_company_name",
+    "invoice_company_address",
+    "invoice_email",
+  ]) {
+    assert.match(source, new RegExp(column), column);
+  }
+  assert.match(source, /if \(invoice\.requested\)[\s\S]*?throw new Error/);
+});
+
+test("public order polling keeps only the invoice request flag", () => {
+  const source = read("lib/security/public-order.ts");
+  assert.match(source, /invoice:\s*\{[\s\S]*?requested:\s*order\.invoice\.requested/);
+  assert.match(source, /taxCode:\s*""/);
+  assert.match(source, /companyName:\s*""/);
+  assert.match(source, /companyAddress:\s*""/);
+  assert.match(source, /email:\s*""/);
 });

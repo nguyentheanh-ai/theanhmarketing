@@ -10,6 +10,7 @@ import {
   isValidSlug,
 } from "@/lib/security/validation";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
+import { normalizeInvoiceInput } from "@/lib/orders/invoice";
 import { sendMetaInitiateCheckoutEvent, sendMetaLeadEvent } from "@/lib/meta/conversions-api";
 import { syncOrderToGoogleSheetWithActivity } from "@/lib/notifications/google-sheets-order-sync";
 import { invalidateAdminModules } from "@/services/adminDataService";
@@ -76,6 +77,7 @@ export async function POST(request: Request) {
       fbp?: string;
       fbc?: string;
       leadId?: string;
+      invoice?: unknown;
     };
     const studentName = cleanText(body.studentName, 120);
     const email = cleanEmail(body.email);
@@ -83,6 +85,7 @@ export async function POST(request: Request) {
     const courseSlug = cleanSlug(body.courseSlug);
     const courseSlugs = cleanSlugList(body.courseSlugs);
     const paymentPlan = cleanText(body.paymentPlan, 40);
+    const invoiceResult = normalizeInvoiceInput(body.invoice);
     const forwardedFor = request.headers.get("x-forwarded-for") ?? "";
     const ipAddress =
       request.headers.get("cf-connecting-ip") ?? forwardedFor.split(",")[0]?.trim() ?? "";
@@ -114,6 +117,13 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!invoiceResult.ok) {
+      return NextResponse.json(
+        { ok: false, message: invoiceResult.message },
+        { status: 400 },
+      );
+    }
+
     if (!courseSlugs.length && (!courseSlug || !isValidSlug(courseSlug))) {
       return NextResponse.json(
         { ok: false, message: "Khóa học thanh toán không hợp lệ." },
@@ -130,6 +140,7 @@ export async function POST(request: Request) {
       paymentPlan,
       leadId: databaseLeadId || null,
       attribution,
+      invoice: invoiceResult.value,
     });
 
     const remarketingNote = [

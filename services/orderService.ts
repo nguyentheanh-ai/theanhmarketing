@@ -1,4 +1,5 @@
 import { fallbackOrders } from "@/data/platform";
+import { emptyInvoiceDetails, type InvoiceDetails } from "@/lib/orders/invoice";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import {
   createOrderCode,
@@ -65,6 +66,7 @@ export type PaymentOrder = {
   paymentEmailLastError: string | null;
   purchaseEventSent: boolean;
   attribution: Attribution;
+  invoice: InvoiceDetails;
 };
 
 type DbOrder = {
@@ -104,12 +106,17 @@ type DbOrder = {
   fbc?: string | null;
   fbp?: string | null;
   landing_page?: string | null;
+  invoice_requested?: boolean | null;
+  invoice_tax_code?: string | null;
+  invoice_company_name?: string | null;
+  invoice_company_address?: string | null;
+  invoice_email?: string | null;
 };
 
 const orderBaseSelectFields =
   "id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items,payment_email_sent_at,payment_email_last_error" as const;
 const orderSelectFields =
-  "id,lead_id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items,payment_email_sent_at,payment_email_last_error,purchase_event_sent,utm_source,utm_campaign,utm_content,utm_medium,utm_id,utm_term,campaign_id,campaign_name,adset_id,ad_id,ad_name,fbclid,fbc,fbp,landing_page" as const;
+  "id,lead_id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items,payment_email_sent_at,payment_email_last_error,purchase_event_sent,utm_source,utm_campaign,utm_content,utm_medium,utm_id,utm_term,campaign_id,campaign_name,adset_id,ad_id,ad_name,fbclid,fbc,fbp,landing_page,invoice_requested,invoice_tax_code,invoice_company_name,invoice_company_address,invoice_email" as const;
 
 export type PaymentConfirmationResult = {
   order: PaymentOrder;
@@ -125,6 +132,7 @@ export type CreatePaymentOrderInput = {
   paymentPlan?: string;
   leadId?: string | null;
   attribution?: AttributionInput;
+  invoice?: InvoiceDetails;
 };
 
 export type CreateManualPaidOrderInput = CreatePaymentOrderInput & {
@@ -256,6 +264,15 @@ function mapDbOrder(row: DbOrder): PaymentOrder {
     paymentEmailLastError: row.payment_email_last_error ?? null,
     purchaseEventSent: Boolean(row.purchase_event_sent),
     attribution: mapOrderAttribution(row),
+    invoice: row.invoice_requested
+      ? {
+          requested: true,
+          taxCode: row.invoice_tax_code ?? "",
+          companyName: row.invoice_company_name ?? "",
+          companyAddress: row.invoice_company_address ?? "",
+          email: row.invoice_email ?? "",
+        }
+      : emptyInvoiceDetails,
   };
 }
 
@@ -284,6 +301,7 @@ function getFallbackOrders(): PaymentOrder[] {
     paymentEmailLastError: null,
     purchaseEventSent: false,
     attribution: normalizeAttribution(),
+    invoice: emptyInvoiceDetails,
   }));
 }
 
@@ -445,6 +463,7 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
   const paymentQrUrl = isSepayConfigured() ? createSepayQrUrl({ amount, orderCode }) : "";
   const expiresAt = new Date(Date.now() + 20 * 60 * 1000).toISOString();
   const attribution = normalizeAttribution(input.attribution);
+  const invoice = input.invoice ?? emptyInvoiceDetails;
 
   const firstInsert = await supabase
     .from("orders")
@@ -465,6 +484,11 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
       expires_at: expiresAt,
       order_items: orderItems,
       purchase_event_sent: false,
+      invoice_requested: invoice.requested,
+      invoice_tax_code: invoice.requested ? invoice.taxCode : null,
+      invoice_company_name: invoice.requested ? invoice.companyName : null,
+      invoice_company_address: invoice.requested ? invoice.companyAddress : null,
+      invoice_email: invoice.requested ? invoice.email : null,
       ...attributionToDbColumns(attribution),
     })
     .select(orderSelectFields)
@@ -472,6 +496,10 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
 
   if (!firstInsert.error && firstInsert.data) {
     return mapDbOrder(firstInsert.data as DbOrder);
+  }
+
+  if (invoice.requested) {
+    throw new Error(firstInsert.error?.message ?? "Không lưu được thông tin xuất hóa đơn.");
   }
 
   // Backward compatible with existing orders schema that does not have order_items.

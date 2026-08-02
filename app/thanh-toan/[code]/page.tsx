@@ -14,6 +14,7 @@ import {
   isSepayConfigured,
 } from "@/lib/payments/sepay";
 import { normalizeAttribution } from "@/lib/tracking/attribution";
+import { emptyInvoiceDetails } from "@/lib/orders/invoice";
 import {
   SUPPORT_PRICE_VND,
   SUPPORT_PRODUCT_SLUG,
@@ -190,6 +191,7 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
       paymentEmailLastError: null,
       purchaseEventSent: false,
       attribution: normalizeAttribution(),
+      invoice: emptyInvoiceDetails,
     };
   }
 
@@ -224,6 +226,7 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
       paymentEmailLastError: null,
       purchaseEventSent: false,
       attribution: normalizeAttribution(),
+      invoice: emptyInvoiceDetails,
     };
   }
 
@@ -258,6 +261,7 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
       paymentEmailLastError: null,
       purchaseEventSent: false,
       attribution: normalizeAttribution(),
+      invoice: emptyInvoiceDetails,
     };
   }
 

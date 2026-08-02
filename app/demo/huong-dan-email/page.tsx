@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { buildPaymentSuccessEmailPayload } from "@/lib/notifications/payment-success-email";
 import { normalizeAttribution } from "@/lib/tracking/attribution";
+import { emptyInvoiceDetails } from "@/lib/orders/invoice";
 import type { PaymentOrder } from "@/services/orderService";
 
 export const dynamic = "force-dynamic";
@@ -35,6 +36,7 @@ export default function GuideEmailDemoPage() {
     paymentEmailLastError: null,
     purchaseEventSent: false,
     attribution: normalizeAttribution(),
+    invoice: emptyInvoiceDetails,
   };
   const payload = buildPaymentSuccessEmailPayload(order, {
     siteUrl: "http://127.0.0.1:3025",

@@ -8,5 +8,12 @@ export function toPublicPaymentOrder(order: PaymentOrder): PaymentOrder {
     studentName: "",
     paymentQrUrl: "",
     sepayReferenceCode: null,
+    invoice: {
+      requested: order.invoice.requested,
+      taxCode: "",
+      companyName: "",
+      companyAddress: "",
+      email: "",
+    },
   };
 }

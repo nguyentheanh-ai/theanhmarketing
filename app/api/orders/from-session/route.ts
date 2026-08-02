@@ -16,6 +16,7 @@ import {
 import { invalidateAdminModules } from "@/services/adminDataService";
 import { createPaymentOrder } from "@/services/orderService";
 import { siteConfig } from "@/data/site";
+import { normalizeInvoiceInput } from "@/lib/orders/invoice";
 
 export async function POST(request: Request) {
   try {
@@ -59,6 +60,7 @@ export async function POST(request: Request) {
         fbc?: string;
         landingPage?: string;
       };
+      invoice?: unknown;
     };
 
     const studentName =
@@ -67,6 +69,7 @@ export async function POST(request: Request) {
     const phone = cleanPhone(user.user_metadata?.phone);
     const courseSlug = cleanSlug(body.courseSlug);
     const courseSlugs = cleanSlugList(body.courseSlugs);
+    const invoiceResult = normalizeInvoiceInput(body.invoice);
     const forwardedFor = request.headers.get("x-forwarded-for") ?? "";
     const ipAddress =
       request.headers.get("cf-connecting-ip") ?? forwardedFor.split(",")[0]?.trim() ?? "";
@@ -99,6 +102,13 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!invoiceResult.ok) {
+      return NextResponse.json(
+        { ok: false, message: invoiceResult.message },
+        { status: 400 },
+      );
+    }
+
     if (phone && !isValidPhone(phone)) {
       return NextResponse.json(
         { ok: false, message: "Số điện thoại trong tài khoản chưa hợp lệ." },
@@ -120,6 +130,7 @@ export async function POST(request: Request) {
       courseSlug,
       courseSlugs,
       attribution,
+      invoice: invoiceResult.value,
     });
 
     invalidateAdminModules(["orders", "students"]);
