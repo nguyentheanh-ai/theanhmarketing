@@ -99,9 +99,9 @@ export function LoginForm() {
           <span className="h-px flex-1 bg-white/10" />
         </div>
         <div className="grid gap-2">
-          <label className="text-sm font-semibold text-white/60">Email</label>
+          <label className="text-sm font-bold text-white">Email</label>
           <input
-            className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none transition placeholder:text-white/35 focus:border-[#77d7ff]/35"
+            className="login-readable-input min-h-12 rounded-xl border border-slate-300 bg-white px-4 text-slate-950 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:ring-4 focus:ring-sky-400/20"
             name="email"
             placeholder="email@example.com"
             required
@@ -110,13 +110,13 @@ export function LoginForm() {
         </div>
         <div className="grid gap-2">
           <div className="flex items-center justify-between gap-3">
-            <label className="text-sm font-semibold text-white/60">Mật khẩu</label>
+            <label className="text-sm font-bold text-white">Mật khẩu</label>
             <Link className="text-xs font-bold text-white/55 hover:text-white" href="/quen-mat-khau">
               Quên mật khẩu?
             </Link>
           </div>
           <input
-            className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none transition placeholder:text-white/35 focus:border-[#77d7ff]/35"
+            className="login-readable-input min-h-12 rounded-xl border border-slate-300 bg-white px-4 text-slate-950 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:ring-4 focus:ring-sky-400/20"
             name="password"
             placeholder="••••••••"
             required

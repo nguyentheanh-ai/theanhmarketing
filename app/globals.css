@@ -4125,6 +4125,24 @@ body {
   outline: none;
 }
 
+.ai-panel input.login-readable-input:not([type="checkbox"]):not([type="radio"]),
+.ai-panel-strong input.login-readable-input:not([type="checkbox"]):not([type="radio"]) {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.ai-panel .login-readable-input::placeholder,
+.ai-panel-strong .login-readable-input::placeholder {
+  color: #64748b !important;
+}
+
+.ai-panel .login-readable-input:focus,
+.ai-panel-strong .login-readable-input:focus {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 4px rgb(56 189 248 / 0.2);
+}
+
 .ai-panel [class*="text-black"],
 .ai-panel-strong [class*="text-black"] {
   color: rgb(226 238 255 / 0.68) !important;
