@@ -1,5 +1,15 @@
 # Feature Map - theanh-main
 
+## Course-cover visual system v2 (local only, 2026-08-02)
+
+Assets: `public/course-thumbnails/*-v2.webp` (10 catalog covers).
+
+Generator: `scripts/generate-course-cover-v2.mjs` composites exact Vietnamese rounded typography over text-free AI-edited 3D backgrounds. Final colors are course-specific cobalt, cyan, violet, magenta, orange and gold; cover text avoids black/gray.
+
+Consumer: `data/courses.ts` points every public course fallback thumbnail at its v2 cover; `components/content/course-card.tsx` renders the media in a square frame.
+
+Guard: original covers and Ebook page images remain unchanged. This affects presentation only; course identity, pricing, cart, landing links, access, payment and email flows are unchanged.
+
 ## Noti-style public foundation (local only, 2026-08-02)
 
 Routes: `/`, `/khoa-hoc`.

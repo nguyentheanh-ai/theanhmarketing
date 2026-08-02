@@ -46,3 +46,13 @@ test("catalog keeps the latest Agent Kit offer from the recovered backup", () =>
   assert.match(courses, /title: "Bộ Agent Kit X10 hiệu suất công việc"[\s\S]*?price: "990K"/);
   assert.match(courses, /Trọn bộ 30 skill cho marketing, bán hàng, vận hành và hệ thống quảng cáo/);
 });
+
+test("catalog uses the colorful rounded-type v2 course covers", () => {
+  const courses = read("data/courses.ts");
+  const v2Covers = courses.match(/course-thumbnails\/[\w-]+-v2\.webp/g) ?? [];
+
+  assert.equal(v2Covers.length, 10);
+  assert.match(courses, /quang-cao-facebook-master-2026-v2\.webp/);
+  assert.match(courses, /ebook-facebook-ads-2026-v2\.webp/);
+  assert.match(courses, /marketing-gioi-phai-kiem-duoc-tien-v2\.webp/);
+});

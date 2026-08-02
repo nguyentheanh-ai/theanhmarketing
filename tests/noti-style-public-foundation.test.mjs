@@ -69,6 +69,7 @@ test("course cards retain real course data and use the light interactive card", 
   assert.match(courseCard, /tam-course-card/);
   assert.match(courseCard, /tam-lift/);
   assert.match(courseCard, /tam-media-zoom/);
+  assert.match(courseCard, /aspect-square/);
 });
 
 test("motion is progressive and reduced-motion safe", () => {

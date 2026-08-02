@@ -1,5 +1,13 @@
 # Session Log
 
+## 2026-08-02 - Rebuilt all course covers with colorful rounded typography
+
+Scope: local public catalog/homepage course-card visuals only.
+
+Changes: inspected the nine original course thumbnails plus the Ebook page cover; generated ten clean, text-free 3D backgrounds using built-in image editing; composited exact Vietnamese titles, The Anh Marketing badge and practice label using rounded typography; saved non-destructive v2 WebP assets; switched course data to v2; made the card media square to prevent crop.
+
+Verification: focused 13/13; full Node 463/463; TypeScript pass; ESLint 0 errors/1 existing warning; Next.js 110-page build pass. Desktop/mobile browser QA confirmed 10/10 v2 assets, no broken images, no horizontal overflow and clean console. No database or deployment mutation.
+
 ## 2026-08-02 - Built Phase 1 Noti-style local foundation
 
 Scope: main-site public homepage and course catalog only, implemented in isolated worktree `feat/noti-visual-redesign-local`.

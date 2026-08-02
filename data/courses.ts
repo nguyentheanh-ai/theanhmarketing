@@ -112,7 +112,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     title: "Quảng cáo Facebook Master 2026",
     price: "799K",
     originalPrice: "",
-    thumbnailImageUrl: "/course-thumbnails/quang-cao-facebook-master-2026.webp",
+    thumbnailImageUrl: "/course-thumbnails/quang-cao-facebook-master-2026-v2.webp",
     eyebrow: "Facebook Ads",
     shortDescription: "Khóa nhập môn giúp bạn hiểu cách chạy Facebook Ads 2026 theo dữ liệu, offer và funnel thay vì chỉ tăng ngân sách.",
     description:
@@ -131,7 +131,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     title: "Thư viện kiến thức Facebook Ads 2026",
     price: "399K",
     originalPrice: "799K",
-    thumbnailImageUrl: "/ebook-facebook-ads-2026/phan-1/1.png",
+    thumbnailImageUrl: "/course-thumbnails/ebook-facebook-ads-2026-v2.webp",
     eyebrow: "Facebook Ads Library",
     shortDescription: "Website thư viện giúp adser, chủ doanh nghiệp và chuyên gia tra cứu nhanh từng phần khi cần setup, đọc số, tối ưu và xử lý lỗi Facebook Ads.",
     description:
@@ -150,7 +150,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     title: "Tạo AI Agent cá nhân X10 hiệu suất",
     price: "99K",
     originalPrice: "499K",
-    thumbnailImageUrl: "/course-thumbnails/tao-ai-agent-ca-nhan-x10-hieu-suat.webp",
+    thumbnailImageUrl: "/course-thumbnails/tao-ai-agent-ca-nhan-x10-hieu-suat-v2.webp",
     eyebrow: "AI Agent",
     shortDescription: "Tạo agent cá nhân để xử lý research, viết nội dung, phân tích dữ liệu và tự động hóa việc lặp lại hằng ngày.",
     description:
@@ -169,7 +169,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     title: "AI Marketing x5 hiệu suất công việc",
     price: "199K",
     originalPrice: "799K",
-    thumbnailImageUrl: "/course-thumbnails/ai-marketing-x5-hieu-suat-cong-viec.webp",
+    thumbnailImageUrl: "/course-thumbnails/ai-marketing-x5-hieu-suat-cong-viec-v2.webp",
     eyebrow: "AI Marketing",
     shortDescription: "Ứng dụng AI vào nghiên cứu khách hàng, content, offer, quảng cáo và tối ưu công việc marketing hằng ngày.",
     description:
@@ -188,7 +188,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     title: "AI Agent Master 2026",
     price: "799K",
     originalPrice: "2.499K",
-    thumbnailImageUrl: "/course-thumbnails/ai-agent-master-2026.webp",
+    thumbnailImageUrl: "/course-thumbnails/ai-agent-master-2026-v2.webp",
     eyebrow: "AI Agent Master",
     shortDescription: "Chương trình chính giúp bạn xây hệ thống AI Agent bài bản cho cá nhân, đội nhóm hoặc hoạt động kinh doanh.",
     description:
@@ -207,7 +207,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     title: "Performance Marketing With AI",
     price: "799K",
     originalPrice: "2.499K",
-    thumbnailImageUrl: "/course-thumbnails/performance-marketing-with-ai.webp",
+    thumbnailImageUrl: "/course-thumbnails/performance-marketing-with-ai-v2.webp",
     eyebrow: "Performance Marketing",
     shortDescription: "Kết hợp AI với quảng cáo, tracking, landing page và dữ liệu để tối ưu hiệu suất marketing.",
     description:
@@ -226,7 +226,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     title: "Bộ Agent Kit X10 hiệu suất công việc",
     price: "990K",
     originalPrice: "2.499K",
-    thumbnailImageUrl: "/course-thumbnails/bo-agent-kit-x10-hieu-suat-cong-viec.webp",
+    thumbnailImageUrl: "/course-thumbnails/bo-agent-kit-x10-hieu-suat-cong-viec-v2.webp",
     eyebrow: "Agent Kit",
     shortDescription: "Trọn bộ 30 skill cho marketing, bán hàng, vận hành và hệ thống quảng cáo, kèm SOP, template và checklist.",
     description:
@@ -245,7 +245,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     title: "Biến tri thức thành tiền",
     price: "1.299K",
     originalPrice: "3.999K",
-    thumbnailImageUrl: "/course-thumbnails/bien-tri-thuc-thanh-tien.webp",
+    thumbnailImageUrl: "/course-thumbnails/bien-tri-thuc-thanh-tien-v2.webp",
     eyebrow: "Knowledge Business",
     shortDescription: "Biến kinh nghiệm, chuyên môn và tri thức cá nhân thành sản phẩm số, offer và phễu bán hàng.",
     description:
@@ -264,7 +264,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     title: "AI Master X10 hiệu suất - Biến tri thức thành tiền",
     price: "1.299K",
     originalPrice: "3.999K",
-    thumbnailImageUrl: "/course-thumbnails/ai-master-x10-hieu-suat.webp",
+    thumbnailImageUrl: "/course-thumbnails/ai-master-x10-hieu-suat-v2.webp",
     eyebrow: "AI Mastery",
     shortDescription: "Làm chủ AI để đóng gói tri thức, tăng tốc content, dựng landing page, tự động hóa bán hàng và biến chuyên môn thành tài sản có thể bán.",
     description:
@@ -283,7 +283,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     title: "Marketing giỏi phải kiếm được tiền",
     price: "2.199K",
     originalPrice: "5.999K",
-    thumbnailImageUrl: "/course-thumbnails/marketing-gioi-phai-kiem-duoc-tien.webp",
+    thumbnailImageUrl: "/course-thumbnails/marketing-gioi-phai-kiem-duoc-tien-v2.webp",
     eyebrow: "Flagship Program",
     shortDescription: "Chương trình flagship giúp bạn nhìn marketing bằng doanh thu, lợi nhuận, offer, hệ thống bán hàng và dữ liệu.",
     description:

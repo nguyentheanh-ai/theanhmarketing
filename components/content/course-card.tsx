@@ -27,7 +27,7 @@ export function CourseCard({ course }: { course: Course }) {
 
   return (
     <article className="tam-course-card tam-card tam-lift group flex min-h-[410px] flex-col overflow-hidden">
-      <div className="relative min-h-[220px] overflow-hidden bg-[#eef5fb]">
+      <div className="relative aspect-square overflow-hidden bg-[#eef5fb]">
         <div className="tam-media-zoom absolute inset-0 bg-cover bg-center" style={getPosterStyle(course)} />
         <span className="absolute right-4 top-4 rounded-full border border-white/80 bg-white/90 px-3 py-1 text-[11px] font-black text-[var(--tam-accent-strong)] shadow-sm backdrop-blur">
           {course.statusLabel}

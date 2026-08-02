@@ -1,5 +1,13 @@
 # Current State - theanh-main
 
+## 2026-08-02 - Colorful course-cover system v2 (local review)
+
+- Replaced all 10 public catalog covers with non-destructive `-v2.webp` assets generated from the existing subject/composition, then overlaid exact Vietnamese typography locally.
+- Cover typography now uses a rounded system face with cobalt/cyan/violet/orange text; no black or gray cover copy. Course cards use a square media frame so the full cover remains visible.
+- Source assets remain untouched. Reproducible overlay configuration and final prompts are recorded in `scripts/generate-course-cover-v2.mjs`.
+- Local browser QA: 10/10 v2 covers, zero broken images, no horizontal overflow at 1440x900 and 390x844, zero browser warnings/errors.
+- Verification: 463/463 Node tests, TypeScript, ESLint 0 errors/1 existing warning, Next.js build 110/110 pages. No production deploy.
+
 ## 2026-08-02 - Noti-style public foundation (local review)
 
 - Branch cô lập `feat/noti-visual-redesign-local` đang phục vụ local tại `http://localhost:57128`; chưa deploy Vercel và chưa thay đổi production.
