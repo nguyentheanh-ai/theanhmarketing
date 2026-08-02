@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import type { Course } from "@/data/courses";
 import { getCourseLessonCount } from "@/data/courses";
 import { toYouTubeThumbnailUrl } from "@/lib/youtube";
@@ -37,7 +36,7 @@ function unique(values: string[]) {
 }
 
 function getCourseHref(course: Course) {
-  return course.landingPageUrl || `/khoa-hoc/${course.slug}`;
+  return course.landingPageUrl || "";
 }
 
 export function CourseCatalogGrid({
@@ -159,10 +158,11 @@ export function CourseCatalogGrid({
               const imageUrl = getCourseImage(course);
               const lessonCount = getCourseLessonCount(course);
               const courseHref = getCourseHref(course);
+              const isComingSoon = course.status === "coming-soon";
 
               return (
                 <article key={course.slug} className="course-catalog-card">
-                  <Link href={courseHref} className="course-catalog-image thumbnail-shine" aria-label={course.title}>
+                  <div className="course-catalog-image thumbnail-shine" aria-label={course.title}>
                     <span className="course-catalog-badge">{course.statusLabel || course.eyebrow}</span>
                     {imageUrl ? (
                       <Image
@@ -174,12 +174,14 @@ export function CourseCatalogGrid({
                         unoptimized
                       />
                     ) : null}
-                  </Link>
+                  </div>
 
                   <div className="course-catalog-content">
-                    <Link href={courseHref} className="course-catalog-title">
-                      {course.title}
-                    </Link>
+                    {isComingSoon ? (
+                      <span className="course-catalog-title">{course.title}</span>
+                    ) : (
+                      <Link href={courseHref} className="course-catalog-title">{course.title}</Link>
+                    )}
                     <div className="course-catalog-meta">
                       <span>{course.level}</span>
                       <span>{lessonCount} bài học</span>
@@ -189,18 +191,12 @@ export function CourseCatalogGrid({
                       {course.originalPrice ? <span>{course.originalPrice}</span> : null}
                     </div>
                     <div className="course-catalog-actions">
-                      {course.landingPageUrl ? (
-                        <Link className="course-catalog-cart" href={course.landingPageUrl}>Đăng ký ngay</Link>
+                      {isComingSoon ? (
+                        <span aria-disabled="true" className="course-catalog-cart">Sắp ra mắt</span>
                       ) : (
-                        <AddToCartButton
-                          slug={course.slug}
-                          title={course.title}
-                          price={course.price}
-                          label="Thêm giỏ"
-                          className="course-catalog-cart"
-                        />
+                        <Link className="course-catalog-cart" href={courseHref}>Đăng ký ngay</Link>
                       )}
-                      <Link href={courseHref}>Chi tiết</Link>
+                      {!isComingSoon ? <Link href={courseHref}>Chi tiết</Link> : null}
                     </div>
                   </div>
                 </article>

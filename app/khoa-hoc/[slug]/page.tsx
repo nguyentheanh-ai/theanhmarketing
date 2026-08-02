@@ -56,6 +56,10 @@ export default async function CourseDetailPage({
     notFound();
   }
 
+  if (course.status === "coming-soon") {
+    notFound();
+  }
+
   if (course.landingPageUrl) {
     redirect(course.landingPageUrl);
   }

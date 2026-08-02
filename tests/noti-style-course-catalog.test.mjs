@@ -61,3 +61,19 @@ test("catalog uses the colorful rounded-type v2 course covers", () => {
   assert.match(courses, /ebook-facebook-ads-2026-v2\.webp/);
   assert.match(courses, /marketing-gioi-phai-kiem-duoc-tien-v2\.webp/);
 });
+
+test("only four courses open their exact approved landing pages", () => {
+  const courses = read("data/courses.ts");
+  const card = read("components/content/course-card.tsx");
+  const detail = read("app/khoa-hoc/[slug]/page.tsx");
+
+  assert.match(courses, /slug: "facebook-ads-2026"[\s\S]*?landingPageUrl: "\/academy\/facebook-ads-master-2026"[\s\S]*?status: "open"/);
+  assert.match(courses, /slug: "ebook-facebook-ads-2026"[\s\S]*?landingPageUrl: "\/academy\/ebook-facebook-ads-2026-premium"[\s\S]*?status: "open"/);
+  assert.match(courses, /slug: "ai-master-x10-hieu-suat"[\s\S]*?landingPageUrl: "\/academy\/ai-master-x10-hieu-suat"[\s\S]*?status: "open"/);
+  assert.match(courses, /slug: "bo-agent-kit-x10-hieu-suat-cong-viec"[\s\S]*?landingPageUrl: "\/academy\/bo-kit-agent-doanh-nghiep"[\s\S]*?status: "open"/);
+  assert.equal((courses.match(/status: "coming-soon"/g) ?? []).length, 6);
+  assert.doesNotMatch(card, /AddToCartButton/);
+  assert.match(card, /course\.status === "coming-soon"/);
+  assert.match(card, /Sắp ra mắt/);
+  assert.match(detail, /course\.status === "coming-soon"[\s\S]*?notFound\(\)/);
+});
