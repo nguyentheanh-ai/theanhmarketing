@@ -1,5 +1,12 @@
 # Current State - theanh-main
 
+## 2026-08-02 - Simplified storefront production release
+
+- Production deployment `dpl_3v4vAeJQFShnQkghuWYoxVfpMCbc` is `READY` and aliased atomically to `https://www.theanhmarketing.com` from release commit `8edca42` (content commit `500d741`).
+- The release includes the approved simplified public navigation, four active course landing pages, six coming-soon catalog cards, full-price formatting, three consultation services, authenticated My Courses/Account navigation, and the approved AI Master/Agent Kit v3 covers.
+- No Supabase migration was applied. Student course content, entitlement, learning-room and progress code have no diff from the protected production base.
+- Production smoke passed 17/17. Vercel reported no runtime errors or error/fatal logs after release.
+
 ## 2026-08-02 - Colorful course-cover system v2 (local review)
 
 - Replaced all 10 public catalog covers with non-destructive `-v2.webp` assets generated from the existing subject/composition, then overlaid exact Vietnamese typography locally.

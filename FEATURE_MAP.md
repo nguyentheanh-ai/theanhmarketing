@@ -1,5 +1,12 @@
 # Feature Map - theanh-main
 
+## Public storefront production release - 2026-08-02
+
+- Canonical production deployment: `dpl_3v4vAeJQFShnQkghuWYoxVfpMCbc`, release commit `8edca42`, status `READY`.
+- Active landing mappings are Facebook Ads, Ebook Facebook Ads, AI Master X10 and Bộ Agent Kit. The other six catalog products remain visible and non-clickable as `Sắp ra mắt`.
+- Price contract: AI Master and Agent Kit `990.000đ`; Facebook Ads `799.000đ`; Ebook `399.000đ`; all other catalog cards `990.000đ`.
+- Protected LMS contract is unchanged: no migration, enrollment, lesson, access or progress mutation belongs to this release.
+
 ## Course-cover visual system v2 (local only, 2026-08-02)
 
 Assets: `public/course-thumbnails/*-v2.webp` (10 catalog covers).

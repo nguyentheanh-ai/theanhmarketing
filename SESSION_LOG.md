@@ -1,5 +1,12 @@
 # Session Log
 
+## 2026-08-02 - Production storefront deployment
+
+- Deployed the approved storefront from the exact guarded worktree `worktrees/theanhmarketing-email-account-hotfix` to Vercel project `theanhmarketing`.
+- Initial CLI attempts were blocked before build because the local commit-author email was not a verified Vercel team member; production remained on the previous `READY` deployment. Added empty release commit `8edca42` with the authenticated Vercel identity and redeployed without changing source.
+- Deployment `dpl_3v4vAeJQFShnQkghuWYoxVfpMCbc` built 91/91 pages, reached `READY`, and received the canonical aliases including `www.theanhmarketing.com`.
+- Live verification passed 17/17, including `/learn/facebook-ads-2026` redirecting to the real current first lesson and `/api/student/progress` retaining its GET 405 guard. No order, email, account or database mutation was executed.
+
 ## 2026-08-02 - Rebuilt all course covers with colorful rounded typography
 
 Scope: local public catalog/homepage course-card visuals only.
