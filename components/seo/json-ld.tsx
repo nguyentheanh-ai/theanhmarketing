@@ -34,11 +34,6 @@ export async function WebsiteJsonLd() {
     name: siteConfig.name,
     url: siteConfig.url,
     inLanguage: "vi-VN",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${siteConfig.url}/blog?search={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
   };
 
   return (

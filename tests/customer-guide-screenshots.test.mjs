@@ -23,8 +23,8 @@ test("email screenshot preview is local-only and uses the production email build
 });
 
 test("local unauthenticated dashboard demo exposes course and ebook for screenshots only", () => {
-  const dashboard = read("app/dashboard/page.tsx");
-  assert.match(dashboard, /isAuthGuardEnabled\(\)/);
-  assert.match(dashboard, /facebook-ads-2026/);
-  assert.match(dashboard, /ebook-facebook-ads-2026/);
+  const portal = read("services/studentPortalService.ts");
+  assert.match(portal, /isAuthGuardEnabled\(\)/);
+  assert.match(portal, /facebook-ads-2026/);
+  assert.match(portal, /ebook-facebook-ads-2026/);
 });

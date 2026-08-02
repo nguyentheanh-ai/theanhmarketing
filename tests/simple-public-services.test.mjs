@@ -53,3 +53,17 @@ test("resources is a real page and retained pages do not link to removed routes"
   assert.doesNotMatch(resources, /redirect\("\/blog/);
   assert.doesNotMatch(`${workshop}\n${home}`, /\/he-sinh-thai|\/hoc-vien|\/blog/);
 });
+
+test("public sitemap advertises only the approved public information architecture", () => {
+  const sitemap = read("app/sitemap.ts");
+  for (const route of ["/gioi-thieu", "/he-sinh-thai", "/doi-tac", "/blog", "/hoc-vien", "/lien-he"]) {
+    assert.doesNotMatch(sitemap, new RegExp(`["][${route[0]}]${route.slice(1)}["]`));
+  }
+  for (const route of ["/dich-vu", "/khoa-hoc", "/tai-lieu", "/workshop"]) {
+    assert.match(sitemap, new RegExp(`["][${route[0]}]${route.slice(1)}["]`));
+  }
+  assert.doesNotMatch(sitemap, /getBlogPosts/);
+
+  const jsonLd = read("components/seo/json-ld.tsx");
+  assert.doesNotMatch(jsonLd, /SearchAction[\s\S]*\/blog\?search=/);
+});

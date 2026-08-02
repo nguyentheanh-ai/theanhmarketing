@@ -137,13 +137,15 @@ test("crm v2 LMS admin and student API routes are server guarded", () => {
 
 test("student-facing LMS reads published enrollment data from the shared LMS source", () => {
   const dashboardPage = read("app/dashboard/page.tsx");
+  const studentPortalService = read("services/studentPortalService.ts");
   const dashboardClient = read("components/app/student-dashboard.tsx");
   const lessonPage = read("app/learn/[course]/[lesson]/page.tsx");
   const learningRoom = read("components/course/learning-room.tsx");
   const courseService = read("services/courseService.ts");
 
-  assert.match(dashboardPage, /getStudentLmsAccess/, "dashboard must read active enrollments from LMS service");
-  assert.match(dashboardPage, /courseProgressBySlug/, "dashboard must pass real progress into the student dashboard");
+  assert.match(dashboardPage, /getStudentPortalSnapshot/, "dashboard must use the shared student portal snapshot");
+  assert.match(studentPortalService, /getStudentLmsAccess/, "student portal snapshot must read active enrollments from LMS service");
+  assert.match(studentPortalService, /progressBySlug/, "student portal snapshot must expose real progress");
   assert.doesNotMatch(dashboardClient, /Math\.min\(100,\s*Math\.max\(8/, "dashboard must not fake completion percentage");
   assert.match(dashboardClient, /progressBySlug/, "dashboard UI must render real progress by course slug");
   assert.match(lessonPage, /getStudentLmsAccess/, "lesson page must check LMS enrollment access");

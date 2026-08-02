@@ -153,11 +153,13 @@ test("configured admin emails are recognized from ADMIN_EMAILS", () => {
 
 test("dashboard and learning room bypass paid-order checks for admin role", () => {
   const dashboard = read("app/dashboard/page.tsx");
+  const studentPortalService = read("services/studentPortalService.ts");
   const lesson = read("app/learn/[course]/[lesson]/page.tsx");
 
-  assert.match(dashboard, /adminRole/);
-  assert.match(dashboard, /getCourseAccessSlugs/);
-  assert.match(dashboard, /allCourseSlugs/);
+  assert.match(dashboard, /getStudentPortalSnapshot/);
+  assert.match(studentPortalService, /adminRole/);
+  assert.match(studentPortalService, /getCourseAccessSlugs/);
+  assert.match(studentPortalService, /allCourseSlugs/);
   assert.match(lesson, /adminRole/);
   assert.match(lesson, /if \(!adminRole/);
 });
