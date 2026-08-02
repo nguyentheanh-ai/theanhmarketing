@@ -27,33 +27,33 @@ export async function SiteFooter() {
   ];
 
   return (
-    <footer id="lien-he" className="relative z-10 border-t border-[#77d7ff]/15 bg-[#04070c]/88 px-4 py-12 text-white sm:px-8 sm:py-14">
-      <div className="mx-auto grid max-w-[1440px] gap-8 sm:gap-10 lg:grid-cols-[1.4fr_0.6fr_0.7fr_0.7fr]">
+    <footer id="lien-he" className="tam-public-footer relative z-10 border-t border-[var(--tam-line)] bg-[#f5f9fd] py-12 text-[var(--tam-ink)] sm:py-16">
+      <div className="tam-container grid gap-10 lg:grid-cols-[1.35fr_0.65fr_0.72fr_0.72fr]">
         <div className="max-w-2xl">
           <Link href="/" className="inline-flex items-center gap-3" aria-label={brand.name}>
-            <BrandMark brand={brand} className="grid size-14 place-items-center overflow-hidden rounded-xl bg-white/8 p-1.5 ring-1 ring-[#77d7ff]/25" />
+            <BrandMark brand={brand} className="grid size-13 place-items-center overflow-hidden rounded-2xl bg-white p-1.5 shadow-sm ring-1 ring-[#159cfb]/15" />
             <span className="text-2xl font-black tracking-[-0.04em]">
               {brand.shortName}
             </span>
           </Link>
-          <p className="ai-muted mt-6 max-w-xl text-sm font-medium leading-7">
+          <p className="mt-5 max-w-lg text-sm font-medium leading-7 text-[var(--tam-muted)]">
             AI Performance Marketing System giúp SME và Solopreneur biến content, ads, funnel,
             automation và CRM/Data thành một hệ thống tăng trưởng có thể vận hành lặp lại.
           </p>
           <div className="mt-10">
-            <p className="text-lg font-black text-[#8bdcff]">Nhận AI Growth Toolkit</p>
+            <p className="text-lg font-black text-[var(--tam-ink)]">Nhận AI Growth Toolkit</p>
             <form
-              className="mt-5 flex max-w-full items-center gap-2 rounded-xl border border-[#77d7ff]/18 bg-white/7 p-1.5 shadow-[0_0_34px_rgba(56,189,248,0.12)] sm:max-w-sm"
+              className="mt-4 flex max-w-full items-center gap-2 rounded-full border border-[var(--tam-line)] bg-white p-1.5 shadow-sm sm:max-w-sm"
               action={emailHref}
             >
               <input
-                className="min-h-10 min-w-0 flex-1 bg-transparent px-4 text-sm text-white outline-none placeholder:text-white/38"
+                className="min-h-10 min-w-0 flex-1 bg-transparent px-4 text-sm text-[var(--tam-ink)] outline-none placeholder:text-slate-400"
                 name="subject"
                 placeholder="Nhập email để nhận toolkit"
                 type="email"
               />
               <button
-                className="grid size-10 shrink-0 place-items-center rounded-lg bg-[#159cfb] text-lg font-black text-white transition-colors hover:bg-[#38bdf8]"
+                className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--tam-accent)] text-lg font-black text-white transition-colors hover:bg-[var(--tam-accent-strong)]"
                 type="submit"
                 aria-label="Nhận AI Growth Toolkit"
               >
@@ -68,16 +68,16 @@ export async function SiteFooter() {
         <div>
           <FooterColumn title="Trợ giúp" links={helpLinks} />
           <div className="mt-6 grid gap-2 text-sm font-semibold">
-            <a href={phoneHref} className="text-white/62 transition hover:text-[#8bdcff]">
+            <a href={phoneHref} className="text-[var(--tam-muted)] transition hover:text-[var(--tam-accent-strong)]">
               Hotline/Zalo: {brand.phone}
             </a>
-            <a href={emailHref} className="text-white/62 transition hover:text-[#8bdcff]">
+            <a href={emailHref} className="text-[var(--tam-muted)] transition hover:text-[var(--tam-accent-strong)]">
               {brand.email}
             </a>
           </div>
         </div>
       </div>
-      <div className="mx-auto mt-10 flex max-w-[1440px] flex-col gap-3 border-t border-white/10 pt-6 text-xs font-semibold leading-6 text-white/42 sm:mt-12 sm:flex-row sm:items-center sm:justify-between">
+      <div className="tam-container mt-10 flex flex-col gap-3 border-t border-[var(--tam-line)] pt-6 text-xs font-semibold leading-6 text-slate-500 sm:mt-12 sm:flex-row sm:items-center sm:justify-between">
         <p>© {new Date().getFullYear()} {brand.name}. All rights reserved.</p>
         <div className="flex flex-wrap gap-4">
           <Link href="/lien-he" className="transition hover:text-white">
@@ -101,13 +101,13 @@ function FooterColumn({
 }) {
   return (
     <nav>
-      <p className="text-lg font-black text-[#8bdcff]">{title}</p>
+      <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--tam-ink)]">{title}</p>
       <div className="mt-6 grid gap-4">
         {links.map((item) => (
           <Link
             key={`${title}-${item.href}-${item.label}`}
             href={item.href}
-            className="text-sm font-bold text-white/68 transition hover:text-white"
+            className="text-sm font-semibold text-[var(--tam-muted)] transition hover:text-[var(--tam-accent-strong)]"
           >
             {item.label}
           </Link>
@@ -116,4 +116,3 @@ function FooterColumn({
     </nav>
   );
 }
-

@@ -26,38 +26,36 @@ export function CourseCard({ course }: { course: Course }) {
   const courseHref = course.landingPageUrl || `/khoa-hoc/${course.slug}`;
 
   return (
-    <article className="surface-motion group ai-panel flex min-h-[390px] flex-col overflow-hidden">
-      <div
-        className="relative min-h-[230px] overflow-hidden bg-cover bg-center"
-        style={getPosterStyle(course)}
-      >
-        <span className="absolute right-4 top-4 rounded-xl border border-[#77d7ff]/25 bg-[#05080d]/78 px-3 py-1 text-[11px] font-bold text-[#8bdcff] shadow-sm backdrop-blur">
+    <article className="tam-course-card tam-card tam-lift group flex min-h-[410px] flex-col overflow-hidden">
+      <div className="relative min-h-[220px] overflow-hidden bg-[#eef5fb]">
+        <div className="tam-media-zoom absolute inset-0 bg-cover bg-center" style={getPosterStyle(course)} />
+        <span className="absolute right-4 top-4 rounded-full border border-white/80 bg-white/90 px-3 py-1 text-[11px] font-black text-[var(--tam-accent-strong)] shadow-sm backdrop-blur">
           {course.statusLabel}
         </span>
       </div>
 
-      <div className="p-5 text-white">
-        <Link href={courseHref} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]">
-          <h2 className="text-2xl font-black tracking-[-0.04em] text-white">
+      <div className="flex flex-1 flex-col p-5">
+        <Link href={courseHref} className="block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#159cfb] focus-visible:ring-offset-4">
+          <h2 className="text-xl font-black tracking-[-0.04em] text-[var(--tam-ink)] sm:text-2xl">
             {course.title}
           </h2>
-          <p className="mt-3 line-clamp-2 text-sm font-semibold leading-6 text-white/58">
+          <p className="mt-3 line-clamp-2 text-sm font-medium leading-6 text-[var(--tam-muted)]">
             {course.shortDescription || course.description}
           </p>
         </Link>
-        <div className="mt-5 flex items-center justify-between gap-4 text-xs font-bold text-white/45">
+        <div className="mt-5 flex items-center justify-between gap-4 text-xs font-bold text-slate-400">
           <span>The Anh Marketing</span>
           <span>{course.modules.length} module</span>
         </div>
-        <div className="mt-2 flex items-center justify-between gap-4 text-sm font-black text-white/80">
-          <span className="text-[#8bdcff]">{course.price}</span>
-          <span>{getCourseLessonCount(course)} bài học</span>
+        <div className="mt-2 flex items-center justify-between gap-4 text-sm font-black text-[var(--tam-ink)]">
+          <span className="text-lg text-[var(--tam-accent-strong)]">{course.price}</span>
+          <span className="text-xs text-slate-500">{getCourseLessonCount(course)} bài học</span>
         </div>
-        <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+        <div className="mt-auto flex flex-col gap-2 pt-5 sm:flex-row">
           {course.landingPageUrl ? (
             <Link
               href={course.landingPageUrl}
-              className="tap-motion inline-flex min-h-11 flex-1 items-center justify-center rounded-xl bg-[#159cfb] px-5 text-sm font-bold text-white"
+              className="tap-motion inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#159cfb] px-5 text-sm font-black text-white shadow-[0_10px_22px_rgba(21,156,251,.24)]"
             >
               Đăng ký ngay
             </Link>
@@ -71,7 +69,7 @@ export function CourseCard({ course }: { course: Course }) {
           )}
           <Link
             href={`${courseHref}#lo-trinh`}
-            className="tap-motion inline-flex min-h-11 flex-1 items-center justify-center rounded-xl border border-white/12 bg-white/8 px-5 text-sm font-bold text-white/72 hover:border-[#77d7ff]/30 hover:text-white"
+            className="tap-motion inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-[var(--tam-line)] bg-white px-5 text-sm font-bold text-[var(--tam-ink)] hover:border-[#159cfb]/30 hover:text-[var(--tam-accent-strong)]"
           >
             Học thử miễn phí
           </Link>

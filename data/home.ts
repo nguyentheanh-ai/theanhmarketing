@@ -23,7 +23,49 @@ export const homePage = {
       "Ads ngày càng đắt khi offer, funnel và CRM chưa nối với nhau.",
       "AI dùng rời rạc nên founder vẫn quá tải thay vì giảm thao tác lặp lại.",
     ],
+    journeys: [
+      {
+        title: "Có nội dung nhưng chưa tạo ra lead",
+        description: "Nối insight, thông điệp và nội dung với một hành trình chuyển đổi rõ ràng.",
+        href: "/he-sinh-thai",
+        points: ["Content theo mục tiêu", "CTA và funnel liền mạch", "Đo phản hồi thật"],
+      },
+      {
+        title: "Quảng cáo ngày càng đắt",
+        description: "Tối ưu đồng thời offer, dữ liệu và quy trình chăm sóc thay vì chỉ chỉnh ads.",
+        href: "/khoa-hoc",
+        points: ["Performance Ads", "Lọc lead phù hợp", "Quyết định từ dữ liệu"],
+      },
+      {
+        title: "Dùng AI nhưng founder vẫn quá tải",
+        description: "Biến prompt rời rạc thành workflow có đầu vào, đầu ra và bước kiểm soát.",
+        href: "/khoa-hoc/bo-kit-agent-doanh-nghiep",
+        points: ["AI Agent theo vai trò", "Giảm việc lặp lại", "Bàn giao dễ hơn"],
+      },
+    ],
   },
+  engines: [
+    {
+      eyebrow: "Tiếp cận",
+      title: "Content & AI",
+      description: "Tìm insight, xây thông điệp và tạo nội dung bám theo hành trình mua.",
+    },
+    {
+      eyebrow: "Tăng trưởng",
+      title: "Ads & Funnel",
+      description: "Đưa đúng thông điệp đến đúng người và dẫn họ qua bước chuyển đổi tiếp theo.",
+    },
+    {
+      eyebrow: "Mở rộng",
+      title: "Automation",
+      description: "Chuẩn hóa các thao tác lặp lại để founder và team tập trung vào quyết định quan trọng.",
+    },
+    {
+      eyebrow: "Dữ liệu",
+      title: "CRM & Measurement",
+      description: "Gom tín hiệu từ lead, đơn hàng và hành vi để biết việc gì cần làm tiếp theo.",
+    },
+  ],
   ecosystem: {
     eyebrow: "The Anh Marketing",
     title: "Một AI Growth Operating System.",
@@ -83,4 +125,3 @@ export const homePage = {
     },
   },
 };
-

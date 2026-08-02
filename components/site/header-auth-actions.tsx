@@ -50,7 +50,7 @@ export function HeaderAuthActions() {
         <span aria-hidden="true">-&gt;</span>
       </ButtonLink>
       {isStudent ? (
-        <SignOutButton className="hidden min-h-10 rounded-xl px-4 text-sm font-bold text-white/62 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-50 md:inline-flex md:items-center" />
+        <SignOutButton className="hidden min-h-10 rounded-full px-4 text-sm font-bold text-[var(--tam-muted)] transition hover:bg-[var(--tam-accent-soft)] hover:text-[var(--tam-ink)] disabled:opacity-50 md:inline-flex md:items-center" />
       ) : (
         <ButtonLink href="/dang-nhap" variant="ghost" className="!hidden px-0 md:!inline-flex">
           Đăng nhập

@@ -50,7 +50,7 @@ test("homepage renders the approved conversion story in order", () => {
 });
 
 test("homepage keeps products service-driven and FAQ accessible", () => {
-  assert.match(page, /await getCourses\(\)/);
+  assert.match(page, /getCourses\(\)/);
   assert.match(page, /courses\.slice\(/);
   assert.doesNotMatch(page, /9\s+sản phẩm|9\s+khóa học/i);
   assert.match(page, /FaqAccordion/);

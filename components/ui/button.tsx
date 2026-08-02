@@ -4,14 +4,14 @@ type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "quiet";
 type ButtonSize = "sm" | "md" | "lg";
 
 const baseClasses =
-  "tap-motion inline-flex max-w-full shrink-0 items-center justify-center gap-2 rounded-xl text-center font-bold leading-tight focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#38bdf8] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0";
+  "tap-motion tam-button inline-flex max-w-full shrink-0 items-center justify-center gap-2 rounded-xl text-center font-bold leading-tight focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#159cfb] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0";
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "border border-[#77d7ff]/35 bg-[#159cfb] text-white shadow-[0_0_28px_rgba(56,189,248,0.34)] hover:bg-[#37b6ff]",
+    "tam-button-primary border border-[#77d7ff]/35 bg-[#159cfb] text-white shadow-[0_0_28px_rgba(56,189,248,0.34)] hover:bg-[#37b6ff]",
   secondary:
-    "border border-white/14 bg-white/8 text-white shadow-[0_10px_30px_rgba(0,0,0,0.22)] hover:border-[#77d7ff]/35 hover:bg-white/12",
-  ghost: "bg-transparent text-white/68 hover:bg-white/[0.08] hover:text-white",
+    "tam-button-secondary border border-white/14 bg-white/8 text-white shadow-[0_10px_30px_rgba(0,0,0,0.22)] hover:border-[#77d7ff]/35 hover:bg-white/12",
+  ghost: "tam-button-ghost bg-transparent text-white/68 hover:bg-white/[0.08] hover:text-white",
   danger:
     "border border-red-300/30 bg-red-500/12 text-red-100 hover:border-red-300/50 hover:bg-red-500/20",
   quiet:

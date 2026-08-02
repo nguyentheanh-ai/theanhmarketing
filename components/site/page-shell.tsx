@@ -8,8 +8,8 @@ import { getOfferSettings } from "@/services/offerService";
 
 export async function PageShell({ children, showOfferPopup = true }: { children: ReactNode; showOfferPopup?: boolean }) {
   return (
-    <main className="ai-os-bg ai-grid min-h-screen text-white">
-      <Suspense fallback={<div className="h-14" />}>
+    <main className="tam-public-shell min-h-screen">
+      <Suspense fallback={<div className="h-16" />}>
         <SiteHeader />
       </Suspense>
       <div className="page-motion relative z-10">{children}</div>
