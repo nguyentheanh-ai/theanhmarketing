@@ -26,6 +26,7 @@ test("public header keeps navigation, account, cart, and a mobile menu", () => {
   assert.match(header, /CartLink/);
   assert.match(header, /MobileMenu/);
   assert.match(header, /tam-public-header/);
+  assert.match(css, /\.tam-public-shell \.tam-public-header/);
 });
 
 test("homepage renders the approved conversion story in order", () => {
@@ -55,6 +56,10 @@ test("homepage keeps products service-driven and FAQ accessible", () => {
   assert.doesNotMatch(page, /9\s+sản phẩm|9\s+khóa học/i);
   assert.match(page, /FaqAccordion/);
   assert.match(page, /faqs=\{faqs\}/);
+});
+
+test("homepage keeps the approved hero unobstructed by the legacy offer popup", () => {
+  assert.match(page, /<PageShell showOfferPopup=\{false\}>/);
 });
 
 test("course cards retain real course data and use the light interactive card", () => {

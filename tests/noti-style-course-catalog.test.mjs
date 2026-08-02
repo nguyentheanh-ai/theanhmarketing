@@ -39,3 +39,10 @@ test("course catalog renders the same reusable course card used on the homepage"
   assert.match(browser, /CourseCard/);
   assert.match(browser, /filteredCourses\.map/);
 });
+
+test("catalog keeps the latest Agent Kit offer from the recovered backup", () => {
+  const courses = read("data/courses.ts");
+
+  assert.match(courses, /title: "Bộ Agent Kit X10 hiệu suất công việc"[\s\S]*?price: "990K"/);
+  assert.match(courses, /Trọn bộ 30 skill cho marketing, bán hàng, vận hành và hệ thống quảng cáo/);
+});

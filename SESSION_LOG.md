@@ -1,5 +1,15 @@
 # Session Log
 
+## 2026-08-02 - Built Phase 1 Noti-style local foundation
+
+Scope: main-site public homepage and course catalog only, implemented in isolated worktree `feat/noti-visual-redesign-local`.
+
+Changes: introduced the scoped light design foundation; rebuilt homepage story and catalog; added shared marketing components, responsive header/menu/footer, searchable filters, FAQ interactions and real service-driven product/proof rendering. Disabled the legacy offer popup only on homepage after mobile/desktop QA showed it obscured the approved hero. Synchronized Agent Kit price/copy from the recovered backup.
+
+Safety: no database, payment, order, email, Auth, student access, progress, admin or production deployment mutation.
+
+Verification: focused tests 12/12; full Node tests 462/462; `tsc --noEmit` exit 0; ESLint 0 errors/1 pre-existing warning; Next.js 16.2.6 build generated 110/110 pages. Browser QA at 1440x900 and 390x844 found no horizontal overflow, broken images, warnings or errors; catalog search/filter, mobile menu and FAQ passed.
+
 ## 2026-07-25 - Built public guide and paid support booking demo
 
 - Added public guide, slot selection, checkout, paid confirmation, CRM list/busy-date controls and student Dashboard CTA.

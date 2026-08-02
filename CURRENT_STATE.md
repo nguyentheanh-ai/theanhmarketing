@@ -1,5 +1,14 @@
 # Current State - theanh-main
 
+## 2026-08-02 - Noti-style public foundation (local review)
+
+- Branch cô lập `feat/noti-visual-redesign-local` đang phục vụ local tại `http://localhost:57128`; chưa deploy Vercel và chưa thay đổi production.
+- Homepage và `/khoa-hoc` dùng visual A nền sáng, accent xanh The Anh, grid nền, pill CTA, card/shadow/hover/reveal và responsive mobile; header/footer/course card dùng chung foundation.
+- Homepage giữ dữ liệu thật từ services, giữ section Agent Kit hiện hữu, FAQ accessible và tắt popup ưu đãi riêng ở homepage để không che hero. Popup/commerce flow ở các trang bán hàng vẫn giữ nguyên.
+- Catalog lấy toàn bộ course thật, tự sinh danh mục, tìm kiếm tiếng Việt và lọc client-side; Agent Kit được đồng bộ theo backup mới nhất ở mức `990K` và mô tả 30 skill.
+- Không đổi Supabase schema, Auth, order, SePay, email, entitlement, progress hoặc admin CRM.
+- Verification: `462/462` Node tests, TypeScript, Next.js build 110 routes, desktop/mobile browser QA, search/filter/menu/FAQ và runtime console đều đạt. ESLint có 0 error và 1 warning cũ ngoài phạm vi.
+
 ## 2026-07-25 - Public guide and paid support booking (local demo)
 
 - Public routes: `/huong-dan`, `/dat-lich-ho-tro`, `/dat-lich-ho-tro/thanh-cong`.

@@ -1,5 +1,19 @@
 # Feature Map - theanh-main
 
+## Noti-style public foundation (local only, 2026-08-02)
+
+Routes: `/`, `/khoa-hoc`.
+
+Files: `app/page.tsx`, `app/khoa-hoc/page.tsx`, `app/globals.css`, `components/marketing/*`, `components/site/header.tsx`, `components/site/mobile-menu.tsx`, `components/site/footer.tsx`, `components/content/course-card.tsx`, `data/home.ts`, `data/courses.ts`.
+
+Data: homepage reads `getCourses()` and `getTestimonials()`; catalog reads `getCourses()` and derives categories/counts from returned course data. No hard-coded product count.
+
+Interaction: mobile menu, accessible FAQ accordion, keyword search, category filter, hover-lift/media zoom and reduced-motion fallback.
+
+Guard: presentation-only. Preserve order, SePay, email, Auth, entitlement, progress, admin CRM and course service contracts. Homepage alone passes `showOfferPopup={false}` so the approved hero remains unobstructed; selling pages keep the existing offer component.
+
+Release state: local review only; no Vercel preview/production deployment until owner approval and source-of-truth commit gap is resolved.
+
 ## Paid support booking
 
 Routes: `/huong-dan`, `/dat-lich-ho-tro`, `/dat-lich-ho-tro/thanh-cong`, `/admin/crm-v2/support-bookings`.

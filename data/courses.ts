@@ -224,11 +224,11 @@ const courseFunnel: FunnelCourseConfig[] = [
     role: "Bộ công cụ/agent kit để upsell",
     slug: "bo-agent-kit-x10-hieu-suat-cong-viec",
     title: "Bộ Agent Kit X10 hiệu suất công việc",
-    price: "799K",
+    price: "990K",
     originalPrice: "2.499K",
     thumbnailImageUrl: "/course-thumbnails/bo-agent-kit-x10-hieu-suat-cong-viec.webp",
     eyebrow: "Agent Kit",
-    shortDescription: "Bộ agent kit thực dụng để triển khai nhanh các workflow làm việc, marketing, bán hàng và vận hành.",
+    shortDescription: "Trọn bộ 30 skill cho marketing, bán hàng, vận hành và hệ thống quảng cáo, kèm SOP, template và checklist.",
     description:
       "Bộ Agent Kit X10 hiệu suất công việc tập trung vào template, prompt, SOP và cách dùng agent cho những tác vụ lặp lại trong marketing, sales và quản trị.",
     topics: ["Agent Kit", "SOP", "Automation"],
