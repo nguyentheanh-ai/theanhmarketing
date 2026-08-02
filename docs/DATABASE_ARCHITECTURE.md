@@ -340,6 +340,7 @@ Fields:
 - One course can have many testimonials.
 - One lead can become one user and one order.
 - One order can create one enrollment after payment/manual approval.
+- One order can optionally carry one invoice request: `invoice_requested`, tax code, company name, company address, and invoice delivery email. These fields are server-written and must not be returned by the public order-status API.
 
 ## Access Rules
 
@@ -407,3 +408,7 @@ Phase 4:
 - Add storage uploads.
 - Add analytics and CRM automation.
 - Add email notifications.
+
+## 2026-08-02 - Order invoice fields
+
+Migration `20260802161009_add_order_invoice_fields.sql` adds five nullable/additive invoice fields to `public.orders`, with `invoice_requested boolean not null default false`. Existing orders remain valid without backfill; invoice details are required and normalized only when the customer selects the invoice option.

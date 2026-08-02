@@ -1273,3 +1273,13 @@ Before changing these, run targeted tests and full build.
 | SePay prevention | Kept full TAM order code as the primary match. Code-less callbacks may match only one pending/expired order using exact amount, normalized payer/student name, and a transaction window from 24 hours before to 5 minutes after order creation. Transaction id/reference retries remain idempotent and ambiguous cases fail closed. |
 | Verification | Added login-contrast and SePay regression coverage. Focused suite passed 40/40; TypeScript, targeted ESLint, production build (91 routes), local browser computed-style checks, and live smoke checks passed. |
 | Release | Runtime commit `6c74a97c7608565c2987dfda147cfede3cdc32bc`; production deployment `dpl_A7fY8d3Whn62dd8ma9317e8nNm8V` is Ready and aliased to `www.theanhmarketing.com`. Live `/dang-nhap` returned 200 with the new class/CSS, unauthenticated SePay webhook returned 401, and `app.theanhmarketing.com` was untouched. |
+
+## 2026-08-02 - VPBank checkout and invoice request
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Scope | `main-site`: current React checkout forms plus AI Master, Facebook Ads, Ebook and Ebook premium static landings. |
+| Invoice | Small centered opt-in below the primary CTA; expands tax code, company name, company address and invoice email. Validation/storage are server-side; public polling exposes only the request flag. |
+| Product copy | Each landing owns its product USP and CTA. The shared invoice helper contains no product copy. Facebook Ads uses the approved 799.000đ course + AI Agent copy. |
+| Payment copy | Customer pages/emails are provider-neutral while the existing internal webhook, QR helper and idempotent reconciliation flow remain unchanged. |
+| Database | Additive migration `20260802161009_add_order_invoice_fields.sql` must precede the application rollout. |

@@ -121,3 +121,10 @@ using (true);
 ```
 
 Before production, replace the anon demo policy with server-only writes and admin/student scoped reads.
+
+## 2026-08-02 - VPBank receiving account and provider-neutral checkout
+
+- Production receiving account is configured through `SEPAY_BANK_CODE`, `SEPAY_BANK_ACCOUNT_NUMBER`, and `SEPAY_BANK_ACCOUNT_NAME`; webhook authentication remains `SEPAY_WEBHOOK_API_KEY` and must not change during an account switch.
+- Checkout pages and pending-payment email intentionally say `Thanh toán chuyển khoản` / `QR thanh toán`. Provider names remain internal in routes, helpers, database fields, and environment variables only.
+- Active course/Ebook forms post optional invoice details with the order. The server validates and stores those details; public order polling returns only `invoice.requested` and never exposes invoice PII.
+- Apply `supabase/migrations/20260802161009_add_order_invoice_fields.sql` before deploying code that accepts invoice requests.
