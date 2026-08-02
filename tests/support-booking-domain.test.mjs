@@ -101,3 +101,19 @@ test("booking input is normalized and rejects invalid or unavailable requests", 
     /ít nhất 10 ký tự/i,
   );
 });
+
+test("verified owner can preview booking without fabricating a paid course order", () => {
+  const service = fs.readFileSync(path.join(process.cwd(), "services/supportBookingService.ts"), "utf8");
+  const page = fs.readFileSync(path.join(process.cwd(), "app/dat-lich-ho-tro/page.tsx"), "utf8");
+  const route = fs.readFileSync(path.join(process.cwd(), "app/api/support-bookings/route.ts"), "utf8");
+  const form = fs.readFileSync(path.join(process.cwd(), "components/support-booking/support-booking-form.tsx"), "utf8");
+
+  assert.match(service, /allowOwnerPreview/);
+  assert.match(service, /previewMode: true/);
+  assert.match(page, /isAdmin/);
+  assert.match(page, /allowOwnerPreview: isAdmin/);
+  assert.match(route, /allowOwnerPreview: isAdmin/);
+  assert.match(form, /Chế độ xem thử của quản trị viên/);
+  assert.match(form, /sẽ tạo một đơn chờ thanh toán 500\.000đ thật/);
+  assert.doesNotMatch(service, /status\s*:\s*["']paid["']/);
+});

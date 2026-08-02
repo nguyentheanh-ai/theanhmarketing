@@ -16,8 +16,10 @@ export const dynamic = "force-dynamic";
 
 export default async function SupportBookingPage() {
   await requireStudentAuth("/dat-lich-ho-tro");
-  const { user } = await getCurrentAuth();
-  const customer = await getEligibleSupportCustomer(user?.email ?? "", user?.user_metadata);
+  const { user, isAdmin } = await getCurrentAuth();
+  const customer = await getEligibleSupportCustomer(user?.email ?? "", user?.user_metadata, {
+    allowOwnerPreview: isAdmin,
+  });
   const today = getVietnamToday();
   if (!customer) {
     return (

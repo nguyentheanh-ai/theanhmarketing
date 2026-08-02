@@ -10,6 +10,7 @@ import {
   validateSupportBookingInput,
   type SupportBookingInput,
 } from "@/lib/support-booking/domain";
+import { isAdminEmail } from "@/lib/course-access";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupportPaymentOrder, getPaymentOrders } from "@/services/orderService";
 
@@ -61,6 +62,7 @@ export type EligibleSupportCustomer = {
   email: string;
   phone: string;
   purchasedCourseSlug: string;
+  previewMode?: boolean;
 };
 
 export class SupportBookingConflictError extends Error {}
@@ -79,6 +81,7 @@ function purchasedCourseSlugs(order: { courseSlug: string; orderItems: Array<{ s
 export async function getEligibleSupportCustomer(
   email: string,
   metadata?: Record<string, unknown> | null,
+  options: { allowOwnerPreview?: boolean } = {},
 ): Promise<EligibleSupportCustomer | null> {
   if (isLocalDemo()) {
     return {
@@ -92,13 +95,15 @@ export async function getEligibleSupportCustomer(
   const normalizedEmail = normalizeEmail(email);
   if (!normalizedEmail) return null;
   const orders = await getPaymentOrders({ includeFallback: false, strict: true });
-  const paidCourseOrders = orders
-    .filter((order) => order.status === "paid" && normalizeEmail(order.email) === normalizedEmail)
+  const matchingCourseOrders = orders
+    .filter((order) => normalizeEmail(order.email) === normalizedEmail)
     .map((order) => ({ order, slugs: purchasedCourseSlugs(order) }))
     .filter((entry) => entry.slugs.length > 0)
     .sort((a, b) => Date.parse(b.order.paidAt ?? b.order.createdAt) - Date.parse(a.order.paidAt ?? a.order.createdAt));
 
-  const latest = paidCourseOrders[0];
+  const latestPaid = matchingCourseOrders.find((entry) => entry.order.status === "paid");
+  const ownerPreview = !latestPaid && options.allowOwnerPreview === true && isAdminEmail(normalizedEmail);
+  const latest = latestPaid ?? (ownerPreview ? matchingCourseOrders[0] : undefined);
   if (!latest) return null;
   const customerName = latest.order.studentName.trim()
     || (typeof metadata?.full_name === "string" ? metadata.full_name.trim() : "")
@@ -106,7 +111,13 @@ export async function getEligibleSupportCustomer(
   const phone = latest.order.phone.trim()
     || (typeof metadata?.phone === "string" ? metadata.phone.trim() : "");
   if (!phone) return null;
-  return { customerName, email: normalizedEmail, phone, purchasedCourseSlug: latest.slugs[0] };
+  return {
+    customerName,
+    email: normalizedEmail,
+    phone,
+    purchasedCourseSlug: latest.slugs[0],
+    ...(ownerPreview ? { previewMode: true } : {}),
+  };
 }
 
 function isLocalDemo() {

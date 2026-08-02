@@ -60,6 +60,12 @@ export function SupportBookingForm({ today, bookableDays, customer }: Props) {
 
   return (
     <form className="space-y-6" onSubmit={submit}>
+      {customer.previewMode ? (
+        <section className="rounded-[24px] border border-amber-200 bg-amber-50 p-5 text-amber-900 shadow-[0_16px_44px_rgba(217,119,6,0.08)]">
+          <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-700">Chế độ xem thử của quản trị viên</p>
+          <p className="mt-2 text-sm font-bold leading-6">Xem trang này không tạo dữ liệu. Nếu bấm “Giữ lịch và thanh toán”, hệ thống sẽ tạo một đơn chờ thanh toán 500.000đ thật như luồng của khách hàng.</p>
+        </section>
+      ) : null}
       <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_22px_70px_rgba(15,23,42,0.08)] sm:p-8">
         <div className="flex items-center gap-3">
           <span className="grid size-10 place-items-center rounded-2xl bg-blue-50 text-blue-600"><CalendarDays className="size-5" /></span>

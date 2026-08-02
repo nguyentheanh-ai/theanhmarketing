@@ -1252,3 +1252,13 @@ Before changing these, run targeted tests and full build.
 | Regression | `tests/sepay-order-code.test.mjs` khóa ba trường hợp: mã rút gọn + content đầy đủ, mã TAM trực tiếp, và mã rút gọn không có TAM. Full gate đạt `423/423`, TypeScript, ESLint và build 105 trang. |
 | Deploy | Commit `0a05711`; production deployment `dpl_8trUtvw1cv2bwTzzEyQgfApVzyQf`; status `Ready`, alias `www.theanhmarketing.com`. |
 | Customer recovery | Đơn gốc 799.000đ được xác nhận paid, tài khoản được kiểm tra đăng nhập và buộc đổi mật khẩu, email đúng đơn được Resend chấp nhận. Đơn 399.000đ phát sinh trong lúc phục hồi được đánh dấu `voided_duplicate`. |
+## 2026-08-02 - Owner access and account-management UX candidate
+
+| Hạng mục | Chi tiết |
+|---|---|
+| App/domain | `main-site` / `theanhmarketing.com`; canonical guarded worktree `theanhmarketing-email-account-hotfix`. |
+| Production operation | Confirmed owner Auth identity received all 10 canonical catalog grants and active CRM enrollments. No password, email, order, payment or schema change. |
+| Account UX | `/tai-khoan` presents profile, new login email and new password as three separate inline cards with independent feedback and safe validation. Forced recovery remains on `/doi-mat-khau`. |
+| Booking preview | Only the server-confirmed owner can fall back to the latest real non-support order identity for preview. Customers still require a paid course order; final submission retains the real 500.000đ pending-order flow. |
+| Verification | 480/480 Node tests, TypeScript, ESLint 0 errors/1 existing unrelated warning, diff check, 91-page build and clean desktop/mobile browser QA. No form submission. |
+| Release | Local candidate only; do not deploy until owner approval. |

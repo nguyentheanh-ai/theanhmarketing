@@ -13,11 +13,13 @@ export async function POST(request: Request) {
   });
   if (!rateLimit.ok) return rateLimitResponse(rateLimit.resetAt);
 
-  const { user } = await getCurrentAuth();
+  const { user, isAdmin } = await getCurrentAuth();
   if (isAuthGuardEnabled() && !user?.email) {
     return NextResponse.json({ ok: false, message: "Vui lòng đăng nhập tài khoản học viên để đặt lịch hỗ trợ." }, { status: 401, headers: noStoreHeaders });
   }
-  const customer = await getEligibleSupportCustomer(user?.email ?? "", user?.user_metadata);
+  const customer = await getEligibleSupportCustomer(user?.email ?? "", user?.user_metadata, {
+    allowOwnerPreview: isAdmin,
+  });
   if (!customer) {
     return NextResponse.json({ ok: false, message: "Chỉ học viên đã mua khóa học mới được đặt lịch hỗ trợ." }, { status: 403, headers: noStoreHeaders });
   }

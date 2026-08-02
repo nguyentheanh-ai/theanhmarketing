@@ -38,6 +38,24 @@ test("account page is protected and supports safe profile changes", () => {
   assert.doesNotMatch(form, /[?&](email|phone|name)=/);
 });
 
+test("account page presents profile email and password as three clear inline actions", () => {
+  const page = read("app/tai-khoan/page.tsx");
+  const form = read("components/account/account-profile-form.tsx");
+
+  assert.match(form, /Thông tin cá nhân/);
+  assert.match(form, /Email đăng nhập/);
+  assert.match(form, /Email hiện tại/);
+  assert.match(form, /Email mới/);
+  assert.match(form, /name="new_email"/);
+  assert.match(form, /Đổi mật khẩu/);
+  assert.match(form, /updatePassword/);
+  assert.match(form, /updateUser\(\{[\s\S]*password/);
+  assert.match(form, /showPassword/);
+  assert.match(form, /aria-live="polite"/);
+  assert.match(page, /Thiết lập tài khoản/);
+  assert.doesNotMatch(page, /href="\/doi-mat-khau\?mode=account/);
+});
+
 test("existing password flow permits voluntary account changes", () => {
   const page = read("app/doi-mat-khau/page.tsx");
   const form = read("components/auth/change-password-form.tsx");

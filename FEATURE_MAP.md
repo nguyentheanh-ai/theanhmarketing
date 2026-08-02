@@ -255,3 +255,10 @@ Guard: order payload and lead payload are different contracts; preserve text for
 | AI Master landing restored | LOCAL READY | `/academy/ai-master-x10-hieu-suat` | Existing published landing source, order API and checkout | Clean route rewrites to synchronized HTML; 990.000đ UI/tracking/order value |
 | Agent Kit 990K alignment | LOCAL READY | `/academy/bo-kit-agent-doanh-nghiep` | Existing form, order API and payment route | Client/server/demo checkout all use `agent-kit-standard-990` and 990.000đ |
 | AI product covers v3 | LOCAL READY | `/khoa-hoc`, shared `CourseCard` | Exact 10-course catalog and 4-live/6-coming gate | Only Agent Kit and AI Master use the new generated square covers |
+## 2026-08-02 - Owner full access and account UX clarity
+
+| Tính năng | Trạng thái | App/route | Flow giữ nguyên | Ghi chú |
+|---|---|---|---|---|
+| Owner full catalog access | PRODUCTION DATA DONE | Supabase Auth, `public.leads`, `crm_v2.enrollments` | Existing Auth identity and entitlement resolver | Exact confirmed owner user has 10 idempotent grants and 10 active enrollments; no password/order/payment/email mutation |
+| Clear account self-service | LOCAL READY | `/tai-khoan` | Existing Supabase Auth update calls and owned-course snapshot | Profile, email and password are separate inline cards; `/doi-mat-khau` recovery remains intact |
+| Owner booking preview | LOCAL READY | `/dat-lich-ho-tro`, `/api/support-bookings` | Normal customers still require a paid non-support order | Server-verified owner can preview with existing identity; final submission still creates a real pending 500.000đ order |
