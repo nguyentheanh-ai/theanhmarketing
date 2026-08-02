@@ -1261,7 +1261,7 @@ Before changing these, run targeted tests and full build.
 | Account UX | `/tai-khoan` keeps profile editing visible and places email/password changes in one closed-by-default card. Choosing password reveals current/new/confirmation fields; the current password is verified through the signed-in Supabase Auth identity before `updateUser`. Forced recovery remains on `/doi-mat-khau`. |
 | Booking preview | Only the server-confirmed owner can fall back to the latest real non-support order identity for preview. Customers still require a paid course order; final submission retains the real 500.000đ pending-order flow. |
 | Verification | 480/480 Node tests, TypeScript, ESLint 0 errors/1 existing unrelated warning, diff check, 91-page build and clean desktop/mobile disclosure QA. No form submission. |
-| Release | Local candidate only; do not deploy until owner approval. |
+| Release | Owner approved. Merged the newer production login/SePay hotfix first, producing runtime commit `1600ff1`. Deployment `dpl_n95J4taySyW4p87gGGTMxsbnBxg8` was built without domain assignment, smoke-tested, then promoted atomically to `www.theanhmarketing.com`; post-release error/fatal scan is clean. |
 
 ## 2026-08-02 - Paid student login recovery and `/dang-nhap` contrast
 

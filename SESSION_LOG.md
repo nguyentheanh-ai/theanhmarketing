@@ -6,7 +6,7 @@
 - Rebuilt `/tai-khoan` so profile editing stays direct while email and password changes are hidden inside one `Đổi thông tin tài khoản` card until selected. Password change now requires and verifies the current password before updating.
 - Added a server-only owner preview path for paid support booking eligibility without fabricating a paid course order. Regular users remain paid-only, and no booking form was submitted.
 - Browser QA passed the default-closed, email-only and password-only states on desktop and 390px mobile with no overflow or console errors. No form was submitted. Full verification passed 480/480 tests, TypeScript, 91-page build and diff check; ESLint has 0 errors and one pre-existing unrelated warning.
-- Code is local only at `http://localhost:57129/tai-khoan`; production deployment awaits owner approval.
+- After owner approval, merged the newer live `6c74a97` login/SePay hotfix into runtime commit `1600ff1`. Built deployment `dpl_n95J4taySyW4p87gGGTMxsbnBxg8` with `--skip-domain`, smoke-tested it, and promoted it atomically to production. Post-release core/landing/guard/API smoke passed and the deployment has no error/fatal logs.
 
 
 ## 2026-08-02 - Production storefront deployment
