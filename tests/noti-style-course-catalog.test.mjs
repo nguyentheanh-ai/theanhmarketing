@@ -52,14 +52,18 @@ test("catalog uses full Vietnamese price labels and keeps only the two requested
   assert.doesNotMatch(courses, /price: "[\d.]+K"/);
 });
 
-test("catalog uses the colorful rounded-type v2 course covers", () => {
+test("catalog uses validated colorful course covers and landing-derived v3 AI banners", () => {
   const courses = read("data/courses.ts");
   const v2Covers = courses.match(/course-thumbnails\/[\w-]+-v2\.webp/g) ?? [];
 
-  assert.equal(v2Covers.length, 10);
+  assert.equal(v2Covers.length, 8);
   assert.match(courses, /quang-cao-facebook-master-2026-v2\.webp/);
   assert.match(courses, /ebook-facebook-ads-2026-v2\.webp/);
   assert.match(courses, /marketing-gioi-phai-kiem-duoc-tien-v2\.webp/);
+  assert.match(courses, /ai-master-x10-hieu-suat-v3\.webp/);
+  assert.match(courses, /bo-agent-kit-x10-hieu-suat-cong-viec-v3\.webp/);
+  assert.equal(existsSync("public/course-thumbnails/ai-master-x10-hieu-suat-v3.webp"), true);
+  assert.equal(existsSync("public/course-thumbnails/bo-agent-kit-x10-hieu-suat-cong-viec-v3.webp"), true);
 });
 
 test("only four courses open their exact approved landing pages", () => {

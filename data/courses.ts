@@ -244,7 +244,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     title: "Bộ Agent Kit X10 hiệu suất công việc",
     price: "990.000đ",
     originalPrice: "2.499.000đ",
-    thumbnailImageUrl: "/course-thumbnails/bo-agent-kit-x10-hieu-suat-cong-viec-v2.webp",
+    thumbnailImageUrl: "/course-thumbnails/bo-agent-kit-x10-hieu-suat-cong-viec-v3.webp",
     eyebrow: "Agent Kit",
     shortDescription: "Trọn bộ 30 skill cho marketing, bán hàng, vận hành và hệ thống quảng cáo, kèm SOP, template và checklist.",
     description:
@@ -287,7 +287,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     title: "AI Master X10 hiệu suất - Biến tri thức thành tiền",
     price: "990.000đ",
     originalPrice: "3.999.000đ",
-    thumbnailImageUrl: "/course-thumbnails/ai-master-x10-hieu-suat-v2.webp",
+    thumbnailImageUrl: "/course-thumbnails/ai-master-x10-hieu-suat-v3.webp",
     eyebrow: "AI Mastery",
     shortDescription: "Làm chủ AI để đóng gói tri thức, tăng tốc content, dựng landing page, tự động hóa bán hàng và biến chuyên môn thành tài sản có thể bán.",
     description:
