@@ -251,3 +251,11 @@ Safety: no existing lesson content/video/access was changed except the exclusion
 - Removed the legacy public offer popup from shared public shells and course sales pages, including its obsolete responsive CSS. Admin offer settings and all cart/order/payment/registration/email/access flows remain untouched.
 - Browser QA on `/khoa-hoc`: 10 cards, exact 8/1/1 price split, zero popup elements, no broken images, no horizontal overflow at 1280px or 390px, and no console warning/error.
 - Verification: focused 13/13, full Node 463/463, TypeScript pass, ESLint 0 errors/1 pre-existing unrelated warning, Next.js production build 110/110 routes. Local only; no Vercel or Supabase mutation.
+
+## 2026-08-02 | main-site | Simplified public services, paid consultation and account management | local ready
+
+- Kept the approved homepage presentation while simplifying public navigation and footer to Home, Services, Courses, Resources, Workshop and auth. Removed eight obsolete public route files and corrected retained links, sitemap and Website JSON-LD.
+- Added three Marketing & AI service offers and a fixed 500.000đ consultation checkout. The owner follows up after payment; the fee is deducted from a later purchase and otherwise non-refundable. Paid consultation fulfillment uses a dedicated email and never creates course access/student credentials.
+- Locked catalog availability to four exact academy landing pages; the other six cards visibly show `Sắp ra mắt` and expose no link/button. Added authenticated My Courses/Account navigation and safe profile/email/password management backed by the existing Auth identity and shared real ownership resolver.
+- Browser QA verified the exact 3 service cards, 10 course cards, 4 live/6 coming split, zero clickable coming-soon cards, no horizontal overflow, retained routes loading and removed routes returning 404. No real form submission, production order, email or data mutation occurred.
+- Verification: 477/477 Node tests, TypeScript, ESLint 0 errors/1 pre-existing unrelated warning, `git diff --check`, and Next.js production build with 91 generated pages/routes. No Vercel deploy or database migration.

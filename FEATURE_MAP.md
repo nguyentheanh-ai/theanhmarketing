@@ -230,3 +230,12 @@ Guard: order payload and lead payload are different contracts; preserve text for
 |---|---|---|---|---|
 | Giá khóa học thống nhất | LOCAL READY | `main-site` `/`, `/khoa-hoc`, `/khoa-hoc/[slug]` | Slug, cart, order parsing, đăng ký và thanh toán | 8 khóa giá `990.000đ`; Facebook Ads `799.000đ`; Ebook `399.000đ`; không dùng hậu tố `K` trong course catalog data |
 | Gỡ popup ưu đãi cũ | LOCAL READY | Public `PageShell` và course sales page | Admin CMS offer settings còn nguyên; cart/order/payment/email/access không đổi | Xóa public popup component và CSS mobile cũ; không còn trigger/popup trên public pages |
+
+## 2026-08-02 - Simplified public services and student self-service
+
+| Tính năng | Trạng thái | App/route | Flow giữ nguyên | Ghi chú |
+|---|---|---|---|---|
+| Public IA tối giản | LOCAL READY | `/`, `/dich-vu`, `/khoa-hoc`, `/tai-lieu`, `/workshop` | Homepage sections and visual foundation | Legacy public routes removed and excluded from sitemap; header/footer contain only approved destinations |
+| Course availability gate | LOCAL READY | `/khoa-hoc` and homepage cards | Exact four existing academy landing pages | 10 products total; 4 live and 6 non-clickable `Sắp ra mắt` |
+| Paid consultation intake | LOCAL READY | `/dang-ky-tu-van`, `/api/consultations`, `/thanh-toan/[code]` | Existing order and SePay confirmation pipeline | Fixed server-side 500.000đ; consultation-specific paid email; no student account/course access provisioning |
+| Student account self-service | LOCAL READY | `/dashboard`, `/tai-khoan` | Existing orders, LMS enrollment and access overrides | Authenticated header switches to My Courses/Account; name, phone, verified email and password updates preserve ownership/history |
