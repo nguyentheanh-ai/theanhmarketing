@@ -1283,3 +1283,4 @@ Before changing these, run targeted tests and full build.
 | Product copy | Each landing owns its product USP and CTA. The shared invoice helper contains no product copy. Facebook Ads uses the approved 799.000đ course + AI Agent copy. |
 | Payment copy | Customer pages/emails are provider-neutral while the existing internal webhook, QR helper and idempotent reconciliation flow remain unchanged. |
 | Database | Additive migration `20260802161009_add_order_invoice_fields.sql` must precede the application rollout. |
+| Release | Migration applied to Supabase project `theanhmarketing`; production bank environment updated; runtime commit `5689c1a`; Vercel deployment `dpl_2yCs8k8H9v4xQc348eQ5C5cAuPwp` promoted to `www.theanhmarketing.com`. Live landing markers and unauthenticated webhook `401` passed; post-release runtime error scan is empty. |
