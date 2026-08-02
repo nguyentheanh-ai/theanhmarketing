@@ -13,7 +13,7 @@ export function HomeDemoPanel() {
           <p className="mt-6 text-xs font-black uppercase tracking-[0.14em] text-[var(--tam-accent-strong)]">Xem hệ thống vận hành</p>
           <h3 className="mt-2 text-2xl font-black tracking-[-0.04em] text-[var(--tam-ink)] sm:text-4xl">Từ một mục tiêu kinh doanh đến workflow có thể thực thi</h3>
           <p className="mt-4 text-sm leading-7 text-[var(--tam-muted)]">Khám phá cách nội dung, quảng cáo, funnel, automation và dữ liệu được nối thành một lộ trình học và áp dụng rõ ràng.</p>
-          <Link className="mt-6 inline-flex items-center gap-2 text-sm font-black text-[var(--tam-accent-strong)]" href="/he-sinh-thai">
+          <Link className="mt-6 inline-flex items-center gap-2 text-sm font-black text-[var(--tam-accent-strong)]" href="/dich-vu">
             Xem bản đồ hệ thống <ArrowRight size={17} aria-hidden="true" />
           </Link>
         </div>

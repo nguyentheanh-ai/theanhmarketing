@@ -641,10 +641,10 @@ export function CourseSalesPage({ course }: { course: Course }) {
             <Link className="hover:text-[#85d49b]" href="/khoa-hoc">
               Chương trình
             </Link>
-            <Link className="hover:text-[#85d49b]" href="/lien-he">
+            <Link className="hover:text-[#85d49b]" href="/dich-vu">
               Liên hệ
             </Link>
-            <Link className="hover:text-[#85d49b]" href="/lien-he">
+            <Link className="hover:text-[#85d49b]" href="/dich-vu">
               Chính sách
             </Link>
             <a className="hover:text-[#85d49b]" href="https://facebook.com" rel="noreferrer" target="_blank">

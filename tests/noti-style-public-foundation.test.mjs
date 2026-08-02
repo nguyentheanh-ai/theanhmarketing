@@ -70,7 +70,8 @@ test("public surfaces no longer render the legacy offer popup", () => {
 test("course cards retain real course data and use the light interactive card", () => {
   assert.match(courseCard, /course\.title/);
   assert.match(courseCard, /course\.price/);
-  assert.match(courseCard, /AddToCartButton/);
+  assert.doesNotMatch(courseCard, /AddToCartButton/);
+  assert.match(courseCard, /Sắp ra mắt/);
   assert.match(courseCard, /tam-course-card/);
   assert.match(courseCard, /tam-lift/);
   assert.match(courseCard, /tam-media-zoom/);
@@ -90,6 +91,7 @@ test("footer remains connected to real brand contact and public routes", () => {
   assert.match(footer, /brand\.phone/);
   assert.match(footer, /brand\.email/);
   assert.match(footer, /\/khoa-hoc/);
-  assert.match(footer, /\/blog/);
+  assert.match(footer, /\/tai-lieu/);
+  assert.match(footer, /\/dich-vu/);
   assert.match(footer, /tam-public-footer/);
 });

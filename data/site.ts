@@ -12,11 +12,11 @@ export const siteConfig = {
 };
 
 export const mainNav = [
-  { label: "Hệ thống", href: "/he-sinh-thai" },
+  { label: "Trang chủ", href: "/" },
+  { label: "Dịch vụ", href: "/dich-vu" },
   { label: "Khóa học", href: "/khoa-hoc" },
-  { label: "Học viên", href: "/hoc-vien" },
+  { label: "Tài liệu", href: "/tai-lieu" },
   { label: "Workshop", href: "/workshop" },
-  { label: "Blog", href: "/blog" },
 ];
 
 export const platformStats = [

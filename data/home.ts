@@ -10,7 +10,7 @@ export const homePage = {
     },
     secondaryCta: {
       label: "Tải AI Growth Toolkit",
-      href: "/blog#tai-lieu",
+      href: "/tai-lieu",
     },
   },
   problem: {
@@ -27,7 +27,7 @@ export const homePage = {
       {
         title: "Có nội dung nhưng chưa tạo ra lead",
         description: "Nối insight, thông điệp và nội dung với một hành trình chuyển đổi rõ ràng.",
-        href: "/he-sinh-thai",
+        href: "/dich-vu",
         points: ["Content theo mục tiêu", "CTA và funnel liền mạch", "Đo phản hồi thật"],
       },
       {
@@ -39,7 +39,7 @@ export const homePage = {
       {
         title: "Dùng AI nhưng founder vẫn quá tải",
         description: "Biến prompt rời rạc thành workflow có đầu vào, đầu ra và bước kiểm soát.",
-        href: "/khoa-hoc/bo-kit-agent-doanh-nghiep",
+        href: "/academy/bo-kit-agent-doanh-nghiep",
         points: ["AI Agent theo vai trò", "Giảm việc lặp lại", "Bàn giao dễ hơn"],
       },
     ],
@@ -95,7 +95,7 @@ export const homePage = {
     title: "Thư viện toolkit giúp bạn bắt đầu nhanh hơn.",
     cta: {
       label: "Xem toolkit",
-      href: "/blog#tai-lieu",
+      href: "/tai-lieu",
     },
   },
   testimonials: {
@@ -107,7 +107,7 @@ export const homePage = {
     title: "Framework, chẩn đoán và workflow mới.",
     cta: {
       label: "Xem blog",
-      href: "/blog",
+      href: "/tai-lieu",
     },
   },
   faq: {

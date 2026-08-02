@@ -7,23 +7,16 @@ export async function SiteFooter() {
   const phoneHref = `tel:${brand.phone.replace(/\D/g, "")}`;
   const emailHref = `mailto:${brand.email}`;
   const featuredLinks = [
-    { label: "AI Growth System", href: "/he-sinh-thai" },
-    { label: "AI Ads Engine", href: "/khoa-hoc" },
-    { label: "AI Growth Toolkit", href: "/blog#tai-lieu" },
-    { label: "Workshop chẩn đoán", href: "/workshop" },
+    { label: "Dịch vụ", href: "/dich-vu" },
+    { label: "Khóa học", href: "/khoa-hoc" },
+    { label: "Tài liệu", href: "/tai-lieu" },
+    { label: "Workshop", href: "/workshop" },
   ];
   const usefulLinks = [
-    { label: "Blog", href: "/blog" },
-    { label: "Hệ thống", href: "/he-sinh-thai" },
-    { label: "AI Operator Hub", href: "/hoc-vien" },
-    { label: "Triển khai cho team", href: "/doi-tac" },
     { label: "Đăng ký", href: "/dang-ky" },
-  ];
-  const helpLinks = [
-    { label: "Liên hệ", href: "/lien-he" },
-    { label: "Marketing OS", href: "/gioi-thieu" },
-    { label: "Đăng nhập học viên", href: "/dang-nhap" },
-    { label: "Dashboard học viên", href: "/dashboard" },
+    { label: "Đăng nhập", href: "/dang-nhap" },
+    { label: "Khóa học của tôi", href: "/dashboard" },
+    { label: "Tài khoản", href: "/tai-khoan" },
   ];
 
   return (
@@ -37,8 +30,7 @@ export async function SiteFooter() {
             </span>
           </Link>
           <p className="mt-5 max-w-lg text-sm font-medium leading-7 text-[var(--tam-muted)]">
-            AI Performance Marketing System giúp SME và Solopreneur biến content, ads, funnel,
-            automation và CRM/Data thành một hệ thống tăng trưởng có thể vận hành lặp lại.
+            Đào tạo Marketing và AI cho cá nhân, chuyên gia và doanh nghiệp theo hình thức Online hoặc Offline.
           </p>
           <div className="mt-10">
             <p className="text-lg font-black text-[var(--tam-ink)]">Nhận AI Growth Toolkit</p>
@@ -63,10 +55,10 @@ export async function SiteFooter() {
           </div>
         </div>
 
-        <FooterColumn title="Growth System" links={featuredLinks} />
+        <FooterColumn title="Khám phá" links={featuredLinks} />
         <FooterColumn title="Liên kết" links={usefulLinks} />
         <div>
-          <FooterColumn title="Trợ giúp" links={helpLinks} />
+          <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--tam-ink)]">Liên hệ</p>
           <div className="mt-6 grid gap-2 text-sm font-semibold">
             <a href={phoneHref} className="text-[var(--tam-muted)] transition hover:text-[var(--tam-accent-strong)]">
               Hotline/Zalo: {brand.phone}
@@ -80,9 +72,7 @@ export async function SiteFooter() {
       <div className="tam-container mt-10 flex flex-col gap-3 border-t border-[var(--tam-line)] pt-6 text-xs font-semibold leading-6 text-slate-500 sm:mt-12 sm:flex-row sm:items-center sm:justify-between">
         <p>© {new Date().getFullYear()} {brand.name}. All rights reserved.</p>
         <div className="flex flex-wrap gap-4">
-          <Link href="/lien-he" className="transition hover:text-white">
-            Chính sách bảo mật
-          </Link>
+          <span>Chính sách bảo mật</span>
           <Link href="/dang-ky" className="transition hover:text-white">
             Điều khoản và điều kiện
           </Link>

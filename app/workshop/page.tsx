@@ -37,8 +37,8 @@ export default async function WorkshopPage() {
           <nav>
             <span>The Anh Marketing</span>
             <Link href="/workshop">Workshop</Link>
-            <Link href="/he-sinh-thai">Growth System</Link>
-            <Link href="/hoc-vien">Operator Hub</Link>
+            <Link href="/dich-vu">Dịch vụ</Link>
+            <Link href="/khoa-hoc">Khóa học</Link>
           </nav>
           <div className="text-center">
             <p className="ai-kicker">Live workshop</p>
@@ -89,7 +89,7 @@ export default async function WorkshopPage() {
             <h2 className="mt-4 text-3xl font-black tracking-[-0.04em]">Xem lại các buổi đã diễn ra</h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
               {["AI Growth System Diagnosis", "Facebook Ads trong funnel", "AI Content Engine", "Workflow automation"].map((item) => (
-                <Link key={item} href="/blog#tai-lieu" className="rounded-xl border border-white/10 bg-white/7 p-4 transition hover:border-[#77d7ff]/35">
+                <Link key={item} href="/tai-lieu" className="rounded-xl border border-white/10 bg-white/7 p-4 transition hover:border-[#77d7ff]/35">
                   <span className="text-xs font-black text-[#8bdcff]">Replay</span>
                   <p className="mt-2 text-lg font-black">{item}</p>
                   <p className="mt-2 text-sm text-white/55">Toolkit, checklist và replay nằm trong thư viện học viên.</p>

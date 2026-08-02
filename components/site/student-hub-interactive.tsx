@@ -42,8 +42,8 @@ const segments = [
 const quickLinks = [
   { label: "AI Operator Dashboard", href: "/dashboard", tags: "dashboard học khóa tiến độ growth system" },
   { label: "Khóa Facebook Ads 2026", href: "/khoa-hoc/facebook-ads-2026", tags: "facebook ads quảng cáo khóa học" },
-  { label: "AI Growth Toolkit", href: "/blog#tai-lieu", tags: "tài liệu workflow checklist prompt sop toolkit" },
-  { label: "Chẩn đoán Growth System", href: "/lien-he", tags: "hỗ trợ zalo email liên hệ tư vấn" },
+  { label: "AI Growth Toolkit", href: "/tai-lieu", tags: "tài liệu workflow checklist prompt sop toolkit" },
+  { label: "Dịch vụ Marketing & AI", href: "/dich-vu", tags: "hỗ trợ zalo email liên hệ tư vấn" },
 ];
 
 export function StudentHubInteractive({ testimonials }: StudentHubInteractiveProps) {
@@ -142,7 +142,7 @@ export function StudentHubInteractive({ testimonials }: StudentHubInteractivePro
             {testimonials.slice(0, 2).map((item) => (
               <div key={`${item.name}-${item.title}`}>
                 <span>{item.quote}</span>
-                <ButtonLink href="/hoc-vien" variant="secondary">{item.name}</ButtonLink>
+                <ButtonLink href="/dashboard" variant="secondary">{item.name}</ButtonLink>
               </div>
             ))}
           </section>

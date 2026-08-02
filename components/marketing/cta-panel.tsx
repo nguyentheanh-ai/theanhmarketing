@@ -10,7 +10,7 @@ export function CtaPanel() {
         <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-[var(--tam-muted)]">Chọn chương trình phù hợp với vấn đề hiện tại, hoặc bắt đầu bằng nội dung và toolkit của The Anh Marketing.</p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <ButtonLink href="/khoa-hoc">Xem chương trình <ArrowRight size={17} aria-hidden="true" /></ButtonLink>
-          <ButtonLink href="/lien-he" variant="secondary">Nhận tư vấn lộ trình</ButtonLink>
+          <ButtonLink href="/dich-vu" variant="secondary">Nhận tư vấn lộ trình</ButtonLink>
         </div>
       </div>
     </div>

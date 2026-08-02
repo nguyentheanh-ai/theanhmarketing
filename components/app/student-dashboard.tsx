@@ -423,7 +423,7 @@ export function StudentDashboard({
               {resources.slice(0, 4).map((item) => (
                 <Link
                   key={item.title}
-                  href="/blog#tai-lieu"
+                  href="/tai-lieu"
                   className={`rounded-xl p-4 ring-1 ${isDark ? "bg-white/5 ring-white/8 hover:bg-white/8" : "bg-[#f6f1e8] ring-black/6 hover:bg-[#f2eadf]"}`}
                 >
                   <p className="font-black">{item.title}</p>
@@ -459,4 +459,3 @@ export function StudentDashboard({
     </main>
   );
 }
-
