@@ -38,18 +38,27 @@ test("account page is protected and supports safe profile changes", () => {
   assert.doesNotMatch(form, /[?&](email|phone|name)=/);
 });
 
-test("account page presents profile email and password as three clear inline actions", () => {
+test("account changes stay collapsed until the student selects email or password", () => {
   const page = read("app/tai-khoan/page.tsx");
   const form = read("components/account/account-profile-form.tsx");
+  const passwordHandlerStart = form.indexOf("async function updatePassword");
+  const passwordHandler = form.slice(passwordHandlerStart, form.indexOf("\n  return (", passwordHandlerStart));
 
   assert.match(form, /Thông tin cá nhân/);
-  assert.match(form, /Email đăng nhập/);
+  assert.match(form, /Đổi thông tin tài khoản/);
+  assert.match(form, /activeChange/);
+  assert.match(form, /setActiveChange\("email"\)/);
+  assert.match(form, /setActiveChange\("password"\)/);
   assert.match(form, /Email hiện tại/);
   assert.match(form, /Email mới/);
   assert.match(form, /name="new_email"/);
   assert.match(form, /Đổi mật khẩu/);
   assert.match(form, /updatePassword/);
-  assert.match(form, /updateUser\(\{[\s\S]*password/);
+  assert.match(form, /name="current_password"/);
+  assert.match(form, /name="new_password"/);
+  assert.match(form, /name="confirm_password"/);
+  assert.match(passwordHandler, /signInWithPassword/);
+  assert.ok(passwordHandler.indexOf("signInWithPassword") < passwordHandler.indexOf("updateUser"));
   assert.match(form, /showPassword/);
   assert.match(form, /aria-live="polite"/);
   assert.match(page, /Thiết lập tài khoản/);

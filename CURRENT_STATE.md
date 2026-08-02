@@ -3,9 +3,9 @@
 ## 2026-08-02 - Owner course access and clearer account self-service (local review)
 
 - Production account `theanhnguyen.marketing@gmail.com` now has active access to all 10 canonical catalog courses through idempotent access grants plus active CRM enrollments tied to the exact confirmed Auth user. No password, order, payment or email was changed.
-- Local `/tai-khoan` separates profile, login-email and password updates into three clear inline cards, adds identity/access summaries and keeps the owned-course list visible. The forced recovery route `/doi-mat-khau` remains unchanged.
+- Local `/tai-khoan` keeps profile editing visible but collapses email/password changes into one `Đổi thông tin tài khoản` card. Students choose one action before its form appears; password changes require the current password, new password and confirmation. The forced recovery route `/doi-mat-khau` remains unchanged.
 - A server-verified owner may preview `/dat-lich-ho-tro` using the latest existing non-support order identity when no paid course order exists. Normal customers remain paid-order-only; a final owner submission would still create a real pending 500.000đ support order, and no submission was made during QA.
-- Verification: 480/480 Node tests, TypeScript, ESLint 0 errors/1 pre-existing unrelated warning, `git diff --check`, 91-page Next.js build, desktop/mobile browser QA with zero horizontal overflow and zero console warnings/errors. UI/code remains local pending owner approval; production storefront is unchanged.
+- Verification: 480/480 Node tests, TypeScript, ESLint 0 errors/1 pre-existing unrelated warning, `git diff --check`, 91-page Next.js build, desktop/mobile disclosure QA with zero horizontal overflow and zero console warnings/errors. No account form was submitted. UI/code remains local pending owner approval; production storefront is unchanged.
 
 ## 2026-08-02 - Simplified storefront production release
 

@@ -15,11 +15,11 @@
 **Files:**
 - Modify: `tests/student-account-portal.test.mjs`
 
-- [ ] **Step 1: Thay test ba form luôn mở bằng test disclosure**
+- [x] **Step 1: Thay test ba form luôn mở bằng test disclosure**
 
 Test phải yêu cầu `Đổi thông tin tài khoản`, hai nút lựa chọn, trạng thái `activeChange`, các trường `current_password`, `new_password`, `confirm_password`, và `signInWithPassword` xuất hiện trước `updateUser({ password` trong source.
 
-- [ ] **Step 2: Chạy test để xác nhận RED**
+- [x] **Step 2: Chạy test để xác nhận RED**
 
 Run: `node --test tests/student-account-portal.test.mjs`
 Expected: FAIL vì component hiện chưa có disclosure, mật khẩu hiện tại hoặc bước đăng nhập lại.
@@ -29,15 +29,15 @@ Expected: FAIL vì component hiện chưa có disclosure, mật khẩu hiện t�
 **Files:**
 - Modify: `components/account/account-profile-form.tsx`
 
-- [ ] **Step 1: Thêm trạng thái disclosure**
+- [x] **Step 1: Thêm trạng thái disclosure**
 
 Thêm `type AccountChange = "email" | "password" | null` và `activeChange`. Render card `Đổi thông tin tài khoản`; khi `activeChange === null` chỉ render hai button `Đổi email`, `Đổi mật khẩu`.
 
-- [ ] **Step 2: Chỉ render đúng biểu mẫu được chọn**
+- [x] **Step 2: Chỉ render đúng biểu mẫu được chọn**
 
 Biểu mẫu email giữ email hiện tại và email mới. Biểu mẫu mật khẩu có ba trường `current_password`, `new_password`, `confirm_password`. Cả hai có hành động `Quay lại` để đóng panel và xóa trạng thái thông báo liên quan.
 
-- [ ] **Step 3: Xác thực mật khẩu hiện tại trước cập nhật**
+- [x] **Step 3: Xác thực mật khẩu hiện tại trước cập nhật**
 
 Trong `updatePassword`, kiểm tra độ dài/khớp/khác mật khẩu cũ; gọi:
 
@@ -47,7 +47,7 @@ const { error: verificationError } = await supabase.auth.signInWithPassword({ em
 
 Nếu lỗi, dừng và hiển thị `Mật khẩu hiện tại chưa đúng.`. Chỉ sau khi thành công mới gọi `supabase.auth.updateUser({ password: newPassword, data: ... })`.
 
-- [ ] **Step 4: Chạy focused test để xác nhận GREEN**
+- [x] **Step 4: Chạy focused test để xác nhận GREEN**
 
 Run: `node --test tests/student-account-portal.test.mjs`
 Expected: toàn bộ test trong file PASS.
@@ -64,15 +64,15 @@ Expected: toàn bộ test trong file PASS.
 - Modify: `/Users/theanh/CodexProjects/Kinh doanh/docs/TASK_LOG.md`
 - Modify: `/Users/theanh/CodexProjects/Kinh doanh/docs/CHANGELOG.md`
 
-- [ ] **Step 1: Chạy full verification**
+- [x] **Step 1: Chạy full verification**
 
 Run: `node --test tests/*.test.mjs`, `tsc --noEmit`, `eslint .`, `next build`, `git diff --check`.
 Expected: 0 test failures, 0 TypeScript/build errors; chỉ chấp nhận warning lint cũ đã được ghi nhận.
 
-- [ ] **Step 2: QA trình duyệt local**
+- [x] **Step 2: QA trình duyệt local**
 
 Xác nhận desktop/mobile mặc định không thấy input email/password, bấm từng lựa chọn chỉ mở một form, có đủ ba trường mật khẩu, không overflow và không có console error. Không submit form thật.
 
-- [ ] **Step 3: Cập nhật tài liệu và commit local**
+- [x] **Step 3: Cập nhật tài liệu và commit local**
 
 Ghi rõ không đổi schema/order/payment/entitlement, không submit form và chưa deploy. Commit component, test và tài liệu trên nhánh hiện tại.
