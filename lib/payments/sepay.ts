@@ -23,6 +23,14 @@ export type SepayWebhookPayload = {
   description?: string;
 };
 
+export type SepayFallbackOrderCandidate = {
+  orderCode: string;
+  studentName: string;
+  amount: number;
+  status: string;
+  createdAt: string;
+};
+
 const orderPrefix = "TAM";
 
 export function getSepayConfig() {
@@ -204,6 +212,84 @@ export function getSepayOrderCode(payload: SepayWebhookPayload) {
   const match = text.match(new RegExp(`${orderPrefix}[A-Z0-9]+`));
 
   return match?.[0] ?? "";
+}
+
+const SEPAY_FALLBACK_LOOKBACK_MS = 24 * 60 * 60 * 1000;
+const SEPAY_FALLBACK_CLOCK_SKEW_MS = 5 * 60 * 1000;
+
+function normalizeVietnameseIdentity(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[đĐ]/g, "D")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function getSepayPayerIdentity(payload: SepayWebhookPayload) {
+  const sources = [
+    payload.content,
+    payload.transactionContent,
+    payload.transaction_content,
+    payload.description,
+  ];
+
+  for (const source of sources) {
+    const match = String(source ?? "").match(/\bND\s+(.+?)(?:\s+CHUYEN\s+TIEN\b|$)/i);
+    const identity = normalizeVietnameseIdentity(match?.[1] ?? "");
+
+    if (identity.length >= 5) {
+      return identity;
+    }
+  }
+
+  return "";
+}
+
+export function getSepayTransactionTimestamp(payload: SepayWebhookPayload) {
+  const raw = String(payload.transactionDate ?? payload.transaction_date ?? "").trim();
+
+  if (!raw) {
+    return null;
+  }
+
+  const isoLike = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(raw)
+    ? `${raw.replace(" ", "T")}+07:00`
+    : raw;
+  const timestamp = Date.parse(isoLike);
+
+  return Number.isFinite(timestamp) ? timestamp : null;
+}
+
+export function resolveSepayFallbackOrderCode(
+  payload: SepayWebhookPayload,
+  candidates: SepayFallbackOrderCandidate[],
+) {
+  const payerIdentity = getSepayPayerIdentity(payload);
+  const receivedAmount = getSepayTransferAmount(payload);
+  const transactionTimestamp = getSepayTransactionTimestamp(payload);
+
+  if (!payerIdentity || receivedAmount <= 0 || transactionTimestamp === null) {
+    return "";
+  }
+
+  const matches = candidates.filter((candidate) => {
+    const createdTimestamp = Date.parse(candidate.createdAt);
+    const status = candidate.status.toLowerCase();
+
+    return (
+      (status === "pending" || status === "expired") &&
+      candidate.amount === receivedAmount &&
+      normalizeVietnameseIdentity(candidate.studentName) === payerIdentity &&
+      Number.isFinite(createdTimestamp) &&
+      createdTimestamp >= transactionTimestamp - SEPAY_FALLBACK_LOOKBACK_MS &&
+      createdTimestamp <= transactionTimestamp + SEPAY_FALLBACK_CLOCK_SKEW_MS
+    );
+  });
+
+  return matches.length === 1 ? matches[0].orderCode.trim().toUpperCase() : "";
 }
 
 export function getSepayTransferAmount(payload: SepayWebhookPayload) {

@@ -1262,3 +1262,14 @@ Before changing these, run targeted tests and full build.
 | Booking preview | Only the server-confirmed owner can fall back to the latest real non-support order identity for preview. Customers still require a paid course order; final submission retains the real 500.000đ pending-order flow. |
 | Verification | 480/480 Node tests, TypeScript, ESLint 0 errors/1 existing unrelated warning, diff check, 91-page build and clean desktop/mobile disclosure QA. No form submission. |
 | Release | Local candidate only; do not deploy until owner approval. |
+
+## 2026-08-02 - Paid student login recovery and `/dang-nhap` contrast
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Customer operation | Recovered the existing Supabase Auth account for the exact paid order `TAMMSBVQNXBYU2N7`; verified a real password sign-in and preserved `must_change_password=true`. |
+| Email | Reused the exact existing `payment-success-email` course template without inventing content. The available Resend key was test-only, so the unchanged rendered message was sent through connected Gmail and recorded as sent; delivery/open is not confirmed. |
+| UI | Added a scoped high-specificity login input override in `app/globals.css` and a dedicated class in `components/auth/login-form.tsx` so the white field, dark text, placeholder, border, and focus state remain readable despite `.ai-panel` declarations using `!important`. |
+| SePay prevention | Kept full TAM order code as the primary match. Code-less callbacks may match only one pending/expired order using exact amount, normalized payer/student name, and a transaction window from 24 hours before to 5 minutes after order creation. Transaction id/reference retries remain idempotent and ambiguous cases fail closed. |
+| Verification | Added login-contrast and SePay regression coverage. Focused suite passed 40/40; TypeScript, targeted ESLint, production build (91 routes), local browser computed-style checks, and live smoke checks passed. |
+| Release | Runtime commit `6c74a97c7608565c2987dfda147cfede3cdc32bc`; production deployment `dpl_A7fY8d3Whn62dd8ma9317e8nNm8V` is Ready and aliased to `www.theanhmarketing.com`. Live `/dang-nhap` returned 200 with the new class/CSS, unauthenticated SePay webhook returned 401, and `app.theanhmarketing.com` was untouched. |

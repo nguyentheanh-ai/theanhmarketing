@@ -6,10 +6,12 @@ import {
   formatVnd,
   getSepayOrderCode,
   getSepayReference,
+  getSepayTransactionTimestamp,
   getSepayTransferAmount,
   isSepayAccountMatched,
   isSepayConfigured,
   parseVndAmount,
+  resolveSepayFallbackOrderCode,
   type SepayWebhookPayload,
 } from "@/lib/payments/sepay";
 import { attributionToDbColumns, normalizeAttribution, type Attribution, type AttributionInput } from "@/lib/tracking/attribution";
@@ -1017,6 +1019,82 @@ export async function expirePaymentOrderIfOverdue(orderCode: string, now = new D
   return data ? mapDbOrder(data as DbOrder) : null;
 }
 
+async function resolveSepayOrderCode(payload: SepayWebhookPayload) {
+  const embeddedOrderCode = getSepayOrderCode(payload);
+
+  if (embeddedOrderCode) {
+    return embeddedOrderCode;
+  }
+
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    throw new Error("Chưa cấu hình Supabase để đối soát giao dịch SePay.");
+  }
+
+  const transactionId = String(payload.id ?? "").trim();
+  const referenceCode = getSepayReference(payload).trim();
+
+  if (transactionId) {
+    const existingTransaction = await supabase
+      .from("orders")
+      .select(orderSelectFields)
+      .eq("sepay_transaction_id", transactionId)
+      .limit(1)
+      .maybeSingle();
+
+    if (!existingTransaction.error && existingTransaction.data) {
+      return (existingTransaction.data as DbOrder).order_code;
+    }
+  }
+
+  if (referenceCode) {
+    const existingReference = await supabase
+      .from("orders")
+      .select(orderSelectFields)
+      .eq("sepay_reference_code", referenceCode)
+      .limit(1)
+      .maybeSingle();
+
+    if (!existingReference.error && existingReference.data) {
+      return (existingReference.data as DbOrder).order_code;
+    }
+  }
+
+  const transactionTimestamp = getSepayTransactionTimestamp(payload);
+  const receivedAmount = getSepayTransferAmount(payload);
+
+  if (transactionTimestamp === null || receivedAmount <= 0) {
+    return "";
+  }
+
+  const earliestCreatedAt = new Date(transactionTimestamp - 24 * 60 * 60 * 1000).toISOString();
+  const latestCreatedAt = new Date(transactionTimestamp + 5 * 60 * 1000).toISOString();
+  const candidateRead = await supabase
+    .from("orders")
+    .select(orderBaseSelectFields)
+    .in("status", ["pending", "expired"])
+    .eq("amount", receivedAmount)
+    .gte("created_at", earliestCreatedAt)
+    .lte("created_at", latestCreatedAt)
+    .order("created_at", { ascending: false });
+
+  if (candidateRead.error) {
+    throw new Error(`Không đối soát được đơn SePay thiếu mã: ${candidateRead.error.message}`);
+  }
+
+  return resolveSepayFallbackOrderCode(
+    payload,
+    ((candidateRead.data ?? []) as DbOrder[]).map((row) => ({
+      orderCode: row.order_code,
+      studentName: row.student_name ?? "",
+      amount: parseVndAmount(row.amount),
+      status: row.status ?? "",
+      createdAt: row.created_at ?? "",
+    })),
+  );
+}
+
 export async function confirmOrderFromSepay(payload: SepayWebhookPayload): Promise<PaymentConfirmationResult> {
   const transferType = String(payload.transferType ?? payload.transfer_type ?? "").toLowerCase();
 
@@ -1028,7 +1106,7 @@ export async function confirmOrderFromSepay(payload: SepayWebhookPayload): Promi
     throw new Error("Webhook Sepay không khớp tài khoản nhận tiền.");
   }
 
-  const orderCode = getSepayOrderCode(payload);
+  const orderCode = await resolveSepayOrderCode(payload);
   const receivedAmount = getSepayTransferAmount(payload);
 
   if (!orderCode) {
