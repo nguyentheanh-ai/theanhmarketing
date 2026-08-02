@@ -72,7 +72,7 @@ export default async function CustomerGuidePage() {
   const { user } = await getCurrentAuth();
 
   return (
-    <PageShell showOfferPopup={false}>
+    <PageShell>
       <section className="ai-shell pb-24 pt-32 sm:pt-40">
         <div className="mx-auto max-w-4xl text-center">
           <p className="ai-kicker">Hướng dẫn dành cho học viên</p>

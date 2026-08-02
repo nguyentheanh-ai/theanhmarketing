@@ -58,8 +58,13 @@ test("homepage keeps products service-driven and FAQ accessible", () => {
   assert.match(page, /faqs=\{faqs\}/);
 });
 
-test("homepage keeps the approved hero unobstructed by the legacy offer popup", () => {
-  assert.match(page, /<PageShell showOfferPopup=\{false\}>/);
+test("public surfaces no longer render the legacy offer popup", () => {
+  const courseSales = read("components/course/ai-marketing-sales-page.tsx");
+  const courseRoute = read("app/khoa-hoc/[slug]/page.tsx");
+
+  assert.doesNotMatch(shell, /SiteOfferPopup|OfferPopupFromSettings|getOfferSettings|showOfferPopup/);
+  assert.doesNotMatch(courseSales, /SiteOfferPopup/);
+  assert.doesNotMatch(courseRoute, /getOfferSettings/);
 });
 
 test("course cards retain real course data and use the light interactive card", () => {

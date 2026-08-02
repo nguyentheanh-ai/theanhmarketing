@@ -342,7 +342,7 @@ test("Ebook Facebook Ads payment plan is configured as a separate 399K product",
 
   assert.match(courses, /slug:\s*"ebook-facebook-ads-2026"/);
   assert.match(courses, /title:\s*"Thư viện kiến thức Facebook Ads 2026"/);
-  assert.match(courses, /price:\s*"399K"/);
+  assert.match(courses, /price:\s*"399\.000đ"/);
   assert.match(orders, /"ebook-facebook-ads-2026":\s*\{/);
   assert.match(orders, /"full-access-399":\s*\{[\s\S]*?amount:\s*399000/);
   assert.match(paymentPage, /function isFacebookAdsEbook2026/);

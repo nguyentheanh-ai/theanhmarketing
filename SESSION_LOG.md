@@ -244,3 +244,10 @@ Scope: production LMS data for `facebook-ads-2026`; no source-code, schema, migr
 Change: inserted four published `enrolled_only` video lessons for Dataset introduction, Business Suite, Pancake, and website/landing-page sales at local orders 10 through 13 in the final module. Shifted the exclusion lesson to local order 14 so it remains last.
 Verification: production has 23 published lessons; the four Dataset lessons are global positions 19 through 22 and the exclusion lesson is position 23. Authenticated live Chrome QA confirmed the same titles, order, Premium labels, and no site runtime errors.
 Safety: no existing lesson content/video/access was changed except the exclusion lesson order; no student progress, entitlement, payment, email, or tracking data changed.
+
+## 2026-08-02 | main-site | Unified course prices and removed legacy offer UI | local ready
+
+- Updated course catalog data so eight courses display `990.000đ`, while Facebook Ads remains `799.000đ` and Ebook remains `399.000đ`; original prices also use full VND formatting instead of `K`.
+- Removed the legacy public offer popup from shared public shells and course sales pages, including its obsolete responsive CSS. Admin offer settings and all cart/order/payment/registration/email/access flows remain untouched.
+- Browser QA on `/khoa-hoc`: 10 cards, exact 8/1/1 price split, zero popup elements, no broken images, no horizontal overflow at 1280px or 390px, and no console warning/error.
+- Verification: focused 13/13, full Node 463/463, TypeScript pass, ESLint 0 errors/1 pre-existing unrelated warning, Next.js production build 110/110 routes. Local only; no Vercel or Supabase mutation.

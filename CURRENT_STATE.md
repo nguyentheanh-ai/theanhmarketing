@@ -12,10 +12,10 @@
 
 - Branch cô lập `feat/noti-visual-redesign-local` đang phục vụ local tại `http://localhost:57128`; chưa deploy Vercel và chưa thay đổi production.
 - Homepage và `/khoa-hoc` dùng visual A nền sáng, accent xanh The Anh, grid nền, pill CTA, card/shadow/hover/reveal và responsive mobile; header/footer/course card dùng chung foundation.
-- Homepage giữ dữ liệu thật từ services, giữ section Agent Kit hiện hữu, FAQ accessible và tắt popup ưu đãi riêng ở homepage để không che hero. Popup/commerce flow ở các trang bán hàng vẫn giữ nguyên.
-- Catalog lấy toàn bộ course thật, tự sinh danh mục, tìm kiếm tiếng Việt và lọc client-side; Agent Kit được đồng bộ theo backup mới nhất ở mức `990K` và mô tả 30 skill.
+- Homepage giữ dữ liệu thật từ services, giữ section Agent Kit hiện hữu và FAQ accessible. Popup ưu đãi giao diện cũ đã được gỡ khỏi toàn bộ public shell và trang bán khóa học; cart/order/payment/registration vẫn giữ nguyên.
+- Catalog lấy toàn bộ course thật, tự sinh danh mục, tìm kiếm tiếng Việt và lọc client-side. Tám khóa ngoài Ebook/Facebook Ads hiển thị `990.000đ`; Facebook Ads giữ `799.000đ`, Ebook giữ `399.000đ`; toàn bộ giá catalog dùng dạng đầy đủ thay cho hậu tố `K`.
 - Không đổi Supabase schema, Auth, order, SePay, email, entitlement, progress hoặc admin CRM.
-- Verification: `462/462` Node tests, TypeScript, Next.js build 110 routes, desktop/mobile browser QA, search/filter/menu/FAQ và runtime console đều đạt. ESLint có 0 error và 1 warning cũ ngoài phạm vi.
+- Verification hiện tại: `463/463` Node tests, TypeScript, Next.js build 110 routes, desktop/mobile browser QA và runtime console đều đạt. ESLint có 0 error và 1 warning cũ ngoài phạm vi.
 
 ## 2026-07-25 - Public guide and paid support booking (local demo)
 

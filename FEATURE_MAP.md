@@ -223,3 +223,10 @@ Files: `services/orderSheetSyncService.ts`, `lib/notifications/google-sheets-ord
 Environment: `GOOGLE_SHEETS_WEBHOOK_URL`, `CRON_SECRET`.
 
 Guard: order payload and lead payload are different contracts; preserve text formatting for phone numbers.
+
+## 2026-08-02 - Course pricing display and legacy offer cleanup
+
+| Tính năng | Trạng thái | App/route | Flow giữ nguyên | Ghi chú |
+|---|---|---|---|---|
+| Giá khóa học thống nhất | LOCAL READY | `main-site` `/`, `/khoa-hoc`, `/khoa-hoc/[slug]` | Slug, cart, order parsing, đăng ký và thanh toán | 8 khóa giá `990.000đ`; Facebook Ads `799.000đ`; Ebook `399.000đ`; không dùng hậu tố `K` trong course catalog data |
+| Gỡ popup ưu đãi cũ | LOCAL READY | Public `PageShell` và course sales page | Admin CMS offer settings còn nguyên; cart/order/payment/email/access không đổi | Xóa public popup component và CSS mobile cũ; không còn trigger/popup trên public pages |

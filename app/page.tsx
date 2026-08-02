@@ -25,7 +25,7 @@ export default async function Home() {
   const featuredCourses = courses.slice(0, 4);
 
   return (
-    <PageShell showOfferPopup={false}>
+    <PageShell>
       <section className="tam-grid-bg pb-16 pt-28 sm:pb-20 sm:pt-36" id="growth-hero">
         <div className="tam-container text-center">
           <Reveal>

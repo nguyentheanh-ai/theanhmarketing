@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { CourseSalesPage } from "@/components/course/ai-marketing-sales-page";
 import { CourseJsonLd } from "@/components/seo/json-ld";
 import { getCourseBySlug, getCourseStaticParams } from "@/services/courseService";
-import { getOfferSettings } from "@/services/offerService";
 
 export const dynamic = "force-dynamic";
 
@@ -60,12 +59,10 @@ export default async function CourseDetailPage({
   if (course.landingPageUrl) {
     redirect(course.landingPageUrl);
   }
-  const offer = await getOfferSettings();
-
   return (
     <>
       <CourseJsonLd course={course} />
-      <CourseSalesPage course={course} offer={offer} />
+      <CourseSalesPage course={course} />
     </>
   );
 }

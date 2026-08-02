@@ -40,11 +40,16 @@ test("course catalog renders the same reusable course card used on the homepage"
   assert.match(browser, /filteredCourses\.map/);
 });
 
-test("catalog keeps the latest Agent Kit offer from the recovered backup", () => {
+test("catalog uses full Vietnamese price labels and keeps only the two requested exceptions", () => {
   const courses = read("data/courses.ts");
+  const standardPrices = courses.match(/price: "990\.000đ"/g) ?? [];
 
-  assert.match(courses, /title: "Bộ Agent Kit X10 hiệu suất công việc"[\s\S]*?price: "990K"/);
+  assert.equal(standardPrices.length, 8);
+  assert.match(courses, /title: "Quảng cáo Facebook Master 2026"[\s\S]*?price: "799\.000đ"/);
+  assert.match(courses, /title: "Thư viện kiến thức Facebook Ads 2026"[\s\S]*?price: "399\.000đ"/);
+  assert.match(courses, /title: "Bộ Agent Kit X10 hiệu suất công việc"[\s\S]*?price: "990\.000đ"/);
   assert.match(courses, /Trọn bộ 30 skill cho marketing, bán hàng, vận hành và hệ thống quảng cáo/);
+  assert.doesNotMatch(courses, /price: "[\d.]+K"/);
 });
 
 test("catalog uses the colorful rounded-type v2 course covers", () => {

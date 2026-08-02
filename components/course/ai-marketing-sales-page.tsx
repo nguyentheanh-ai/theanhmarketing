@@ -8,14 +8,12 @@ import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
-import { SiteOfferPopup } from "@/components/site/offer-popup";
 import type { Course } from "@/data/courses";
 import { cleanLessonTitle } from "@/lib/lesson-title";
 import { formatCurrency, getDiscountPercent, parsePrice } from "@/lib/price";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { trackMarketingEvent } from "@/lib/tracking/events";
 import { toYouTubeEmbedUrl, toYouTubeThumbnailUrl } from "@/lib/youtube";
-import type { OfferSettings } from "@/services/offerService";
 
 const navItems = [
   { label: "Growth Engine", href: "#hero" },
@@ -283,7 +281,7 @@ function buildLandingContent(course: Course): LandingContent {
   };
 }
 
-export function CourseSalesPage({ course, offer }: { course: Course; offer: OfferSettings }) {
+export function CourseSalesPage({ course }: { course: Course }) {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openLesson, setOpenLesson] = useState(0);
@@ -659,7 +657,6 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
         </div>
       </footer>
 
-      <SiteOfferPopup contextTitle={course.title} offer={offer} />
       <TrialAccessModal
         course={course}
         isOpen={isTrialFormOpen}
@@ -679,8 +676,8 @@ export function CourseSalesPage({ course, offer }: { course: Course; offer: Offe
   );
 }
 
-export function AiMarketingSalesPage({ course, offer }: { course: Course; offer: OfferSettings }) {
-  return <CourseSalesPage course={course} offer={offer} />;
+export function AiMarketingSalesPage({ course }: { course: Course }) {
+  return <CourseSalesPage course={course} />;
 }
 
 function TrialAccessModal({
