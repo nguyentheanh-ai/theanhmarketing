@@ -90,9 +90,9 @@ export function ChangePasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="grid gap-4">
       <div className="grid gap-2">
-        <label className="text-sm font-semibold text-white/60">Mật khẩu mới</label>
+        <label className="text-sm font-bold text-slate-900">Mật khẩu mới</label>
         <input
-          className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none transition placeholder:text-white/35 focus:border-[#77d7ff]/35"
+          className="auth-readable-input min-h-12 rounded-xl border border-slate-300 bg-white px-4 text-slate-950 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:ring-4 focus:ring-sky-400/20"
           minLength={8}
           name="password"
           placeholder="Tối thiểu 8 ký tự"
@@ -101,9 +101,9 @@ export function ChangePasswordForm() {
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm font-semibold text-white/60">Nhập lại mật khẩu mới</label>
+        <label className="text-sm font-bold text-slate-900">Nhập lại mật khẩu mới</label>
         <input
-          className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none transition placeholder:text-white/35 focus:border-[#77d7ff]/35"
+          className="auth-readable-input min-h-12 rounded-xl border border-slate-300 bg-white px-4 text-slate-950 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:ring-4 focus:ring-sky-400/20"
           minLength={8}
           name="confirmPassword"
           placeholder="Nhập lại để xác nhận"
@@ -112,7 +112,7 @@ export function ChangePasswordForm() {
         />
       </div>
       {message ? (
-        <p className="rounded-xl bg-red-500/12 p-4 text-sm font-semibold text-red-100">
+        <p className="rounded-xl bg-red-50 p-4 text-sm font-semibold text-red-800">
           {message}
         </p>
       ) : null}

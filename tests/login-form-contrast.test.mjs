@@ -29,8 +29,9 @@ test("login fields use a readable light surface and visible focus state", () => 
     assert.ok(passwordClasses.split(" ").includes(className), `password field must include ${className}`);
   }
 
-  assert.match(source, /text-sm font-bold text-white">Email/);
-  assert.match(source, /text-sm font-bold text-white">Mật khẩu/);
+  assert.match(source, /text-sm font-bold text-slate-900">Email/);
+  assert.match(source, /text-sm font-bold text-slate-900">Mật khẩu/);
+  assert.match(source, /text-slate-700[^>]*>\s*<input[\s\S]*?name="rememberLogin"/);
   assert.match(
     globalStyles,
     /\.ai-panel input\.login-readable-input:not\(\[type="checkbox"\]\):not\(\[type="radio"\]\)/,
@@ -38,6 +39,22 @@ test("login fields use a readable light surface and visible focus state", () => 
   assert.match(globalStyles, /background-color:\s*#ffffff\s*!important/);
   assert.match(globalStyles, /color:\s*#0f172a\s*!important/);
   assert.match(globalStyles, /\.login-readable-input::placeholder/);
+});
+
+test("login password can be shown or hidden with an accessible eye button", () => {
+  assert.match(source, /const \[showPassword, setShowPassword\] = useState\(false\)/);
+  assert.match(source, /type=\{showPassword \? "text" : "password"\}/);
+  assert.match(source, /aria-label=\{showPassword \? "Ẩn mật khẩu" : "Hiện mật khẩu"\}/);
+  assert.match(source, /onClick=\{\(\) => setShowPassword\(\(visible\) => !visible\)\}/);
+  assert.match(source, /showPassword \? <EyeOff/);
+  assert.match(source, /: <Eye/);
+});
+
+test("login supporting copy stays visible on the public light card", () => {
+  assert.match(source, /tracking-\[0\.12em\] text-slate-500/);
+  assert.match(source, /text-xs font-bold text-sky-700 hover:text-sky-800/);
+  assert.match(source, /border-slate-200 bg-slate-50[^>]*text-slate-700/);
+  assert.match(source, /bg-slate-50[^>]*text-slate-600/);
 });
 
 test("login behavior and recovery controls remain intact", () => {

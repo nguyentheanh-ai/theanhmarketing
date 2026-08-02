@@ -4126,19 +4126,25 @@ body {
 }
 
 .ai-panel input.login-readable-input:not([type="checkbox"]):not([type="radio"]),
-.ai-panel-strong input.login-readable-input:not([type="checkbox"]):not([type="radio"]) {
+.ai-panel-strong input.login-readable-input:not([type="checkbox"]):not([type="radio"]),
+.ai-panel input.auth-readable-input:not([type="checkbox"]):not([type="radio"]),
+.ai-panel-strong input.auth-readable-input:not([type="checkbox"]):not([type="radio"]) {
   background-color: #ffffff !important;
   border-color: #cbd5e1 !important;
   color: #0f172a !important;
 }
 
 .ai-panel .login-readable-input::placeholder,
-.ai-panel-strong .login-readable-input::placeholder {
+.ai-panel-strong .login-readable-input::placeholder,
+.ai-panel .auth-readable-input::placeholder,
+.ai-panel-strong .auth-readable-input::placeholder {
   color: #64748b !important;
 }
 
 .ai-panel .login-readable-input:focus,
-.ai-panel-strong .login-readable-input:focus {
+.ai-panel-strong .login-readable-input:focus,
+.ai-panel .auth-readable-input:focus,
+.ai-panel-strong .auth-readable-input:focus {
   border-color: #38bdf8 !important;
   box-shadow: 0 0 0 4px rgb(56 189 248 / 0.2);
 }
