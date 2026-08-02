@@ -12,7 +12,6 @@ export const siteConfig = {
 };
 
 export const mainNav = [
-  { label: "Trang chủ", href: "/" },
   { label: "Dịch vụ", href: "/dich-vu" },
   { label: "Khóa học", href: "/khoa-hoc" },
   { label: "Tài liệu", href: "/tai-lieu" },

@@ -6,11 +6,14 @@ const read = (path) => readFileSync(path, "utf8");
 
 test("public navigation contains only the approved destinations", () => {
   const site = read("data/site.ts");
+  const header = read("components/site/header.tsx");
   const footer = read("components/site/footer.tsx");
 
-  for (const item of ["Trang chủ", "Dịch vụ", "Khóa học", "Tài liệu", "Workshop"]) {
+  for (const item of ["Dịch vụ", "Khóa học", "Tài liệu", "Workshop"]) {
     assert.match(site, new RegExp(`label: "${item}"`));
   }
+  assert.doesNotMatch(site, /label: "Trang chủ"/);
+  assert.match(header, /<Link href="\/"/);
   assert.doesNotMatch(site, /label: "Hệ thống"|label: "Học viên"|label: "Blog"/);
   assert.doesNotMatch(footer, /\/he-sinh-thai|\/gioi-thieu|\/doi-tac|\/lien-he|\/blog|\/hoc-vien|\/ky-nang/);
 });

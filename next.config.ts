@@ -99,6 +99,10 @@ const nextConfig: NextConfig = {
         destination: "/academy/ebook-facebook-ads-2026-premium.html",
       },
       {
+        source: "/academy/ai-master-x10-hieu-suat",
+        destination: "/academy/ai-master-x10-hieu-suat.html",
+      },
+      {
         source: "/academy/bo-kit-agent-doanh-nghiep",
         destination: "/khoa-hoc/bo-kit-agent-doanh-nghiep",
       },

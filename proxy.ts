@@ -26,13 +26,6 @@ function isLadiPageRoute(pathname: string) {
   );
 }
 
-function isDisabledAcademyRoute(pathname: string) {
-  return (
-    pathname === "/academy/ai-master-x10-hieu-suat" ||
-    pathname === "/academy/ai-master-x10-hieu-suat.html"
-  );
-}
-
 function isStudentAccessBridgeRoute(pathname: string) {
   return pathname === "/vao-khoa-hoc" || pathname === "/go";
 }
@@ -126,15 +119,6 @@ export function proxy(request: NextRequest) {
     url.port = "";
 
     return NextResponse.redirect(url, 301);
-  }
-
-  if (isDisabledAcademyRoute(request.nextUrl.pathname)) {
-    return new NextResponse("Not Found", {
-      status: 404,
-      headers: {
-        "X-Robots-Tag": "noindex, nofollow",
-      },
-    });
   }
 
   const nonceBytes = new Uint8Array(16);
