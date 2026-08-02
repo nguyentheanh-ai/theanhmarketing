@@ -38,7 +38,7 @@ export default async function RegisterPage() {
                 <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-[#159cfb] text-xs font-bold text-white">
                   {index + 1}
                 </span>
-                <p className="pt-1 font-semibold text-white/70">{item}</p>
+                <p className="pt-1 font-semibold text-slate-700">{item}</p>
               </div>
             ))}
           </div>

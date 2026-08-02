@@ -4128,7 +4128,9 @@ body {
 .ai-panel input.login-readable-input:not([type="checkbox"]):not([type="radio"]),
 .ai-panel-strong input.login-readable-input:not([type="checkbox"]):not([type="radio"]),
 .ai-panel input.auth-readable-input:not([type="checkbox"]):not([type="radio"]),
-.ai-panel-strong input.auth-readable-input:not([type="checkbox"]):not([type="radio"]) {
+.ai-panel-strong input.auth-readable-input:not([type="checkbox"]):not([type="radio"]),
+.ai-panel select.auth-readable-input,
+.ai-panel-strong select.auth-readable-input {
   background-color: #ffffff !important;
   border-color: #cbd5e1 !important;
   color: #0f172a !important;

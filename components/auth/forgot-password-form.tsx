@@ -29,9 +29,9 @@ export function ForgotPasswordForm() {
   return (
     <form className="grid gap-4" onSubmit={handleSubmit}>
       <div className="grid gap-2">
-        <label className="text-sm font-semibold text-white/60">Email</label>
+        <label className="text-sm font-bold text-slate-900">Email</label>
         <input
-          className="min-h-12 rounded-xl border border-white/10 bg-white/8 px-4 text-white outline-none transition placeholder:text-white/35 focus:border-[#77d7ff]/35"
+          className="auth-readable-input min-h-12 rounded-xl border border-slate-300 bg-white px-4 text-slate-950 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:ring-4 focus:ring-sky-400/20"
           name="email"
           placeholder="email@gmail.com"
           required
@@ -39,14 +39,14 @@ export function ForgotPasswordForm() {
         />
       </div>
       {message ? (
-        <p className="rounded-xl border border-sky-300/70 bg-sky-500/15 p-4 text-sm font-semibold leading-6 text-sky-50">
+        <p className="rounded-xl border border-sky-200 bg-sky-50 p-4 text-sm font-semibold leading-6 text-sky-900">
           {message}
         </p>
       ) : null}
       <Button isLoading={isSubmitting} loadingLabel="Đang gửi..." type="submit">
         Gửi hướng dẫn đặt lại mật khẩu
       </Button>
-      <Link className="text-sm font-bold text-white/75 hover:text-white" href="/dang-nhap">
+      <Link className="text-sm font-bold text-sky-700 hover:text-sky-800" href="/dang-nhap">
         Quay lại đăng nhập
       </Link>
     </form>
