@@ -16,6 +16,16 @@ export const emptyInvoiceDetails: InvoiceDetails = {
   email: "",
 };
 
+export function invoiceInputFromFormData(formData: Pick<FormData, "get">) {
+  return {
+    requested: formData.get("invoiceRequested") === "on",
+    taxCode: formData.get("invoiceTaxCode"),
+    companyName: formData.get("invoiceCompanyName"),
+    companyAddress: formData.get("invoiceCompanyAddress"),
+    email: formData.get("invoiceEmail"),
+  };
+}
+
 const taxCodePattern = /^\d{10}(?:-\d{3})?$/;
 
 export function normalizeInvoiceInput(input: unknown):

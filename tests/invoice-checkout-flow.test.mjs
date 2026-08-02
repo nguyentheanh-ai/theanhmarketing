@@ -110,3 +110,23 @@ test("public order polling keeps only the invoice request flag", () => {
   assert.match(source, /companyAddress:\s*""/);
   assert.match(source, /email:\s*""/);
 });
+
+test("React checkout surfaces render the shared invoice fields after their primary CTA", () => {
+  const component = read("components/payment/invoice-request-fields.tsx");
+  assert.match(component, /Tôi cần xuất hóa đơn/);
+  assert.match(component, /name="invoiceTaxCode"/);
+  assert.match(component, /name="invoiceCompanyName"/);
+  assert.match(component, /name="invoiceCompanyAddress"/);
+  assert.match(component, /name="invoiceEmail"/);
+  assert.match(component, /justify-center/);
+
+  for (const file of [
+    "app/khoa-hoc/bo-kit-agent-doanh-nghiep/agent-kit-checkout-form.tsx",
+    "components/auth/register-form.tsx",
+    "components/cart/cart-page-client.tsx",
+  ]) {
+    const source = read(file);
+    assert.match(source, /InvoiceRequestFields/, file);
+    assert.match(source, /invoice(?:\s*:|,)/, file);
+  }
+});

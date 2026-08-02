@@ -4,6 +4,8 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { getClientAttribution } from "@/lib/tracking/client-attribution";
 import { trackMarketingEvent } from "@/lib/tracking/events";
+import { InvoiceRequestFields } from "@/components/payment/invoice-request-fields";
+import { invoiceInputFromFormData } from "@/lib/orders/invoice";
 
 const COURSE_SLUG = "bo-agent-kit-x10-hieu-suat-cong-viec";
 const PAYMENT_PLAN = "agent-kit-standard-990";
@@ -30,6 +32,7 @@ export function AgentKitCheckoutForm() {
       pageUrl: window.location.href,
       referrer: document.referrer,
       ...attribution,
+      invoice: invoiceInputFromFormData(formData),
     };
 
     if (!payload.studentName || !payload.email || !payload.phone) {
@@ -143,6 +146,8 @@ export function AgentKitCheckoutForm() {
       >
         {isSubmitting ? "Đang tạo mã thanh toán..." : "Thanh toán 990.000đ ngay"}
       </button>
+
+      <div className="mt-3"><InvoiceRequestFields variant="light" /></div>
 
       <p className="mt-4 text-center text-xs leading-5 text-slate-500">
         Sau khi thanh toán thành công, hệ thống chuyển sang trang QR và hướng dẫn truy cập sẽ được gửi theo thông tin bạn đã nhập.

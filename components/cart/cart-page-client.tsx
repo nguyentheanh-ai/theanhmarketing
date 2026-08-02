@@ -9,6 +9,8 @@ import { clearCart, readCart, removeFromCart, subscribeCart, type CartItem } fro
 import { formatVnd, parseVndAmount } from "@/lib/payments/sepay";
 import { getClientAttribution } from "@/lib/tracking/client-attribution";
 import { trackMarketingEvent } from "@/lib/tracking/events";
+import { InvoiceRequestFields } from "@/components/payment/invoice-request-fields";
+import { emptyInvoiceDetails, type InvoiceDetails } from "@/lib/orders/invoice";
 
 type CartPageClientProps = {
   auth: {
@@ -24,6 +26,7 @@ export function CartPageClient({ auth }: CartPageClientProps) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [message, setMessage] = useState("");
+  const [invoice, setInvoice] = useState<InvoiceDetails>(emptyInvoiceDetails);
 
   useEffect(() => {
     const update = () => setItems(readCart());
@@ -57,6 +60,7 @@ export function CartPageClient({ auth }: CartPageClientProps) {
       body: JSON.stringify({
         courseSlugs: items.map((item) => item.slug),
         attribution: getClientAttribution(),
+        invoice,
       }),
     });
 
@@ -175,6 +179,7 @@ export function CartPageClient({ auth }: CartPageClientProps) {
             Thêm khóa học khác
           </Link>
         </div>
+        {auth.isLoggedIn ? <div className="mt-3"><InvoiceRequestFields onChange={setInvoice} /></div> : null}
         {message ? (
           <p className="mt-4 rounded-xl bg-red-500/12 p-4 text-sm font-semibold text-red-100">
             {message}

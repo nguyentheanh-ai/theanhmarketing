@@ -10,6 +10,8 @@ import { getSafeNextPath } from "@/lib/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { getClientAttribution } from "@/lib/tracking/client-attribution";
 import { trackMarketingEvent } from "@/lib/tracking/events";
+import { InvoiceRequestFields } from "@/components/payment/invoice-request-fields";
+import { invoiceInputFromFormData } from "@/lib/orders/invoice";
 
 export function RegisterForm({ courses }: { courses: Course[] }) {
   const router = useRouter();
@@ -121,6 +123,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
         courseSlug,
         courseSlugs: orderCourseSlugs,
         leadId: leadData.lead?.id,
+        invoice: invoiceInputFromFormData(formData),
         ...attribution,
       }),
     });
@@ -267,6 +270,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
         <Button isLoading={isSubmitting} loadingLabel="Đang tạo đơn thanh toán..." type="submit">
           Tạo Growth Hub
         </Button>
+        <InvoiceRequestFields />
       </form>
       <p className="mt-6 text-center text-sm text-white/55">
         Đã có tài khoản?{" "}
