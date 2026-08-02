@@ -10,6 +10,7 @@ import { ProofGrid } from "@/components/marketing/proof-grid";
 import { PublicSectionHeading } from "@/components/marketing/public-section-heading";
 import { Reveal } from "@/components/marketing/reveal";
 import { VerifiedStatStrip } from "@/components/marketing/verified-stat-strip";
+import { AgentKitWorkflow } from "@/components/site/agent-kit-workflow";
 import { PageShell } from "@/components/site/page-shell";
 import { ButtonLink } from "@/components/ui/button-link";
 import { homePage } from "@/data/home";
@@ -89,6 +90,8 @@ export default async function Home() {
         />
         <HomeDemoPanel />
       </section>
+
+      <AgentKitWorkflow />
 
       <section className="border-y border-[var(--tam-line)] bg-[#f7fafc] py-20 sm:py-28" id="growth-products">
         <div className="tam-container">
