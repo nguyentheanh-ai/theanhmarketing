@@ -259,3 +259,11 @@ Safety: no existing lesson content/video/access was changed except the exclusion
 - Locked catalog availability to four exact academy landing pages; the other six cards visibly show `Sắp ra mắt` and expose no link/button. Added authenticated My Courses/Account navigation and safe profile/email/password management backed by the existing Auth identity and shared real ownership resolver.
 - Browser QA verified the exact 3 service cards, 10 course cards, 4 live/6 coming split, zero clickable coming-soon cards, no horizontal overflow, retained routes loading and removed routes returning 404. No real form submission, production order, email or data mutation occurred.
 - Verification: 477/477 Node tests, TypeScript, ESLint 0 errors/1 pre-existing unrelated warning, `git diff --check`, and Next.js production build with 91 generated pages/routes. No Vercel deploy or database migration.
+
+## 2026-08-02 | main-site | Complete AI Master and Agent Kit local storefront | local ready
+
+- Removed the standalone Home header item while preserving the desktop/mobile brand links to `/`.
+- Restored the existing AI Master landing at its clean academy URL and synchronized AI Master plus Agent Kit to the exact `990.000đ` client/server/tracking/demo checkout contract.
+- Generated and installed two square v3 course covers derived from the approved landing visual language; the other eight catalog covers and six coming-soon gates remain unchanged.
+- Browser QA verified 10 cards, 4 live/6 coming, zero coming-soon academy links, correct v3 CSS backgrounds, both landing forms/CTAs, no legacy prices and no horizontal overflow at default and 390px. No form submission or external mutation occurred.
+- Verification: focused TDD passed during each change; full Node 478/478, TypeScript, ESLint 0 errors/1 pre-existing unrelated warning, `git diff --check`, and 91-page Next.js build pass. Local only; no deploy.

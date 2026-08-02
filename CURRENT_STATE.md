@@ -79,3 +79,11 @@ Updated: 2026-07-22
 - Catalog keeps 10 products: four approved landing pages are live and six coming-soon cards are non-clickable. Authenticated navigation exposes `/dashboard` and `/tai-khoan`; account management supports name/phone, verified email change and voluntary password change without altering order/access history.
 - Consultation payment confirmation sends consultation-specific mail and skips student-course provisioning. Existing course checkout, order, SePay, email, entitlement, progress and admin CRM flows remain intact; no schema or production data change.
 - Verification: 477/477 Node tests, TypeScript, Next.js 91-page production build, ESLint 0 errors/1 pre-existing warning, browser QA of retained/removed routes and exact 3/10/4/6 content counts. Local only; no deployment.
+
+## 2026-08-02 - AI Master and Agent Kit landing completion (local)
+
+- The standalone `Trang chủ` header item is removed; both desktop and mobile brand/logo links remain the home entry.
+- `/academy/ai-master-x10-hieu-suat` is restored through the existing published landing HTML. AI Master and Agent Kit both show and submit the server-known price `990.000đ`; their checkout demo fixtures and Meta event values use `990000`.
+- Only the AI Master and Agent Kit catalog covers moved to `v3`, using the approved luminous cobalt/cyan/violet landing-page direction. The other eight covers and the 4-live/6-coming availability gate are unchanged.
+- Browser QA: both landings return 200, expose their form/CTA, show no legacy 1.299.000đ/359.000đ price, have no broken content image or horizontal overflow, and pass 390px mobile checks. No form was submitted.
+- Verification: 478/478 Node tests, TypeScript, Next.js 91-page production build, ESLint 0 errors/1 pre-existing unrelated warning. Local only; no deployment, real order, email or database mutation.
