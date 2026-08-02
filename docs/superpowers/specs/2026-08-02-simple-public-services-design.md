@@ -26,6 +26,28 @@ Footer chỉ nhắc lại các đích public trên và thông tin thương hiệ
 
 Các trang public cũ `/he-sinh-thai`, `/gioi-thieu`, `/doi-tac`, `/lien-he`, `/blog`, `/blog/[slug]`, `/hoc-vien` và `/ky-nang` bị xóa khỏi App Router và trả về 404 khi truy cập trực tiếp. Các route kỹ thuật phục vụ thanh toán, email bridge, LMS, dashboard học viên và admin vẫn giữ nguyên nhưng không xuất hiện trong navigation public.
 
+## Trạng thái navigation khi đã đăng nhập
+
+Header phải phản ánh session hiện tại:
+
+- Khách chưa đăng nhập thấy `Đăng ký` và `Đăng nhập`.
+- Khách đã đăng nhập thấy `Khóa học của tôi` dẫn tới `/dashboard` và `Tài khoản` dẫn tới `/tai-khoan`.
+- Mobile menu dùng cùng trạng thái và cùng hai đích; không hiển thị CTA guest sau khi session đã xác nhận.
+- Đăng xuất nằm trong trang Tài khoản để header không bị quá nhiều nút.
+
+Trang `/tai-khoan` là route được bảo vệ, gồm:
+
+- Họ tên hiện tại.
+- Email tài khoản hiện tại và trạng thái chờ xác minh nếu khách yêu cầu đổi email.
+- Số điện thoại hiện tại.
+- Danh sách khóa học đã đăng ký, dùng cùng nguồn quyền học thật với `/dashboard`.
+- Form cập nhật họ tên và số điện thoại.
+- Form yêu cầu đổi email qua Supabase Auth; email mới chỉ trở thành email đăng nhập sau bước xác minh của nhà cung cấp, không được tự ý sửa order lịch sử.
+- CTA đổi mật khẩu dùng lại flow Supabase Auth hiện hữu và quay về `/tai-khoan` sau khi hoàn tất.
+- Nút đăng xuất.
+
+Mọi cập nhật profile phải yêu cầu session hợp lệ, chuẩn hóa dữ liệu, ghi activity an toàn và không làm mất `user_id`, quyền khóa học hoặc lịch sử đơn hàng. Không đưa email/số điện thoại vào query string.
+
 ## Trang Dịch vụ
 
 Trang `/dich-vu` dùng visual sáng/xanh, font tròn, card và motion đã được owner duyệt. Nội dung chỉ tập trung vào ba dịch vụ, tất cả đều về Marketing và AI:
@@ -96,10 +118,12 @@ Mọi entry point dùng chung course data (homepage card nếu xuất hiện, ca
 4. Đơn tư vấn tạo đúng 500.000đ, đi tới checkout thật và không cấp quyền học.
 5. Bốn khóa mở đúng bốn landing page trong bảng; sáu khóa hiện `Sắp ra mắt` và không click/checkout được.
 6. Các route public cũ trả 404.
-7. Trang chủ giữ nguyên visual/section hiện tại ngoài link bắt buộc.
-8. Desktop/mobile không tràn ngang, không lỗi ảnh hoặc console.
-9. Focused tests, full Node tests, TypeScript, ESLint, production build và `git diff --check` đạt.
-10. Chỉ chạy local; không deploy Vercel hoặc sửa Supabase production trước khi owner duyệt bản local.
+7. Guest header hiện Đăng ký/Đăng nhập; authenticated header hiện Khóa học của tôi/Tài khoản trên desktop và mobile.
+8. `/tai-khoan` chặn guest, hiển thị đúng profile và khóa đã đăng ký; đổi tên/SĐT, yêu cầu đổi email và đổi mật khẩu không làm mất quyền học.
+9. Trang chủ giữ nguyên visual/section hiện tại ngoài link bắt buộc.
+10. Desktop/mobile không tràn ngang, không lỗi ảnh hoặc console.
+11. Focused tests, full Node tests, TypeScript, ESLint, production build và `git diff --check` đạt.
+12. Chỉ chạy local; không deploy Vercel hoặc sửa Supabase production trước khi owner duyệt bản local.
 
 ## Ngoài phạm vi
 
