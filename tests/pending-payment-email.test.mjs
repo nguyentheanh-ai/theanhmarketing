@@ -81,7 +81,7 @@ test("builds an admin new lead email with student, phone, course, and payment st
   assert.match(payload.text, /Trạng thái thanh toán: Chưa thanh toán/);
 });
 
-test("builds a customer pending payment email with Sepay QR and payment page link", () => {
+test("builds a customer pending payment email with a neutral bank QR and payment page link", () => {
   const previousBankCode = process.env.SEPAY_BANK_CODE;
   const previousBankAccount = process.env.SEPAY_BANK_ACCOUNT_NUMBER;
   const previousBankName = process.env.SEPAY_BANK_ACCOUNT_NAME;
@@ -108,7 +108,8 @@ test("builds a customer pending payment email with Sepay QR and payment page lin
     assert.match(payload.html, /0367928921/);
     assert.match(payload.html, /Nội dung chuyển khoản/);
     assert.match(payload.html, /TAMDEMO0524/);
-    assert.match(payload.text, /QR Sepay: https:\/\/qr\.sepay\.vn\/img/);
+    assert.match(payload.text, /QR thanh toán: https:\/\/qr\.sepay\.vn\/img/);
+    assert.doesNotMatch(payload.html, />[^<{]*SePay[^<{]*</);
     assert.doesNotMatch(payload.html, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     assert.doesNotMatch(payload.text, new RegExp(adsSupportAgentUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     assert.match(payload.text, /Thông tin chuyển khoản:/);

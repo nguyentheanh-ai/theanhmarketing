@@ -89,10 +89,10 @@ export function AgentKitCheckoutForm() {
       onSubmit={handleSubmit}
       className="rounded-[28px] border border-white/70 bg-white/80 p-5 text-slate-900 shadow-[0_24px_80px_rgba(0,97,255,0.16)] backdrop-blur-2xl sm:p-7"
     >
-      <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600">Thanh toán SePay</p>
+      <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600">Thanh toán chuyển khoản</p>
       <h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-slate-950 sm:text-4xl">Đăng ký bản quyền bộ kit</h2>
       <p className="mt-3 text-sm leading-6 text-slate-600">
-        Điền form, tạo mã đơn, chuyển sang trang QR SePay và tự xác nhận khi giao dịch khớp mã.
+        Điền thông tin để nhận bộ kit ngay sau khi hệ thống xác nhận giao dịch.
       </p>
 
       <div className="mt-5 rounded-3xl border border-slate-900/10 bg-slate-50/90 p-4">
@@ -150,7 +150,7 @@ export function AgentKitCheckoutForm() {
       <div className="mt-3"><InvoiceRequestFields variant="light" /></div>
 
       <p className="mt-4 text-center text-xs leading-5 text-slate-500">
-        Sau khi thanh toán thành công, hệ thống chuyển sang trang QR và hướng dẫn truy cập sẽ được gửi theo thông tin bạn đã nhập.
+        Sau khi thanh toán thành công, hướng dẫn truy cập sẽ được gửi theo thông tin bạn đã nhập.
       </p>
     </form>
   );

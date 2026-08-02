@@ -23,7 +23,7 @@ export default async function CartPage() {
           Chốt khóa học trước khi thanh toán.
         </h1>
         <p className="ai-muted mt-6 max-w-3xl text-lg leading-9">
-          Bạn có thể thêm nhiều khóa học vào giỏ và thanh toán tự động qua SePay.
+          Bạn có thể thêm nhiều khóa học vào giỏ và thanh toán chuyển khoản với trạng thái được xác nhận tự động.
         </p>
         <div className="mt-10">
           <CartPageClient

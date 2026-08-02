@@ -523,9 +523,9 @@ export function buildPendingPaymentEmailPayload(
         <tr>
           <td align="center" style="padding:24px">
             <p style="margin:0 0 16px;color:#161616;font-size:15px;font-weight:900">
-              Quét QR Sepay để hoàn tất thanh toán
+              Quét QR để hoàn tất thanh toán
             </p>
-            <img src="${safeQrUrl}" alt="QR thanh toán Sepay ${safeOrderCode}" style="display:block;width:260px;max-width:100%;height:auto;border-radius:12px;border:1px solid #ded4c5;background:#ffffff" />
+            <img src="${safeQrUrl}" alt="QR thanh toán ${safeOrderCode}" style="display:block;width:260px;max-width:100%;height:auto;border-radius:12px;border:1px solid #ded4c5;background:#ffffff" />
           </td>
         </tr>
       </table>
@@ -560,7 +560,7 @@ export function buildPendingPaymentEmailPayload(
                   <p style="margin:0;color:#bdb7a9;font-size:15px;line-height:1.8">
                     Hệ thống đã nhận thông tin đăng ký của bạn, nhưng đơn hàng hiện vẫn ở trạng thái
                     <strong style="color:#f66628">${escapeHtml(statusLabel)}</strong>.
-                    Bạn có thể quét QR Sepay bên dưới hoặc mở trang thanh toán để hoàn tất.
+                    Bạn có thể quét QR bên dưới hoặc mở trang thanh toán để hoàn tất.
                   </p>
 
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:30px;border:1px solid #3a3a3a;border-radius:14px;background:#202020">
@@ -599,7 +599,7 @@ export function buildPendingPaymentEmailPayload(
 
               <tr>
                 <td align="center" style="padding:28px 20px;border-top:1px solid #2f2f2f;color:#8f887c;font-size:13px;line-height:1.7">
-                  Nếu bạn đã chuyển khoản, hệ thống sẽ tự động xác nhận sau khi SePay báo giao dịch thành công.<br />
+                  Nếu bạn đã chuyển khoản, hệ thống sẽ tự động xác nhận khi giao dịch thành công.<br />
                   © 2026 The Anh Marketing. All rights reserved.
                 </td>
               </tr>
@@ -620,7 +620,7 @@ export function buildPendingPaymentEmailPayload(
     transferRows.length
       ? ["", "Thông tin chuyển khoản:", ...transferRows.map(([label, value]) => `${label}: ${value}`)].join("\n")
       : "",
-    order.paymentQrUrl ? `QR Sepay: ${order.paymentQrUrl}` : "",
+    order.paymentQrUrl ? `QR thanh toán: ${order.paymentQrUrl}` : "",
     isFacebookAdsSupportPlan(order) ? `${adsSupportAgentName}: ${adsSupportAgentUrl}` : "",
     `Trang thanh toán: ${paymentUrl}`,
   ]

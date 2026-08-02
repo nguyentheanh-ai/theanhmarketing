@@ -15,7 +15,7 @@ test("payment page follows the agent kit checkout section structure", () => {
   assert.match(page, /Thông tin đơn hàng/);
   assert.doesNotMatch(page, /Thanh toán 359K để nhận Bộ AI Agent thoát việc lặp/);
   assert.match(page, /AI Agent Business/);
-  assert.match(page, /Thanh toán SePay/);
+  assert.match(page, /Thanh toán chuyển khoản/);
   assert.match(page, /PaymentOfferCountdown/);
   assert.match(page, /Ưu đãi đang được giữ theo mã đơn/);
   assert.match(page, /Thông tin đơn hàng/);
@@ -28,7 +28,7 @@ test("payment page follows the agent kit checkout section structure", () => {
   assert.match(page, /payment-after-grid/);
   assert.match(page, /payment-step-number grid size-8/);
   assert.doesNotMatch(page, /mt-5 grid gap-3 sm:grid-cols-3/);
-  assert.match(page, /SePay tự đối soát/);
+  assert.match(page, /Tự động xác nhận giao dịch/);
   assert.match(page, /qr-payment-section/);
   assert.match(page, /AI Master X10/);
   assert.match(page, /Facebook Ads Master 2026/);
@@ -41,6 +41,8 @@ test("payment page follows the agent kit checkout section structure", () => {
   assert.doesNotMatch(page, /Bạn nhận được/);
   assert.doesNotMatch(page, /Ưu đãi kết thúc hôm nay lúc 23:59/);
   assert.doesNotMatch(page, /Chỉ còn .* suất cuối/);
+  assert.doesNotMatch(page, />[^<{]*SePay[^<{]*</);
+  assert.match(page, /Đã ghi nhận yêu cầu xuất hóa đơn/);
 });
 
 test("local AI product payment demos mirror the approved 990K checkout price", () => {

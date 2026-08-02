@@ -152,14 +152,14 @@ export function PaymentStatusPoller({
 
   const paid = order.status === "paid";
   const paidStatusMessage = hasExactCourseSlug(order, supportBookingSlug)
-    ? "SePay đã báo tiền vào. Lịch hỗ trợ 30 phút của bạn đã được ghi nhận. Đang chuyển tới trang xác nhận..."
+    ? "Thanh toán đã được xác nhận. Lịch hỗ trợ 30 phút của bạn đã được ghi nhận. Đang chuyển tới trang xác nhận..."
     : hasExactCourseSlug(order, consultationSlug)
-      ? "SePay đã báo tiền vào. The Anh sẽ chủ động liên hệ để sắp xếp buổi tư vấn."
+      ? "Thanh toán đã được xác nhận. The Anh sẽ chủ động liên hệ để sắp xếp buổi tư vấn."
     : isFacebookAdsCourseOrder(order)
-    ? "SePay đã báo tiền vào. Hệ thống sẽ gửi email tài khoản học viên. Đang chuyển bạn tới trang hướng dẫn vào khóa học Facebook Ads..."
+    ? "Thanh toán đã được xác nhận. Hệ thống sẽ gửi email tài khoản học viên. Đang chuyển bạn tới trang hướng dẫn vào khóa học Facebook Ads..."
     : isFacebookEbookOrder(order)
-      ? "SePay đã báo tiền vào. Hệ thống sẽ gửi email tài khoản và link ebook. Đang chuyển bạn tới trang hướng dẫn nhận ebook..."
-    : "SePay đã báo tiền vào. Hệ thống sẽ gửi email hướng dẫn, nếu chưa thấy hãy kiểm tra Spam hoặc Promotions/Khuyến mãi trước khi liên hệ hỗ trợ. Đang chuyển bạn tới khu học viên...";
+      ? "Thanh toán đã được xác nhận. Hệ thống sẽ gửi email tài khoản và link ebook. Đang chuyển bạn tới trang hướng dẫn nhận ebook..."
+    : "Thanh toán đã được xác nhận. Hệ thống sẽ gửi email hướng dẫn, nếu chưa thấy hãy kiểm tra Spam hoặc Promotions/Khuyến mãi trước khi liên hệ hỗ trợ. Đang chuyển bạn tới khu học viên...";
 
   return (
     <div
@@ -193,7 +193,7 @@ export function PaymentStatusPoller({
         {paid
           ? paidStatusMessage
           : disablePolling
-            ? "Đây là bản demo giao diện checkout. Khi tạo đơn thật từ form đăng ký, hệ thống sẽ tự đối soát SePay theo mã đơn mới."
+            ? "Đây là bản demo giao diện checkout. Với đơn thật, hệ thống sẽ tự xác nhận giao dịch theo mã đơn riêng."
             : "Trang này tự kiểm tra mỗi vài giây. Sau khi chuyển khoản thành công, trạng thái sẽ đổi tự động."}
       </p>
 

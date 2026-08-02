@@ -29,7 +29,7 @@ const steps = [
   {
     title: "Thanh toán thành công",
     description:
-      "Sau khi SePay báo tiền vào, website tự chuyển anh/chị sang trang hướng dẫn này.",
+      "Sau khi giao dịch được xác nhận, website tự chuyển anh/chị sang trang hướng dẫn này.",
     icon: CheckCircle2,
   },
   {

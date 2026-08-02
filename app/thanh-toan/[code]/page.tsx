@@ -46,7 +46,7 @@ const agentKitIncludes = [
 ];
 
 const agentKitSaleReasons = [
-  ["Giữ đúng giá 990.000đ", "Đơn này đang khóa số tiền và nội dung chuyển khoản riêng để SePay đối soát tự động."],
+  ["Giữ đúng giá 990.000đ", "Đơn này đang khóa số tiền và nội dung chuyển khoản riêng để hệ thống xác nhận tự động."],
   ["Không phải tự setup lại từ đầu", "Nhận sẵn agent, command, workflow, template và folder context để bắt đầu giao việc cho AI."],
   ["Mua xong biết bước tiếp theo", "Trang sau thanh toán và email hướng dẫn giúp bạn biết copy dữ liệu vào đâu, gọi command nào trước."],
 ];
@@ -59,7 +59,7 @@ const aiMasterIncludes = [
 
 const defaultSaleReasons = [
   ["Giữ đúng đơn hiện tại", "Mã đơn và nội dung chuyển khoản được tạo riêng cho giao dịch này."],
-  ["SePay tự đối soát", "Khi tiền vào đúng nội dung, hệ thống tự đổi trạng thái mà không cần gửi bill thủ công."],
+  ["Tự động xác nhận giao dịch", "Khi tiền vào đúng nội dung, hệ thống tự đổi trạng thái mà không cần gửi bill thủ công."],
   ["Nhận hướng dẫn qua email", "Sau khi thanh toán, hệ thống gửi email hướng dẫn theo thông tin bạn đã đăng ký."],
 ];
 
@@ -278,7 +278,7 @@ function getCheckoutContent(order: PaymentOrder) {
       productHref: "/dich-vu",
       includes: ["The Anh xem trước nhu cầu đã gửi", "Chủ động liên hệ để sắp xếp thời gian", CONSULTATION_POLICY],
       saleReasons: defaultSaleReasons,
-      nextSteps: ["SePay xác nhận thanh toán", "Nhận email xác nhận", "The Anh chủ động liên hệ để sắp xếp buổi tư vấn"],
+      nextSteps: ["Hệ thống xác nhận thanh toán", "Nhận email xác nhận", "The Anh chủ động liên hệ để sắp xếp buổi tư vấn"],
       stickyCopy: "Thanh toán phí tư vấn",
     };
   }
@@ -288,7 +288,7 @@ function getCheckoutContent(order: PaymentOrder) {
       eyebrow: "Bước cuối để nhận bộ kit",
       title: "Bộ Kit AI Agent Business",
       description:
-        "Quét QR hoặc chuyển khoản đúng nội dung. Khi SePay xác nhận giao dịch, hệ thống sẽ mở quyền truy cập và gửi hướng dẫn theo email bạn đã đăng ký.",
+        "Quét QR hoặc chuyển khoản đúng nội dung. Khi giao dịch được xác nhận, hệ thống sẽ mở quyền truy cập và gửi hướng dẫn theo email bạn đã đăng ký.",
       productLabel: "AI Agent Business",
       productHref: "/academy/bo-kit-agent-doanh-nghiep",
       includes: agentKitIncludes,
@@ -308,7 +308,7 @@ function getCheckoutContent(order: PaymentOrder) {
         eyebrow: "Bước cuối để mở khóa thư viện",
         title: "Thư viện kiến thức Facebook Ads 2026",
         description:
-          "Kiểm tra đúng số tiền và nội dung chuyển khoản. Khi SePay xác nhận giao dịch, hệ thống sẽ gửi email hướng dẫn truy cập thư viện và tài nguyên thực hành đi kèm.",
+          "Kiểm tra đúng số tiền và nội dung chuyển khoản. Khi giao dịch được xác nhận, hệ thống sẽ gửi email hướng dẫn truy cập thư viện và tài nguyên thực hành đi kèm.",
         productLabel: "Thư viện Facebook Ads 2026",
         productHref: "/academy/ebook-facebook-ads-2026",
         includes: [
@@ -331,7 +331,7 @@ function getCheckoutContent(order: PaymentOrder) {
       eyebrow: "Bước cuối để hoàn tất đăng ký",
       title: "Quảng cáo Facebook Master 2026",
       description:
-        "Kiểm tra đúng số tiền và nội dung chuyển khoản. Khi SePay xác nhận giao dịch, hệ thống sẽ gửi email hướng dẫn truy cập khóa học. Nếu chưa thấy email, hãy kiểm tra mục Spam hoặc Promotions/Khuyến mãi.",
+        "Kiểm tra đúng số tiền và nội dung chuyển khoản. Khi giao dịch được xác nhận, hệ thống sẽ gửi email hướng dẫn truy cập khóa học. Nếu chưa thấy email, hãy kiểm tra mục Spam hoặc Promotions/Khuyến mãi.",
       productLabel: "Facebook Ads Master 2026",
       productHref: "/academy/facebook-ads-master-2026",
       includes:
@@ -354,7 +354,7 @@ function getCheckoutContent(order: PaymentOrder) {
       eyebrow: "Bước cuối để mở khóa khóa học",
       title: "Hoàn tất thanh toán để nhận quyền truy cập AI Master X10.",
       description:
-        "Kiểm tra đúng số tiền và nội dung chuyển khoản. Khi SePay xác nhận giao dịch, hệ thống sẽ gửi email hướng dẫn truy cập.",
+        "Kiểm tra đúng số tiền và nội dung chuyển khoản. Khi giao dịch được xác nhận, hệ thống sẽ gửi email hướng dẫn truy cập.",
       productLabel: "AI Master X10",
       productHref: "/academy/ai-master-x10-hieu-suat",
       includes: aiMasterIncludes,
@@ -372,7 +372,7 @@ function getCheckoutContent(order: PaymentOrder) {
     eyebrow: "Bước cuối để hoàn tất đăng ký",
     title: `Thanh toán để nhận quyền truy cập ${getDisplayCourseTitle(order)}.`,
     description:
-      "Kiểm tra đúng khóa học, số tiền và nội dung chuyển khoản. Hệ thống sẽ tự xác nhận sau khi SePay báo giao dịch thành công.",
+      "Kiểm tra đúng khóa học, số tiền và nội dung chuyển khoản. Hệ thống sẽ tự xác nhận sau khi giao dịch thành công.",
     productLabel: "The Anh Marketing",
     productHref: "/khoa-hoc",
     includes:
@@ -380,7 +380,7 @@ function getCheckoutContent(order: PaymentOrder) {
         ? order.orderItems.map((item) => item.title)
         : ["Quyền truy cập sản phẩm đã đăng ký", "Email hướng dẫn sau thanh toán", "Hỗ trợ kiểm tra nếu giao dịch chưa được xác nhận"],
     saleReasons: defaultSaleReasons,
-    nextSteps: ["SePay xác nhận giao dịch", "Hệ thống gửi email hướng dẫn", "Bạn bắt đầu học hoặc dùng sản phẩm đã mua"],
+    nextSteps: ["Hệ thống xác nhận giao dịch", "Hệ thống gửi email hướng dẫn", "Bạn bắt đầu học hoặc dùng sản phẩm đã mua"],
     stickyCopy: "Hoàn tất thanh toán",
   };
 }
@@ -623,7 +623,7 @@ export default async function PaymentPage({
             <span>{content.productLabel}</span>
           </Link>
           <span className="hidden rounded-full bg-blue-50 px-4 py-2 text-sm font-black text-blue-600 sm:inline-flex">
-            SePay tự đối soát
+            Tự động xác nhận giao dịch
           </span>
         </div>
       </header>
@@ -638,7 +638,7 @@ export default async function PaymentPage({
                   {content.title}
                 </h1>
                 <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-slate-600">
-                  Sau khi SePay xác nhận giao dịch, hệ thống sẽ mở quyền truy cập và gửi hướng dẫn vào email bạn đã đăng ký.
+                  Sau khi giao dịch được xác nhận, hệ thống sẽ mở quyền truy cập và gửi hướng dẫn vào email bạn đã đăng ký.
                 </p>
               </div>
               <div className="w-fit rounded-2xl border border-blue-100 bg-white px-5 py-3 shadow-[0_12px_34px_rgba(0,97,255,0.1)]">
@@ -664,6 +664,9 @@ export default async function PaymentPage({
           <p className="mt-4 rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-bold leading-6 text-orange-900">
             Hoàn tất đúng nội dung chuyển khoản để hệ thống tự mở quyền. Nếu chuyển sai nội dung, đơn có thể cần kiểm tra thủ công.
           </p>
+          {order.invoice.requested ? (
+            <p className="mt-3 text-center text-xs font-semibold text-slate-500">Đã ghi nhận yêu cầu xuất hóa đơn.</p>
+          ) : null}
         </div>
 
         <div className="payment-card order-1 mx-auto w-full max-w-5xl rounded-[26px] border border-blue-100 bg-white/94 p-2.5 shadow-[0_28px_90px_rgba(0,97,255,0.14)] backdrop-blur-2xl sm:rounded-[34px] sm:p-6" id="qr-payment-section">
@@ -671,7 +674,7 @@ export default async function PaymentPage({
             <div className="payment-qr-inner rounded-[22px] bg-[#fbfdff] p-3 sm:rounded-[24px] sm:p-7">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-600">Thanh toán SePay</p>
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-600">Thanh toán chuyển khoản</p>
                   <h2 className="payment-qr-title mt-2 text-[1.7rem] font-black leading-[1.08] tracking-[-0.035em] text-slate-950 sm:text-3xl sm:tracking-[-0.045em]">
                     Thanh toán ngay - 3 bước đơn giản
                   </h2>
@@ -703,7 +706,7 @@ export default async function PaymentPage({
                     </div>
                   ) : (
                     <div className="rounded-[26px] border border-amber-200 bg-amber-50 p-5 text-sm font-bold leading-6 text-amber-800">
-                      Chưa cấu hình SePay để hiện mã QR tự động. Trang vẫn hiển thị thông tin chuyển khoản khi có cấu hình ngân hàng.
+                      Chưa có cấu hình ngân hàng để hiện mã QR tự động. Trang sẽ hiển thị thông tin chuyển khoản khi cấu hình hoàn tất.
                     </div>
                   )}
                   <p className="mt-3 text-center text-xs font-bold leading-5 text-slate-400">
@@ -729,7 +732,7 @@ export default async function PaymentPage({
                   {[
                     "Mở app ngân hàng và quét QR.",
                     `Giữ đúng nội dung chuyển khoản: ${transferContent}.`,
-                    "Đợi trang tự đổi trạng thái khi SePay xác nhận.",
+                    "Đợi trang tự đổi trạng thái khi giao dịch được xác nhận.",
                   ].map((step, index) => (
                     <div className="payment-muted-card flex gap-3 rounded-2xl bg-slate-50 p-4" key={step}>
                       <span className="payment-step-number grid size-8 shrink-0 place-items-center rounded-full bg-blue-600 text-sm font-black text-white">

@@ -112,7 +112,8 @@ test("agent kit checkout posts to orders API with the fixed 990K payment plan", 
   assertIncludes(checkoutForm, 'landingPage: "academy/bo-kit-agent-doanh-nghiep"');
   assert.match(checkoutForm, /fetch\("\/api\/orders"/);
   assert.match(checkoutForm, /router\.push\(`\/thanh-toan\/\$\{encodeURIComponent\(result\.order\.orderCode\)\}`\)/);
-  assertIncludes(checkoutForm, "Thanh toán SePay");
+  assertIncludes(checkoutForm, "Thanh toán chuyển khoản");
+  assert.doesNotMatch(checkoutForm, />[^<{]*SePay[^<{]*</);
   assertIncludes(checkoutForm, "Thanh toán 990.000đ ngay");
   assert.match(checkoutForm, /value:\s*990000/g);
   assert.doesNotMatch(checkoutForm, /359K|359000/);
