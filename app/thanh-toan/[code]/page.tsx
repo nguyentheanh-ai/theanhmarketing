@@ -19,6 +19,7 @@ import {
   SUPPORT_PRODUCT_SLUG,
   SUPPORT_PRODUCT_TITLE,
 } from "@/lib/support-booking/constants";
+import { CONSULTATION_POLICY, isConsultationOrder } from "@/lib/consultation/constants";
 import { sendCheckoutEntryNotifications } from "@/services/checkoutNotificationService";
 import { getPaymentOrder, type PaymentOrder } from "@/services/orderService";
 
@@ -264,6 +265,20 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
 }
 
 function getCheckoutContent(order: PaymentOrder) {
+  if (isConsultationOrder(order)) {
+    return {
+      eyebrow: "Phí giữ yêu cầu tư vấn",
+      title: "Hoàn tất thanh toán phí tư vấn Marketing & AI",
+      description: "Sau khi thanh toán thành công, The Anh sẽ chủ động liên hệ để sắp xếp buổi tư vấn.",
+      productLabel: "Tư vấn Marketing & AI",
+      productHref: "/dich-vu",
+      includes: ["The Anh xem trước nhu cầu đã gửi", "Chủ động liên hệ để sắp xếp thời gian", CONSULTATION_POLICY],
+      saleReasons: defaultSaleReasons,
+      nextSteps: ["SePay xác nhận thanh toán", "Nhận email xác nhận", "The Anh chủ động liên hệ để sắp xếp buổi tư vấn"],
+      stickyCopy: "Thanh toán phí tư vấn",
+    };
+  }
+
   if (isAgentKit(order)) {
     return {
       eyebrow: "Bước cuối để nhận bộ kit",

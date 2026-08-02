@@ -40,3 +40,19 @@ test("consultation form has no calendar and discloses the non-refundable policy"
   assert.match(form, /fetch\("\/api\/consultations"/);
   assert.match(page, /ConsultationRequestForm/);
 });
+
+test("paid consultation is confirmed without student provisioning", () => {
+  const webhook = read("app/api/sepay/webhook/route.ts");
+  const email = read("lib/notifications/consultation-payment-email.ts");
+  const checkout = read("app/thanh-toan/[code]/page.tsx");
+  const poller = read("components/payment/payment-status-poller.tsx");
+
+  assert.match(webhook, /isConsultationOrder/);
+  assert.match(webhook, /sendConsultationPaymentEmail/);
+  assert.match(webhook, /!consultationOrder[\s\S]*?ensureStudentAccountForPaidOrder/);
+  assert.match(email, /The Anh sẽ chủ động liên hệ/);
+  assert.doesNotMatch(email, /temporaryPassword|mật khẩu tạm|Vào khóa học/);
+  assert.match(checkout, /isConsultationOrder/);
+  assert.match(checkout, /The Anh sẽ chủ động liên hệ/);
+  assert.match(poller, /marketing-ai-consultation/);
+});

@@ -6,6 +6,8 @@ import {
 import { syncOrderToGoogleSheetWithActivity } from "@/lib/notifications/google-sheets-order-sync";
 import { sendTelegramOrderNotification, sendTelegramSupportBookingNotification } from "@/lib/notifications/telegram";
 import { SUPPORT_PRODUCT_SLUG } from "@/lib/support-booking/constants";
+import { isConsultationOrder } from "@/lib/consultation/constants";
+import { sendConsultationPaymentEmail } from "@/lib/notifications/consultation-payment-email";
 import { sendMetaPurchaseEvent } from "@/lib/meta/conversions-api";
 import {
   verifySepayApiKey,
@@ -110,6 +112,7 @@ export async function POST(request: Request) {
       ReturnType<typeof notifyStudentPortalProvisioning>
     > | null = null;
     const supportBookingOrder = isSupportBookingOrder(confirmation.order);
+    const consultationOrder = isConsultationOrder(confirmation.order);
     let supportBooking: ConfirmedSupportBooking | null = null;
 
     if (!confirmation.wasAlreadyPaid && supportBookingOrder) {
@@ -119,6 +122,16 @@ export async function POST(request: Request) {
         skipped: true,
         reason: "Support booking confirmation is shown on the website.",
       };
+    }
+
+    if (!confirmation.wasAlreadyPaid && consultationOrder) {
+      const result = await sendConsultationPaymentEmail(confirmation.order);
+      paymentEmail = result;
+      if (result.ok && !result.skipped) {
+        await markPaymentEmailSent(confirmation.order.orderCode);
+      } else if (!result.ok) {
+        await markPaymentEmailError(confirmation.order.orderCode, result.reason ?? "Không gửi được email xác nhận tư vấn.");
+      }
     }
 
     if (!confirmation.wasAlreadyPaid && !confirmation.order.purchaseEventSent) {
@@ -182,7 +195,8 @@ export async function POST(request: Request) {
     if (
       !confirmation.wasAlreadyPaid &&
       shouldSendPaymentSuccessEmail(confirmation.order) &&
-      !supportBookingOrder
+      !supportBookingOrder &&
+      !consultationOrder
     ) {
       studentAccount = await ensureStudentAccountForPaidOrder(
         confirmation.order,
