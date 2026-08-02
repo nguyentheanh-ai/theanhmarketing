@@ -10,7 +10,7 @@ const stats = [
   ["6", "Agent theo vai trò", "Growth, insight, content, ads, CRM, delivery"],
   ["12", "Command gọi việc", "/growth-system, /content-calendar, /crm-dashboard"],
   ["10+", "Workflow triển khai", "Bám hệ Attract, Grow, Scale, CRM/Data"],
-  ["359K", "Private ads", "Giá riêng cho bộ kit AI Agent Business"],
+  ["990.000đ", "Giá hiện tại", "Một mức giá thống nhất cho bộ kit AI Agent Business"],
 ];
 
 const pains = [
@@ -545,7 +545,7 @@ export default function AgentKitLandingPage() {
             Bộ kit giúp chủ doanh nghiệp có sẵn agent, command và workflow để giao việc cho AI: nghiên cứu, content, ads, CRM, báo cáo và checklist mà không làm lại từ đầu mỗi ngày.
           </p>
           <div className="hero-cta reveal">
-            <Link href="#dang-ky" className="btn-primary">Nhận kit 359K →</Link>
+            <Link href="#dang-ky" className="btn-primary">Nhận kit 990.000đ →</Link>
             <Link href="#templates" className="btn-ghost">Xem demo workflow</Link>
           </div>
           <div className="hero-trust reveal">
@@ -820,7 +820,7 @@ export default function AgentKitLandingPage() {
           <div>
             <span className="section-tag">Bản quyền trọn đời</span>
             <h2 style={{ fontSize: "clamp(2.15rem,4.5vw,3.35rem)", lineHeight: 1.12, letterSpacing: "-.035em", margin: "18px 0" }}>
-              Nhận trọn bộ <span className="orange-text">AI Agent</span> thoát việc lặp chỉ với <span className="gradient-text">359K</span>.
+              Nhận trọn bộ <span className="orange-text">AI Agent</span> thoát việc lặp với mức giá <span className="gradient-text">990.000đ</span>.
             </h2>
             <p style={{ color: "var(--muted)", lineHeight: 1.75, fontWeight: 650 }}>
               Bộ Agent Kit X10 hiệu suất công việc giúp bạn copy dữ liệu thật, chọn command phù hợp và làm theo workflow để tạo kế hoạch, nội dung, CRM, checklist và báo cáo.
@@ -838,8 +838,8 @@ export default function AgentKitLandingPage() {
               </div>
               <div className="price-stage active">
                 <span>Hiện tại</span>
-                <strong>359K</strong>
-                <p>Giá private ads cho landing này.</p>
+                <strong>990.000đ</strong>
+                <p>Giá thống nhất cho Bộ Agent Kit X10.</p>
               </div>
               <div className="price-stage">
                 <span>Nâng cấp</span>
@@ -877,7 +877,7 @@ export default function AgentKitLandingPage() {
             Nhận bộ kit, đưa dữ liệu thật vào folder context, chọn command phù hợp và bắt đầu chuẩn hóa research, content, ads, CRM, checklist, báo cáo theo một hệ thống dễ lặp lại.
           </p>
           <div className="hero-cta">
-            <Link href="#dang-ky" className="btn-primary">Nhận bộ kit 359K</Link>
+            <Link href="#dang-ky" className="btn-primary">Nhận bộ kit 990.000đ</Link>
           </div>
         </div>
       </section>
@@ -888,7 +888,7 @@ export default function AgentKitLandingPage() {
             <strong>AI Agent Business</strong>
             <p>Offer AI Agent thoát vòng lặp công việc</p>
           </div>
-          <Link href="#dang-ky" className="btn-primary">Nhận kit 359K</Link>
+          <Link href="#dang-ky" className="btn-primary">Nhận kit 990.000đ</Link>
         </div>
       </div>
     </main>

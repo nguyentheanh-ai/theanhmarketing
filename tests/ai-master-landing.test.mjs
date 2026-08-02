@@ -20,8 +20,9 @@ test("AI Master X10 landing posts to the order API with the correct course and p
   assert.match(html, /\/api\/orders/);
   assert.match(html, /\/thanh-toan\//);
   assert.match(html, /ai-master-x10-hieu-suat/);
-  assert.match(html, /1299000/);
-  assert.match(html, /1\.299\.000/);
+  assert.match(html, /990000/);
+  assert.match(html, /990\.000đ/);
+  assert.doesNotMatch(html, /1299000|1\.299\.000đ/);
   assert.match(html, /Biến tri thức thành tiền/);
 });
 

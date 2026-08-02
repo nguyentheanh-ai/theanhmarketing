@@ -12,7 +12,7 @@ function assertIncludes(source, expected) {
   assert.match(source, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 }
 
-test("agent kit private landing uses kit source facts and requested ads price", () => {
+test("agent kit private landing uses kit source facts and approved 990K price", () => {
   const landingSurface = `${landingPage}\n${calculator}`;
   for (const text of [
     "Bộ Agent Kit X10 hiệu suất công việc",
@@ -26,7 +26,7 @@ test("agent kit private landing uses kit source facts and requested ads price", 
     "Performance Ads",
     "CRM Data",
     "Automation Delivery",
-    "359K",
+    "990.000đ",
     "/growth-system",
     "/content-calendar",
     "/crm-dashboard",
@@ -106,17 +106,18 @@ test("agent kit calculator has a real range input that updates live results", ()
   }
 });
 
-test("agent kit checkout posts to orders API with the 359K payment plan", () => {
+test("agent kit checkout posts to orders API with the fixed 990K payment plan", () => {
   assert.match(checkoutForm, /courseSlug:\s*COURSE_SLUG/);
   assert.match(checkoutForm, /paymentPlan:\s*PAYMENT_PLAN/);
   assertIncludes(checkoutForm, 'landingPage: "academy/bo-kit-agent-doanh-nghiep"');
   assert.match(checkoutForm, /fetch\("\/api\/orders"/);
   assert.match(checkoutForm, /router\.push\(`\/thanh-toan\/\$\{encodeURIComponent\(result\.order\.orderCode\)\}`\)/);
   assertIncludes(checkoutForm, "Thanh toán SePay");
-  assertIncludes(checkoutForm, "Thanh toán 359K ngay");
+  assertIncludes(checkoutForm, "Thanh toán 990.000đ ngay");
+  assert.match(checkoutForm, /value:\s*990000/g);
+  assert.doesNotMatch(checkoutForm, /359K|359000/);
   assert.match(orderService, /"bo-agent-kit-x10-hieu-suat-cong-viec"/);
-  assert.match(orderService, /"agent-kit-ads-359"/);
-  assert.match(orderService, /amount:\s*359000/);
+  assert.match(orderService, /"agent-kit-standard-990"[\s\S]*amount:\s*990000/);
 });
 
 test("agent kit private landing is exposed as an academy page, not a main website course URL", () => {

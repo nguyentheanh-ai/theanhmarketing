@@ -45,7 +45,7 @@ const agentKitIncludes = [
 ];
 
 const agentKitSaleReasons = [
-  ["Giữ đúng giá 359K", "Đơn này đang khóa số tiền và nội dung chuyển khoản riêng để SePay đối soát tự động."],
+  ["Giữ đúng giá 990.000đ", "Đơn này đang khóa số tiền và nội dung chuyển khoản riêng để SePay đối soát tự động."],
   ["Không phải tự setup lại từ đầu", "Nhận sẵn agent, command, workflow, template và folder context để bắt đầu giao việc cho AI."],
   ["Mua xong biết bước tiếp theo", "Trang sau thanh toán và email hướng dẫn giúp bạn biết copy dữ liệu vào đâu, gọi command nào trước."],
 ];
@@ -202,9 +202,9 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
       email: "demo@gmail.com",
       phone: "0900000000",
       courseSlug: agentKitSlug,
-      courseTitle: "Bộ Agent Kit X10 hiệu suất công việc - Gói private ads 359K",
-      amount: 359000,
-      amountLabel: "359.000đ",
+      courseTitle: "Bộ Agent Kit X10 hiệu suất công việc",
+      amount: 990000,
+      amountLabel: "990.000đ",
       currency: "VND",
       status: "pending",
       paymentMethod: "sepay",
@@ -216,8 +216,8 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
       orderItems: [
         {
           slug: agentKitSlug,
-          title: "Bộ Agent Kit X10 hiệu suất công việc - Gói private ads 359K",
-          price: 359000,
+          title: "Bộ Agent Kit X10 hiệu suất công việc",
+          price: 990000,
         },
       ],
       paymentEmailSentAt: null,
@@ -237,8 +237,8 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
       phone: "0900000000",
       courseSlug: "ai-master-x10-hieu-suat",
       courseTitle: "AI Master X10 hiệu suất - Biến tri thức thành tiền",
-      amount: 1299000,
-      amountLabel: "1.299.000đ",
+      amount: 990000,
+      amountLabel: "990.000đ",
       currency: "VND",
       status: "pending",
       paymentMethod: "sepay",
@@ -251,7 +251,7 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
         {
           slug: "ai-master-x10-hieu-suat",
           title: "AI Master X10 hiệu suất - Biến tri thức thành tiền",
-          price: 1299000,
+          price: 990000,
         },
       ],
       paymentEmailSentAt: null,

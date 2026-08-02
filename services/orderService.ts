@@ -360,9 +360,9 @@ const coursePaymentPlans: Record<string, Record<string, CoursePaymentPlan>> = {
     },
   },
   "bo-agent-kit-x10-hieu-suat-cong-viec": {
-    "agent-kit-ads-359": {
-      title: "Gói private ads 359K",
-      amount: 359000,
+    "agent-kit-standard-990": {
+      title: "Bộ Agent Kit X10 hiệu suất công việc",
+      amount: 990000,
     },
   },
 };

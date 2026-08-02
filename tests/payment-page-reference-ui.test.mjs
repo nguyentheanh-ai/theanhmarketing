@@ -43,6 +43,15 @@ test("payment page follows the agent kit checkout section structure", () => {
   assert.doesNotMatch(page, /Chỉ còn .* suất cuối/);
 });
 
+test("local AI product payment demos mirror the approved 990K checkout price", () => {
+  const page = read("app/thanh-toan/[code]/page.tsx");
+
+  assert.match(page, /AGENTKITDEMO[\s\S]*?amount:\s*990000[\s\S]*?amountLabel:\s*"990\.000đ"/);
+  assert.match(page, /AIMASTERX10DEMO[\s\S]*?amount:\s*990000[\s\S]*?amountLabel:\s*"990\.000đ"/);
+  assert.match(page, /Giữ đúng giá 990\.000đ/);
+  assert.doesNotMatch(page, /Gói private ads 359K|Giữ đúng giá 359K/);
+});
+
 test("payment page keeps the existing SePay and polling integrations", () => {
   const page = read("app/thanh-toan/[code]/page.tsx");
 

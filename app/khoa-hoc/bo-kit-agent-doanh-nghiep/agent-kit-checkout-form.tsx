@@ -6,7 +6,7 @@ import { getClientAttribution } from "@/lib/tracking/client-attribution";
 import { trackMarketingEvent } from "@/lib/tracking/events";
 
 const COURSE_SLUG = "bo-agent-kit-x10-hieu-suat-cong-viec";
-const PAYMENT_PLAN = "agent-kit-ads-359";
+const PAYMENT_PLAN = "agent-kit-standard-990";
 
 export function AgentKitCheckoutForm() {
   const router = useRouter();
@@ -59,7 +59,7 @@ export function AgentKitCheckoutForm() {
         event_id: result.leadId || result.order.orderCode,
         content_name: "Bo Agent Kit X10 Hieu Suat Cong Viec",
         content_type: "product",
-        value: 359000,
+        value: 990000,
         currency: "VND",
         ...attribution,
       });
@@ -68,7 +68,7 @@ export function AgentKitCheckoutForm() {
         order_id: result.order.orderCode,
         content_name: "Bo Agent Kit X10 Hieu Suat Cong Viec",
         content_type: "product",
-        value: 359000,
+        value: 990000,
         currency: "VND",
         ...attribution,
       });
@@ -96,11 +96,11 @@ export function AgentKitCheckoutForm() {
         <p className="text-sm font-bold text-slate-500">Giá hiện tại</p>
         <div className="mt-1 flex flex-wrap items-end gap-3">
           <strong className="bg-gradient-to-r from-blue-600 to-cyan-400 bg-clip-text text-5xl font-black tracking-[-0.06em] text-transparent">
-            359K
+            990.000đ
           </strong>
-          <span className="pb-2 text-sm font-bold text-slate-400 line-through">799K</span>
+          <span className="pb-2 text-sm font-bold text-slate-400 line-through">2.499.000đ</span>
         </div>
-        <p className="mt-2 text-xs font-bold leading-5 text-slate-500">Private ads cho landing AI Agent Business.</p>
+        <p className="mt-2 text-xs font-bold leading-5 text-slate-500">Một mức giá thống nhất cho Bộ Agent Kit X10.</p>
       </div>
 
       <div className="mt-5 grid gap-3">
@@ -141,7 +141,7 @@ export function AgentKitCheckoutForm() {
         disabled={isSubmitting}
         className="mt-5 min-h-13 w-full rounded-full bg-gradient-to-r from-blue-600 to-cyan-400 px-6 text-base font-black text-white shadow-[0_14px_34px_rgba(0,97,255,0.28)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isSubmitting ? "Đang tạo mã thanh toán..." : "Thanh toán 359K ngay"}
+        {isSubmitting ? "Đang tạo mã thanh toán..." : "Thanh toán 990.000đ ngay"}
       </button>
 
       <p className="mt-4 text-center text-xs leading-5 text-slate-500">
