@@ -130,3 +130,31 @@ test("React checkout surfaces render the shared invoice fields after their prima
     assert.match(source, /invoice(?:\s*:|,)/, file);
   }
 });
+
+test("all active static course landings opt into the shared invoice fieldset", () => {
+  const files = [
+    "public/ladipage/ai-master-x10-hieu-suat.html",
+    "public/ladipage/facebook-ads-2026.html",
+    "public/ladipage/ebook-facebook-ads-2026.html",
+    "public/ladipage/ebook-facebook-ads-2026-premium.html",
+  ];
+  const shared = read("public/checkout-invoice.js");
+  assert.match(shared, /Tôi cần xuất hóa đơn/);
+  assert.match(shared, /invoiceTaxCode/);
+  assert.match(shared, /invoiceCompanyName/);
+  assert.match(shared, /invoiceCompanyAddress/);
+  assert.match(shared, /invoiceEmail/);
+  for (const file of files) {
+    const source = read(file);
+    assert.match(source, /data-invoice-checkout/, file);
+    assert.match(source, /\/checkout-invoice\.js/, file);
+    assert.match(source, /invoice:\s*window\.getInvoiceRequest\(/, file);
+  }
+});
+
+test("Facebook Ads checkout owns its approved product-specific copy", () => {
+  const source = read("public/ladipage/facebook-ads-2026.html");
+  assert.match(source, /Đăng ký và nhận khóa học Facebook Ads Master 2026 ngay hôm nay/);
+  assert.match(source, /Nhận khóa học \+ AI Agent - 799\.000đ/);
+  assert.doesNotMatch(source, /Đăng ký và tạo QR thanh toán/);
+});

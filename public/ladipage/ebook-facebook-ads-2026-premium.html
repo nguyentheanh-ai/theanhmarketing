@@ -1225,6 +1225,7 @@
       .reveal { opacity: 1; transform: none; }
     }
   </style>
+  <script src="/checkout-invoice.js" defer></script>
 </head>
 <body>
   <noscript>
@@ -1676,7 +1677,7 @@
       <aside class="order-card reveal">
         <h3>Tạo đơn thanh toán ebook</h3>
         <p>Điền thông tin để hệ thống tạo mã thanh toán riêng và chuyển anh/chị sang trang chuyển khoản.</p>
-        <form id="orderForm">
+        <form id="orderForm" data-invoice-checkout>
           <label>Họ tên
             <input id="name" name="name" autocomplete="name" placeholder="Ví dụ: Nguyễn Văn A" required>
           </label>
@@ -1914,6 +1915,7 @@
             phone,
             courseSlug: "ebook-facebook-ads-2026",
             paymentPlan: "full-access-399",
+            invoice: window.getInvoiceRequest(orderForm),
             leadId,
             ...getTrackingPayload()
           })

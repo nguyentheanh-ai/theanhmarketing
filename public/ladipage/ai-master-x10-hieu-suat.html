@@ -1551,6 +1551,7 @@
         }
       }
     </style>
+    <script src="/checkout-invoice.js" defer></script>
   </head>
   <body>
     <div class="page">
@@ -1932,7 +1933,7 @@
               </ul>
             </div>
 
-            <form class="form-card reveal" id="payment-form">
+            <form class="form-card reveal" id="payment-form" data-invoice-checkout>
               <h3>Bắt đầu xây hệ thống Marketing AI</h3>
               <p>Để lại thông tin để giữ ưu đãi beta và bắt đầu xây offer, content, landing, CRM cho sản phẩm tri thức của bạn.</p>
               <div class="form-grid">
@@ -2123,6 +2124,7 @@
             fbp: attribution.fbp,
             fbc: attribution.fbc,
             leadId: leadId,
+            invoice: window.getInvoiceRequest(form),
           };
 
           if (!payload.studentName || !payload.email || !payload.phone) {

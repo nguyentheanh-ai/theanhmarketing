@@ -2534,6 +2534,7 @@
         }
       }
     </style>
+    <script src="/checkout-invoice.js" defer></script>
   </head>
   <body>
     <div class="page">
@@ -3168,9 +3169,9 @@
             </div>
 
             <aside class="form-card">
-              <h3>Đăng ký và tạo QR thanh toán</h3>
-              <p id="payment-plan-summary">Đang chọn gói AI Agent 799.000đ: học video + tặng AI Agent lên kế hoạch quảng cáo. Điền thông tin, hệ thống sẽ tạo đơn và chuyển bạn sang trang thanh toán SePay.</p>
-              <form id="payment-form" class="form">
+              <h3>Đăng ký và nhận khóa học Facebook Ads Master 2026 ngay hôm nay</h3>
+              <p id="payment-plan-summary">Học toàn bộ nội dung Facebook Ads Master 2026 và nhận AI Agent lên kế hoạch quảng cáo để bắt đầu triển khai ngay.</p>
+              <form id="payment-form" class="form" data-invoice-checkout>
                 <input type="hidden" name="paymentPlan" value="zoom-kit" />
                 <div class="selected-plan-note" id="selected-plan-note">Gói đang chọn: AI Agent 799.000đ - học video và nhận AI Agent lên kế hoạch quảng cáo.</div>
                 <div class="field">
@@ -3193,7 +3194,7 @@
                     <span class="ebook-addon-price">299.000đ <del>799.000đ</del></span>
                   </span>
                 </label>
-                <button class="btn btn-primary" type="submit" id="payment-submit">Đăng ký gói AI Agent - 799.000đ</button>
+                <button class="btn btn-primary" type="submit" id="payment-submit">Nhận khóa học + AI Agent - 799.000đ</button>
               </form>
               <div class="secure-note">
                 <span>Thanh toán qua QR ngân hàng, hệ thống đối soát tự động.</span>
@@ -3515,6 +3516,7 @@
                 phone: phone,
                 courseSlug: course.slug,
                 paymentPlan: checkoutPlan.id,
+                invoice: window.getInvoiceRequest(form),
                 landingPage: "academy/facebook-ads-master-2026",
                 pageUrl: window.location.href,
                 referrer: document.referrer,

@@ -1859,6 +1859,7 @@
       .form-actions .btn { font-size: 14px; }
     }
   </style>
+  <script src="/checkout-invoice.js" defer></script>
 </head>
 <body>
   <div class="preview-focus-backdrop" id="previewFocusBackdrop" aria-hidden="true"></div>
@@ -2378,7 +2379,7 @@
         <h3>Đăng ký mua quyền truy cập</h3>
         <p>Điền thông tin để nhận hướng dẫn thanh toán và truy cập thư viện.</p>
         <div class="price">399.000đ <small>Truy cập thư viện và tài nguyên thực hành đi kèm.</small></div>
-        <form id="orderForm">
+        <form id="orderForm" data-invoice-checkout>
           <label>Họ tên
             <input id="name" name="name" autocomplete="name" placeholder="Ví dụ: Nguyễn Văn A" required>
           </label>
@@ -2614,6 +2615,7 @@
             phone,
             courseSlug: course.slug,
             paymentPlan: course.plan,
+            invoice: window.getInvoiceRequest(form),
             landingPage: "academy/ebook-facebook-ads-2026",
             pageUrl: window.location.href,
             referrer: document.referrer,
