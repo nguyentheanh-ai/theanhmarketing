@@ -20,6 +20,12 @@ import {
   SUPPORT_PRODUCT_TITLE,
 } from "@/lib/support-booking/constants";
 import {
+  CONSULTATION_PAYMENT_PLAN,
+  CONSULTATION_PRICE_VND,
+  CONSULTATION_PRODUCT_SLUG,
+  CONSULTATION_PRODUCT_TITLE,
+} from "@/lib/consultation/constants";
+import {
   collectCommandCenterPages,
   MAX_COMMAND_CENTER_SOURCE_ROWS,
   type CommandCenterAnalysisWindow,
@@ -303,6 +309,19 @@ type CoursePaymentPlan = {
   orderItems?: OrderItem[];
 };
 
+function getFixedPaymentPackage(input: CreatePaymentOrderInput) {
+  if (input.courseSlug !== CONSULTATION_PRODUCT_SLUG || input.paymentPlan !== CONSULTATION_PAYMENT_PLAN) {
+    return null;
+  }
+
+  return {
+    amount: CONSULTATION_PRICE_VND,
+    courseSlug: CONSULTATION_PRODUCT_SLUG,
+    courseTitle: CONSULTATION_PRODUCT_TITLE,
+    orderItems: [{ slug: CONSULTATION_PRODUCT_SLUG, title: CONSULTATION_PRODUCT_TITLE, price: CONSULTATION_PRICE_VND }],
+  };
+}
+
 const coursePaymentPlans: Record<string, Record<string, CoursePaymentPlan>> = {
   "facebook-ads-2026": {
     video: {
@@ -406,13 +425,14 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
     throw new Error("Chưa cấu hình Supabase để tạo đơn thanh toán.");
   }
 
-  const selectedCourses = await resolveCourses(input);
+  const fixedPackage = getFixedPaymentPackage(input);
+  const selectedCourses = fixedPackage ? [] : await resolveCourses(input);
 
-  if (selectedCourses.length === 0) {
+  if (!fixedPackage && selectedCourses.length === 0) {
     throw new Error("Không tìm thấy khóa học đã chọn.");
   }
 
-  const orderPackage = buildOrderPackage(selectedCourses, input.paymentPlan);
+  const orderPackage = fixedPackage ?? buildOrderPackage(selectedCourses, input.paymentPlan);
   const { amount, courseSlug, courseTitle, orderItems } = orderPackage;
 
   if (amount <= 0) {
