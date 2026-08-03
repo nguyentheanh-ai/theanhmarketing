@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { after } from "next/server";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import { BankAppHandoff } from "@/components/payment/bank-app-handoff";
 import { PaymentOfferCountdown } from "@/components/payment/payment-offer-countdown";
 import { PaymentStatusPoller } from "@/components/payment/payment-status-poller";
 import { TransferDetails } from "@/components/payment/transfer-details";
+import { loadVietQrBankApps } from "@/lib/payments/bank-app-handoff";
 import {
   createSepayQrUrl,
   formatVnd,
@@ -393,10 +396,14 @@ function getCheckoutContent(order: PaymentOrder) {
 
 export default async function PaymentPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ code: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { code } = await params;
+  const resolvedSearchParams = await searchParams;
+  const openBank = resolvedSearchParams.openBank === "1";
   const order = (await getPaymentOrder(code)) ?? getLocalDemoPaymentOrder(code);
 
   if (!order) {
@@ -414,6 +421,11 @@ export default async function PaymentPage({
       ? createSepayQrUrl({ amount: order.amount, orderCode: transferContent })
       : "";
   const amountLabel = order.amountLabel || formatVnd(order.amount);
+  const requestHeaders = await headers();
+  const bankApps = openBank
+    ? await loadVietQrBankApps({ userAgent: requestHeaders.get("user-agent") ?? "" })
+    : [];
+  const paymentReturnUrl = `https://www.theanhmarketing.com/thanh-toan/${encodeURIComponent(order.orderCode)}`;
   const courseTitle = getDisplayCourseTitle(order);
   const content = getCheckoutContent(order);
   const paymentOffer = getPaymentOffer(order, amountLabel);
@@ -698,6 +710,17 @@ export default async function PaymentPage({
                   originalPriceLabel={paymentOffer.originalPriceLabel}
                 />
               </div>
+
+              <BankAppHandoff
+                amount={order.amount}
+                apps={bankApps}
+                bankAccountName={sepay.bankAccountName}
+                bankAccountNumber={sepay.bankAccountNumber}
+                bankCode={sepay.bankCode}
+                requested={openBank}
+                returnUrl={paymentReturnUrl}
+                transferContent={transferContent}
+              />
 
               <div className="payment-focus-grid mt-7 grid justify-center gap-5 md:items-stretch">
                 <div className="mx-auto w-full max-w-[420px] rounded-[30px] border border-blue-100 bg-white p-3 shadow-[0_18px_58px_rgba(0,97,255,0.12)]">

@@ -49,3 +49,14 @@ The immutable proposed variables are:
 The action URL reuses `order_code` in the fixed pattern `https://www.theanhmarketing.com/thanh-toan/<order_code>?openBank=1`.
 
 The ZBS template is not yet approved. Provider sending remains disabled until Zalo approves a template with exactly these variables; after approval this section will record the template ID and status without storing tokens.
+
+## VietQR bank-app handoff
+
+Verified on 2026-08-03 against <https://vietqr.io/en/danh-sach-api/deeplink-app-ngan-hang/> and <https://www.vietqr.io/changelog/>.
+
+- VietQR documents platform-specific app directories at `https://api.vietqr.io/v2/android-app-deeplinks` and `https://api.vietqr.io/v2/ios-app-deeplinks`.
+- A current handoff is app-specific: `https://dl.vietqr.io/pay?app=<app_id>`. The customer must click a chosen installed banking app on Android or iOS.
+- The documented parameters are `ba` for beneficiary account and bank, `am` for amount, `tn` for transfer content, `bn` for beneficiary name, and `url` for the return URL.
+- VietQR explicitly describes a universal `vietqr://` chooser as an expected future standard, not a generally available current capability. The website therefore does not claim or attempt universal automatic opening.
+- `openBank=1` shows a server-derived mobile app chooser. Every app link is generated from the stored order and server bank configuration; URL query parameters cannot override amount, account, or transfer content.
+- Unsupported devices, directory failures, missing apps, or blocked handoffs remain on the existing payment page with VietQR and copy controls.
