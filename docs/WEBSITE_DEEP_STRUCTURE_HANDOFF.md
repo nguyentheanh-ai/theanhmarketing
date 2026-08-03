@@ -1,5 +1,16 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-08-03 - Durable Meta Purchase outbox restored to deploy branch
+
+| Item | State |
+|---|---|
+| Incident | The active deploy branch had regressed to direct, one-shot CAPI calls. The database still had outbox columns/RPCs, but production code had no dispatcher, protected retry route or cron. This produced paid orders with `meta_purchase_state=null` and zero attempts. |
+| Fix | Added a shared service-role dispatcher with lease fencing and bounded backoff. SePay replay, manual confirmation replay and manual paid provisioning all hand an unmarked paid order to the same dispatcher without changing payment success. |
+| Meta contract | `Purchase` keeps the real `paid_at`, stable `event_id=order_code`, Website action source, order value/currency/items and stored attribution. Successful finalization records the Meta trace; failed or skipped requests remain retryable. |
+| Retry contract | Only paid, unmarked orders whose real `paid_at` is within seven days are claimable. `/api/meta/purchase-retry` requires `CRON_SECRET`, processes at most ten per run and exposes no customer payload; Vercel schedules the fallback daily. |
+| Database | Production already contains `claim_meta_purchase_orders` and `finish_meta_purchase_order` as security-definer RPCs restricted to `service_role`. The source migration is now tracked in this branch so future releases cannot silently omit the architecture. |
+| Verification | RED reproduced all five missing contracts. GREEN passes 17/17 focused tests, 517/517 full Node tests, TypeScript, ESLint with zero errors/one unchanged warning, and the 93-page Next.js production build. |
+
 ## 2026-08-03 - Accounting email for every paid order
 
 - `lib/notifications/accounting-payment-email.ts` renders one internal HTML/text email with customer name, phone, email, product/service, paid amount, order code, Vietnam paid time and payment method. Requested invoices also include tax code, company, address and invoice delivery email.

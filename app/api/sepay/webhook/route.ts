@@ -8,7 +8,7 @@ import { sendTelegramOrderNotification, sendTelegramSupportBookingNotification }
 import { SUPPORT_PRODUCT_SLUG } from "@/lib/support-booking/constants";
 import { isConsultationOrder } from "@/lib/consultation/constants";
 import { sendConsultationPaymentEmail } from "@/lib/notifications/consultation-payment-email";
-import { sendMetaPurchaseEvent } from "@/lib/meta/conversions-api";
+import { dispatchMetaPurchaseOrders } from "@/lib/meta/purchase-outbox";
 import {
   verifySepayApiKey,
   type SepayWebhookPayload,
@@ -26,7 +26,6 @@ import {
   confirmOrderFromSepay,
   markPaymentEmailError,
   markPaymentEmailSent,
-  markPurchaseEventSent,
   type PaymentOrder,
 } from "@/services/orderService";
 import { ensureStudentAccountForPaidOrder } from "@/services/studentAccountService";
@@ -143,61 +142,31 @@ export async function POST(request: Request) {
       }
     }
 
-    if (!confirmation.wasAlreadyPaid && !confirmation.order.purchaseEventSent) {
+    if (confirmation.order.status === "paid" && !confirmation.order.purchaseEventSent) {
       try {
-        const eventSourceUrl = `${siteConfig.url}/thanh-toan/${encodeURIComponent(confirmation.order.orderCode)}`;
-        metaPurchase = await sendMetaPurchaseEvent({
+        const dispatch = await dispatchMetaPurchaseOrders({
           orderCode: confirmation.order.orderCode,
-          studentName: confirmation.order.studentName,
-          email: confirmation.order.email,
-          phone: confirmation.order.phone,
-          courseSlug: confirmation.order.courseSlug,
-          courseTitle: confirmation.order.courseTitle,
-          amount: confirmation.order.amount,
-          currency: confirmation.order.currency,
-          status: confirmation.order.status,
-          pageUrl: eventSourceUrl,
-          landingPage:
-            confirmation.order.attribution.landingPage || eventSourceUrl,
-          utmSource: confirmation.order.attribution.utmSource,
-          utmMedium: confirmation.order.attribution.utmMedium,
-          utmCampaign: confirmation.order.attribution.utmCampaign,
-          utmContent: confirmation.order.attribution.utmContent,
-          utmId: confirmation.order.attribution.utmId,
-          utmTerm: confirmation.order.attribution.utmTerm,
-          campaignId: confirmation.order.attribution.campaignId,
-          campaignName: confirmation.order.attribution.campaignName,
-          adsetId: confirmation.order.attribution.adsetId,
-          adId: confirmation.order.attribution.adId,
-          adName: confirmation.order.attribution.adName,
-          fbclid: confirmation.order.attribution.fbclid,
-          fbp: confirmation.order.attribution.fbp,
-          fbc: confirmation.order.attribution.fbc,
-          paidAt: confirmation.order.paidAt,
-          orderItems: confirmation.order.orderItems,
+          limit: 1,
         });
+        metaPurchase = {
+          ok: dispatch.sent > 0,
+          skipped: dispatch.claimed === 0,
+          reason: dispatch.error ?? (dispatch.retried > 0 ? "queued_for_retry" : undefined),
+        };
 
-        if (metaPurchase.ok && !metaPurchase.skipped) {
-          const markResult = await markPurchaseEventSent(
-            confirmation.order.orderCode,
-          );
-
-          if (!markResult.ok) {
-            console.warn(
-              "[sepay] Could not mark Purchase event as sent:",
-              markResult.error,
-            );
-          }
-        }
-
-        if (!metaPurchase.ok && !metaPurchase.skipped) {
+        if (dispatch.error || dispatch.retried > 0 || dispatch.lostLease > 0) {
           console.warn("[sepay] Meta Purchase event failed:", {
-            reason: metaPurchase.reason,
-            status: metaPurchase.status,
+            orderCode: confirmation.order.orderCode,
+            retried: dispatch.retried,
+            lostLease: dispatch.lostLease,
+            reason: dispatch.error,
           });
         }
-      } catch (metaError) {
-        console.warn("[sepay] Meta Purchase event failed:", metaError);
+      } catch {
+        metaPurchase = { ok: false, skipped: false, reason: "queued_for_retry" };
+        console.warn("[sepay] Meta Purchase event failed; durable retry remains queued.", {
+          orderCode: confirmation.order.orderCode,
+        });
       }
     }
 

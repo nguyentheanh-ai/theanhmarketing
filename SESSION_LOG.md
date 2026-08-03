@@ -1,5 +1,12 @@
 # Session Log
 
+## 2026-08-03 - Restore durable Meta Purchase CAPI
+
+- Traced the zero-attempt paid-order gap to a deploy-branch regression and restored the seven-day lease-fenced Purchase outbox/retry route/cron across every paid source.
+- Preserved real `paid_at`, stable order-code deduplication, existing payment/accounting/email fulfillment and the seven-day Meta eligibility boundary.
+- Verification: focused Meta 17/17, full Node 517/517, TypeScript, build and diff check pass; ESLint has zero errors and one unchanged warning.
+- No fake timestamp, demo order or event older than seven days was used.
+
 ## 2026-08-03 - Accounting paid-order notification implementation
 
 - Added shared renderer/sender, delivery orchestration, two order markers and both authoritative paid-route integrations.

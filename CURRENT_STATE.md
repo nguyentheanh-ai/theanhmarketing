@@ -1,5 +1,12 @@
 # Current State - theanh-main
 
+## 2026-08-03 - Durable Meta Purchase CAPI recovery candidate
+
+- Root cause confirmed: the active production branch still called Meta directly inside payment requests, while the previously verified durable outbox code was never committed into this deploy branch. Paid orders could therefore remain `purchase_event_sent=false` with `meta_purchase_state=null` and zero attempts after a missed or failed first call.
+- Candidate restores the service-role-only, lease-fenced seven-day outbox, immediate dispatch for SePay/manual confirmation/manual paid provisioning, stable `event_id=order_code`, original `paid_at` event time, bounded retry endpoint and daily Vercel retry cron.
+- Production schema already contains both outbox RPCs. Pre-deploy database audit found one currently due paid order in the valid seven-day window; no historical event outside seven days will be sent.
+- Verification: focused Meta tests 17/17, full Node 517/517, TypeScript, ESLint (0 errors/1 unchanged warning) and 93-page Next.js production build pass.
+
 ## 2026-08-03 - Accounting payment email live
 
 - One shared internal email covers every newly paid course, Ebook, consultation, support booking and manual confirmation.

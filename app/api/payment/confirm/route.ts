@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { sendMetaPurchaseEvent } from "@/lib/meta/conversions-api";
+import { dispatchMetaPurchaseOrders } from "@/lib/meta/purchase-outbox";
 import { syncOrderToGoogleSheetWithActivity } from "@/lib/notifications/google-sheets-order-sync";
 import { verifySepayApiKey } from "@/lib/payments/sepay";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
@@ -7,7 +7,7 @@ import { cleanEmail, cleanPhone, cleanText, isValidEmail, isValidPhone } from "@
 import { siteConfig } from "@/data/site";
 import { invalidateAdminModules } from "@/services/adminDataService";
 import { notifyAccountingForPaidOrder } from "@/services/accountingNotificationService";
-import { confirmPaymentManually, markPurchaseEventSent } from "@/services/orderService";
+import { confirmPaymentManually } from "@/services/orderService";
 
 export const runtime = "nodejs";
 
@@ -81,40 +81,19 @@ export async function POST(request: Request) {
       reason: "not_sent",
     };
 
-    if (!confirmation.wasAlreadyPaid && !confirmation.order.purchaseEventSent) {
-      const eventSourceUrl = `${siteConfig.url}/thanh-toan/${encodeURIComponent(confirmation.order.orderCode)}`;
-      metaPurchase = await sendMetaPurchaseEvent({
-        orderCode: confirmation.order.orderCode,
-        studentName: confirmation.order.studentName,
-        email: confirmation.order.email,
-        phone: confirmation.order.phone,
-        courseSlug: confirmation.order.courseSlug,
-        courseTitle: confirmation.order.courseTitle || productName,
-        amount: confirmation.order.amount,
-        currency: confirmation.order.currency,
-        status: confirmation.order.status,
-        pageUrl: eventSourceUrl,
-        landingPage: confirmation.order.attribution.landingPage || eventSourceUrl,
-        utmSource: confirmation.order.attribution.utmSource,
-        utmMedium: confirmation.order.attribution.utmMedium,
-        utmCampaign: confirmation.order.attribution.utmCampaign,
-        utmContent: confirmation.order.attribution.utmContent,
-        utmId: confirmation.order.attribution.utmId,
-        utmTerm: confirmation.order.attribution.utmTerm,
-        campaignId: confirmation.order.attribution.campaignId,
-        campaignName: confirmation.order.attribution.campaignName,
-        adsetId: confirmation.order.attribution.adsetId,
-        adId: confirmation.order.attribution.adId,
-        adName: confirmation.order.attribution.adName,
-        fbclid: confirmation.order.attribution.fbclid,
-        fbp: confirmation.order.attribution.fbp,
-        fbc: confirmation.order.attribution.fbc,
-        paidAt: confirmation.order.paidAt,
-        orderItems: confirmation.order.orderItems,
-      });
-
-      if (metaPurchase.ok && !metaPurchase.skipped) {
-        await markPurchaseEventSent(confirmation.order.orderCode);
+    if (confirmation.order.status === "paid" && !confirmation.order.purchaseEventSent) {
+      try {
+        const dispatch = await dispatchMetaPurchaseOrders({
+          orderCode: confirmation.order.orderCode,
+          limit: 1,
+        });
+        metaPurchase = {
+          ok: dispatch.sent > 0,
+          skipped: dispatch.claimed === 0,
+          reason: dispatch.error ?? (dispatch.retried > 0 ? "queued_for_retry" : undefined),
+        };
+      } catch {
+        metaPurchase = { ok: false, skipped: false, reason: "queued_for_retry" };
       }
     }
 

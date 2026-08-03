@@ -1,5 +1,6 @@
 import { fallbackOrders } from "@/data/platform";
 import { emptyInvoiceDetails, type InvoiceDetails } from "@/lib/orders/invoice";
+import { dispatchMetaPurchaseOrders } from "@/lib/meta/purchase-outbox";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import {
   createOrderCode,
@@ -586,6 +587,18 @@ export async function createSupportPaymentOrder(input: CreateSupportPaymentOrder
   return mapDbOrder(result.data as DbOrder);
 }
 
+async function dispatchManualPaidOrderPurchase(order: PaymentOrder) {
+  if (order.status !== "paid" || order.purchaseEventSent) return;
+
+  try {
+    await dispatchMetaPurchaseOrders({ orderCode: order.orderCode, limit: 1 });
+  } catch {
+    console.warn("[orders] Manual paid order Purchase remains queued for retry.", {
+      orderCode: order.orderCode,
+    });
+  }
+}
+
 export async function createManualPaidOrder(input: CreateManualPaidOrderInput) {
   const supabase = createSupabaseAdminClient();
 
@@ -595,7 +608,10 @@ export async function createManualPaidOrder(input: CreateManualPaidOrderInput) {
 
   if (input.provisioningOperationId) {
     const existing = await findManualPaidOrderByProvisioningOperationId(input.provisioningOperationId);
-    if (existing) return existing;
+    if (existing) {
+      await dispatchManualPaidOrderPurchase(existing);
+      return existing;
+    }
   }
 
   const selectedCourses = await resolveCourses(input);
@@ -636,7 +652,9 @@ export async function createManualPaidOrder(input: CreateManualPaidOrderInput) {
     .single();
 
   if (!firstInsert.error && firstInsert.data) {
-    return mapDbOrder(firstInsert.data as DbOrder);
+    const order = mapDbOrder(firstInsert.data as DbOrder);
+    await dispatchManualPaidOrderPurchase(order);
+    return order;
   }
 
   const fallbackInsert = await supabase
@@ -662,14 +680,19 @@ export async function createManualPaidOrder(input: CreateManualPaidOrderInput) {
   if (fallbackInsert.error || !fallbackInsert.data) {
     if (input.provisioningOperationId) {
       const existing = await findManualPaidOrderByProvisioningOperationId(input.provisioningOperationId);
-      if (existing) return existing;
+      if (existing) {
+        await dispatchManualPaidOrderPurchase(existing);
+        return existing;
+      }
     }
     throw new Error(
       fallbackInsert.error?.message ?? firstInsert.error?.message ?? "Không cấp được quyền học viên.",
     );
   }
 
-  return mapDbOrder(fallbackInsert.data as DbOrder);
+  const order = mapDbOrder(fallbackInsert.data as DbOrder);
+  await dispatchManualPaidOrderPurchase(order);
+  return order;
 }
 
 export async function getPaymentOrder(orderCode: string) {

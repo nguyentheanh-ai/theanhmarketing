@@ -168,7 +168,7 @@ test("Meta InitiateCheckout uses the order code shared with the browser event", 
   assert.equal(event.custom_data.currency, "VND");
 });
 
-test("order and payment routes emit Meta Lead, InitiateCheckout and Purchase events without blocking core flow", () => {
+test("order and payment routes emit Meta Lead, InitiateCheckout and durable Purchase events without blocking core flow", () => {
   const orderRoute = read("app/api/orders/route.ts");
   const sessionOrderRoute = read("app/api/orders/from-session/route.ts");
   const sepayRoute = read("app/api/sepay/webhook/route.ts");
@@ -190,9 +190,9 @@ test("order and payment routes emit Meta Lead, InitiateCheckout and Purchase eve
   assert.match(sessionOrderRoute, /sendMetaInitiateCheckoutEvent/);
   assert.match(sessionOrderRoute, /eventId:\s*order\.orderCode/);
 
-  assert.match(sepayRoute, /sendMetaPurchaseEvent/);
-  assert.match(sepayRoute, /!confirmation\.wasAlreadyPaid/);
-  assert.match(sepayRoute, /await sendMetaPurchaseEvent\(/);
+  assert.match(sepayRoute, /dispatchMetaPurchaseOrders/);
+  assert.match(sepayRoute, /confirmation\.order\.status\s*===\s*"paid"/);
+  assert.doesNotMatch(sepayRoute, /sendMetaPurchaseEvent/);
   assert.match(sepayRoute, /Meta Purchase event failed/);
 });
 
