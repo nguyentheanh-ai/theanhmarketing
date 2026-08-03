@@ -34,6 +34,8 @@ export default function GuideEmailDemoPage() {
     ],
     paymentEmailSentAt: null,
     paymentEmailLastError: null,
+    accountingEmailSentAt: null,
+    accountingEmailLastError: null,
     purchaseEventSent: false,
     attribution: normalizeAttribution(),
     invoice: emptyInvoiceDetails,

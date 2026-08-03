@@ -227,3 +227,21 @@ test("both authoritative paid routes call the shared accounting notification onl
     assert.match(source, /!confirmation\.wasAlreadyPaid/);
   }
 });
+
+test("accounting backfill is bounded, account-matched, and dry-run by default", () => {
+  const script = read("scripts/backfill-accounting-payment-emails.ts");
+  const orderService = read("services/orderService.ts");
+
+  assert.match(script, /2026-08-01T17:00:00\.000Z/);
+  assert.match(script, /process\.argv\.includes\("--send"\)/);
+  assert.match(script, /SEPAY_BANK_ACCOUNT_NUMBER/);
+  assert.match(script, /accountingEmailSentAt/);
+  assert.match(script, /notifyAccountingForPaidOrder/);
+  assert.match(script, /ambiguousOrderCodes/);
+  assert.doesNotMatch(script, /studentName|\.email\b|\.phone\b/);
+
+  assert.match(orderService, /listAccountingBackfillCandidates/);
+  assert.match(orderService, /\.eq\("status", "paid"\)/);
+  assert.match(orderService, /\.gte\("paid_at", since\)/);
+  assert.match(orderService, /\.limit\(boundedLimit\)/);
+});

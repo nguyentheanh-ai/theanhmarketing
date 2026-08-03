@@ -115,6 +115,7 @@ type DbOrder = {
   invoice_company_name?: string | null;
   invoice_company_address?: string | null;
   invoice_email?: string | null;
+  sepay_payload?: SepayWebhookPayload | null;
 };
 
 const orderBaseSelectFields =
@@ -747,6 +748,41 @@ export async function getPaymentOrders(options: { includeFallback?: boolean; str
   }
 
   return rows.map(mapDbOrder);
+}
+
+export type AccountingBackfillCandidate = {
+  order: PaymentOrder;
+  receivedAccountNumber: string;
+};
+
+export async function listAccountingBackfillCandidates({
+  since,
+  limit = 500,
+}: {
+  since: string;
+  limit?: number;
+}): Promise<AccountingBackfillCandidate[]> {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Accounting backfill order source is unavailable");
+
+  const boundedLimit = Math.min(Math.max(Math.trunc(limit), 1), 1000);
+  const { data, error } = await supabase
+    .from("orders")
+    .select(`${orderSelectFields},sepay_payload`)
+    .eq("status", "paid")
+    .gte("paid_at", since)
+    .order("paid_at", { ascending: true })
+    .order("id", { ascending: true })
+    .limit(boundedLimit);
+
+  if (error) throw new Error(`Could not read accounting backfill orders: ${error.message}`);
+
+  return ((data ?? []) as DbOrder[]).map((row) => ({
+    order: mapDbOrder(row),
+    receivedAccountNumber: String(
+      row.sepay_payload?.accountNumber ?? row.sepay_payload?.account_number ?? "",
+    ).replace(/\D/g, ""),
+  }));
 }
 
 export async function getCommandCenterOrdersStrict(window: CommandCenterAnalysisWindow): Promise<PaymentOrder[]> {
