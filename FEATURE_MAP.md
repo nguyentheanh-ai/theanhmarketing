@@ -282,3 +282,12 @@ Guard: order payload and lead payload are different contracts; preserve text for
 | Owner full catalog access | PRODUCTION DATA DONE | Supabase Auth, `public.leads`, `crm_v2.enrollments` | Existing Auth identity and entitlement resolver | Exact confirmed owner user has 10 idempotent grants and 10 active enrollments; no password/order/payment/email mutation |
 | Clear account self-service | ACTIVE | `/tai-khoan` | Existing Supabase Auth update calls and owned-course snapshot | Profile stays visible; email/password live in one closed-by-default change card; password verifies the current credential before update; `/doi-mat-khau` recovery remains intact |
 | Owner booking preview | ACTIVE | `/dat-lich-ho-tro`, `/api/support-bookings` | Normal customers still require a paid non-support order | Server-verified owner can preview with existing identity; final submission still creates a real pending 500.000đ order |
+
+## 2026-08-03 - Zalo ZBS pending-course-payment reminder
+
+| Tính năng | Trạng thái | App/route | Flow giữ nguyên | Ghi chú |
+|---|---|---|---|---|
+| Nhắc thanh toán ZBS sau 5 phút | LOCAL READY / DISABLED | `main-site` `/api/zalo/pending-payment/send-due` | Existing order status, SePay confirmation, email and access provisioning | Exact Facebook Ads course/Ebook scope; reread pending before send; lease, retry and permanent sent marker prevent duplicates |
+| Mở app ngân hàng an toàn | LOCAL READY | `/thanh-toan/[code]?openBank=1` | Existing QR, copy details, polling and SePay | Official VietQR app directory; customer gesture required; QR/copy stays as fallback |
+| Zalo OAuth rotation | LOCAL READY / NOT SEEDED | Private schema + service-role RPCs | Existing Supabase service role boundary | Atomic rotating refresh token; no credential in committed artifacts |
+| ZBS production rollout | BLOCKED BY EXTERNAL GATES | Zalo ZBS + Supabase Cron | Fail-closed feature flag | Requires approved template, applied migration, controlled test and owner-approved daily cap before enablement |

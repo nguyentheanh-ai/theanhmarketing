@@ -117,3 +117,11 @@ Updated: 2026-07-22
 - Only the AI Master and Agent Kit catalog covers moved to `v3`, using the approved luminous cobalt/cyan/violet landing-page direction. The other eight covers and the 4-live/6-coming availability gate are unchanged.
 - Browser QA: both landings return 200, expose their form/CTA, show no legacy 1.299.000đ/359.000đ price, have no broken content image or horizontal overflow, and pass 390px mobile checks. No form was submitted.
 - Verification: 478/478 Node tests, TypeScript, Next.js 91-page production build, ESLint 0 errors/1 pre-existing unrelated warning. Local only; no deployment, real order, email or database mutation.
+
+## 2026-08-03 - Zalo ZBS pending-course-payment reminder (local, disabled)
+
+- `main-site` now has a lease-fenced ZBS outbox and protected worker for exactly `facebook-ads-2026`, `ebook-facebook-ads-2026`, or their exact two-item bundle. A row is eligible only while still pending 5–24 minutes after registration; the worker rereads authoritative status immediately before sending and permanently fences successful sends.
+- Zalo OAuth tokens stay in a service-role-only private credential store and rotate atomically. The server client follows the authenticated official Zalo ZBS contract; no token or app secret is in source, migration, docs, logs, or browser code.
+- Customer CTA opens `/thanh-toan/<code>?openBank=1`. On mobile the server builds official VietQR app-specific links; the bank chooser requires a customer click and the existing QR/copy details remain visible as fallback.
+- Production remains disabled. The ZBS template is not yet submitted/approved, the migration is not applied, Cron is not enabled, and no daily cap has been owner-approved. The rollout runbook requires these gates and blocks backfill with `ZALO_ZNS_ROLLOUT_AT`.
+- Verification: focused Zalo/payment tests 25/25; full Node 542/542; TypeScript and 94-page Next production build pass. ESLint has 0 errors and 1 pre-existing unrelated warning in `components/crm-v2/support-bookings-client.tsx`.

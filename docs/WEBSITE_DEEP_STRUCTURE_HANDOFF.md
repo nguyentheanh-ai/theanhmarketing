@@ -1326,3 +1326,16 @@ Before changing these, run targeted tests and full build.
 | Regression | Updated `tests/noti-style-public-foundation.test.mjs` to reject cart UI imports, labels and links in the shared public chrome. |
 | Verification | RED reproduced all three existing surfaces. Final 503/503 Node tests, TypeScript, targeted ESLint, diff check and 91-route production build passed. |
 | Release | Runtime commit `9c6db8054780cf8e903cf9665e774048fce6ff1d`; deployment `dpl_G2JP4xg3KFJrHLR7ckB2b6Fga8AH` is Ready and aliased to both canonical domains. Fresh desktop and 390x844 live QA found zero cart links and zero floating panels; mobile navigation and auth contrast remain correct. |
+
+## 2026-08-03 - Zalo ZBS nhắc thanh toán khóa học
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Scope | `main-site`; đúng `facebook-ads-2026`, `ebook-facebook-ads-2026`, hoặc bundle gồm đúng hai slug. Không áp dụng sản phẩm thứ ba. |
+| Timing/status | Claim khi đăng ký vẫn `pending` sau tối thiểu 5 phút và không quá 24 giờ. Worker reread bản ghi authoritative trước provider call; paid/ineligible/invalid phone được cancel, không gửi. |
+| Idempotency | Postgres outbox dùng lease 10 phút, `FOR UPDATE SKIP LOCKED`, attempt tối đa 3, retry 5/15 phút, lease-fenced finish và marker `sent_at` vĩnh viễn. Rollout timestamp chặn backfill; daily limit chặn vượt trần. |
+| Zalo contract | `POST https://business.openapi.zalo.me/message/template`; access token header; exact template variables `customer_name`, `product_name`, `order_code`, `amount`, `transfer_content`, `status`; OAuth refresh token rotates atomically in private service-role-only storage. |
+| Bank handoff | ZBS CTA trỏ tới `/thanh-toan/<order>?openBank=1`. Mobile page fetches official VietQR iOS/Android app directory server-side and emits app-specific `dl.vietqr.io` links only after customer click. Existing QR và copy controls remain fallback. |
+| Operations | Protected GET/POST worker uses `CRON_SECRET`. Runbook requires Supabase Vault, `pg_cron`/`pg_net`, one-minute cadence, disabled-first rollout, controlled test, owner-approved daily limit and Cron-first rollback. |
+| External state | Local only. ZBS template chưa submitted/approved because the authenticated Chrome window was in active owner use; migration, token seed, Cron, provider test and production flag are untouched. |
+| Verification | Zalo/payment focused 25/25; full Node 542/542; TypeScript and Next.js 94-page production build pass. ESLint 0 errors/1 pre-existing unrelated warning. |
