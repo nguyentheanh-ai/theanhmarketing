@@ -1,5 +1,19 @@
 # Feature Map - theanh-main
 
+## Accounting paid-order notification
+
+Description: Sends one internal accounting email for every first transition to `paid`, including courses, Ebook products, consultations, support bookings and manual confirmations. Requested invoice details are included when present.
+
+Routes: `POST /api/sepay/webhook`, `POST /api/payment/confirm`.
+
+Files: `lib/notifications/accounting-payment-email.ts`, `services/accountingNotificationService.ts`, `services/orderService.ts`, `scripts/backfill-accounting-payment-emails.ts`, `tests/accounting-payment-email.test.mjs`.
+
+Database: `public.orders.accounting_email_sent_at`, `public.orders.accounting_email_last_error`.
+
+Environment: `ACCOUNTING_NOTIFICATION_EMAIL`, existing `RESEND_API_KEY`, existing paid-email sender variables.
+
+Guard: accounting failure must not alter payment/customer fulfillment; never send when the dedicated sent marker exists; backfill defaults to dry-run and must match the configured receiving account or use an explicitly reviewed ambiguous-order allowlist.
+
 ## Public storefront production release - 2026-08-02
 
 - Canonical production deployment: `dpl_3v4vAeJQFShnQkghuWYoxVfpMCbc`, release commit `8edca42`, status `READY`.

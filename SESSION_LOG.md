@@ -1,5 +1,13 @@
 # Session Log
 
+## 2026-08-03 - Accounting paid-order notification implementation
+
+- Added shared renderer/sender, delivery orchestration, two order markers and both authoritative paid-route integrations.
+- Added a dry-run-first Greezhub backfill from 2026-08-02 and conditional invoice details.
+- TDD: migration marker RED to GREEN; renderer RED to GREEN; route/orchestration RED to GREEN; backfill RED to GREEN.
+- Verification: focused accounting 8/8, focused payment/account 40/40, full Node 511/511, TypeScript clean, ESLint zero errors/one unchanged warning, diff check clean, Next build 91/91 pages.
+- Production migration, recipient configuration, deploy and backfill are recorded separately after rollout.
+
 ## 2026-08-02 - Granted owner access and rebuilt account self-service locally
 
 - Granted the exact confirmed Auth user for `theanhnguyen.marketing@gmail.com` all 10 canonical course entitlements using idempotent `admin-access-grant` lead markers and active CRM enrollments. Readback confirmed all 10; password, email, orders and payment evidence were untouched.

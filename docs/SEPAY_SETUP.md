@@ -128,3 +128,10 @@ Before production, replace the anon demo policy with server-only writes and admi
 - Checkout pages and pending-payment email intentionally say `Thanh toán chuyển khoản` / `QR thanh toán`. Provider names remain internal in routes, helpers, database fields, and environment variables only.
 - Active course/Ebook forms post optional invoice details with the order. The server validates and stores those details; public order polling returns only `invoice.requested` and never exposes invoice PII.
 - Apply `supabase/migrations/20260802161009_add_order_invoice_fields.sql` before deploying code that accepts invoice requests.
+
+## 2026-08-03 - Accounting paid-order notification
+
+- Set server-only `ACCOUNTING_NOTIFICATION_EMAIL` in Production. The paid route sends through the existing Resend credential and `PAYMENT_SUCCESS_EMAIL_FROM` sender fallback.
+- SePay and manual confirmation both call the shared accounting service only for a newly paid order. The accounting send uses `Idempotency-Key: accounting-paid-<orderCode>` plus dedicated database markers.
+- Missing recipient/provider config or a provider failure is recorded in `accounting_email_last_error` and never changes the paid result or customer fulfillment.
+- Run `scripts/backfill-accounting-payment-emails.ts` without flags first. Live mode is `--send`; ambiguous rows require an explicit reviewed `--approve-ambiguous=<orderCodes>` list.

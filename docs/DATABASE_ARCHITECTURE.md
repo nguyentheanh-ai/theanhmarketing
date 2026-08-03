@@ -412,3 +412,7 @@ Phase 4:
 ## 2026-08-02 - Order invoice fields
 
 Migration `20260802161009_add_order_invoice_fields.sql` adds five nullable/additive invoice fields to `public.orders`, with `invoice_requested boolean not null default false`. Existing orders remain valid without backfill; invoice details are required and normalized only when the customer selects the invoice option.
+
+## 2026-08-03 - Accounting email delivery markers
+
+Migration `20260803090000_add_accounting_email_markers.sql` adds nullable `accounting_email_sent_at timestamptz` and `accounting_email_last_error text` columns to `public.orders`. They are server-written operational state only; no public order DTO exposes them and no RLS policy or table ownership changes.

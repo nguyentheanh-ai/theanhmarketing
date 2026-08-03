@@ -1,5 +1,14 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-08-03 - Accounting email for every paid order
+
+- `lib/notifications/accounting-payment-email.ts` renders one internal HTML/text email with customer name, phone, email, product/service, paid amount, order code, Vietnam paid time and payment method. Requested invoices also include tax code, company, address and invoice delivery email.
+- `services/accountingNotificationService.ts` owns accounting eligibility and delivery markers. Both `POST /api/sepay/webhook` and `POST /api/payment/confirm` call it only when an order first becomes paid; course, Ebook, consultation and support-booking branches are all covered.
+- `public.orders.accounting_email_sent_at` prevents intentional duplicates and `accounting_email_last_error` preserves a bounded retry reason. Accounting failure never reverts payment, blocks customer email/account access or changes Meta, Telegram and Google Sheets side effects.
+- Production recipient is server-only `ACCOUNTING_NOTIFICATION_EMAIL`. The approved value is managed in Vercel and must not be hard-coded into client code.
+- `scripts/backfill-accounting-payment-emails.ts` defaults to dry-run for paid orders since `2026-08-02 00:00 +07:00`, matches stored receiving-account evidence to the configured Greezhub account, skips sent rows and requires explicit review of ambiguous order codes before `--send`.
+- Local gate: accounting regression `8/8`, full Node `511/511`, TypeScript, build 91 pages and diff check pass. ESLint has zero errors and the unchanged existing warning in `components/crm-v2/support-bookings-client.tsx`.
+
 ## 2026-07-22 - Facebook Ads 799K pending-email title
 
 - `lib/notifications/pending-payment-email.ts` normalizes 799,000 VND Facebook Ads pending orders to the current buyer-facing AI Agent package title.

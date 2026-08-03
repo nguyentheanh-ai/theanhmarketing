@@ -1,5 +1,12 @@
 # Current State - theanh-main
 
+## 2026-08-03 - Accounting payment email ready for production rollout
+
+- One shared internal email covers every newly paid course, Ebook, consultation, support booking and manual confirmation.
+- Recipient is server-only `ACCOUNTING_NOTIFICATION_EMAIL`; invoice-requested orders include all stored invoice fields.
+- Additive order markers and a safe Greezhub dry-run/backfill script are implemented.
+- Local verification: 511/511 Node tests, TypeScript, build and diff check pass; ESLint has zero errors and one unchanged warning.
+
 ## 2026-08-02 - Owner course access and clearer account self-service (production)
 
 - Production account `theanhnguyen.marketing@gmail.com` now has active access to all 10 canonical catalog courses through idempotent access grants plus active CRM enrollments tied to the exact confirmed Auth user. No password, order, payment or email was changed.
