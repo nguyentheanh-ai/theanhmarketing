@@ -48,13 +48,6 @@ export function MobileMenu({ items }: { items: Array<{ href: string; label: stri
               </Link>
             ))}
             <div className="my-1 h-px bg-[var(--tam-line)]" />
-            <Link
-              className="rounded-xl px-4 py-3 text-sm font-bold text-[var(--tam-ink)] hover:bg-[var(--tam-accent-soft)]"
-              href="/gio-hang"
-              onClick={() => setOpen(false)}
-            >
-              Giỏ hàng
-            </Link>
             <div className="grid gap-1 rounded-xl bg-[var(--tam-accent-soft)] px-4 py-3 text-sm font-black text-[var(--tam-ink)]" onClick={() => setOpen(false)}>
               <HeaderMobileActions />
             </div>

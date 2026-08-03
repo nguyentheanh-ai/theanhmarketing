@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { BrandMark } from "@/components/site/brand-mark";
-import { CartLink } from "@/components/cart/cart-link";
 import { HeaderAuthActions } from "@/components/site/header-auth-actions";
 import { MobileMenu } from "@/components/site/mobile-menu";
 import { mainNav } from "@/data/site";
@@ -29,7 +28,6 @@ export async function SiteHeader() {
           </nav>
 
           <div className="ml-auto hidden items-center gap-2 lg:flex">
-            <CartLink />
             <HeaderAuthActions />
           </div>
           <MobileMenu items={mainNav} />

@@ -1284,3 +1284,22 @@ Before changing these, run targeted tests and full build.
 | Payment copy | Customer pages/emails are provider-neutral while the existing internal webhook, QR helper and idempotent reconciliation flow remain unchanged. |
 | Database | Additive migration `20260802161009_add_order_invoice_fields.sql` must precede the application rollout. |
 | Release | Migration applied to Supabase project `theanhmarketing`; production bank environment updated; runtime commit `5689c1a`; Vercel deployment `dpl_2yCs8k8H9v4xQc348eQ5C5cAuPwp` promoted to `www.theanhmarketing.com`. Live landing markers and unauthenticated webhook `401` passed; post-release runtime error scan is empty. |
+
+## 2026-08-03 - Preserve public-auth contrast across production releases
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Regression | The VPBank/invoice release was cut from the canonical production branch before the later complete public-auth contrast commits had been merged. It therefore replaced the earlier auth-only deployment and restored translucent white labels/supporting copy on white cards, most visibly on mobile. |
+| Fix | Cherry-picked the exact existing auth fixes into `deploy/website-production-20260802`, preserving all invoice/order/payment changes. Login, remember-login, first password change, forgot password and registration now share the intended dark-on-light presentation; the login eye control remains accessible. |
+| Prevention | Added `tests/mobile-public-auth-production-contract.test.mjs` to enforce the required classes and CSS on the canonical production line before future releases. |
+| Verification | RED reproduced the missing remember-label contract. Final focused suite passed 10/10, TypeScript, targeted ESLint, diff check, 91-route local/Vercel builds and fresh live 390x844 computed-style QA across all four public auth routes passed. |
+| Release | Runtime commit `738039c0db3b2c207a0e08835e11cf4340731e02`; production deployment `dpl_52siV27L871MbGtutSsG3BAEF443` is Ready and aliased to `www.theanhmarketing.com`. No Auth, order, payment, email, student-access or `app.theanhmarketing.com` mutation. |
+
+## 2026-08-03 - Remove public cart chrome
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Owner request | Remove the visible `Giỏ hàng` control and the floating cart summary from the public website. |
+| Scope | Removed `CartLink` from the desktop header, the `/gio-hang` entry from the mobile menu and `CartToast` from shared `PageShell`. Existing course/direct-checkout, invoice, order and payment code remains intact. |
+| Regression | Updated `tests/noti-style-public-foundation.test.mjs` to reject cart UI imports, labels and links in the shared public chrome. |
+| Verification | RED reproduced all three existing surfaces. Final 503/503 Node tests, TypeScript, targeted ESLint, diff check and 91-route production build passed. |

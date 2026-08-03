@@ -7,6 +7,7 @@ const read = (path) => readFileSync(path, "utf8");
 const page = read("app/page.tsx");
 const shell = read("components/site/page-shell.tsx");
 const header = read("components/site/header.tsx");
+const mobileMenu = read("components/site/mobile-menu.tsx");
 const footer = read("components/site/footer.tsx");
 const courseCard = read("components/content/course-card.tsx");
 const css = read("app/globals.css");
@@ -20,13 +21,15 @@ test("public shell uses the approved light The Anh visual surface", () => {
   assert.match(css, /\.tam-grid-bg/);
 });
 
-test("public header keeps navigation, account, cart, and a mobile menu", () => {
+test("public chrome keeps navigation and account actions without a cart widget", () => {
   assert.match(header, /mainNav\.map/);
   assert.match(header, /HeaderAuthActions/);
-  assert.match(header, /CartLink/);
   assert.match(header, /MobileMenu/);
   assert.match(header, /tam-public-header/);
   assert.match(css, /\.tam-public-shell \.tam-public-header/);
+  assert.doesNotMatch(header, /CartLink|Giỏ hàng|\/gio-hang/);
+  assert.doesNotMatch(mobileMenu, /Giỏ hàng|\/gio-hang/);
+  assert.doesNotMatch(shell, /CartToast/);
 });
 
 test("homepage renders the approved conversion story in order", () => {

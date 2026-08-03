@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { Suspense } from "react";
-import { CartToast } from "@/components/cart/cart-toast";
 import { SiteFooter } from "@/components/site/footer";
 import { SiteHeader } from "@/components/site/header";
 
@@ -14,7 +13,6 @@ export async function PageShell({ children }: { children: ReactNode }) {
       <Suspense fallback={null}>
         <SiteFooter />
       </Suspense>
-      <CartToast />
     </main>
   );
 }
