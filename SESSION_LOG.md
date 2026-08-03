@@ -6,6 +6,7 @@
 - Preserved real `paid_at`, stable order-code deduplication, existing payment/accounting/email fulfillment and the seven-day Meta eligibility boundary.
 - Verification: focused Meta 17/17, full Node 517/517, TypeScript, build and diff check pass; ESLint has zero errors and one unchanged warning.
 - No fake timestamp, demo order or event older than seven days was used.
+- Production release `dpl_FxVx4S3tVtuiVzvtTfLLtVvkobNB` from authorized commit `9bff9e2` is live. The stale cron secret was rotated and verified against both authenticated and unauthenticated paths. The first protected dispatch claimed 1, sent 1, retried 0 and lost 0 leases; database readback is 32 paid/7d, 0 unsent, 0 due, with one fresh Meta trace and no runtime errors.
 
 ## 2026-08-03 - Accounting paid-order notification implementation
 

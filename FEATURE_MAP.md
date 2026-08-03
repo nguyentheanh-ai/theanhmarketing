@@ -237,6 +237,8 @@ Environment: `NEXT_PUBLIC_META_PIXEL_ID`, `META_CAPI_ACCESS_TOKEN`, `META_CAPI_D
 
 Durable Purchase delivery: `lib/meta/purchase-outbox.ts` claims eligible paid orders through service-role RPCs defined by `supabase/migrations/20260727150000_meta_purchase_outbox.sql`. SePay, protected manual confirmation and manual paid provisioning dispatch immediately; `/api/meta/purchase-retry` plus the Vercel cron recovers eligible failures. The outbox accepts only real paid timestamps within seven days and keeps `event_id=order_code` stable for Meta deduplication.
 
+Production state (2026-08-03): deployment `dpl_FxVx4S3tVtuiVzvtTfLLtVvkobNB` is live. The cron secret was rotated and authenticated recovery sent the only due seven-day event; database readback is 0 unsent/0 due and the successful row has a Meta trace ID.
+
 Guard: keep one production Pixel; checkout must continue even when browser tracking is skipped.
 
 ## Google Sheets order backup

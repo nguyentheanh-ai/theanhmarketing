@@ -10,6 +10,7 @@
 | Retry contract | Only paid, unmarked orders whose real `paid_at` is within seven days are claimable. `/api/meta/purchase-retry` requires `CRON_SECRET`, processes at most ten per run and exposes no customer payload; Vercel schedules the fallback daily. |
 | Database | Production already contains `claim_meta_purchase_orders` and `finish_meta_purchase_order` as security-definer RPCs restricted to `service_role`. The source migration is now tracked in this branch so future releases cannot silently omit the architecture. |
 | Verification | RED reproduced all five missing contracts. GREEN passes 17/17 focused tests, 517/517 full Node tests, TypeScript, ESLint with zero errors/one unchanged warning, and the 93-page Next.js production build. |
+| Production | Release commit `9bff9e2`; deployment `dpl_FxVx4S3tVtuiVzvtTfLLtVvkobNB`; Ready and promoted to `www.theanhmarketing.com`. Rotated the stale `CRON_SECRET`, preserved unauthenticated 401, and verified authenticated 200. Initial recovery claimed 1/sent 1 with a stored Meta trace; readback is 32 paid orders in seven days, 0 unsent and 0 due. No runtime errors were reported. |
 
 ## 2026-08-03 - Accounting email for every paid order
 

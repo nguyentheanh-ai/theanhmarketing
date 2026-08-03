@@ -1,10 +1,11 @@
 # Current State - theanh-main
 
-## 2026-08-03 - Durable Meta Purchase CAPI recovery candidate
+## 2026-08-03 - Durable Meta Purchase CAPI recovery live
 
 - Root cause confirmed: the active production branch still called Meta directly inside payment requests, while the previously verified durable outbox code was never committed into this deploy branch. Paid orders could therefore remain `purchase_event_sent=false` with `meta_purchase_state=null` and zero attempts after a missed or failed first call.
-- Candidate restores the service-role-only, lease-fenced seven-day outbox, immediate dispatch for SePay/manual confirmation/manual paid provisioning, stable `event_id=order_code`, original `paid_at` event time, bounded retry endpoint and daily Vercel retry cron.
-- Production schema already contains both outbox RPCs. Pre-deploy database audit found one currently due paid order in the valid seven-day window; no historical event outside seven days will be sent.
+- Production now runs the service-role-only, lease-fenced seven-day outbox, immediate dispatch for SePay/manual confirmation/manual paid provisioning, stable `event_id=order_code`, original `paid_at` event time, bounded retry endpoint and daily Vercel retry cron.
+- Production schema already contained both outbox RPCs. The protected dispatcher claimed and sent the one due paid order in the valid seven-day window; Meta returned a trace ID. Post-run audit shows 32 paid orders in seven days, zero unsent and zero due. No historical event outside seven days was sent.
+- Release commit `9bff9e2` and deployment `dpl_FxVx4S3tVtuiVzvtTfLLtVvkobNB` are `READY` and promoted to `www.theanhmarketing.com`. `CRON_SECRET` was rotated because the former production value did not authenticate any cron route; authenticated retry is now 200, unauthenticated retry remains 401, and the post-release runtime error scan is empty.
 - Verification: focused Meta tests 17/17, full Node 517/517, TypeScript, ESLint (0 errors/1 unchanged warning) and 93-page Next.js production build pass.
 
 ## 2026-08-03 - Accounting payment email live
