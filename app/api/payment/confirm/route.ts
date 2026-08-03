@@ -6,6 +6,7 @@ import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/
 import { cleanEmail, cleanPhone, cleanText, isValidEmail, isValidPhone } from "@/lib/security/validation";
 import { siteConfig } from "@/data/site";
 import { invalidateAdminModules } from "@/services/adminDataService";
+import { notifyAccountingForPaidOrder } from "@/services/accountingNotificationService";
 import { confirmPaymentManually, markPurchaseEventSent } from "@/services/orderService";
 
 export const runtime = "nodejs";
@@ -65,6 +66,16 @@ export async function POST(request: Request) {
       paymentMethod,
       paidAt,
     });
+
+    if (!confirmation.wasAlreadyPaid) {
+      const accountingEmail = await notifyAccountingForPaidOrder(confirmation.order);
+      if (!accountingEmail.ok) {
+        console.warn("[payment-confirm] Accounting payment email failed:", {
+          orderCode: confirmation.order.orderCode,
+          reason: accountingEmail.reason,
+        });
+      }
+    }
 
     let metaPurchase: { ok: boolean; skipped: boolean; reason?: string; status?: number } = {
       ok: true,

@@ -20,6 +20,7 @@ import {
   rateLimitResponse,
 } from "@/lib/security/rate-limit";
 import { invalidateAdminModules } from "@/services/adminDataService";
+import { notifyAccountingForPaidOrder } from "@/services/accountingNotificationService";
 import { logStudentActivity } from "@/services/activityLogService";
 import {
   confirmOrderFromSepay,
@@ -114,6 +115,16 @@ export async function POST(request: Request) {
     const supportBookingOrder = isSupportBookingOrder(confirmation.order);
     const consultationOrder = isConsultationOrder(confirmation.order);
     let supportBooking: ConfirmedSupportBooking | null = null;
+
+    if (!confirmation.wasAlreadyPaid) {
+      const accountingEmail = await notifyAccountingForPaidOrder(confirmation.order);
+      if (!accountingEmail.ok) {
+        console.warn("[sepay] Accounting payment email failed:", {
+          orderCode: confirmation.order.orderCode,
+          reason: accountingEmail.reason,
+        });
+      }
+    }
 
     if (!confirmation.wasAlreadyPaid && supportBookingOrder) {
       supportBooking = await confirmSupportBookingForPaidOrder(confirmation.order);

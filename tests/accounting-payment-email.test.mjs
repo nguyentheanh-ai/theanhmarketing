@@ -6,7 +6,7 @@ import ts from "typescript";
 
 const read = (relativePath) => readFileSync(relativePath, "utf8");
 
-function loadTsModule(relativePath) {
+function loadTsModule(relativePath, modules = {}) {
   const source = read(path.resolve(relativePath));
   const compiled = ts.transpileModule(source, {
     compilerOptions: {
@@ -18,6 +18,7 @@ function loadTsModule(relativePath) {
   const cjsModule = { exports: {} };
   const runner = new Function("exports", "module", "require", compiled);
   runner(cjsModule.exports, cjsModule, (specifier) => {
+    if (Object.hasOwn(modules, specifier)) return modules[specifier];
     throw new Error(`Unsupported test import: ${specifier}`);
   });
   return cjsModule.exports;
@@ -145,5 +146,84 @@ test("accounting email fails closed when the recipient is not configured", async
   } finally {
     if (previousRecipient === undefined) delete process.env.ACCOUNTING_NOTIFICATION_EMAIL;
     else process.env.ACCOUNTING_NOTIFICATION_EMAIL = previousRecipient;
+  }
+});
+
+function loadAccountingNotificationService() {
+  return loadTsModule("services/accountingNotificationService.ts", {
+    "@/lib/notifications/accounting-payment-email": {
+      sendAccountingPaymentEmail: async () => ({ ok: true, skipped: false, reason: null }),
+    },
+    "@/services/orderService": {
+      markAccountingEmailSent: async () => ({ ok: true, error: null }),
+      markAccountingEmailError: async () => ({ ok: true, error: null }),
+    },
+  });
+}
+
+test("accounting notification skips orders that are not paid or were already sent", async () => {
+  const { notifyAccountingForPaidOrder } = loadAccountingNotificationService();
+  let sends = 0;
+  const dependencies = {
+    send: async () => {
+      sends += 1;
+      return { ok: true, skipped: false, reason: null };
+    },
+    markSent: async () => ({ ok: true, error: null }),
+    markError: async () => ({ ok: true, error: null }),
+  };
+
+  const pending = await notifyAccountingForPaidOrder({ ...paidOrder, status: "pending" }, dependencies);
+  const sent = await notifyAccountingForPaidOrder({
+    ...paidOrder,
+    accountingEmailSentAt: "2026-08-03T02:20:00.000Z",
+  }, dependencies);
+
+  assert.equal(pending.skipped, true);
+  assert.equal(sent.skipped, true);
+  assert.equal(sends, 0);
+});
+
+test("accounting notification records provider success and failure independently", async () => {
+  const { notifyAccountingForPaidOrder } = loadAccountingNotificationService();
+  const successCalls = [];
+  const success = await notifyAccountingForPaidOrder(paidOrder, {
+    send: async () => ({ ok: true, skipped: false, reason: null }),
+    markSent: async (orderCode) => {
+      successCalls.push(["sent", orderCode]);
+      return { ok: true, error: null };
+    },
+    markError: async (...args) => {
+      successCalls.push(["error", ...args]);
+      return { ok: true, error: null };
+    },
+  });
+  assert.equal(success.ok, true);
+  assert.deepEqual(successCalls, [["sent", "TAM123"]]);
+
+  const failureCalls = [];
+  const failure = await notifyAccountingForPaidOrder(paidOrder, {
+    send: async () => ({ ok: false, skipped: false, reason: "provider unavailable" }),
+    markSent: async (...args) => {
+      failureCalls.push(["sent", ...args]);
+      return { ok: true, error: null };
+    },
+    markError: async (...args) => {
+      failureCalls.push(["error", ...args]);
+      return { ok: true, error: null };
+    },
+  });
+  assert.equal(failure.ok, false);
+  assert.deepEqual(failureCalls, [["error", "TAM123", "provider unavailable"]]);
+});
+
+test("both authoritative paid routes call the shared accounting notification only for new payments", () => {
+  for (const file of [
+    "app/api/sepay/webhook/route.ts",
+    "app/api/payment/confirm/route.ts",
+  ]) {
+    const source = read(file);
+    assert.match(source, /notifyAccountingForPaidOrder/);
+    assert.match(source, /!confirmation\.wasAlreadyPaid/);
   }
 });
