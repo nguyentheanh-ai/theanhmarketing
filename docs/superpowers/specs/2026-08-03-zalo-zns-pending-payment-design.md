@@ -17,9 +17,9 @@ Send exactly one Zalo ZNS payment reminder about five minutes after an eligible 
 
 Use the ZBS `Mẫu yêu cầu chuyển khoản` template with the following copy and variables:
 
-- Title: `Hoàn tất thanh toán đơn hàng`
-- Body: `Chào <customer_name>, đơn đăng ký <product_name> của bạn vẫn đang chờ thanh toán. Vui lòng hoàn tất để hệ thống xác nhận và gửi quyền truy cập.`
-- Bill rows: order code, product, amount, transfer content and `Chờ thanh toán` status.
+- Title: `Hoàn tất thanh toán khóa học`
+- Body: `Chào <customer_name>, khóa học <product_name> của bạn vẫn đang chờ thanh toán. Vui lòng hoàn tất để hệ thống xác nhận và gửi quyền truy cập.`
+- Bill rows: registration code, course, amount, transfer content and `Chờ thanh toán` status.
 - Primary action: `MỞ APP NGÂN HÀNG`.
 
 The action points to `https://www.theanhmarketing.com/thanh-toan/<order_code>?openBank=1`. The URL contains only the order code and the fixed handoff flag. The server resolves product, amount, bank account and transfer content from the stored order; the browser cannot override them.
@@ -32,15 +32,15 @@ No direct bank account, amount or credential is embedded in the ZBS action URL. 
 
 ## Visual asset
 
-Use a product-neutral 16:9 The Anh Marketing banner for both eligible products. It uses royal blue, cyan and warm yellow-gold, with a Vietnamese business owner holding a phone beside a laptop. Exact visible copy:
+Use a 16:9 The Anh Marketing banner for both eligible products. It uses royal blue, cyan and warm yellow-gold; the right side shows the real Ebook Facebook Ads 2026 mockup and the real Quảng cáo Facebook Master 2026 course artwork. The top-left uses the official black-and-gold TA logo from `public/brand/ta-logo.svg`, not a generated text wordmark. Exact visible copy:
 
 - `THE ANH MARKETING`
-- `HOÀN TẤT THANH TOÁN`
-- `Đơn hàng của bạn đang chờ xác nhận`
+- `HOÀN TẤT THANH TOÁN KHÓA HỌC`
+- `Khóa học của bạn đang chờ xác nhận`
 - `Thanh toán an toàn qua VietQR`
 - `NHẬN QUYỀN TRUY CẬP NGAY`
 
-The image contains no price, account number, scannable QR, bank logo, Zalo logo, lending claim or third-party brand.
+The image contains no `đơn hàng` wording, price, account number, scannable QR, bank logo, Zalo logo, lending claim or third-party brand.
 
 ## Scheduling and delivery
 
