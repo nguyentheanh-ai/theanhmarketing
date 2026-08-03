@@ -64,6 +64,8 @@ export type PaymentOrder = {
   orderItems: OrderItem[];
   paymentEmailSentAt: string | null;
   paymentEmailLastError: string | null;
+  accountingEmailSentAt: string | null;
+  accountingEmailLastError: string | null;
   purchaseEventSent: boolean;
   attribution: Attribution;
   invoice: InvoiceDetails;
@@ -90,6 +92,8 @@ type DbOrder = {
   order_items: OrderItem[] | null;
   payment_email_sent_at?: string | null;
   payment_email_last_error?: string | null;
+  accounting_email_sent_at?: string | null;
+  accounting_email_last_error?: string | null;
   purchase_event_sent?: boolean | null;
   utm_source?: string | null;
   utm_medium?: string | null;
@@ -114,9 +118,9 @@ type DbOrder = {
 };
 
 const orderBaseSelectFields =
-  "id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items,payment_email_sent_at,payment_email_last_error" as const;
+  "id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items,payment_email_sent_at,payment_email_last_error,accounting_email_sent_at,accounting_email_last_error" as const;
 const orderSelectFields =
-  "id,lead_id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items,payment_email_sent_at,payment_email_last_error,purchase_event_sent,utm_source,utm_campaign,utm_content,utm_medium,utm_id,utm_term,campaign_id,campaign_name,adset_id,ad_id,ad_name,fbclid,fbc,fbp,landing_page,invoice_requested,invoice_tax_code,invoice_company_name,invoice_company_address,invoice_email" as const;
+  "id,lead_id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items,payment_email_sent_at,payment_email_last_error,accounting_email_sent_at,accounting_email_last_error,purchase_event_sent,utm_source,utm_campaign,utm_content,utm_medium,utm_id,utm_term,campaign_id,campaign_name,adset_id,ad_id,ad_name,fbclid,fbc,fbp,landing_page,invoice_requested,invoice_tax_code,invoice_company_name,invoice_company_address,invoice_email" as const;
 
 export type PaymentConfirmationResult = {
   order: PaymentOrder;
@@ -262,6 +266,8 @@ function mapDbOrder(row: DbOrder): PaymentOrder {
     orderItems: row.order_items ?? [],
     paymentEmailSentAt: row.payment_email_sent_at ?? null,
     paymentEmailLastError: row.payment_email_last_error ?? null,
+    accountingEmailSentAt: row.accounting_email_sent_at ?? null,
+    accountingEmailLastError: row.accounting_email_last_error ?? null,
     purchaseEventSent: Boolean(row.purchase_event_sent),
     attribution: mapOrderAttribution(row),
     invoice: row.invoice_requested
@@ -299,6 +305,8 @@ function getFallbackOrders(): PaymentOrder[] {
     orderItems: [],
     paymentEmailSentAt: null,
     paymentEmailLastError: null,
+    accountingEmailSentAt: null,
+    accountingEmailLastError: null,
     purchaseEventSent: false,
     attribution: normalizeAttribution(),
     invoice: emptyInvoiceDetails,
@@ -1252,6 +1260,43 @@ export async function markPaymentEmailError(orderCode: string, reason: string) {
     .from("orders")
     .update({
       payment_email_last_error: reason.slice(0, 1000),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("order_code", orderCode.toUpperCase());
+
+  return error ? { ok: false, error: error.message } : { ok: true, error: null };
+}
+
+export async function markAccountingEmailSent(orderCode: string, sentAt = new Date().toISOString()) {
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    return { ok: false, error: "Missing Supabase admin client" };
+  }
+
+  const { error } = await supabase
+    .from("orders")
+    .update({
+      accounting_email_sent_at: sentAt,
+      accounting_email_last_error: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("order_code", orderCode.toUpperCase());
+
+  return error ? { ok: false, error: error.message } : { ok: true, error: null };
+}
+
+export async function markAccountingEmailError(orderCode: string, reason: string) {
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    return { ok: false, error: "Missing Supabase admin client" };
+  }
+
+  const { error } = await supabase
+    .from("orders")
+    .update({
+      accounting_email_last_error: reason.slice(0, 1000),
       updated_at: new Date().toISOString(),
     })
     .eq("order_code", orderCode.toUpperCase());
