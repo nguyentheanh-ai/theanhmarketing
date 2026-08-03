@@ -1,0 +1,57 @@
+{
+  "verified_at": "2026-08-03",
+  "official_documentation_url": "https://developers.zalo.me/docs/zbs-template-message/gui-tin-template-qua-sdt/api-gui-tin-qua-sdt/api-gui-tin",
+  "send": {
+    "method": "POST",
+    "url": "https://business.openapi.zalo.me/message/template",
+    "content_type": "application/json",
+    "access_token_header": "access_token",
+    "request_fields": [
+      "phone",
+      "template_id",
+      "template_data",
+      "tracking_id"
+    ],
+    "optional_request_fields": [
+      "sending_mode"
+    ],
+    "success_fields": [
+      "error",
+      "message",
+      "data.msg_id",
+      "data.sent_time",
+      "data.sending_mode",
+      "data.quota.dailyQuota",
+      "data.quota.remainingQuota"
+    ],
+    "error_fields": [
+      "error",
+      "message"
+    ]
+  },
+  "oauth_refresh": {
+    "method": "POST",
+    "url": "https://oauth.zaloapp.com/v4/oa/access_token",
+    "content_type": "application/x-www-form-urlencoded",
+    "secret_header": "secret_key",
+    "request_fields": [
+      "refresh_token",
+      "app_id",
+      "grant_type"
+    ],
+    "response_fields": [
+      "access_token",
+      "refresh_token",
+      "expires_in"
+    ],
+    "refresh_token_rotates": true
+  },
+  "template_variables": [
+    "customer_name",
+    "product_name",
+    "order_code",
+    "amount",
+    "transfer_content",
+    "status"
+  ]
+}
