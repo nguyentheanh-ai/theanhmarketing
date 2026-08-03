@@ -1,4 +1,3 @@
-import { formatVnd } from "@/lib/payments/sepay";
 import zbsContract from "@/tests/fixtures/zalo-zbs-contract.json";
 
 export const ZNS_ELIGIBLE_COURSE_SLUGS = new Set([
@@ -35,7 +34,6 @@ export type PendingPaymentZnsOrder = {
 export type PendingPaymentZbsPayload = {
   phone: string;
   trackingId: string;
-  paymentUrl: string;
   templateData: Record<(typeof templateKeys)[number], string>;
 };
 
@@ -82,7 +80,7 @@ export function normalizeVietnamMobileForZalo(phone: string):
 
 function normalizeOrderCode(orderCode: string) {
   const normalized = String(orderCode ?? "").trim().toUpperCase();
-  if (!/^TAM[A-Z0-9]+$/.test(normalized) || normalized.length > 46) {
+  if (!/^TAM[A-Z0-9]+$/.test(normalized) || normalized.length > 30) {
     throw new Error("invalid_order_code");
   }
   return normalized;
@@ -104,14 +102,10 @@ function assertTemplateContract() {
 }
 
 function getProductName(order: PendingPaymentZnsOrder) {
-  const title = String(order.courseTitle ?? "").trim();
-  if (title) return title;
-
-  const itemTitles = (order.orderItems ?? [])
-    .map((item) => String(item.title ?? "").trim())
-    .filter(Boolean);
-  if (itemTitles.length > 0) return itemTitles.join(" + ");
-
+  const slugs = collectCourseSlugs(order);
+  if (slugs.length === 2) return "Facebook Ads + Ebook 2026";
+  if (slugs[0] === "facebook-ads-2026") return "Facebook Ads Master 2026";
+  if (slugs[0] === "ebook-facebook-ads-2026") return "Ebook Facebook Ads 2026";
   throw new Error("missing_product_name");
 }
 
@@ -126,24 +120,32 @@ export function buildPendingPaymentZbsPayload(
   if (!normalizedPhone.ok) throw new Error(normalizedPhone.reason);
 
   const orderCode = normalizeOrderCode(order.orderCode);
-  const customerName = String(order.studentName ?? "").trim();
+  const customerName = Array.from(String(order.studentName ?? "").trim())
+    .slice(0, 30)
+    .join("");
   if (!customerName) throw new Error("missing_customer_name");
 
   const amount = Number(order.amount);
-  if (!Number.isFinite(amount) || amount <= 0) throw new Error("invalid_amount");
+  if (!Number.isSafeInteger(amount) || amount <= 0 || amount > 999_999_999_999) {
+    throw new Error("invalid_amount");
+  }
+
+  const transferContent = String(order.sepayReferenceCode ?? "")
+    .trim()
+    .toUpperCase() || orderCode;
+  if (Array.from(transferContent).length > 90) {
+    throw new Error("invalid_transfer_content");
+  }
 
   return {
     phone: normalizedPhone.phone,
     trackingId: `PP${orderCode}`,
-    paymentUrl: buildPendingPaymentUrl(orderCode),
     templateData: {
       customer_name: customerName,
       product_name: getProductName(order),
       order_code: orderCode,
-      amount: formatVnd(amount),
-      transfer_content: String(order.sepayReferenceCode || orderCode)
-        .trim()
-        .toUpperCase(),
+      amount: String(amount),
+      transfer_content: transferContent,
       status: "Chờ thanh toán",
     },
   };

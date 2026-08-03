@@ -53,5 +53,24 @@
     "amount",
     "transfer_content",
     "status"
-  ]
+  ],
+  "template": {
+    "id": "617517",
+    "status": "pending_review",
+    "created_at": "2026-08-03T19:56:00+07:00",
+    "internal_name": "Thông báo đơn hàng",
+    "type": "bank_transfer_request",
+    "purpose": "transaction",
+    "phone_price_vnd": 300,
+    "uid_price_vnd": 210,
+    "production_enabled": false,
+    "parameter_types": {
+      "customer_name": "customer_name_30",
+      "product_name": "custom_label_30",
+      "order_code": "code_30",
+      "amount": "currency_vnd_12",
+      "status": "transaction_status_30",
+      "transfer_content": "bank_transfer_note_90"
+    }
+  }
 }

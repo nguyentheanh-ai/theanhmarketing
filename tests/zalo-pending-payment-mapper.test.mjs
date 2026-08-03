@@ -125,7 +125,7 @@ test("ZBS payload is course-first, authoritative, and contract exact", () => {
 
   assert.equal(payload.phone, "84901234567");
   assert.equal(payload.trackingId, "PPTAMABC123");
-  assert.equal(payload.paymentUrl, "https://www.theanhmarketing.com/thanh-toan/TAMABC123?openBank=1");
+  assert.equal("paymentUrl" in payload, false);
   assert.deepEqual(Object.keys(payload.templateData), [
     "customer_name",
     "product_name",
@@ -136,9 +136,9 @@ test("ZBS payload is course-first, authoritative, and contract exact", () => {
   ]);
   assert.deepEqual(payload.templateData, {
     customer_name: "Nguyễn Minh Anh",
-    product_name: "Quảng cáo Facebook Master 2026",
+    product_name: "Facebook Ads Master 2026",
     order_code: "TAMABC123",
-    amount: "399.000đ",
+    amount: "399000",
     transfer_content: "TAMABC123",
     status: "Chờ thanh toán",
   });
@@ -158,10 +158,45 @@ test("bundle title and transfer reference stay server-derived", () => {
     ],
   });
 
-  assert.equal(payload.templateData.amount, "1.098.000đ");
+  assert.equal(payload.templateData.amount, "1098000");
   assert.equal(payload.templateData.transfer_content, "TAMTRANSFER456");
   assert.equal(
     payload.templateData.product_name,
-    "Facebook Ads Master 2026 + Ebook Facebook Ads 2026",
+    "Facebook Ads + Ebook 2026",
+  );
+});
+
+test("ZBS transfer parameters honor the approved field limits", () => {
+  const payload = mapper.buildPendingPaymentZbsPayload({
+    ...baseOrder,
+    studentName: "Nguyễn Minh Anh Có Tên Dài Hơn Ba Mươi Ký Tự",
+    courseSlug: "ebook-facebook-ads-2026",
+    courseTitle: "Tên tùy ý rất dài không được đưa thẳng vào mẫu ZBS",
+  });
+
+  assert.equal(payload.templateData.customer_name.length, 30);
+  assert.equal(payload.templateData.product_name, "Ebook Facebook Ads 2026");
+  assert.match(payload.templateData.amount, /^\d{1,12}$/);
+
+  assert.throws(
+    () => mapper.buildPendingPaymentZbsPayload({
+      ...baseOrder,
+      orderCode: `TAM${"A".repeat(28)}`,
+    }),
+    /invalid_order_code/,
+  );
+  assert.throws(
+    () => mapper.buildPendingPaymentZbsPayload({
+      ...baseOrder,
+      sepayReferenceCode: "A".repeat(91),
+    }),
+    /invalid_transfer_content/,
+  );
+  assert.throws(
+    () => mapper.buildPendingPaymentZbsPayload({
+      ...baseOrder,
+      amount: 1_000_000_000_000,
+    }),
+    /invalid_amount/,
   );
 });

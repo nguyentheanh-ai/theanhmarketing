@@ -6,6 +6,8 @@ Worker `POST /api/zalo/pending-payment/send-due` chỉ nhắc một lần cho đ
 
 Không bật production khi mẫu ZBS chưa được Zalo duyệt, chưa có test có kiểm soát đạt yêu cầu, hoặc anh chưa phê duyệt giới hạn tin/ngày. Không backfill đăng ký cũ: mốc rollout phải là thời điểm bản triển khai được bật.
 
+Trạng thái hiện tại (2026-08-03): mẫu `617517` đã gửi duyệt lúc 19:56, loại yêu cầu chuyển khoản, đang duyệt; Zalo dự kiến 2-3 ngày làm việc. Số tin đã gửi là 0. Không đưa ID này vào biến môi trường cho đến khi trạng thái chuyển sang đã duyệt.
+
 ## Bí mật và quyền truy cập
 
 - Giữ `ZALO_APP_SECRET`, token OA và `CRON_SECRET` ở kho bí mật phía server; không đưa vào mã nguồn, migration, ảnh chụp, shell history, log hay tài liệu đã commit.

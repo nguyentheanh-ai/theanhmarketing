@@ -37,18 +37,28 @@ Tokens are stored server-side behind service-role-only RPCs. No token is committ
 
 ## Pending-payment template contract
 
-The immutable proposed variables are:
+Template `617517` was submitted at 19:56 on 2026-08-03 (Asia/Ho_Chi_Minh) and is **pending review**. Zalo states review normally takes 2-3 business days. The ZBS account shows zero messages sent. Provider sending remains disabled.
 
-1. `customer_name`
-2. `product_name`
-3. `order_code`
-4. `amount`
-5. `transfer_content`
-6. `status`
+- Internal template name: `Thông báo đơn hàng`. This is an admin label only; the customer-visible title is `Hoàn tất thanh toán khóa học`, and the customer-visible body uses `khóa học`, not `đơn hàng`.
+- Type: `Mẫu yêu cầu chuyển khoản`; purpose: `Giao dịch`; Ztime: 7200 seconds.
+- Native action: `Thanh toán ngay`. This template type does not accept a custom hero image or custom website URL. Zalo renders the bank-transfer card and payment action from the declared VPBank beneficiary and the two payment parameters.
+- Logo assets: `public/zalo-zns/ta-zbs-logo-light.png` and `public/zalo-zns/ta-zbs-logo-dark.png`, each 400x96. The previously approved course/Ebook hero remains unused because this native template type supports logos only.
+- Estimated price shown at submission: 300 VND/message by phone; 210 VND/message by UID; native action add-on 0 VND.
 
-The action URL reuses `order_code` in the fixed pattern `https://www.theanhmarketing.com/thanh-toan/<order_code>?openBank=1`.
+The immutable variables and their approved technical types are:
 
-The ZBS template is not yet approved. Provider sending remains disabled until Zalo approves a template with exactly these variables; after approval this section will record the template ID and status without storing tokens.
+1. `customer_name`: customer name, string, 30 characters.
+2. `product_name`: custom label, string, 30 characters.
+3. `order_code`: code, string, 30 characters.
+4. `amount`: VND currency, at most 12 digits. API payloads use an unformatted positive integer string such as `799000`.
+5. `transfer_content`: bank transfer note, at most 90 characters.
+6. `status`: transaction status, string, 30 characters.
+
+The three allowed product labels are `Facebook Ads Master 2026`, `Ebook Facebook Ads 2026`, and `Facebook Ads + Ebook 2026`. They are derived from the exact eligible course slug set, never copied from an unbounded order title.
+
+The website payment page still supports `https://www.theanhmarketing.com/thanh-toan/<order_code>?openBank=1` as a separate customer journey. It is not included in the ZBS API payload because this native bank-transfer template has no custom URL field.
+
+Do not set `ZALO_ZNS_PENDING_PAYMENT_TEMPLATE_ID=617517` or enable provider sending until the status changes to approved and a controlled preview/staging test has been explicitly authorized.
 
 ## VietQR bank-app handoff
 

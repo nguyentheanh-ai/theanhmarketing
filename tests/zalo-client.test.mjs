@@ -34,7 +34,6 @@ const { createZaloZbsClient, source } = loadClientModule();
 const payload = {
   phone: "84901234567",
   trackingId: "PPTAMABC123",
-  paymentUrl: "https://www.theanhmarketing.com/thanh-toan/TAMABC123?openBank=1",
   templateData: {
     customer_name: "Nguyễn Minh Anh",
     product_name: "Facebook Ads Master 2026",
