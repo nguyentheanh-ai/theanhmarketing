@@ -1,9 +1,10 @@
 # Current State - theanh-main
 
-## 2026-08-03 - Accounting payment email ready for production rollout
+## 2026-08-03 - Accounting payment email live
 
 - One shared internal email covers every newly paid course, Ebook, consultation, support booking and manual confirmation.
 - Recipient is server-only `ACCOUNTING_NOTIFICATION_EMAIL`; invoice-requested orders include all stored invoice fields.
+- Production deployment `dpl_C35A8fXAyguEq8cGsaJLkiqiAFp5` is `READY` and promoted to `www.theanhmarketing.com`. The protected retry route sent all 6 approved Greezhub/manual-confirmation orders since 2026-08-02 (4.592.000đ); database verification shows 6 sent markers and 0 remaining errors.
 - Additive order markers and a safe Greezhub dry-run/backfill script are implemented.
 - Local verification: 511/511 Node tests, TypeScript, build and diff check pass; ESLint has zero errors and one unchanged warning.
 

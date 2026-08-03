@@ -132,6 +132,7 @@ Before production, replace the anon demo policy with server-only writes and admi
 ## 2026-08-03 - Accounting paid-order notification
 
 - Set server-only `ACCOUNTING_NOTIFICATION_EMAIL` in Production. The paid route sends through the existing Resend credential and `PAYMENT_SUCCESS_EMAIL_FROM` sender fallback.
-- SePay and manual confirmation both call the shared accounting service only for a newly paid order. The accounting send uses `Idempotency-Key: accounting-paid-<orderCode>` plus dedicated database markers.
+- SePay and manual confirmation both call the shared accounting service after every valid confirmation. The accounting send uses `Idempotency-Key: accounting-paid-<orderCode>` plus dedicated database markers, so already-sent orders skip while failed delivery can retry.
 - Missing recipient/provider config or a provider failure is recorded in `accounting_email_last_error` and never changes the paid result or customer fulfillment.
 - Run `scripts/backfill-accounting-payment-emails.ts` without flags first. Live mode is `--send`; ambiguous rows require an explicit reviewed `--approve-ambiguous=<orderCodes>` list.
+- If protected production credentials cannot be downloaded, use authenticated `POST /api/payment/accounting-retry` with at most 50 reviewed order codes; the route returns aggregate counts and no customer payload.

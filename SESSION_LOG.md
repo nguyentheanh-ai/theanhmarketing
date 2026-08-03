@@ -6,6 +6,8 @@
 - Added a dry-run-first Greezhub backfill from 2026-08-02 and conditional invoice details.
 - TDD: migration marker RED to GREEN; renderer RED to GREEN; route/orchestration RED to GREEN; backfill RED to GREEN.
 - Verification: focused accounting 8/8, focused payment/account 40/40, full Node 511/511, TypeScript clean, ESLint zero errors/one unchanged warning, diff check clean, Next build 91/91 pages.
+- Production: applied migration `add_accounting_email_markers`, configured the recipient, deployed retry-capable release `dpl_C35A8fXAyguEq8cGsaJLkiqiAFp5`, and promoted it after isolated smoke tests. Backfill scanned 9 paid rows since 2026-08-02, sent 6 approved Greezhub/manual-confirmation emails totaling 4.592.000đ, excluded 3 other-account rows, and verified 6 sent markers/0 errors plus an idempotent second dry-run.
+- Retry hardening: authoritative paid routes now let the shared marker service skip duplicates, and authenticated `POST /api/payment/accounting-retry` allows bounded production-only retries without customer data in its request/response logs. Focused accounting tests are now 9/9 and the Vercel build produced 92/92 pages.
 - Production migration, recipient configuration, deploy and backfill are recorded separately after rollout.
 
 ## 2026-08-02 - Granted owner access and rebuilt account self-service locally
