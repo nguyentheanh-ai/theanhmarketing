@@ -67,14 +67,12 @@ export async function POST(request: Request) {
       paidAt,
     });
 
-    if (!confirmation.wasAlreadyPaid) {
-      const accountingEmail = await notifyAccountingForPaidOrder(confirmation.order);
-      if (!accountingEmail.ok) {
-        console.warn("[payment-confirm] Accounting payment email failed:", {
-          orderCode: confirmation.order.orderCode,
-          reason: accountingEmail.reason,
-        });
-      }
+    const accountingEmail = await notifyAccountingForPaidOrder(confirmation.order);
+    if (!accountingEmail.ok) {
+      console.warn("[payment-confirm] Accounting payment email failed:", {
+        orderCode: confirmation.order.orderCode,
+        reason: accountingEmail.reason,
+      });
     }
 
     let metaPurchase: { ok: boolean; skipped: boolean; reason?: string; status?: number } = {

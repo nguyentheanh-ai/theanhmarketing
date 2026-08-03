@@ -217,15 +217,26 @@ test("accounting notification records provider success and failure independently
   assert.deepEqual(failureCalls, [["error", "TAM123", "provider unavailable"]]);
 });
 
-test("both authoritative paid routes call the shared accounting notification only for new payments", () => {
+test("both authoritative paid routes let the shared service enforce accounting idempotency", () => {
   for (const file of [
     "app/api/sepay/webhook/route.ts",
     "app/api/payment/confirm/route.ts",
   ]) {
     const source = read(file);
     assert.match(source, /notifyAccountingForPaidOrder/);
-    assert.match(source, /!confirmation\.wasAlreadyPaid/);
   }
+});
+
+test("accounting retry route is authenticated, bounded, and contains no customer payload", () => {
+  const source = read("app/api/payment/accounting-retry/route.ts");
+
+  assert.match(source, /verifySepayApiKey/);
+  assert.match(source, /MAX_ORDER_CODES\s*=\s*50/);
+  assert.match(source, /getPaymentOrder/);
+  assert.match(source, /notifyAccountingForPaidOrder/);
+  assert.match(source, /sent/);
+  assert.match(source, /failed/);
+  assert.doesNotMatch(source, /studentName|\.email\b|\.phone\b/);
 });
 
 test("accounting backfill is bounded, account-matched, and dry-run by default", () => {
