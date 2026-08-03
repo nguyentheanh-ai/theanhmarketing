@@ -344,7 +344,9 @@ begin
 end;
 $$;
 
-create or replace function public.claim_zalo_oauth_refresh()
+create or replace function public.claim_zalo_oauth_refresh(
+  p_force boolean default false
+)
 returns jsonb
 language plpgsql
 security definer
@@ -364,7 +366,8 @@ begin
     return jsonb_build_object('refresh_state', 'missing');
   end if;
 
-  if v_credentials.access_expires_at > v_now + interval '5 minutes' then
+  if not coalesce(p_force, false)
+     and v_credentials.access_expires_at > v_now + interval '5 minutes' then
     return jsonb_build_object(
       'refresh_state', 'fresh',
       'access_token', v_credentials.access_token,
@@ -447,7 +450,7 @@ revoke all on function public.get_zalo_oauth_credentials() from public, anon, au
 grant execute on function public.get_zalo_oauth_credentials() to service_role;
 revoke all on function public.replace_zalo_oauth_credentials(text, text, timestamptz) from public, anon, authenticated;
 grant execute on function public.replace_zalo_oauth_credentials(text, text, timestamptz) to service_role;
-revoke all on function public.claim_zalo_oauth_refresh() from public, anon, authenticated;
-grant execute on function public.claim_zalo_oauth_refresh() to service_role;
+revoke all on function public.claim_zalo_oauth_refresh(boolean) from public, anon, authenticated;
+grant execute on function public.claim_zalo_oauth_refresh(boolean) to service_role;
 revoke all on function public.finish_zalo_oauth_refresh(uuid, text, text, timestamptz) from public, anon, authenticated;
 grant execute on function public.finish_zalo_oauth_refresh(uuid, text, text, timestamptz) to service_role;
