@@ -1303,3 +1303,4 @@ Before changing these, run targeted tests and full build.
 | Scope | Removed `CartLink` from the desktop header, the `/gio-hang` entry from the mobile menu and `CartToast` from shared `PageShell`. Existing course/direct-checkout, invoice, order and payment code remains intact. |
 | Regression | Updated `tests/noti-style-public-foundation.test.mjs` to reject cart UI imports, labels and links in the shared public chrome. |
 | Verification | RED reproduced all three existing surfaces. Final 503/503 Node tests, TypeScript, targeted ESLint, diff check and 91-route production build passed. |
+| Release | Runtime commit `9c6db8054780cf8e903cf9665e774048fce6ff1d`; deployment `dpl_G2JP4xg3KFJrHLR7ckB2b6Fga8AH` is Ready and aliased to both canonical domains. Fresh desktop and 390x844 live QA found zero cart links and zero floating panels; mobile navigation and auth contrast remain correct. |
