@@ -18,6 +18,10 @@ function loadTsModule(relativePath) {
   return cjsModule.exports;
 }
 
+function read(relativePath) {
+  return fs.readFileSync(path.resolve(relativePath), "utf8");
+}
+
 test("business report windows use exact Vietnam 14:00 boundaries", () => {
   const { buildTelegramReportWindow } = loadTsModule("lib/reports/telegram-business-day.ts");
 
@@ -72,4 +76,24 @@ test("business report message is aggregate-only, explicit, and fail-closed for A
   assert.match(unavailable, /Chi phí Ads: CHƯA CÓ DỮ LIỆU/);
   assert.match(unavailable, /Meta timeout/);
   assert.doesNotMatch(unavailable, /Lãi\/lỗ tạm tính:/);
+});
+
+test("protected morning and full-day routes are scheduled in UTC", () => {
+  const shared = read("app/api/reports/telegram/_shared.ts");
+  const morning = read("app/api/reports/telegram/morning/route.ts");
+  const fullDay = read("app/api/reports/telegram/full-day/route.ts");
+  const vercel = JSON.parse(read("vercel.json"));
+
+  assert.match(shared, /CRON_SECRET/);
+  assert.match(shared, /Authorization/);
+  assert.match(shared, /payload\?\.test === true/);
+  assert.match(morning, /"morning"/);
+  assert.match(fullDay, /"full-day"/);
+  assert.deepEqual(
+    vercel.crons.filter((entry) => entry.path.startsWith("/api/reports/telegram")),
+    [
+      { path: "/api/reports/telegram/morning", schedule: "0 1 * * *" },
+      { path: "/api/reports/telegram/full-day", schedule: "0 7 * * *" },
+    ],
+  );
 });
