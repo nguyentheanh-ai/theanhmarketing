@@ -39,6 +39,33 @@ function zonedHourToUtc(metaDate: string, metaHour: number, timeZone: string) {
   return new Date(guess);
 }
 
+export function aggregateMetaAdsForUtcWindow(
+  rows: MetaHourlyRow[],
+  window: { startIso: string; endIso: string },
+  advertiserTimezone: string,
+) {
+  const start = Date.parse(window.startIso);
+  const end = Date.parse(window.endIso);
+  const scoped = rows.filter((row) => {
+    const timestamp = zonedHourToUtc(row.metaDate, row.metaHour, advertiserTimezone).getTime();
+    return Number.isFinite(timestamp) && timestamp >= start && timestamp < end;
+  });
+  const totals = scoped.reduce(
+    (sum, row) => ({
+      spend: sum.spend + row.spend,
+      impressions: sum.impressions + row.impressions,
+      clicks: sum.clicks + row.clicks,
+    }),
+    { spend: 0, impressions: 0, clicks: 0 },
+  );
+  return {
+    ...totals,
+    ctr: totals.impressions ? (totals.clicks / totals.impressions) * 100 : 0,
+    cpc: totals.clicks ? totals.spend / totals.clicks : 0,
+    rowCount: scoped.length,
+  };
+}
+
 function dateAndHourInTimezone(date: Date, timeZone: string) {
   const parts = partsInTimezone(date, timeZone);
   return {
