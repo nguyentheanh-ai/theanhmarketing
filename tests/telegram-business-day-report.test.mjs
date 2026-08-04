@@ -93,8 +93,8 @@ test("protected morning and full-day routes are scheduled in UTC", () => {
   assert.deepEqual(
     vercel.crons.filter((entry) => entry.path.startsWith("/api/reports/telegram")),
     [
-      { path: "/api/reports/telegram/morning", schedule: "0 1 * * *" },
-      { path: "/api/reports/telegram/full-day", schedule: "0 7 * * *" },
+      { path: "/api/reports/telegram/morning", schedule: "5 1 * * *" },
+      { path: "/api/reports/telegram/full-day", schedule: "5 7 * * *" },
     ],
   );
 });
