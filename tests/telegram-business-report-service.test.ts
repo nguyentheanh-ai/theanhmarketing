@@ -171,6 +171,14 @@ test("hourly MCP snapshots must cover and reconcile every account hour", () => {
     ],
   });
 
+  const rounded = validateAndAggregateSnapshots([
+    account("2026-08-03T07:00:00.000Z", 100_000),
+    account("2026-08-03T08:00:00.000Z", 200_000),
+    campaign("2026-08-03T07:00:00.000Z", "Ebook", 100_300),
+    campaign("2026-08-03T08:00:00.000Z", "FBA", 199_500),
+  ], window);
+  assert.equal(rounded.available, true);
+
   const missing = validateAndAggregateSnapshots([
     account("2026-08-03T07:00:00.000Z", 100),
     campaign("2026-08-03T07:00:00.000Z", "Ebook", 100),

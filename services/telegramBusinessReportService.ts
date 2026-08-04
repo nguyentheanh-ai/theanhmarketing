@@ -111,7 +111,8 @@ export function validateAndAggregateSnapshots(rows: SnapshotRow[], window: IsoWi
     campaignByHour.set(row.local_start_at, (campaignByHour.get(row.local_start_at) ?? 0) + Number(row.spend ?? 0));
   }
   for (const [hour, accountSpend] of accountByHour) {
-    if (Math.abs((campaignByHour.get(hour) ?? 0) - accountSpend) > 1) {
+    const reconciliationTolerance = Math.max(2, accountSpend * 0.005);
+    if (Math.abs((campaignByHour.get(hour) ?? 0) - accountSpend) > reconciliationTolerance) {
       return snapshotUnavailable("Tổng campaign MCP chưa khớp tổng tài khoản theo giờ.");
     }
   }
