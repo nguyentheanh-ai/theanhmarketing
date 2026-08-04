@@ -1,12 +1,25 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { runTelegramBusinessReport, type TelegramBusinessReportDependencies } from "../services/telegramBusinessReportService";
+import {
+  runTelegramBusinessReport,
+  validateAndAggregateSnapshots,
+  type TelegramBusinessReportDependencies,
+} from "../services/telegramBusinessReportService";
 
 function dependencies(overrides: Partial<TelegramBusinessReportDependencies> = {}): TelegramBusinessReportDependencies {
   return {
-    readPaidOrders: async () => [{ amount: 799_000 }, { amount: 399_000 }],
-    readAds: async () => ({ available: true, spend: 200_000 }),
+    readPaidOrders: async () => [
+      { amount: 799_000, courseSlug: "facebook-ads-2026", courseTitle: "Facebook Ads 2026" },
+      { amount: 399_000, courseSlug: "ebook-facebook-ads-2026", courseTitle: "Ebook Facebook Ads" },
+    ],
+    readAds: async () => ({
+      available: true,
+      campaigns: [
+        { campaignName: "FBA", spend: 120_000 },
+        { campaignName: "Ebook", spend: 80_000 },
+      ],
+    }),
     claim: async () => ({ claimed: true, leaseToken: "lease-1" }),
     finish: async () => ({ ok: true }),
     send: async () => ({ ok: true, skipped: false, status: 200 }),
@@ -14,14 +27,24 @@ function dependencies(overrides: Partial<TelegramBusinessReportDependencies> = {
   };
 }
 
-test("scheduled report claims a deterministic key, sends aggregates, and finishes sent", async () => {
+test("scheduled report reads all periods, sends every section, and finishes only after delivery", async () => {
   const events: Array<Record<string, unknown>> = [];
+  const orderWindows: string[] = [];
+  const adsWindows: string[] = [];
   const result = await runTelegramBusinessReport(
     { slot: "full-day", now: new Date("2026-08-04T07:00:00.000Z") },
     dependencies({
       claim: async (input) => {
         events.push({ claim: input });
         return { claimed: true, leaseToken: "lease-1" };
+      },
+      readPaidOrders: async (window) => {
+        orderWindows.push(`${window.startIso}/${window.endIso}`);
+        return dependencies().readPaidOrders(window);
+      },
+      readAds: async (window) => {
+        adsWindows.push(`${window.startIso}/${window.endIso}`);
+        return dependencies().readAds(window);
       },
       send: async (text) => {
         events.push({ text });
@@ -37,9 +60,14 @@ test("scheduled report claims a deterministic key, sends aggregates, and finishe
   assert.equal(result.ok, true);
   assert.equal(result.skipped, false);
   assert.match(String(events[0].claim && JSON.stringify(events[0].claim)), /full-day:2026-08-03T07:00:00.000Z:2026-08-04T07:00:00.000Z/);
-  assert.match(String(events[1].text), /Đơn đã thanh toán: 2/);
+  assert.equal(orderWindows.length, 3);
+  assert.deepEqual(adsWindows, orderWindows);
+  assert.equal(events.filter((event) => event.text).length, 3);
+  assert.match(String(events[1].text), /THEO SẢN PHẨM/);
   assert.match(String(events[1].text), /1\.198\.000 ₫/);
-  assert.deepEqual(events[2].finish, { runKey: "full-day:2026-08-03T07:00:00.000Z:2026-08-04T07:00:00.000Z", leaseToken: "lease-1", outcome: "sent" });
+  assert.match(String(events[2].text), /7 NGÀY/);
+  assert.match(String(events[3].text), /DOANH THU THÁNG/);
+  assert.deepEqual(events[4].finish, { runKey: "full-day:2026-08-03T07:00:00.000Z:2026-08-04T07:00:00.000Z", leaseToken: "lease-1", outcome: "sent" });
 });
 
 test("duplicate scheduled report skips before reading or sending", async () => {
@@ -49,7 +77,7 @@ test("duplicate scheduled report skips before reading or sending", async () => {
     dependencies({
       claim: async () => ({ claimed: false }),
       readPaidOrders: async () => { reads += 1; return []; },
-      readAds: async () => { reads += 1; return { available: true, spend: 0 }; },
+      readAds: async () => { reads += 1; return { available: true, campaigns: [] }; },
       send: async () => { throw new Error("must not send"); },
     }),
   );
@@ -60,18 +88,19 @@ test("duplicate scheduled report skips before reading or sending", async () => {
 
 test("test report bypasses delivery claim and is visibly marked", async () => {
   let claimed = false;
-  let text = "";
+  const texts: string[] = [];
   const result = await runTelegramBusinessReport(
     { slot: "full-day", now: new Date("2026-08-04T07:00:00.000Z"), test: true },
     dependencies({
       claim: async () => { claimed = true; return { claimed: false }; },
-      send: async (message) => { text = message; return { ok: true, skipped: false, status: 200 }; },
+      send: async (message) => { texts.push(message); return { ok: true, skipped: false, status: 200 }; },
     }),
   );
 
   assert.equal(result.ok, true);
   assert.equal(claimed, false);
-  assert.match(text, /^\[TEST\]/);
+  assert.equal(texts.length, 3);
+  assert.ok(texts.every((text) => /^\[TEST\]/.test(text)));
 });
 
 test("delivery failure is recorded without leaking transport internals", async () => {
@@ -87,4 +116,74 @@ test("delivery failure is recorded without leaking transport internals", async (
   assert.equal(result.ok, false);
   assert.equal(finish?.outcome, "failed");
   assert.equal(finish?.reason, "Telegram Bot API rejected the message.");
+});
+
+test("a later Telegram part failure prevents a false sent marker", async () => {
+  let sends = 0;
+  let finish: Record<string, unknown> | undefined;
+  const result = await runTelegramBusinessReport(
+    { slot: "full-day", now: new Date("2026-08-04T07:00:00.000Z") },
+    dependencies({
+      send: async () => {
+        sends += 1;
+        return sends === 2
+          ? { ok: false, skipped: false, status: 502, reason: "Telegram Bot API rejected the message." }
+          : { ok: true, skipped: false, status: 200 };
+      },
+      finish: async (input) => { finish = input; return { ok: true }; },
+    }),
+  );
+
+  assert.equal(result.ok, false);
+  assert.equal(sends, 2);
+  assert.equal(finish?.outcome, "failed");
+});
+
+test("hourly MCP snapshots must cover and reconcile every account hour", () => {
+  const window = { startIso: "2026-08-03T07:00:00.000Z", endIso: "2026-08-03T09:00:00.000Z" };
+  const account = (hour: string, spend: number) => ({
+    entity_level: "account" as const,
+    entity_id: "1255736315302940",
+    entity_name: "Greezhub 01",
+    local_start_at: hour,
+    spend,
+    data_status: "final" as const,
+  });
+  const campaign = (hour: string, name: string, spend: number) => ({
+    entity_level: "campaign" as const,
+    entity_id: name,
+    entity_name: name,
+    local_start_at: hour,
+    spend,
+    data_status: "final" as const,
+  });
+  const valid = validateAndAggregateSnapshots([
+    account("2026-08-03T07:00:00.000Z", 100),
+    account("2026-08-03T08:00:00.000Z", 200),
+    campaign("2026-08-03T07:00:00.000Z", "Ebook", 100),
+    campaign("2026-08-03T08:00:00.000Z", "FBA", 200),
+  ], window);
+  assert.deepEqual(valid, {
+    available: true,
+    campaigns: [
+      { campaignName: "Ebook", spend: 100 },
+      { campaignName: "FBA", spend: 200 },
+    ],
+  });
+
+  const missing = validateAndAggregateSnapshots([
+    account("2026-08-03T07:00:00.000Z", 100),
+    campaign("2026-08-03T07:00:00.000Z", "Ebook", 100),
+  ], window);
+  assert.equal(missing.available, false);
+  assert.match(missing.reason ?? "", /thiếu giờ/i);
+
+  const unreconciled = validateAndAggregateSnapshots([
+    account("2026-08-03T07:00:00.000Z", 100),
+    account("2026-08-03T08:00:00.000Z", 200),
+    campaign("2026-08-03T07:00:00.000Z", "Ebook", 100),
+    campaign("2026-08-03T08:00:00.000Z", "FBA", 150),
+  ], window);
+  assert.equal(unreconciled.available, false);
+  assert.match(unreconciled.reason ?? "", /chưa khớp/i);
 });
