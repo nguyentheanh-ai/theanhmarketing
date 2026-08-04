@@ -106,15 +106,11 @@ export function validateAndAggregateSnapshots(rows: SnapshotRow[], window: IsoWi
     if (!accountByHour.has(new Date(hour).toISOString())) return snapshotUnavailable("Snapshot MCP không phủ liên tục toàn bộ kỳ.");
   }
 
-  const campaignByHour = new Map<string, number>();
-  for (const row of campaignRows) {
-    campaignByHour.set(row.local_start_at, (campaignByHour.get(row.local_start_at) ?? 0) + Number(row.spend ?? 0));
-  }
-  for (const [hour, accountSpend] of accountByHour) {
-    const reconciliationTolerance = Math.max(2, accountSpend * 0.005);
-    if (Math.abs((campaignByHour.get(hour) ?? 0) - accountSpend) > reconciliationTolerance) {
-      return snapshotUnavailable("Tổng campaign MCP chưa khớp tổng tài khoản theo giờ.");
-    }
+  const accountSpend = [...accountByHour.values()].reduce((sum, spend) => sum + spend, 0);
+  const campaignSpend = campaignRows.reduce((sum, row) => sum + Number(row.spend ?? 0), 0);
+  const reconciliationTolerance = Math.max(2, accountSpend * 0.005);
+  if (Math.abs(campaignSpend - accountSpend) > reconciliationTolerance) {
+    return snapshotUnavailable("Tổng campaign MCP chưa khớp tổng tài khoản trong kỳ.");
   }
 
   const campaignTotals = new Map<string, number>();

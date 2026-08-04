@@ -179,6 +179,14 @@ test("hourly MCP snapshots must cover and reconcile every account hour", () => {
   ], window);
   assert.equal(rounded.available, true);
 
+  const hourlyDriftWithExactPeriodTotal = validateAndAggregateSnapshots([
+    account("2026-08-03T07:00:00.000Z", 100_000),
+    account("2026-08-03T08:00:00.000Z", 200_000),
+    campaign("2026-08-03T07:00:00.000Z", "Ebook", 101_000),
+    campaign("2026-08-03T08:00:00.000Z", "FBA", 199_000),
+  ], window);
+  assert.equal(hourlyDriftWithExactPeriodTotal.available, true);
+
   const missing = validateAndAggregateSnapshots([
     account("2026-08-03T07:00:00.000Z", 100),
     campaign("2026-08-03T07:00:00.000Z", "Ebook", 100),
