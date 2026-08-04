@@ -97,3 +97,12 @@ test("protected morning and full-day routes are scheduled in UTC", () => {
     ],
   );
 });
+
+test("delivery ledger is RLS-protected and callable only by service role", () => {
+  const migration = read("supabase/migrations/20260804090000_telegram_business_report_runs.sql");
+  assert.match(migration, /enable row level security/i);
+  assert.match(migration, /security invoker/gi);
+  assert.doesNotMatch(migration, /security definer/i);
+  assert.match(migration, /revoke all on function[\s\S]+from public, anon, authenticated/i);
+  assert.match(migration, /grant execute on function[\s\S]+to service_role/i);
+});

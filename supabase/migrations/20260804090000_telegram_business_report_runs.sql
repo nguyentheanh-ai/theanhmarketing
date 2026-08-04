@@ -30,7 +30,7 @@ create or replace function public.claim_telegram_business_report(
 )
 returns jsonb
 language plpgsql
-security definer
+security invoker
 set search_path = public, pg_catalog
 as $$
 declare
@@ -82,7 +82,7 @@ create or replace function public.finish_telegram_business_report(
 )
 returns boolean
 language plpgsql
-security definer
+security invoker
 set search_path = public, pg_catalog
 as $$
 declare
