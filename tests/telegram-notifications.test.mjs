@@ -106,6 +106,24 @@ test("telegram notification skips safely without bot config and posts through Bo
   }
 });
 
+test("generic Telegram text sender reuses the protected Bot API transport", async () => {
+  const { sendTelegramTextMessage } = loadTsModule("lib/notifications/telegram.ts");
+  const calls = [];
+  const result = await sendTelegramTextMessage("[TEST] Bao cao tong hop", {
+    botToken: "test-token",
+    chatId: "123456",
+    fetchImpl: async (url, init) => {
+      calls.push({ url, init });
+      return { ok: true, status: 200, json: async () => ({ ok: true }) };
+    },
+  });
+
+  assert.deepEqual(result, { ok: true, skipped: false, status: 200 });
+  assert.equal(calls.length, 1);
+  assert.match(calls[0].init.body, /Bao cao tong hop/);
+  assert.doesNotMatch(calls[0].init.body, /test-token/);
+});
+
 test("checkout page sends order-created telegram after payment page opens", () => {
   const publicOrderRoute = read("app/api/orders/route.ts");
   const sessionOrderRoute = read("app/api/orders/from-session/route.ts");

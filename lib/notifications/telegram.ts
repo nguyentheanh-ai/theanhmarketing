@@ -2,14 +2,14 @@ import type { PaymentOrder } from "@/services/orderService";
 
 export type TelegramOrderEvent = "order_created" | "payment_paid";
 
-type TelegramSendOptions = {
+export type TelegramSendOptions = {
   botToken?: string;
   chatId?: string;
   siteUrl?: string;
   fetchImpl?: typeof fetch;
 };
 
-type TelegramSendResult = {
+export type TelegramSendResult = {
   ok: boolean;
   skipped: boolean;
   reason?: string;
@@ -45,6 +45,30 @@ function getEventTitle(event: TelegramOrderEvent) {
   return event === "payment_paid" ? "[PAID]" : "[NEW ORDER]";
 }
 
+export async function sendTelegramTextMessage(
+  text: string,
+  options: TelegramSendOptions = {},
+): Promise<TelegramSendResult> {
+  const botToken = cleanEnvValue(options.botToken) || cleanEnvValue(process.env.TELEGRAM_BOT_TOKEN);
+  const chatId = cleanEnvValue(options.chatId) || cleanEnvValue(process.env.TELEGRAM_CHAT_ID);
+
+  if (!botToken || !chatId) {
+    return { ok: true, skipped: true, reason: "Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID" };
+  }
+
+  const response = await (options.fetchImpl ?? fetch)(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true }),
+  });
+
+  if (!response.ok) {
+    return { ok: false, skipped: false, reason: "Telegram Bot API rejected the message.", status: response.status };
+  }
+
+  return { ok: true, skipped: false, status: response.status };
+}
+
 export function buildTelegramOrderMessage(order: PaymentOrder, event: TelegramOrderEvent, options?: TelegramSendOptions) {
   const paymentUrl = `${getSiteUrl(options)}/thanh-toan/${encodeURIComponent(order.orderCode)}`;
   const paidLine = order.paidAt ? [`Paid at: ${order.paidAt}`] : [];
@@ -68,38 +92,7 @@ export async function sendTelegramOrderNotification(
   event: TelegramOrderEvent,
   options: TelegramSendOptions = {},
 ): Promise<TelegramSendResult> {
-  const botToken = cleanEnvValue(options.botToken) || cleanEnvValue(process.env.TELEGRAM_BOT_TOKEN);
-  const chatId = cleanEnvValue(options.chatId) || cleanEnvValue(process.env.TELEGRAM_CHAT_ID);
-
-  if (!botToken || !chatId) {
-    return {
-      ok: true,
-      skipped: true,
-      reason: "Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID",
-    };
-  }
-
-  const fetchImpl = options.fetchImpl ?? fetch;
-  const response = await fetchImpl(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text: buildTelegramOrderMessage(order, event, options),
-      disable_web_page_preview: true,
-    }),
-  });
-
-  if (!response.ok) {
-    return {
-      ok: false,
-      skipped: false,
-      reason: "Telegram Bot API rejected the message.",
-      status: response.status,
-    };
-  }
-
-  return { ok: true, skipped: false, status: response.status };
+  return sendTelegramTextMessage(buildTelegramOrderMessage(order, event, options), options);
 }
 
 type TelegramSupportBooking = {
@@ -134,26 +127,5 @@ export async function sendTelegramSupportBookingNotification(
   booking: TelegramSupportBooking,
   options: TelegramSendOptions = {},
 ): Promise<TelegramSendResult> {
-  const botToken = cleanEnvValue(options.botToken) || cleanEnvValue(process.env.TELEGRAM_BOT_TOKEN);
-  const chatId = cleanEnvValue(options.chatId) || cleanEnvValue(process.env.TELEGRAM_CHAT_ID);
-
-  if (!botToken || !chatId) {
-    return { ok: true, skipped: true, reason: "Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID" };
-  }
-
-  const response = await (options.fetchImpl ?? fetch)(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text: buildTelegramSupportBookingMessage(order, booking),
-      disable_web_page_preview: true,
-    }),
-  });
-
-  if (!response.ok) {
-    return { ok: false, skipped: false, reason: "Telegram Bot API rejected the message.", status: response.status };
-  }
-
-  return { ok: true, skipped: false, status: response.status };
+  return sendTelegramTextMessage(buildTelegramSupportBookingMessage(order, booking), options);
 }
