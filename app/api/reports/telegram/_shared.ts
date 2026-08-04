@@ -4,9 +4,11 @@ import type { TelegramBusinessReportSlot } from "@/lib/reports/telegram-business
 import { runTelegramBusinessReport } from "@/services/telegramBusinessReportService";
 
 function isAuthorized(request: Request) {
-  const secret = process.env.CRON_SECRET;
   const authorization = request.headers.get("Authorization");
-  return Boolean(secret && authorization === `Bearer ${secret}`);
+  const acceptedSecrets = [process.env.CRON_SECRET, process.env.TELEGRAM_REPORT_SECRET]
+    .map((value) => value?.trim())
+    .filter((value): value is string => Boolean(value));
+  return acceptedSecrets.some((secret) => authorization === `Bearer ${secret}`);
 }
 
 export async function handleTelegramBusinessReportRequest(

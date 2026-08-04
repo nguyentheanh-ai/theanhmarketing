@@ -85,6 +85,7 @@ test("protected morning and full-day routes are scheduled in UTC", () => {
   const vercel = JSON.parse(read("vercel.json"));
 
   assert.match(shared, /CRON_SECRET/);
+  assert.match(shared, /TELEGRAM_REPORT_SECRET/);
   assert.match(shared, /Authorization/);
   assert.match(shared, /payload\?\.test === true/);
   assert.match(morning, /"morning"/);
