@@ -15,14 +15,6 @@
     {
       "path": "/api/meta/purchase-retry",
       "schedule": "20 18 * * *"
-    },
-    {
-      "path": "/api/reports/telegram/morning",
-      "schedule": "5 1 * * *"
-    },
-    {
-      "path": "/api/reports/telegram/full-day",
-      "schedule": "5 7 * * *"
     }
   ]
 }
