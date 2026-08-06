@@ -145,7 +145,7 @@ test("Facebook Ads landing does not fire InitiateCheckout before a real order co
   assert.match(html, /window\.location\.href = "\/thanh-toan\/" \+ encodeURIComponent\(payload\.order\.orderCode\);/);
 });
 
-test("Facebook Ads landing shows the Agent demo and exactly 12 Zalo support proofs before curriculum", () => {
+test("Facebook Ads landing shows the curriculum before outputs, Agent demo and exactly 12 Zalo support proofs", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
   const outcomeIndex = html.indexOf('id="san-pham-thuc-te"');
   const demoIndex = html.indexOf('id="agent-tu-dong-len-quang-cao"');
@@ -168,12 +168,12 @@ test("Facebook Ads landing shows the Agent demo and exactly 12 Zalo support proo
   ];
 
   assert.ok(outcomeIndex >= 0, "Missing existing outcome section");
+  assert.ok(outcomeIndex > curriculumIndex, "Outcome section must follow curriculum");
   assert.ok(demoIndex > outcomeIndex, "Agent demo must follow the outcome section");
-  assert.ok(curriculumIndex > demoIndex, "Agent demo must precede curriculum");
   assert.match(html, /Một câu lệnh\.\s*<span>Agent tự động lên toàn bộ quảng cáo\.<\/span>/);
   assert.match(html, /Không chỉ xem video\. Vướng ở đâu, được hỗ trợ triển khai ở đó\./);
-  assert.match(html, /<source media="\(prefers-reduced-motion: reduce\)" srcset="\/ladipage\/assets\/facebook-ads-agent-demo-poster\.webp"/);
-  assert.match(html, /<img[^>]+src="\/ladipage\/assets\/facebook-ads-agent-demo\.gif"[^>]+loading="lazy"[^>]+decoding="async"/);
+  assert.match(html, /<source media="\(prefers-reduced-motion: reduce\)" srcset="\.\.\/ladipage\/assets\/facebook-ads-agent-demo-poster\.webp"/);
+  assert.match(html, /<img[^>]+src="\.\.\/ladipage\/assets\/facebook-ads-agent-demo\.gif"[^>]+loading="lazy"[^>]+decoding="async"/);
   assert.doesNotMatch(html, /facebook-ads-agent-demo\.mp4/);
   assert.equal((html.match(/data-zalo-proof=/g) || []).length, 12);
   assert.doesNotMatch(html, /a1814dc3cf3103050c99a5f65d909d65/);

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="72" y1="34" x2="570" y2="330" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2B1711"/>
+      <stop offset="1" stop-color="#111319"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="202" y1="86" x2="454" y2="278" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF9A5D"/>
+      <stop offset="1" stop-color="#F66628"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="640" height="360" rx="28" fill="url(#bg)"/>
+  <path d="M0 84H640M0 180H640M0 276H640M128 0V360M320 0V360M512 0V360" stroke="#fff" stroke-opacity=".045"/>
+  <g stroke="url(#accent)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M205 115h-48c-22 0-39 17-39 39v53c0 22 17 39 39 39h48"/>
+    <path d="M435 115h48c22 0 39 17 39 39v53c0 22-17 39-39 39h-48"/>
+  </g>
+  <g filter="url(#glow)">
+    <ellipse cx="320" cy="111" rx="83" ry="31" fill="#F66628" fill-opacity=".22" stroke="#FF9A5D" stroke-width="4"/>
+    <path d="M237 111v91c0 17 37 31 83 31s83-14 83-31v-91" fill="#F66628" fill-opacity=".1" stroke="#FF9A5D" stroke-width="4"/>
+    <path d="M237 155c0 17 37 31 83 31s83-14 83-31M237 199c0 17 37 31 83 31s83-14 83-31" stroke="#FF9A5D" stroke-width="4"/>
+  </g>
+  <g fill="#FF9A5D">
+    <circle cx="117" cy="180" r="9"/><circle cx="523" cy="180" r="9"/>
+  </g>
+  <path d="M156 180h62M422 180h62" stroke="#FF9A5D" stroke-width="4" stroke-dasharray="8 9"/>
+  <text x="320" y="304" text-anchor="middle" fill="#FFF4EA" font-family="Arial, sans-serif" font-size="22" font-weight="700">DATASET  →  META AI</text>
+</svg>
