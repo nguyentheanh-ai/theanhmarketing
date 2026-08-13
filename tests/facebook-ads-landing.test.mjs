@@ -20,6 +20,14 @@ test("Facebook Ads landing keeps source and published HTML synced", () => {
   assert.equal(published, source);
 });
 
+test("Facebook Ads direct-file checkout loads and submits the shared invoice fields", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+
+  assert.match(html, /<script src="\.\.\/checkout-invoice\.js" defer><\/script>/);
+  assert.match(html, /<form id="payment-form" class="form" data-invoice-checkout>/);
+  assert.match(html, /invoice:\s*window\.getInvoiceRequest\(form\)/);
+});
+
 test("Facebook Ads landing keeps the three approved owner photos", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
   const approvedAssets = [
