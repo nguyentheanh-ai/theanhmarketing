@@ -210,3 +210,12 @@ test("Facebook Ads landing uses the approved WeSuccess-inspired typography and m
   );
   assert.match(html, /padding-bottom:\s*calc\(8px \+ env\(safe-area-inset-bottom\)\)/);
 });
+
+test("Facebook Ads decorative curriculum portrait cannot block mobile interactions", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+
+  assert.match(
+    html,
+    /\.curriculum-portrait-cutout,[\s\S]*?\.curriculum-portrait-cutout img,[\s\S]*?\.curriculum-orbit\s*\{[\s\S]*?pointer-events:\s*none/
+  );
+});
