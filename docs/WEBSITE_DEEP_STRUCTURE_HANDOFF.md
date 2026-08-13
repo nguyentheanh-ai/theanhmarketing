@@ -8,8 +8,9 @@
 | Typography | Keeps the existing `Be Vietnam Pro` family and adopts a calmer reference-style type scale: display `800`, section headings `700/800`, restrained tracking and body line-height `1.6`. |
 | Mobile | At `<=680px`, content uses 32px total gutters, 56px section rhythm, fluid 30–34px hero type, fluid 26–30px section headings, 16px body copy and safe-area-aware sticky actions. At `<=360px`, gutters and titles tighten further without horizontal overflow. |
 | Interaction fix | Decorative curriculum portrait/orbit layers ignore pointer events so accordion rows remain tappable on narrow screens. |
+| Review correction | The typography branch originally started from an older landing snapshot and briefly restored three retired illustrations. The page now pins the approved owner images in the standard landing asset folder: `hero-operator.webp` for `#van-de`, `fragmented-handoffs.webp` for `#ket-qua`, and `role-marketing.webp` for `#phuong-phap`. The curriculum profile divider was removed so it no longer crosses the instructor's neck on mobile. |
 | Preserved contract | Copy, 799K offer, Ebook add-on, CTA/form, Pixel/CAPI and order/payment/email/access flows are unchanged. Source and published HTML remain byte-identical. |
-| Verification | Landing regression `13/13`, TypeScript, production build (96 routes) and browser QA at 1440, 1020, 390 and 320px pass. ESLint has zero errors/one unchanged warning. Full Node is `569/570`; the only failure is the pre-existing Telegram cron expectation for an intentionally disabled cron, so production integration remains pending. |
+| Verification | Focused landing regressions `25/25`, TypeScript and production build (96 routes) pass. ESLint has zero errors/one unchanged warning. Full Node is `571/572`; the only failure is the pre-existing Telegram cron expectation for an intentionally disabled cron, so production integration remains pending. Direct `file://` browser reload is blocked by browser policy; owner can reload the already-open preview tab for visual confirmation. |
 
 ## 2026-08-03 - Durable Meta Purchase outbox restored to deploy branch
 

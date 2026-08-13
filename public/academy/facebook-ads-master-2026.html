@@ -3706,7 +3706,9 @@
 
       .hybrid-pain-visual {
         grid-column: 1;
-        grid-row: 1 / span 4;
+        grid-row: 1 / span 3;
+        align-self: center;
+        width: min(100%, 520px);
         overflow: hidden;
         margin: 0;
         border: 1px solid rgba(246, 102, 40, 0.28);
@@ -3716,8 +3718,10 @@
 
       .hybrid-pain-visual img {
         width: 100%;
-        aspect-ratio: 3 / 2;
+        height: 100%;
+        aspect-ratio: 4 / 3;
         object-fit: cover;
+        object-position: 58% center;
       }
 
       .audience-grid {
@@ -4174,7 +4178,7 @@
         position: relative;
         z-index: 3;
         margin: var(--curriculum-profile-lift) 20px 0;
-        border-top: 1px solid rgba(246, 102, 40, 0.48);
+        border-top: 0;
         background: linear-gradient(to bottom, transparent, rgba(10, 11, 15, 0.92) 52%, var(--bg) 100%);
         padding: 70px 4px 0;
       }
@@ -4248,6 +4252,8 @@
         .hybrid-pain-visual {
           grid-row: auto;
           order: 4;
+          width: min(100%, 620px);
+          justify-self: center;
           margin-top: 18px;
         }
 
@@ -4651,7 +4657,7 @@
                 Phần lớn anh chị chủ doanh nghiệp mới chỉ chạy Facebook Ads ở mức cơ bản: lên đúng một chiến dịch, chọn vài sở thích hoặc hành vi rồi chờ kết quả. Khi quảng cáo chưa hiệu quả, nhiều người vội đánh giá Facebook Ads không hiệu quả — trong khi vấn đề thật sự nằm ở cách xây hệ thống, tích lũy dữ liệu và tối ưu sau mỗi lần chạy.
               </p>
               <figure class="hybrid-pain-visual" data-reveal>
-                <img src="../ladipage/assets/facebook-ads-kstudy-hybrid/pain-owner-ads-workspace.webp" alt="Chủ doanh nghiệp đang phân tích màn hình quảng cáo" width="750" height="496" loading="lazy" decoding="async" />
+                <img src="../ladipage/assets/facebook-ads-kstudy-hybrid/hero-operator.webp" alt="Người vận hành quảng cáo Facebook đang làm việc trên máy tính" width="1586" height="992" loading="lazy" decoding="async" />
               </figure>
             </div>
             <div class="pain-list">
@@ -4869,7 +4875,7 @@
 
         <section class="hybrid-section" id="ket-qua">
           <div class="container hybrid-split">
-            <div class="hybrid-copy" data-reveal>
+            <div class="hybrid-copy">
               <p class="section-kicker">Bạn sẽ nhận được gì?</p>
               <h2>Học xong để <span class="text-accent-inline">tự triển khai, tự đọc số và tự sửa</span>.</h2>
               <ul class="hybrid-checklist">
@@ -4883,7 +4889,7 @@
               <div class="hero-actions"><a class="btn btn-primary" href="#hoc-phi">Đăng ký gói 799.000đ</a></div>
             </div>
             <figure class="hybrid-media" data-reveal>
-              <img src="../ladipage/assets/facebook-ads-kstudy-hybrid/outcomes-dashboard-operator.webp" alt="Người vận hành Facebook Ads và Dataset Meta AI" width="750" height="493" loading="lazy" decoding="async" />
+              <img src="../ladipage/assets/facebook-ads-kstudy-hybrid/fragmented-handoffs.webp" alt="Đội ngũ phối hợp triển khai và tối ưu Facebook Ads" width="1400" height="933" loading="lazy" decoding="async" />
             </figure>
           </div>
         </section>
@@ -4891,9 +4897,9 @@
         <section class="hybrid-section" id="phuong-phap">
           <div class="container hybrid-split">
             <figure class="hybrid-media" data-reveal>
-              <img src="../ladipage/assets/facebook-ads-kstudy-hybrid/method-ads-workflow.webp" alt="Quy trình triển khai Facebook Ads theo hệ thống" width="750" height="493" loading="lazy" decoding="async" />
+              <img src="../ladipage/assets/facebook-ads-kstudy-hybrid/role-marketing.webp" alt="Người làm marketing xây dựng kế hoạch Facebook Ads" width="1400" height="1050" loading="lazy" decoding="async" />
             </figure>
-            <div class="hybrid-copy" data-reveal>
+            <div class="hybrid-copy">
               <p class="section-kicker">Phương pháp học</p>
               <h2>Hiểu bản chất. Làm trên case thật. Tối ưu theo tín hiệu.</h2>
               <p>Mỗi nội dung được đặt vào đúng vị trí trong workflow để bạn không học xong rồi vẫn không biết bắt đầu từ đâu.</p>

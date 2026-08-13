@@ -20,6 +20,30 @@ test("Facebook Ads landing keeps source and published HTML synced", () => {
   assert.equal(published, source);
 });
 
+test("Facebook Ads landing keeps the three approved owner photos", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+  const approvedAssets = [
+    "public/ladipage/assets/facebook-ads-kstudy-hybrid/hero-operator.webp",
+    "public/ladipage/assets/facebook-ads-kstudy-hybrid/fragmented-handoffs.webp",
+    "public/ladipage/assets/facebook-ads-kstudy-hybrid/role-marketing.webp",
+  ];
+
+  assert.match(html, /<section id="van-de"[\s\S]*?src="\.\.\/ladipage\/assets\/facebook-ads-kstudy-hybrid\/hero-operator\.webp"/);
+  assert.match(html, /<section class="hybrid-section" id="ket-qua">[\s\S]*?src="\.\.\/ladipage\/assets\/facebook-ads-kstudy-hybrid\/fragmented-handoffs\.webp"/);
+  assert.match(html, /<section class="hybrid-section" id="phuong-phap">[\s\S]*?src="\.\.\/ladipage\/assets\/facebook-ads-kstudy-hybrid\/role-marketing\.webp"/);
+  assert.doesNotMatch(html, /pain-owner-ads-workspace\.webp|outcomes-dashboard-operator\.webp|method-ads-workflow\.webp/);
+
+  for (const asset of approvedAssets) {
+    assert.ok(fs.existsSync(path.resolve(asset)), `Missing approved owner photo: ${asset}`);
+  }
+});
+
+test("Facebook Ads mobile instructor portrait has no divider across the neck", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+
+  assert.match(html, /\.curriculum-profile\s*\{[\s\S]*?border-top:\s*0;/);
+});
+
 test("Facebook Ads landing offers only the 799K AI Agent plan", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
 
