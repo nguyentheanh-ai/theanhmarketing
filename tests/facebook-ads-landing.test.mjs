@@ -190,3 +190,23 @@ test("Facebook Ads landing shows the curriculum before outputs, Agent demo and e
   const gifSize = fs.statSync(path.resolve("public/ladipage/assets/facebook-ads-agent-demo.gif")).size;
   assert.ok(gifSize <= 12 * 1024 * 1024, `GIF is too large: ${gifSize} bytes`);
 });
+
+test("Facebook Ads landing uses the approved WeSuccess-inspired typography and mobile rhythm", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+
+  assert.match(html, /--type-display-weight:\s*800/);
+  assert.match(html, /--type-heading-tracking:\s*-0\.02em/);
+  assert.match(
+    html,
+    /\.course-hero-title\s*\{[\s\S]*?font-size:\s*clamp\(44px,\s*4\.2vw,\s*60px\)[\s\S]*?line-height:\s*1\.16/
+  );
+  assert.match(
+    html,
+    /\.hybrid-section-head h2\s*\{[\s\S]*?font-size:\s*clamp\(36px,\s*3\.5vw,\s*48px\)/
+  );
+  assert.match(
+    html,
+    /@media \(max-width:\s*680px\)[\s\S]*?\.course-hero-title\s*\{[\s\S]*?font-size:\s*clamp\(30px,\s*8\.6vw,\s*34px\)[\s\S]*?line-height:\s*1\.2/
+  );
+  assert.match(html, /padding-bottom:\s*calc\(8px \+ env\(safe-area-inset-bottom\)\)/);
+});
