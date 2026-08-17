@@ -36,16 +36,16 @@ test("order product mapping uses canonical slug and title without merging Ebook 
   assert.equal(classifyOrderProduct({ courseSlug: "ai-master", courseTitle: "AI Master" }), "unclassified");
 });
 
-test("seven-day report uses seven complete Vietnam business days ending at 14:00", () => {
+test("seven-day report uses seven complete Vietnam business days ending at 17:00", () => {
   const { buildSevenDayWindow } = loadTsModule("lib/reports/telegram-product-report.ts");
 
-  assert.deepEqual(buildSevenDayWindow(new Date("2026-08-04T07:00:00.000Z")), {
-    startIso: "2026-07-28T07:00:00.000Z",
-    endIso: "2026-08-04T07:00:00.000Z",
+  assert.deepEqual(buildSevenDayWindow(new Date("2026-08-04T10:00:00.000Z")), {
+    startIso: "2026-07-28T10:00:00.000Z",
+    endIso: "2026-08-04T10:00:00.000Z",
   });
   assert.deepEqual(buildSevenDayWindow(new Date("2026-08-04T01:00:00.000Z")), {
-    startIso: "2026-07-27T07:00:00.000Z",
-    endIso: "2026-08-03T07:00:00.000Z",
+    startIso: "2026-07-27T10:00:00.000Z",
+    endIso: "2026-08-03T10:00:00.000Z",
   });
 });
 
@@ -148,11 +148,34 @@ test("Telegram product report returns ordered current, seven-day, and month sect
   });
 
   assert.equal(messages.length, 3);
-  assert.match(messages[0], /^\[TEST\] BÁO CÁO CHỐT NGÀY 14:00/);
+  assert.match(messages[0], /^\[TEST\] BÁO CÁO CHỐT NGÀY 17:00/);
   assert.match(messages[0], /THEO SẢN PHẨM/);
-  assert.match(messages[1], /7 NGÀY · 14:00 → 14:00/);
+  assert.match(messages[1], /7 NGÀY · 17:00 → 17:00/);
   assert.match(messages[1], /Khóa Facebook Ads|Ebook/);
   assert.match(messages[2], /DOANH THU THÁNG ĐẾN HIỆN TẠI/);
   assert.match(messages[2], /Ebook: 1\.000\.000 ₫/);
   assert.ok(messages.every((message) => message.length <= 4096));
+});
+
+test("Telegram report lists Meta efficiency separately for every ad account", () => {
+  const { buildTelegramProductReportMessages } = loadTsModule("lib/reports/telegram-product-report.ts");
+  const empty = { available: true, rows: [], totals: { orderCount: 0, grossReceived: 0, vat: 0, adSpend: 0, conversionFee: 0, estimatedResult: 0 } };
+  const messages = buildTelegramProductReportMessages({
+    slot: "full-day",
+    current: {
+      startIso: "2026-08-03T10:00:00.000Z",
+      endIso: "2026-08-04T10:00:00.000Z",
+      metrics: empty,
+      accounts: [
+        { accountName: "TAM01", accountId: "1103665698635605", available: true, spend: 200000, impressions: 4000, clicks: 80, purchases: 2, purchaseValue: 1000000 },
+        { accountName: "TAM03", accountId: "2727370877462532", available: false, reason: "Thiếu phương thức thanh toán" },
+      ],
+    },
+    sevenDay: { startIso: "2026-07-28T10:00:00.000Z", endIso: "2026-08-04T10:00:00.000Z", metrics: empty },
+    month: { startIso: "2026-07-31T17:00:00.000Z", endIso: "2026-08-04T10:00:00.000Z", metrics: empty },
+  });
+  const report = messages.join("\n");
+  assert.match(report, /THEO TÀI KHOẢN QUẢNG CÁO/);
+  assert.match(report, /TAM01.*Ads 200\.000 ₫.*CPM 50\.000 ₫.*CTR 2\.00%.*Purchase 2.*CPA 100\.000 ₫.*ROAS 5\.00x/s);
+  assert.match(report, /TAM03.*CHƯA ĐỦ DỮ LIỆU.*Thiếu phương thức thanh toán/s);
 });

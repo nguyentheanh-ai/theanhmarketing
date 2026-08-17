@@ -23,7 +23,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 function latestVietnamBoundary(slot: TelegramBusinessReportSlot, now: Date) {
   const vietnamNow = new Date(now.getTime() + VIETNAM_OFFSET_MS);
-  const targetHour = slot === "morning" ? 8 : 14;
+  const targetHour = slot === "morning" ? 8 : 17;
   const todayAtTargetUtc = Date.UTC(
     vietnamNow.getUTCFullYear(),
     vietnamNow.getUTCMonth(),
@@ -43,7 +43,7 @@ export function buildTelegramReportWindow(
     endInVietnam.getUTCFullYear(),
     endInVietnam.getUTCMonth(),
     endInVietnam.getUTCDate() - 1,
-    7,
+    slot === "morning" ? 7 : 10,
   ));
 
   return { slot, startIso: start.toISOString(), endIso: end.toISOString() };
@@ -85,7 +85,7 @@ function formatVietnamDateTime(iso: string) {
 }
 
 export function buildTelegramBusinessReportMessage(input: TelegramBusinessReportMessageInput) {
-  const title = input.slot === "morning" ? "BÁO CÁO 08:00" : "BÁO CÁO CHỐT NGÀY 14:00";
+  const title = input.slot === "morning" ? "BÁO CÁO 08:00" : "BÁO CÁO CHỐT NGÀY 17:00";
   const lines = [
     `${input.test ? "[TEST] " : ""}${title} · The Anh Marketing`,
     `Kỳ: ${formatVietnamDateTime(input.startIso)} → ${formatVietnamDateTime(input.endIso)}`,

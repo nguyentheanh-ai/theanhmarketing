@@ -32,7 +32,7 @@ test("scheduled report reads all periods, sends every section, and finishes only
   const orderWindows: string[] = [];
   const adsWindows: string[] = [];
   const result = await runTelegramBusinessReport(
-    { slot: "full-day", now: new Date("2026-08-04T07:00:00.000Z") },
+    { slot: "full-day", now: new Date("2026-08-04T10:00:00.000Z") },
     dependencies({
       claim: async (input) => {
         events.push({ claim: input });
@@ -59,7 +59,7 @@ test("scheduled report reads all periods, sends every section, and finishes only
 
   assert.equal(result.ok, true);
   assert.equal(result.skipped, false);
-  assert.match(String(events[0].claim && JSON.stringify(events[0].claim)), /full-day:2026-08-03T07:00:00.000Z:2026-08-04T07:00:00.000Z/);
+  assert.match(String(events[0].claim && JSON.stringify(events[0].claim)), /full-day:2026-08-03T10:00:00.000Z:2026-08-04T10:00:00.000Z/);
   assert.equal(orderWindows.length, 3);
   assert.deepEqual(adsWindows, orderWindows);
   assert.equal(events.filter((event) => event.text).length, 3);
@@ -67,7 +67,7 @@ test("scheduled report reads all periods, sends every section, and finishes only
   assert.match(String(events[1].text), /1\.198\.000 ₫/);
   assert.match(String(events[2].text), /7 NGÀY/);
   assert.match(String(events[3].text), /DOANH THU THÁNG/);
-  assert.deepEqual(events[4].finish, { runKey: "full-day:2026-08-03T07:00:00.000Z:2026-08-04T07:00:00.000Z", leaseToken: "lease-1", outcome: "sent" });
+  assert.deepEqual(events[4].finish, { runKey: "full-day:2026-08-03T10:00:00.000Z:2026-08-04T10:00:00.000Z", leaseToken: "lease-1", outcome: "sent" });
 });
 
 test("duplicate scheduled report skips before reading or sending", async () => {
@@ -90,7 +90,7 @@ test("test report bypasses delivery claim and is visibly marked", async () => {
   let claimed = false;
   const texts: string[] = [];
   const result = await runTelegramBusinessReport(
-    { slot: "full-day", now: new Date("2026-08-04T07:00:00.000Z"), test: true },
+    { slot: "full-day", now: new Date("2026-08-04T10:00:00.000Z"), test: true },
     dependencies({
       claim: async () => { claimed = true; return { claimed: false }; },
       send: async (message) => { texts.push(message); return { ok: true, skipped: false, status: 200 }; },
@@ -106,7 +106,7 @@ test("test report bypasses delivery claim and is visibly marked", async () => {
 test("delivery failure is recorded without leaking transport internals", async () => {
   let finish: Record<string, unknown> | undefined;
   const result = await runTelegramBusinessReport(
-    { slot: "full-day", now: new Date("2026-08-04T07:00:00.000Z") },
+    { slot: "full-day", now: new Date("2026-08-04T10:00:00.000Z") },
     dependencies({
       send: async () => ({ ok: false, skipped: false, status: 502, reason: "Telegram Bot API rejected the message." }),
       finish: async (input) => { finish = input; return { ok: true }; },
@@ -122,7 +122,7 @@ test("a later Telegram part failure prevents a false sent marker", async () => {
   let sends = 0;
   let finish: Record<string, unknown> | undefined;
   const result = await runTelegramBusinessReport(
-    { slot: "full-day", now: new Date("2026-08-04T07:00:00.000Z") },
+    { slot: "full-day", now: new Date("2026-08-04T10:00:00.000Z") },
     dependencies({
       send: async () => {
         sends += 1;

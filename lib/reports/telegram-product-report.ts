@@ -20,6 +20,18 @@ export type CampaignSpendInput = {
   spend: number;
 };
 
+export type AccountPerformanceInput = {
+  accountName: string;
+  accountId: string;
+  available: boolean;
+  reason?: string;
+  spend?: number;
+  impressions?: number;
+  clicks?: number;
+  purchases?: number;
+  purchaseValue?: number;
+};
+
 export type ProductMetricRow = {
   key: ReportProductKey;
   label: string;
@@ -38,7 +50,7 @@ export type ProductMetricsReport = {
   totals: Omit<ProductMetricRow, "key" | "label">;
 };
 
-type ProductReportPeriod = IsoWindow & { metrics: ProductMetricsReport };
+type ProductReportPeriod = IsoWindow & { metrics: ProductMetricsReport; accounts?: AccountPerformanceInput[] };
 
 const VIETNAM_OFFSET_MS = 7 * 60 * 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -75,13 +87,13 @@ export function classifyOrderProduct(identity: OrderProductIdentity): ReportProd
 
 function latestClosedVietnamBusinessDay(now: Date) {
   const vietnamNow = new Date(now.getTime() + VIETNAM_OFFSET_MS);
-  const todayAt14 = Date.UTC(
+  const todayAt17 = Date.UTC(
     vietnamNow.getUTCFullYear(),
     vietnamNow.getUTCMonth(),
     vietnamNow.getUTCDate(),
-    7,
+    10,
   );
-  return new Date(now.getTime() >= todayAt14 ? todayAt14 : todayAt14 - DAY_MS);
+  return new Date(now.getTime() >= todayAt17 ? todayAt17 : todayAt17 - DAY_MS);
 }
 
 export function buildSevenDayWindow(now: Date): IsoWindow {
@@ -211,8 +223,26 @@ function metricLines(report: ProductMetricsReport) {
   return lines;
 }
 
+function accountMetricLines(accounts: AccountPerformanceInput[] | undefined) {
+  if (!accounts?.length) return [];
+  return accounts.map((account) => {
+    const label = `${account.accountName} (${account.accountId})`;
+    if (!account.available) return `${label}: CHƯA ĐỦ DỮ LIỆU · ${account.reason || "Snapshot MCP chưa đủ."}`;
+    const spend = account.spend ?? 0;
+    const impressions = account.impressions ?? 0;
+    const clicks = account.clicks ?? 0;
+    const purchases = account.purchases ?? 0;
+    const purchaseValue = account.purchaseValue ?? 0;
+    const cpm = impressions > 0 ? (spend * 1000) / impressions : 0;
+    const ctr = impressions > 0 ? (clicks * 100) / impressions : 0;
+    const cpa = purchases > 0 ? formatMoney(spend / purchases) : "Chưa đủ";
+    const roas = spend > 0 ? `${(purchaseValue / spend).toFixed(2)}x` : "Chưa đủ";
+    return `${label}: Ads ${formatMoney(spend)} · Impressions ${Math.round(impressions).toLocaleString("vi-VN")} · CPM ${formatMoney(cpm)} · CTR ${ctr.toFixed(2)}% · Purchase ${purchases} · CPA ${cpa} · ROAS ${roas}`;
+  });
+}
+
 function currentSection(slot: "morning" | "full-day", test: boolean | undefined, period: ProductReportPeriod) {
-  const title = slot === "morning" ? "BÁO CÁO 08:00" : "BÁO CÁO CHỐT NGÀY 14:00";
+  const title = slot === "morning" ? "BÁO CÁO 08:00" : "BÁO CÁO CHỐT NGÀY 17:00";
   const totals = period.metrics.totals;
   const lines = [
     `${test ? "[TEST] " : ""}${title} · The Anh Marketing`,
@@ -229,12 +259,14 @@ function currentSection(slot: "morning" | "full-day", test: boolean | undefined,
     );
   }
   lines.push("", "THEO SẢN PHẨM", ...metricLines(period.metrics));
+  const accountLines = accountMetricLines(period.accounts);
+  if (accountLines.length) lines.push("", "THEO TÀI KHOẢN QUẢNG CÁO", ...accountLines);
   return lines.join("\n");
 }
 
 function sevenDaySection(test: boolean | undefined, period: ProductReportPeriod) {
   return [
-    `${test ? "[TEST] " : ""}7 NGÀY · 14:00 → 14:00`,
+    `${test ? "[TEST] " : ""}7 NGÀY · 17:00 → 17:00`,
     `Kỳ: ${formatVietnamDateTime(period.startIso)} → ${formatVietnamDateTime(period.endIso)}`,
     "",
     ...metricLines(period.metrics),

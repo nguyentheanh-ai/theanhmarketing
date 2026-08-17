@@ -22,7 +22,7 @@ function read(relativePath) {
   return fs.readFileSync(path.resolve(relativePath), "utf8");
 }
 
-test("business report windows use exact Vietnam 14:00 boundaries", () => {
+test("business report windows use exact Vietnam 17:00 boundaries", () => {
   const { buildTelegramReportWindow } = loadTsModule("lib/reports/telegram-business-day.ts");
 
   assert.deepEqual(buildTelegramReportWindow("morning", new Date("2026-08-04T01:00:00.000Z")), {
@@ -30,15 +30,15 @@ test("business report windows use exact Vietnam 14:00 boundaries", () => {
     startIso: "2026-08-03T07:00:00.000Z",
     endIso: "2026-08-04T01:00:00.000Z",
   });
-  assert.deepEqual(buildTelegramReportWindow("full-day", new Date("2026-08-04T07:00:00.000Z")), {
+  assert.deepEqual(buildTelegramReportWindow("full-day", new Date("2026-08-04T10:00:00.000Z")), {
     slot: "full-day",
-    startIso: "2026-08-03T07:00:00.000Z",
-    endIso: "2026-08-04T07:00:00.000Z",
+    startIso: "2026-08-03T10:00:00.000Z",
+    endIso: "2026-08-04T10:00:00.000Z",
   });
-  assert.deepEqual(buildTelegramReportWindow("full-day", new Date("2026-08-04T06:59:00.000Z")), {
+  assert.deepEqual(buildTelegramReportWindow("full-day", new Date("2026-08-04T09:59:00.000Z")), {
     slot: "full-day",
-    startIso: "2026-08-02T07:00:00.000Z",
-    endIso: "2026-08-03T07:00:00.000Z",
+    startIso: "2026-08-02T10:00:00.000Z",
+    endIso: "2026-08-03T10:00:00.000Z",
   });
 });
 
@@ -58,14 +58,14 @@ test("business report message is aggregate-only, explicit, and fail-closed for A
   const { buildTelegramBusinessReportMessage } = loadTsModule("lib/reports/telegram-business-day.ts");
   const base = {
     slot: "full-day",
-    startIso: "2026-08-03T07:00:00.000Z",
-    endIso: "2026-08-04T07:00:00.000Z",
+    startIso: "2026-08-03T10:00:00.000Z",
+    endIso: "2026-08-04T10:00:00.000Z",
     orderCount: 4,
     grossReceived: 10_000_000,
   };
   const available = buildTelegramBusinessReportMessage({ ...base, test: true, ads: { available: true, spend: 2_000_000 } });
   assert.match(available, /^\[TEST\]/);
-  assert.match(available, /14:00 03\/08\/2026 → 14:00 04\/08\/2026/);
+  assert.match(available, /17:00 03\/08\/2026 → 17:00 04\/08\/2026/);
   assert.match(available, /Đơn đã thanh toán: 4/);
   assert.match(available, /VAT Facebook \(8% tiền thu\): 800\.000 ₫/);
   assert.match(available, /Phí chuyển đổi \(2% Ads\): 40\.000 ₫/);
@@ -78,7 +78,7 @@ test("business report message is aggregate-only, explicit, and fail-closed for A
   assert.doesNotMatch(unavailable, /Lãi\/lỗ tạm tính:/);
 });
 
-test("protected morning and full-day routes are scheduled in UTC", () => {
+test("only the protected 17:05 full-day Telegram route is scheduled", () => {
   const shared = read("app/api/reports/telegram/_shared.ts");
   const morning = read("app/api/reports/telegram/morning/route.ts");
   const fullDay = read("app/api/reports/telegram/full-day/route.ts");
@@ -92,10 +92,7 @@ test("protected morning and full-day routes are scheduled in UTC", () => {
   assert.match(fullDay, /"full-day"/);
   assert.deepEqual(
     vercel.crons.filter((entry) => entry.path.startsWith("/api/reports/telegram")),
-    [
-      { path: "/api/reports/telegram/morning", schedule: "5 1 * * *" },
-      { path: "/api/reports/telegram/full-day", schedule: "5 7 * * *" },
-    ],
+    [{ path: "/api/reports/telegram/full-day", schedule: "5 10 * * *" }],
   );
 });
 
