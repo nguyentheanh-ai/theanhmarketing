@@ -1361,7 +1361,12 @@
       .hero-actions, .meta-row { justify-content: center; }
       .hero-actions .btn, .nav .btn { width: 100%; }
       .nav-inner { align-items: center; flex-direction: column; padding: 14px 0; }
-      .nav-links { width: 100%; min-width: 0; }
+      .nav-links {
+        width: 100%;
+        min-width: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+      }
       .hero-grid { padding-top: 26px; }
       .hero-visual { margin-top: 0; padding-bottom: 0; }
       .book-stack { width: 100%; }
@@ -1393,14 +1398,16 @@
       .new-price { font-size: 48px; }
       .mobile-buy.is-shown { display: flex; }
       .section-menu-toggle {
-        top: auto;
-        right: 14px;
-        bottom: 92px;
+        position: static;
+        min-height: 44px;
+        box-shadow: none;
       }
       .section-menu-panel {
-        top: auto;
+        top: 132px;
         right: 14px;
-        bottom: 146px;
+        bottom: auto;
+        max-height: calc(100vh - 146px);
+        overflow-y: auto;
       }
       .section-progress-rail {
         left: 6px;
@@ -1452,6 +1459,7 @@
           <a href="#price">Giá</a>
           <a href="#faq">FAQ</a>
           <a class="btn btn-gold" href="#price" data-event="header_cta_click">Mua ebook 399.000đ</a>
+          <button class="section-menu-toggle" type="button" data-section-menu-toggle aria-expanded="false" aria-controls="ebook-section-menu">Mục lục</button>
         </div>
       </div>
     </nav>
@@ -1497,7 +1505,6 @@
     </div>
   </header>
 
-  <button class="section-menu-toggle" type="button" data-section-menu-toggle aria-expanded="false" aria-controls="ebook-section-menu">Mục lục</button>
   <nav id="ebook-section-menu" class="section-menu-panel" aria-label="Mục lục landing page" hidden>
     <span class="section-menu-heading">Mục lục Ebook</span>
     <a href="#top" data-section-menu-link>Trang đầu</a>

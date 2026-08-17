@@ -94,6 +94,15 @@ test("Premium Ebook landing uses the approved mobile-first hero and section navi
 
   assert.match(html, /data-section-menu-toggle/);
   assert.match(html, /aria-controls="ebook-section-menu"/);
+  assert.match(
+    hero,
+    /<div class="nav-links">[\s\S]*?<button class="section-menu-toggle"[\s\S]*?<\/div>/,
+    "Mục lục phải nằm trong thanh điều hướng, không nổi giữa nội dung",
+  );
+  const mobileCss = html.match(/@media \(max-width:\s*640px\) \{[\s\S]*?@media \(max-width:\s*339px\)/)?.[0] ?? "";
+  assert.match(mobileCss, /\.nav-links\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) auto;/);
+  assert.match(mobileCss, /\.section-menu-toggle\s*\{[\s\S]*?position:\s*static;/);
+  assert.doesNotMatch(mobileCss, /\.section-menu-toggle\s*\{[\s\S]*?bottom:\s*92px;/);
   assert.equal((menu.match(/data-section-menu-link/g) || []).length, 6);
   assert.equal((rail.match(/data-section-progress-dot/g) || []).length, 6);
   const sectionMenu = [
