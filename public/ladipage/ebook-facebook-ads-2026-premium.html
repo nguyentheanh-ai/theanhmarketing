@@ -107,8 +107,7 @@
     }
 
     .nav {
-      position: sticky;
-      top: 0;
+      position: relative;
       z-index: 50;
       border-bottom: 1px solid var(--line);
       background: rgba(9, 7, 5, .82);
@@ -140,6 +139,11 @@
       font-weight: 900;
       box-shadow: inset 0 0 22px rgba(231,184,75,.08);
     }
+    .brand-mark img {
+      width: 30px;
+      height: 20px;
+      object-fit: contain;
+    }
     .nav-links {
       display: flex;
       align-items: center;
@@ -149,6 +153,133 @@
       font-weight: 800;
     }
     .nav-links a:hover { color: var(--gold); }
+
+    .section-menu-toggle {
+      position: fixed;
+      top: 92px;
+      right: 22px;
+      z-index: 70;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      border: 1px solid rgba(231, 184, 75, .4);
+      border-radius: 999px;
+      padding: 0 15px;
+      color: var(--cream);
+      background: rgba(9, 7, 5, .9);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, .28);
+      backdrop-filter: blur(16px);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .section-menu-toggle::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 5px rgba(231, 184, 75, .12);
+    }
+    .section-menu-panel {
+      position: fixed;
+      top: 146px;
+      right: 22px;
+      z-index: 69;
+      width: min(292px, calc(100vw - 32px));
+      padding: 16px;
+      border: 1px solid rgba(231, 184, 75, .28);
+      border-radius: 20px;
+      background: rgba(17, 11, 7, .97);
+      box-shadow: 0 24px 62px rgba(0, 0, 0, .42);
+      backdrop-filter: blur(18px);
+    }
+    .section-menu-panel[hidden] { display: none; }
+    .section-menu-heading {
+      display: block;
+      margin: 0 0 10px;
+      color: var(--gold-2);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .section-menu-panel a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 42px;
+      border-radius: 12px;
+      padding: 8px 10px;
+      color: #eadfc4;
+      font-size: 14px;
+      font-weight: 700;
+      transition: color .2s ease, background .2s ease, transform .2s ease;
+    }
+    .section-menu-panel a::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      flex: 0 0 7px;
+      border-radius: 50%;
+      background: rgba(231, 184, 75, .35);
+    }
+    .section-menu-panel a:hover,
+    .section-menu-panel a:focus-visible,
+    .section-menu-panel a[aria-current="true"] {
+      color: var(--gold-2);
+      background: rgba(231, 184, 75, .1);
+      transform: translateX(2px);
+    }
+    .section-menu-panel a[aria-current="true"]::before { background: var(--gold); }
+
+    .section-progress-rail {
+      --section-progress: 0;
+      position: fixed;
+      left: 18px;
+      top: 50%;
+      z-index: 60;
+      display: grid;
+      gap: 12px;
+      transform: translateY(-50%);
+    }
+    .section-progress-rail::before,
+    .section-progress-rail::after {
+      content: "";
+      position: absolute;
+      top: 5px;
+      bottom: 5px;
+      left: 5px;
+      width: 2px;
+      border-radius: 999px;
+      background: rgba(255, 247, 232, .2);
+    }
+    .section-progress-rail::after {
+      bottom: auto;
+      height: calc((100% - 10px) * var(--section-progress));
+      background: var(--gold);
+      transition: height .25s ease;
+    }
+    .section-progress-dot {
+      position: relative;
+      z-index: 1;
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(255, 247, 232, .42);
+      border-radius: 50%;
+      background: #130d09;
+      transition: border-color .2s ease, background .2s ease, transform .2s ease;
+    }
+    .section-progress-dot.is-reached,
+    .section-progress-dot.is-active {
+      border-color: var(--gold);
+      background: var(--gold);
+    }
+    .section-progress-dot.is-active {
+      transform: scale(1.28);
+      box-shadow: 0 0 0 5px rgba(231, 184, 75, .13);
+    }
 
     .btn {
       display: inline-flex;
@@ -1139,7 +1270,8 @@
       .hero-grid, .section-head, .inside-grid, .offer, .solution-layout {
         grid-template-columns: 1fr;
       }
-      .hero-visual { min-height: auto; }
+      .hero-visual { min-height: auto; order: -1; }
+      .hero-copy { order: 1; }
       .book-stack {
         width: min(620px, 100%);
         justify-self: center;
@@ -1159,18 +1291,22 @@
 
     @media (max-width: 640px) {
       .wrap {
-        width: calc(100% - 28px);
-        max-width: 330px;
-        margin-left: 14px;
-        margin-right: 14px;
+        width: min(calc(100% - 28px), 520px);
+        max-width: none;
+        margin-left: auto;
+        margin-right: auto;
       }
       .hero > .wrap {
-        width: calc(100% - 28px);
-        max-width: 330px;
+        width: min(calc(100% - 28px), 520px);
+        max-width: none;
       }
       .section { padding: 62px 0; }
-      .hero { padding: 46px 0 64px; }
+      .hero { padding: 0 0 64px; }
       .hero-copy, .hero-grid, .book-stack { min-width: 0; max-width: 100%; overflow: hidden; }
+      .hero-copy {
+        justify-items: center;
+        text-align: center;
+      }
       h1 {
         font-size: 34px;
         max-width: 330px;
@@ -1182,12 +1318,14 @@
       }
       .hero-copy .lead,
       .hero-copy .trust-line {
-        max-width: 300px;
+        max-width: 100%;
       }
+      .hero-actions, .meta-row { justify-content: center; }
       .hero-actions .btn, .nav .btn { width: 100%; }
-      .nav-inner { align-items: flex-start; flex-direction: column; padding: 14px 0; }
+      .nav-inner { align-items: center; flex-direction: column; padding: 14px 0; }
       .nav-links { width: 100%; min-width: 0; }
-      .hero-visual { margin-top: 18px; padding-bottom: 0; }
+      .hero-grid { padding-top: 26px; }
+      .hero-visual { margin-top: 0; padding-bottom: 0; }
       .book-stack { width: 100%; }
       .book-main { transform: none; padding: 8px; }
       .floating-card { position: static; width: auto; margin-top: 10px; }
@@ -1216,7 +1354,32 @@
       .module-card .pages { grid-column: auto; }
       .new-price { font-size: 48px; }
       .mobile-buy.is-shown { display: flex; }
+      .section-menu-toggle {
+        top: auto;
+        right: 14px;
+        bottom: 92px;
+      }
+      .section-menu-panel {
+        top: auto;
+        right: 14px;
+        bottom: 146px;
+      }
+      .section-progress-rail {
+        left: 6px;
+        gap: 10px;
+      }
+      .section-progress-dot {
+        width: 9px;
+        height: 9px;
+        border-width: 1px;
+      }
+      .section-progress-rail::before,
+      .section-progress-rail::after { left: 4px; }
       body { padding-bottom: 78px; }
+    }
+
+    @media (max-width: 339px) {
+      .section-progress-rail { display: none; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1237,25 +1400,24 @@
       alt=""
     >
   </noscript>
-  <nav class="nav" aria-label="Điều hướng chính">
-    <div class="wrap nav-inner">
-      <a class="brand" href="#top" aria-label="The Anh Marketing">
-        <span class="brand-mark">TA</span>
-        <span>The Anh Marketing</span>
-      </a>
-      <div class="nav-links">
-        <a href="#problem">Vấn đề</a>
-        <a href="#inside">Bên trong ebook</a>
-        <a href="#sample">Đọc thử</a>
-        <a href="#content">Nội dung</a>
-        <a href="#price">Giá</a>
-        <a href="#faq">FAQ</a>
-        <a class="btn btn-gold" href="#price" data-event="header_cta_click">Mua ebook 399.000đ</a>
-      </div>
-    </div>
-  </nav>
-
   <header class="hero" id="top">
+    <nav class="nav" aria-label="Điều hướng chính">
+      <div class="wrap nav-inner">
+        <a class="brand" href="#top" aria-label="The Anh Marketing">
+          <span class="brand-mark"><img src="/brand/ta-logo.svg" alt="The Anh Marketing"></span>
+          <span>The Anh Marketing</span>
+        </a>
+        <div class="nav-links">
+          <a href="#problem">Vấn đề</a>
+          <a href="#inside">Bên trong ebook</a>
+          <a href="#sample">Đọc thử Ebook</a>
+          <a href="#content">Nội dung</a>
+          <a href="#price">Giá</a>
+          <a href="#faq">FAQ</a>
+          <a class="btn btn-gold" href="#price" data-event="header_cta_click">Mua ebook 399.000đ</a>
+        </div>
+      </div>
+    </nav>
     <div class="wrap hero-grid">
       <div class="hero-copy reveal">
         <span class="eyebrow">Ebook Facebook Ads 2026</span>
@@ -1263,7 +1425,7 @@
         <p class="lead">Ebook <strong>Tất tần tật về Facebook Ads 2026</strong> gồm 10 phần, 471 trang, giúp anh/chị hiểu từ nền tảng, mục tiêu, target, content, thực hành, Pixel/CAPI, đọc chỉ số, remarketing, testing, scale đến chính sách Meta.</p>
         <div class="hero-actions">
           <a class="btn btn-gold" href="#price" data-event="hero_cta_click">Mua ebook ngay - 399.000đ</a>
-          <a class="btn btn-ghost" href="#inside" data-event="hero_preview_click">Xem bên trong ebook</a>
+          <a class="btn btn-ghost" href="#inside" data-event="hero_preview_click">Đọc thử Ebook</a>
         </div>
         <div class="trust-line">
           Dành cho chủ doanh nghiệp, người tự chạy ads, media buyer, marketer và người đang thuê ads nhưng muốn hiểu hệ thống để kiểm soát hiệu quả tốt hơn.
@@ -1297,6 +1459,28 @@
       </div>
     </div>
   </header>
+
+  <button class="section-menu-toggle" type="button" data-section-menu-toggle aria-expanded="false" aria-controls="ebook-section-menu">Mục lục</button>
+  <nav id="ebook-section-menu" class="section-menu-panel" aria-label="Mục lục landing page" hidden>
+    <span class="section-menu-heading">Mục lục Ebook</span>
+    <a href="#top" data-section-menu-link>Cuốn Ebook</a>
+    <a href="#problem" data-section-menu-link>Vấn đề cần giải quyết</a>
+    <a href="#inside" data-section-menu-link>Bên trong Ebook</a>
+    <a href="#sample" data-section-menu-link>Đọc thử Ebook</a>
+    <a href="#content" data-section-menu-link>10 phần nội dung</a>
+    <a href="#price" data-section-menu-link>Giá và đăng ký</a>
+    <a href="#faq" data-section-menu-link>Câu hỏi thường gặp</a>
+  </nav>
+
+  <nav class="section-progress-rail" data-section-progress aria-label="Tiến trình nội dung Ebook">
+    <a class="section-progress-dot is-reached is-active" href="#top" data-section-progress-dot aria-label="Cuốn Ebook" aria-current="true"></a>
+    <a class="section-progress-dot" href="#problem" data-section-progress-dot aria-label="Vấn đề cần giải quyết"></a>
+    <a class="section-progress-dot" href="#inside" data-section-progress-dot aria-label="Bên trong Ebook"></a>
+    <a class="section-progress-dot" href="#sample" data-section-progress-dot aria-label="Đọc thử Ebook"></a>
+    <a class="section-progress-dot" href="#content" data-section-progress-dot aria-label="10 phần nội dung"></a>
+    <a class="section-progress-dot" href="#price" data-section-progress-dot aria-label="Giá và đăng ký"></a>
+    <a class="section-progress-dot" href="#faq" data-section-progress-dot aria-label="Câu hỏi thường gặp"></a>
+  </nav>
 
   <section class="section dark" id="preview" data-event="preview_scroll">
     <div class="wrap">
@@ -1523,7 +1707,7 @@
         </div>
         <div class="reveal">
           <div class="hero-actions sample-reader-actions">
-            <a class="btn btn-dark" href="/doc-thu/ebook-facebook-ads-2026" target="_blank" rel="noopener" data-event="sample_trial_reader_click">Mở bản đọc thử online</a>
+            <a class="btn btn-dark" href="/doc-thu/ebook-facebook-ads-2026" target="_blank" rel="noopener" data-event="sample_trial_reader_click">Đọc thử Ebook</a>
           </div>
         </div>
       </div>
@@ -1767,6 +1951,74 @@
       });
     }, { threshold: 0.14 });
     document.querySelectorAll(".reveal").forEach((item) => revealObserver.observe(item));
+
+    const ebookSectionTargets = ["top", "problem", "inside", "sample", "content", "price", "faq"];
+    const ebookSections = ebookSectionTargets.map((id) => document.getElementById(id)).filter(Boolean);
+    const ebookProgressRail = document.querySelector("[data-section-progress]");
+    const ebookProgressDots = Array.from(document.querySelectorAll("[data-section-progress-dot]"));
+    const ebookMenu = document.getElementById("ebook-section-menu");
+    const ebookMenuToggle = document.querySelector("[data-section-menu-toggle]");
+    const ebookMenuLinks = Array.from(document.querySelectorAll("[data-section-menu-link]"));
+
+    function setActiveEbookSection(sectionId) {
+      const activeIndex = Math.max(0, ebookSectionTargets.indexOf(sectionId));
+      const progress = ebookSectionTargets.length > 1 ? activeIndex / (ebookSectionTargets.length - 1) : 0;
+      if (ebookProgressRail) ebookProgressRail.style.setProperty("--section-progress", String(progress));
+      ebookProgressDots.forEach((dot, index) => {
+        dot.classList.toggle("is-reached", index <= activeIndex);
+        dot.classList.toggle("is-active", index === activeIndex);
+        dot.setAttribute("aria-current", index === activeIndex ? "true" : "false");
+      });
+      ebookMenuLinks.forEach((link) => {
+        link.setAttribute("aria-current", link.getAttribute("href") === `#${sectionId}` ? "true" : "false");
+      });
+    }
+
+    function getActiveEbookSection() {
+      const marker = Math.min(window.innerHeight * .42, 360);
+      let current = ebookSections[0]?.id || "top";
+      ebookSections.forEach((section) => {
+        if (section.getBoundingClientRect().top <= marker) current = section.id;
+      });
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 6) {
+        current = ebookSections[ebookSections.length - 1]?.id || current;
+      }
+      return current;
+    }
+
+    function updateEbookSectionProgress() {
+      setActiveEbookSection(getActiveEbookSection());
+    }
+
+    if (ebookSections.length) {
+      const ebookSectionObserver = new IntersectionObserver(updateEbookSectionProgress, {
+        rootMargin: "-18% 0px -62% 0px",
+        threshold: [0, .1, .5]
+      });
+      ebookSections.forEach((section) => ebookSectionObserver.observe(section));
+      window.addEventListener("scroll", updateEbookSectionProgress, { passive: true });
+      window.addEventListener("resize", updateEbookSectionProgress, { passive: true });
+      updateEbookSectionProgress();
+    }
+
+    function setEbookMenuOpen(isOpen) {
+      if (!ebookMenu || !ebookMenuToggle) return;
+      ebookMenu.hidden = !isOpen;
+      ebookMenuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    }
+
+    if (ebookMenuToggle && ebookMenu) {
+      ebookMenuToggle.addEventListener("click", () => setEbookMenuOpen(ebookMenu.hidden));
+      ebookMenuLinks.forEach((link) => link.addEventListener("click", () => setEbookMenuOpen(false)));
+      document.addEventListener("click", (event) => {
+        if (!ebookMenu.hidden && !ebookMenu.contains(event.target) && !ebookMenuToggle.contains(event.target)) {
+          setEbookMenuOpen(false);
+        }
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") setEbookMenuOpen(false);
+      });
+    }
 
     document.querySelectorAll("details[data-event='faq_open']").forEach((item) => {
       item.addEventListener("toggle", () => {

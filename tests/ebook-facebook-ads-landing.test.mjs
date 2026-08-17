@@ -43,7 +43,7 @@ test("Premium Ebook Facebook Ads landing is published on a clean academy URL", (
   assert.match(source, /const leadId = `web\.\$\{Date\.now\(\)\}\.\$\{Math\.random\(\)\.toString\(10\)\.slice\(2\)\}`/);
   assert.match(source, /leadId,/);
   assert.match(source, /trackLead\(result\.order, leadId\)/);
-  assert.match(source, /href="\/doc-thu\/ebook-facebook-ads-2026"[^>]*data-event="sample_trial_reader_click"[^>]*>M\u1EDF b\u1EA3n \u0111\u1ECDc th\u1EED online<\/a>/);
+  assert.match(source, /href="\/doc-thu\/ebook-facebook-ads-2026"[^>]*data-event="sample_trial_reader_click"[^>]*>\u0110\u1ECDc th\u1EED Ebook<\/a>/);
   assert.doesNotMatch(source, /d\u00F9ng \u1EA3nh th\u1EADt t\u1EEB t\u00E0i li\u1EC7u|Cho kh\u00E1ch th\u1EA5y|Kh\u00E1ch c\u00F3 th\u1EC3 k\u00E9o ngang|kh\u00E1ch hay nghi ng\u1EDD|PNG ebook|kh\u00F4ng d\u00F9ng \u1EA3nh minh h\u1ECDa gi\u1EA3/i);
   assert.match(nextConfig, /source:\s*"\/academy\/ebook-facebook-ads-2026-premium\.html"[\s\S]*?destination:\s*"\/academy\/ebook-facebook-ads-2026-premium"/);
   assert.match(nextConfig, /source:\s*"\/academy\/ebook-facebook-ads-2026-premium"[\s\S]*?destination:\s*"\/academy\/ebook-facebook-ads-2026-premium\.html"/);
@@ -71,6 +71,38 @@ test("Premium Ebook Facebook Ads landing is published on a clean academy URL", (
       `Missing premium landing asset ${asset}`,
     );
   }
+});
+
+test("Premium Ebook landing uses the approved mobile-first hero and section navigation", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026-premium.html");
+  const hero = html.match(/<header class="hero" id="top">[\s\S]*?<\/header>/)?.[0] ?? "";
+  const menu = html.match(/<nav id="ebook-section-menu"[\s\S]*?<\/nav>/)?.[0] ?? "";
+  const rail = html.match(/<nav class="section-progress-rail"[\s\S]*?<\/nav>/)?.[0] ?? "";
+
+  assert.match(hero, /<nav class="nav" aria-label="Điều hướng chính">/);
+  assert.match(html, /\.nav\s*\{[\s\S]*?position:\s*relative;/);
+  assert.doesNotMatch(html, /\.nav\s*\{[\s\S]*?position:\s*sticky;/);
+  assert.match(html, /<span class="brand-mark"><img src="\/brand\/ta-logo\.svg" alt="The Anh Marketing"><\/span>/);
+  assert.doesNotMatch(html, /<span class="brand-mark">TA<\/span>/);
+  assert.match(html, /@media \(max-width:\s*980px\)[\s\S]*?\.hero-visual\s*\{[\s\S]*?order:\s*-1;/);
+  assert.match(html, /@media \(max-width:\s*980px\)[\s\S]*?\.hero-copy\s*\{[\s\S]*?order:\s*1;/);
+  assert.match(html, /@media \(max-width:\s*640px\)[\s\S]*?\.wrap\s*\{[\s\S]*?width:\s*min\(calc\(100% - 28px\), 520px\);/);
+
+  assert.match(html, /data-section-menu-toggle/);
+  assert.match(html, /aria-controls="ebook-section-menu"/);
+  assert.equal((menu.match(/data-section-menu-link/g) || []).length, 7);
+  assert.equal((rail.match(/data-section-progress-dot/g) || []).length, 7);
+  for (const anchor of ["top", "problem", "inside", "sample", "content", "price", "faq"]) {
+    assert.match(menu, new RegExp(`href="#${anchor}"`));
+    assert.match(rail, new RegExp(`href="#${anchor}"`));
+  }
+  assert.match(html, /const ebookSectionTargets = \["top", "problem", "inside", "sample", "content", "price", "faq"\]/);
+  assert.match(html, /new IntersectionObserver\(updateEbookSectionProgress/);
+  assert.match(html, /aria-current/);
+  assert.match(html, /@media \(max-width:\s*339px\)[\s\S]*?\.section-progress-rail\s*\{[\s\S]*?display:\s*none;/);
+
+  assert.equal((html.match(/>Đọc thử Ebook<\/a>/g) || []).length, 4);
+  assert.doesNotMatch(html, />Xem bên trong ebook<\/a>|>Mở bản đọc thử online<\/a>|>Đọc thử<\/a>/);
 });
 
 test("Ebook Facebook Ads landing uses production purchase CTA copy", () => {
