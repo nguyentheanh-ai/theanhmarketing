@@ -37,12 +37,12 @@ test("Premium Ebook Facebook Ads landing is published on a clean academy URL", (
   assert.match(source, /fbp:\s*getCookieValue\("_fbp"\)/);
   assert.match(source, /fbc:\s*getCookieValue\("_fbc"\) \|\| \(fbclid \? `fb\.1\.\$\{Math\.floor\(Date\.now\(\) \/ 1000\)\}\.\$\{fbclid\}` : ""\)/);
   assert.match(source, /landingPage:\s*"academy\/ebook-facebook-ads-2026-premium"/);
-  assert.match(source, /function trackLead\(order, leadId\)/);
+  assert.match(source, /function trackLead\(order, leadId, checkoutPlan\)/);
   assert.match(source, /window\.fbq\("track", "Lead", \{/);
   assert.match(source, /eventID:\s*leadId \|\| order\?\.orderCode/);
   assert.match(source, /const leadId = `web\.\$\{Date\.now\(\)\}\.\$\{Math\.random\(\)\.toString\(10\)\.slice\(2\)\}`/);
   assert.match(source, /leadId,/);
-  assert.match(source, /trackLead\(result\.order, leadId\)/);
+  assert.match(source, /trackLead\(result\.order, leadId, checkoutPlan\)/);
   assert.match(source, /href="\/doc-thu\/ebook-facebook-ads-2026"[^>]*data-event="sample_trial_reader_click"[^>]*>\u0110\u1ECDc th\u1EED Ebook<\/a>/);
   assert.doesNotMatch(source, /d\u00F9ng \u1EA3nh th\u1EADt t\u1EEB t\u00E0i li\u1EC7u|Cho kh\u00E1ch th\u1EA5y|Kh\u00E1ch c\u00F3 th\u1EC3 k\u00E9o ngang|kh\u00E1ch hay nghi ng\u1EDD|PNG ebook|kh\u00F4ng d\u00F9ng \u1EA3nh minh h\u1ECDa gi\u1EA3/i);
   assert.match(nextConfig, /source:\s*"\/academy\/ebook-facebook-ads-2026-premium\.html"[\s\S]*?destination:\s*"\/academy\/ebook-facebook-ads-2026-premium"/);
@@ -118,6 +118,30 @@ test("Premium Ebook landing uses the approved mobile-first hero and section navi
 
   assert.equal((html.match(/>Đọc thử Ebook<\/a>/g) || []).length, 3);
   assert.doesNotMatch(html, />Xem bên trong ebook<\/a>|>Mở bản đọc thử online<\/a>|>Đọc thử<\/a>/);
+});
+
+test("Premium Ebook checkout offers the Facebook Ads course for 699K in one server-known bundle", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026-premium.html");
+  const orderService = read("services/orderService.ts");
+
+  assert.match(html, /<input id="course-addon" name="courseAddon" type="checkbox" \/>/);
+  assert.match(html, /Mua kèm khóa Facebook Ads Master 2026/);
+  assert.match(html, /<del>799\.000đ<\/del>/);
+  assert.match(html, /699\.000đ/);
+  assert.match(html, /Tổng thanh toán 1\.098\.000đ/);
+  assert.match(html, /const ebookOnlyPlan = \{[\s\S]*?paymentPlan:\s*"full-access-399"[\s\S]*?amount:\s*399000/);
+  assert.match(html, /const ebookCourseBundlePlan = \{[\s\S]*?paymentPlan:\s*"full-access-399-course-699"[\s\S]*?amount:\s*1098000/);
+  assert.match(html, /stickyText:\s*"Mua Ebook \+ khóa học - 1\.098\.000đ"/);
+  assert.match(html, /courseAddon\.checked\s*\?\s*ebookCourseBundlePlan\s*:\s*ebookOnlyPlan/);
+  assert.match(html, /courseAddon\.addEventListener\("change", syncCheckoutPlan\)/);
+  assert.match(html, /if \(stickyBuy\) stickyBuy\.textContent = checkoutPlan\.stickyText/);
+  assert.match(html, /courseSlug:\s*"ebook-facebook-ads-2026"[\s\S]*?paymentPlan:\s*checkoutPlan\.paymentPlan/);
+  assert.match(html, /content_ids:\s*checkoutPlan\.contentIds/);
+  assert.match(html, /value:\s*checkoutPlan\.amount/);
+
+  assert.match(orderService, /"full-access-399-course-699":\s*\{[\s\S]*?amount:\s*1098000/);
+  assert.match(orderService, /slug:\s*"ebook-facebook-ads-2026"[\s\S]*?price:\s*399000/);
+  assert.match(orderService, /slug:\s*"facebook-ads-2026"[\s\S]*?price:\s*699000/);
 });
 
 test("Ebook Facebook Ads landing uses production purchase CTA copy", () => {

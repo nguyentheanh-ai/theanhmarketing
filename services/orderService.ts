@@ -388,6 +388,22 @@ const coursePaymentPlans: Record<string, Record<string, CoursePaymentPlan>> = {
       title: "Mở khóa thư viện Facebook Ads 2026",
       amount: 399000,
     },
+    "full-access-399-course-699": {
+      title: "Ebook 399K + khóa Facebook Ads Master 2026 ưu đãi 699K",
+      amount: 1098000,
+      orderItems: [
+        {
+          slug: "ebook-facebook-ads-2026",
+          title: "Ebook Facebook Ads 2026",
+          price: 399000,
+        },
+        {
+          slug: "facebook-ads-2026",
+          title: "Khóa Facebook Ads Master 2026 - Mua kèm ưu đãi 699K",
+          price: 699000,
+        },
+      ],
+    },
   },
   "bo-agent-kit-x10-hieu-suat-cong-viec": {
     "agent-kit-standard-990": {

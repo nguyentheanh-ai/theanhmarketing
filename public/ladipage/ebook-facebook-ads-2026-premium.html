@@ -1123,6 +1123,44 @@
       outline: none;
     }
     .order-card input:focus { border-color: rgba(231,184,75,.7); }
+    .order-card .course-addon {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin: 16px 0 14px;
+      border: 1px solid rgba(231,184,75,.38);
+      border-radius: 18px;
+      padding: 15px;
+      color: #fff7e8;
+      background: linear-gradient(135deg, rgba(231,184,75,.14), rgba(47,109,246,.08));
+      cursor: pointer;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+    .order-card .course-addon:hover {
+      transform: translateY(-1px);
+      border-color: rgba(231,184,75,.7);
+      background: linear-gradient(135deg, rgba(231,184,75,.2), rgba(47,109,246,.11));
+    }
+    .order-card .course-addon input {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 20px;
+      margin: 2px 0 0;
+      accent-color: var(--gold);
+    }
+    .course-addon-copy { display: grid; gap: 4px; }
+    .course-addon-copy strong { font-size: 14px; line-height: 1.45; }
+    .course-addon-copy small { color: #d9ccb0; font-size: 12px; line-height: 1.55; }
+    .course-addon-copy del { color: #a99c84; }
+    .course-addon-copy b { color: var(--gold-2); }
+    .checkout-summary {
+      min-height: 22px;
+      margin: 0 0 12px;
+      color: #e8dcc1;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.55;
+    }
     .status {
       min-height: 24px;
       margin-top: 12px;
@@ -1849,6 +1887,14 @@
           <label>Email nhận ebook
             <input id="email" name="email" type="email" autocomplete="email" placeholder="email@gmail.com" required>
           </label>
+          <label class="course-addon">
+            <input id="course-addon" name="courseAddon" type="checkbox" />
+            <span class="course-addon-copy">
+              <strong>Mua kèm khóa Facebook Ads Master 2026</strong>
+              <small>Giá riêng <del>799.000đ</del>, mua cùng Ebook chỉ còn <b>699.000đ</b>. Tổng thanh toán 1.098.000đ.</small>
+            </span>
+          </label>
+          <div class="checkout-summary" id="checkoutSummary" aria-live="polite">Đang chọn Ebook 399.000đ.</div>
           <button class="btn btn-gold" type="submit" data-event="checkout_start">Mua ebook ngay - 399.000đ</button>
           <div class="status" id="status" aria-live="polite"></div>
           <div class="checkout-success" id="checkoutSuccess" hidden>
@@ -2062,7 +2108,42 @@
     const checkoutSuccess = document.getElementById("checkoutSuccess");
     const successOrderCode = document.getElementById("successOrderCode");
     const successPaymentLink = document.getElementById("successPaymentLink");
+    const courseAddon = document.getElementById("course-addon");
+    const checkoutSummary = document.getElementById("checkoutSummary");
+    const submitButton = orderForm.querySelector('button[type="submit"]');
     const stickyBuy = document.querySelector(".mobile-buy");
+    const ebookOnlyPlan = {
+      paymentPlan: "full-access-399",
+      amount: 399000,
+      contentIds: ["ebook-facebook-ads-2026"],
+      contentName: "Ebook Facebook Ads 2026 Premium",
+      submitText: "Mua ebook ngay - 399.000đ",
+      stickyText: "Mua ebook - 399.000đ",
+      summary: "Đang chọn Ebook 399.000đ."
+    };
+    const ebookCourseBundlePlan = {
+      paymentPlan: "full-access-399-course-699",
+      amount: 1098000,
+      contentIds: ["ebook-facebook-ads-2026", "facebook-ads-2026"],
+      contentName: "Ebook Facebook Ads 2026 + khóa Facebook Ads Master 2026",
+      submitText: "Mua Ebook + khóa học - 1.098.000đ",
+      stickyText: "Mua Ebook + khóa học - 1.098.000đ",
+      summary: "Đang chọn Ebook 399.000đ + khóa Facebook Ads Master 2026 ưu đãi 699.000đ. Tổng thanh toán 1.098.000đ."
+    };
+
+    function getCheckoutPlan() {
+      return courseAddon.checked ? ebookCourseBundlePlan : ebookOnlyPlan;
+    }
+
+    function syncCheckoutPlan() {
+      const checkoutPlan = getCheckoutPlan();
+      if (submitButton) submitButton.textContent = checkoutPlan.submitText;
+      if (checkoutSummary) checkoutSummary.textContent = checkoutPlan.summary;
+      if (stickyBuy) stickyBuy.textContent = checkoutPlan.stickyText;
+    }
+
+    courseAddon.addEventListener("change", syncCheckoutPlan);
+    syncCheckoutPlan();
     const toggleStickyBuy = () => {
       if (!stickyBuy) return;
       stickyBuy.classList.toggle("is-shown", window.scrollY > 620);
@@ -2109,15 +2190,15 @@
       };
     }
 
-    function trackLead(order, leadId) {
+    function trackLead(order, leadId, checkoutPlan) {
       if (typeof window.fbq !== "function") return;
 
       window.fbq("track", "Lead", {
-        content_ids: ["ebook-facebook-ads-2026"],
-        content_name: "Ebook Facebook Ads 2026 Premium",
+        content_ids: checkoutPlan.contentIds,
+        content_name: checkoutPlan.contentName,
         content_type: "product",
         currency: "VND",
-        value: 399000
+        value: checkoutPlan.amount
       }, {
         eventID: leadId || order?.orderCode
       });
@@ -2128,7 +2209,7 @@
       const name = document.getElementById("name").value.trim();
       const phone = document.getElementById("phone").value.trim();
       const email = document.getElementById("email").value.trim();
-      const submitButton = orderForm.querySelector('button[type="submit"]');
+      const checkoutPlan = getCheckoutPlan();
       const checkoutOrigin = getCheckoutOrigin();
       const leadId = `web.${Date.now()}.${Math.random().toString(10).slice(2)}`;
 
@@ -2144,7 +2225,7 @@
             email,
             phone,
             courseSlug: "ebook-facebook-ads-2026",
-            paymentPlan: "full-access-399",
+            paymentPlan: checkoutPlan.paymentPlan,
             invoice: window.getInvoiceRequest(orderForm),
             leadId,
             ...getTrackingPayload()
@@ -2157,7 +2238,7 @@
         }
 
         const paymentUrl = `${checkoutOrigin}/thanh-toan/${encodeURIComponent(result.order.orderCode)}`;
-        trackLead(result.order, leadId);
+        trackLead(result.order, leadId, checkoutPlan);
         if (successOrderCode) successOrderCode.textContent = `Mã đơn: ${result.order.orderCode}`;
         if (successPaymentLink) successPaymentLink.href = paymentUrl;
         if (checkoutSuccess) checkoutSuccess.hidden = false;

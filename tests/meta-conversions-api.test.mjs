@@ -303,7 +303,7 @@ test("all sales landing surfaces include only primary browser Pixel and pass att
     assert.match(html, /\.\.\.getMetaAttribution\(params\)/);
     assert.match(html, /const leadId = `web\.\$\{Date\.now\(\)\}\.\$\{Math\.random\(\)\.toString\(10\)\.slice\(2\)\}`/);
     assert.match(html, /leadId,/);
-    assert.match(html, /trackLead\(result\.order,\s*leadId\)/);
+    assert.match(html, /trackLead\(result\.order,\s*leadId,\s*checkoutPlan\)/);
   }
 
   assert.match(paymentPoller, /trackMarketingEvent\("InitiateCheckout"/);
