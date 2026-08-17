@@ -128,16 +128,16 @@
       letter-spacing: 0;
     }
     .brand-mark {
-      width: 42px;
-      height: 42px;
+      width: 46px;
+      height: 32px;
       display: grid;
       place-items: center;
-      border: 1px solid rgba(231, 184, 75, .42);
-      border-radius: 14px;
+      border: 0;
+      border-radius: 0;
       color: var(--gold);
-      background: #0f0a07;
+      background: transparent;
       font-weight: 900;
-      box-shadow: inset 0 0 22px rgba(231,184,75,.08);
+      box-shadow: none;
     }
     .brand-mark img {
       width: 30px;
@@ -1409,7 +1409,6 @@
         </a>
         <div class="nav-links">
           <a href="#problem">Vấn đề</a>
-          <a href="#inside">Bên trong ebook</a>
           <a href="#sample">Đọc thử Ebook</a>
           <a href="#content">Nội dung</a>
           <a href="#price">Giá</a>
@@ -1425,7 +1424,7 @@
         <p class="lead">Ebook <strong>Tất tần tật về Facebook Ads 2026</strong> gồm 10 phần, 471 trang, giúp anh/chị hiểu từ nền tảng, mục tiêu, target, content, thực hành, Pixel/CAPI, đọc chỉ số, remarketing, testing, scale đến chính sách Meta.</p>
         <div class="hero-actions">
           <a class="btn btn-gold" href="#price" data-event="hero_cta_click">Mua ebook ngay - 399.000đ</a>
-          <a class="btn btn-ghost" href="#inside" data-event="hero_preview_click">Đọc thử Ebook</a>
+          <a class="btn btn-ghost" href="#sample" data-event="hero_preview_click">Đọc thử Ebook</a>
         </div>
         <div class="trust-line">
           Dành cho chủ doanh nghiệp, người tự chạy ads, media buyer, marketer và người đang thuê ads nhưng muốn hiểu hệ thống để kiểm soát hiệu quả tốt hơn.
@@ -1463,22 +1462,20 @@
   <button class="section-menu-toggle" type="button" data-section-menu-toggle aria-expanded="false" aria-controls="ebook-section-menu">Mục lục</button>
   <nav id="ebook-section-menu" class="section-menu-panel" aria-label="Mục lục landing page" hidden>
     <span class="section-menu-heading">Mục lục Ebook</span>
-    <a href="#top" data-section-menu-link>Cuốn Ebook</a>
-    <a href="#problem" data-section-menu-link>Vấn đề cần giải quyết</a>
-    <a href="#inside" data-section-menu-link>Bên trong Ebook</a>
-    <a href="#sample" data-section-menu-link>Đọc thử Ebook</a>
-    <a href="#content" data-section-menu-link>10 phần nội dung</a>
-    <a href="#price" data-section-menu-link>Giá và đăng ký</a>
+    <a href="#top" data-section-menu-link>Trang đầu</a>
+    <a href="#problem" data-section-menu-link>Bạn có gặp vấn đề này?</a>
+    <a href="#sample" data-section-menu-link>Đọc thử Ebook trước khi mua</a>
+    <a href="#content" data-section-menu-link>Nội dung toàn bộ cuốn Ebook</a>
+    <a href="#price" data-section-menu-link>Đăng ký và Ưu đãi</a>
     <a href="#faq" data-section-menu-link>Câu hỏi thường gặp</a>
   </nav>
 
   <nav class="section-progress-rail" data-section-progress aria-label="Tiến trình nội dung Ebook">
-    <a class="section-progress-dot is-reached is-active" href="#top" data-section-progress-dot aria-label="Cuốn Ebook" aria-current="true"></a>
-    <a class="section-progress-dot" href="#problem" data-section-progress-dot aria-label="Vấn đề cần giải quyết"></a>
-    <a class="section-progress-dot" href="#inside" data-section-progress-dot aria-label="Bên trong Ebook"></a>
-    <a class="section-progress-dot" href="#sample" data-section-progress-dot aria-label="Đọc thử Ebook"></a>
-    <a class="section-progress-dot" href="#content" data-section-progress-dot aria-label="10 phần nội dung"></a>
-    <a class="section-progress-dot" href="#price" data-section-progress-dot aria-label="Giá và đăng ký"></a>
+    <a class="section-progress-dot is-reached is-active" href="#top" data-section-progress-dot aria-label="Trang đầu" aria-current="true"></a>
+    <a class="section-progress-dot" href="#problem" data-section-progress-dot aria-label="Bạn có gặp vấn đề này?"></a>
+    <a class="section-progress-dot" href="#sample" data-section-progress-dot aria-label="Đọc thử Ebook trước khi mua"></a>
+    <a class="section-progress-dot" href="#content" data-section-progress-dot aria-label="Nội dung toàn bộ cuốn Ebook"></a>
+    <a class="section-progress-dot" href="#price" data-section-progress-dot aria-label="Đăng ký và Ưu đãi"></a>
     <a class="section-progress-dot" href="#faq" data-section-progress-dot aria-label="Câu hỏi thường gặp"></a>
   </nav>
 
@@ -1674,25 +1671,6 @@
         <article class="card reveal">
           <h3>Testing và scale</h3>
           <p>Biết test target, content angle, creative, offer và tối ưu theo các mốc 24 giờ, 72 giờ, 7 ngày.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section dark" id="inside">
-    <div class="wrap inside-grid">
-      <div class="reveal">
-        <span class="eyebrow">Bên trong ebook</span>
-        <h2>10 phần, 471 trang, có ảnh minh họa và cấu trúc theo từng chủ đề.</h2>
-        <p class="lead" style="margin-top: 16px;">Anh/chị không cần đọc một lần rồi nhớ hết. Đang setup thì mở phần thực hành, đang bí content thì mở phần content/media, đang nhìn báo cáo thì mở phần đọc chỉ số, đang cần bám lại khách thì mở phần remarketing.</p>
-      </div>
-      <div class="feature-list">
-        <figure class="featured-page reveal">
-          <img loading="lazy" decoding="async" src="/ebook-facebook-ads-2026-premium/optimized/toc-02.jpg" alt="Trang mục lục ebook Facebook Ads 2026">
-        </figure>
-        <article class="card reveal">
-          <h3>Bằng chứng sản phẩm</h3>
-          <p>Phần này dùng ảnh thật từ ebook hiện có. Không dùng testimonial, số liệu tự bịa hoặc ảnh feedback chưa được xác nhận.</p>
         </article>
       </div>
     </div>
@@ -1952,7 +1930,7 @@
     }, { threshold: 0.14 });
     document.querySelectorAll(".reveal").forEach((item) => revealObserver.observe(item));
 
-    const ebookSectionTargets = ["top", "problem", "inside", "sample", "content", "price", "faq"];
+    const ebookSectionTargets = ["top", "problem", "sample", "content", "price", "faq"];
     const ebookSections = ebookSectionTargets.map((id) => document.getElementById(id)).filter(Boolean);
     const ebookProgressRail = document.querySelector("[data-section-progress]");
     const ebookProgressDots = Array.from(document.querySelectorAll("[data-section-progress-dot]"));

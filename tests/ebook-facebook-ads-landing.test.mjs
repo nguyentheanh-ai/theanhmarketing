@@ -84,24 +84,39 @@ test("Premium Ebook landing uses the approved mobile-first hero and section navi
   assert.doesNotMatch(html, /\.nav\s*\{[\s\S]*?position:\s*sticky;/);
   assert.match(html, /<span class="brand-mark"><img src="\/brand\/ta-logo\.svg" alt="The Anh Marketing"><\/span>/);
   assert.doesNotMatch(html, /<span class="brand-mark">TA<\/span>/);
+  const brandMarkCss = html.match(/\.brand-mark\s*\{[\s\S]*?\}/)?.[0] ?? "";
+  assert.match(brandMarkCss, /border:\s*0;/);
+  assert.match(brandMarkCss, /background:\s*transparent;/);
+  assert.match(brandMarkCss, /box-shadow:\s*none;/);
   assert.match(html, /@media \(max-width:\s*980px\)[\s\S]*?\.hero-visual\s*\{[\s\S]*?order:\s*-1;/);
   assert.match(html, /@media \(max-width:\s*980px\)[\s\S]*?\.hero-copy\s*\{[\s\S]*?order:\s*1;/);
   assert.match(html, /@media \(max-width:\s*640px\)[\s\S]*?\.wrap\s*\{[\s\S]*?width:\s*min\(calc\(100% - 28px\), 520px\);/);
 
   assert.match(html, /data-section-menu-toggle/);
   assert.match(html, /aria-controls="ebook-section-menu"/);
-  assert.equal((menu.match(/data-section-menu-link/g) || []).length, 7);
-  assert.equal((rail.match(/data-section-progress-dot/g) || []).length, 7);
-  for (const anchor of ["top", "problem", "inside", "sample", "content", "price", "faq"]) {
+  assert.equal((menu.match(/data-section-menu-link/g) || []).length, 6);
+  assert.equal((rail.match(/data-section-progress-dot/g) || []).length, 6);
+  const sectionMenu = [
+    ["top", "Trang đầu"],
+    ["problem", "Bạn có gặp vấn đề này?"],
+    ["sample", "Đọc thử Ebook trước khi mua"],
+    ["content", "Nội dung toàn bộ cuốn Ebook"],
+    ["price", "Đăng ký và Ưu đãi"],
+    ["faq", "Câu hỏi thường gặp"],
+  ];
+  for (const [anchor, label] of sectionMenu) {
     assert.match(menu, new RegExp(`href="#${anchor}"`));
+    assert.ok(menu.includes(`>${label}</a>`));
     assert.match(rail, new RegExp(`href="#${anchor}"`));
+    assert.ok(rail.includes(`aria-label="${label}"`));
   }
-  assert.match(html, /const ebookSectionTargets = \["top", "problem", "inside", "sample", "content", "price", "faq"\]/);
+  assert.doesNotMatch(html, /id="inside"|href="#inside"|"inside"/);
+  assert.match(html, /const ebookSectionTargets = \["top", "problem", "sample", "content", "price", "faq"\]/);
   assert.match(html, /new IntersectionObserver\(updateEbookSectionProgress/);
   assert.match(html, /aria-current/);
   assert.match(html, /@media \(max-width:\s*339px\)[\s\S]*?\.section-progress-rail\s*\{[\s\S]*?display:\s*none;/);
 
-  assert.equal((html.match(/>Đọc thử Ebook<\/a>/g) || []).length, 4);
+  assert.equal((html.match(/>Đọc thử Ebook<\/a>/g) || []).length, 3);
   assert.doesNotMatch(html, />Xem bên trong ebook<\/a>|>Mở bản đọc thử online<\/a>|>Đọc thử<\/a>/);
 });
 
