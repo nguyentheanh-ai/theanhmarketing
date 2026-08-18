@@ -1,5 +1,16 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-08-18 - Restore support booking price to 1.000.000đ
+
+| Item | State |
+|---|---|
+| Incident | The 1.000.000đ change was deployed from an isolated release branch but never synchronized into the canonical deploy branch. Subsequent releases reintroduced the old 500.000đ application constant while the database default remained 1.000.000đ. |
+| Fix | `support-session-30m` now uses shared `SUPPORT_PRICE_VND = 1_000_000` and `SUPPORT_PRICE_LABEL = "1.000.000đ"` across booking page/form, server order creation, checkout demo and CRM. Historical CRM rows display their stored amount. |
+| Preserved contract | Student eligibility, 30-minute holds, SePay, paid redirect, Telegram, payment email and all landing offers remain unchanged. The independent Marketing & AI consultation stays 500.000đ. |
+| Database | Production migration was already applied and read back before this release: default 1.000.000đ, constraint 500.000đ/1.000.000đ, four historical 500.000đ rows and two 1.000.000đ rows. Migration source is restored; no schema mutation is needed. |
+| Verification | TDD RED/GREEN; support suite 16/16; full Node 577/577; TypeScript; targeted ESLint 0 errors/1 unchanged warning; Next production build 96/96. No real order/payment/email/data mutation. |
+| Release | Clean branch `hotfix/support-price-1m-20260818`; production deployment pending. |
+
 ## 2026-08-13 - Facebook Ads typography and mobile refinement
 
 | Item | State |

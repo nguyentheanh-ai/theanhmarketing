@@ -1,5 +1,17 @@
 # Feature Map - theanh-main
 
+## Paid student support booking - 1.000.000đ
+
+Product: server-known `support-session-30m`, fixed at 1.000.000đ for every new order and 30-minute booking.
+
+Routes: `/dat-lich-ho-tro`, `/thanh-toan/[code]`, `/admin/crm-v2/support-bookings`, `POST /api/support-bookings`, existing SePay paid-confirmation flow.
+
+Files: `lib/support-booking/constants.ts`, `components/support-booking/support-booking-form.tsx`, `services/supportBookingService.ts`, `services/orderService.ts`, support checkout/admin pages and `tests/support-booking-*.test.mjs`.
+
+Database: `public.support_bookings.amount` defaults to 1.000.000đ. Constraint accepts 500.000đ or 1.000.000đ only so historical 500.000đ rows remain intact; application code creates new rows/orders at 1.000.000đ.
+
+Guard: do not apply this price to the separate Marketing & AI consultation product, which remains fixed at 500.000đ. Admin history must render each booking's stored amount rather than relabeling old rows.
+
 ## Accounting paid-order notification
 
 Description: Sends one internal accounting email for every first transition to `paid`, including courses, Ebook products, consultations, support bookings and manual confirmations. Requested invoice details are included when present.

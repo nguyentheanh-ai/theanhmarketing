@@ -2,6 +2,7 @@ import {
   SUPPORT_HOLD_MINUTES,
   SUPPORT_MAX_LEAD_DAYS,
   SUPPORT_MIN_LEAD_DAYS,
+  SUPPORT_PRICE_VND,
   SUPPORT_PRODUCT_SLUG,
 } from "@/lib/support-booking/constants";
 import {
@@ -318,7 +319,7 @@ export async function listConfirmedSupportBookings(now = new Date()): Promise<Su
       customerName: "Nguyễn Minh Anh",
       email: "minhanh.demo@gmail.com",
       phone: "0900000000",
-      amount: 500_000,
+      amount: SUPPORT_PRICE_VND,
       orderCode: "SUPPORTDEMO",
       paidAt: now.toISOString(),
     }];

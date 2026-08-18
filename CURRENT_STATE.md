@@ -1,5 +1,13 @@
 # Current State - theanh-main
 
+## 2026-08-18 - Support booking 1.000.000đ regression fix candidate
+
+- Root cause: the verified 1.000.000đ support-price commit lived only on the prior release branch; later production releases from the canonical branch still carried `SUPPORT_PRICE_VND = 500_000` and regressed form, checkout and CRM copy.
+- Candidate restores the server-known `support-session-30m` amount and shared label to 1.000.000đ across booking UI, checkout, order creation and admin CRM. The separate Marketing & AI consultation remains 500.000đ.
+- Historical support rows retain their stored amount. The already-applied production schema default remains 1.000.000đ and accepts 500.000đ only for historical compatibility; the migration is restored to source control.
+- TDD RED reproduced five price-contract failures; GREEN is 16/16. Full Node is 577/577, TypeScript and 96-route production build pass; targeted ESLint has zero errors and one unchanged warning in the support-bookings client.
+- No real order, payment, email or database mutation was used for QA. Production deployment is pending from the clean release branch `hotfix/support-price-1m-20260818`.
+
 ## 2026-08-03 - Durable Meta Purchase CAPI recovery live
 
 - Root cause confirmed: the active production branch still called Meta directly inside payment requests, while the previously verified durable outbox code was never committed into this deploy branch. Paid orders could therefore remain `purchase_event_sent=false` with `meta_purchase_state=null` and zero attempts after a missed or failed first call.

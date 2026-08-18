@@ -14,6 +14,10 @@ function dateLabel(date: string) {
     .format(new Date(`${date}T00:00:00Z`));
 }
 
+function amountLabel(amount: number) {
+  return `${new Intl.NumberFormat("vi-VN").format(amount)}đ`;
+}
+
 export function SupportBookingsClient({ bookings, busyDates: initialBusyDates, today }: { bookings: SupportBookingAdminRow[]; busyDates: string[]; today: string }) {
   const [busyDates, setBusyDates] = useState(new Set(initialBusyDates));
   const [pending, setPending] = useState("");
@@ -57,11 +61,11 @@ export function SupportBookingsClient({ bookings, busyDates: initialBusyDates, t
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-200 p-5"><h2 className="font-black">Lịch đã thanh toán</h2><p className="mt-1 text-sm font-semibold text-slate-500">Chỉ hiển thị các buổi đã được SePay xác nhận đủ 500.000đ.</p></div>
+        <div className="border-b border-slate-200 p-5"><h2 className="font-black">Lịch đã thanh toán</h2><p className="mt-1 text-sm font-semibold text-slate-500">Chỉ hiển thị các buổi đã được SePay xác nhận thanh toán đầy đủ.</p></div>
         <div className="divide-y divide-slate-100">
           {bookings.length ? bookings.map((booking) => (
             <article className="grid gap-4 p-5 lg:grid-cols-[180px_1fr_220px]" key={booking.id}>
-              <div><p className="flex items-center gap-2 font-black text-blue-700"><Clock3 className="size-4" />{dateLabel(booking.appointmentDate)} · {booking.appointmentTime}</p><p className="mt-2 text-sm font-black text-emerald-700">Đã thanh toán · 500.000đ</p><p className="mt-1 text-xs font-semibold text-slate-400">{booking.orderCode}</p></div>
+              <div><p className="flex items-center gap-2 font-black text-blue-700"><Clock3 className="size-4" />{dateLabel(booking.appointmentDate)} · {booking.appointmentTime}</p><p className="mt-2 text-sm font-black text-emerald-700">Đã thanh toán · {amountLabel(booking.amount)}</p><p className="mt-1 text-xs font-semibold text-slate-400">{booking.orderCode}</p></div>
               <div><p className="font-black">{booking.customerName}</p><p className="mt-1 text-sm font-semibold text-slate-500">{booking.phone} · {booking.email}</p><p className="mt-4 text-xs font-black uppercase tracking-[0.1em] text-slate-400">Nội dung cần hỗ trợ</p><p className="mt-1 text-sm font-semibold leading-6 text-slate-700">{booking.note}</p></div>
               <div className="rounded-xl bg-slate-50 p-4"><p className="text-xs font-black uppercase text-slate-400">Chủ đề</p><p className="mt-2 font-black text-slate-800">{booking.topic}</p><p className="mt-4 text-xs font-semibold text-slate-500">30 phút · GMT+7</p></div>
             </article>
