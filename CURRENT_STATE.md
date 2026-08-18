@@ -6,7 +6,7 @@
 - Candidate restores the server-known `support-session-30m` amount and shared label to 1.000.000đ across booking UI, checkout, order creation and admin CRM. The separate Marketing & AI consultation remains 500.000đ.
 - Historical support rows retain their stored amount. The already-applied production schema default remains 1.000.000đ and accepts 500.000đ only for historical compatibility; the migration is restored to source control.
 - TDD RED reproduced five price-contract failures; GREEN is 16/16. Full Node is 577/577, TypeScript and 96-route production build pass; targeted ESLint has zero errors and one unchanged warning in the support-bookings client.
-- No real order, payment, email or database mutation was used for QA. Production deployment is pending from the clean release branch `hotfix/support-price-1m-20260818`.
+- No real order, payment, email or database mutation was used for QA. Release commit `68c0ca0` is live as production deployment `dpl_2LHJxZTEF9U2SUhgmyDARetBP89c` (`READY`) on `www` and apex; owner-session browser readback shows 1.000.000đ across the live booking page and CRM, and the post-release runtime error scan is empty.
 
 ## 2026-08-03 - Durable Meta Purchase CAPI recovery live
 
