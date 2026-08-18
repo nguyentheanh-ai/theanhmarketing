@@ -7,6 +7,7 @@ function read(file) {
 }
 
 test("support booking service reserves a slot and creates the fixed-price order", () => {
+  const constants = read("lib/support-booking/constants.ts");
   const service = read("services/supportBookingService.ts");
   const orders = read("services/orderService.ts");
 
@@ -19,6 +20,15 @@ test("support booking service reserves a slot and creates the fixed-price order"
   assert.match(orders, /course_slug: SUPPORT_PRODUCT_SLUG/);
   assert.match(orders, /amount: SUPPORT_PRICE_VND/);
   assert.match(orders, /expires_at: input\.expiresAt/);
+  assert.match(constants, /SUPPORT_PRICE_VND = 1_000_000/);
+  assert.match(constants, /SUPPORT_PRICE_LABEL = "1\.000\.000đ"/);
+});
+
+test("support booking price migration preserves old rows and prices new bookings at 1.000.000đ", () => {
+  const migration = read("supabase/migrations/20260816152642_support_booking_price_1m.sql");
+
+  assert.match(migration, /alter column amount set default 1000000/i);
+  assert.match(migration, /check \(amount in \(500000, 1000000\)\)/i);
 });
 
 test("public support booking APIs are bounded, no-store, and return conflict safely", () => {

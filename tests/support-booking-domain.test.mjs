@@ -114,6 +114,7 @@ test("verified owner can preview booking without fabricating a paid course order
   assert.match(page, /allowOwnerPreview: isAdmin/);
   assert.match(route, /allowOwnerPreview: isAdmin/);
   assert.match(form, /Chế độ xem thử của quản trị viên/);
-  assert.match(form, /sẽ tạo một đơn chờ thanh toán 500\.000đ thật/);
+  assert.match(form, /SUPPORT_PRICE_LABEL/);
+  assert.doesNotMatch(form, /500\.000đ/);
   assert.doesNotMatch(service, /status\s*:\s*["']paid["']/);
 });

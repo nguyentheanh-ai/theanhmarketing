@@ -20,6 +20,7 @@ import { normalizeAttribution } from "@/lib/tracking/attribution";
 import { emptyInvoiceDetails } from "@/lib/orders/invoice";
 import {
   SUPPORT_PRICE_VND,
+  SUPPORT_PRICE_LABEL,
   SUPPORT_PRODUCT_SLUG,
   SUPPORT_PRODUCT_TITLE,
 } from "@/lib/support-booking/constants";
@@ -180,7 +181,7 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
       courseSlug: SUPPORT_PRODUCT_SLUG,
       courseTitle: SUPPORT_PRODUCT_TITLE,
       amount: SUPPORT_PRICE_VND,
-      amountLabel: "500.000đ",
+      amountLabel: SUPPORT_PRICE_LABEL,
       currency: "VND",
       status: "pending",
       paymentMethod: "sepay",

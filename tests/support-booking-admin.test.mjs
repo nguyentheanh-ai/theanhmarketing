@@ -14,7 +14,9 @@ test("canonical CRM exposes a paid support booking admin", () => {
   assert.match(page, /listConfirmedSupportBookings/);
   assert.match(page, /listSupportBusyDates/);
   assert.match(client, /Nội dung cần hỗ trợ/);
-  assert.match(client, /500\.000đ/);
+  assert.match(page, /SUPPORT_PRICE_LABEL/);
+  assert.match(client, /booking\.amount/);
+  assert.doesNotMatch(`${page}\n${client}`, /500\.000đ/);
   assert.match(client, /Ngày bận/);
 });
 

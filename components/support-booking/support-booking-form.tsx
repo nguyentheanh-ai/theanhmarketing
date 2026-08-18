@@ -2,7 +2,7 @@
 
 import { CalendarDays, Check, Clock3, Loader2, ShieldCheck } from "lucide-react";
 import { useMemo, useState } from "react";
-import { SUPPORT_TOPICS } from "@/lib/support-booking/constants";
+import { SUPPORT_PRICE_LABEL, SUPPORT_TOPICS } from "@/lib/support-booking/constants";
 import type { EligibleSupportCustomer, SupportAvailabilityDay } from "@/services/supportBookingService";
 
 type Props = {
@@ -63,7 +63,7 @@ export function SupportBookingForm({ today, bookableDays, customer }: Props) {
       {customer.previewMode ? (
         <section className="rounded-[24px] border border-amber-200 bg-amber-50 p-5 text-amber-900 shadow-[0_16px_44px_rgba(217,119,6,0.08)]">
           <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-700">Chế độ xem thử của quản trị viên</p>
-          <p className="mt-2 text-sm font-bold leading-6">Xem trang này không tạo dữ liệu. Nếu bấm “Giữ lịch và thanh toán”, hệ thống sẽ tạo một đơn chờ thanh toán 500.000đ thật như luồng của khách hàng.</p>
+          <p className="mt-2 text-sm font-bold leading-6">Xem trang này không tạo dữ liệu. Nếu bấm “Giữ lịch và thanh toán”, hệ thống sẽ tạo một đơn chờ thanh toán {SUPPORT_PRICE_LABEL} thật như luồng của khách hàng.</p>
         </section>
       ) : null}
       <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_22px_70px_rgba(15,23,42,0.08)] sm:p-8">
@@ -131,7 +131,7 @@ export function SupportBookingForm({ today, bookableDays, customer }: Props) {
         </div>
         {error ? <p className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">{error}</p> : null}
         <div className="mt-6 flex flex-col gap-4 rounded-2xl bg-slate-950 p-5 text-white sm:flex-row sm:items-center sm:justify-between">
-          <div><p className="text-xs font-black uppercase tracking-[0.14em] text-white/50">Buổi hỗ trợ 1:1 · 30 phút</p><p className="mt-1 text-2xl font-black">500.000đ</p><p className="mt-1 text-xs text-white/55">Lịch được ghi nhận sau khi hệ thống xác nhận thanh toán.</p></div>
+          <div><p className="text-xs font-black uppercase tracking-[0.14em] text-white/50">Buổi hỗ trợ 1:1 · 30 phút</p><p className="mt-1 text-2xl font-black">{SUPPORT_PRICE_LABEL}</p><p className="mt-1 text-xs text-white/55">Lịch được ghi nhận sau khi hệ thống xác nhận thanh toán.</p></div>
           <button className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-blue-500 px-7 text-sm font-black text-white hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-50" disabled={submitting || !selectedDate || !selectedTime} type="submit">
             {submitting ? <Loader2 className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />}{submitting ? "Đang giữ lịch..." : "Giữ lịch và thanh toán"}
           </button>
