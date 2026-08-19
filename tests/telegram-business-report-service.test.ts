@@ -27,7 +27,7 @@ function dependencies(overrides: Partial<TelegramBusinessReportDependencies> = {
   };
 }
 
-test("scheduled report reads all periods, sends every section, and finishes only after delivery", async () => {
+test("17h report reads one Ads window, sends one two-account summary, and finishes only after delivery", async () => {
   const events: Array<Record<string, unknown>> = [];
   const orderWindows: string[] = [];
   const adsWindows: string[] = [];
@@ -44,7 +44,14 @@ test("scheduled report reads all periods, sends every section, and finishes only
       },
       readAds: async (window) => {
         adsWindows.push(`${window.startIso}/${window.endIso}`);
-        return dependencies().readAds(window);
+        return {
+          available: true,
+          campaigns: [],
+          accounts: [
+            { accountName: "Greezhub 01", accountId: "1255736315302940", available: true, spend: 900_000, purchases: 3 },
+            { accountName: "TAM01", accountId: "1103665698635605", available: true, spend: 600_000, purchases: 2 },
+          ],
+        };
       },
       send: async (text) => {
         events.push({ text });
@@ -60,14 +67,14 @@ test("scheduled report reads all periods, sends every section, and finishes only
   assert.equal(result.ok, true);
   assert.equal(result.skipped, false);
   assert.match(String(events[0].claim && JSON.stringify(events[0].claim)), /full-day:2026-08-03T10:00:00.000Z:2026-08-04T10:00:00.000Z/);
-  assert.equal(orderWindows.length, 3);
-  assert.deepEqual(adsWindows, orderWindows);
-  assert.equal(events.filter((event) => event.text).length, 3);
-  assert.match(String(events[1].text), /THEO SẢN PHẨM/);
-  assert.match(String(events[1].text), /1\.198\.000 ₫/);
-  assert.match(String(events[2].text), /7 NGÀY/);
-  assert.match(String(events[3].text), /DOANH THU THÁNG/);
-  assert.deepEqual(events[4].finish, { runKey: "full-day:2026-08-03T10:00:00.000Z:2026-08-04T10:00:00.000Z", leaseToken: "lease-1", outcome: "sent" });
+  assert.equal(orderWindows.length, 0);
+  assert.deepEqual(adsWindows, ["2026-08-03T10:00:00.000Z/2026-08-04T10:00:00.000Z"]);
+  assert.equal(events.filter((event) => event.text).length, 1);
+  assert.match(String(events[1].text), /Greezhub 01 - 900\.000 ₫ - 3 đơn/);
+  assert.match(String(events[1].text), /TAM01 - 600\.000 ₫ - 2 đơn/);
+  assert.match(String(events[1].text), /TỔNG 2 TÀI KHOẢN - 1\.500\.000 ₫ - 5 đơn/);
+  assert.doesNotMatch(String(events[1].text), /7 NGÀY|DOANH THU THÁNG|CPM|CTR|ROAS/);
+  assert.deepEqual(events[2].finish, { runKey: "full-day:2026-08-03T10:00:00.000Z:2026-08-04T10:00:00.000Z", leaseToken: "lease-1", outcome: "sent" });
 });
 
 test("duplicate scheduled report skips before reading or sending", async () => {
@@ -99,7 +106,7 @@ test("test report bypasses delivery claim and is visibly marked", async () => {
 
   assert.equal(result.ok, true);
   assert.equal(claimed, false);
-  assert.equal(texts.length, 3);
+  assert.equal(texts.length, 1);
   assert.ok(texts.every((text) => /^\[TEST\]/.test(text)));
 });
 
@@ -118,25 +125,21 @@ test("delivery failure is recorded without leaking transport internals", async (
   assert.equal(finish?.reason, "Telegram Bot API rejected the message.");
 });
 
-test("a later Telegram part failure prevents a false sent marker", async () => {
+test("the concise 17h report sends only one Telegram message", async () => {
   let sends = 0;
-  let finish: Record<string, unknown> | undefined;
   const result = await runTelegramBusinessReport(
     { slot: "full-day", now: new Date("2026-08-04T10:00:00.000Z") },
     dependencies({
       send: async () => {
         sends += 1;
-        return sends === 2
-          ? { ok: false, skipped: false, status: 502, reason: "Telegram Bot API rejected the message." }
-          : { ok: true, skipped: false, status: 200 };
+        return { ok: true, skipped: false, status: 200 };
       },
-      finish: async (input) => { finish = input; return { ok: true }; },
     }),
   );
 
-  assert.equal(result.ok, false);
-  assert.equal(sends, 2);
-  assert.equal(finish?.outcome, "failed");
+  assert.equal(result.ok, true);
+  assert.equal(sends, 1);
+  assert.equal(result.parts, 1);
 });
 
 test("hourly MCP snapshots must cover and reconcile every account hour", () => {
