@@ -13,11 +13,72 @@ function cardFor(html, planId) {
   return match[0];
 }
 
+function assertOrdered(html, markers) {
+  let previousIndex = -1;
+  for (const marker of markers) {
+    const currentIndex = html.indexOf(marker);
+    assert.ok(currentIndex >= 0, `Missing ordered marker: ${marker}`);
+    assert.ok(currentIndex > previousIndex, `Marker is out of order: ${marker}`);
+    previousIndex = currentIndex;
+  }
+}
+
 test("Facebook Ads landing keeps source and published HTML synced", () => {
   const source = read("public/ladipage/facebook-ads-2026.html");
   const published = read("public/academy/facebook-ads-master-2026.html");
 
   assert.equal(published, source);
+});
+
+test("Facebook Ads rewrite preserves SEO, tracking and order contracts", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+
+  assert.match(html, /<title>Khóa học Facebook Ads 2026 - Thế Anh Marketing<\/title>/);
+  assert.match(html, /<meta\s+name="description"\s+content="Khóa học Quảng cáo Facebook Master 2026 giúp chủ doanh nghiệp chạy Facebook Ads có hệ thống để tạo inbox, lọc lead và tối ưu đơn hàng\."/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/www\.theanhmarketing\.com\/academy\/facebook-ads-master-2026"/);
+  assert.equal((html.match(/fbq\("init", "1315653423712065"\)/g) || []).length, 1);
+  assert.match(html, /fbq\("track", "PageView"\)/);
+  assert.match(html, /fbq\("track", "ViewContent", \{[\s\S]*?content_ids: \["facebook-ads-2026"\][\s\S]*?value: 799000/);
+  assert.match(html, /fetch\("\/api\/orders", \{/);
+  assert.match(html, /courseSlug: course\.slug/);
+  assert.match(html, /paymentPlan: checkoutPlan\.id/);
+  assert.match(html, /"zoom-kit-ebook-299"/);
+});
+
+test("Facebook Ads P0 rewrite sells the Data and AI system instead of a curriculum", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+
+  assert.match(html, /Tự xây dựng và vận hành hệ thống <span class="accent">Facebook Ads 2026<\/span> bằng Data &amp; AI/);
+  assert.match(html, /Từ Fanpage, tài nguyên, Content, quảng cáo, Dataset đến đọc số – tối ưu – scale/);
+  assert.match(html, /Bao gồm AI Agent hỗ trợ nghiên cứu, lập kế hoạch và triển khai quảng cáo/);
+  assert.match(html, /Quảng cáo là <span>tài sản tích lũy<\/span>/);
+  assert.match(html, /Mỗi đồng ngân sách phải để lại dữ liệu cho lần chạy tiếp theo/);
+  assert.doesNotMatch(html, /21 bài|Sáu module|Bài 1\b|Bài 2\b|id="lo-trinh"|legacy-curriculum|data-module-trigger/);
+  assert.equal((html.match(/data-outcome-card=/g) || []).length, 12);
+  assert.doesNotMatch(html, /90% tệp khách rác/);
+  assert.doesNotMatch(html, /không dùng gallery|được trình bày theo năng lực.*thay vì tên video/i);
+});
+
+test("Facebook Ads P0 rewrite makes the AI Agent and support boundaries explicit", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+
+  assert.match(html, /AI Agent hỗ trợ lập kế hoạch và trực tiếp dựng Campaign – Ad Set – Ads ở trạng thái PAUSED để bạn duyệt trước/);
+  assert.match(html, /Gói 799\.000đ gồm khóa video, AI Agent và bộ công cụ triển khai/);
+  assert.match(html, /Zoom 1:1 là dịch vụ riêng, không nằm trong gói 799\.000đ/);
+  assert.doesNotMatch(html, /Hỗ trợ Zoom 1:1 trên chính vấn đề/);
+  assert.doesNotMatch(html, /Tặng AI Agent hỗ trợ lên kế hoạch/);
+});
+
+test("Facebook Ads P0 rewrite places the value stack immediately before checkout", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+
+  assertOrdered(html, ['id="gia-tri"', 'id="hoc-phi"']);
+  assert.match(html, /Facebook Ads Master 2026 — Giá trị 2\.999\.000đ/);
+  assert.match(html, /AI Agent Facebook Ads — Giá trị 1\.999\.000đ/);
+  assert.match(html, /Bộ Prompt \+ Checklist \+ Framework tối ưu — Giá trị 999\.000đ/);
+  assert.match(html, /Tổng giá trị:\s*<strong>5\.997\.000đ<\/strong>/);
+  assert.match(html, /Hôm nay bạn sở hữu toàn bộ với\s*<strong>799\.000đ<\/strong>/);
+  assert.doesNotMatch(html, /giá gốc/i);
 });
 
 test("Facebook Ads direct-file checkout loads and submits the shared invoice fields", () => {
@@ -38,7 +99,7 @@ test("Facebook Ads landing keeps the three approved owner photos", () => {
 
   assert.match(html, /<section id="van-de"[\s\S]*?src="\.\.\/ladipage\/assets\/facebook-ads-kstudy-hybrid\/hero-operator\.webp"/);
   assert.match(html, /<section class="hybrid-section" id="ket-qua">[\s\S]*?src="\.\.\/ladipage\/assets\/facebook-ads-kstudy-hybrid\/fragmented-handoffs\.webp"/);
-  assert.match(html, /<section class="hybrid-section" id="phuong-phap">[\s\S]*?src="\.\.\/ladipage\/assets\/facebook-ads-kstudy-hybrid\/role-marketing\.webp"/);
+  assert.match(html, /<section class="hybrid-section is-cream" id="bo-cong-cu">[\s\S]*?src="\.\.\/ladipage\/assets\/facebook-ads-kstudy-hybrid\/role-marketing\.webp"/);
   assert.doesNotMatch(html, /pain-owner-ads-workspace\.webp|outcomes-dashboard-operator\.webp|method-ads-workflow\.webp/);
 
   for (const asset of approvedAssets) {
@@ -61,7 +122,7 @@ test("Facebook Ads landing offers only the 799K AI Agent plan", () => {
   assert.doesNotMatch(html, /data-plan-card="advanced-zoom"/);
   assert.match(html, /<input type="hidden" name="paymentPlan" value="zoom-kit" \/>/);
   assert.match(html, /var selectedPlan = plans\["zoom-kit"\]/);
-  assert.match(html, /AI Agent - 799\.000/);
+  assert.match(html, /toàn bộ hệ thống Facebook Ads 799\.000đ/i);
   assert.match(html, /value: 799000/);
   assert.doesNotMatch(html, /399K|399\.000|399000/);
 
@@ -70,7 +131,7 @@ test("Facebook Ads landing offers only the 799K AI Agent plan", () => {
   assert.match(agentCard, /is-selected/);
   assert.match(agentCard, /799K/);
   assert.match(agentCard, /AI Agent/);
-  assert.doesNotMatch(agentCard, /Zoom/);
+  assert.match(agentCard, /Zoom 1:1 là dịch vụ riêng, không nằm trong gói 799\.000đ/);
   assert.doesNotMatch(agentCard, /Chọn gói 799K/);
   assert.doesNotMatch(agentCard, /<button[^>]+data-plan-select="zoom-kit"/);
 
@@ -114,7 +175,7 @@ test("Facebook Ads pricing keeps 799K featured and the registration button direc
     html,
     /<input id="phone"[\s\S]*?<\/div>\s*<label class="ebook-addon"[\s\S]*?name="ebookAddon"[\s\S]*?<\/label>\s*<button class="btn btn-primary" type="submit" id="payment-submit">/
   );
-  assert.match(html, /submitText: "Đăng ký gói AI Agent - 799\.000đ"/);
+  assert.match(html, /submitText: "Nhận toàn bộ hệ thống Facebook Ads – 799\.000đ"/);
   assert.doesNotMatch(html, /Thanh toán gói AI Agent - 799\.000đ/);
   assert.doesNotMatch(html, /\.zoom-addon/);
 });
@@ -177,42 +238,40 @@ test("Facebook Ads landing does not fire InitiateCheckout before a real order co
   assert.match(html, /window\.location\.href = "\/thanh-toan\/" \+ encodeURIComponent\(payload\.order\.orderCode\);/);
 });
 
-test("Facebook Ads landing shows the curriculum before outputs, Agent demo and exactly 12 Zalo support proofs", () => {
+test("Facebook Ads P1 rewrite follows the final 12-section order and keeps five content-rich proofs", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
-  const outcomeIndex = html.indexOf('id="san-pham-thuc-te"');
-  const demoIndex = html.indexOf('id="agent-tu-dong-len-quang-cao"');
-  const curriculumIndex = html.indexOf('id="lo-trinh"');
+  const main = html.match(/<main>([\s\S]*?)<\/main>/)?.[1] || "";
+  const sectionIds = [...main.matchAll(/<section[^>]+id="([^"]+)"/g)].map((match) => match[1]);
   const expectedAssets = [
     "facebook-ads-agent-demo.gif",
     "facebook-ads-agent-demo-poster.webp",
     "zalo-support/zalo-proof-01-agent-plan.webp",
     "zalo-support/zalo-proof-02-marketing-advice.webp",
     "zalo-support/zalo-proof-03-course-feedback.webp",
-    "zalo-support/zalo-proof-04-call-34m09.webp",
-    "zalo-support/zalo-proof-05-call-55m50.webp",
-    "zalo-support/zalo-proof-06-calls-21m59-46m04.webp",
-    "zalo-support/zalo-proof-07-call-30m59.webp",
-    "zalo-support/zalo-proof-08-call-36m10.webp",
-    "zalo-support/zalo-proof-09-call-22m51.webp",
     "zalo-support/zalo-proof-10-agent-consultation.webp",
-    "zalo-support/zalo-proof-11-call-23m59.webp",
     "zalo-support/zalo-proof-12-support-schedule.webp",
   ];
 
-  assert.ok(outcomeIndex >= 0, "Missing existing outcome section");
-  assert.ok(outcomeIndex > curriculumIndex, "Outcome section must follow curriculum");
-  assert.ok(demoIndex > outcomeIndex, "Agent demo must follow the outcome section");
+  assert.deepEqual(sectionIds, [
+    "dau-trang",
+    "van-de",
+    "tich-luy",
+    "ket-qua",
+    "agent-tu-dong-len-quang-cao",
+    "feedback",
+    "giang-vien",
+    "bo-cong-cu",
+    "gia-tri",
+    "hoc-phi",
+    "faq",
+    "bat-dau",
+  ]);
   assert.match(html, /Một câu lệnh\.\s*<span>Agent tự động lên toàn bộ quảng cáo\.<\/span>/);
-  assert.match(html, /Không chỉ xem video\. Vướng ở đâu, được hỗ trợ triển khai ở đó\./);
   assert.match(html, /<source media="\(prefers-reduced-motion: reduce\)" srcset="\.\.\/ladipage\/assets\/facebook-ads-agent-demo-poster\.webp"/);
   assert.match(html, /<img[^>]+src="\.\.\/ladipage\/assets\/facebook-ads-agent-demo\.gif"[^>]+loading="lazy"[^>]+decoding="async"/);
   assert.doesNotMatch(html, /facebook-ads-agent-demo\.mp4/);
-  assert.equal((html.match(/data-zalo-proof=/g) || []).length, 12);
-  assert.doesNotMatch(html, /a1814dc3cf3103050c99a5f65d909d65/);
-  assert.match(html, /\.zalo-proof-sequence\s*\{[\s\S]*?gap:\s*12px/);
-  assert.match(html, /\.zalo-proof-card\s*\{[\s\S]*?width:\s*300px;[\s\S]*?aspect-ratio:\s*15\s*\/\s*32;[\s\S]*?overflow:\s*hidden/);
-  assert.match(html, /\.zalo-proof-card img\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*100%;[\s\S]*?object-fit:\s*cover/);
-  assert.match(html, /@media \(max-width:\s*680px\)[\s\S]*?\.zalo-proof-card\s*\{[\s\S]*?width:\s*244px/);
+  assert.equal((html.match(/class="proof-case-card"/g) || []).length, 5);
+  assert.doesNotMatch(main, /zalo-proof-(?:04|05|06|07|08|09|11)-/);
 
   for (const asset of expectedAssets) {
     assert.ok(fs.existsSync(path.resolve("public/ladipage/assets", asset)), `Missing asset: ${asset}`);
@@ -221,6 +280,22 @@ test("Facebook Ads landing shows the curriculum before outputs, Agent demo and e
 
   const gifSize = fs.statSync(path.resolve("public/ladipage/assets/facebook-ads-agent-demo.gif")).size;
   assert.ok(gifSize <= 12 * 1024 * 1024, `GIF is too large: ${gifSize} bytes`);
+});
+
+test("Facebook Ads P1 rewrite updates navigation, FAQs and the primary CTA", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+  const main = html.match(/<main>([\s\S]*?)<\/main>/)?.[1] || "";
+  const menu = html.match(/<nav id="sticky-section-menu"[\s\S]*?<\/nav>/)?.[0] || "";
+  const menuTargets = [...menu.matchAll(/<a href="([^"]+)">/g)].map((match) => match[1]);
+  const primaryCtas = [...main.matchAll(/<a class="btn btn-primary"[^>]*data-cta>([^<]+)<\/a>/g)].map((match) => match[1]);
+
+  assert.deepEqual(menuTargets, ["#van-de", "#tich-luy", "#ket-qua", "#agent-tu-dong-len-quang-cao", "#feedback", "#hoc-phi", "#faq"]);
+  assert.ok(primaryCtas.length >= 5, "Expected primary CTA at key decision points");
+  assert.ok(primaryCtas.every((label) => label === "Nhận toàn bộ hệ thống Facebook Ads – 799.000đ"));
+  assert.match(main, /Tôi đã chạy Facebook Ads rồi thì khóa này còn phù hợp không\?/);
+  assert.match(main, /Tôi có cần biết code để học không\?/);
+  assert.match(main, /AI Agent có tự bật quảng cáo và tiêu tiền không\?/);
+  assert.doesNotMatch(main, /Sau khóa này học tiếp gì\?/);
 });
 
 test("Facebook Ads landing uses the approved WeSuccess-inspired typography and mobile rhythm", () => {
@@ -243,7 +318,7 @@ test("Facebook Ads landing uses the approved WeSuccess-inspired typography and m
   assert.match(html, /padding-bottom:\s*calc\(8px \+ env\(safe-area-inset-bottom\)\)/);
 });
 
-test("Facebook Ads decorative curriculum portrait cannot block mobile interactions", () => {
+test("Facebook Ads legacy decorative portrait styles cannot block mobile interactions", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
 
   assert.match(

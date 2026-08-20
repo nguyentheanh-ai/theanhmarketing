@@ -1,5 +1,16 @@
 # Current State - theanh-main
 
+## 2026-08-21 - Facebook Ads Master Data & AI conversion rewrite + event contract (release candidate)
+
+- Existing worktree `/Users/theanh/CodexProjects/TheAnh-Web/worktrees/facebook-ads-master-rewrite-20260821`, branch `feat/facebook-ads-master-rewrite-20260821`, is based on production commit `ce4b0eb`. The production deployment/readback for this release candidate is still pending.
+- `/academy/facebook-ads-master-2026` now follows the approved 12-section conversion order: Hero, three pains, Big Idea, 12 buyer outcomes, AI Agent, five content-rich proofs, instructor, tools, value stack, pricing/checkout, FAQ and final CTA. The visible 21-lesson/six-module curriculum is removed.
+- The 799K contract is explicit: video course + AI Agent + tools; the Agent creates Campaign – Ad Set – Ads in `PAUSED`; Zoom 1:1 is a separate service and is not included.
+- Source and published HTML are byte-identical. The existing `zoom-kit`, optional `zoom-kit-ebook-299`, invoice module, `/api/orders`, Pixel ID/value, SEO title/meta/canonical and responsive sticky CTA remain intact.
+- The approved browser-only Meta contract is implemented through `trackCustom`: `EngagedView` after 30 visible seconds, one-shot `ScrollDepth` at 50/75/90, and `CTAClick` only on six explicit primary CTAs with `cta_id`, `cta_text` and absolute `destination_url`. `VideoProgress` is `NOT_APPLICABLE` because the page contains no HTML video element.
+- Standard semantics remain guarded: `PageView` and `ViewContent` are unchanged; browser `Lead` now fires only after `/api/orders` returns a valid order code with the existing `leadId` dedup ID; no early `InitiateCheckout`, browser `Purchase`, fake `LandingPageView`, `Contact` or `FindLocation` was added. Server-authoritative Purchase/CAPI code is unchanged.
+- Verification: focused Facebook Ads/Meta/invoice `59/59`, full Node `591/591`, TypeScript, ESLint `0` errors/`1` unchanged unrelated warning, tracking verification, `git diff --check`, and in-app Browser QA at 1440/390/320 with zero overflow, broken images, mojibake, console errors or real order submission. Source/published SHA-256 is `247f45406d36c00bcdac74848db7836e4f5e86af2737dde8d7dc279fd5593358`.
+- Next 16 production build now passes with Webpack and generates 96 pages. Two base-commit type blockers were corrected without runtime behavior changes: the admin route request limit remains module-local instead of being an invalid route export, and `/go` uses the required Promise-only `searchParams` contract.
+
 ## 2026-08-03 - Durable Meta Purchase CAPI recovery live
 
 - Root cause confirmed: the active production branch still called Meta directly inside payment requests, while the previously verified durable outbox code was never committed into this deploy branch. Paid orders could therefore remain `purchase_event_sent=false` with `meta_purchase_state=null` and zero attempts after a missed or failed first call.

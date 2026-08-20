@@ -53,6 +53,8 @@ test("email link bridge route is public, noindex, and has manual fallback copy",
   assert.match(page, /targetUrl/);
   assert.match(page, /Mở liên kết/);
   assert.match(page, /break-all/);
+  assert.match(page, /searchParams\?: Promise<\{ to\?: string \}>;/);
+  assert.doesNotMatch(page, /Promise<\{ to\?: string \}> \| \{ to\?: string \}/);
   assert.match(client, /window\.location\.assign\(targetUrl\)/);
   assert.match(proxy, /pathname === "\/vao-khoa-hoc" \|\| pathname === "\/go"/);
 });

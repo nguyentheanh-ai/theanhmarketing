@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 type EmailOpenPageProps = {
-  searchParams?: Promise<{ to?: string }> | { to?: string };
+  searchParams?: Promise<{ to?: string }>;
 };
 
 export default async function EmailOpenPage({ searchParams }: EmailOpenPageProps) {

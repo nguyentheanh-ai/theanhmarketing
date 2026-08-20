@@ -6,6 +6,10 @@ Dung cho `theanhmarketing.com` / Pixel-Dataset `1315653423712065`.
 
 ## Trang thai hien tai
 
+- Custom engagement tren `/academy/facebook-ads-master-2026` la Browser Pixel `trackCustom`: `EngagedView`, `ScrollDepth`, `CTAClick`; khong tao CAPI song song cho cac event nay.
+- `VideoProgress` chi ap dung khi co HTML video that. Trang hien tai chi co GIF proof, nen `NOT_APPLICABLE`; khong tao event thay the.
+- Kiem tra custom event trong Events Manager chi dung kenh Test Events dang dang nhap san. Khong them `test_event_code`, khong tao order/lead that, va khong thay doi Production env chi de kiem tra engagement contract.
+
 - Browser Pixel live: `NEXT_PUBLIC_META_PIXEL_ID=1315653423712065`.
 - Server CAPI live: `lib/meta/conversions-api.ts`.
 - Server `Lead`: tao qua `POST /api/orders`, `POST /api/orders/from-session` va `POST /api/leads`, chay nen sau khi response thanh cong.

@@ -10,7 +10,7 @@ import {
   ProvisioningOperationLostLeaseError,
 } from "@/services/studentProvisioningOperationService";
 
-export const MAX_REQUEST_BYTES = 16_384;
+const MAX_REQUEST_BYTES = 16_384;
 const noStoreHeaders = { "Cache-Control": "private, no-store" };
 
 function json(body: unknown, status: number) {

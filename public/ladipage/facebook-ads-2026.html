@@ -3531,10 +3531,6 @@
         }
       }
 
-      .legacy-curriculum[hidden] {
-        display: none !important;
-      }
-
       .hybrid-section {
         position: relative;
         overflow: hidden;
@@ -4222,6 +4218,332 @@
         margin: 24px 20px 0;
       }
 
+      .pain-summary-grid,
+      .value-stack-grid,
+      .tool-grid,
+      .instructor-proof-grid {
+        display: grid;
+        gap: 18px;
+      }
+
+      .pain-summary-grid,
+      .value-stack-grid,
+      .instructor-proof-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .pain-summary-grid .panel,
+      .value-stack-card,
+      .instructor-proof-grid article {
+        transition: transform 220ms ease, border-color 220ms ease, background 220ms ease;
+      }
+
+      .pain-summary-grid .panel:hover,
+      .value-stack-card:hover,
+      .instructor-proof-grid article:hover {
+        transform: translateY(-5px);
+        border-color: rgba(246, 102, 40, 0.48);
+      }
+
+      .system-flow-grid {
+        display: grid;
+        grid-template-columns: repeat(9, auto);
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        border: 1px solid rgba(246, 102, 40, 0.28);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.045);
+        padding: 28px;
+      }
+
+      .system-flow-grid span {
+        border-radius: 999px;
+        background: rgba(246, 102, 40, 0.13);
+        color: var(--text);
+        padding: 11px 16px;
+        font-size: 14px;
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .system-flow-grid b {
+        color: var(--primary-2);
+        font-size: 20px;
+      }
+
+      .outcomes-lead,
+      .tools-lead {
+        margin-bottom: 34px;
+      }
+
+      .outcome-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .outcome-grid .course-outcome {
+        min-height: 210px;
+        padding: 22px;
+      }
+
+      .outcome-index {
+        display: inline-flex;
+        margin-bottom: 16px;
+        color: var(--primary-2);
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+      }
+
+      .outcome-grid .course-outcome strong {
+        font-size: 17px;
+        line-height: 1.35;
+      }
+
+      .outcome-grid .course-outcome p {
+        font-size: 14px;
+        line-height: 1.58;
+      }
+
+      .section-action {
+        justify-content: center;
+        margin-top: 34px;
+      }
+
+      .proof-case-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .proof-case-card {
+        position: relative;
+        overflow: hidden;
+        margin: 0;
+        border: 1px solid rgba(91, 48, 29, 0.2);
+        border-radius: 18px;
+        background: #351a11;
+        box-shadow: 0 20px 44px rgba(83, 44, 28, 0.16);
+        transition: transform 220ms ease, box-shadow 220ms ease;
+      }
+
+      .proof-case-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 26px 54px rgba(83, 44, 28, 0.24);
+      }
+
+      .proof-case-card img {
+        width: 100%;
+        aspect-ratio: 15 / 32;
+        object-fit: cover;
+      }
+
+      .proof-case-card figcaption {
+        color: #ffe8d6;
+        padding: 13px 12px 15px;
+        font-size: 13px;
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .instructor-split {
+        align-items: center;
+      }
+
+      .instructor-portrait {
+        position: relative;
+        overflow: hidden;
+        margin: 0;
+        border: 1px solid rgba(246, 102, 40, 0.3);
+        border-radius: 30px;
+        background: radial-gradient(circle at 50% 35%, rgba(246, 102, 40, 0.22), transparent 35rem), #151820;
+        box-shadow: var(--shadow);
+      }
+
+      .instructor-portrait img {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+      }
+
+      .instructor-proof-grid {
+        margin-top: 28px;
+      }
+
+      .instructor-proof-grid article {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.045);
+        padding: 18px;
+      }
+
+      .instructor-proof-grid strong,
+      .instructor-proof-grid span {
+        display: block;
+      }
+
+      .instructor-proof-grid strong {
+        color: var(--primary-2);
+        font-size: 23px;
+      }
+
+      .instructor-proof-grid span {
+        margin-top: 7px;
+        color: var(--muted-2);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .tool-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .tool-grid .learning-format-card {
+        min-height: 260px;
+      }
+
+      .model-strip {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 22px;
+      }
+
+      .model-strip span {
+        border: 1px solid rgba(91, 48, 29, 0.18);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.45);
+        color: #4b281a;
+        padding: 12px 16px;
+        font-size: 13px;
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .value-stack-section {
+        border-block: 1px solid rgba(246, 102, 40, 0.22);
+        background: radial-gradient(circle at 50% 0%, rgba(246, 102, 40, 0.18), transparent 34rem), #101218;
+      }
+
+      .value-stack-head {
+        max-width: 900px;
+        margin-inline: auto;
+        text-align: center;
+      }
+
+      .value-stack-card {
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.045);
+        padding: 24px;
+      }
+
+      .value-stack-card > span {
+        color: var(--primary-2);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+      }
+
+      .value-stack-card h3 {
+        margin-top: 12px;
+        color: var(--text);
+        font-size: 21px;
+        line-height: 1.35;
+      }
+
+      .value-stack-card p {
+        margin-top: 12px;
+        color: var(--muted-2);
+        font-size: 14px;
+        line-height: 1.62;
+      }
+
+      .value-stack-total {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .value-stack-total p {
+        border: 1px solid rgba(246, 102, 40, 0.34);
+        border-radius: 20px;
+        background: rgba(246, 102, 40, 0.09);
+        padding: 20px;
+        color: var(--muted-2);
+        text-align: center;
+      }
+
+      .value-stack-total strong {
+        display: block;
+        margin-top: 5px;
+        color: var(--primary-2);
+        font-size: clamp(26px, 3vw, 38px);
+      }
+
+      .pricing-head {
+        max-width: 900px;
+      }
+
+      @media (max-width: 1020px) {
+        .proof-case-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .tool-grid,
+        .outcome-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .system-flow-grid {
+          grid-template-columns: 1fr;
+          justify-items: stretch;
+        }
+
+        .system-flow-grid b {
+          transform: rotate(90deg);
+          text-align: center;
+        }
+      }
+
+      @media (max-width: 680px) {
+        .pain-summary-grid,
+        .value-stack-grid,
+        .tool-grid,
+        .outcome-grid,
+        .instructor-proof-grid,
+        .value-stack-total,
+        .model-strip {
+          grid-template-columns: 1fr;
+        }
+
+        .outcome-grid .course-outcome {
+          min-height: 0;
+        }
+
+        .proof-case-grid {
+          grid-template-columns: repeat(5, minmax(220px, 76vw));
+          overflow-x: auto;
+          padding: 4px 2px 14px;
+          scroll-snap-type: x mandatory;
+        }
+
+        .proof-case-card {
+          scroll-snap-align: start;
+        }
+
+        .system-flow-grid {
+          padding: 20px;
+        }
+
+        .instructor-portrait {
+          max-width: 520px;
+          margin-inline: auto;
+        }
+      }
+
       [data-reveal] {
         opacity: 0;
         transform: translateY(24px);
@@ -4534,6 +4856,7 @@
       }
     </style>
     <script src="../checkout-invoice.js" defer></script>
+    <script src="../landing-assets/facebook-ads-event-contract.js" defer></script>
   </head>
   <body data-kstudy-hybrid="true">
     <div class="page">
@@ -4543,15 +4866,15 @@
             <div class="course-hero-grid">
               <div class="course-hero-content">
                 <p class="course-hero-label">FACEBOOK ADS MASTER 2026</p>
-                <h1 id="course-hero-title" class="course-hero-title">Khóa học <span class="accent">Facebook Ads</span> Master 2026</h1>
+                <h1 id="course-hero-title" class="course-hero-title">Tự xây dựng và vận hành hệ thống <span class="accent">Facebook Ads 2026</span> bằng Data &amp; AI</h1>
                 <div class="course-hero-copy">
-                  <p>Khóa học dành cho chủ doanh nghiệp, marketer và người đang tự chạy Facebook Ads nhưng chưa biết vì sao có chiến dịch ra đơn, có chiến dịch lại chỉ tốn tiền.</p>
+                  <p>Từ Fanpage, tài nguyên, Content, quảng cáo, Dataset đến đọc số – tối ưu – scale. Giúp bạn biết quảng cáo đang sai ở đâu và cần làm gì tiếp theo thay vì chạy theo cảm giác.</p>
                 </div>
                 <div class="course-hero-actions">
-                  <a class="btn btn-primary" href="#hoc-phi" data-cta>Đăng ký ngay – 799.000đ</a>
-                  <a class="btn btn-secondary" href="#lo-trinh">Xem nội dung khóa học</a>
+                  <a class="btn btn-primary" href="#hoc-phi" data-meta-cta data-cta-id="hero-primary" data-cta-text="Nhận toàn bộ hệ thống Facebook Ads – 799.000đ" data-cta>Nhận toàn bộ hệ thống Facebook Ads – 799.000đ</a>
+                  <a class="btn btn-secondary" href="#ket-qua">Xem sau khóa học bạn làm được gì</a>
                 </div>
-                <p class="course-bonus-line">✦ Tặng AI Agent hỗ trợ lên kế hoạch quảng cáo trong thời gian mở đăng ký.</p>
+                <p class="course-bonus-line">✦ Bao gồm AI Agent hỗ trợ nghiên cứu, lập kế hoạch và triển khai quảng cáo.</p>
               </div>
 
               <div class="course-portrait-stage" aria-label="Giảng viên khóa học">
@@ -4560,12 +4883,8 @@
                   <span class="hero-orbit-ring hero-orbit-ring-one"></span>
                   <span class="hero-orbit-ring hero-orbit-ring-two"></span>
                   <span class="hero-orbit-ring hero-orbit-ring-three"></span>
-                  <span class="hero-orbit-node"></span>
-                  <span class="hero-orbit-node"></span>
-                  <span class="hero-orbit-node"></span>
-                  <span class="hero-orbit-node"></span>
-                  <span class="hero-orbit-node"></span>
-                  <span class="hero-orbit-node"></span>
+                  <span class="hero-orbit-node"></span><span class="hero-orbit-node"></span><span class="hero-orbit-node"></span>
+                  <span class="hero-orbit-node"></span><span class="hero-orbit-node"></span><span class="hero-orbit-node"></span>
                   <span class="facebook-float-depth" data-depth="far-left">f</span>
                   <span class="facebook-float-depth" data-depth="far-right">f</span>
                 </div>
@@ -4582,68 +4901,24 @@
                   <small>CEO Greezhub Việt Nam</small>
                 </div>
               </div>
+
               <div class="course-hero-mobile-details">
                 <div class="course-hero-copy course-hero-copy-mobile">
-                  <p>Khóa học dành cho chủ doanh nghiệp, marketer và người đang tự chạy Facebook Ads nhưng chưa biết vì sao có chiến dịch ra đơn, có chiến dịch lại chỉ tốn tiền.</p>
+                  <p>Từ Fanpage, tài nguyên, Content, quảng cáo, Dataset đến đọc số – tối ưu – scale. Giúp bạn biết quảng cáo đang sai ở đâu và cần làm gì tiếp theo thay vì chạy theo cảm giác.</p>
                 </div>
                 <div class="course-hero-actions-mobile">
-                  <a class="btn btn-primary" href="#hoc-phi" data-cta>Đăng ký ngay – 799.000đ</a>
-                  <a class="btn btn-secondary" href="#lo-trinh">Xem nội dung khóa học</a>
+                  <a class="btn btn-primary" href="#hoc-phi" data-meta-cta data-cta-id="hero-mobile-primary" data-cta-text="Nhận toàn bộ hệ thống Facebook Ads – 799.000đ" data-cta>Nhận toàn bộ hệ thống Facebook Ads – 799.000đ</a>
+                  <a class="btn btn-secondary" href="#ket-qua">Xem sau khóa học bạn làm được gì</a>
                 </div>
-                <p class="course-bonus-line-mobile">✦ Tặng AI Agent hỗ trợ lên kế hoạch quảng cáo trong thời gian mở đăng ký.</p>
+                <p class="course-bonus-line-mobile">✦ Bao gồm AI Agent hỗ trợ nghiên cứu, lập kế hoạch và triển khai quảng cáo.</p>
               </div>
             </div>
 
-            <div class="course-outcomes" aria-label="Điểm nổi bật của khóa học">
-              <article class="course-outcome"><span class="course-outcome-element" data-outcome-element="campaign" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="5" y="7" width="14" height="12" rx="3"/><rect x="29" y="7" width="14" height="12" rx="3"/><rect x="17" y="29" width="14" height="12" rx="3"/><path d="M19 13h10M12 19v5h12v5M36 19v5H24"/></svg></span><strong>Hiểu cách Facebook Ads vận hành</strong><p>Biết campaign, nhóm quảng cáo, mẫu quảng cáo và ngân sách liên quan với nhau như thế nào.</p></article>
-              <article class="course-outcome"><span class="course-outcome-element" data-outcome-element="creative" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M8 27v-9l27-8v25L8 27z"/><path d="M35 18c5 1 7 4 7 7s-2 6-7 7M12 28l4 11h8l-4-9"/><path d="M8 18H5a3 3 0 0 0-3 3v3a3 3 0 0 0 3 3h3"/></svg></span><strong>Xây ưu đãi và nội dung quảng cáo</strong><p>Biết khách hàng cần nghe điều gì để dừng lại, quan tâm và thực hiện hành động.</p></article>
-              <article class="course-outcome"><span class="course-outcome-element" data-outcome-element="tracking" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="16"/><circle cx="24" cy="24" r="8"/><circle cx="24" cy="24" r="2"/><path d="M24 3v6M24 39v6M3 24h6M39 24h6"/></svg></span><strong>Cách setup Dataset cho từng loại hình kinh doanh</strong><p>Giúp Facebook nhận đúng dữ liệu, đồng thời giúp bạn biết khách hàng đến từ đâu và quảng cáo đang vướng ở bước nào.</p></article>
-              <article class="course-outcome"><span class="course-outcome-element" data-outcome-element="optimize" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M7 39V9M7 39h34"/><path d="M12 32l8-9 7 5 12-15"/><path d="M31 13h8v8"/></svg></span><strong>Đọc chỉ số và tối ưu quảng cáo</strong><p>Biết lúc nào nên giữ, sửa, tắt hoặc tăng ngân sách thay vì quyết định theo cảm giác.</p></article>
-            </div>
-          </div>
-        </section>
-
-        <section class="curriculum-section legacy-curriculum" hidden aria-hidden="true">
-          <div class="container">
-            <div class="curriculum-heading">
-              <p class="curriculum-kicker">Lộ trình thực hành Facebook Ads 2026</p>
-              <h2 id="legacy-curriculum-title">21 bài học <span>+ chuyên đề Dataset</span></h2>
-            </div>
-            <div class="curriculum-panel">
-              <div class="curriculum-grid">
-                <div class="lesson-column">
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 1</strong> – Nền tảng Facebook Ads 2026 và tư duy phễu</span><span class="lesson-duration">08:00</span></div>
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 2</strong> – Thuật ngữ chuyên ngành trong Quảng Cáo Facebook</span><span class="lesson-duration">08:08</span></div>
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 3</strong> – Những sai lầm phổ biến khi chạy Quảng cáo Facebook</span><span class="lesson-duration">06:22</span></div>
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 4</strong> – Hướng dẫn mua VIA</span><span class="lesson-duration">05:20</span></div>
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 5</strong> – Tất tần tật về Fanpage Facebook P.1</span><span class="lesson-duration">19:53</span></div>
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 6</strong> – Tất tần tật về Fanpage Facebook P.2</span><span class="lesson-duration">07:21</span></div>
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 7</strong> – Hướng dẫn nhanh thiết kế Poster - Cover - Avatar Facebook</span><span class="lesson-duration">06:06</span></div>
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 8</strong> – Đăng bài trên Facebook</span><span class="lesson-duration">05:30</span></div>
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 9</strong> – Tại sao content lại quan trọng, các dạng content phổ biến</span><span class="lesson-duration">03:18</span></div>
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 10</strong> – Hướng dẫn nghiên cứu đối thủ, lập kế hoạch quảng cáo</span><span class="lesson-duration">09:04</span></div>
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 11</strong> – Tổng quan về quảng cáo Facebook</span><span class="lesson-duration">17:00</span></div>
-                </div>
-                <div class="lesson-column">
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 12</strong> – Hướng dẫn quản trị tài khoản doanh nghiệp BM</span><span class="lesson-duration">09:00</span></div>
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 13</strong> – Hướng dẫn thêm thẻ thanh toán trên Facebook Ads</span><span class="lesson-duration">03:00</span></div>
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 14</strong> – Tất tần tật về Target trên Facebook Ads</span><span class="lesson-duration">23:30</span></div>
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 15</strong> – Thiết lập và đọc các chỉ số trên Facebook Ads</span><span class="lesson-duration">07:00</span></div>
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 16</strong> – Scale ngân sách quảng cáo</span><span class="lesson-duration">09:27</span></div>
-                  <div class="lesson-row"><span class="lesson-play" aria-hidden="true">▶</span><span class="lesson-title"><strong>Bài 17</strong> – Hướng dẫn lên quảng cáo tin nhắn</span><span class="lesson-duration">08:45</span></div>
-                  <div class="lesson-row" data-kind="dataset"><span class="lesson-play" aria-hidden="true">◆</span><span class="lesson-title"><strong>Giới thiệu về Dataset</strong></span></div>
-                  <div class="lesson-row" data-kind="dataset"><span class="lesson-play" aria-hidden="true">◆</span><span class="lesson-title">Dataset - Bán hàng trực tiếp trên Business Suite</span></div>
-                  <div class="lesson-row" data-kind="dataset"><span class="lesson-play" aria-hidden="true">◆</span><span class="lesson-title">Dataset - Bán hàng trên Pancake</span></div>
-                  <div class="lesson-row" data-kind="dataset"><span class="lesson-play" aria-hidden="true">◆</span><span class="lesson-title">Dataset - Bán hàng thông qua website/landing page</span></div>
-                  <div class="lesson-row" data-kind="dataset"><span class="lesson-play" aria-hidden="true">◆</span><span class="lesson-title">Cách loại trừ 90% tệp khách rác không mua hàng trên quảng cáo Facebook</span></div>
-                </div>
-              </div>
-            </div>
-            <div class="curriculum-benefits" aria-label="Quyền lợi học viên">
-              <article class="curriculum-benefit"><span class="curriculum-benefit-icon" aria-hidden="true">◎</span><div><strong>Thực chiến 100%</strong><span>Áp dụng ngay vào công việc</span></div></article>
-              <article class="curriculum-benefit"><span class="curriculum-benefit-icon" aria-hidden="true">21</span><div><strong>21 bài học bài bản</strong><span>Từ cơ bản đến chuyên sâu</span></div></article>
-              <article class="curriculum-benefit"><span class="curriculum-benefit-icon" aria-hidden="true">∞</span><div><strong>Trọn đời học lại</strong><span>Cập nhật kiến thức mới liên tục</span></div></article>
-              <article class="curriculum-benefit"><span class="curriculum-benefit-icon" aria-hidden="true">◉</span><div><strong>Hỗ trợ 24/7</strong><span>Đồng hành cùng học viên</span></div></article>
+            <div class="course-outcomes hero-pillars" aria-label="Bốn trụ cột của hệ thống">
+              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">01</span><strong>Hệ thống tài nguyên chuẩn</strong><p>Fanpage, BM, tài khoản, quyền và thanh toán được tổ chức rõ ràng.</p></article>
+              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">02</span><strong>Quảng cáo đúng khách</strong><p>Content, cấu trúc và tín hiệu bám sát mục tiêu kinh doanh.</p></article>
+              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">03</span><strong>Dataset tích lũy dữ liệu</strong><p>Mỗi lần chạy để lại dữ liệu có ích cho lần tối ưu tiếp theo.</p></article>
+              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">04</span><strong>Tự đọc số &amp; tối ưu</strong><p>Biết cần giữ, sửa, tắt hay tăng ngân sách dựa trên tín hiệu.</p></article>
             </div>
           </div>
         </section>
@@ -4651,695 +4926,229 @@
         <section id="van-de" class="section">
           <div class="container">
             <div class="section-head">
-              <p class="section-kicker">5 nút thắt khiến quảng cáo không ra đơn</p>
-              <h2>Có sản phẩm tốt nhưng <span class="text-accent-inline">Facebook</span> vẫn chưa tạo ra đơn hàng ổn định.</h2>
-              <p class="section-copy">
-                Phần lớn anh chị chủ doanh nghiệp mới chỉ chạy Facebook Ads ở mức cơ bản: lên đúng một chiến dịch, chọn vài sở thích hoặc hành vi rồi chờ kết quả. Khi quảng cáo chưa hiệu quả, nhiều người vội đánh giá Facebook Ads không hiệu quả — trong khi vấn đề thật sự nằm ở cách xây hệ thống, tích lũy dữ liệu và tối ưu sau mỗi lần chạy.
-              </p>
-              <figure class="hybrid-pain-visual" data-reveal>
-                <img src="../ladipage/assets/facebook-ads-kstudy-hybrid/hero-operator.webp" alt="Người vận hành quảng cáo Facebook đang làm việc trên máy tính" width="1586" height="992" loading="lazy" decoding="async" />
-              </figure>
+              <figure class="hybrid-pain-visual"><img src="../ladipage/assets/facebook-ads-kstudy-hybrid/hero-operator.webp" alt="Người vận hành quảng cáo Facebook đang làm việc trên máy tính" width="1586" height="992" loading="lazy" decoding="async" /></figure>
+              <p class="section-kicker">Ba vấn đề lớn</p>
+              <h2>Bạn không thiếu chiến dịch. Bạn thiếu một hệ thống để biết tiền quảng cáo đang đi đâu.</h2>
+              <p class="section-copy">Nếu mỗi lần chạy lại bắt đầu từ đầu, dữ liệu không được tích lũy và quyết định vẫn dựa trên cảm giác.</p>
             </div>
-            <div class="pain-list">
-              <details open>
-                <summary>
-                  <span class="number">1</span>
-                  <span class="pain-title">
-                    <strong>Có sản phẩm tốt, dịch vụ chất lượng nhưng quảng cáo không có đơn</strong>
-                    <span>Khách không thấy đủ lý do để dừng lại, tin và hành động.</span>
-                  </span>
-                  <span class="pain-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="pain-detail">
-                  <p>
-                    Bạn biết sản phẩm tốt, khách cũ hài lòng, nhưng quảng cáo lại không chuyển thành đơn. Thường không phải sản phẩm yếu, mà là thông điệp chưa đóng gói đúng nỗi đau, bằng chứng và lý do mua ngay.
-                  </p>
-                  <ul>
-                    <li>Offer chưa làm rõ khách được gì sau khi mua</li>
-                    <li>Content nói về sản phẩm nhiều hơn vấn đề của khách</li>
-                    <li>Thiếu bằng chứng khiến khách tin trước khi inbox</li>
-                  </ul>
-                </div>
-              </details>
-              <details>
-                <summary>
-                  <span class="number">2</span>
-                  <span class="pain-title">
-                    <strong>Đổ tiền mua page, mua tài khoản quảng cáo nhưng hệ thống luôn không ổn định</strong>
-                    <span>Cứ tưởng có tài khoản là chạy được, nhưng nền tảng lại liên tục phát sinh lỗi.</span>
-                  </span>
-                  <span class="pain-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="pain-detail">
-                  <p>
-                    Nhiều chủ doanh nghiệp tốn tiền mua page, BM, tài khoản quảng cáo, thuê người setup nhưng hệ thống vẫn chập chờn. Khi nền móng không ổn định, mọi chiến dịch phía sau đều khó tối ưu.
-                  </p>
-                  <ul>
-                    <li>Tài khoản chết, hạn chế hoặc không rõ nguyên nhân</li>
-                    <li>Page thiếu độ tin cậy, tài sản không được chuẩn hóa</li>
-                    <li>Không có checklist kiểm tra trước khi đổ ngân sách</li>
-                  </ul>
-                </div>
-              </details>
-              <details>
-                <summary>
-                  <span class="number">3</span>
-                  <span class="pain-title">
-                    <strong>Chạy quảng cáo thì ra toàn khách im lặng, khách phá</strong>
-                    <span>Có lead nhưng chất lượng thấp, hỏi cho vui, để lại số rồi không phản hồi.</span>
-                  </span>
-                  <span class="pain-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="pain-detail">
-                  <p>
-                    Khi quảng cáo kéo nhầm tệp hoặc lời hứa chưa rõ, inbox sẽ đầy khách im lặng, khách phá giá, khách không có nhu cầu thật. Cuối cùng đội sale mệt, chủ doanh nghiệp mất niềm tin vào ads.
-                  </p>
-                  <ul>
-                    <li>Target và nội dung đang thu hút sai mức độ nhu cầu</li>
-                    <li>Form/inbox thiếu câu hỏi lọc khách ngay từ đầu</li>
-                    <li>Sale phải xử lý nhiều lead nhưng ít cơ hội thật</li>
-                  </ul>
-                </div>
-              </details>
-              <details>
-                <summary>
-                  <span class="number">4</span>
-                  <span class="pain-title">
-                    <strong>Không cài đặt Dataset đúng cho mô hình kinh doanh</strong>
-                    <span>Meta thiếu dữ liệu để hiểu ai là khách hàng thật và tối ưu phân phối quảng cáo.</span>
-                  </span>
-                  <span class="pain-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="pain-detail">
-                  <p>
-                    Khi Dataset chưa được tạo và kết nối đúng, Meta chỉ nhìn thấy các lượt click, tin nhắn hoặc chuyển đổi rời rạc. Meta AI không có đủ tín hiệu sạch để nhận diện khách hàng thật, học từ kết quả và phân phối ngân sách tốt hơn qua từng lần chạy.
-                  </p>
-                  <ul>
-                    <li>Chọn sai nguồn Dataset so với loại hình kinh doanh</li>
-                    <li>Không gửi đủ sự kiện quan trọng về hành vi và chuyển đổi</li>
-                    <li>Dữ liệu phân mảnh khiến Meta AI học chậm và tối ưu sai</li>
-                  </ul>
-                </div>
-              </details>
-              <details>
-                <summary>
-                  <span class="number">5</span>
-                  <span class="pain-title">
-                    <strong>Nhìn chỉ số nào cũng thấy quan trọng, cuối cùng chẳng biết tối ưu thế nào</strong>
-                    <span>CTR, CPC, CPM, CPA, tần suất đều có vẻ đúng nhưng không chỉ ra bước tiếp theo.</span>
-                  </span>
-                  <span class="pain-toggle" aria-hidden="true"></span>
-                </summary>
-                <div class="pain-detail">
-                  <p>
-                    Không có khung đọc chỉ số thì rất dễ tắt nhầm chiến dịch tốt, giữ lại chiến dịch xấu hoặc tăng ngân sách khi chưa đủ tín hiệu. Chủ doanh nghiệp cần biết chỉ số nào trả lời câu hỏi nào.
-                  </p>
-                  <ul>
-                    <li>Không biết lỗi nằm ở creative, offer, landing hay sale</li>
-                    <li>Không có ngưỡng quyết định khi nào tắt, sửa, nhân rộng</li>
-                    <li>Tối ưu theo cảm giác nên mỗi ngày đổi một thứ</li>
-                  </ul>
-                </div>
-              </details>
+            <div class="pain-summary-grid">
+              <article class="panel"><div class="panel-icon">01</div><h3>Không tạo đơn ổn định</h3><p>Có sản phẩm tốt nhưng thông điệp, bằng chứng và lý do mua chưa đủ rõ để quảng cáo tạo khách hàng đều đặn.</p></article>
+              <article class="panel"><div class="panel-icon">02</div><h3>Có lead nhưng sai khách</h3><p>Có inbox, có lead nhưng phần lớn không phải người thực sự muốn mua, khiến ngân sách và thời gian sale bị lãng phí.</p></article>
+              <article class="panel"><div class="panel-icon">03</div><h3>Có số nhưng không biết tối ưu</h3><p>Dữ liệu chưa sạch và người chạy không có khung quyết định để biết lỗi nằm ở Creative, tệp, Offer, Landing Page hay Sale.</p></article>
             </div>
           </div>
         </section>
 
-        <section class="section loss-section" id="tich-luy">
+        <section class="section gold-section" id="tich-luy">
           <div class="container">
             <div class="section-head">
-              <p class="section-kicker">Quảng cáo là tài sản tích lũy</p>
-              <h2 class="loss-title">Mỗi đồng ngân sách phải để lại <span class="text-accent-inline">dữ liệu cho lần chạy tiếp theo</span>.</h2>
-              <p class="section-copy">
-                Quảng cáo là một hệ thống tích lũy. Mỗi đồng tiền anh chị tiêu trên quảng cáo phải được tích lũy thành dữ liệu, insight và tín hiệu để càng về sau hệ thống càng ổn định — thay vì mỗi chiến dịch mới lại bắt đầu từ con số không.
-              </p>
+              <p class="gold-kicker">Big Idea</p>
+              <h2 class="gold-title">Quảng cáo là <span>tài sản tích lũy</span></h2>
+              <p class="section-copy">Mỗi đồng ngân sách phải để lại dữ liệu cho lần chạy tiếp theo.</p>
             </div>
-            <div class="sales-grid">
-              <article class="sales-card">
-                <strong>01 · Dữ liệu khách hàng</strong>
-                <h3>Mỗi lần chạy phải hiểu khách rõ hơn</h3>
-                <p>Biết nhóm khách nào dừng lại, nội dung nào tạo phản hồi và ưu đãi nào khiến họ hành động để lần test sau có cơ sở tốt hơn lần trước.</p>
-              </article>
-              <article class="sales-card">
-                <strong>02 · Tín hiệu Meta AI</strong>
-                <h3>Dataset càng sạch, hệ thống càng học đúng</h3>
-                <p>Khi nguồn dữ liệu được setup đúng theo mô hình kinh doanh, Meta AI có thêm tín hiệu chất lượng để phân phối ổn định và tìm đúng nhóm khách hơn.</p>
-              </article>
-              <article class="sales-card">
-                <strong>03 · Quyết định tối ưu</strong>
-                <h3>Mỗi con số phải dẫn đến một hành động</h3>
-                <p>Dữ liệu tích lũy giúp anh chị biết lúc nào nên giữ, sửa, tắt hoặc tăng ngân sách thay vì thay đổi campaign liên tục theo cảm giác.</p>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="hybrid-section" id="gioi-thieu">
-          <div class="container">
-            <header class="hybrid-section-head" data-reveal>
-              <p class="section-kicker">Hình thức học linh hoạt</p>
-              <h2>Khóa học Online qua video có sẵn, học theo tốc độ của bạn</h2>
-              <p>Toàn bộ lộ trình Facebook Ads Master 2026 được quay sẵn để bạn xem lại bất cứ lúc nào. Khi cần đi sâu trên case thực tế, bạn có thể chọn thêm hình thức học 1:1 phù hợp.</p>
-            </header>
-            <div class="learning-format-grid">
-              <article class="learning-format-card is-core" data-reveal>
-                <span class="learning-format-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="6" y="9" width="36" height="26" rx="6"/><path d="m21 18 9 6-9 6zM15 41h18"/></svg></span>
-                <span class="learning-format-label">Gói học hiện tại · 799.000đ</span>
-                <h3>Video Online có sẵn</h3>
-                <p>Học trọn bộ bài giảng theo từng module, xem lại nhiều lần và thực hành trực tiếp trên tài khoản quảng cáo của bạn.</p>
-              </article>
-              <article class="learning-format-card" data-reveal>
-                <span class="learning-format-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="18" cy="16" r="7"/><circle cx="34" cy="18" r="5"/><path d="M6 39c1-9 6-14 12-14s11 5 12 14M29 28c7 0 11 4 12 11"/></svg></span>
-                <span class="learning-format-label">Lựa chọn học riêng</span>
-                <h3>1:1 trực tiếp tại HCM</h3>
-                <p>Làm việc trực tiếp trên mô hình kinh doanh, tài khoản, nội dung và dữ liệu thực tế của riêng bạn.</p>
-              </article>
-              <article class="learning-format-card" data-reveal>
-                <span class="learning-format-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="5" y="8" width="38" height="27" rx="6"/><circle cx="21" cy="20" r="5"/><path d="M12 31c1-5 4-8 9-8s8 3 9 8M17 41h14"/></svg></span>
-                <span class="learning-format-label">Lựa chọn học riêng</span>
-                <h3>1 kèm 1 qua Zoom online</h3>
-                <p>Được hướng dẫn từ xa trên chính vấn đề đang gặp phải mà không cần di chuyển đến TP.HCM.</p>
-              </article>
-            </div>
-            <p class="learning-format-note">Gói 799.000đ trên landing page gồm khóa video Online và AI Agent. Hình thức 1:1 được sắp xếp riêng theo nhu cầu thực tế.</p>
-          </div>
-        </section>
-
-        <section class="hybrid-section is-cream" id="doi-tuong">
-          <div class="container">
-            <header class="hybrid-section-head" data-reveal>
-              <p class="section-kicker">Ứng dụng theo từng ngành nghề</p>
-              <h2>Facebook Ads không có một công thức dùng chung cho mọi mô hình</h2>
-              <p>Mỗi ngành có chu kỳ mua, dữ liệu và cách ra quyết định khác nhau. Khóa học giúp bạn chọn cấu trúc quảng cáo và cách setup Dataset phù hợp với chính mô hình đang kinh doanh.</p>
-            </header>
-            <div class="industry-grid">
-              <article class="industry-card" data-industry="fashion" data-reveal>
-                <div class="industry-visual"><img class="industry-image" src="../ladipage/assets/facebook-ads-kstudy-hybrid/industry-fashion.webp" alt="Chủ thương hiệu thời trang chuẩn bị bộ sưu tập quảng cáo" width="900" height="675" loading="lazy" decoding="async" /><span class="industry-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M17 8 8 14l5 10 6-3v19h18V21l6 3 5-10-9-6c-3 5-5 6-11 6s-8-1-11-6Z"/></svg></span></div>
-                <div class="industry-copy"><h3>Thời trang</h3><p>Creative, bộ sưu tập và tín hiệu mua theo mùa.</p></div>
-              </article>
-              <article class="industry-card" data-industry="retail" data-reveal>
-                <div class="industry-visual"><img class="industry-image" src="../ladipage/assets/facebook-ads-kstudy-hybrid/industry-retail.webp" alt="Chủ cửa hàng bán lẻ vận hành sản phẩm tại điểm bán" width="900" height="675" loading="lazy" decoding="async" /><span class="industry-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M8 19h32v22H8zM5 19l4-11h30l4 11M16 19v22M32 19v22"/></svg></span></div>
-                <div class="industry-copy"><h3>Bán lẻ</h3><p>Tối ưu nhiều sản phẩm, điểm bán và hành vi mua lặp lại.</p></div>
-              </article>
-              <article class="industry-card" data-industry="real-estate" data-reveal>
-                <div class="industry-visual"><img class="industry-image" src="../ladipage/assets/facebook-ads-kstudy-hybrid/industry-real-estate.webp" alt="Chuyên viên bất động sản tư vấn dự án cho khách hàng" width="900" height="675" loading="lazy" decoding="async" /><span class="industry-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="m6 23 18-15 18 15M11 21v20h26V21M20 41V29h8v12"/></svg></span></div>
-                <div class="industry-copy"><h3>Bất động sản</h3><p>Lọc nhu cầu, khu vực, ngân sách và chất lượng lead.</p></div>
-              </article>
-              <article class="industry-card" data-industry="b2b" data-reveal>
-                <div class="industry-visual"><img class="industry-image" src="../ladipage/assets/facebook-ads-kstudy-hybrid/industry-b2b.webp" alt="Đội ngũ B2B tư vấn vật liệu và thiết bị cho doanh nghiệp" width="900" height="675" loading="lazy" decoding="async" /><span class="industry-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="6" y="11" width="15" height="12" rx="3"/><rect x="27" y="25" width="15" height="12" rx="3"/><path d="M21 17h8c5 0 8 3 8 8M27 31h-8c-5 0-8-3-8-8"/></svg></span></div>
-                <div class="industry-copy"><h3>B2B</h3><p>Vật liệu xây dựng, thiết bị phòng khám và sản phẩm cần tư vấn dài.</p></div>
-              </article>
-              <article class="industry-card" data-industry="interior" data-reveal>
-                <div class="industry-visual"><img class="industry-image" src="../ladipage/assets/facebook-ads-kstudy-hybrid/industry-interior.webp" alt="Nhà thiết kế nội thất lựa chọn vật liệu cho công trình" width="900" height="675" loading="lazy" decoding="async" /><span class="industry-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M7 27h34v12H7zM11 27V15h10c5 0 7 3 7 7v5M7 39v4M41 39v4"/></svg></span></div>
-                <div class="industry-copy"><h3>Nội thất</h3><p>Chứng minh thẩm mỹ, công năng và giá trị thi công.</p></div>
-              </article>
-              <article class="industry-card" data-industry="spa" data-reveal>
-                <div class="industry-visual"><img class="industry-image" src="../ladipage/assets/facebook-ads-kstudy-hybrid/industry-spa.webp" alt="Chuyên viên spa tư vấn dịch vụ cho khách hàng" width="900" height="675" loading="lazy" decoding="async" /><span class="industry-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 40C12 32 9 21 15 12c6 2 9 6 9 12 0-6 3-10 9-12 6 9 3 20-9 28Z"/><path d="M8 23c8 0 13 5 16 17M40 23c-8 0-13 5-16 17"/></svg></span></div>
-                <div class="industry-copy"><h3>SPA / Thẩm mỹ viện</h3><p>Offer dịch vụ, niềm tin và dữ liệu đặt lịch chất lượng.</p></div>
-              </article>
-              <article class="industry-card" data-industry="online-course" data-reveal>
-                <div class="industry-visual"><img class="industry-image" src="../ladipage/assets/facebook-ads-kstudy-hybrid/industry-online-course.webp" alt="Giảng viên ghi hình khóa học Online trong studio" width="900" height="675" loading="lazy" decoding="async" /><span class="industry-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="6" y="8" width="36" height="26" rx="5"/><path d="m21 16 9 5-9 5zM14 41h20"/></svg></span></div>
-                <div class="industry-copy"><h3>Khóa học Online</h3><p>Content giáo dục, phễu đăng ký và dữ liệu người học.</p></div>
-              </article>
-              <article class="industry-card" data-industry="digital-product" data-reveal>
-                <div class="industry-visual"><img class="industry-image" src="../ladipage/assets/facebook-ads-kstudy-hybrid/industry-digital-product.webp" alt="Nhà sáng tạo xây dựng sản phẩm số trên máy tính" width="900" height="675" loading="lazy" decoding="async" /><span class="industry-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M10 8h28v32H10zM16 16h16M16 23h16M16 30h10"/><path d="M32 35h9V13"/></svg></span></div>
-                <div class="industry-copy"><h3>Sản phẩm số</h3><p>Thông điệp rõ giá trị, chuyển đổi nhanh và đo lường trực tiếp.</p></div>
-              </article>
-              <article class="industry-card" data-industry="affiliate" data-reveal>
-                <div class="industry-visual"><img class="industry-image" src="../ladipage/assets/facebook-ads-kstudy-hybrid/industry-affiliate.webp" alt="Nhà sáng tạo nội dung quay video đánh giá sản phẩm Affiliate" width="900" height="675" loading="lazy" decoding="async" /><span class="industry-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M19 29 13 35a7 7 0 0 1-10-10l8-8a7 7 0 0 1 10 0M29 19l6-6a7 7 0 0 1 10 10l-8 8a7 7 0 0 1-10 0M16 32l16-16"/></svg></span></div>
-                <div class="industry-copy"><h3>Affiliate</h3><p>Chọn angle, pre-sell và kiểm soát chi phí theo hoa hồng.</p></div>
-              </article>
+            <div class="system-flow-grid" aria-label="Vòng lặp dữ liệu quảng cáo">
+              <span>Khách hàng</span><b>→</b><span>Data</span><b>→</b><span>Meta AI</span><b>→</b><span>Quảng cáo tốt hơn</span><b>→</b><span>Data mới</span>
             </div>
           </div>
         </section>
 
         <section class="hybrid-section" id="ket-qua">
-          <div class="container hybrid-split">
-            <div class="hybrid-copy">
-              <p class="section-kicker">Bạn sẽ nhận được gì?</p>
-              <h2>Học xong để <span class="text-accent-inline">tự triển khai, tự đọc số và tự sửa</span>.</h2>
-              <ul class="hybrid-checklist">
-                <li>Chuẩn hóa page, tài khoản, BM và phương thức thanh toán.</li>
-                <li>Lập kế hoạch content, angle, hook và creative test bằng AI.</li>
-                <li>Dựng quảng cáo tin nhắn, target và cấu trúc camp test.</li>
-                <li>Đọc CTR, CPC, CPM, CPA, tần suất và chất lượng lead.</li>
-                <li>Biết khi nào sửa content, đổi tệp, tắt camp hoặc scale.</li>
-                <li>Setup Dataset Meta AI theo đúng loại hình kinh doanh để lọc tín hiệu rác và giúp hệ thống học đúng hơn.</li>
-              </ul>
-              <div class="hero-actions"><a class="btn btn-primary" href="#hoc-phi">Đăng ký gói 799.000đ</a></div>
-            </div>
-            <figure class="hybrid-media" data-reveal>
-              <img src="../ladipage/assets/facebook-ads-kstudy-hybrid/fragmented-handoffs.webp" alt="Đội ngũ phối hợp triển khai và tối ưu Facebook Ads" width="1400" height="933" loading="lazy" decoding="async" />
-            </figure>
-          </div>
-        </section>
-
-        <section class="hybrid-section" id="phuong-phap">
-          <div class="container hybrid-split">
-            <figure class="hybrid-media" data-reveal>
-              <img src="../ladipage/assets/facebook-ads-kstudy-hybrid/role-marketing.webp" alt="Người làm marketing xây dựng kế hoạch Facebook Ads" width="1400" height="1050" loading="lazy" decoding="async" />
-            </figure>
-            <div class="hybrid-copy">
-              <p class="section-kicker">Phương pháp học</p>
-              <h2>Hiểu bản chất. Làm trên case thật. Tối ưu theo tín hiệu.</h2>
-              <p>Mỗi nội dung được đặt vào đúng vị trí trong workflow để bạn không học xong rồi vẫn không biết bắt đầu từ đâu.</p>
-              <ul class="hybrid-checklist">
-                <li>Video ngắn, đi thẳng vào một vấn đề và một đầu ra.</li>
-                <li>Checklist giúp kiểm tra trước khi bật quảng cáo.</li>
-                <li>Prompt AI hỗ trợ nghiên cứu, content và kế hoạch test.</li>
-                <li>Dataset Meta AI nối dữ liệu khách hàng với tín hiệu tối ưu cụ thể.</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section class="hybrid-section" id="lo-trinh" aria-labelledby="curriculum-title">
           <div class="container">
-            <header class="hybrid-section-head" data-reveal>
-              <p class="section-kicker">Nội dung khóa học</p>
-              <h2 id="curriculum-title">Sáu module từ nền tảng đến Dataset và scale</h2>
-              <p>Bỏ cách học rời rạc theo số thứ tự. Mỗi module gom các bài đúng theo một năng lực cần hoàn thành.</p>
-            </header>
-            <div class="course-modules-layout">
-              <div class="course-modules">
-                <article class="course-module" data-reveal>
-                  <button type="button" data-module-trigger aria-expanded="true" aria-controls="module-foundation"><strong>Nền tảng và tư duy quảng cáo</strong><span aria-hidden="true">+</span></button>
-                  <div class="course-module-panel" id="module-foundation"><ul>
-                    <li>Nền tảng Facebook Ads 2026 và tư duy phễu <span>08:00</span></li>
-                    <li>Thuật ngữ chuyên ngành trong Quảng Cáo Facebook <span>08:08</span></li>
-                    <li>Những sai lầm phổ biến khi chạy Quảng cáo Facebook <span>06:22</span></li>
-                  </ul></div>
-                </article>
-                <article class="course-module" data-reveal>
-                  <button type="button" data-module-trigger aria-expanded="false" aria-controls="module-account"><strong>Tài khoản, BM và Fanpage</strong><span aria-hidden="true">+</span></button>
-                  <div class="course-module-panel" id="module-account" hidden><ul>
-                    <li>Hướng dẫn mua VIA <span>05:20</span></li>
-                    <li>Tất tần tật về Fanpage Facebook P.1 <span>19:53</span></li>
-                    <li>Tất tần tật về Fanpage Facebook P.2 <span>07:21</span></li>
-                    <li>Hướng dẫn quản trị tài khoản doanh nghiệp BM <span>09:00</span></li>
-                    <li>Hướng dẫn thêm thẻ thanh toán trên Facebook Ads <span>03:00</span></li>
-                  </ul></div>
-                </article>
-                <article class="course-module" data-reveal>
-                  <button type="button" data-module-trigger aria-expanded="false" aria-controls="module-content"><strong>Content và vận hành Fanpage</strong><span aria-hidden="true">+</span></button>
-                  <div class="course-module-panel" id="module-content" hidden><ul>
-                    <li>Hướng dẫn nhanh thiết kế Poster - Cover - Avatar Facebook <span>06:06</span></li>
-                    <li>Đăng bài trên Facebook <span>05:30</span></li>
-                    <li>Tại sao content lại quan trọng, các dạng content phổ biến <span>03:18</span></li>
-                    <li>Hướng dẫn nghiên cứu đối thủ, lập kế hoạch quảng cáo <span>09:04</span></li>
-                  </ul></div>
-                </article>
-                <article class="course-module" data-reveal>
-                  <button type="button" data-module-trigger aria-expanded="false" aria-controls="module-setup"><strong>Thiết lập quảng cáo</strong><span aria-hidden="true">+</span></button>
-                  <div class="course-module-panel" id="module-setup" hidden><ul>
-                    <li>Tổng quan về quảng cáo Facebook <span>17:00</span></li>
-                    <li>Tất tần tật về Target trên Facebook Ads <span>23:30</span></li>
-                    <li>Hướng dẫn lên quảng cáo tin nhắn <span>08:45</span></li>
-                  </ul></div>
-                </article>
-                <article class="course-module" data-reveal>
-                  <button type="button" data-module-trigger aria-expanded="false" aria-controls="module-scale"><strong>Đọc số, tối ưu và scale</strong><span aria-hidden="true">+</span></button>
-                  <div class="course-module-panel" id="module-scale" hidden><ul>
-                    <li>Thiết lập và đọc các chỉ số trên Facebook Ads <span>07:00</span></li>
-                    <li>Scale ngân sách quảng cáo <span>09:27</span></li>
-                  </ul></div>
-                </article>
-                <article class="course-module" data-reveal>
-                  <button type="button" data-module-trigger aria-expanded="false" aria-controls="module-dataset"><strong>Dataset và lọc khách hàng</strong><span aria-hidden="true">+</span></button>
-                  <div class="course-module-panel" id="module-dataset" hidden><ul>
-                    <li>Giới thiệu về Dataset</li>
-                    <li>Dataset - Bán hàng trực tiếp trên Business Suite</li>
-                    <li>Dataset - Bán hàng trên Pancake</li>
-                    <li>Dataset - Bán hàng thông qua website/landing page</li>
-                    <li>Cách loại trừ 90% tệp khách rác không mua hàng trên quảng cáo Facebook</li>
-                  </ul></div>
-                </article>
+            <div class="hybrid-split outcomes-lead">
+              <div class="hybrid-copy">
+                <p class="section-kicker">Bạn sẽ làm được gì</p>
+                <h2>Sau khóa học, bạn tự xây được một hệ thống Facebook Ads hoàn chỉnh</h2>
+                <p>Bạn đi từ nền tảng → tài nguyên → Content → quảng cáo → Dataset → tối ưu → Scale để từng bước sở hữu năng lực tự vận hành, thay vì chỉ biết các thao tác rời rạc.</p>
               </div>
-              <aside class="curriculum-side" data-reveal>
-                <figure class="curriculum-portrait-cutout">
-                  <span class="curriculum-orbit curriculum-orbit-f" aria-hidden="true">f</span>
-                  <span class="curriculum-orbit curriculum-orbit-data" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M7 30V12M7 30h27M12 25l7-8 6 4 8-11"/></svg></span>
-                  <img src="../landing-assets/facebook-ads-kstudy-hero/the-anh.png" alt="Nguyễn Thế Anh - Founder Greezhub Agency" width="1000" height="1000" loading="lazy" decoding="async" />
-                </figure>
-                <div class="curriculum-profile" data-profile-position="waist">
-                  <p class="section-kicker">Trực tiếp hướng dẫn</p>
-                  <h3>Nguyễn Thế Anh</h3>
-                  <ul>
-                    <li>Founder Greezhub Agency</li>
-                    <li>Triển khai hơn 10.000 chiến dịch</li>
-                    <li>Chi tiêu hơn 40 tỷ tiền quảng cáo</li>
-                    <li>Đối tác chính thức của Meta</li>
-                  </ul>
-                </div>
-                <div class="hero-actions curriculum-profile-cta"><a class="btn btn-primary" href="#hoc-phi">Học toàn bộ + AI Agent</a></div>
-              </aside>
+              <figure class="hybrid-media"><img src="../ladipage/assets/facebook-ads-kstudy-hybrid/fragmented-handoffs.webp" alt="Quy trình quảng cáo được chuẩn hóa thành một hệ thống thống nhất" width="1536" height="1024" loading="lazy" decoding="async" /></figure>
             </div>
-          </div>
-        </section>
-
-        <section class="section gold-section" id="san-pham-thuc-te">
-          <div class="container">
-            <div class="section-head">
-              <p class="gold-kicker">Sản phẩm thực tế sau khóa học</p>
-              <h2 class="gold-title">Sau khóa học <span>Facebook Ads Master</span> bạn sẽ làm được</h2>
-              <p class="section-copy">
-                Bạn không chỉ biết bấm nút chạy quảng cáo, mà có đủ khung triển khai, kiểm tra lỗi, kết nối content, Dataset và đọc chỉ số để tối ưu.
-              </p>
+            <div class="course-outcomes outcome-grid" aria-label="Mười hai kết quả sau khóa học">
+              <article class="course-outcome" data-outcome-card="fanpage"><span class="outcome-index">01</span><strong>Fanpage quảng cáo chuyên nghiệp</strong><p>Chuẩn hóa Page, avatar, cover, nội dung và độ tin cậy để sẵn sàng chạy quảng cáo.</p></article>
+              <article class="course-outcome" data-outcome-card="resources"><span class="outcome-index">02</span><strong>Hệ thống tài nguyên quảng cáo an toàn</strong><p>Tổ chức BM, tài khoản, quyền truy cập và thanh toán để hạn chế lỗi vận hành.</p></article>
+              <article class="course-outcome" data-outcome-card="content"><span class="outcome-index">03</span><strong>Hệ thống Content có khả năng bán hàng</strong><p>Nghiên cứu khách hàng, đối thủ, angle, hook, offer và creative trước khi đổ tiền test.</p></article>
+              <article class="course-outcome" data-outcome-card="setup"><span class="outcome-index">04</span><strong>Tự setup quảng cáo đúng cấu trúc</strong><p>Chọn mục tiêu, tệp, ngân sách và dựng Campaign – Ad Set – Ads phù hợp mục tiêu kinh doanh.</p></article>
+              <article class="course-outcome" data-outcome-card="dataset"><span class="outcome-index">05</span><strong>Xây Dataset giúp quảng cáo ngày càng hiểu khách hàng</strong><p>Đưa tín hiệu khách hàng về Meta theo mô hình Inbox, Pancake hoặc Website/Landing Page.</p></article>
+              <article class="course-outcome" data-outcome-card="quality"><span class="outcome-index">06</span><strong>Giảm khách rác – tăng tín hiệu chất lượng</strong><p>Lọc tín hiệu không có giá trị và ưu tiên dữ liệu phản ánh khách hàng thật.</p></article>
+              <article class="course-outcome" data-outcome-card="diagnosis"><span class="outcome-index">07</span><strong>Biết chính xác quảng cáo đang lỗi ở đâu</strong><p>Phân biệt vấn đề nằm ở Creative, tệp, Offer, Landing Page, ngân sách hay Sale.</p></article>
+              <article class="course-outcome" data-outcome-card="optimize"><span class="outcome-index">08</span><strong>Cách tối ưu quảng cáo triệt để</strong><p>Mỗi chỉ số dẫn tới một hành động cụ thể thay vì một nhận xét chung chung.</p></article>
+              <article class="course-outcome" data-outcome-card="decision"><span class="outcome-index">09</span><strong>Biết khi nào tắt – giữ – sửa – tăng ngân sách</strong><p>Dùng tín hiệu và ngưỡng quyết định để tránh tắt nhầm camp tốt hoặc giữ camp kém.</p></article>
+              <article class="course-outcome" data-outcome-card="scale"><span class="outcome-index">10</span><strong>Scale quảng cáo có nguyên tắc</strong><p>Biết khi nào tăng ngân sách, nhân chiến dịch hay cần thêm dữ liệu trước khi scale.</p></article>
+              <article class="course-outcome" data-outcome-card="testing"><span class="outcome-index">11</span><strong>Framework test quảng cáo có hệ thống</strong><p>Mỗi lần chạy tạo thêm dữ liệu, insight và tín hiệu cho lần triển khai tiếp theo.</p></article>
+              <article class="course-outcome" data-outcome-card="operator"><span class="outcome-index">12</span><strong>Khả năng tự vận hành Facebook Ads</strong><p>Kiểm soát hệ thống, dữ liệu và tiền quảng cáo thay vì phụ thuộc hoàn toàn vào người chạy thuê.</p></article>
             </div>
-            <div class="deliverable-grid">
-              <article class="deliverable-card">
-                <div class="deliverable-visual">
-                  <span class="deliverable-badge">Automation</span>
-                  <img class="deliverable-thumb" src="../ladipage/assets/fbads-output-automation.svg" alt="Thumbnail hệ thống quảng cáo tự động" />
-                </div>
-                <div class="deliverable-body">
-                  <h3>Xây dựng được hệ thống quảng cáo tự động</h3>
-                  <p>Biết cách nối quảng cáo, inbox, landing, dữ liệu khách hàng và bước chăm sóc lại để tiền ads không rơi khỏi phễu.</p>
-                  <div class="deliverable-result">Có flow từ traffic đến tư vấn và chăm sóc lại</div>
-                </div>
-              </article>
-              <article class="deliverable-card">
-                <div class="deliverable-visual">
-                  <span class="deliverable-badge">Fix lỗi</span>
-                  <img class="deliverable-thumb" src="../ladipage/assets/fbads-output-fix.svg" alt="Thumbnail tự fix lỗi Facebook Ads chuyên sâu" />
-                </div>
-                <div class="deliverable-body">
-                  <h3>Hiểu Facebook và tự fix lỗi chuyên sâu</h3>
-                  <p>Biết kiểm tra page, tài khoản, tracking, policy, tín hiệu học máy và các điểm khiến chiến dịch không ổn định.</p>
-                  <div class="deliverable-result">Không phụ thuộc hoàn toàn vào người chạy thuê</div>
-                </div>
-              </article>
-              <article class="deliverable-card">
-                <div class="deliverable-visual">
-                  <span class="deliverable-badge">Skill stack</span>
-                  <img class="deliverable-thumb" src="../ladipage/assets/fbads-output-skill-stack.svg" alt="Thumbnail kết nối content đến digital" />
-                </div>
-                <div class="deliverable-body">
-                  <h3>Kết nối nhiều kỹ năng từ content đến digital</h3>
-                  <p>Nắm cách biến insight thành content, offer, landing, chiến dịch quảng cáo và hệ thống CRM/Data để bán hàng có logic.</p>
-                  <div class="deliverable-result">Không học rời rạc từng mẹo nhỏ</div>
-                </div>
-              </article>
-              <article class="deliverable-card is-featured">
-                <div class="deliverable-visual">
-                  <span class="deliverable-badge">Dataset Meta AI</span>
-                  <img class="deliverable-thumb" src="../ladipage/assets/fbads-output-dataset-ai.svg" alt="Minh họa kết nối Dataset với Meta AI" />
-                </div>
-                <div class="deliverable-body">
-                  <h3>Kết nối Dataset AI</h3>
-                  <p>Biết chọn và kết nối nguồn dữ liệu phù hợp với từng loại hình kinh doanh để Meta AI nhận tín hiệu khách hàng rõ ràng hơn.</p>
-                  <div class="deliverable-result">Giúp hệ thống học từ dữ liệu sạch hơn</div>
-                </div>
-              </article>
-            </div>
+            <div class="hero-actions section-action"><a class="btn btn-primary" href="#hoc-phi" data-meta-cta data-cta-id="outcomes-primary" data-cta-text="Nhận toàn bộ hệ thống Facebook Ads – 799.000đ" data-cta>Nhận toàn bộ hệ thống Facebook Ads – 799.000đ</a></div>
           </div>
         </section>
 
         <section class="section agent-proof-section" id="agent-tu-dong-len-quang-cao">
           <div class="container">
             <div class="agent-proof-head">
-              <p class="agent-proof-kicker">AI Agent thực chiến</p>
+              <p class="agent-proof-kicker">AI Agent là thành phần cốt lõi</p>
               <h2>Một câu lệnh. <span>Agent tự động lên toàn bộ quảng cáo.</span></h2>
-              <p class="agent-proof-copy">
-                Agent tự phân tích yêu cầu, dựng Campaign - Ad set - mẫu quảng cáo, để PAUSED an toàn và trả lại đầy đủ ID để bạn kiểm tra trước khi bật.
-              </p>
+              <p class="agent-proof-copy">AI Agent hỗ trợ lập kế hoạch và trực tiếp dựng Campaign – Ad Set – Ads ở trạng thái PAUSED để bạn duyệt trước.</p>
             </div>
-
-            <figure class="agent-demo-frame">
-              <figcaption class="agent-demo-label">DEMO THỰC TẾ • 6 CHIẾN DỊCH</figcaption>
+            <div class="agent-demo-frame">
+              <span class="agent-demo-label">Demo thực tế · 6 chiến dịch · PAUSED · có ID</span>
               <picture>
                 <source media="(prefers-reduced-motion: reduce)" srcset="../ladipage/assets/facebook-ads-agent-demo-poster.webp" />
-                <img
-                  src="../ladipage/assets/facebook-ads-agent-demo.gif"
-                  alt="Demo Agent tự động tạo sáu chiến dịch quảng cáo và để ở trạng thái PAUSED"
-                  width="960"
-                  height="490"
-                  loading="lazy"
-                  decoding="async"
-                />
+                <img src="../ladipage/assets/facebook-ads-agent-demo.gif" alt="Demo AI Agent dựng sáu chiến dịch Facebook Ads ở trạng thái tạm dừng" width="960" height="490" loading="lazy" decoding="async" />
               </picture>
-            </figure>
-
-            <div class="agent-proof-grid" aria-label="Kết quả Agent thực hiện">
-              <article class="agent-proof-item">
-                <strong>Tạo 6 chiến dịch</strong>
-                <span>Tự dựng Campaign, Ad set và mẫu quảng cáo.</span>
-              </article>
-              <article class="agent-proof-item">
-                <strong>PAUSED an toàn</strong>
-                <span>Không phát sinh chi tiêu trước khi bạn duyệt.</span>
-              </article>
-              <article class="agent-proof-item">
-                <strong>Đầy đủ ID</strong>
-                <span>Campaign ID, Ad set ID và Ad ID được trả về rõ ràng.</span>
-              </article>
             </div>
+            <div class="agent-proof-grid">
+              <article class="agent-proof-item"><strong>Lập kế hoạch trước khi dựng</strong><span>Nghiên cứu sản phẩm, khách hàng, angle và khung test trong cùng một flow.</span></article>
+              <article class="agent-proof-item"><strong>Dựng đúng cấu trúc</strong><span>Tạo Campaign – Ad Set – Ads theo kế hoạch, không chỉ trả về một danh sách gợi ý.</span></article>
+              <article class="agent-proof-item"><strong>Bạn giữ quyền quyết định</strong><span>Mọi thành phần được tạo ở trạng thái PAUSED để bạn kiểm tra trước khi bật ngân sách.</span></article>
+            </div>
+            <p class="agent-proof-close">Facebook Ads Master = Knowledge + Framework + Tools + AI Agent.</p>
+          </div>
+        </section>
 
-            <p class="agent-proof-close">Không chỉ lên kế hoạch. Agent trực tiếp triển khai vào tài khoản quảng cáo.</p>
+        <section class="hybrid-section is-cream" id="feedback">
+          <div class="container">
+            <div class="hybrid-section-head">
+              <p class="section-kicker">Phản hồi thực tế</p>
+              <h2>Không chỉ là lý thuyết — đây là cách hệ thống được triển khai thực tế</h2>
+              <p>Năm phản hồi dưới đây cho thấy cách học viên dùng kế hoạch, lời khuyên triển khai và AI Agent trong những tình huống thực tế.</p>
+            </div>
+            <div class="proof-case-grid">
+              <figure class="proof-case-card"><img src="../ladipage/assets/zalo-support/zalo-proof-01-agent-plan.webp" alt="Phản hồi thực tế về kế hoạch quảng cáo từ AI Agent" width="640" height="1385" loading="lazy" decoding="async" /><figcaption>Kế hoạch Agent</figcaption></figure>
+              <figure class="proof-case-card"><img src="../ladipage/assets/zalo-support/zalo-proof-02-marketing-advice.webp" alt="Trao đổi thực tế về nội dung và tối ưu quảng cáo" width="640" height="1385" loading="lazy" decoding="async" /><figcaption>Tư vấn triển khai</figcaption></figure>
+              <figure class="proof-case-card"><img src="../ladipage/assets/zalo-support/zalo-proof-03-course-feedback.webp" alt="Phản hồi thực tế sau khi học Facebook Ads Master" width="640" height="1385" loading="lazy" decoding="async" /><figcaption>Phản hồi khóa học</figcaption></figure>
+              <figure class="proof-case-card"><img src="../ladipage/assets/zalo-support/zalo-proof-10-agent-consultation.webp" alt="Trao đổi thực tế về cách ứng dụng AI Agent cho quảng cáo" width="640" height="1385" loading="lazy" decoding="async" /><figcaption>Ứng dụng AI Agent</figcaption></figure>
+              <figure class="proof-case-card"><img src="../ladipage/assets/zalo-support/zalo-proof-12-support-schedule.webp" alt="Trao đổi hỗ trợ và sắp xếp hướng dẫn thực tế" width="640" height="1385" loading="lazy" decoding="async" /><figcaption>Hướng dẫn thực tế</figcaption></figure>
+            </div>
+            <div class="hero-actions section-action"><a class="btn btn-primary" href="#hoc-phi" data-meta-cta data-cta-id="agent-primary" data-cta-text="Nhận toàn bộ hệ thống Facebook Ads – 799.000đ" data-cta>Nhận toàn bộ hệ thống Facebook Ads – 799.000đ</a></div>
+          </div>
+        </section>
 
-            <div class="zalo-proof-block">
-              <div class="zalo-proof-head">
-                <p class="agent-proof-kicker">Hỗ trợ thực tế</p>
-                <h3>Không chỉ xem video. Vướng ở đâu, được hỗ trợ triển khai ở đó.</h3>
-                <p class="zalo-proof-copy">
-                  Hỗ trợ Zoom 1:1 trên chính vấn đề của từng học viên gặp phải. Setup mẫu, test quảng cáo và đồng hành cùng học viên trong quá trình triển khai thực tế.
-                </p>
-              </div>
-
-              <div class="zalo-proof-marquee" aria-label="Phản hồi và thời lượng hỗ trợ thực tế từ học viên">
-                <div class="zalo-proof-track">
-                  <div class="zalo-proof-sequence">
-                    <figure class="zalo-proof-card" data-zalo-proof="agent-plan">
-                      <img src="../ladipage/assets/zalo-support/zalo-proof-01-agent-plan.webp" alt="Phản hồi học viên về Agent lập kế hoạch và lên quảng cáo tự động" width="640" height="1385" loading="lazy" decoding="async" />
-                    </figure>
-                    <figure class="zalo-proof-card" data-zalo-proof="marketing-advice">
-                      <img src="../ladipage/assets/zalo-support/zalo-proof-02-marketing-advice.webp" alt="Trao đổi hỗ trợ tối ưu nội dung quảng cáo cho khách hàng" width="640" height="1385" loading="lazy" decoding="async" />
-                    </figure>
-                    <figure class="zalo-proof-card" data-zalo-proof="course-feedback">
-                      <img src="../ladipage/assets/zalo-support/zalo-proof-03-course-feedback.webp" alt="Phản hồi học viên sau khi học Facebook Ads Master" width="640" height="1385" loading="lazy" decoding="async" />
-                    </figure>
-                    <figure class="zalo-proof-card" data-zalo-proof="call-34m09">
-                      <img src="../ladipage/assets/zalo-support/zalo-proof-04-call-34m09.webp" alt="Cuộc gọi hỗ trợ thực tế 34 phút 9 giây" width="640" height="1384" loading="lazy" decoding="async" />
-                    </figure>
-                    <figure class="zalo-proof-card" data-zalo-proof="call-55m50">
-                      <img src="../ladipage/assets/zalo-support/zalo-proof-05-call-55m50.webp" alt="Cuộc gọi hỗ trợ thực tế 55 phút 50 giây" width="640" height="1386" loading="lazy" decoding="async" />
-                    </figure>
-                    <figure class="zalo-proof-card" data-zalo-proof="calls-21m59-46m04">
-                      <img src="../ladipage/assets/zalo-support/zalo-proof-06-calls-21m59-46m04.webp" alt="Hai cuộc gọi hỗ trợ thực tế 21 phút 59 giây và 46 phút 4 giây" width="640" height="1384" loading="lazy" decoding="async" />
-                    </figure>
-                    <figure class="zalo-proof-card" data-zalo-proof="call-30m59">
-                      <img src="../ladipage/assets/zalo-support/zalo-proof-07-call-30m59.webp" alt="Cuộc gọi hỗ trợ thực tế 30 phút 59 giây" width="640" height="1384" loading="lazy" decoding="async" />
-                    </figure>
-                    <figure class="zalo-proof-card" data-zalo-proof="call-36m10">
-                      <img src="../ladipage/assets/zalo-support/zalo-proof-08-call-36m10.webp" alt="Cuộc gọi hỗ trợ thực tế 36 phút 10 giây" width="640" height="1384" loading="lazy" decoding="async" />
-                    </figure>
-                    <figure class="zalo-proof-card" data-zalo-proof="call-22m51">
-                      <img src="../ladipage/assets/zalo-support/zalo-proof-09-call-22m51.webp" alt="Cuộc gọi hỗ trợ thực tế 22 phút 51 giây" width="640" height="1384" loading="lazy" decoding="async" />
-                    </figure>
-                    <figure class="zalo-proof-card" data-zalo-proof="agent-consultation">
-                      <img src="../ladipage/assets/zalo-support/zalo-proof-10-agent-consultation.webp" alt="Trao đổi tư vấn cách dùng Agent tối ưu video quảng cáo" width="640" height="1385" loading="lazy" decoding="async" />
-                    </figure>
-                    <figure class="zalo-proof-card" data-zalo-proof="call-23m59">
-                      <img src="../ladipage/assets/zalo-support/zalo-proof-11-call-23m59.webp" alt="Cuộc gọi hỗ trợ thực tế 23 phút 59 giây" width="640" height="1384" loading="lazy" decoding="async" />
-                    </figure>
-                    <figure class="zalo-proof-card" data-zalo-proof="support-schedule">
-                      <img src="../ladipage/assets/zalo-support/zalo-proof-12-support-schedule.webp" alt="Trao đổi hỗ trợ học viên và sắp xếp lịch hướng dẫn" width="640" height="1385" loading="lazy" decoding="async" />
-                    </figure>
-                  </div>
-
-                  <div class="zalo-proof-sequence" aria-hidden="true">
-                    <figure class="zalo-proof-card"><img src="../ladipage/assets/zalo-support/zalo-proof-01-agent-plan.webp" alt="" width="640" height="1385" loading="lazy" decoding="async" /></figure>
-                    <figure class="zalo-proof-card"><img src="../ladipage/assets/zalo-support/zalo-proof-02-marketing-advice.webp" alt="" width="640" height="1385" loading="lazy" decoding="async" /></figure>
-                    <figure class="zalo-proof-card"><img src="../ladipage/assets/zalo-support/zalo-proof-03-course-feedback.webp" alt="" width="640" height="1385" loading="lazy" decoding="async" /></figure>
-                    <figure class="zalo-proof-card"><img src="../ladipage/assets/zalo-support/zalo-proof-04-call-34m09.webp" alt="" width="640" height="1384" loading="lazy" decoding="async" /></figure>
-                    <figure class="zalo-proof-card"><img src="../ladipage/assets/zalo-support/zalo-proof-05-call-55m50.webp" alt="" width="640" height="1386" loading="lazy" decoding="async" /></figure>
-                    <figure class="zalo-proof-card"><img src="../ladipage/assets/zalo-support/zalo-proof-06-calls-21m59-46m04.webp" alt="" width="640" height="1384" loading="lazy" decoding="async" /></figure>
-                    <figure class="zalo-proof-card"><img src="../ladipage/assets/zalo-support/zalo-proof-07-call-30m59.webp" alt="" width="640" height="1384" loading="lazy" decoding="async" /></figure>
-                    <figure class="zalo-proof-card"><img src="../ladipage/assets/zalo-support/zalo-proof-08-call-36m10.webp" alt="" width="640" height="1384" loading="lazy" decoding="async" /></figure>
-                    <figure class="zalo-proof-card"><img src="../ladipage/assets/zalo-support/zalo-proof-09-call-22m51.webp" alt="" width="640" height="1384" loading="lazy" decoding="async" /></figure>
-                    <figure class="zalo-proof-card"><img src="../ladipage/assets/zalo-support/zalo-proof-10-agent-consultation.webp" alt="" width="640" height="1385" loading="lazy" decoding="async" /></figure>
-                    <figure class="zalo-proof-card"><img src="../ladipage/assets/zalo-support/zalo-proof-11-call-23m59.webp" alt="" width="640" height="1384" loading="lazy" decoding="async" /></figure>
-                    <figure class="zalo-proof-card"><img src="../ladipage/assets/zalo-support/zalo-proof-12-support-schedule.webp" alt="" width="640" height="1385" loading="lazy" decoding="async" /></figure>
-                  </div>
-                </div>
+        <section class="hybrid-section" id="giang-vien">
+          <div class="container hybrid-split instructor-split">
+            <figure class="instructor-portrait"><img src="../landing-assets/facebook-ads-kstudy-hero/the-anh.png" alt="Nguyễn Thế Anh - CEO Greezhub Việt Nam" width="1000" height="1000" loading="lazy" decoding="async" /></figure>
+            <div class="hybrid-copy">
+              <p class="section-kicker">Người hướng dẫn</p>
+              <h2>Trực tiếp hướng dẫn bởi Nguyễn Thế Anh</h2>
+              <p>CEO Greezhub Việt Nam. Nội dung khóa học được xây từ quá trình trực tiếp vận hành quảng cáo cho doanh nghiệp, không tổng hợp lại từ lý thuyết.</p>
+              <div class="instructor-proof-grid">
+                <article><strong>10.000+</strong><span>chiến dịch đã trực tiếp triển khai và phân tích</span></article>
+                <article><strong>40 tỷ+</strong><span>ngân sách quảng cáo trong kinh nghiệm vận hành thực tế</span></article>
+                <article><strong>Thực chiến</strong><span>từ Content, quảng cáo, Landing Page đến dữ liệu</span></article>
               </div>
             </div>
           </div>
         </section>
 
-        <section class="section solution">
+        <section class="hybrid-section is-cream" id="bo-cong-cu">
           <div class="container">
-            <div class="section-head">
-              <p class="section-kicker">Bạn nhận được gì</p>
-              <h2>Không chỉ là video, mà là bộ công cụ triển khai.</h2>
+            <div class="hybrid-split tools-lead">
+              <div class="hybrid-copy">
+                <p class="section-kicker">Bộ công cụ triển khai</p>
+                <h2>Không chỉ xem video – bạn có bộ công cụ để triển khai</h2>
+                <p>Dùng lại checklist, prompt, framework test và bảng ra quyết định trong công việc hằng ngày.</p>
+              </div>
+              <figure class="hybrid-media"><img src="../ladipage/assets/facebook-ads-kstudy-hybrid/role-marketing.webp" alt="Người làm marketing vận hành hệ thống quảng cáo bằng công cụ và dữ liệu" width="1536" height="1024" loading="lazy" decoding="async" /></figure>
             </div>
-            <div class="bonus-grid">
-              <article class="panel">
-                <div class="panel-icon">✓</div>
-                <h3>Checklist setup chiến dịch</h3>
-                <p>Giúp bạn biết cần chuẩn bị gì trước khi bật quảng cáo để tránh mất tiền vì lỗi nền tảng.</p>
-              </article>
-              <article class="panel">
-                <div class="panel-icon">✓</div>
-                <h3>Prompt viết angle và content ads</h3>
-                <p>Dùng AI để tạo nhiều góc nội dung, biến insight khách hàng thành quảng cáo có lý do click.</p>
-              </article>
-              <article class="panel">
-                <div class="panel-icon">✓</div>
-                <h3>Bảng đọc chỉ số tối ưu</h3>
-                <p>Biết nên sửa creative, landing, tệp hay ngân sách dựa trên tín hiệu từ từng chỉ số.</p>
-              </article>
-              <article class="panel">
-                <div class="panel-icon">✓</div>
-                <h3>Gói AI Agent lên kế hoạch quảng cáo</h3>
-                <p>Với gói 799.000đ, bạn nhận AI Agent giúp lên kế hoạch quảng cáo, gợi ý angle và khung test để triển khai nhanh hơn.</p>
-              </article>
+            <div class="tool-grid">
+              <article class="learning-format-card"><div class="panel-icon">✓</div><h3>Checklist kiểm tra trước khi chạy</h3><p>Rà tài nguyên, cấu trúc và tracking trước khi bật ngân sách.</p></article>
+              <article class="learning-format-card"><div class="panel-icon">AI</div><h3>Prompt nghiên cứu &amp; Content</h3><p>Nghiên cứu khách hàng, đối thủ, angle, hook và offer có hệ thống.</p></article>
+              <article class="learning-format-card"><div class="panel-icon">↻</div><h3>Framework test quảng cáo</h3><p>Mỗi lần test có giả thuyết, tín hiệu cần đọc và điều kiện ra quyết định.</p></article>
+              <article class="learning-format-card"><div class="panel-icon">↗</div><h3>Bảng quyết định tối ưu</h3><p>Biết khi nào giữ, sửa, tắt hay scale dựa trên dữ liệu.</p></article>
+            </div>
+            <div class="model-strip" aria-label="Ba mô hình triển khai">
+              <span>Bán qua Inbox</span><span>Website / Landing Page</span><span>Lead &amp; tư vấn</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="section value-stack-section" id="gia-tri">
+          <div class="container">
+            <div class="section-head value-stack-head">
+              <p class="section-kicker">Tổng giá trị nhận được</p>
+              <h2>Bạn nhận toàn bộ hệ thống này trong một lần đăng ký</h2>
+            </div>
+            <div class="value-stack-grid">
+              <article class="value-stack-card"><span>01</span><h3>Facebook Ads Master 2026 — Giá trị 2.999.000đ</h3><p>Hệ thống từ Fanpage, tài nguyên, Content, quảng cáo, Dataset đến tối ưu và Scale.</p></article>
+              <article class="value-stack-card"><span>02</span><h3>AI Agent Facebook Ads — Giá trị 1.999.000đ</h3><p>Hỗ trợ nghiên cứu, lập kế hoạch và dựng Campaign – Ad Set – Ads ở trạng thái PAUSED.</p></article>
+              <article class="value-stack-card"><span>03</span><h3>Bộ Prompt + Checklist + Framework tối ưu — Giá trị 999.000đ</h3><p>Prompt nghiên cứu, checklist setup, khung test và bảng ra quyết định tối ưu.</p></article>
+            </div>
+            <div class="value-stack-total">
+              <p>Tổng giá trị: <strong>5.997.000đ</strong></p>
+              <p>Hôm nay bạn sở hữu toàn bộ với <strong>799.000đ</strong></p>
             </div>
           </div>
         </section>
 
         <section id="hoc-phi" class="section pricing">
-          <div class="container pricing-grid">
-            <div class="plan-grid" aria-label="Chọn gói học Facebook Ads Master 2026">
-              <article class="plan-card is-featured is-selected" data-plan-card="zoom-kit">
-                <span class="plan-ribbon">Gói đang mở</span>
-                <span class="plan-name">Gói AI Agent</span>
-                <div class="plan-price">
-                  <strong>799K</strong>
-                  <span>video + AI Agent</span>
-                </div>
-                <p>Gói nên chọn nếu bạn muốn học xong có ngay AI Agent lên kế hoạch quảng cáo để triển khai thực tế nhanh hơn.</p>
-                <ul class="plan-features">
-                  <li>Toàn bộ nội dung khóa học Facebook Ads Master 2026</li>
-                  <li>Tặng AI Agent lên kế hoạch quảng cáo</li>
-                  <li>Prompt phân tích sản phẩm, khách hàng và angle ads</li>
-                  <li>Khung plan test quảng cáo 7 ngày</li>
-                  <li>Phù hợp nhất để bắt đầu triển khai</li>
-                </ul>
-              </article>
-
+          <div class="container">
+            <div class="section-head pricing-head">
+              <p class="section-kicker">Học phí &amp; đăng ký</p>
+              <h2>Hôm nay bạn sở hữu toàn bộ với 799.000đ</h2>
+              <p class="section-copy">Một chiến dịch test sai 300.000đ/ngày trong 3 ngày đã tiêu 900.000đ. Mục tiêu không phải để bạn biết thêm Facebook Ads, mà để biết tiền quảng cáo đang đi đâu và phải làm gì tiếp theo.</p>
             </div>
-
-            <aside class="form-card">
-              <h3>Đăng ký và nhận khóa học Facebook Ads Master 2026 ngay hôm nay</h3>
-              <p id="payment-plan-summary">Học toàn bộ nội dung Facebook Ads Master 2026 và nhận AI Agent lên kế hoạch quảng cáo để bắt đầu triển khai ngay.</p>
-              <form id="payment-form" class="form" data-invoice-checkout>
-                <input type="hidden" name="paymentPlan" value="zoom-kit" />
-                <div class="selected-plan-note" id="selected-plan-note">Gói đang chọn: AI Agent 799.000đ - học video và nhận AI Agent lên kế hoạch quảng cáo.</div>
-                <div class="field">
-                  <label for="name">Họ tên</label>
-                  <input id="name" name="name" type="text" autocomplete="name" required placeholder="Ví dụ: Nguyễn Văn Anh" />
-                </div>
-                <div class="field">
-                  <label for="email">Email nhận quyền học</label>
-                  <input id="email" name="email" type="email" autocomplete="email" required placeholder="email@gmail.com" />
-                </div>
-                <div class="field">
-                  <label for="phone">Số điện thoại / Zalo</label>
-                  <input id="phone" name="phone" type="tel" autocomplete="tel" required placeholder="09..." />
-                </div>
-                <label class="ebook-addon" for="ebook-addon">
-                  <input id="ebook-addon" name="ebookAddon" type="checkbox" />
-                  <span class="ebook-addon-control" aria-hidden="true"></span>
-                  <span>
-                    <strong>Mua kèm Ebook Facebook Ads</strong>
-                    <span class="ebook-addon-price">299.000đ <del>799.000đ</del></span>
-                  </span>
-                </label>
-                <button class="btn btn-primary" type="submit" id="payment-submit">Nhận khóa học + AI Agent - 799.000đ</button>
-              </form>
-              <div class="secure-note">
-                <span>Thanh toán qua QR ngân hàng, hệ thống đối soát tự động.</span>
-                <span>Thông tin dùng để tạo tài khoản học và hỗ trợ triển khai.</span>
+            <div class="pricing-grid">
+              <div class="plan-grid" aria-label="Gói học Facebook Ads Master 2026">
+                <article class="plan-card is-featured is-selected" data-plan-card="zoom-kit">
+                  <span class="plan-ribbon">Gói đang mở</span>
+                  <span class="plan-name">Toàn bộ hệ thống Facebook Ads</span>
+                  <div class="plan-price"><strong>799K</strong><span>khóa video + AI Agent + bộ công cụ</span></div>
+                  <p>Gói 799.000đ gồm khóa video, AI Agent và bộ công cụ triển khai. Zoom 1:1 là dịch vụ riêng, không nằm trong gói 799.000đ.</p>
+                  <ul class="plan-features">
+                    <li>Toàn bộ hệ thống Facebook Ads Master 2026</li>
+                    <li>AI Agent hỗ trợ lập kế hoạch và dựng quảng cáo PAUSED</li>
+                    <li>Prompt nghiên cứu khách hàng, đối thủ và Content</li>
+                    <li>Checklist setup + framework test + bảng tối ưu</li>
+                    <li>Quyền học và hướng dẫn nhận AI Agent theo gói</li>
+                  </ul>
+                </article>
               </div>
-            </aside>
+
+              <aside class="form-card">
+                <h3>Nhận toàn bộ hệ thống Facebook Ads – 799.000đ</h3>
+                <p id="payment-plan-summary">Khóa video, AI Agent và bộ công cụ để bạn bắt đầu triển khai có hệ thống.</p>
+                <form id="payment-form" class="form" data-invoice-checkout>
+                  <input type="hidden" name="paymentPlan" value="zoom-kit" />
+                  <div class="selected-plan-note" id="selected-plan-note">Gói đang chọn: toàn bộ hệ thống Facebook Ads 799.000đ.</div>
+                  <div class="field"><label for="name">Họ tên</label><input id="name" name="name" type="text" autocomplete="name" required placeholder="Ví dụ: Nguyễn Văn Anh" /></div>
+                  <div class="field"><label for="email">Email nhận quyền học</label><input id="email" name="email" type="email" autocomplete="email" required placeholder="email@gmail.com" /></div>
+                  <div class="field"><label for="phone">Số điện thoại / Zalo</label><input id="phone" name="phone" type="tel" autocomplete="tel" required placeholder="09..." /></div>
+                  <label class="ebook-addon" for="ebook-addon">
+                    <input id="ebook-addon" name="ebookAddon" type="checkbox" />
+                    <span class="ebook-addon-control" aria-hidden="true"></span>
+                    <span><strong>Mua kèm Ebook Facebook Ads</strong><span class="ebook-addon-price">299.000đ <del>799.000đ</del></span></span>
+                  </label>
+                  <button class="btn btn-primary" type="submit" id="payment-submit">Nhận toàn bộ hệ thống Facebook Ads – 799.000đ</button>
+                </form>
+                <div class="secure-note">
+                  <span>Thanh toán qua QR ngân hàng, hệ thống đối soát tự động.</span>
+                  <span>Thông tin dùng để tạo tài khoản học và gửi hướng dẫn nhận AI Agent.</span>
+                </div>
+              </aside>
+            </div>
           </div>
         </section>
 
         <section id="faq" class="section">
           <div class="container">
-            <div class="section-head">
-              <p class="section-kicker">Câu hỏi thường gặp</p>
-              <h2>Trước khi bạn đăng ký.</h2>
-            </div>
+            <div class="section-head"><p class="section-kicker">FAQ</p><h2>Trước khi bạn đăng ký</h2></div>
             <div class="faq-list">
-              <details open>
-                <summary>
-                  <span class="number">?</span>
-                  <h3>Người mới hoàn toàn có học được không?</h3>
-                </summary>
-                <p>Có. Khóa được thiết kế từ nền tảng: hiểu cấu trúc quảng cáo, chuẩn bị tài sản, dựng content, lên camp test và đọc chỉ số.</p>
-              </details>
-              <details>
-                <summary>
-                  <span class="number">?</span>
-                  <h3>Khóa này có cam kết ra đơn không?</h3>
-                </summary>
-                <p>Không cam kết kết quả ảo. Khóa giúp bạn có quy trình đúng để giảm sai lầm, biết đọc dữ liệu và tăng xác suất ra đơn.</p>
-              </details>
-              <details>
-                <summary>
-                  <span class="number">?</span>
-                  <h3>Tôi cần ngân sách quảng cáo bao nhiêu để thực hành?</h3>
-                </summary>
-                <p>Bạn có thể bắt đầu bằng ngân sách nhỏ để test dữ liệu. Quan trọng là test đúng cấu trúc, không đổ tiền lớn khi chưa có tín hiệu.</p>
-              </details>
-              <details>
-                <summary>
-                  <span class="number">?</span>
-                  <h3>Sau khóa này học tiếp gì?</h3>
-                </summary>
-                <p>Khi đã nắm nền tảng, bạn có thể lên Performance Marketing With AI để học sâu hơn về funnel, creative testing, tracking và scale.</p>
-              </details>
-              <details>
-                <summary>
-                  <span class="number">?</span>
-                  <h3>Chưa có page hoặc tài khoản quảng cáo ổn định thì có học được không?</h3>
-                </summary>
-                <p>Có. Một phần quan trọng của khóa là checklist chuẩn bị tài sản, kiểm tra page, tài khoản, tracking và các lỗi nền tảng trước khi đổ tiền chạy ads.</p>
-              </details>
-              <details>
-                <summary>
-                  <span class="number">?</span>
-                  <h3>Tôi không rành kỹ thuật có setup Dataset Meta AI được không?</h3>
-                </summary>
-                <p>Được. Khóa đi theo hướng chủ doanh nghiệp có thể hiểu và triển khai từng bước. Phần Dataset tập trung vào cách chọn đúng nguồn dữ liệu, kết nối theo mô hình kinh doanh và kiểm tra tín hiệu Meta đang nhận.</p>
-              </details>
-              <details>
-                <summary>
-                  <span class="number">?</span>
-                  <h3>Học xong có được hỗ trợ sửa quảng cáo không?</h3>
-                </summary>
-                <p>Hiện form đăng ký mở gói AI Agent 799.000đ, gồm toàn bộ khóa học và AI Agent lên kế hoạch quảng cáo.</p>
-              </details>
-              <details>
-                <summary>
-                  <span class="number">?</span>
-                  <h3>Tôi là chủ doanh nghiệp bận, học thế nào cho hiệu quả?</h3>
-                </summary>
-                <p>Bạn nên học theo từng module, làm checklist ngay trên sản phẩm của mình và ưu tiên dựng một chiến dịch test nhỏ trước. Mục tiêu không phải xem thật nhanh, mà là có hệ thống đầu tiên đo được.</p>
-              </details>
-              <details>
-                <summary>
-                  <span class="number">?</span>
-                  <h3>Thanh toán xong nhận quyền học thế nào?</h3>
-                </summary>
-                <p>Sau khi thanh toán, thông tin đăng ký dùng để tạo quyền học và hỗ trợ triển khai theo đúng gói đã chọn. Bạn nên điền đúng email, số điện thoại hoặc Zalo để nhận hướng dẫn.</p>
-              </details>
+              <details><summary><span class="number">?</span><h3>Người mới hoàn toàn có học được không?</h3></summary><p>Có. Lộ trình đi từ nền tảng đến tài nguyên, Content, setup quảng cáo, Dataset và tối ưu. Bạn không cần có kinh nghiệm trước, nhưng cần thực hành trực tiếp trên sản phẩm hoặc tài khoản của mình.</p></details>
+              <details><summary><span class="number">?</span><h3>Khóa này có cam kết ra đơn không?</h3></summary><p>Không cam kết kết quả ảo. Khóa giúp bạn có quy trình đúng để giảm sai lầm, đọc dữ liệu và ra quyết định tốt hơn khi triển khai quảng cáo.</p></details>
+              <details><summary><span class="number">?</span><h3>Tôi cần ngân sách quảng cáo bao nhiêu để thực hành?</h3></summary><p>Bạn có thể bắt đầu bằng ngân sách test nhỏ. Quan trọng là test đúng cấu trúc, có ngưỡng ra quyết định và không đổ ngân sách lớn khi chưa đủ tín hiệu.</p></details>
+              <details><summary><span class="number">?</span><h3>Tôi đã chạy Facebook Ads rồi thì khóa này còn phù hợp không?</h3></summary><p>Phù hợp nếu bạn vẫn thiếu một hệ thống để chuẩn hóa tài nguyên, đọc số, setup Dataset, test và scale có nguyên tắc. Bạn có thể đi nhanh qua phần nền tảng và tập trung vào phần vận hành.</p></details>
+              <details><summary><span class="number">?</span><h3>Tôi không rành kỹ thuật có setup Dataset được không?</h3></summary><p>Được. Phần Dataset đi theo từng mô hình bán qua Inbox, phần mềm bán hàng hoặc Website/Landing Page để bạn hiểu cần thu tín hiệu gì và kiểm tra Meta đang nhận gì.</p></details>
+              <details><summary><span class="number">?</span><h3>Tôi có cần biết code để học không?</h3></summary><p>Không cần biết code để học phần lớn nội dung. Với các phần tracking kỹ thuật hơn, bạn được hướng dẫn theo quy trình và có thể phối hợp với công cụ hoặc đơn vị làm website khi cần.</p></details>
+              <details><summary><span class="number">?</span><h3>Học xong có được hỗ trợ sửa quảng cáo không?</h3></summary><p>Gói 799.000đ gồm khóa video, AI Agent và bộ công cụ triển khai. Zoom 1:1 là dịch vụ riêng, không nằm trong gói 799.000đ.</p></details>
+              <details><summary><span class="number">?</span><h3>AI Agent có tự bật quảng cáo và tiêu tiền không?</h3></summary><p>Không. Theo cơ chế hiện tại, Agent dựng Campaign – Ad Set – Ads ở trạng thái PAUSED để bạn kiểm tra và chủ động quyết định trước khi bật.</p></details>
+              <details><summary><span class="number">?</span><h3>Thanh toán xong nhận quyền học thế nào?</h3></summary><p>Sau khi thanh toán, thông tin đăng ký được dùng để tạo quyền học và gửi hướng dẫn nhận AI Agent theo gói đã chọn. Hãy điền đúng email và số điện thoại/Zalo.</p></details>
             </div>
           </div>
         </section>
 
-        <section class="section final-cta">
+        <section class="section final-cta" id="bat-dau">
           <div class="container">
             <p class="eyebrow">Facebook Ads Master 2026</p>
-            <h2>Bắt đầu xây dựng hệ thống quảng cáo chuyên nghiệp ngay hôm nay</h2>
-            <p>
-              Đăng ký gói AI Agent 799.000đ để bạn không phải mò từng video rời rạc, copy camp cảm tính và mất tiền vì không biết nhìn chỉ số nào.
-            </p>
-            <div class="hero-actions" style="justify-content: center">
-              <a class="btn btn-primary" href="#hoc-phi" data-cta>Chọn gói học phù hợp</a>
-            </div>
+            <h2>Tự vận hành Facebook Ads bằng Data &amp; AI ngay từ hệ thống đầu tiên</h2>
+            <p>Biết tiền quảng cáo đang đi đâu, dữ liệu đang nói gì và bước tiếp theo cần làm — với khóa học, bộ công cụ và AI Agent trong cùng một hệ thống.</p>
+            <div class="hero-actions" style="justify-content: center"><a class="btn btn-primary" href="#hoc-phi" data-meta-cta data-cta-id="final-primary" data-cta-text="Nhận toàn bộ hệ thống Facebook Ads – 799.000đ" data-cta>Nhận toàn bộ hệ thống Facebook Ads – 799.000đ</a></div>
           </div>
         </section>
       </main>
@@ -5347,27 +5156,22 @@
       <div class="sticky-cta" data-sticky-layout="responsive-course" aria-label="Đăng ký khóa Facebook Ads Master 2026">
         <nav id="sticky-section-menu" class="sticky-section-menu" aria-label="Mục lục landing page" hidden>
           <div class="sticky-section-menu-header"><strong>Mục lục</strong><span>Facebook Ads 2026</span></div>
-          <a href="#dau-trang">Đầu trang</a>
-          <a href="#van-de">Vấn đề quảng cáo</a>
-          <a href="#tich-luy">Quảng cáo là tài sản tích lũy</a>
-          <a href="#gioi-thieu">Hình thức học</a>
-          <a href="#doi-tuong">Ứng dụng theo ngành nghề</a>
+          <a href="#van-de">Vấn đề</a>
+          <a href="#tich-luy">Hệ thống</a>
           <a href="#ket-qua">Bạn sẽ làm được gì</a>
-          <a href="#phuong-phap">Phương pháp học</a>
-          <a href="#lo-trinh">Nội dung khóa học</a>
-          <a href="#san-pham-thuc-te">Sản phẩm sau khóa học</a>
-          <a href="#agent-tu-dong-len-quang-cao">AI Agent và hỗ trợ thực tế</a>
-          <a href="#hoc-phi">Học phí &amp; đăng ký</a>
-          <a href="#faq">Câu hỏi thường gặp</a>
+          <a href="#agent-tu-dong-len-quang-cao">AI Agent</a>
+          <a href="#feedback">Feedback</a>
+          <a href="#hoc-phi">Học phí</a>
+          <a href="#faq">FAQ</a>
         </nav>
         <div class="sticky-cta-inner">
           <div class="sticky-course-summary">
             <strong class="sticky-course-title">Facebook Ads Master 2026</strong>
-            <span class="sticky-course-meta">Khóa học Online qua video <span aria-hidden="true">•</span> <strong>799.000đ</strong> <span aria-hidden="true">•</span> Tặng AI Agent</span>
+            <span class="sticky-course-meta">Khóa video + AI Agent + bộ công cụ <span aria-hidden="true">•</span> <strong>799.000đ</strong></span>
           </div>
-          <a class="btn sticky-cta-button" href="#hoc-phi" data-cta>
-            <span class="sticky-cta-label sticky-cta-label-desktop">Đăng ký ngay</span>
-            <span class="sticky-cta-label sticky-cta-label-mobile"><strong>ĐĂNG KÝ NGAY</strong><small>Nhận hỗ trợ đúng vấn đề đang gặp phải</small></span>
+          <a class="btn sticky-cta-button" href="#hoc-phi" data-meta-cta data-cta-id="sticky-primary" data-cta-text="Nhận toàn bộ hệ thống – 799.000đ" data-cta>
+            <span class="sticky-cta-label sticky-cta-label-desktop">Nhận toàn bộ hệ thống – 799.000đ</span>
+            <span class="sticky-cta-label sticky-cta-label-mobile"><strong>NHẬN TOÀN BỘ HỆ THỐNG</strong><small>Facebook Ads + AI Agent · 799.000đ</small></span>
             <span aria-hidden="true">→</span>
           </a>
           <button class="sticky-menu-toggle" type="button" data-sticky-menu-toggle aria-expanded="false" aria-controls="sticky-section-menu" aria-label="Mở mục lục">
@@ -5388,21 +5192,21 @@
         var plans = {
           "zoom-kit": {
             id: "zoom-kit",
-            label: "Gói AI Agent",
+            label: "Toàn bộ hệ thống Facebook Ads",
             price: "799K",
             amount: 799000,
-            summary: "Đang chọn gói AI Agent 799.000đ: học video + tặng AI Agent lên kế hoạch quảng cáo.",
-            note: "Gói đang chọn: AI Agent 799.000đ - học video và nhận AI Agent lên kế hoạch quảng cáo.",
-            submitText: "Đăng ký gói AI Agent - 799.000đ",
+            summary: "Đang chọn toàn bộ hệ thống Facebook Ads 799.000đ: khóa video + AI Agent + bộ công cụ.",
+            note: "Gói đang chọn: toàn bộ hệ thống Facebook Ads 799.000đ.",
+            submitText: "Nhận toàn bộ hệ thống Facebook Ads – 799.000đ",
           },
           "zoom-kit-ebook-299": {
             id: "zoom-kit-ebook-299",
-            label: "Gói AI Agent + Ebook",
+            label: "Hệ thống Facebook Ads + Ebook",
             price: "1.098K",
             amount: 1098000,
-            summary: "Đang chọn gói AI Agent 799.000đ + Ebook Facebook Ads 299.000đ. Tổng thanh toán 1.098.000đ.",
-            note: "Gói đang chọn: AI Agent + Ebook Facebook Ads - tổng 1.098.000đ, nhận quyền truy cập cả hai sản phẩm.",
-            submitText: "Đăng ký khóa học + Ebook - 1.098.000đ",
+            summary: "Đang chọn toàn bộ hệ thống Facebook Ads 799.000đ + Ebook Facebook Ads 299.000đ. Tổng thanh toán 1.098.000đ.",
+            note: "Gói đang chọn: hệ thống Facebook Ads + Ebook - tổng 1.098.000đ, nhận quyền truy cập cả hai sản phẩm.",
+            submitText: "Nhận hệ thống Facebook Ads + Ebook – 1.098.000đ",
           },
         };
         var selectedPlan = plans["zoom-kit"];
@@ -5464,7 +5268,7 @@
             if (!Array.isArray(current)) current = [];
             var courseCartItem = {
               slug: course.slug,
-              title: course.title + " - Gói AI Agent",
+              title: course.title + " - Hệ thống + AI Agent",
               price: "799K",
             };
             current = current.filter(function (item) {
@@ -5531,13 +5335,6 @@
         document.querySelectorAll("[data-cta]").forEach(function (cta) {
           cta.addEventListener("click", function () {
             addCourseToCart();
-            var checkoutPlan = resolveSelectedPlan();
-            track("Lead", {
-              content_name: course.title,
-              content_category: "Facebook Ads",
-              currency: "VND",
-              value: checkoutPlan.amount,
-            });
           });
         });
 
@@ -5597,14 +5394,6 @@
           button.disabled = true;
           button.textContent = "Đang tạo mã thanh toán...";
           showToast("Đang tạo đơn thanh toán " + new Intl.NumberFormat("vi-VN").format(checkoutPlan.amount) + "đ...");
-          track("Lead", {
-            content_name: course.title,
-            content_category: "Facebook Ads",
-            currency: "VND",
-            value: checkoutPlan.amount,
-            event_id: leadId,
-          });
-
           try {
             var response = await fetch("/api/orders", {
               method: "POST",
@@ -5640,6 +5429,13 @@
             if (!response.ok || !payload.order || !payload.order.orderCode) {
               throw new Error(payload.message || "Không tạo được đơn thanh toán.");
             }
+            track("Lead", {
+              content_name: course.title,
+              content_category: "Facebook Ads",
+              currency: "VND",
+              value: checkoutPlan.amount,
+              event_id: leadId,
+            });
             window.location.href = "/thanh-toan/" + encodeURIComponent(payload.order.orderCode);
           } catch (error) {
             button.disabled = false;
@@ -5653,23 +5449,6 @@
     </script>
     <script>
       (function () {
-        var moduleTriggers = Array.prototype.slice.call(document.querySelectorAll("[data-module-trigger]"));
-
-        function setModuleState(trigger, isOpen) {
-          var panelId = trigger.getAttribute("aria-controls");
-          var panel = panelId ? document.getElementById(panelId) : null;
-          trigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
-          if (panel) panel.hidden = !isOpen;
-        }
-
-        moduleTriggers.forEach(function (trigger) {
-          trigger.addEventListener("click", function () {
-            moduleTriggers.forEach(function (item) {
-              setModuleState(item, item === trigger);
-            });
-          });
-        });
-
         var iconPaths = {
           target: '<circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3"></path><path d="M12 19v3"></path><path d="M2 12h3"></path><path d="M19 12h3"></path>',
           users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',

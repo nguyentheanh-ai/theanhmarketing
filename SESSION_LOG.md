@@ -1,5 +1,14 @@
 # Session Log
 
+## 2026-08-21 - Facebook Ads Master event contract release candidate
+
+- Implemented the owner-approved custom browser contract on `/academy/facebook-ads-master-2026`: one-shot `EngagedView` after 30 visible seconds, `ScrollDepth` at 50/75/90, and `CTAClick` only for six explicit primary CTAs with stable ID/text/destination parameters.
+- Kept standard Meta semantics: no fake LPV, Contact or FindLocation; no early InitiateCheckout or browser Purchase. Browser Lead moved from CTA click to the successful `/api/orders` response and keeps the existing `leadId` dedup key. Server Purchase/CAPI code was not changed.
+- `VideoProgress` is `NOT_APPLICABLE` because the page has no HTML video; the Agent proof is a GIF. Source and published HTML are byte-identical with SHA-256 `247f45406d36c00bcdac74848db7836e4f5e86af2737dde8d7dc279fd5593358`.
+- TDD observed the new event and Next 16 compatibility guards fail before implementation. Verification: focused `59/59`, full Node `591/591`, TypeScript, tracking verification, diff check, ESLint 0 errors/1 unchanged warning, and 96-page Webpack production build.
+- In-app Browser QA at 1440/390/320 found no overflow, broken images, mojibake or console errors. Main CTA navigation, mobile menu, SEO/canonical, form fields, `zoom-kit` and Ebook/invoice controls were checked without submitting an order.
+- Deployment and live readback remain pending at this log point.
+
 ## 2026-08-03 - Restore durable Meta Purchase CAPI
 
 - Traced the zero-attempt paid-order gap to a deploy-branch regression and restored the seven-day lease-fenced Purchase outbox/retry route/cron across every paid source.

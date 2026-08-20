@@ -68,6 +68,7 @@ test("grant API is a bounded authenticated adapter with safe status mapping", ()
   assert.match(route, /canAccessAdminRole\(adminRole, \["owner", "editor"\]\)/);
   assert.match(route, /application\/json/);
   assert.match(route, /MAX_REQUEST_BYTES/);
+  assert.doesNotMatch(route, /export const MAX_REQUEST_BYTES/);
   assert.match(route, /parseStudentProvisioningRequest/);
   assert.match(route, /provisionStudent\([\s\S]*actorId: user\.id/);
   assert.match(route, /PROVISIONING_OPERATION_CONFLICT[\s\S]*409/);
