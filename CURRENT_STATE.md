@@ -1,5 +1,13 @@
 # Current State - theanh-main
 
+## 2026-08-21 - Facebook Ads value stack grouped into two panels (production)
+
+- Owner follow-up is live from commit `dceb20b` as Vercel production deployment `dpl_FFoE7Ny1bG2bFaFGai7Q4n1Hxhqj` (`READY`) on apex and `www`; rollback target is `dpl_EFWWGpZnaBbwuCjJp6d3DhTLBVXz`.
+- The three numbered value cards now form one continuous panel with internal dividers. The crossed-out total and today's 799K ownership price form a second continuous panel with an internal divider. Copy, values and section order are unchanged.
+- Source/published HTML are byte-identical and live matches both at SHA-256 `f500d2d9be40633d843b8cb0808f0fecebe0e32402d0982fa197ca2856ac26f7`; the custom event JS remains unchanged at `e6d272f21c2458bfb78e0a5e35d40724254e67ec29a0026024cb27c5bb721a19`.
+- TDD failed on the missing two-cluster contract before implementation, then focused landing/event tests passed `27/27`. Full Node `591/591`, TypeScript, tracking verification, diff check, 96-page Webpack build and ESLint 0 errors/1 unchanged warning pass.
+- Production in-app Browser QA at 390/320/1440 confirms exactly two clusters, three cards, two price rows, correct responsive dividers, zero out-of-bounds groups and zero horizontal overflow. Form/checkout/SEO/Pixel/CAPI are untouched; no order was submitted. Live route is 200, guards remain 307/405/405 and the post-release runtime error scan is empty.
+
 ## 2026-08-21 - Facebook Ads pricing header simplification (production)
 
 - Owner follow-up is live from runtime commit `dac8111` as Vercel production deployment `dpl_EFWWGpZnaBbwuCjJp6d3DhTLBVXz` (`READY`) on `www.theanhmarketing.com`; rollback target is prior event-contract production `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL`.

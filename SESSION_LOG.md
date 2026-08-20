@@ -1,5 +1,13 @@
 # Session Log
 
+## 2026-08-21 - Facebook Ads value stack two-panel grouping
+
+- Grouped value cards 01-03 into one continuous responsive panel and grouped the crossed-out total plus today's 799K price into a second panel; content and values did not change.
+- Added the two-cluster regression before implementation. Focused landing/event tests pass 27/27; full Node 591/591, TypeScript, tracking, diff check, 96-page Webpack build and ESLint 0 errors/1 unchanged warning pass.
+- Preserved byte-identical source/published HTML, checkout form, invoice, `/api/orders`, 799K/Ebook plans, SEO/canonical, Pixel/CAPI and event JS. No order, payment, email or customer-data mutation was made.
+- Pushed commit `dceb20b`, validated Git preview `dpl_89EoChcRay5GQVX7Q9YumNUh89rt`, then promoted exact commit as production `dpl_FFoE7Ny1bG2bFaFGai7Q4n1Hxhqj`. Prior production `dpl_EFWWGpZnaBbwuCjJp6d3DhTLBVXz` is the rollback target.
+- Live HTML matches local/source SHA-256 `f500d2d9be40633d843b8cb0808f0fecebe0e32402d0982fa197ca2856ac26f7`; event JS remains `e6d272f21c2458bfb78e0a5e35d40724254e67ec29a0026024cb27c5bb721a19`. Production Browser 390/320/1440 has exactly two clusters and no overflow; protected guards and runtime-error scan are clean.
+
 ## 2026-08-21 - Facebook Ads pricing header simplification
 
 - Implemented the exact owner follow-up: line-through on total value 5.997.000đ; removed the pricing kicker and repeated 799K heading; retained the separate 799K ownership line and complete registration form.

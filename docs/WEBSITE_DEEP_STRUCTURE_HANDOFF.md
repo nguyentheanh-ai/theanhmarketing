@@ -1,5 +1,15 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-08-21 - Facebook Ads value stack two-panel grouping (production)
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Scope | Presentation-only follow-up for `main-site` route `/academy/facebook-ads-master-2026`; source/published HTML and landing regression only. |
+| UI | Cards 01-03 are one continuous panel with internal responsive dividers. Crossed-out total and today's 799K price are a second continuous panel with one internal divider. Copy and values are unchanged. |
+| Preserved | Form, invoice, `/api/orders`, 799K/Ebook plans, SEO/canonical, Pixel, custom event script and server Purchase/CAPI are unchanged. No order was submitted. |
+| Verification | TDD RED then focused GREEN `27/27`; full Node `591/591`; TypeScript, tracking, diff check and 96-page Webpack build pass; ESLint 0 errors/1 unchanged warning. Production Browser 390/320/1440 confirms two clusters and zero overflow. |
+| Production | Commit `dceb20b`; Git preview `dpl_89EoChcRay5GQVX7Q9YumNUh89rt` validated, then exact promotion `dpl_FFoE7Ny1bG2bFaFGai7Q4n1Hxhqj` (`READY`) on apex/`www`. Rollback `dpl_EFWWGpZnaBbwuCjJp6d3DhTLBVXz`. Live/local HTML SHA-256 `f500d2d9be40633d843b8cb0808f0fecebe0e32402d0982fa197ca2856ac26f7`; event JS unchanged; guards 307/405/405 and runtime-error scan clean. |
+
 ## 2026-08-21 - Facebook Ads pricing header simplification (production)
 
 | Hạng mục | Chi tiết |
