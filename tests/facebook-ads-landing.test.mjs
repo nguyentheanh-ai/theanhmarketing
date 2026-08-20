@@ -71,9 +71,20 @@ test("Facebook Ads P0 rewrite makes the AI Agent and support boundaries explicit
 
 test("Facebook Ads P0 rewrite places the value stack immediately before checkout", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
+  const valueStack = html.match(/<section class="section value-stack-section"[\s\S]*?<\/section>/)?.[0] || "";
   const pricing = html.match(/<section id="hoc-phi"[\s\S]*?<\/section>/)?.[0] || "";
+  const groupedClusters = valueStack.match(/class="[^"]*\bvalue-stack-cluster\b[^"]*"/g) || [];
 
   assertOrdered(html, ['id="gia-tri"', 'id="hoc-phi"']);
+  assert.equal(groupedClusters.length, 2);
+  assertOrdered(valueStack, [
+    'class="value-stack-grid value-stack-cluster"',
+    'class="value-stack-total value-stack-cluster"',
+  ]);
+  assert.match(html, /\.value-stack-clusters\s*\{[\s\S]*?display:\s*grid;[\s\S]*?gap:\s*20px/);
+  assert.match(html, /\.value-stack-cluster\s*\{[\s\S]*?overflow:\s*hidden;[\s\S]*?border:\s*1px solid/);
+  assert.match(html, /\.value-stack-card\s*\{[\s\S]*?border:\s*0;[\s\S]*?border-radius:\s*0;[\s\S]*?background:\s*transparent/);
+  assert.match(html, /\.value-stack-total p\s*\{[\s\S]*?border:\s*0;[\s\S]*?border-radius:\s*0;[\s\S]*?background:\s*transparent/);
   assert.match(html, /Facebook Ads Master 2026 — Giá trị 2\.999\.000đ/);
   assert.match(html, /AI Agent Facebook Ads — Giá trị 1\.999\.000đ/);
   assert.match(html, /Bộ Prompt \+ Checklist \+ Framework tối ưu — Giá trị 999\.000đ/);

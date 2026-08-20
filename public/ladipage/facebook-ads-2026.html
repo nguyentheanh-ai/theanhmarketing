@@ -4432,11 +4432,38 @@
         text-align: center;
       }
 
-      .value-stack-card {
-        border: 1px solid var(--line);
-        border-radius: 22px;
+      .value-stack-clusters {
+        display: grid;
+        gap: 20px;
+      }
+
+      .value-stack-cluster {
+        overflow: hidden;
+        border: 1px solid rgba(246, 102, 40, 0.3);
+        border-radius: 24px;
         background: rgba(255, 255, 255, 0.045);
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.18);
+      }
+
+      .value-stack-grid {
+        gap: 0;
+      }
+
+      .value-stack-card {
+        border: 0;
+        border-radius: 0;
+        background: transparent;
         padding: 24px;
+      }
+
+      .value-stack-card + .value-stack-card {
+        border-left: 1px solid var(--line);
+      }
+
+      .value-stack-card:hover {
+        border-color: transparent;
+        background: rgba(246, 102, 40, 0.07);
+        transform: none;
       }
 
       .value-stack-card > span {
@@ -4463,17 +4490,21 @@
       .value-stack-total {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 14px;
-        margin-top: 22px;
+        gap: 0;
       }
 
       .value-stack-total p {
-        border: 1px solid rgba(246, 102, 40, 0.34);
-        border-radius: 20px;
-        background: rgba(246, 102, 40, 0.09);
+        border: 0;
+        border-radius: 0;
+        background: transparent;
         padding: 20px;
         color: var(--muted-2);
         text-align: center;
+      }
+
+      .value-stack-total p + p {
+        border-left: 1px solid rgba(246, 102, 40, 0.3);
+        background: rgba(246, 102, 40, 0.09);
       }
 
       .value-stack-total strong {
@@ -4522,6 +4553,12 @@
         .value-stack-total,
         .model-strip {
           grid-template-columns: 1fr;
+        }
+
+        .value-stack-card + .value-stack-card,
+        .value-stack-total p + p {
+          border-left: 0;
+          border-top: 1px solid rgba(246, 102, 40, 0.3);
         }
 
         .outcome-grid .course-outcome {
@@ -5070,14 +5107,16 @@
               <p class="section-kicker">Tổng giá trị nhận được</p>
               <h2>Bạn nhận toàn bộ hệ thống này trong một lần đăng ký</h2>
             </div>
-            <div class="value-stack-grid">
-              <article class="value-stack-card"><span>01</span><h3>Facebook Ads Master 2026 — Giá trị 2.999.000đ</h3><p>Hệ thống từ Fanpage, tài nguyên, Content, quảng cáo, Dataset đến tối ưu và Scale.</p></article>
-              <article class="value-stack-card"><span>02</span><h3>AI Agent Facebook Ads — Giá trị 1.999.000đ</h3><p>Hỗ trợ nghiên cứu, lập kế hoạch và dựng Campaign – Ad Set – Ads ở trạng thái PAUSED.</p></article>
-              <article class="value-stack-card"><span>03</span><h3>Bộ Prompt + Checklist + Framework tối ưu — Giá trị 999.000đ</h3><p>Prompt nghiên cứu, checklist setup, khung test và bảng ra quyết định tối ưu.</p></article>
-            </div>
-            <div class="value-stack-total">
-              <p><del>Tổng giá trị: <strong>5.997.000đ</strong></del></p>
-              <p>Hôm nay bạn sở hữu toàn bộ với <strong>799.000đ</strong></p>
+            <div class="value-stack-clusters">
+              <div class="value-stack-grid value-stack-cluster">
+                <article class="value-stack-card"><span>01</span><h3>Facebook Ads Master 2026 — Giá trị 2.999.000đ</h3><p>Hệ thống từ Fanpage, tài nguyên, Content, quảng cáo, Dataset đến tối ưu và Scale.</p></article>
+                <article class="value-stack-card"><span>02</span><h3>AI Agent Facebook Ads — Giá trị 1.999.000đ</h3><p>Hỗ trợ nghiên cứu, lập kế hoạch và dựng Campaign – Ad Set – Ads ở trạng thái PAUSED.</p></article>
+                <article class="value-stack-card"><span>03</span><h3>Bộ Prompt + Checklist + Framework tối ưu — Giá trị 999.000đ</h3><p>Prompt nghiên cứu, checklist setup, khung test và bảng ra quyết định tối ưu.</p></article>
+              </div>
+              <div class="value-stack-total value-stack-cluster">
+                <p><del>Tổng giá trị: <strong>5.997.000đ</strong></del></p>
+                <p>Hôm nay bạn sở hữu toàn bộ với <strong>799.000đ</strong></p>
+              </div>
             </div>
           </div>
         </section>
