@@ -71,13 +71,18 @@ test("Facebook Ads P0 rewrite makes the AI Agent and support boundaries explicit
 
 test("Facebook Ads P0 rewrite places the value stack immediately before checkout", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
+  const pricing = html.match(/<section id="hoc-phi"[\s\S]*?<\/section>/)?.[0] || "";
 
   assertOrdered(html, ['id="gia-tri"', 'id="hoc-phi"']);
   assert.match(html, /Facebook Ads Master 2026 — Giá trị 2\.999\.000đ/);
   assert.match(html, /AI Agent Facebook Ads — Giá trị 1\.999\.000đ/);
   assert.match(html, /Bộ Prompt \+ Checklist \+ Framework tối ưu — Giá trị 999\.000đ/);
-  assert.match(html, /Tổng giá trị:\s*<strong>5\.997\.000đ<\/strong>/);
+  assert.match(html, /<del>Tổng giá trị:\s*<strong>5\.997\.000đ<\/strong><\/del>/);
+  assert.match(html, /\.value-stack-total del\s*\{[\s\S]*?text-decoration-thickness:\s*2px/);
   assert.match(html, /Hôm nay bạn sở hữu toàn bộ với\s*<strong>799\.000đ<\/strong>/);
+  assert.doesNotMatch(pricing, /Học phí &amp; đăng ký/);
+  assert.doesNotMatch(pricing, /<h2>Hôm nay bạn sở hữu toàn bộ với 799\.000đ<\/h2>/);
+  assert.match(pricing, /<form id="payment-form" class="form" data-invoice-checkout>/);
   assert.doesNotMatch(html, /giá gốc/i);
 });
 
