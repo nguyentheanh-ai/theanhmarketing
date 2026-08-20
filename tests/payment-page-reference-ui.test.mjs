@@ -70,6 +70,10 @@ test("Facebook Ads and Ebook checkout prioritizes payment and real Zalo proof", 
   assert.match(page, /href="https:\/\/zalo\.me\/0367928921"/);
   assert.match(page, /payment-floating-zalo[^\n]*fixed/);
   assert.match(page, /Nhắn Zalo Thế Anh/);
+  assert.ok(
+    page.indexOf('className="payment-floating-zalo') > page.lastIndexOf("</section>"),
+    "floating Zalo button must live outside every checkout section and backdrop-filter box",
+  );
 
   assert.equal((proof.match(/zalo-proof-\d{2}-/g) || []).length, 12);
   assert.match(proof, /animation:\s*payment-zalo-scroll 92s linear infinite/);

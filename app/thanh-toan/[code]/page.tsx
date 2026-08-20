@@ -854,19 +854,7 @@ export default async function PaymentPage({
               </div>
 
               {isFacebookAdsConversionCheckout ? (
-                <>
-                  <ZaloSupportProof />
-                  <a
-                    aria-label="Nhắn Zalo Thế Anh"
-                    className="payment-floating-zalo fixed bottom-4 right-4 z-40 inline-flex min-h-14 items-center justify-center gap-2 rounded-full border-2 border-white bg-[#0068ff] px-5 text-center text-sm font-black text-white transition hover:bg-[#0057d9] focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-blue-300 sm:bottom-6 sm:right-6"
-                    href="https://zalo.me/0367928921"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    <span className="grid size-8 place-items-center rounded-full bg-white text-base font-black text-[#0068ff]">Z</span>
-                    <span>Nhắn Zalo Thế Anh</span>
-                  </a>
-                </>
+                <ZaloSupportProof />
               ) : (
                 <div className="payment-after-grid mt-5 grid gap-3">
                   {content.nextSteps.map((step, index) => (
@@ -888,6 +876,19 @@ export default async function PaymentPage({
           </div>
         </div>
       </section>
+
+      {isFacebookAdsConversionCheckout ? (
+        <a
+          aria-label="Nhắn Zalo Thế Anh"
+          className="payment-floating-zalo fixed bottom-4 right-4 z-40 inline-flex min-h-14 items-center justify-center gap-2 rounded-full border-2 border-white bg-[#0068ff] px-5 text-center text-sm font-black text-white transition hover:bg-[#0057d9] focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-blue-300 sm:bottom-6 sm:right-6"
+          href="https://zalo.me/0367928921"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span className="grid size-8 place-items-center rounded-full bg-white text-base font-black text-[#0068ff]">Z</span>
+          <span>Nhắn Zalo Thế Anh</span>
+        </a>
+      ) : null}
 
     </main>
   );
