@@ -123,6 +123,31 @@ test("Facebook Ads landing keeps the three approved owner photos", () => {
   }
 });
 
+test("Facebook Ads cream tools section and Zalo proof cards remain readable", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+
+  assert.match(
+    html,
+    /\.hybrid-section\.is-cream \.hybrid-copy h2\s*\{[\s\S]*?color:\s*#2d170f;[\s\S]*?text-shadow:\s*none;/
+  );
+  assert.match(html, /\.hybrid-section\.is-cream \.hybrid-copy > p\s*\{[\s\S]*?color:\s*#6b4938;/);
+  assert.match(html, /\.hybrid-section\.is-cream \.section-kicker\s*\{[\s\S]*?color:\s*#b34116;/);
+  assert.match(
+    html,
+    /\.hybrid-section\.is-cream \.learning-format-card\s*\{[\s\S]*?background:[\s\S]*?rgba\(255,\s*255,\s*255,\s*0\.62\)[\s\S]*?border-color:\s*rgba\(91,\s*48,\s*29,\s*0\.2\)/
+  );
+  assert.match(html, /\.hybrid-section\.is-cream \.learning-format-card h3\s*\{[\s\S]*?color:\s*#361c12;/);
+  assert.match(html, /\.hybrid-section\.is-cream \.learning-format-card p\s*\{[\s\S]*?color:\s*#6b4938;/);
+  assert.match(
+    html,
+    /\.proof-case-card img\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*auto;[\s\S]*?aspect-ratio:\s*auto;[\s\S]*?object-fit:\s*contain;/
+  );
+  assert.match(
+    html,
+    /@media \(max-width:\s*680px\)[\s\S]*?\.proof-case-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(5,\s*min\(84vw,\s*320px\)\);[\s\S]*?scroll-snap-type:\s*x mandatory;/
+  );
+});
+
 test("Facebook Ads mobile instructor portrait has no divider across the neck", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
 
