@@ -1,8 +1,8 @@
 # Current State - theanh-main
 
-## 2026-08-21 - Facebook Ads Master Data & AI conversion rewrite + event contract (release candidate)
+## 2026-08-21 - Facebook Ads Master Data & AI conversion rewrite + event contract (production)
 
-- Existing worktree `/Users/theanh/CodexProjects/TheAnh-Web/worktrees/facebook-ads-master-rewrite-20260821`, branch `feat/facebook-ads-master-rewrite-20260821`, is based on production commit `ce4b0eb`. The production deployment/readback for this release candidate is still pending.
+- Runtime commit `17bdabb` from existing worktree `/Users/theanh/CodexProjects/TheAnh-Web/worktrees/facebook-ads-master-rewrite-20260821`, branch `feat/facebook-ads-master-rewrite-20260821`, is live as Vercel production deployment `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL` (`READY`) on `www.theanhmarketing.com`. Rollback target is prior production `dpl_CpvZrvvxbQQauZkbAUi8dmTRoWvG`.
 - `/academy/facebook-ads-master-2026` now follows the approved 12-section conversion order: Hero, three pains, Big Idea, 12 buyer outcomes, AI Agent, five content-rich proofs, instructor, tools, value stack, pricing/checkout, FAQ and final CTA. The visible 21-lesson/six-module curriculum is removed.
 - The 799K contract is explicit: video course + AI Agent + tools; the Agent creates Campaign – Ad Set – Ads in `PAUSED`; Zoom 1:1 is a separate service and is not included.
 - Source and published HTML are byte-identical. The existing `zoom-kit`, optional `zoom-kit-ebook-299`, invoice module, `/api/orders`, Pixel ID/value, SEO title/meta/canonical and responsive sticky CTA remain intact.
@@ -10,6 +10,8 @@
 - Standard semantics remain guarded: `PageView` and `ViewContent` are unchanged; browser `Lead` now fires only after `/api/orders` returns a valid order code with the existing `leadId` dedup ID; no early `InitiateCheckout`, browser `Purchase`, fake `LandingPageView`, `Contact` or `FindLocation` was added. Server-authoritative Purchase/CAPI code is unchanged.
 - Verification: focused Facebook Ads/Meta/invoice `59/59`, full Node `591/591`, TypeScript, ESLint `0` errors/`1` unchanged unrelated warning, tracking verification, `git diff --check`, and in-app Browser QA at 1440/390/320 with zero overflow, broken images, mojibake, console errors or real order submission. Source/published SHA-256 is `247f45406d36c00bcdac74848db7836e4f5e86af2737dde8d7dc279fd5593358`.
 - Next 16 production build now passes with Webpack and generates 96 pages. Two base-commit type blockers were corrected without runtime behavior changes: the admin route request limit remains module-local instead of being an invalid route export, and `/go` uses the required Promise-only `searchParams` contract.
+- Live readback: clean route and event script return 200; live HTML SHA-256 exactly matches local/source at `247f45406d36c00bcdac74848db7836e4f5e86af2737dde8d7dc279fd5593358`, and live JS matches `e6d272f21c2458bfb78e0a5e35d40724254e67ec29a0026024cb27c5bb721a19`. Exact six CTA IDs, Pixel/ViewContent, form route, canonical and zero early checkout/browser Purchase/video/mojibake were confirmed. Dataset aggregate readback over the post-release one-hour window returned `EngagedView=3`, `ScrollDepth=4`, `CTAClick=1` from Web; Vercel runtime error/warning/fatal scans are empty. No real order was created.
+- Events Manager Test Events UI is `BLOCKED/NOT_AVAILABLE` in the current authenticated channels: the Facebook connector exposes aggregate dataset stats but no Test Events stream, and no test code/token was entered. GitHub push is separately blocked by unavailable local HTTPS credentials; this does not change the live Vercel artifact.
 
 ## 2026-08-03 - Durable Meta Purchase CAPI recovery live
 

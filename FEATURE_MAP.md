@@ -95,7 +95,7 @@ Standard-event preservation: keep `PageView`/`ViewContent`; send browser `Lead` 
 
 Guard: keep source and published HTML byte-identical; preserve `paymentPlan=zoom-kit`, optional `zoom-kit-ebook-299`, shared invoice fields, `/api/orders`, Pixel/CAPI attribution, `ViewContent=799000`, title/meta/canonical, historical order compatibility and the separate Ebook landing. Do not restore the 399K card, curriculum, call-duration proof gallery or Zoom-included wording without owner approval. Keep the Agent GIF below 12 MB with its reduced-motion poster.
 
-Release state: clean release/deployment gate pending in branch `feat/facebook-ads-master-rewrite-20260821`; not deployed at the time of this entry.
+Release state: LIVE from runtime commit `17bdabb`, Vercel `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL` (`READY`) on `www.theanhmarketing.com`. Exact live HTML/JS hashes match the release artifact; rollback target is `dpl_CpvZrvvxbQQauZkbAUi8dmTRoWvG`.
 
 Search: `data-outcome-card`, `proof-case-card`, `data-plan-card="zoom-kit"`, `paymentPlan`, `799000`, `Facebook Ads P0 rewrite`.
 

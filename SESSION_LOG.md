@@ -1,13 +1,16 @@
 # Session Log
 
-## 2026-08-21 - Facebook Ads Master event contract release candidate
+## 2026-08-21 - Facebook Ads Master event contract production release
 
 - Implemented the owner-approved custom browser contract on `/academy/facebook-ads-master-2026`: one-shot `EngagedView` after 30 visible seconds, `ScrollDepth` at 50/75/90, and `CTAClick` only for six explicit primary CTAs with stable ID/text/destination parameters.
 - Kept standard Meta semantics: no fake LPV, Contact or FindLocation; no early InitiateCheckout or browser Purchase. Browser Lead moved from CTA click to the successful `/api/orders` response and keeps the existing `leadId` dedup key. Server Purchase/CAPI code was not changed.
 - `VideoProgress` is `NOT_APPLICABLE` because the page has no HTML video; the Agent proof is a GIF. Source and published HTML are byte-identical with SHA-256 `247f45406d36c00bcdac74848db7836e4f5e86af2737dde8d7dc279fd5593358`.
 - TDD observed the new event and Next 16 compatibility guards fail before implementation. Verification: focused `59/59`, full Node `591/591`, TypeScript, tracking verification, diff check, ESLint 0 errors/1 unchanged warning, and 96-page Webpack production build.
 - In-app Browser QA at 1440/390/320 found no overflow, broken images, mojibake or console errors. Main CTA navigation, mobile menu, SEO/canonical, form fields, `zoom-kit` and Ebook/invoice controls were checked without submitting an order.
-- Deployment and live readback remain pending at this log point.
+- Release commit `17bdabb` was built as production candidate `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL` with `--skip-domain`, smoke-tested while `www` remained on rollback deployment `dpl_CpvZrvvxbQQauZkbAUi8dmTRoWvG`, then promoted. The final alias is `READY` on the new deployment.
+- Live HTML and JS return 200 and exactly match local SHA-256 hashes. Readback confirms the six CTA IDs, primary Pixel, ViewContent, `/api/orders`, canonical, no early InitiateCheckout/browser Purchase, zero HTML video and zero mojibake. Route guards are `/admin` 307 and protected API GETs 405; runtime error/warning/fatal scans are empty.
+- Meta dataset aggregate stats for the post-release one-hour window returned `EngagedView=3`, `ScrollDepth=4`, `CTAClick=1` from Web. Events Manager Test Events remains unavailable through the current authenticated channels; no test code/token or real order was used.
+- GitHub push is blocked by missing HTTPS credential on this Mac. No login/2FA flow was opened and no production rollback is required.
 
 ## 2026-08-03 - Restore durable Meta Purchase CAPI
 

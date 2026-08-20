@@ -1,11 +1,11 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
-## 2026-08-21 - Facebook Ads Master Data & AI conversion rewrite + Meta event contract (release candidate)
+## 2026-08-21 - Facebook Ads Master Data & AI conversion rewrite + Meta event contract (production)
 
 | Hạng mục | Chi tiết |
 |---|---|
 | App/route | `main-site`, `/academy/facebook-ads-master-2026`; canonical static source `public/ladipage/facebook-ads-2026.html`, published mirror `public/academy/facebook-ads-master-2026.html`. |
-| Source state | Existing worktree `/Users/theanh/CodexProjects/TheAnh-Web/worktrees/facebook-ads-master-rewrite-20260821`, branch `feat/facebook-ads-master-rewrite-20260821`, base `ce4b0eb`. Release candidate gate is in progress; no order, payment, email or production data mutation. |
+| Source state | Runtime commit `17bdabb` from existing worktree `/Users/theanh/CodexProjects/TheAnh-Web/worktrees/facebook-ads-master-rewrite-20260821`, branch `feat/facebook-ads-master-rewrite-20260821`, base `ce4b0eb`. No order, payment, email or customer-data mutation was used for QA. |
 | P0 | New Data & AI hero; three pains; early Big Idea; 12 outcome cards; AI Agent as core with `PAUSED`; explicit support boundary; value stack 5.997.000đ revealed at 799.000đ; no curriculum/module/lesson list. |
 | P1 | Exact 12-section order; five content-rich proofs; instructor/tools sections; seven valid sticky-nav anchors; nine updated FAQs; one consistent primary CTA. |
 | Commerce guard | Preserve `zoom-kit` 799K, optional `zoom-kit-ebook-299` 1.098M, shared invoice fields, `/api/orders`, payment redirect, server price authority, SePay/email/access downstream handling. Zoom 1:1 is separate and excluded from 799K. |
@@ -14,6 +14,9 @@
 | Standard preservation | `PageView`/`ViewContent` remain unchanged. Browser `Lead` fires only after `/api/orders` returns a valid order code and retains `event_id=leadId` for server/browser dedup. No early `InitiateCheckout`, browser `Purchase`, fake `LandingPageView`, `Contact` or `FindLocation`; durable server Purchase/CAPI remains unchanged. |
 | QA | Focused Facebook Ads/Meta/invoice `59/59`; full Node `591/591`; TypeScript pass; ESLint 0 errors/1 unchanged unrelated warning; tracking verification and diff check pass. In-app Browser 1440/390/320 has 0 overflow, broken images, mojibake or console errors; exact six CTA annotations and event runtime readiness verified without submitting a real order. |
 | Build note | Next 16 Webpack production build passes and generates 96 pages. Two base-commit type blockers were fixed without behavior changes: `MAX_REQUEST_BYTES` is module-local rather than an invalid route export, and `/go` uses Promise-only `searchParams`. |
+| Production | Vercel `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL`, `READY`, promoted to `www.theanhmarketing.com`; rollback target `dpl_CpvZrvvxbQQauZkbAUi8dmTRoWvG`. Clean route/event script are 200 and exact live HTML/JS hashes match local. Guards: `/admin` 307, `GET /api/orders` 405, `GET /api/student/progress` 405. Runtime error/warning/fatal scans are empty. |
+| Meta readback | Aggregate Web counts in the post-release one-hour window: `EngagedView=3`, `ScrollDepth=4`, `CTAClick=1`. This is dataset-stat readback, not Events Manager Test Events. Test Events is unavailable in the current authenticated tool channel; no token/test code was entered. |
+| Remaining external handoff | GitHub HTTPS push of branch `feat/facebook-ads-master-rewrite-20260821` is blocked by missing local credential (`Device not configured`). Runtime deployment and exact local commit remain verified. |
 
 ## 2026-08-13 - Facebook Ads typography and mobile refinement
 
