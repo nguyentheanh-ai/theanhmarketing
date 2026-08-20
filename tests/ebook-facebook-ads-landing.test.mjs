@@ -94,15 +94,12 @@ test("Premium Ebook landing uses the approved mobile-first hero and section navi
 
   assert.match(html, /data-section-menu-toggle/);
   assert.match(html, /aria-controls="ebook-section-menu"/);
-  assert.match(
-    hero,
-    /<div class="nav-links">[\s\S]*?<button class="section-menu-toggle"[\s\S]*?<\/div>/,
-    "Mục lục phải nằm trong thanh điều hướng, không nổi giữa nội dung",
-  );
+  assert.doesNotMatch(hero, /class="section-menu-toggle"/);
+  assert.match(html, /<\/header>\s*<button class="section-menu-toggle"/);
   const mobileCss = html.match(/@media \(max-width:\s*640px\) \{[\s\S]*?@media \(max-width:\s*339px\)/)?.[0] ?? "";
   assert.match(mobileCss, /\.nav-links\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) auto;/);
-  assert.match(mobileCss, /\.section-menu-toggle\s*\{[\s\S]*?position:\s*static;/);
-  assert.doesNotMatch(mobileCss, /\.section-menu-toggle\s*\{[\s\S]*?bottom:\s*92px;/);
+  assert.match(mobileCss, /\.section-menu-toggle\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?bottom:\s*18px;/);
+  assert.doesNotMatch(mobileCss, /\.section-menu-toggle\s*\{[\s\S]*?top:\s*92px;/);
   assert.equal((menu.match(/data-section-menu-link/g) || []).length, 6);
   assert.equal((rail.match(/data-section-progress-dot/g) || []).length, 6);
   const sectionMenu = [
@@ -127,6 +124,31 @@ test("Premium Ebook landing uses the approved mobile-first hero and section navi
 
   assert.equal((html.match(/>Đọc thử Ebook<\/a>/g) || []).length, 3);
   assert.doesNotMatch(html, />Xem bên trong ebook<\/a>|>Mở bản đọc thử online<\/a>|>Đọc thử<\/a>/);
+});
+
+test("Premium Ebook keeps the menu and purchase actions pinned at the bottom", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026-premium.html");
+  const hero = html.match(/<header class="hero" id="top">[\s\S]*?<\/header>/)?.[0] ?? "";
+
+  assert.match(html, /\.section-menu-toggle\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?bottom:\s*18px;/);
+  assert.match(html, /\.section-menu-panel\s*\{[\s\S]*?bottom:\s*82px;/);
+  assert.match(html, /\.mobile-buy\s*\{[\s\S]*?display:\s*flex;/);
+  assert.match(html, /\.mobile-buy\s*\{[\s\S]*?right:\s*124px;/);
+  assert.match(html, /body\s*\{[\s\S]*?padding-bottom:\s*80px;/);
+  assert.doesNotMatch(hero, /data-event="hero_cta_click"/);
+  assert.doesNotMatch(hero, /data-event="header_cta_click"/);
+  assert.doesNotMatch(hero, /class="section-menu-toggle"/);
+  assert.match(hero, /data-event="hero_preview_click"/);
+});
+
+test("Premium Ebook shows a visible countdown before opening the payment page", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026-premium.html");
+
+  assert.match(html, /id="checkoutRedirectCountdown"/);
+  assert.match(html, /let redirectSeconds = 3;/);
+  assert.match(html, /checkoutRedirectCountdown\.textContent = String\(redirectSeconds\)/);
+  assert.match(html, /window\.setInterval\(\(\) => \{/);
+  assert.match(html, /window\.location\.href = paymentUrl;/);
 });
 
 test("Premium Ebook checkout offers the Facebook Ads course for 699K in one server-known bundle", () => {

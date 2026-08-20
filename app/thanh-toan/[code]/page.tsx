@@ -8,6 +8,7 @@ import { BankAppHandoff } from "@/components/payment/bank-app-handoff";
 import { PaymentOfferCountdown } from "@/components/payment/payment-offer-countdown";
 import { PaymentStatusPoller } from "@/components/payment/payment-status-poller";
 import { TransferDetails } from "@/components/payment/transfer-details";
+import { ZaloSupportProof } from "@/components/payment/zalo-support-proof";
 import { loadVietQrBankApps } from "@/lib/payments/bank-app-handoff";
 import {
   createSepayQrUrl,
@@ -160,6 +161,30 @@ function getPaymentOffer(order: PaymentOrder, amountLabel: string) {
   return {
     originalPriceLabel: undefined,
     currentPriceLabel: amountLabel,
+  };
+}
+
+function getFacebookAdsConversionMessage(order: PaymentOrder) {
+  if (isFacebookAdsEbookBundle(order)) {
+    return {
+      title: "Thanh toán để vào khóa học và đọc Ebook ngay",
+      description: "Hệ thống gửi tài khoản học tập và Ebook tự động sau 5 giây thanh toán.",
+      proof: "Hơn 1.000 anh/chị học viên đang học và bạn nhận cả tài khoản học tập và Ebook.",
+    };
+  }
+
+  if (isFacebookAdsEbook2026(order)) {
+    return {
+      title: "Thanh toán để đọc Ebook ngay",
+      description: "Hệ thống gửi Ebook tự động sau 5 giây thanh toán.",
+      proof: "Hơn 400 Ebook đã bán trong tháng này.",
+    };
+  }
+
+  return {
+    title: "Thanh toán để vào khóa học ngay",
+    description: "Hệ thống gửi tài khoản học tập ngay sau 5 giây thanh toán.",
+    proof: "Hơn 1.000 anh/chị học viên đang học.",
   };
 }
 
@@ -430,6 +455,8 @@ export default async function PaymentPage({
   const courseTitle = getDisplayCourseTitle(order);
   const content = getCheckoutContent(order);
   const paymentOffer = getPaymentOffer(order, amountLabel);
+  const isFacebookAdsConversionCheckout = isFacebookAds2026(order);
+  const conversionMessage = isFacebookAdsConversionCheckout ? getFacebookAdsConversionMessage(order) : null;
   if (!isLocalDemoOrder) {
     after(async () => {
       const notifications = await sendCheckoutEntryNotifications(order);
@@ -629,8 +656,8 @@ export default async function PaymentPage({
         <div className="absolute bottom-0 right-1/4 size-[320px] rounded-full bg-orange-300/12 blur-3xl" />
       </div>
 
-      <div className="payment-topbar relative z-20 bg-gradient-to-r from-blue-600 to-cyan-400 px-5 py-2 text-center text-sm font-black text-white">
-        Ưu đãi đang được giữ theo mã đơn của bạn. Chuyển khoản đúng nội dung để hệ thống mở quyền tự động.
+      <div className="payment-topbar sticky top-0 z-30 bg-gradient-to-r from-blue-600 to-cyan-400 px-5 py-2 text-center text-sm font-black text-white shadow-lg">
+        Lưu ý: Thế Anh không gọi điện cho bạn để thúc bạn thanh toán, mình chỉ nhắn tin để hỗ trợ học viên sau khi đăng ký học thành công. Nếu bạn cần học nghiêm túc - Hãy đăng ký luôn ở trang này.
       </div>
 
       <header className="payment-header relative z-10 border-b border-slate-900/8 bg-white/88 px-5 py-4 backdrop-blur-2xl">
@@ -695,8 +722,14 @@ export default async function PaymentPage({
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-600">Thanh toán chuyển khoản</p>
                   <h2 className="payment-qr-title mt-2 text-[1.7rem] font-black leading-[1.08] tracking-[-0.035em] text-slate-950 sm:text-3xl sm:tracking-[-0.045em]">
-                    Thanh toán ngay - 3 bước đơn giản
+                    {conversionMessage?.title ?? "Thanh toán ngay - 3 bước đơn giản"}
                   </h2>
+                  {conversionMessage ? (
+                    <div className="mt-3 max-w-2xl">
+                      <p className="text-sm font-bold leading-6 text-slate-600">{conversionMessage.description}</p>
+                      <p className="mt-2 text-sm font-black leading-6 text-blue-600">{conversionMessage.proof}</p>
+                    </div>
+                  ) : null}
                 </div>
                 <div className="rounded-2xl border border-blue-100 bg-white px-4 py-3 text-right shadow-[0_12px_34px_rgba(0,97,255,0.12)]">
                   <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">Cần thanh toán</p>
@@ -704,13 +737,15 @@ export default async function PaymentPage({
                 </div>
               </div>
 
-              <div className="mt-5">
-                <PaymentOfferCountdown
-                  currentPriceLabel={paymentOffer.currentPriceLabel}
-                  deadline={offerDeadline}
-                  originalPriceLabel={paymentOffer.originalPriceLabel}
-                />
-              </div>
+              {isFacebookAdsConversionCheckout ? null : (
+                <div className="mt-5">
+                  <PaymentOfferCountdown
+                    currentPriceLabel={paymentOffer.currentPriceLabel}
+                    deadline={offerDeadline}
+                    originalPriceLabel={paymentOffer.originalPriceLabel}
+                  />
+                </div>
+              )}
 
               <BankAppHandoff
                 amount={order.amount}
@@ -758,7 +793,8 @@ export default async function PaymentPage({
                 </div>
               </div>
 
-              <div className="mt-5 grid gap-3 md:grid-cols-3">
+              {isFacebookAdsConversionCheckout ? null : (
+                <div className="mt-5 grid gap-3 md:grid-cols-3">
                   {[
                     "Mở app ngân hàng và quét QR.",
                     `Giữ đúng nội dung chuyển khoản: ${transferContent}.`,
@@ -771,27 +807,42 @@ export default async function PaymentPage({
                       <p className="pt-1 text-sm font-bold leading-6 text-slate-600">{step}</p>
                     </div>
                   ))}
-              </div>
+                </div>
+              )}
 
-              <div className="mt-6">
+              <div className={isFacebookAdsConversionCheckout ? "sr-only" : "mt-6"}>
                 <PaymentStatusPoller disablePolling={isLocalDemoOrder} initialOrder={order} variant="light" />
               </div>
 
-              <div className="payment-after-grid mt-5 grid gap-3">
-                {content.nextSteps.map((step, index) => (
-                  <div className="payment-muted-card flex items-start gap-3 rounded-2xl border border-slate-900/6 bg-slate-50 p-4" key={step}>
-                    <span className="payment-step-number grid size-8 shrink-0 place-items-center rounded-full bg-blue-600 text-sm font-black text-white">
-                      {index + 1}
-                    </span>
-                    <div className="min-w-0">
-                      <span className="block text-xs font-black uppercase tracking-[0.08em] text-blue-600">
-                        Sau thanh toán {index + 1}
+              {isFacebookAdsConversionCheckout ? (
+                <>
+                  <ZaloSupportProof />
+                  <a
+                    className="mt-6 inline-flex min-h-14 w-full items-center justify-center rounded-full bg-[#0068ff] px-5 text-center text-sm font-black text-white shadow-[0_16px_40px_rgba(0,104,255,.28)] transition hover:-translate-y-0.5 hover:bg-[#0057d9]"
+                    href="https://zalo.me/0367928921"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Nhắn Zalo Thế Anh - 0367 928 921
+                  </a>
+                </>
+              ) : (
+                <div className="payment-after-grid mt-5 grid gap-3">
+                  {content.nextSteps.map((step, index) => (
+                    <div className="payment-muted-card flex items-start gap-3 rounded-2xl border border-slate-900/6 bg-slate-50 p-4" key={step}>
+                      <span className="payment-step-number grid size-8 shrink-0 place-items-center rounded-full bg-blue-600 text-sm font-black text-white">
+                        {index + 1}
                       </span>
-                      <p className="mt-2 text-sm font-bold leading-6 text-slate-600">{step}</p>
+                      <div className="min-w-0">
+                        <span className="block text-xs font-black uppercase tracking-[0.08em] text-blue-600">
+                          Sau thanh toán {index + 1}
+                        </span>
+                        <p className="mt-2 text-sm font-bold leading-6 text-slate-600">{step}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

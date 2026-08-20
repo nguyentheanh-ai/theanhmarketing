@@ -17,7 +17,7 @@ test("payment page follows the agent kit checkout section structure", () => {
   assert.match(page, /AI Agent Business/);
   assert.match(page, /Thanh toán chuyển khoản/);
   assert.match(page, /PaymentOfferCountdown/);
-  assert.match(page, /Ưu đãi đang được giữ theo mã đơn/);
+  assert.match(page, /Thế Anh không gọi điện cho bạn để thúc bạn thanh toán/);
   assert.match(page, /Thông tin đơn hàng/);
   assert.match(page, /Thanh toán ngay - 3 bước đơn giản/);
   assert.match(page, /Quét QR hoặc chuyển khoản/);
@@ -43,6 +43,33 @@ test("payment page follows the agent kit checkout section structure", () => {
   assert.doesNotMatch(page, /Chỉ còn .* suất cuối/);
   assert.doesNotMatch(page, />[^<{]*SePay[^<{]*</);
   assert.match(page, /Đã ghi nhận yêu cầu xuất hóa đơn/);
+});
+
+test("Facebook Ads and Ebook checkout prioritizes payment and real Zalo proof", () => {
+  const page = read("app/thanh-toan/[code]/page.tsx");
+  const proof = read("components/payment/zalo-support-proof.tsx");
+
+  assert.match(page, /Thanh toán để đọc Ebook ngay/);
+  assert.match(page, /Hệ thống gửi Ebook tự động sau 5 giây thanh toán/);
+  assert.match(page, /Hơn 400 Ebook đã bán trong tháng này/);
+  assert.match(page, /Thanh toán để vào khóa học ngay/);
+  assert.match(page, /Hệ thống gửi tài khoản học tập ngay sau 5 giây thanh toán/);
+  assert.match(page, /Hơn 1\.000 anh\/chị học viên đang học/);
+  assert.match(page, /nhận cả tài khoản học tập và Ebook/);
+  assert.match(page, /Thế Anh không gọi điện cho bạn để thúc bạn thanh toán/);
+  assert.match(page, /Nếu bạn cần học nghiêm túc - Hãy đăng ký luôn ở trang này/);
+  assert.match(page, /payment-topbar[^\n]*sticky top-0/);
+  assert.match(page, /const isFacebookAdsConversionCheckout/);
+  assert.match(page, /isFacebookAdsConversionCheckout \? null : \(/);
+  assert.match(page, /<ZaloSupportProof \/>/);
+  assert.match(page, /href="https:\/\/zalo\.me\/0367928921"/);
+  assert.match(page, /Nhắn Zalo Thế Anh - 0367 928 921/);
+
+  assert.equal((proof.match(/zalo-proof-\d{2}-/g) || []).length, 12);
+  assert.match(proof, /animation:\s*payment-zalo-scroll 92s linear infinite/);
+  assert.match(proof, /animation-play-state:\s*paused/);
+  assert.match(proof, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(proof, /Học viên được hỗ trợ thật qua Zalo/);
 });
 
 test("local AI product payment demos mirror the approved 990K checkout price", () => {
