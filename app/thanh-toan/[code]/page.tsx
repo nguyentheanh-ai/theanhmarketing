@@ -498,6 +498,7 @@ export default async function PaymentPage({
           overflow-y: visible;
           overscroll-behavior-y: auto;
           touch-action: pan-y;
+          padding-top: 74px;
         }
 
         .payment-checkout-page * {
@@ -514,6 +515,28 @@ export default async function PaymentPage({
           background: linear-gradient(90deg, #0061ff 0%, #00b7ff 100%) !important;
           color: #ffffff !important;
           line-height: 1.35;
+        }
+
+        .payment-topbar-content {
+          animation: payment-notice-float 2.4s ease-in-out infinite;
+        }
+
+        .payment-notice-label {
+          color: #dc2626;
+        }
+
+        .payment-floating-zalo {
+          animation: payment-zalo-float 2.2s ease-in-out infinite;
+        }
+
+        @keyframes payment-notice-float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-3px); }
+        }
+
+        @keyframes payment-zalo-float {
+          0%, 100% { transform: translateY(0); box-shadow: 0 16px 40px rgba(0, 104, 255, 0.34); }
+          50% { transform: translateY(-6px); box-shadow: 0 22px 48px rgba(0, 104, 255, 0.46); }
         }
 
         .payment-checkout-page .payment-header,
@@ -575,12 +598,11 @@ export default async function PaymentPage({
         @media (max-width: 640px) {
           .payment-checkout-page {
             padding-bottom: 4rem;
+            padding-top: 118px;
           }
 
           .payment-checkout-page .payment-topbar {
-            padding-left: 1rem;
-            padding-right: 1rem;
-            font-size: 0.72rem;
+            font-size: 0.84rem;
           }
 
           .payment-checkout-page section {
@@ -649,6 +671,13 @@ export default async function PaymentPage({
           }
 
         }
+
+        @media (prefers-reduced-motion: reduce) {
+          .payment-topbar-content,
+          .payment-floating-zalo {
+            animation: none;
+          }
+        }
       `}</style>
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -right-28 -top-32 size-[460px] rounded-full bg-blue-500/18 blur-3xl" />
@@ -656,8 +685,18 @@ export default async function PaymentPage({
         <div className="absolute bottom-0 right-1/4 size-[320px] rounded-full bg-orange-300/12 blur-3xl" />
       </div>
 
-      <div className="payment-topbar sticky top-0 z-30 bg-gradient-to-r from-blue-600 to-cyan-400 px-5 py-2 text-center text-sm font-black text-white shadow-lg">
-        Lưu ý: Thế Anh không gọi điện cho bạn để thúc bạn thanh toán, mình chỉ nhắn tin để hỗ trợ học viên sau khi đăng ký học thành công. Nếu bạn cần học nghiêm túc - Hãy đăng ký luôn ở trang này.
+      <div className="payment-topbar fixed inset-x-0 top-0 z-50 bg-gradient-to-r from-blue-600 to-cyan-400 px-4 py-3 text-center text-base font-black text-white shadow-lg">
+        <div className="payment-topbar-content mx-auto max-w-6xl">
+          <div className="payment-topbar-desktop hidden sm:block">
+            <p><span className="payment-notice-label">Lưu ý:</span> Thế Anh sẽ không gọi thúc bạn thanh toán.</p>
+            <p>Mình chỉ nhắn tin cho học viên đăng ký thành công. Nếu bạn nghiêm túc - thanh toán luôn ở trang này.</p>
+          </div>
+          <div className="payment-topbar-mobile space-y-1 sm:hidden">
+            <p><span className="payment-notice-label">Lưu ý:</span> Thế Anh sẽ không gọi thúc bạn thanh toán</p>
+            <p>Mình chỉ nhắn tin cho học viên đăng ký thành công</p>
+            <p>Nếu bạn nghiêm túc - thanh toán luôn ở trang này</p>
+          </div>
+        </div>
       </div>
 
       <header className="payment-header relative z-10 border-b border-slate-900/8 bg-white/88 px-5 py-4 backdrop-blur-2xl">
@@ -818,12 +857,14 @@ export default async function PaymentPage({
                 <>
                   <ZaloSupportProof />
                   <a
-                    className="mt-6 inline-flex min-h-14 w-full items-center justify-center rounded-full bg-[#0068ff] px-5 text-center text-sm font-black text-white shadow-[0_16px_40px_rgba(0,104,255,.28)] transition hover:-translate-y-0.5 hover:bg-[#0057d9]"
+                    aria-label="Nhắn Zalo Thế Anh"
+                    className="payment-floating-zalo fixed bottom-4 right-4 z-40 inline-flex min-h-14 items-center justify-center gap-2 rounded-full border-2 border-white bg-[#0068ff] px-5 text-center text-sm font-black text-white transition hover:bg-[#0057d9] focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-blue-300 sm:bottom-6 sm:right-6"
                     href="https://zalo.me/0367928921"
                     rel="noopener noreferrer"
                     target="_blank"
                   >
-                    Nhắn Zalo Thế Anh - 0367 928 921
+                    <span className="grid size-8 place-items-center rounded-full bg-white text-base font-black text-[#0068ff]">Z</span>
+                    <span>Nhắn Zalo Thế Anh</span>
                   </a>
                 </>
               ) : (

@@ -17,7 +17,7 @@ test("payment page follows the agent kit checkout section structure", () => {
   assert.match(page, /AI Agent Business/);
   assert.match(page, /Thanh toán chuyển khoản/);
   assert.match(page, /PaymentOfferCountdown/);
-  assert.match(page, /Thế Anh không gọi điện cho bạn để thúc bạn thanh toán/);
+  assert.match(page, /Thế Anh sẽ không gọi thúc bạn thanh toán/);
   assert.match(page, /Thông tin đơn hàng/);
   assert.match(page, /Thanh toán ngay - 3 bước đơn giản/);
   assert.match(page, /Quét QR hoặc chuyển khoản/);
@@ -56,14 +56,20 @@ test("Facebook Ads and Ebook checkout prioritizes payment and real Zalo proof", 
   assert.match(page, /Hệ thống gửi tài khoản học tập ngay sau 5 giây thanh toán/);
   assert.match(page, /Hơn 1\.000 anh\/chị học viên đang học/);
   assert.match(page, /nhận cả tài khoản học tập và Ebook/);
-  assert.match(page, /Thế Anh không gọi điện cho bạn để thúc bạn thanh toán/);
-  assert.match(page, /Nếu bạn cần học nghiêm túc - Hãy đăng ký luôn ở trang này/);
-  assert.match(page, /payment-topbar[^\n]*sticky top-0/);
+  assert.match(page, /Thế Anh sẽ không gọi thúc bạn thanh toán/);
+  assert.match(page, /Mình chỉ nhắn tin cho học viên đăng ký thành công/);
+  assert.match(page, /Nếu bạn nghiêm túc - thanh toán luôn ở trang này/);
+  assert.match(page, /payment-topbar[^\n]*fixed inset-x-0 top-0/);
+  assert.match(page, /payment-topbar-desktop/);
+  assert.match(page, /payment-topbar-mobile/);
+  assert.match(page, /payment-notice-label/);
+  assert.match(page, /@keyframes payment-notice-float/);
   assert.match(page, /const isFacebookAdsConversionCheckout/);
   assert.match(page, /isFacebookAdsConversionCheckout \? null : \(/);
   assert.match(page, /<ZaloSupportProof \/>/);
   assert.match(page, /href="https:\/\/zalo\.me\/0367928921"/);
-  assert.match(page, /Nhắn Zalo Thế Anh - 0367 928 921/);
+  assert.match(page, /payment-floating-zalo[^\n]*fixed/);
+  assert.match(page, /Nhắn Zalo Thế Anh/);
 
   assert.equal((proof.match(/zalo-proof-\d{2}-/g) || []).length, 12);
   assert.match(proof, /animation:\s*payment-zalo-scroll 92s linear infinite/);
