@@ -307,6 +307,18 @@ Change: inserted four published `enrolled_only` video lessons for Dataset introd
 Verification: production has 23 published lessons; the four Dataset lessons are global positions 19 through 22 and the exclusion lesson is position 23. Authenticated live Chrome QA confirmed the same titles, order, Premium labels, and no site runtime errors.
 Safety: no existing lesson content/video/access was changed except the exclusion lesson order; no student progress, entitlement, payment, email, or tracking data changed.
 
+## 2026-08-21 - Facebook Ads mobile readability and Zalo proof production release
+
+Scope: `main-site` route `/academy/facebook-ads-master-2026` in the existing `facebook-ads-master-rewrite-20260821` worktree. Implemented owner-approved cream-section option 1 and repaired Zalo proof cards without changing copy, offer, form, checkout, SEO or tracking contracts.
+
+Files: source/published Facebook Ads HTML pair, `tests/facebook-ads-landing.test.mjs`, and the approved design/implementation notes under `docs/superpowers/`.
+
+Verification: TDD RED/GREEN; full Node 592/592; TypeScript; ESLint 0 errors/1 pre-existing warning; tracking; diff check; 96-page Webpack build; local and production Browser QA at 1440/390/320. Source, published and live HTML are byte-identical.
+
+Deploy: commit `3fef504`; preview `dpl_HxgCVALaiDseameKhtmeVyiwvzXy`; production `dpl_5kEZoPX1YAtoGdXHBgpJrzqixeNA` Ready; rollback `dpl_FFoE7Ny1bG2bFaFGai7Q4n1Hxhqj`.
+
+Production QA order: `TAMMT24TKS5A3FIN`, 799.000 VND, pending. QR loads; pending-payment email and Telegram markers succeeded. No payment, Purchase, success email, provisioning, Auth account or entitlement was created.
+
 ## 2026-08-02 | main-site | Unified course prices and removed legacy offer UI | local ready
 
 - Updated course catalog data so eight courses display `990.000đ`, while Facebook Ads remains `799.000đ` and Ebook remains `399.000đ`; original prices also use full VND formatting instead of `K`.

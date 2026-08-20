@@ -1,5 +1,14 @@
 # Current State - theanh-main
 
+## 2026-08-21 - Facebook Ads mobile readability and Zalo proof fix (production)
+
+- Owner-approved option 1 is live from commit `3fef504` as Vercel production deployment `dpl_5kEZoPX1YAtoGdXHBgpJrzqixeNA` (`READY`) on apex and `www`; rollback target is `dpl_FFoE7Ny1bG2bFaFGai7Q4n1Hxhqj`.
+- The cream `#bo-cong-cu` section now uses dark brown headings/card titles, medium-brown supporting copy, orange kicker/icons and translucent warm-white cards. The five Zalo proof images now preserve their natural aspect ratio instead of being center-cropped; mobile cards use one readable 84vw/320px snap column.
+- Source/published HTML are byte-identical and live matches both at SHA-256 `f5f8a4d45a64fb6fdaaa9e75e4639d7144c58010828839892d921794e7cd67ff`; event JS is unchanged at `e6d272f21c2458bfb78e0a5e35d40724254e67ec29a0026024cb27c5bb721a19`.
+- TDD observed the new readability regression fail before implementation. Full Node `592/592`, TypeScript, tracking verification, diff check and 96-page Webpack build pass; ESLint has 0 errors and 1 unchanged unrelated warning.
+- Production in-app Browser QA at 390/320/1440 confirms readable contrast, natural Zalo image ratios, no horizontal overflow, no broken image and no mojibake. Route/guards are 200/307/405/405 and the deployment runtime error scan is empty.
+- Exactly one production QA order was created after live verification: `TAMMT24TKS5A3FIN`, 799.000 VND, `pending`. Checkout QR loaded 360x360; pending-payment email and order-created Telegram markers succeeded with null errors. `paid_at`, payment-success email, Purchase/CAPI, provisioning and Auth account remain absent.
+
 ## 2026-08-21 - Facebook Ads value stack grouped into two panels (production)
 
 - Owner follow-up is live from commit `dceb20b` as Vercel production deployment `dpl_FFoE7Ny1bG2bFaFGai7Q4n1Hxhqj` (`READY`) on apex and `www`; rollback target is `dpl_EFWWGpZnaBbwuCjJp6d3DhTLBVXz`.

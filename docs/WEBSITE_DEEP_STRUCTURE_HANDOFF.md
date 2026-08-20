@@ -1,5 +1,17 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-08-21 - Facebook Ads mobile readability and Zalo proof fix (production)
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Scope | Presentation-only follow-up for `main-site` route `/academy/facebook-ads-master-2026`; source/published HTML, landing regression, release/readback and one owner-requested pending QA order. |
+| Root cause | Cream tools section inherited light text from the dark hybrid theme. Zalo proof CSS forced `aspect-ratio: 15/32` plus `object-fit: cover`, while the mobile grid minimum kept two narrow 220px cards visible. |
+| UI | Option 1: dark-brown heading/card titles, medium-brown copy, orange kicker/icons and warm translucent-white cards. Proof images use natural height with `contain`; mobile uses one readable `min(84vw, 320px)` snap card. |
+| Preserved | Copy/offer, form/invoice, `/api/orders`, 799K/Ebook plans, SEO/canonical, Pixel, engagement event script, SePay and server Purchase/CAPI are unchanged. |
+| Verification | TDD RED then GREEN; full Node `592/592`; TypeScript, tracking, diff check and 96-page Webpack build pass; ESLint 0 errors/1 unchanged warning. Production Browser 390/320/1440 has no overflow, broken image or mojibake. |
+| Production | Commit `3fef504`; Git preview `dpl_HxgCVALaiDseameKhtmeVyiwvzXy` validated, then exact promotion `dpl_5kEZoPX1YAtoGdXHBgpJrzqixeNA` (`READY`). Rollback `dpl_FFoE7Ny1bG2bFaFGai7Q4n1Hxhqj`. Live/local HTML hash `f5f8a4d45a64fb6fdaaa9e75e4639d7144c58010828839892d921794e7cd67ff`; event JS unchanged; guards and runtime scan clean. |
+| QA order | `TAMMT24TKS5A3FIN`, 799.000 VND, `pending`; QR 360x360; pending email and Telegram markers sent with null errors. No payment, success email, Purchase, provisioning or Auth user. |
+
 ## 2026-08-21 - Facebook Ads value stack two-panel grouping (production)
 
 | Hạng mục | Chi tiết |
