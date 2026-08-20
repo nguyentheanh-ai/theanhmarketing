@@ -10,7 +10,7 @@
 - Release commit `17bdabb` was built as production candidate `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL` with `--skip-domain`, smoke-tested while `www` remained on rollback deployment `dpl_CpvZrvvxbQQauZkbAUi8dmTRoWvG`, then promoted. The final alias is `READY` on the new deployment.
 - Live HTML and JS return 200 and exactly match local SHA-256 hashes. Readback confirms the six CTA IDs, primary Pixel, ViewContent, `/api/orders`, canonical, no early InitiateCheckout/browser Purchase, zero HTML video and zero mojibake. Route guards are `/admin` 307 and protected API GETs 405; runtime error/warning/fatal scans are empty.
 - Meta dataset aggregate stats for the post-release one-hour window returned `EngagedView=3`, `ScrollDepth=4`, `CTAClick=1` from Web. Events Manager Test Events remains unavailable through the current authenticated channels; no test code/token or real order was used.
-- GitHub push is blocked by missing HTTPS credential on this Mac. No login/2FA flow was opened and no production rollback is required.
+- GitHub push follow-up is `RESOLVED`: installed the official GitHub CLI 2.97.0 after SHA-256 checksum verification, completed the owner-approved device authorization for `nguyentheanh-ai`, configured HTTPS Git credential access through the macOS keyring, and pushed the full branch with upstream tracking. Remote readback matched commits `17bdabb0691593c8778686241791eef9e548a2f6` and `36c26e8b8205b8154b96c6e6251825e88356f831`; no production deploy or rollback was performed in this authentication-only follow-up.
 
 ## 2026-08-03 - Restore durable Meta Purchase CAPI
 

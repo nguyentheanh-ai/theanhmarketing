@@ -16,7 +16,7 @@
 | Build note | Next 16 Webpack production build passes and generates 96 pages. Two base-commit type blockers were fixed without behavior changes: `MAX_REQUEST_BYTES` is module-local rather than an invalid route export, and `/go` uses Promise-only `searchParams`. |
 | Production | Vercel `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL`, `READY`, promoted to `www.theanhmarketing.com`; rollback target `dpl_CpvZrvvxbQQauZkbAUi8dmTRoWvG`. Clean route/event script are 200 and exact live HTML/JS hashes match local. Guards: `/admin` 307, `GET /api/orders` 405, `GET /api/student/progress` 405. Runtime error/warning/fatal scans are empty. |
 | Meta readback | Aggregate Web counts in the post-release one-hour window: `EngagedView=3`, `ScrollDepth=4`, `CTAClick=1`. This is dataset-stat readback, not Events Manager Test Events. Test Events is unavailable in the current authenticated tool channel; no token/test code was entered. |
-| Remaining external handoff | GitHub HTTPS push of branch `feat/facebook-ads-master-rewrite-20260821` is blocked by missing local credential (`Device not configured`). Runtime deployment and exact local commit remain verified. |
+| Remaining external handoff | GitHub push is `RESOLVED`. The owner-approved device flow authenticated Terminal Git as `nguyentheanh-ai`; the full branch `feat/facebook-ads-master-rewrite-20260821` now tracks origin, and remote readback matched runtime `17bdabb0691593c8778686241791eef9e548a2f6` plus docs `36c26e8b8205b8154b96c6e6251825e88356f831`. Events Manager Test Events remains the only unavailable external channel. |
 
 ## 2026-08-13 - Facebook Ads typography and mobile refinement
 
