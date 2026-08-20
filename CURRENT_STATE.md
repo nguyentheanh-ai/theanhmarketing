@@ -1,5 +1,13 @@
 # Current State - theanh-main
 
+## 2026-08-21 - Facebook Ads pricing header simplification (production)
+
+- Owner follow-up is live from runtime commit `dac8111` as Vercel production deployment `dpl_EFWWGpZnaBbwuCjJp6d3DhTLBVXz` (`READY`) on `www.theanhmarketing.com`; rollback target is prior event-contract production `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL`.
+- The value-stack total `5.997.000đ` now has a visible 2px line-through. The pricing section no longer renders the redundant `Học phí & đăng ký` kicker or `Hôm nay bạn sở hữu toàn bộ với 799.000đ` heading; the separate ownership/value line above checkout remains.
+- Scope is presentation-only. Source/published HTML remain byte-identical, SHA-256 `916c9b223ac2d98902a08bfe3dab56ecf78ef828fb60a538e0c97638d2575a45`; form, invoice module, `/api/orders`, 799K/Ebook plans, SEO/canonical, Pixel and event JS are unchanged. Live event JS still matches local SHA-256 `e6d272f21c2458bfb78e0a5e35d40724254e67ec29a0026024cb27c5bb721a19`.
+- TDD observed the new UI regression fail before implementation, then focused landing/event tests passed `27/27`. Full Node is `591/591`; TypeScript, tracking verification, diff check and 96-page Webpack production build pass. ESLint has 0 errors and 1 unchanged unrelated warning.
+- Production Browser QA at 1440/390/320 confirmed the line-through, removed headings, intact form/submit button, zero horizontal overflow and no console warnings/errors. Live route is 200; guards remain `/admin` 307, `GET /api/orders` 405 and `GET /api/student/progress` 405. Runtime error scan is empty and no real order was submitted.
+
 ## 2026-08-21 - Facebook Ads Master Data & AI conversion rewrite + event contract (production)
 
 - Runtime commit `17bdabb` from existing worktree `/Users/theanh/CodexProjects/TheAnh-Web/worktrees/facebook-ads-master-rewrite-20260821`, branch `feat/facebook-ads-master-rewrite-20260821`, is live as Vercel production deployment `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL` (`READY`) on `www.theanhmarketing.com`. Rollback target is prior production `dpl_CpvZrvvxbQQauZkbAUi8dmTRoWvG`.

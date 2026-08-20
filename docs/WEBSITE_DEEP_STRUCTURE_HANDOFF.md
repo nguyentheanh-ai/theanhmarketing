@@ -1,5 +1,15 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-08-21 - Facebook Ads pricing header simplification (production)
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Scope | Presentation-only follow-up for `main-site` route `/academy/facebook-ads-master-2026`; source/published HTML and one landing regression test. |
+| UI | `Tổng giá trị: 5.997.000đ` is wrapped in a visible 2px line-through. Pricing no longer repeats `Học phí & đăng ký` or the `Hôm nay bạn sở hữu toàn bộ với 799.000đ` heading; the ownership line above checkout stays. |
+| Preserved | Payment form, invoice, `/api/orders`, 799K/Ebook plans, SEO/canonical, Pixel, custom event script and server Purchase/CAPI are unchanged. No order was submitted. |
+| Verification | TDD RED then focused GREEN `27/27`; full Node `591/591`; TypeScript, tracking, diff check and 96-page Webpack build pass; ESLint 0 errors/1 unchanged warning. Browser QA 1440/390/320 has no overflow or console warnings/errors. |
+| Production | Commit `dac8111`; Git preview `dpl_FDF9LMRTeZfNCeBdTHWoxaJERLeV` validated, then promoted as production `dpl_EFWWGpZnaBbwuCjJp6d3DhTLBVXz` (`READY`). Rollback target `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL`. Live/local HTML SHA-256 `916c9b223ac2d98902a08bfe3dab56ecf78ef828fb60a538e0c97638d2575a45`; event JS hash unchanged. |
+
 ## 2026-08-21 - Facebook Ads Master Data & AI conversion rewrite + Meta event contract (production)
 
 | Hạng mục | Chi tiết |

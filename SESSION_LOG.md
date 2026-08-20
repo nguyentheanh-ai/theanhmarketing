@@ -1,5 +1,13 @@
 # Session Log
 
+## 2026-08-21 - Facebook Ads pricing header simplification
+
+- Implemented the exact owner follow-up: line-through on total value 5.997.000đ; removed the pricing kicker and repeated 799K heading; retained the separate 799K ownership line and complete registration form.
+- Added a regression contract before implementation. Focused landing/event tests pass 27/27; full Node 591/591, TypeScript, tracking, diff check and 96-page Webpack build pass. ESLint reports 0 errors and the existing unrelated warning only.
+- Preserved source/published byte equality, invoice/order/payment form, plans, SEO, Pixel/CAPI and the complete custom event script. No real order, email, account or customer-data mutation was used.
+- Pushed commit `dac8111`, validated Git preview `dpl_FDF9LMRTeZfNCeBdTHWoxaJERLeV`, then promoted production `dpl_EFWWGpZnaBbwuCjJp6d3DhTLBVXz`. Prior production `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL` is the rollback target.
+- Live HTML is byte-identical to local at SHA-256 `916c9b223ac2d98902a08bfe3dab56ecf78ef828fb60a538e0c97638d2575a45`; event JS hash remains `e6d272f21c2458bfb78e0a5e35d40724254e67ec29a0026024cb27c5bb721a19`. Browser 1440/390/320 has no horizontal overflow or console warnings/errors; protected guards and Vercel runtime-error scan are clean.
+
 ## 2026-08-21 - Facebook Ads Master event contract production release
 
 - Implemented the owner-approved custom browser contract on `/academy/facebook-ads-master-2026`: one-shot `EngagedView` after 30 visible seconds, `ScrollDepth` at 50/75/90, and `CTAClick` only for six explicit primary CTAs with stable ID/text/destination parameters.
