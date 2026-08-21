@@ -1402,7 +1402,7 @@ Before changing these, run targeted tests and full build.
 | External state | Local only. ZBS template chưa submitted/approved because the authenticated Chrome window was in active owner use; migration, token seed, Cron, provider test and production flag are untouched. |
 | Verification | Zalo/payment focused 25/25; full Node 542/542; TypeScript and Next.js 94-page production build pass. ESLint 0 errors/1 pre-existing unrelated warning. |
 
-## 2026-08-21 - Premium Ebook workbook rewrite release candidate
+## 2026-08-21 - Premium Ebook workbook rewrite production release
 
 | Hạng mục | Chi tiết |
 |---|---|
@@ -1412,7 +1412,7 @@ Before changing these, run targeted tests and full build.
 | Tracking guard | Keeps Pixel `1315653423712065`, PageView and ViewContent 399K; Lead remains after successful order response with shared `leadId`. No browser InitiateCheckout or Purchase was introduced. |
 | Verification | Focused 86/86; full Node 594/594; TypeScript, tracking, Webpack build 96 routes, ESLint 0 errors/1 existing warning. Browser 1440/390/320: no overflow, broken images or console errors; 320 form overflow found during QA was regression-locked and fixed. |
 | Route gate | Production-build local smoke: Premium Ebook, public preview, protected reader and protected PDF routes all return 200. Repo-wide route script still lists eight removed legacy public routes and therefore exits nonzero outside this scope. |
-| Release state | Local only; no commit, merge, deploy, live readback or order. Feedback testimonials and owner policies for access duration, future updates and refunds remain BLOCKED due missing approved evidence. |
+| Release state | Runtime commit `a4db95a`; preview `dpl_J1ME2GVxtcHAez9fQs8GvtgQ9gXk`; production `dpl_Ak1fTmaTMb2NnKvrTtW4CtnjqpTh` READY on apex/`www`; rollback `dpl_5kEZoPX1YAtoGdXHBgpJrzqixeNA`. No order created. Feedback testimonials and owner policies for access duration, future updates and refunds remain BLOCKED due missing approved evidence. |
 
 ## 2026-08-21 - Premium Ebook header-free hero refinement
 
@@ -1422,7 +1422,7 @@ Before changing these, run targeted tests and full build.
 | Visual result | Left: eyebrow, compact result headline, three bullets and unchanged CTAs. Right: centered real book mockup, two real interior pages and 471/10/2026 facts. Bottom: three proof points. |
 | Guardrails | Source/published byte-identical. No change to order form, bundle toggle, invoice, `/api/orders`, payment redirect, SEO, Pixel/CAPI or commerce events. |
 | Verification | Ebook 23/23, full Node 595/595, TypeScript, diff check, Webpack 96 routes, Browser 1440/390/320 with loaded images, no overflow and no console warnings/errors. No order submission. |
-| Release state | Local only; no commit or deployment. |
+| Release state | Included in production runtime commit `a4db95a` / deployment `dpl_Ak1fTmaTMb2NnKvrTtW4CtnjqpTh`. |
 
 ## 2026-08-21 - Premium Ebook final hero controls release candidate
 
@@ -1432,4 +1432,4 @@ Before changing these, run targeted tests and full build.
 | UI result | Hero facts retain only `471 trang`, `10 phần`, `2026 cập nhật`. CTA, form submit, menu and sticky purchase controls use 14px corners; page arrows use 12px. Dots and non-button badges remain circular/pill where semantically appropriate. |
 | Safety | Source/published mirror byte-identical; form, bundle, invoice, `/api/orders`, payment, SEO and Pixel/CAPI unchanged. |
 | Local gate | TDD RED/GREEN; Ebook 25/25; full Node 597/597; TypeScript; tracking; ESLint 0 errors/1 unchanged warning; Webpack build 96 routes; Browser 1440/390 has no overflow or console warnings/errors. |
-| Release state | Production deployment explicitly authorized by owner; deploy/readback pending. |
+| Release state | LIVE from commit `a4db95a`: preview `dpl_J1ME2GVxtcHAez9fQs8GvtgQ9gXk`, production `dpl_Ak1fTmaTMb2NnKvrTtW4CtnjqpTh` READY, rollback `dpl_5kEZoPX1YAtoGdXHBgpJrzqixeNA`. Live/source/published SHA-256 `f272b6fb4d8734b472ac22e17064d90b0d3fe81d1fc61b6a8a75689cee0f2248`; 29/29 image URLs 200; Browser 1440/390/320 has zero overflow and console errors; guards 307/405/405 and runtime error scan clean. No order submitted. |

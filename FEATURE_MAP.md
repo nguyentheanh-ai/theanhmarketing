@@ -306,8 +306,8 @@ Guard: order payload and lead payload are different contracts; preserve text for
 
 | Feature | Status | Code | Flow giữ nguyên | Ghi chú |
 |---|---|---|---|---|
-| Landing thư viện tra cứu 471 trang | LOCAL READY / CHƯA DEPLOY | Premium Ebook source/published HTML pair | 399K, bundle 1.098M, invoice, order, SePay, email, access | P0/P1 theo workbook; result-first hero, 3 situation, 12 outcome, 2 chương đọc thử, 10 phần, tác giả, value stack, FAQ |
+| Landing thư viện tra cứu 471 trang | LIVE | Premium Ebook source/published HTML pair | 399K, bundle 1.098M, invoice, order, SePay, email, access | Commit `a4db95a`; production `dpl_Ak1fTmaTMb2NnKvrTtW4CtnjqpTh`; P0/P1 theo workbook |
 | Honest-price/trust guard | LOCAL CONTRACT LOCKED | Landing + `tests/ebook-facebook-ads-landing.test.mjs` | Server-known plans và giá khóa add-on giữ nguyên | Không dùng Ebook old-price 799K; không bịa testimonial, lifetime, update hoặc refund |
 | Mobile 320px containment | LOCAL READY | Scoped `<=339px` offer/form CSS | Form fields, invoice helper và checkout JS không đổi | Browser readback `scrollWidth=clientWidth`; 390/1440 cũng không overflow |
-| Header-free visual hero | LOCAL READY / CHƯA DEPLOY | Premium Ebook hero HTML/CSS + regression test | CTA, form, order API, SEO và Pixel/CAPI không đổi | Owner wireframe: book + 2 page previews + 471/10/2026 facts; copy bullets; proof row; Browser 1440/390/320 đạt |
-| Compact hero facts and buttons | LOCAL READY / DEPLOY AUTHORIZED | Premium Ebook hero/button CSS + regression test | Commerce/tracking/SEO unchanged | Removes 3 redundant captions; 14px CTA/menu/sticky radius and 12px page-arrow radius; dots/badges stay semantic |
+| Header-free visual hero | LIVE | Premium Ebook hero HTML/CSS + regression test | CTA, form, order API, SEO và Pixel/CAPI không đổi | Book + 2 page previews + 471/10/2026 facts; production Browser 1440/390/320 đạt |
+| Compact hero facts and buttons | LIVE | Premium Ebook hero/button CSS + regression test | Commerce/tracking/SEO unchanged | Bỏ 3 caption; nút 14px, page arrow 12px; live hash khớp local |
