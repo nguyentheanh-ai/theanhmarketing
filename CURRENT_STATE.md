@@ -163,3 +163,16 @@ Updated: 2026-07-22
 - Customer CTA opens `/thanh-toan/<code>?openBank=1`. On mobile the server builds official VietQR app-specific links; the bank chooser requires a customer click and the existing QR/copy details remain visible as fallback.
 - Production remains disabled. The ZBS template is not yet submitted/approved, the migration is not applied, Cron is not enabled, and no daily cap has been owner-approved. The rollout runbook requires these gates and blocks backfill with `ZALO_ZNS_ROLLOUT_AT`.
 - Verification: focused Zalo/payment tests 25/25; full Node 542/542; TypeScript and 94-page Next production build pass. ESLint has 0 errors and 1 pre-existing unrelated warning in `components/crm-v2/support-bookings-client.tsx`.
+
+## 2026-08-21 - Premium Ebook conversion rewrite theo workbook (local ready)
+
+- App/domain: `main-site` / `/academy/ebook-facebook-ads-2026-premium`; triển khai trực tiếp từ toàn bộ workbook `ebook_facebook_ads_2026_landingpage_codex_plan.xlsx`, P0 trước P1.
+- Định vị mới: thư viện tra cứu Facebook Ads 2026; hero result-first, 3 tình huống, 4 lớp Offer → Creative → Data → Vận hành, 12 outcome, 3 cách dùng, đọc thử thật Phần 1 + Phần 5, 10 phần, tác giả, value stack, checkout, FAQ và final CTA.
+- Giữ nguyên 399.000đ, optional course bundle 1.098.000đ không chọn sẵn, invoice, `/api/orders`, payment redirect, Pixel `1315653423712065`, browser PageView/ViewContent và Lead sau khi tạo đơn. Không thêm browser InitiateCheckout/Purchase.
+- Xóa giá gạch 799.000đ khỏi chính Ebook vì chưa có bằng chứng giá gốc; giá khóa riêng 799.000đ trong add-on vẫn là dữ kiện server-known. Không đưa cam kết ra đơn, lifetime access/update hoặc refund chưa được phê duyệt.
+- Source/published HTML byte-identical. Browser QA local 1440/390/320: không tràn ngang, không ảnh lỗi, không console warning/error; add-on toggle đúng, không submit form và không tạo đơn.
+- Verify: focused commerce/delivery/tracking 86/86; full Node 594/594; TypeScript; tracking; ESLint 0 lỗi/1 warning cũ ngoài phạm vi; Webpack build 96 trang. Exact Ebook/preview/protected reader/PDF routes trả 200 trên production build local. Repo-wide route verifier vẫn có 8 route legacy 404 ngoài phạm vi.
+- Trạng thái: local ready, chưa commit/merge/deploy. Feedback khách mua Ebook, thời hạn truy cập, chính sách cập nhật tương lai và chính sách hoàn tiền chưa có nguồn thật nên không được bịa trên landing.
+- Hero refinement theo wireframe owner: bỏ header, bố cục copy trái / sách + 2 trang mẫu + 3 thông số phải, 3 lợi ích chạy ngang cuối hero. Browser 1440/390/320 đạt; source/published byte-identical; commerce và tracking giữ nguyên. Vẫn local only.
+- Direct-file preview fix: toàn bộ bundled Ebook image và `checkout-invoice.js` dùng đường dẫn tương đối `../`, nên cùng HTML chạy được qua `file://`, `/ladipage/...` và `/academy/...`; regression xác minh từng asset tồn tại thật.
+- Final owner UI pass local-ready: hero fact row chỉ còn `471 trang`, `10 phần`, `2026 cập nhật`; CTA/menu/sticky controls dùng góc 14px và page arrows 12px thay cho pill radius. Release gates đạt; đang chờ production deployment/readback trong cùng phiên.

@@ -43,7 +43,7 @@ test("Premium Ebook Facebook Ads landing is published on a clean academy URL", (
   assert.match(source, /const leadId = `web\.\$\{Date\.now\(\)\}\.\$\{Math\.random\(\)\.toString\(10\)\.slice\(2\)\}`/);
   assert.match(source, /leadId,/);
   assert.match(source, /trackLead\(result\.order, leadId, checkoutPlan\)/);
-  assert.match(source, /href="\/doc-thu\/ebook-facebook-ads-2026"[^>]*data-event="sample_trial_reader_click"[^>]*>\u0110\u1ECDc th\u1EED Ebook<\/a>/);
+  assert.match(source, /href="\/doc-thu\/ebook-facebook-ads-2026"[^>]*data-event="sample_trial_reader_click"[^>]*>Đọc thử miễn phí 2 chương<\/a>/);
   assert.doesNotMatch(source, /d\u00F9ng \u1EA3nh th\u1EADt t\u1EEB t\u00E0i li\u1EC7u|Cho kh\u00E1ch th\u1EA5y|Kh\u00E1ch c\u00F3 th\u1EC3 k\u00E9o ngang|kh\u00E1ch hay nghi ng\u1EDD|PNG ebook|kh\u00F4ng d\u00F9ng \u1EA3nh minh h\u1ECDa gi\u1EA3/i);
   assert.match(nextConfig, /source:\s*"\/academy\/ebook-facebook-ads-2026-premium\.html"[\s\S]*?destination:\s*"\/academy\/ebook-facebook-ads-2026-premium"/);
   assert.match(nextConfig, /source:\s*"\/academy\/ebook-facebook-ads-2026-premium"[\s\S]*?destination:\s*"\/academy\/ebook-facebook-ads-2026-premium\.html"/);
@@ -73,21 +73,94 @@ test("Premium Ebook Facebook Ads landing is published on a clean academy URL", (
   }
 });
 
-test("Premium Ebook landing uses the approved mobile-first hero and section navigation", () => {
+test("Premium Ebook conversion rewrite follows the approved P0 journey", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026-premium.html");
+  const published = read("public/academy/ebook-facebook-ads-2026-premium.html");
+  const hero = html.match(/<header class="hero" id="top">[\s\S]*?<\/header>/)?.[0] ?? "";
+  const pricing = html.match(/<section class="section dark" id="price"[\s\S]*?<\/section>/)?.[0] ?? "";
+
+  assert.equal(published, html);
+  assert.match(hero, /THƯ VIỆN TRA CỨU FACEBOOK ADS 2026/);
+  assert.match(hero, /Khi quảng cáo gặp vấn đề,[\s\S]*?mở đúng phần[\s\S]*?để biết cần làm gì tiếp theo/);
+  assert.match(hero, /Không cần đọc hết 471 trang/);
+  assert.match(hero, /data-event="hero_cta_click"[^>]*>Nhận Ebook Facebook Ads 2026 – 399\.000đ<\/a>/);
+  assert.match(hero, /data-event="hero_preview_click"[^>]*>Đọc thử miễn phí 2 chương<\/a>/);
+  assert.ok(hero.indexOf("hero_cta_click") < hero.indexOf("hero_preview_click"));
+
+  const sectionOrder = [
+    'id="preview"',
+    'id="situations"',
+    'id="mechanism"',
+    'id="outcomes"',
+    'id="use-cases"',
+    'id="sample"',
+    'id="content"',
+    'id="author"',
+    'id="value-stack"',
+    'id="price"',
+    'id="faq"',
+    'id="final-cta"',
+  ];
+  let previousIndex = html.indexOf("</header>");
+  for (const marker of sectionOrder) {
+    const index = html.indexOf(marker);
+    assert.ok(index > previousIndex, `${marker} must follow the preceding approved section`);
+    previousIndex = index;
+  }
+
+  assert.equal((html.match(/class="[^"]*situation-card/g) || []).length, 3);
+  assert.match(html, /Offer[\s\S]*?Creative[\s\S]*?Data[\s\S]*?Vận hành/);
+  assert.match(html, /Chính sách Meta, xử lý lỗi và công cụ hỗ trợ/);
+  assert.match(html, /Bản đọc thử đang mở Phần 1 và Phần 5/);
+  assert.match(html, /href="\/doc-thu\/ebook-facebook-ads-2026"[^>]*>Đọc thử miễn phí 2 chương<\/a>/);
+  assert.doesNotMatch(html, /landing page hệ thống hóa|manifest ebook|Phần này không mở rộng nội dung ebook|Ưu đãi hiện tại tập trung|theo quy trình giao ebook hiện tại/i);
+  assert.match(pricing, /399\.000đ/);
+  assert.doesNotMatch(pricing, /class="old-price"|Giá gốc 799\.000đ/);
+});
+
+test("Premium Ebook P1 trust copy uses only verified delivery and access contracts", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026-premium.html");
+  const valueStack = html.match(/<section[^>]*id="value-stack"[\s\S]*?<\/section>/)?.[0] ?? "";
+
+  for (const proof of [
+    "471 trang",
+    "Đọc online",
+    "Tải PDF",
+    "2 chương đọc thử",
+    "Tài khoản truy cập",
+  ]) {
+    assert.match(valueStack, new RegExp(proof));
+  }
+
+  assert.match(html, /điện thoại, máy tính bảng và máy tính/);
+  assert.match(html, /sau khi thanh toán được xác nhận/);
+  assert.match(html, /phiên bản Facebook Ads 2026 hiện tại/);
+  assert.match(html, /hỗ trợ kỹ thuật về thanh toán, tài khoản và quyền mở tài liệu/);
+  assert.match(html, /không bao gồm tư vấn hoặc sửa quảng cáo 1:1/);
+  assert.match(html, /không được chia sẻ công khai, bán lại hoặc dùng để đào tạo bên thứ ba/);
+  assert.doesNotMatch(html, /cập nhật trọn đời|truy cập trọn đời|sở hữu trọn đời|vĩnh viễn/i);
+
+  assert.match(html, /<input id="course-addon" name="courseAddon" type="checkbox" \/>/);
+  assert.doesNotMatch(html, /<input id="course-addon"[^>]*checked/);
+  assert.match(html, /paymentPlan:\s*"full-access-399"/);
+  assert.match(html, /paymentPlan:\s*"full-access-399-course-699"/);
+  assert.match(html, /fetch\(`\$\{checkoutOrigin\}\/api\/orders`/);
+  assert.match(html, /fbq\("init", "1315653423712065"\)/);
+  assert.match(html, /fbq\("track", "PageView"\)/);
+  assert.match(html, /fbq\("track", "ViewContent", \{/);
+  assert.match(html, /trackLead\(result\.order, leadId, checkoutPlan\)/);
+  assert.doesNotMatch(html, /fbq\("track", "InitiateCheckout"/);
+  assert.doesNotMatch(html, /fbq\("track", "Purchase"/);
+});
+
+test("Premium Ebook landing uses the approved header-free hero and section navigation", () => {
   const html = read("public/ladipage/ebook-facebook-ads-2026-premium.html");
   const hero = html.match(/<header class="hero" id="top">[\s\S]*?<\/header>/)?.[0] ?? "";
   const menu = html.match(/<nav id="ebook-section-menu"[\s\S]*?<\/nav>/)?.[0] ?? "";
   const rail = html.match(/<nav class="section-progress-rail"[\s\S]*?<\/nav>/)?.[0] ?? "";
 
-  assert.match(hero, /<nav class="nav" aria-label="Điều hướng chính">/);
-  assert.match(html, /\.nav\s*\{[\s\S]*?position:\s*relative;/);
-  assert.doesNotMatch(html, /\.nav\s*\{[\s\S]*?position:\s*sticky;/);
-  assert.match(html, /<span class="brand-mark"><img src="\/brand\/ta-logo\.svg" alt="The Anh Marketing"><\/span>/);
-  assert.doesNotMatch(html, /<span class="brand-mark">TA<\/span>/);
-  const brandMarkCss = html.match(/\.brand-mark\s*\{[\s\S]*?\}/)?.[0] ?? "";
-  assert.match(brandMarkCss, /border:\s*0;/);
-  assert.match(brandMarkCss, /background:\s*transparent;/);
-  assert.match(brandMarkCss, /box-shadow:\s*none;/);
+  assert.doesNotMatch(hero, /<nav class="nav"/);
+  assert.doesNotMatch(html, /\.nav\s*\{/);
   assert.match(html, /@media \(max-width:\s*980px\)[\s\S]*?\.hero-visual\s*\{[\s\S]*?order:\s*-1;/);
   assert.match(html, /@media \(max-width:\s*980px\)[\s\S]*?\.hero-copy\s*\{[\s\S]*?order:\s*1;/);
   assert.match(html, /@media \(max-width:\s*640px\)[\s\S]*?\.wrap\s*\{[\s\S]*?width:\s*min\(calc\(100% - 28px\), 520px\);/);
@@ -97,17 +170,16 @@ test("Premium Ebook landing uses the approved mobile-first hero and section navi
   assert.doesNotMatch(hero, /class="section-menu-toggle"/);
   assert.match(html, /<\/header>\s*<button class="section-menu-toggle"/);
   const mobileCss = html.match(/@media \(max-width:\s*640px\) \{[\s\S]*?@media \(max-width:\s*339px\)/)?.[0] ?? "";
-  assert.match(mobileCss, /\.nav-links\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) auto;/);
   assert.match(mobileCss, /\.section-menu-toggle\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?bottom:\s*18px;/);
   assert.doesNotMatch(mobileCss, /\.section-menu-toggle\s*\{[\s\S]*?top:\s*92px;/);
   assert.equal((menu.match(/data-section-menu-link/g) || []).length, 6);
   assert.equal((rail.match(/data-section-progress-dot/g) || []).length, 6);
   const sectionMenu = [
     ["top", "Trang đầu"],
-    ["problem", "Bạn có gặp vấn đề này?"],
-    ["sample", "Đọc thử Ebook trước khi mua"],
-    ["content", "Nội dung toàn bộ cuốn Ebook"],
-    ["price", "Đăng ký và Ưu đãi"],
+    ["situations", "3 tình huống cần Ebook"],
+    ["outcomes", "Ebook giúp bạn làm gì?"],
+    ["sample", "Đọc thử miễn phí"],
+    ["price", "Nhận Ebook 399.000đ"],
     ["faq", "Câu hỏi thường gặp"],
   ];
   for (const [anchor, label] of sectionMenu) {
@@ -117,13 +189,61 @@ test("Premium Ebook landing uses the approved mobile-first hero and section navi
     assert.ok(rail.includes(`aria-label="${label}"`));
   }
   assert.doesNotMatch(html, /id="inside"|href="#inside"|"inside"/);
-  assert.match(html, /const ebookSectionTargets = \["top", "problem", "sample", "content", "price", "faq"\]/);
+  assert.match(html, /const ebookSectionTargets = \["top", "situations", "outcomes", "sample", "price", "faq"\]/);
   assert.match(html, /new IntersectionObserver\(updateEbookSectionProgress/);
   assert.match(html, /aria-current/);
   assert.match(html, /@media \(max-width:\s*339px\)[\s\S]*?\.section-progress-rail\s*\{[\s\S]*?display:\s*none;/);
+  assert.match(html, /@media \(max-width:\s*339px\)[\s\S]*?\.offer-box,[\s\S]*?\.order-card\s*\{[\s\S]*?min-width:\s*0;[\s\S]*?max-width:\s*100%;/);
+  assert.match(html, /@media \(max-width:\s*339px\)[\s\S]*?\.new-price\s*\{\s*font-size:\s*40px;/);
 
-  assert.equal((html.match(/>Đọc thử Ebook<\/a>/g) || []).length, 3);
-  assert.doesNotMatch(html, />Xem bên trong ebook<\/a>|>Mở bản đọc thử online<\/a>|>Đọc thử<\/a>/);
+  assert.equal((html.match(/>Đọc thử miễn phí 2 chương<\/a>/g) || []).length, 3);
+  assert.doesNotMatch(html, />Xem bên trong ebook<\/a>|>Mở bản đọc thử online<\/a>|>Đọc thử Ebook<\/a>/);
+});
+
+test("Premium Ebook hero follows the compact no-header visual brief", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026-premium.html");
+  const hero = html.match(/<header class="hero" id="top">[\s\S]*?<\/header>/)?.[0] ?? "";
+
+  assert.doesNotMatch(hero, /<nav class="nav"/);
+  assert.match(hero, /<ul class="hero-benefits" aria-label="Điểm nổi bật của Ebook">/);
+  assert.equal((hero.match(/<li>/g) || []).length, 3);
+  assert.match(hero, /<div class="hero-preview-pages" aria-label="Trang nội dung mẫu">/);
+  assert.equal((hero.match(/class="hero-preview-page"/g) || []).length, 2);
+  assert.match(hero, /<div class="hero-stats" aria-label="Thông tin Ebook">/);
+  assert.match(hero, /<strong>471<\/strong><span>trang<\/span>/);
+  assert.match(hero, /<strong>10<\/strong><span>phần<\/span>/);
+  assert.match(hero, /<strong>2026<\/strong><span>cập nhật<\/span>/);
+  assert.doesNotMatch(hero, /<dt>|>Quy mô<|>Nội dung<|>Phiên bản</i);
+  assert.match(hero, /<div class="hero-proof-row" aria-label="Lợi ích nổi bật">/);
+  assert.equal((hero.match(/class="hero-proof-item"/g) || []).length, 3);
+});
+
+test("Premium Ebook interaction buttons use restrained corner radii", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026-premium.html");
+
+  for (const selector of [".btn", ".section-menu-toggle", ".mobile-buy", ".sample-control"]) {
+    const escapedSelector = selector.replace(".", "\\.");
+    const block = html.match(new RegExp(`${escapedSelector}\\s*\\{[\\s\\S]*?\\}`))?.[0] ?? "";
+    assert.match(block, /border-radius:\s*(?:12|14)px;/, `${selector} should not remain pill-shaped`);
+    assert.doesNotMatch(block, /border-radius:\s*999px;/);
+  }
+});
+
+test("Premium Ebook local file preview resolves every bundled image and helper script", () => {
+  const html = read("public/ladipage/ebook-facebook-ads-2026-premium.html");
+  const bundledSources = [...html.matchAll(/src="([^"]+)"/g)]
+    .map((match) => match[1])
+    .filter((source) => source.includes("ebook-facebook-ads-2026") || source.includes("checkout-invoice.js"));
+
+  assert.ok(bundledSources.length > 0);
+  assert.equal(bundledSources.filter((source) => source.startsWith("/")).length, 0);
+  for (const source of bundledSources) {
+    assert.match(source, /^\.\.\//);
+    assert.ok(
+      fs.existsSync(path.resolve("public/ladipage", source)),
+      `Local file preview asset is missing: ${source}`,
+    );
+  }
 });
 
 test("Premium Ebook keeps the menu and purchase actions pinned at the bottom", () => {
@@ -135,7 +255,7 @@ test("Premium Ebook keeps the menu and purchase actions pinned at the bottom", (
   assert.match(html, /\.mobile-buy\s*\{[\s\S]*?display:\s*flex;/);
   assert.match(html, /\.mobile-buy\s*\{[\s\S]*?right:\s*124px;/);
   assert.match(html, /body\s*\{[\s\S]*?padding-bottom:\s*80px;/);
-  assert.doesNotMatch(hero, /data-event="hero_cta_click"/);
+  assert.match(hero, /data-event="hero_cta_click"/);
   assert.doesNotMatch(hero, /data-event="header_cta_click"/);
   assert.doesNotMatch(hero, /class="section-menu-toggle"/);
   assert.match(hero, /data-event="hero_preview_click"/);
@@ -156,8 +276,8 @@ test("Premium Ebook checkout offers the Facebook Ads course for 699K in one serv
   const orderService = read("services/orderService.ts");
 
   assert.match(html, /<input id="course-addon" name="courseAddon" type="checkbox" \/>/);
-  assert.match(html, /Mua kèm khóa Facebook Ads Master 2026/);
-  assert.match(html, /<del>799\.000đ<\/del>/);
+  assert.match(html, /Tùy chọn: mua kèm khóa Facebook Ads Master 2026/);
+  assert.doesNotMatch(html, /<input id="course-addon"[^>]*checked/);
   assert.match(html, /699\.000đ/);
   assert.match(html, /Tổng thanh toán 1\.098\.000đ/);
   assert.match(html, /const ebookOnlyPlan = \{[\s\S]*?paymentPlan:\s*"full-access-399"[\s\S]*?amount:\s*399000/);

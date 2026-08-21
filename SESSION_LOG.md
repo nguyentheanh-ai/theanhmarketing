@@ -341,3 +341,20 @@ Production QA order: `TAMMT24TKS5A3FIN`, 799.000 VND, pending. QR loads; pending
 - Generated and installed two square v3 course covers derived from the approved landing visual language; the other eight catalog covers and six coming-soon gates remain unchanged.
 - Browser QA verified 10 cards, 4 live/6 coming, zero coming-soon academy links, correct v3 CSS backgrounds, both landing forms/CTAs, no legacy prices and no horizontal overflow at default and 390px. No form submission or external mutation occurred.
 - Verification: focused TDD passed during each change; full Node 478/478, TypeScript, ESLint 0 errors/1 pre-existing unrelated warning, `git diff --check`, and 91-page Next.js build pass. Local only; no deploy.
+
+## 2026-08-21 - Premium Ebook rewrite theo workbook (local)
+
+- Scope: `main-site` route `/academy/ebook-facebook-ads-2026-premium` trong worktree hiện có. Đã đọc toàn bộ 9 sheet workbook và triển khai P0 rồi P1, không thay đổi offer, payment plan, API order, email/access delivery, SEO hay Pixel/CAPI semantics.
+- Files: source/published Premium Ebook HTML pair, `tests/ebook-facebook-ads-landing.test.mjs`, design note và implementation plan trong `docs/superpowers/`.
+- Verification: TDD RED/GREEN; focused 86/86; full Node 594/594; TypeScript; tracking; ESLint 0 error/1 pre-existing warning; Webpack production build 96 routes; Browser local 1440/390/320 đạt, gồm fix overflow form 320px. Exact Ebook, preview, paid reader và PDF routes trả 200. Không submit form, không tạo order/payment/email/data.
+- Release: local only. Chưa commit, merge hoặc deploy production. Không có feedback Ebook thật và chưa có policy thật về access duration, future updates, refund nên các mục này được để BLOCKED thay vì bịa.
+
+## 2026-08-21 - Premium Ebook hero refinement (local)
+
+Scope: `main-site` Premium Ebook landing only. Applied the owner-provided wireframe: removed the top header, compacted the result-first copy into three bullets, centered and raised the real book mockup, added two real interior-page previews, a 471/10/2026 fact row and three closing proof points. The source and published HTML remain byte-identical; checkout, order form, invoice, payment, SEO and Meta semantics are unchanged.
+
+Verification: new RED/GREEN regression; Ebook suite 23/23; full Node 595/595; TypeScript; `git diff --check`; Webpack production build 96 routes. Browser QA at 1440/390/320 confirmed all hero images loaded, no horizontal overflow, no console warnings/errors, fixed CTAs still target `#price`, Pixel remains present and browser InitiateCheckout remains absent. No form submission or order was created. Local only; not deployed.
+
+Follow-up: direct `file://` preview showed no images because 33 bundled sources were root-relative. Converted only the bundled Ebook images and invoice helper to `../` paths, which resolve from both `public/ladipage` and `public/academy` while retaining the same HTTP production URLs. Added a regression that resolves every referenced local asset against disk. HTTP browser readback shows the hero images and invoice helper load correctly; file-URL browser automation is blocked by browser security, so the filesystem resolver is the authoritative file-preview check.
+
+Owner final UI pass: removed the visible `Quy mô`, `Nội dung` and `Phiên bản` captions from the hero fact row while retaining `471 trang`, `10 phần` and `2026 cập nhật`. Reduced the landing interaction radii to 14px for CTA/menu/sticky purchase controls and 12px for page arrows; pagination dots and status badges keep their semantic shapes. TDD RED/GREEN, local 1440/390 QA, full Node 597/597, TypeScript, tracking, ESLint 0 errors/1 unchanged warning and Webpack 96-route build pass. Production deployment authorized and pending release cut.

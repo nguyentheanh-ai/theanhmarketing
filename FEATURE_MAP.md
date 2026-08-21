@@ -301,3 +301,13 @@ Guard: order payload and lead payload are different contracts; preserve text for
 | Mở app ngân hàng an toàn | LOCAL READY | `/thanh-toan/[code]?openBank=1` | Existing QR, copy details, polling and SePay | Official VietQR app directory; customer gesture required; QR/copy stays as fallback |
 | Zalo OAuth rotation | LOCAL READY / NOT SEEDED | Private schema + service-role RPCs | Existing Supabase service role boundary | Atomic rotating refresh token; no credential in committed artifacts |
 | ZBS production rollout | BLOCKED BY EXTERNAL GATES | Zalo ZBS + Supabase Cron | Fail-closed feature flag | Requires approved template, applied migration, controlled test and owner-approved daily cap before enablement |
+
+## 2026-08-21 - Premium Ebook conversion landing
+
+| Feature | Status | Code | Flow giữ nguyên | Ghi chú |
+|---|---|---|---|---|
+| Landing thư viện tra cứu 471 trang | LOCAL READY / CHƯA DEPLOY | Premium Ebook source/published HTML pair | 399K, bundle 1.098M, invoice, order, SePay, email, access | P0/P1 theo workbook; result-first hero, 3 situation, 12 outcome, 2 chương đọc thử, 10 phần, tác giả, value stack, FAQ |
+| Honest-price/trust guard | LOCAL CONTRACT LOCKED | Landing + `tests/ebook-facebook-ads-landing.test.mjs` | Server-known plans và giá khóa add-on giữ nguyên | Không dùng Ebook old-price 799K; không bịa testimonial, lifetime, update hoặc refund |
+| Mobile 320px containment | LOCAL READY | Scoped `<=339px` offer/form CSS | Form fields, invoice helper và checkout JS không đổi | Browser readback `scrollWidth=clientWidth`; 390/1440 cũng không overflow |
+| Header-free visual hero | LOCAL READY / CHƯA DEPLOY | Premium Ebook hero HTML/CSS + regression test | CTA, form, order API, SEO và Pixel/CAPI không đổi | Owner wireframe: book + 2 page previews + 471/10/2026 facts; copy bullets; proof row; Browser 1440/390/320 đạt |
+| Compact hero facts and buttons | LOCAL READY / DEPLOY AUTHORIZED | Premium Ebook hero/button CSS + regression test | Commerce/tracking/SEO unchanged | Removes 3 redundant captions; 14px CTA/menu/sticky radius and 12px page-arrow radius; dots/badges stay semantic |

@@ -1401,3 +1401,35 @@ Before changing these, run targeted tests and full build.
 | Operations | Protected GET/POST worker uses `CRON_SECRET`. Runbook requires Supabase Vault, `pg_cron`/`pg_net`, one-minute cadence, disabled-first rollout, controlled test, owner-approved daily limit and Cron-first rollback. |
 | External state | Local only. ZBS template chưa submitted/approved because the authenticated Chrome window was in active owner use; migration, token seed, Cron, provider test and production flag are untouched. |
 | Verification | Zalo/payment focused 25/25; full Node 542/542; TypeScript and Next.js 94-page production build pass. ESLint 0 errors/1 pre-existing unrelated warning. |
+
+## 2026-08-21 - Premium Ebook workbook rewrite release candidate
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Scope | `main-site` `/academy/ebook-facebook-ads-2026-premium`; source and published static HTML pair only, plus regression/spec/plan docs. |
+| P0/P1 | Result-first lookup-library hero; 3 situations; 4-layer diagnosis; 12 outcomes; 3 use modes; real preview Parts 1 and 5; compact 10-part content; author; five-item value stack; honest 399K pricing; expanded delivery/support/license FAQ; final CTA. |
+| Commerce guard | Keeps `full-access-399` and optional unchecked `full-access-399-course-699`, invoice helper, `/api/orders`, checkout countdown and payment redirect. No real submission was made. |
+| Tracking guard | Keeps Pixel `1315653423712065`, PageView and ViewContent 399K; Lead remains after successful order response with shared `leadId`. No browser InitiateCheckout or Purchase was introduced. |
+| Verification | Focused 86/86; full Node 594/594; TypeScript, tracking, Webpack build 96 routes, ESLint 0 errors/1 existing warning. Browser 1440/390/320: no overflow, broken images or console errors; 320 form overflow found during QA was regression-locked and fixed. |
+| Route gate | Production-build local smoke: Premium Ebook, public preview, protected reader and protected PDF routes all return 200. Repo-wide route script still lists eight removed legacy public routes and therefore exits nonzero outside this scope. |
+| Release state | Local only; no commit, merge, deploy, live readback or order. Feedback testimonials and owner policies for access duration, future updates and refunds remain BLOCKED due missing approved evidence. |
+
+## 2026-08-21 - Premium Ebook header-free hero refinement
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Owner brief | Remove the header; raise and center the book; compact the copy into bullets; follow the supplied two-column wireframe. |
+| Visual result | Left: eyebrow, compact result headline, three bullets and unchanged CTAs. Right: centered real book mockup, two real interior pages and 471/10/2026 facts. Bottom: three proof points. |
+| Guardrails | Source/published byte-identical. No change to order form, bundle toggle, invoice, `/api/orders`, payment redirect, SEO, Pixel/CAPI or commerce events. |
+| Verification | Ebook 23/23, full Node 595/595, TypeScript, diff check, Webpack 96 routes, Browser 1440/390/320 with loaded images, no overflow and no console warnings/errors. No order submission. |
+| Release state | Local only; no commit or deployment. |
+
+## 2026-08-21 - Premium Ebook final hero controls release candidate
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Owner request | Remove `Quy mô`, `Nội dung`, `Phiên bản`; reduce excessive rounding across landing buttons; deploy. |
+| UI result | Hero facts retain only `471 trang`, `10 phần`, `2026 cập nhật`. CTA, form submit, menu and sticky purchase controls use 14px corners; page arrows use 12px. Dots and non-button badges remain circular/pill where semantically appropriate. |
+| Safety | Source/published mirror byte-identical; form, bundle, invoice, `/api/orders`, payment, SEO and Pixel/CAPI unchanged. |
+| Local gate | TDD RED/GREEN; Ebook 25/25; full Node 597/597; TypeScript; tracking; ESLint 0 errors/1 unchanged warning; Webpack build 96 routes; Browser 1440/390 has no overflow or console warnings/errors. |
+| Release state | Production deployment explicitly authorized by owner; deploy/readback pending. |
