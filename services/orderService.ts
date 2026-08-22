@@ -30,6 +30,13 @@ import {
   CONSULTATION_PRODUCT_TITLE,
 } from "@/lib/consultation/constants";
 import {
+  AGENT_KIT_PREORDER_DEPOSIT_VND,
+  AGENT_KIT_PREORDER_PAYMENT_PLAN,
+  AGENT_KIT_PREORDER_PRICE_VND,
+  AGENT_KIT_PREORDER_REMAINING_VND,
+  AGENT_KIT_SLUG,
+} from "@/lib/agent-kit-preorder";
+import {
   collectCommandCenterPages,
   MAX_COMMAND_CENTER_SOURCE_ROWS,
   type CommandCenterAnalysisWindow,
@@ -405,7 +412,11 @@ const coursePaymentPlans: Record<string, Record<string, CoursePaymentPlan>> = {
       ],
     },
   },
-  "bo-agent-kit-x10-hieu-suat-cong-viec": {
+  [AGENT_KIT_SLUG]: {
+    [AGENT_KIT_PREORDER_PAYMENT_PLAN]: {
+      title: `Cọc preorder trước ngày mở bán - tổng ${formatVnd(AGENT_KIT_PREORDER_PRICE_VND)}, còn lại ${formatVnd(AGENT_KIT_PREORDER_REMAINING_VND)} khi mở bán`,
+      amount: AGENT_KIT_PREORDER_DEPOSIT_VND,
+    },
     "agent-kit-standard-990": {
       title: "Bộ Agent Kit X10 hiệu suất công việc",
       amount: 990000,

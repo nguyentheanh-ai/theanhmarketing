@@ -1,5 +1,11 @@
 import type { PaymentOrder } from "@/services/orderService";
 import { buildEmailLink } from "@/lib/notifications/email-link-bridge";
+import {
+  AGENT_KIT_PREORDER_DEPOSIT_VND,
+  AGENT_KIT_PREORDER_PRICE_VND,
+  AGENT_KIT_PREORDER_REMAINING_VND,
+  isAgentKitPreorderDepositOrder,
+} from "@/lib/agent-kit-preorder";
 
 type PaymentEmailOptions = {
   from?: string;
@@ -278,6 +284,43 @@ function isFacebookAdsSupportPlan(order: PaymentOrder) {
 
 export function shouldSendPaymentSuccessEmail(order: PaymentOrder) {
   return order.status === "paid" && Boolean(order.email.trim()) && !order.paymentEmailSentAt;
+}
+
+function buildPreorderDepositEmailPayload(order: PaymentOrder, options: PaymentEmailOptions = {}): ResendEmailPayload {
+  const siteUrl = normalizeSiteUrl(options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL);
+  const paymentUrl = buildEmailLink(`${siteUrl}/thanh-toan/${encodeURIComponent(order.orderCode)}`, siteUrl);
+  const safeName = escapeHtml(order.studentName || "anh/chị");
+  const safeOrderCode = escapeHtml(order.orderCode);
+  const safePaymentUrl = escapeHtml(paymentUrl);
+  const subject = `Đã nhận cọc preorder Đội ngũ nhân sự AI - ${order.orderCode}`;
+  const text = [
+    "Đã nhận tiền cọc preorder Đội ngũ nhân sự AI tại The Anh Marketing",
+    `Chào ${order.studentName || "anh/chị"},`,
+    `Mã đơn: ${order.orderCode}`,
+    `Tiền cọc đã thanh toán: ${order.amountLabel || `${AGENT_KIT_PREORDER_DEPOSIT_VND.toLocaleString("vi-VN")}đ`}`,
+    `Tổng giá preorder: ${AGENT_KIT_PREORDER_PRICE_VND.toLocaleString("vi-VN")}đ`,
+    `Còn lại khi mở bán: ${AGENT_KIT_PREORDER_REMAINING_VND.toLocaleString("vi-VN")}đ`,
+    "Khoản cọc được ghi nhận để giữ suất preorder; bộ cài sẽ được bàn giao sau khi sản phẩm mở bán và hoàn tất phần thanh toán còn lại.",
+    `Xem lại đơn: ${paymentUrl}`,
+  ].join("\n");
+  const html = withEmailDocument(`
+    <div style="max-width:640px;margin:0 auto;padding:32px 20px;background:#171816;color:#f5eee2;font-family:${emailFontFamily};line-height:1.7">
+      <p style="margin:0 0 8px;color:#d8b653;font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase">ĐÃ NHẬN TIỀN CỌC PREORDER</p>
+      <h1 style="margin:0 0 18px;color:#ffffff;font-size:28px;line-height:1.2">Giữ suất Đội ngũ nhân sự AI thành công</h1>
+      <p>Chào ${safeName},</p>
+      <p>The Anh Marketing đã ghi nhận tiền cọc trước ngày mở bán của anh/chị.</p>
+      <div style="margin:24px 0;padding:20px;border:1px solid #5b3a23;border-radius:16px;background:#211913">
+        <p style="margin:0 0 10px"><strong>Mã đơn:</strong> ${safeOrderCode}</p>
+        <p style="margin:0 0 10px"><strong>Tiền cọc:</strong> ${escapeHtml(order.amountLabel || "399.000đ")}</p>
+        <p style="margin:0 0 10px"><strong>Tổng giá preorder:</strong> 799.000đ</p>
+        <p style="margin:0"><strong>Còn lại khi mở bán:</strong> 400.000đ</p>
+      </div>
+      <p>Khoản cọc được tính vào tổng giá preorder. Bộ cài và hướng dẫn sẽ được bàn giao sau khi sản phẩm mở bán và anh/chị hoàn tất phần thanh toán còn lại.</p>
+      <p><a href="${safePaymentUrl}" style="display:inline-block;padding:12px 18px;border-radius:10px;background:#d8b653;color:#171816;font-weight:900;text-decoration:none">Xem lại đơn cọc</a></p>
+    </div>
+  `);
+
+  return { from: getSender(options), to: order.email, subject, html, text };
 }
 
 export function shouldSendPaymentFailedEmail(order: PaymentOrder) {
@@ -800,7 +843,9 @@ export async function sendPaymentSuccessEmail(
   }
 
   try {
-    const payload = buildPaymentSuccessEmailPayload(order, options);
+    const payload = isAgentKitPreorderDepositOrder(order)
+      ? buildPreorderDepositEmailPayload(order, options)
+      : buildPaymentSuccessEmailPayload(order, options);
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {

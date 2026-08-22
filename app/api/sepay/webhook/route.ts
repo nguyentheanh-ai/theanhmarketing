@@ -31,6 +31,7 @@ import {
 import { ensureStudentAccountForPaidOrder } from "@/services/studentAccountService";
 import { notifyStudentPortalProvisioning } from "@/services/studentPortalProvisioningService";
 import { siteConfig } from "@/data/site";
+import { isAgentKitPreorderDepositOrder } from "@/lib/agent-kit-preorder";
 import {
   confirmSupportBookingForPaidOrder,
   markSupportBookingTelegram,
@@ -113,6 +114,7 @@ export async function POST(request: Request) {
     > | null = null;
     const supportBookingOrder = isSupportBookingOrder(confirmation.order);
     const consultationOrder = isConsultationOrder(confirmation.order);
+    const preorderDepositOrder = isAgentKitPreorderDepositOrder(confirmation.order);
     let supportBooking: ConfirmedSupportBooking | null = null;
 
     const accountingEmail = await notifyAccountingForPaidOrder(confirmation.order);
@@ -176,45 +178,47 @@ export async function POST(request: Request) {
       !supportBookingOrder &&
       !consultationOrder
     ) {
-      studentAccount = await ensureStudentAccountForPaidOrder(
-        confirmation.order,
-      );
+      if (!preorderDepositOrder) {
+        studentAccount = await ensureStudentAccountForPaidOrder(
+          confirmation.order,
+        );
 
-      if (!studentAccount.ok) {
-        logSecurityEvent({
-          action: "student_account_auto_create_failed",
-          request,
-          detail: {
-            orderCode: confirmation.order.orderCode,
-            reason: studentAccount.reason,
-          },
-        });
-      }
-
-      if (studentAccount.ok && studentAccount.userId) {
-        studentPortalProvisioning = await notifyStudentPortalProvisioning({
-          order: confirmation.order,
-          userId: studentAccount.userId,
-        });
-
-        if (!studentPortalProvisioning.ok) {
+        if (!studentAccount.ok) {
           logSecurityEvent({
-            action: "student_portal_provisioning_failed",
+            action: "student_account_auto_create_failed",
             request,
             detail: {
               orderCode: confirmation.order.orderCode,
-              reason: studentPortalProvisioning.reason,
-              status: studentPortalProvisioning.status,
+              reason: studentAccount.reason,
             },
           });
         }
+
+        if (studentAccount.ok && studentAccount.userId) {
+          studentPortalProvisioning = await notifyStudentPortalProvisioning({
+            order: confirmation.order,
+            userId: studentAccount.userId,
+          });
+
+          if (!studentPortalProvisioning.ok) {
+            logSecurityEvent({
+              action: "student_portal_provisioning_failed",
+              request,
+              detail: {
+                orderCode: confirmation.order.orderCode,
+                reason: studentPortalProvisioning.reason,
+                status: studentPortalProvisioning.status,
+              },
+            });
+          }
+        }
       }
 
-      if (!studentAccount.temporaryPassword) {
-        const reason = studentAccount.ok
+      if (!preorderDepositOrder && !studentAccount?.temporaryPassword) {
+        const reason = studentAccount?.ok
           ? "Payment success email requires a verified student login account."
           : `Payment success email blocked because student account provisioning failed: ${
-              studentAccount.reason ?? "unknown reason"
+              studentAccount?.reason ?? "unknown reason"
             }`;
         paymentEmail = { ok: false, skipped: false, reason };
 
@@ -249,15 +253,17 @@ export async function POST(request: Request) {
           },
         });
       } else {
+        const provisionedAccount = studentAccount;
+        const account = provisionedAccount && provisionedAccount.temporaryPassword
+          ? {
+              email: provisionedAccount.email,
+              temporaryPassword: provisionedAccount.temporaryPassword,
+              created: provisionedAccount.created,
+              mustChangePassword: true,
+            }
+          : undefined;
         const result = await sendPaymentSuccessEmail(confirmation.order, {
-          account: studentAccount.temporaryPassword
-            ? {
-                email: studentAccount.email,
-                temporaryPassword: studentAccount.temporaryPassword,
-                created: studentAccount.created,
-                mustChangePassword: true,
-              }
-            : undefined,
+          account,
         });
         paymentEmail = {
           ok: result.ok,

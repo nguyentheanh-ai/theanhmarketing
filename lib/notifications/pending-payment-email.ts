@@ -1,5 +1,6 @@
 import type { PaymentOrder } from "@/services/orderService";
 import { buildEmailLink } from "@/lib/notifications/email-link-bridge";
+import { isAgentKitPreorderDepositOrder } from "@/lib/agent-kit-preorder";
 
 type PendingPaymentEmailOptions = {
   from?: string;
@@ -166,6 +167,10 @@ function getProductTitle(order: PaymentOrder) {
 
   if (isFacebookEbookOrder(order)) {
     return facebookEbookProductTitle;
+  }
+
+  if (isAgentKitPreorderDepositOrder(order)) {
+    return "Đặt cọc preorder Đội ngũ nhân sự AI";
   }
 
   return getFacebookAdsProductTitle(order) || getCourseList(order)[0] || order.courseTitle || "Khóa học tại The Anh Marketing";

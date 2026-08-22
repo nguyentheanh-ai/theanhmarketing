@@ -157,7 +157,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     status: "coming-soon",
     statusLabel: "Sắp ra mắt",
     title: "Tạo AI Agent cá nhân X10 hiệu suất",
-    price: "990.000đ",
+    price: "999.000đ",
     originalPrice: "1.499.000đ",
     thumbnailImageUrl: "/course-thumbnails/tao-ai-agent-ca-nhan-x10-hieu-suat-v2.webp",
     eyebrow: "AI Agent",

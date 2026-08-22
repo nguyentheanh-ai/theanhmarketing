@@ -28,6 +28,13 @@ import {
 import { CONSULTATION_POLICY, isConsultationOrder } from "@/lib/consultation/constants";
 import { sendCheckoutEntryNotifications } from "@/services/checkoutNotificationService";
 import { getPaymentOrder, type PaymentOrder } from "@/services/orderService";
+import {
+  AGENT_KIT_PREORDER_DEPOSIT_VND,
+  AGENT_KIT_PREORDER_PRICE_VND,
+  AGENT_KIT_PREORDER_REMAINING_VND,
+  AGENT_KIT_SLUG,
+  isAgentKitPreorderDepositOrder,
+} from "@/lib/agent-kit-preorder";
 
 export const dynamic = "force-dynamic";
 
@@ -39,15 +46,13 @@ export const metadata: Metadata = {
   },
 };
 
-const agentKitSlug = "bo-agent-kit-x10-hieu-suat-cong-viec";
+const agentKitSlug = AGENT_KIT_SLUG;
 
 const agentKitIncludes = [
-  "6 AI Agent theo vai trò: Growth, Insight, Content, Ads, CRM, Delivery",
-  "12 command gọi việc để không phải viết prompt từ đầu",
-  "10+ workflow cho research, content, ads, CRM, checklist và báo cáo",
-  "Template brief, KPI, CRM field map, content calendar và offer checklist",
-  "Folder context để copy dữ liệu doanh nghiệp vào cho agent đọc",
-  "Hướng dẫn triển khai theo từng bước cho chủ doanh nghiệp nhỏ",
+  "8 Nhân viên AI theo từng phần việc của phòng ban marketing",
+  "Tự đào tạo nhân viên cho riêng doanh nghiệp mình từ dữ liệu đã duyệt",
+  "SOP vận hành quảng cáo chuyên nghiệp",
+  "Bộ cài, video hướng dẫn và checklist bàn giao",
 ];
 
 const agentKitSaleReasons = [
@@ -116,6 +121,13 @@ function isFacebookAdsEbookBundle(order: PaymentOrder) {
 }
 
 function getPaymentOffer(order: PaymentOrder, amountLabel: string) {
+  if (isAgentKitPreorderDepositOrder(order)) {
+    return {
+      originalPriceLabel: "999.000đ",
+      currentPriceLabel: "Cọc 399.000đ",
+    };
+  }
+
   if (isFacebookAdsEbookBundle(order)) {
     return {
       originalPriceLabel: "3.389.000đ",
@@ -235,9 +247,9 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
       email: "demo@gmail.com",
       phone: "0900000000",
       courseSlug: agentKitSlug,
-      courseTitle: "Bộ Agent Kit X10 hiệu suất công việc",
-      amount: 990000,
-      amountLabel: "990.000đ",
+      courseTitle: "Bộ Agent Kit X10 hiệu suất công việc - Cọc preorder trước ngày mở bán",
+      amount: AGENT_KIT_PREORDER_DEPOSIT_VND,
+      amountLabel: "399.000đ",
       currency: "VND",
       status: "pending",
       paymentMethod: "sepay",
@@ -249,8 +261,8 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
       orderItems: [
         {
           slug: agentKitSlug,
-          title: "Bộ Agent Kit X10 hiệu suất công việc",
-          price: 990000,
+          title: "Bộ Agent Kit X10 hiệu suất công việc - Cọc preorder trước ngày mở bán",
+          price: AGENT_KIT_PREORDER_DEPOSIT_VND,
         },
       ],
       paymentEmailSentAt: null,
@@ -319,6 +331,29 @@ function getCheckoutContent(order: PaymentOrder) {
   }
 
   if (isAgentKit(order)) {
+    if (isAgentKitPreorderDepositOrder(order)) {
+      return {
+        eyebrow: "Giữ suất preorder trước ngày mở bán",
+        title: "Đặt cọc để giữ mức preorder Đội ngũ nhân sự AI",
+        description:
+          `Đây là tiền cọc ${formatVnd(AGENT_KIT_PREORDER_DEPOSIT_VND)} trước ngày mở bán, được tính vào tổng giá preorder ${formatVnd(AGENT_KIT_PREORDER_PRICE_VND)}. Khi mở bán, anh/chị thanh toán ${formatVnd(AGENT_KIT_PREORDER_REMAINING_VND)} còn lại.`,
+        productLabel: "Đội ngũ nhân sự AI",
+        productHref: "/academy/bo-kit-agent-doanh-nghiep",
+        includes: agentKitIncludes,
+        saleReasons: [
+          ["Giữ mức preorder 799.000đ", "Khoản cọc 399.000đ được trừ vào tổng giá preorder."],
+          ["Cọc trước ngày mở bán", "Anh/chị chưa thanh toán phần còn lại cho đến khi sản phẩm mở bán."],
+          ["Nhận hướng dẫn thanh toán tiếp", "Khi mở bán, The Anh sẽ thông báo phần còn lại 400.000đ."],
+        ],
+        nextSteps: [
+          "Hệ thống xác nhận tiền cọc và giữ suất preorder",
+          "Nhận thông báo khi Đội ngũ nhân sự AI mở bán",
+          "Thanh toán 400.000đ còn lại để nhận đủ bộ cài",
+        ],
+        stickyCopy: "Thanh toán cọc preorder",
+      };
+    }
+
     return {
       eyebrow: "Bước cuối để nhận bộ kit",
       title: "Bộ Kit AI Agent Business",
@@ -723,7 +758,7 @@ export default async function PaymentPage({
                   {content.title}
                 </h1>
                 <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-slate-600">
-                  Sau khi giao dịch được xác nhận, hệ thống sẽ mở quyền truy cập và gửi hướng dẫn vào email bạn đã đăng ký.
+                  {content.description}
                 </p>
               </div>
               <div className="w-fit rounded-2xl border border-blue-100 bg-white px-5 py-3 shadow-[0_12px_34px_rgba(0,97,255,0.1)]">
@@ -747,7 +782,9 @@ export default async function PaymentPage({
           </div>
 
           <p className="mt-4 rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-bold leading-6 text-orange-900">
-            Hoàn tất đúng nội dung chuyển khoản để hệ thống tự mở quyền. Nếu chuyển sai nội dung, đơn có thể cần kiểm tra thủ công.
+            {isAgentKitPreorderDepositOrder(order)
+              ? "Hoàn tất đúng nội dung chuyển khoản để hệ thống ghi nhận tiền cọc và giữ suất preorder. Phần còn lại 400.000đ chỉ thanh toán khi mở bán."
+              : "Hoàn tất đúng nội dung chuyển khoản để hệ thống tự mở quyền. Nếu chuyển sai nội dung, đơn có thể cần kiểm tra thủ công."}
           </p>
           {order.invoice.requested ? (
             <p className="mt-3 text-center text-xs font-semibold text-slate-500">Đã ghi nhận yêu cầu xuất hóa đơn.</p>
