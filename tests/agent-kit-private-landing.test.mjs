@@ -4,8 +4,8 @@ import test from "node:test";
 
 const landingPage = readFileSync("app/khoa-hoc/bo-kit-agent-doanh-nghiep/page.tsx", "utf8");
 const bundleLoader = readFileSync("app/khoa-hoc/bo-kit-agent-doanh-nghiep/agent-kit-bundle.tsx", "utf8");
-const bundle = readFileSync("public/doi-ngu-nhan-su-ai/assets/index-BJ6yWQEz.js", "utf8");
-const styles = readFileSync("public/doi-ngu-nhan-su-ai/assets/index-Cn7caiqW.css", "utf8");
+const bundle = readFileSync("public/doi-ngu-nhan-su-ai/assets/index-Cnd463jX.js", "utf8");
+const styles = readFileSync("public/doi-ngu-nhan-su-ai/assets/index-9haU9im1.css", "utf8");
 const orderService = readFileSync("services/orderService.ts", "utf8");
 const paymentPage = readFileSync("app/thanh-toan/[code]/page.tsx", "utf8");
 const sepayWebhook = readFileSync("app/api/sepay/webhook/route.ts", "utf8");
@@ -16,8 +16,8 @@ const nextConfig = readFileSync("next.config.ts", "utf8");
 test("academy route mounts only the approved Đội ngũ nhân sự AI build", () => {
   assert.match(landingPage, /title: "Đội ngũ nhân sự AI"/);
   assert.match(landingPage, /landingAssetRoot = "\/doi-ngu-nhan-su-ai"/);
-  assert.match(bundleLoader, /\/doi-ngu-nhan-su-ai\/assets\/index-BJ6yWQEz\.js/);
-  assert.match(landingPage, /assets\/index-Cn7caiqW\.css/);
+  assert.match(bundleLoader, /\/doi-ngu-nhan-su-ai\/assets\/index-Cnd463jX\.js/);
+  assert.match(landingPage, /assets\/index-9haU9im1\.css/);
   assert.match(bundleLoader, /<div id="root"/);
   assert.doesNotMatch(landingPage, /AgentKitCalculator|AgentKitCheckoutForm|noti-agent-page/);
 });
