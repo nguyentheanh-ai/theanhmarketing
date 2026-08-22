@@ -4,7 +4,7 @@ import { AgentKitBundle } from "./agent-kit-bundle";
 const landingAssetRoot = "/doi-ngu-nhan-su-ai";
 
 export const metadata: Metadata = {
-  title: "Đội ngũ nhân sự AI | The Anh Marketing",
+  title: "Đội ngũ nhân sự AI",
   description:
     "Đội ngũ nhân sự AI hỗ trợ điều hành, marketing, thiết kế, quảng cáo và đọc số liệu cho doanh nghiệp nhỏ.",
   icons: {

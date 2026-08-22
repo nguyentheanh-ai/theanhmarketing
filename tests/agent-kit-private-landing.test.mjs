@@ -14,7 +14,7 @@ const pendingPaymentEmail = readFileSync("lib/notifications/pending-payment-emai
 const nextConfig = readFileSync("next.config.ts", "utf8");
 
 test("academy route mounts only the approved Đội ngũ nhân sự AI build", () => {
-  assert.match(landingPage, /Đội ngũ nhân sự AI \| The Anh Marketing/);
+  assert.match(landingPage, /title: "Đội ngũ nhân sự AI"/);
   assert.match(landingPage, /landingAssetRoot = "\/doi-ngu-nhan-su-ai"/);
   assert.match(bundleLoader, /\/doi-ngu-nhan-su-ai\/assets\/index-BJ6yWQEz\.js/);
   assert.match(landingPage, /assets\/index-Cn7caiqW\.css/);
