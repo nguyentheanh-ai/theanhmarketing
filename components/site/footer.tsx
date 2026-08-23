@@ -72,9 +72,14 @@ export async function SiteFooter() {
       <div className="tam-container mt-10 flex flex-col gap-3 border-t border-[var(--tam-line)] pt-6 text-xs font-semibold leading-6 text-slate-500 sm:mt-12 sm:flex-row sm:items-center sm:justify-between">
         <p>© {new Date().getFullYear()} {brand.name}. All rights reserved.</p>
         <div className="flex flex-wrap gap-4">
-          <span>Chính sách bảo mật</span>
-          <Link href="/dang-ky" className="transition hover:text-white">
-            Điều khoản và điều kiện
+          <Link href="/chinh-sach-bao-mat" className="transition hover:text-[var(--tam-accent-strong)]">
+            Chính sách bảo mật
+          </Link>
+          <Link href="/dieu-khoan-mua-hang" className="transition hover:text-[var(--tam-accent-strong)]">
+            Điều khoản mua hàng
+          </Link>
+          <Link href="/chinh-sach-giao-nhan-san-pham-so" className="transition hover:text-[var(--tam-accent-strong)]">
+            Giao nhận sản phẩm số
           </Link>
         </div>
       </div>

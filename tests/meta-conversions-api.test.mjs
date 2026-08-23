@@ -180,7 +180,7 @@ test("order and payment routes emit Meta Lead, InitiateCheckout and durable Purc
   assert.match(orderRoute, /body\.fbp/);
   assert.match(orderRoute, /body\.fbc/);
   assert.match(orderRoute, /body\.leadId/);
-  assert.match(orderRoute, /eventId:\s*incomingLeadId/);
+  assert.match(orderRoute, /eventId:\s*order\.orderCode/);
   assert.match(orderRoute, /sendMetaInitiateCheckoutEvent/);
   assert.match(orderRoute, /eventId:\s*order\.orderCode/);
 

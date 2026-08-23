@@ -418,8 +418,8 @@ const coursePaymentPlans: Record<string, Record<string, CoursePaymentPlan>> = {
       amount: AGENT_KIT_PREORDER_DEPOSIT_VND,
     },
     "agent-kit-standard-990": {
-      title: "Bộ Agent Kit X10 hiệu suất công việc",
-      amount: 990000,
+      title: "Đội ngũ nhân sự AI - Giá chính thức",
+      amount: 999000,
     },
   },
 };

@@ -56,9 +56,9 @@ const agentKitIncludes = [
 ];
 
 const agentKitSaleReasons = [
-  ["Giữ đúng giá 990.000đ", "Đơn này đang khóa số tiền và nội dung chuyển khoản riêng để hệ thống xác nhận tự động."],
-  ["Không phải tự setup lại từ đầu", "Nhận sẵn agent, command, workflow, template và folder context để bắt đầu giao việc cho AI."],
-  ["Mua xong biết bước tiếp theo", "Trang sau thanh toán và email hướng dẫn giúp bạn biết copy dữ liệu vào đâu, gọi command nào trước."],
+  ["Giữ mức preorder 799.000đ", "Đơn này khóa khoản cọc 399.000đ và nội dung chuyển khoản riêng để hệ thống xác nhận tự động."],
+  ["Tự đào tạo theo dữ liệu doanh nghiệp", "Đưa thông tin sản phẩm, khách hàng và cách làm đã duyệt vào đúng chỗ để 8 Nhân viên AI dùng chung."],
+  ["Có SOP để bắt đầu đúng thứ tự", "Bộ cài, video hướng dẫn và SOP vận hành quảng cáo giúp anh/chị biết bước tiếp theo sau khi nhận sản phẩm."],
 ];
 
 const aiMasterIncludes = [
@@ -247,7 +247,7 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
       email: "demo@gmail.com",
       phone: "0900000000",
       courseSlug: agentKitSlug,
-      courseTitle: "Bộ Agent Kit X10 hiệu suất công việc - Cọc preorder trước ngày mở bán",
+      courseTitle: "Đội ngũ nhân sự AI - Cọc preorder trước ngày mở bán",
       amount: AGENT_KIT_PREORDER_DEPOSIT_VND,
       amountLabel: "399.000đ",
       currency: "VND",
@@ -261,7 +261,7 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
       orderItems: [
         {
           slug: agentKitSlug,
-          title: "Bộ Agent Kit X10 hiệu suất công việc - Cọc preorder trước ngày mở bán",
+          title: "Đội ngũ nhân sự AI - Cọc preorder trước ngày mở bán",
           price: AGENT_KIT_PREORDER_DEPOSIT_VND,
         },
       ],
@@ -286,7 +286,7 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
       courseSlug: "ai-master-x10-hieu-suat",
       courseTitle: "AI Master X10 hiệu suất - Biến tri thức thành tiền",
       amount: 990000,
-      amountLabel: "990.000đ",
+      amountLabel: "999.000đ",
       currency: "VND",
       status: "pending",
       paymentMethod: "sepay",
@@ -366,9 +366,9 @@ function getCheckoutContent(order: PaymentOrder) {
       nextSteps: [
         "Nhận hướng dẫn truy cập bộ AI Growth Kit",
         "Copy dữ liệu doanh nghiệp vào folder context",
-        "Chọn command phù hợp để bắt đầu giao việc cho AI Agent",
+        "Giao việc đầu tiên cho đúng Nhân viên AI trong bộ 8 vị trí",
       ],
-      stickyCopy: "Nhận bộ kit AI Agent",
+      stickyCopy: "Nhận bộ 8 Nhân viên AI",
     };
   }
 

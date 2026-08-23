@@ -78,12 +78,28 @@ export function PaymentStatusPoller({
   const [order, setOrder] = useState(initialOrder);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const checkoutTrackedRef = useRef(false);
+  const paymentPageViewTrackedRef = useRef(false);
   const isLight = variant === "light";
 
   const countdownTarget = useMemo(() => {
     const createdTime = Date.parse(order.createdAt);
     return Number.isNaN(createdTime) ? null : createdTime + 5 * 60 * 1000;
   }, [order.createdAt]);
+  const paymentContentIds = useMemo(() => getContentIds(order), [order]);
+
+  useEffect(() => {
+    if (paymentPageViewTrackedRef.current) return;
+    paymentPageViewTrackedRef.current = true;
+    trackMarketingEvent("payment_page_view", {
+      event_id: `payment-page-view-${order.orderCode}`,
+      order_id: order.orderCode,
+      content_ids: paymentContentIds,
+      content_name: order.courseTitle,
+      content_type: "product",
+      currency: order.currency || "VND",
+      value: order.amount,
+    });
+  }, [order.orderCode, order.courseTitle, order.currency, order.amount, paymentContentIds]);
 
   useEffect(() => {
     const updateCountdown = () => {

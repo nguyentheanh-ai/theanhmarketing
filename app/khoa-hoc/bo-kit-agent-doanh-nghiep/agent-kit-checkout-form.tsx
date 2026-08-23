@@ -59,8 +59,8 @@ export function AgentKitCheckoutForm() {
       }
 
       trackMarketingEvent("Lead", {
-        event_id: result.leadId || result.order.orderCode,
-        content_name: "Bo Agent Kit X10 Hieu Suat Cong Viec",
+        event_id: result.order.orderCode,
+        content_name: "Doi Ngu Nhan Su AI",
         content_type: "product",
         value: 399000,
         currency: "VND",
@@ -69,7 +69,7 @@ export function AgentKitCheckoutForm() {
       trackMarketingEvent("InitiateCheckout", {
         event_id: result.order.orderCode,
         order_id: result.order.orderCode,
-        content_name: "Bo Agent Kit X10 Hieu Suat Cong Viec",
+        content_name: "Doi Ngu Nhan Su AI",
         content_type: "product",
         value: 399000,
         currency: "VND",

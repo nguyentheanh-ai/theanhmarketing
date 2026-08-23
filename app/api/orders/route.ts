@@ -231,7 +231,8 @@ export async function POST(request: Request) {
           fbclid: attribution.fbclid,
           fbp: cleanText(body.fbp, 180),
           fbc: cleanText(body.fbc, 220),
-          eventId: incomingLeadId,
+          // Browser Lead and server Lead use the order code so Meta can deduplicate them.
+          eventId: order.orderCode,
           leadId: leadSync.ok ? leadSync.lead?.id ?? incomingLeadId : incomingLeadId,
           ipAddress,
           userAgent,

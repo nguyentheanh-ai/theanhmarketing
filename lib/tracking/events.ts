@@ -5,7 +5,14 @@ export type MarketingEventName =
   | "CompleteRegistration"
   | "AddToCart"
   | "InitiateCheckout"
-  | "Purchase";
+  | "Purchase"
+  | "cta_click"
+  | "demo_start"
+  | "demo_complete"
+  | "offer_view"
+  | "form_start"
+  | "form_error"
+  | "payment_page_view";
 
 type MarketingEventPayload = Record<string, string | number | boolean | string[] | number[] | null | undefined>;
 

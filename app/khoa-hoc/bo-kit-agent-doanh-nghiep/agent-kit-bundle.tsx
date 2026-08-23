@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 
 const bundleId = "doi-ngu-nhan-su-ai-bundle";
-const bundleSource = "/doi-ngu-nhan-su-ai/assets/index-DkW-zXg0.js";
+const bundleSource = "/doi-ngu-nhan-su-ai/assets/index-DPkUN-zm.js";
 
 export function AgentKitBundle() {
   useEffect(() => {

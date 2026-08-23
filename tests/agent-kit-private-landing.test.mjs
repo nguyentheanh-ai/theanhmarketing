@@ -4,7 +4,7 @@ import test from "node:test";
 
 const landingPage = readFileSync("app/khoa-hoc/bo-kit-agent-doanh-nghiep/page.tsx", "utf8");
 const bundleLoader = readFileSync("app/khoa-hoc/bo-kit-agent-doanh-nghiep/agent-kit-bundle.tsx", "utf8");
-const bundle = readFileSync("public/doi-ngu-nhan-su-ai/assets/index-DkW-zXg0.js", "utf8");
+const bundle = readFileSync("public/doi-ngu-nhan-su-ai/assets/index-DPkUN-zm.js", "utf8");
 const styles = readFileSync("public/doi-ngu-nhan-su-ai/assets/index-ekBwkhKb.css", "utf8");
 const orderService = readFileSync("services/orderService.ts", "utf8");
 const paymentPage = readFileSync("app/thanh-toan/[code]/page.tsx", "utf8");
@@ -14,20 +14,20 @@ const pendingPaymentEmail = readFileSync("lib/notifications/pending-payment-emai
 const nextConfig = readFileSync("next.config.ts", "utf8");
 
 test("academy route mounts only the approved Đội ngũ nhân sự AI build", () => {
-  assert.match(landingPage, /title: "Đội ngũ nhân sự AI"/);
+  assert.match(landingPage, /title: "Đội ngũ nhân sự AI dành cho doanh nghiệp"/);
   assert.match(landingPage, /landingAssetRoot = "\/doi-ngu-nhan-su-ai"/);
-  assert.match(bundleLoader, /\/doi-ngu-nhan-su-ai\/assets\/index-DkW-zXg0\.js/);
+  assert.match(bundleLoader, /\/doi-ngu-nhan-su-ai\/assets\/index-DPkUN-zm\.js/);
   assert.match(landingPage, /assets\/index-ekBwkhKb\.css/);
   assert.match(bundleLoader, /<div id="root"/);
   assert.doesNotMatch(landingPage, /AgentKitCalculator|AgentKitCheckoutForm|noti-agent-page/);
 });
 
-test("landing bundle includes the approved product, dashboard, form and commerce contract", () => {
+test("landing bundle includes the approved product, form and commerce contract", () => {
   for (const text of [
     "Đội ngũ nhân sự AI",
     "Giao bớt việc marketing lặp lại cho đội ngũ Nhân viên AI",
-    "Mô hình minh họa 6 tháng",
-    "Nhận bộ 8 Nhân viên AI",
+    "Bộ 8 Nhân viên AI dành cho doanh nghiệp",
+    "Đặt cọc 399.000đ",
     "bo-agent-kit-x10-hieu-suat-cong-viec",
     "agent-kit-preorder-deposit-399",
     "cọc preorder",
