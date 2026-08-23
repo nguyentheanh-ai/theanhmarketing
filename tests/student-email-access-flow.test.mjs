@@ -24,6 +24,9 @@ function loadTsModule(relativePath) {
     if (specifier === "@/lib/notifications/email-link-bridge") {
       return loadTsModule("lib/notifications/email-link-bridge.ts");
     }
+    if (specifier === "@/lib/agent-kit-preorder") {
+      return loadTsModule("lib/agent-kit-preorder.ts");
+    }
 
     throw new Error(`Unsupported test import: ${specifier}`);
   };
@@ -104,10 +107,11 @@ test("paid student emails use the official access landing link", () => {
   }
 });
 
-test("payment webhook blocks every student email when password provisioning fails", () => {
+test("payment webhook requires a verified login before full-access email and exempts deposit confirmation", () => {
   const webhook = read("app/api/sepay/webhook/route.ts");
 
-  assert.match(webhook, /if \(!studentAccount\.temporaryPassword\)/);
+  assert.match(webhook, /if \(!preorderDepositOrder && !studentAccount\?\.temporaryPassword\)/);
+  assert.match(webhook, /if \(!preorderDepositOrder\)\s*\{[\s\S]*?ensureStudentAccountForPaidOrder/);
   assert.match(webhook, /Payment success email requires a verified student login account\./);
   assert.match(webhook, /Payment success email blocked because student account provisioning failed:/);
   assert.doesNotMatch(webhook, /requiresVerifiedLoginAccount/);

@@ -88,7 +88,8 @@ export function PaymentLinkForm({ courses }: { courses: Course[] }) {
             <option value="default">Theo giá khóa học</option>
             <option value="video">Facebook Ads 399K</option>
             <option value="zoom-kit">Facebook Ads 799K</option>
-            <option value="agent-kit-ads-359">Agent Kit private 359K</option>
+            <option value="agent-kit-preorder-deposit-399">Đội ngũ nhân sự AI · Cọc preorder 399K (đến 15/09/2026)</option>
+            <option value="agent-kit-standard-999">Đội ngũ nhân sự AI · Giá chính thức 999K (từ 16/09/2026)</option>
           </select>
         </label>
       </div>

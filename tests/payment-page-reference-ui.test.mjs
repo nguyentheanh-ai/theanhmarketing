@@ -11,10 +11,9 @@ test("payment page follows the agent kit checkout section structure", () => {
   const page = read("app/thanh-toan/[code]/page.tsx");
 
   assert.match(page, /AGENTKITDEMO/);
-  assert.match(page, /Bộ Kit AI Agent Business/);
+  assert.match(page, /Đội ngũ nhân sự AI/);
   assert.match(page, /Thông tin đơn hàng/);
   assert.doesNotMatch(page, /Thanh toán 359K để nhận Bộ AI Agent thoát việc lặp/);
-  assert.match(page, /AI Agent Business/);
   assert.match(page, /Thanh toán chuyển khoản/);
   assert.match(page, /PaymentOfferCountdown/);
   assert.match(page, /Thế Anh sẽ không gọi thúc bạn thanh toán/);
@@ -82,12 +81,12 @@ test("Facebook Ads and Ebook checkout prioritizes payment and real Zalo proof", 
   assert.match(proof, /Học viên được hỗ trợ thật qua Zalo/);
 });
 
-test("local AI product payment demos mirror the approved 990K checkout price", () => {
+test("local product demos preserve their product-specific checkout prices", () => {
   const page = read("app/thanh-toan/[code]/page.tsx");
 
-  assert.match(page, /AGENTKITDEMO[\s\S]*?amount:\s*990000[\s\S]*?amountLabel:\s*"990\.000đ"/);
-  assert.match(page, /AIMASTERX10DEMO[\s\S]*?amount:\s*990000[\s\S]*?amountLabel:\s*"990\.000đ"/);
-  assert.match(page, /Giữ đúng giá 990\.000đ/);
+  assert.match(page, /AGENTKITDEMO[\s\S]*?amount:\s*AGENT_KIT_PREORDER_DEPOSIT_VND[\s\S]*?amountLabel:\s*"399\.000đ"/);
+  assert.match(page, /AIMASTERX10DEMO[\s\S]*?amount:\s*990000/);
+  assert.match(page, /Giữ mức preorder 799\.000đ/);
   assert.doesNotMatch(page, /Gói private ads 359K|Giữ đúng giá 359K/);
 });
 

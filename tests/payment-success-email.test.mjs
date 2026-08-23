@@ -20,6 +20,9 @@ function loadTsModule(relativePath) {
     if (specifier === "@/lib/notifications/email-link-bridge") {
       return loadTsModule("lib/notifications/email-link-bridge.ts");
     }
+    if (specifier === "@/lib/agent-kit-preorder") {
+      return loadTsModule("lib/agent-kit-preorder.ts");
+    }
 
     throw new Error(`Unsupported test import: ${specifier}`);
   };

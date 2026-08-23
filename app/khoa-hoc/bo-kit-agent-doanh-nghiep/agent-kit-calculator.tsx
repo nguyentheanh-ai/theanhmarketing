@@ -73,7 +73,7 @@ export function AgentKitCalculator() {
             <p>vòng việc có thể xử lý khi vẫn phải tự brief lại</p>
           </div>
           <div className="calc-card glass calc-card-primary">
-            <span className="calc-label">AI Agent Business</span>
+            <span className="calc-label">Đội ngũ nhân sự AI</span>
             <strong>{data.agentLoops}+</strong>
             <p>vòng giao việc có workflow + dữ liệu để lặp</p>
           </div>

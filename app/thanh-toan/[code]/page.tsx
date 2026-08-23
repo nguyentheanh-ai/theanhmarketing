@@ -34,6 +34,7 @@ import {
   AGENT_KIT_PREORDER_REMAINING_VND,
   AGENT_KIT_SLUG,
   isAgentKitPreorderDepositOrder,
+  isAgentKitPreorderRemainingOrder,
 } from "@/lib/agent-kit-preorder";
 
 export const dynamic = "force-dynamic";
@@ -354,12 +355,30 @@ function getCheckoutContent(order: PaymentOrder) {
       };
     }
 
+    if (isAgentKitPreorderRemainingOrder(order)) {
+      return {
+        eyebrow: "Hoàn tất phần còn lại của preorder",
+        title: "Thanh toán 400.000đ còn lại để nhận Đội ngũ nhân sự AI",
+        description: "Khoản cọc 399.000đ đã được ghi nhận. Anh/chị hoàn tất 400.000đ còn lại để đủ tổng giá preorder 799.000đ và nhận trọn bộ cài, video hướng dẫn cùng SOP.",
+        productLabel: "Đội ngũ nhân sự AI",
+        productHref: "/academy/bo-kit-agent-doanh-nghiep",
+        includes: agentKitIncludes,
+        saleReasons: [
+          ["Đã trừ tiền cọc", "Đơn này chỉ thu phần 400.000đ còn lại của mức preorder 799.000đ."],
+          ["Mở đủ quyền sau thanh toán", "Hệ thống chỉ bàn giao đầy đủ sau khi tổng thanh toán đạt mức preorder."],
+          ["Một mã chuyển khoản riêng", "Nội dung chuyển khoản được tạo riêng để hệ thống xác nhận đúng đơn."],
+        ],
+        nextSteps: ["Hệ thống xác nhận 400.000đ còn lại", "Mở đủ quyền nhận sản phẩm", "Gửi hướng dẫn qua email đã đăng ký"],
+        stickyCopy: "Thanh toán 400.000đ còn lại",
+      };
+    }
+
     return {
       eyebrow: "Bước cuối để nhận bộ kit",
-      title: "Bộ Kit AI Agent Business",
+      title: "Nhận trọn bộ Đội ngũ nhân sự AI",
       description:
         "Quét QR hoặc chuyển khoản đúng nội dung. Khi giao dịch được xác nhận, hệ thống sẽ mở quyền truy cập và gửi hướng dẫn theo email bạn đã đăng ký.",
-      productLabel: "AI Agent Business",
+      productLabel: "Đội ngũ nhân sự AI",
       productHref: "/academy/bo-kit-agent-doanh-nghiep",
       includes: agentKitIncludes,
       saleReasons: agentKitSaleReasons,

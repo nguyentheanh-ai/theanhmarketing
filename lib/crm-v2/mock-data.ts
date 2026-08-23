@@ -95,7 +95,7 @@ export const demoLeads: CrmLeadRow[] = [
     email: "mai***@company.vn",
     phone: "+8498***019",
     source: "Zalo",
-    course: "Bộ Agent Kit X10",
+    course: "Đội ngũ nhân sự AI",
     leadScore: 48,
     owner: "Sale B",
     stage: "not_contacted",
@@ -492,7 +492,7 @@ export const demoDashboard: CrmDashboardData = {
   ],
   courses: [
     { name: "Facebook Ads Master 2026", revenue: "94,2tr", paid: 118 },
-    { name: "Bộ Agent Kit X10", revenue: "41,5tr", paid: 52 },
+    { name: "Đội ngũ nhân sự AI", revenue: "41,5tr", paid: 52 },
     { name: "Ebook Facebook Ads", revenue: "17,1tr", paid: 57 },
   ],
 };

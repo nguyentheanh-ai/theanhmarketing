@@ -553,18 +553,18 @@ test("student account provisioning centralizes auth normalization and password l
 test("SePay paid email includes account password when an existing user was reset", () => {
   const route = read("app/api/sepay/webhook/route.ts");
 
-  assert.match(route, /studentAccount\.temporaryPassword/);
+  assert.match(route, /studentAccount\?\.temporaryPassword|provisionedAccount\.temporaryPassword/);
   assert.doesNotMatch(route, /account:\s*studentAccount\.created/);
 });
 
 test("SePay student success email is blocked until a verified login account is available", () => {
   const route = read("app/api/sepay/webhook/route.ts");
 
-  assert.match(route, /if \(!studentAccount\.temporaryPassword\)/);
+  assert.match(route, /if \(!preorderDepositOrder && !studentAccount\?\.temporaryPassword\)/);
   assert.match(route, /Payment success email requires a verified student login account\./);
   assert.doesNotMatch(route, /requiresVerifiedLoginAccount/);
   assert.match(
     route,
-    /if \(!studentAccount\.temporaryPassword\)[\s\S]*?markPaymentEmailError[\s\S]*?else \{[\s\S]*?sendPaymentSuccessEmail/,
+    /if \(!preorderDepositOrder && !studentAccount\?\.temporaryPassword\)[\s\S]*?markPaymentEmailError[\s\S]*?else \{[\s\S]*?sendPaymentSuccessEmail/,
   );
 });

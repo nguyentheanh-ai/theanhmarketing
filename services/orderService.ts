@@ -30,11 +30,16 @@ import {
   CONSULTATION_PRODUCT_TITLE,
 } from "@/lib/consultation/constants";
 import {
+  AGENT_KIT_OFFICIAL_PAYMENT_PLAN,
+  AGENT_KIT_OFFICIAL_PRICE_VND,
   AGENT_KIT_PREORDER_DEPOSIT_VND,
   AGENT_KIT_PREORDER_PAYMENT_PLAN,
   AGENT_KIT_PREORDER_PRICE_VND,
+  AGENT_KIT_PREORDER_REMAINING_PAYMENT_PLAN,
   AGENT_KIT_PREORDER_REMAINING_VND,
   AGENT_KIT_SLUG,
+  assertAgentKitPaymentPlanAvailable,
+  getAgentKitSalePhase,
 } from "@/lib/agent-kit-preorder";
 import {
   collectCommandCenterPages,
@@ -75,6 +80,8 @@ export type PaymentOrder = {
   accountingEmailSentAt: string | null;
   accountingEmailLastError: string | null;
   purchaseEventSent: boolean;
+  paymentPlan?: string | null;
+  parentOrderCode?: string | null;
   attribution: Attribution;
   invoice: InvoiceDetails;
 };
@@ -103,6 +110,8 @@ type DbOrder = {
   accounting_email_sent_at?: string | null;
   accounting_email_last_error?: string | null;
   purchase_event_sent?: boolean | null;
+  payment_plan?: string | null;
+  parent_order_code?: string | null;
   utm_source?: string | null;
   utm_medium?: string | null;
   utm_campaign?: string | null;
@@ -129,7 +138,7 @@ type DbOrder = {
 const orderBaseSelectFields =
   "id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items,payment_email_sent_at,payment_email_last_error,accounting_email_sent_at,accounting_email_last_error" as const;
 const orderSelectFields =
-  "id,lead_id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items,payment_email_sent_at,payment_email_last_error,accounting_email_sent_at,accounting_email_last_error,purchase_event_sent,utm_source,utm_campaign,utm_content,utm_medium,utm_id,utm_term,campaign_id,campaign_name,adset_id,ad_id,ad_name,fbclid,fbc,fbp,landing_page,invoice_requested,invoice_tax_code,invoice_company_name,invoice_company_address,invoice_email" as const;
+  "id,lead_id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items,payment_email_sent_at,payment_email_last_error,accounting_email_sent_at,accounting_email_last_error,purchase_event_sent,payment_plan,parent_order_code,utm_source,utm_campaign,utm_content,utm_medium,utm_id,utm_term,campaign_id,campaign_name,adset_id,ad_id,ad_name,fbclid,fbc,fbp,landing_page,invoice_requested,invoice_tax_code,invoice_company_name,invoice_company_address,invoice_email" as const;
 
 export type PaymentConfirmationResult = {
   order: PaymentOrder;
@@ -278,6 +287,8 @@ function mapDbOrder(row: DbOrder): PaymentOrder {
     accountingEmailSentAt: row.accounting_email_sent_at ?? null,
     accountingEmailLastError: row.accounting_email_last_error ?? null,
     purchaseEventSent: Boolean(row.purchase_event_sent),
+    paymentPlan: row.payment_plan ?? null,
+    parentOrderCode: row.parent_order_code ?? null,
     attribution: mapOrderAttribution(row),
     invoice: row.invoice_requested
       ? {
@@ -417,9 +428,9 @@ const coursePaymentPlans: Record<string, Record<string, CoursePaymentPlan>> = {
       title: `Cọc preorder trước ngày mở bán - tổng ${formatVnd(AGENT_KIT_PREORDER_PRICE_VND)}, còn lại ${formatVnd(AGENT_KIT_PREORDER_REMAINING_VND)} khi mở bán`,
       amount: AGENT_KIT_PREORDER_DEPOSIT_VND,
     },
-    "agent-kit-standard-990": {
+    [AGENT_KIT_OFFICIAL_PAYMENT_PLAN]: {
       title: "Đội ngũ nhân sự AI - Giá chính thức",
-      amount: 999000,
+      amount: AGENT_KIT_OFFICIAL_PRICE_VND,
     },
   },
 };
@@ -489,6 +500,10 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
     throw new Error("Không tìm thấy khóa học đã chọn.");
   }
 
+  if (input.courseSlug === AGENT_KIT_SLUG && input.paymentPlan) {
+    assertAgentKitPaymentPlanAvailable(input.paymentPlan);
+  }
+
   const orderPackage = fixedPackage ?? buildOrderPackage(selectedCourses, input.paymentPlan);
   const { amount, courseSlug, courseTitle, orderItems } = orderPackage;
 
@@ -521,6 +536,8 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
       expires_at: expiresAt,
       order_items: orderItems,
       purchase_event_sent: false,
+      payment_plan: input.paymentPlan || null,
+      parent_order_code: null,
       invoice_requested: invoice.requested,
       invoice_tax_code: invoice.requested ? invoice.taxCode : null,
       invoice_company_name: invoice.requested ? invoice.companyName : null,
@@ -566,6 +583,92 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
   }
 
   return mapDbOrder(fallbackInsert.data as DbOrder);
+}
+
+export type AgentKitRemainingPaymentSummary = {
+  created: PaymentOrder[];
+  skipped: number;
+  phase: "preorder" | "official";
+};
+
+export async function createAgentKitRemainingPaymentOrders(now = new Date()): Promise<AgentKitRemainingPaymentSummary> {
+  const phase = getAgentKitSalePhase(now);
+  if (phase === "preorder") return { created: [], skipped: 0, phase };
+
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) throw new Error("Chưa cấu hình Supabase để tạo đơn thanh toán phần còn lại.");
+
+  const deposits = await supabase
+    .from("orders")
+    .select(orderSelectFields)
+    .eq("course_slug", AGENT_KIT_SLUG)
+    .eq("payment_plan", AGENT_KIT_PREORDER_PAYMENT_PLAN)
+    .eq("status", "paid");
+
+  if (deposits.error) throw new Error("Không đọc được danh sách đơn cọc preorder đã thanh toán.");
+
+  const created: PaymentOrder[] = [];
+  let skipped = 0;
+
+  for (const row of (deposits.data ?? []) as DbOrder[]) {
+    const deposit = mapDbOrder(row);
+    const existing = await supabase
+      .from("orders")
+      .select(orderSelectFields)
+      .eq("parent_order_code", deposit.orderCode)
+      .eq("payment_plan", AGENT_KIT_PREORDER_REMAINING_PAYMENT_PLAN)
+      .maybeSingle();
+
+    if (existing.error) throw new Error("Không kiểm tra được đơn thanh toán phần còn lại.");
+    if (existing.data) {
+      skipped += 1;
+      continue;
+    }
+
+    const orderCode = createOrderCode();
+    const title = `Đội ngũ nhân sự AI - Thanh toán 400.000đ còn lại preorder ${deposit.orderCode}`;
+    const paymentQrUrl = isSepayConfigured()
+      ? createSepayQrUrl({ amount: AGENT_KIT_PREORDER_REMAINING_VND, orderCode })
+      : "";
+    const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    const insert = await supabase
+      .from("orders")
+      .insert({
+        lead_id: deposit.leadId,
+        order_code: orderCode,
+        student_name: deposit.studentName,
+        email: deposit.email,
+        phone: deposit.phone,
+        course_slug: AGENT_KIT_SLUG,
+        course_title: title,
+        amount: AGENT_KIT_PREORDER_REMAINING_VND,
+        currency: "VND",
+        status: "pending",
+        payment_status: "pending",
+        payment_method: "sepay",
+        payment_qr_url: paymentQrUrl,
+        expires_at: expiresAt,
+        order_items: [{ slug: AGENT_KIT_SLUG, title, price: AGENT_KIT_PREORDER_REMAINING_VND }],
+        purchase_event_sent: false,
+        payment_plan: AGENT_KIT_PREORDER_REMAINING_PAYMENT_PLAN,
+        parent_order_code: deposit.orderCode,
+        ...attributionToDbColumns(deposit.attribution),
+      })
+      .select(orderSelectFields)
+      .single();
+
+    if (insert.error || !insert.data) {
+      if (insert.error?.code === "23505") {
+        skipped += 1;
+        continue;
+      }
+      throw new Error("Không tạo được đơn thanh toán 400.000đ còn lại.");
+    }
+
+    created.push(mapDbOrder(insert.data as DbOrder));
+  }
+
+  return { created, skipped, phase };
 }
 
 export async function createSupportPaymentOrder(input: CreateSupportPaymentOrderInput) {

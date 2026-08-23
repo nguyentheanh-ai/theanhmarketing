@@ -243,7 +243,7 @@ const courseFunnel: FunnelCourseConfig[] = [
     statusLabel: "Đang mở đăng ký",
     title: "Đội ngũ nhân sự AI",
     price: "799.000đ",
-    originalPrice: "2.499.000đ",
+    originalPrice: "999.000đ",
     thumbnailImageUrl: "/course-thumbnails/bo-agent-kit-x10-hieu-suat-cong-viec-v3.webp",
     eyebrow: "Doanh nghiệp · 8 Nhân viên AI",
     shortDescription: "Bộ 8 Nhân viên AI dành cho doanh nghiệp, tự đào tạo theo dữ liệu riêng và kèm SOP vận hành quảng cáo chuyên nghiệp.",

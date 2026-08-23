@@ -17,6 +17,10 @@
       "schedule": "20 18 * * *"
     },
     {
+      "path": "/api/agent-kit/preorder-launch",
+      "schedule": "10 17 * * *"
+    },
+    {
       "path": "/api/reports/telegram/full-day",
       "schedule": "5 10 * * *"
     }

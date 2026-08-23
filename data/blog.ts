@@ -187,7 +187,7 @@ export const blogPosts: BlogPost[] = [
       "<blockquote>Website của tương lai không chỉ là brochure. Nó là một lớp dữ liệu để người, AI Agent và hệ thống bán hàng cùng hiểu doanh nghiệp của các bạn.</blockquote>",
       "<h2>Nguồn tham khảo</h2>",
       '<p>Tham khảo: <a href="https://karpathy.bearblog.dev/sequoia-ascent-2026/" target="_blank">Andrej Karpathy - Sequoia Ascent 2026 summary</a>.</p>',
-      '<p>Nếu muốn xây tài liệu, workflow và sản phẩm tri thức dễ nhân bản bằng AI, xem <a href="/khoa-hoc/ai-master-x10-hieu-suat">AI Master X10</a> hoặc <a href="/khoa-hoc/bo-agent-kit-x10-hieu-suat-cong-viec">Bộ Agent Kit X10</a>.</p>',
+      '<p>Nếu muốn xây tài liệu, workflow và sản phẩm tri thức dễ nhân bản bằng AI, xem <a href="/khoa-hoc/ai-master-x10-hieu-suat">AI Master X10</a> hoặc <a href="/khoa-hoc/bo-agent-kit-x10-hieu-suat-cong-viec">Đội ngũ nhân sự AI</a>.</p>',
     ]),
   },
   {
@@ -460,7 +460,7 @@ export const blogPosts: BlogPost[] = [
       "<p>Bài học từ robotics không phải mọi doanh nghiệp cần robot. Bài học là agent hữu ích cần bối cảnh, kế hoạch, công cụ, tiêu chuẩn hoàn thành và giới hạn an toàn. Đó cũng chính là cách biến AI thành hệ vận hành thay vì trợ lý trả lời câu hỏi.</p>",
       "<h2>6. Nguồn tham khảo</h2>",
       '<p>Tham khảo: <a href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-1-6/" target="_blank" rel="noopener noreferrer">Google - Gemini Robotics-ER 1.6</a>.</p>',
-      '<p>Nếu muốn xây agent có hành động, kiểm tra và guardrail rõ ràng cho công việc hàng ngày, xem <a href="/khoa-hoc/ai-agent-master-2026">AI Agent Master 2026</a> hoặc <a href="/khoa-hoc/bo-agent-kit-x10-hieu-suat-cong-viec">Bộ Agent Kit X10</a>.</p>',
+      '<p>Nếu muốn xây agent có hành động, kiểm tra và guardrail rõ ràng cho công việc hàng ngày, xem <a href="/khoa-hoc/ai-agent-master-2026">AI Agent Master 2026</a> hoặc <a href="/khoa-hoc/bo-agent-kit-x10-hieu-suat-cong-viec">Đội ngũ nhân sự AI</a>.</p>',
     ]),
   },
   {
