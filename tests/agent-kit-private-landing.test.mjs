@@ -8,7 +8,9 @@ const bundleSource = bundleLoader.match(/bundleSource = "([^"]+)"/)?.[1];
 assert.ok(bundleSource, "academy loader must declare its landing bundle");
 const bundle = readFileSync(`public${bundleSource}`, "utf8");
 const staticEntry = readFileSync("public/doi-ngu-nhan-su-ai/index.html", "utf8");
-const styles = readFileSync("public/doi-ngu-nhan-su-ai/assets/index-ekBwkhKb.css", "utf8");
+const styleSource = landingPage.match(/assets\/(index-[A-Za-z0-9_-]+\.css)/)?.[1];
+assert.ok(styleSource, "academy route must declare its landing stylesheet");
+const styles = readFileSync(`public/doi-ngu-nhan-su-ai/assets/${styleSource}`, "utf8");
 const orderService = readFileSync("services/orderService.ts", "utf8");
 const paymentPage = readFileSync("app/thanh-toan/[code]/page.tsx", "utf8");
 const sepayWebhook = readFileSync("app/api/sepay/webhook/route.ts", "utf8");
@@ -20,7 +22,7 @@ test("academy route mounts only the approved Đội ngũ nhân sự AI build", (
   assert.match(landingPage, /title: "Đội ngũ nhân sự AI dành cho doanh nghiệp"/);
   assert.match(landingPage, /landingAssetRoot = "\/doi-ngu-nhan-su-ai"/);
   assert.match(bundleLoader, /\/doi-ngu-nhan-su-ai\/assets\/index-[A-Za-z0-9_-]+\.js/);
-  assert.match(landingPage, /assets\/index-ekBwkhKb\.css/);
+  assert.match(landingPage, /assets\/index-[A-Za-z0-9_-]+\.css/);
   assert.match(bundleLoader, /<div id="root"/);
   assert.doesNotMatch(landingPage, /AgentKitCalculator|AgentKitCheckoutForm|noti-agent-page/);
 });
@@ -28,7 +30,7 @@ test("academy route mounts only the approved Đội ngũ nhân sự AI build", (
 test("academy and static entry load the same current bundle from an absolute asset URL", () => {
   assert.match(staticEntry, new RegExp(`src="${bundleSource.replaceAll("/", "\\/")}"`));
   assert.doesNotMatch(staticEntry, /src="\.\/assets\//);
-  assert.match(staticEntry, /href="\/doi-ngu-nhan-su-ai\/assets\/index-ekBwkhKb\.css"/);
+  assert.match(staticEntry, new RegExp(`href="/doi-ngu-nhan-su-ai/assets/${styleSource.replaceAll("/", "\\/")}"`));
   assert.doesNotMatch(staticEntry, /href="\.\/assets\//);
 });
 
