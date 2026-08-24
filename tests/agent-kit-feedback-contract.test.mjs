@@ -40,6 +40,7 @@ test("main source contains the current landing build and no stale buyer-facing b
   const bundle = read(`public${currentBundlePath}`);
   assert.match(bundle, /Đội ngũ nhân sự AI/);
   assert.match(bundle, /Đặt cọc 399\.000đ/);
-  assert.doesNotMatch(bundle, /Nhận bộ 8 Nhân viên AI/);
+  assert.match(bundle, /agent-kit-standard-999/);
+  assert.match(bundle, /Mua ngay 999\.000đ/);
   assert.doesNotMatch(bundle, /Bo Agent Kit X10 Hieu Suat Cong Viec/);
 });
