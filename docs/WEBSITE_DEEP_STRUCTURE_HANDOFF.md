@@ -1476,4 +1476,6 @@ Before changing these, run targeted tests and full build.
 - Offer: the optional Facebook Ads + Ebook combo is `878.400đ` during 26/08/2026–31/08/2026, down 20% from `1.098.000đ`; standalone system remains `799.000đ`.
 - Contract: browser selects `zoom-kit-ebook-vietnam-thang-thai-lan-20`; `services/orderService.ts` is the price authority and rejects that plan outside the Vietnam-date window. Historical `zoom-kit-ebook-299` remains unchanged.
 - Scope: form copy/CTA and minimum server price guard only; no schema, payment route, email template, tracking event, entitlement or other landing section changed.
-- Verification before deploy: focused landing `22/22`, TypeScript, targeted ESLint and source/published byte equality pass. Production deploy and live readback pending.
+- Verification before deploy: focused landing `22/22`, TypeScript, targeted ESLint, source/published byte equality and Next production build 100 route pass.
+- Release: GitHub `main` SHA `75c4ef6f7e91c88d66e282f67c5bc284cd27f008`; preview `dpl_CSLThahsmsC6GgrqasH8KiXDkcfw` READY; production `dpl_VqFpMoALxMff8x3kb99qKPYSGS8g` READY with `www.theanhmarketing.com` and apex aliases.
+- Live readback: route `200`; exact promotion CTA, `878.400đ`, promo plan ID, `2026-08-31` and standalone `799.000đ` all present. Vercel runtime error scan for the route found no errors.
