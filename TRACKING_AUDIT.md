@@ -1,11 +1,13 @@
 # Tracking Audit - Facebook Pixel / Meta CAPI
 
-## 2026-08-26 - Purchase match-key remediation (local candidate)
+## 2026-08-26 - Purchase match-key remediation (production)
 
 - Live Dataset readback for `Purchase` was `7.4/10`: email, phone, fbp and external ID were present, `fbc` covered `75%`, while `ip_address` and `user_agent` were absent.
 - The candidate stores the checkout request IP and User Agent on `public.orders`, returns them from the lease-fenced Purchase claim RPC and passes them to CAPI as `client_ip_address` and `client_user_agent`.
 - Scope is server-side `Purchase` only. Browser Pixel, stable `event_id=order_code`, `paid_at`, value/currency, attribution and retry idempotency are unchanged.
-- Status: `LOCAL_CANDIDATE / NOT_DEPLOYED`; migration is not applied and no real order or test credential was created in this session.
+- Status: `PRODUCTION_READY_FOR_NEXT_REAL_PURCHASE`; migration applied, commit `e2fc2d7`, production deployment `dpl_51iMJ9y6zaACBBNLJ4NGzjmoGk97` is `READY`, and no real order or test credential was created in this session.
+- Post-deploy Meta readback remains Purchase `7.4/10` with `fbc` coverage `75%` and the affected-spend card still visible. This is expected until a new paid order carries the newly stored request keys; historical paid orders cannot be safely replayed with a new Purchase event ID.
+- Meta CRM guide was followed for inspection only. CRM production upload remains `BLOCKED` without the Meta-generated 15–17 digit `lead_id`; no access token was created.
 
 ## 2026-08-21 - Facebook Ads engagement event contract
 

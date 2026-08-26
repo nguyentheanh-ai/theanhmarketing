@@ -1,15 +1,17 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
-## 2026-08-26 - Meta Purchase match-key remediation (local candidate)
+## 2026-08-26 - Meta Purchase match-key remediation (production)
 
 | Hạng mục | Chi tiết |
 |---|---|
 | Scope | Bổ sung `client_ip_address` và `client_user_agent` cho server-side `Purchase` CAPI theo live Events Manager readback của Dataset `1315653423712065`. |
 | Root cause | `lib/meta/conversions-api.ts` đã hỗ trợ hai match key nhưng durable `lib/meta/purchase-outbox.ts` không nhận chúng từ order; `public.orders` cũng chưa lưu chúng qua vòng đời pending -> paid. |
 | Fix | Lưu IP/User Agent từ checkout thường và checkout đăng nhập; claim RPC trả hai trường; dispatcher truyền chúng vào `sendMetaPurchaseEvent`. Không thay đổi browser Pixel, event ID, giá trị, currency, paid time hoặc retry/lease. |
-| Database | Candidate migration `supabase/migrations/20260826120000_meta_purchase_match_keys.sql` thêm hai cột và cập nhật `claim_meta_purchase_orders`; chưa apply production trong phiên này. |
-| Evidence boundary | Live readback hiện là Purchase EMQ `7.4/10`, `fbc` phủ `75%`, chưa có `ip_address`/`user_agent`; sau deploy cần gửi một Purchase thật đủ điều kiện rồi đọc lại Meta. Không tạo order/payment/test credential trong local QA. |
-| Verification | Focused Meta suite `17/17` pass. Full repo typecheck/lint/build và production readback còn pending; chưa commit/deploy. |
+| Database | Migration `supabase/migrations/20260826120000_meta_purchase_match_keys.sql` đã apply production; readback xác nhận hai cột tồn tại và RPC trả IP/User-Agent, chỉ `service_role` được execute. |
+| Release | Commit `e2fc2d7ccd4d1d7472f3e101e0037b2e9a44532e`; preview `dpl_AYuFttq87jVPFygzD8jnp9AaG4Ux` đã smoke-test rồi promote thành production `dpl_51iMJ9y6zaACBBNLJ4NGzjmoGk97` (`READY`). |
+| Verification | Focused `17/17`, full Node `610/610`, TypeScript, targeted ESLint, tracking verification, Webpack build, active Ads landing smoke và Vercel runtime-error scan đều pass; không tạo order/payment/test credential. |
+| Meta readback | Sau deploy, Purchase vẫn `7.4/10`, `fbc` `75%` và banner còn `13.835.445 ₫`; 19 paid orders 7 ngày qua đều là dữ liệu cũ không có IP/UA, không có order paid mới để Meta tính lại. Code/database đã sẵn sàng cho Purchase thật tiếp theo; không gửi lại event ID cũ để tránh duplicate Purchase. |
+| CRM guide boundary | Đã đọc đúng hướng dẫn CRM của Meta. Chưa tạo access token và chưa gửi CRM event vì hệ thống hiện không có Meta-issued `lead_id` 15–17 chữ số; không được dùng UUID/internal lead ID thay thế. |
 
 ## 2026-08-26 - Canonical release integration, checkout countdown và Telegram report (local)
 
