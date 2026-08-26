@@ -6,6 +6,7 @@ import {
 } from "@/lib/reports/telegram-business-day";
 import {
   aggregateProductMetrics,
+  buildTelegramAdAccountSummaryMessage,
   buildMonthToDateWindow,
   buildSevenDayWindow,
   buildTelegramProductReportMessages,
@@ -37,8 +38,6 @@ type SnapshotRow = {
 const REPORT_AD_ACCOUNTS = [
   { accountId: "1255736315302940", accountName: "Greezhub 01" },
   { accountId: "1103665698635605", accountName: "TAM01" },
-  { accountId: "1679428239416668", accountName: "TAM02" },
-  { accountId: "2727370877462532", accountName: "TAM03" },
 ] as const;
 const PRODUCT_REPORT_AD_ACCOUNT_ID = "1255736315302940";
 const HOUR_MS = 60 * 60 * 1000;
@@ -256,18 +255,29 @@ export async function runTelegramBusinessReport(
   }
 
   try {
-    const [currentOrders, currentAds, sevenDayOrders, sevenDayAds, monthOrders, monthAds] = await Promise.all([
-      dependencies.readPaidOrders(window), dependencies.readAds(window),
-      dependencies.readPaidOrders(sevenDayWindow), dependencies.readAds(sevenDayWindow),
-      dependencies.readPaidOrders(monthWindow), dependencies.readAds(monthWindow),
-    ]);
-    const messages = buildTelegramProductReportMessages({
-      slot: input.slot,
-      test: input.test,
-      current: { ...window, accounts: currentAds.accounts, metrics: aggregateProductMetrics({ orders: currentOrders, campaigns: currentAds.campaigns, ads: currentAds.available ? { available: true } : { available: false, reason: currentAds.reason } }) },
-      sevenDay: { ...sevenDayWindow, metrics: aggregateProductMetrics({ orders: sevenDayOrders, campaigns: sevenDayAds.campaigns, ads: sevenDayAds.available ? { available: true } : { available: false, reason: sevenDayAds.reason } }) },
-      month: { ...monthWindow, metrics: aggregateProductMetrics({ orders: monthOrders, campaigns: monthAds.campaigns, ads: monthAds.available ? { available: true } : { available: false, reason: monthAds.reason } }) },
-    });
+    let messages: string[];
+    if (input.slot === "full-day") {
+      const currentAds = await dependencies.readAds(window);
+      messages = [buildTelegramAdAccountSummaryMessage({
+        test: input.test,
+        startIso: window.startIso,
+        endIso: window.endIso,
+        accounts: currentAds.accounts,
+      })];
+    } else {
+      const [currentOrders, currentAds, sevenDayOrders, sevenDayAds, monthOrders, monthAds] = await Promise.all([
+        dependencies.readPaidOrders(window), dependencies.readAds(window),
+        dependencies.readPaidOrders(sevenDayWindow), dependencies.readAds(sevenDayWindow),
+        dependencies.readPaidOrders(monthWindow), dependencies.readAds(monthWindow),
+      ]);
+      messages = buildTelegramProductReportMessages({
+        slot: input.slot,
+        test: input.test,
+        current: { ...window, accounts: currentAds.accounts, metrics: aggregateProductMetrics({ orders: currentOrders, campaigns: currentAds.campaigns, ads: currentAds.available ? { available: true } : { available: false, reason: currentAds.reason } }) },
+        sevenDay: { ...sevenDayWindow, metrics: aggregateProductMetrics({ orders: sevenDayOrders, campaigns: sevenDayAds.campaigns, ads: sevenDayAds.available ? { available: true } : { available: false, reason: sevenDayAds.reason } }) },
+        month: { ...monthWindow, metrics: aggregateProductMetrics({ orders: monthOrders, campaigns: monthAds.campaigns, ads: monthAds.available ? { available: true } : { available: false, reason: monthAds.reason } }) },
+      });
+    }
     let status: number | undefined;
     for (const message of messages) {
       const delivery = await dependencies.send(message);

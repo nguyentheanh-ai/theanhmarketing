@@ -241,6 +241,37 @@ function accountMetricLines(accounts: AccountPerformanceInput[] | undefined) {
   });
 }
 
+export function buildTelegramAdAccountSummaryMessage(input: {
+  test?: boolean;
+  startIso: string;
+  endIso: string;
+  accounts?: AccountPerformanceInput[];
+}) {
+  const accounts = input.accounts ?? [];
+  const lines = [
+    `${input.test ? "[TEST] " : ""}BÁO CÁO QUẢNG CÁO 17:00`,
+    `Kỳ: ${formatVietnamDateTime(input.startIso)} → ${formatVietnamDateTime(input.endIso)}`,
+    "",
+    "Tài khoản - Chi tiêu - Đơn hàng",
+  ];
+  for (const account of accounts) {
+    if (!account.available) {
+      lines.push(`${account.accountName} - CHƯA ĐỦ DỮ LIỆU - CHƯA ĐỦ`);
+      continue;
+    }
+    lines.push(`${account.accountName} - ${formatMoney(account.spend ?? 0)} - ${Math.round(account.purchases ?? 0)} đơn`);
+  }
+  const complete = accounts.length === 2 && accounts.every((account) => account.available);
+  if (!complete) {
+    lines.push("TỔNG 2 TÀI KHOẢN - CHƯA ĐỦ DỮ LIỆU - CHƯA ĐỦ");
+    return lines.join("\n");
+  }
+  const totalSpend = accounts.reduce((sum, account) => sum + (account.spend ?? 0), 0);
+  const totalPurchases = accounts.reduce((sum, account) => sum + (account.purchases ?? 0), 0);
+  lines.push(`TỔNG 2 TÀI KHOẢN - ${formatMoney(totalSpend)} - ${Math.round(totalPurchases)} đơn`);
+  return lines.join("\n");
+}
+
 function currentSection(slot: "morning" | "full-day", test: boolean | undefined, period: ProductReportPeriod) {
   const title = slot === "morning" ? "BÁO CÁO 08:00" : "BÁO CÁO CHỐT NGÀY 17:00";
   const totals = period.metrics.totals;

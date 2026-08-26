@@ -49,6 +49,16 @@
 | Production | Vercel `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL`, `READY`, promoted to `www.theanhmarketing.com`; rollback target `dpl_CpvZrvvxbQQauZkbAUi8dmTRoWvG`. Clean route/event script are 200 and exact live HTML/JS hashes match local. Guards: `/admin` 307, `GET /api/orders` 405, `GET /api/student/progress` 405. Runtime error/warning/fatal scans are empty. |
 | Meta readback | Aggregate Web counts in the post-release one-hour window: `EngagedView=3`, `ScrollDepth=4`, `CTAClick=1`. This is dataset-stat readback, not Events Manager Test Events. Test Events is unavailable in the current authenticated tool channel; no token/test code was entered. |
 | Remaining external handoff | GitHub push is `RESOLVED`. The owner-approved device flow authenticated Terminal Git as `nguyentheanh-ai`; the full branch `feat/facebook-ads-master-rewrite-20260821` now tracks origin, and remote readback matched runtime `17bdabb0691593c8778686241791eef9e548a2f6` plus docs `36c26e8b8205b8154b96c6e6251825e88356f831`. Events Manager Test Events remains the only unavailable external channel. |
+## 2026-08-18 - Restore support booking price to 1.000.000đ
+
+| Item | State |
+|---|---|
+| Incident | The 1.000.000đ change was deployed from an isolated release branch but never synchronized into the canonical deploy branch. Subsequent releases reintroduced the old 500.000đ application constant while the database default remained 1.000.000đ. |
+| Fix | `support-session-30m` now uses shared `SUPPORT_PRICE_VND = 1_000_000` and `SUPPORT_PRICE_LABEL = "1.000.000đ"` across booking page/form, server order creation, checkout demo and CRM. Historical CRM rows display their stored amount. |
+| Preserved contract | Student eligibility, 30-minute holds, SePay, paid redirect, Telegram, payment email and all landing offers remain unchanged. The independent Marketing & AI consultation stays 500.000đ. |
+| Database | Production migration was already applied and read back before this release: default 1.000.000đ, constraint 500.000đ/1.000.000đ, four historical 500.000đ rows and two 1.000.000đ rows. Migration source is restored; no schema mutation is needed. |
+| Verification | TDD RED/GREEN; support suite 16/16; full Node 577/577; TypeScript; targeted ESLint 0 errors/1 unchanged warning; Next production build 96/96. No real order/payment/email/data mutation. |
+| Release | Commit `68c0ca0`; production `dpl_2LHJxZTEF9U2SUhgmyDARetBP89c` Ready/promoted to `www` and apex. Owner-session browser readback shows 1.000.000đ on booking intro, preview warning, total and CRM badge; no form was submitted. Runtime error scan is empty. |
 
 ## 2026-08-13 - Facebook Ads typography and mobile refinement
 
@@ -705,6 +715,7 @@ Email helpers:
 
 Compatibility note: Admin Lead resend still writes legacy `lead_email_logs` for existing resend count/history and also writes `email_logs` for lifecycle tracking after `SUPABASE_ADMIN_OPERATIONS.sql` is applied.
 - `lib/notifications/telegram.ts`: Telegram order notifications. `order_created` is now sent by `services/checkoutNotificationService.ts` after the payment page response, not by order creation APIs. `app/api/sepay/webhook/route.ts` still sends `payment_paid` once for newly paid orders. Production `TELEGRAM_CHAT_ID` was set on 2026-06-08 to the `Greezhub x Report` group (`-5220455978`) and redeployed in `dpl_7fq1tDhaQYmoVwtwtmE5reknPbWn`. Do not print `TELEGRAM_BOT_TOKEN`; Vercel env pull may return empty values for encrypted/sensitive Telegram vars.
+- Ads reporting note 2026-08-19: the 17:05 Asia/Ho_Chi_Minh `/api/reports/telegram/full-day` run sends exactly one concise Telegram message for two ad accounts only: Greezhub 01 (`1255736315302940`) and TAM01 (`1103665698635605`). The contract is `Tài khoản - Chi tiêu - Đơn hàng`, one row per account plus `TỔNG 2 TÀI KHOẢN`. `Đơn hàng` is the Meta-attributed Purchase count from finalized hourly snapshots. If either account is incomplete, the account and total must fail closed as `CHƯA ĐỦ DỮ LIỆU`; never substitute a false zero. The 17:00 Codex automation only refreshes snapshots and stays silent on success so it cannot create a second late report.
 - `services/leadEmailService.ts`: chooses resend template by real matched order status (`payment_success`, `payment_failed`, `pending_payment`) and is called by owner-only Admin Lead resend API.
 - Email font/style note 2026-06-07: notification emails should use CSS-safe inline font stack `'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif`; do not use bare `font-family:Arial...` or heavily letter-spaced uppercase H1 styles. Guard: `tests/notification-email-font.test.mjs`.
 

@@ -179,3 +179,23 @@ test("Telegram report lists Meta efficiency separately for every ad account", ()
   assert.match(report, /TAM01.*Ads 200\.000 ₫.*CPM 50\.000 ₫.*CTR 2\.00%.*Purchase 2.*CPA 100\.000 ₫.*ROAS 5\.00x/s);
   assert.match(report, /TAM03.*CHƯA ĐỦ DỮ LIỆU.*Thiếu phương thức thanh toán/s);
 });
+
+test("concise 17h Ads summary contains only two accounts and their total", () => {
+  const { buildTelegramAdAccountSummaryMessage } = loadTsModule("lib/reports/telegram-product-report.ts");
+  const message = buildTelegramAdAccountSummaryMessage({
+    test: true,
+    startIso: "2026-08-03T10:00:00.000Z",
+    endIso: "2026-08-04T10:00:00.000Z",
+    accounts: [
+      { accountName: "Greezhub 01", accountId: "1255736315302940", available: true, spend: 900000, purchases: 3 },
+      { accountName: "TAM01", accountId: "1103665698635605", available: true, spend: 600000, purchases: 2 },
+    ],
+  });
+
+  assert.match(message, /^\[TEST\] BÁO CÁO QUẢNG CÁO 17:00/);
+  assert.match(message, /Tài khoản - Chi tiêu - Đơn hàng/);
+  assert.match(message, /Greezhub 01 - 900\.000 ₫ - 3 đơn/);
+  assert.match(message, /TAM01 - 600\.000 ₫ - 2 đơn/);
+  assert.match(message, /TỔNG 2 TÀI KHOẢN - 1\.500\.000 ₫ - 5 đơn/);
+  assert.doesNotMatch(message, /TAM02|TAM03|CPM|CTR|CPA|ROAS|7 NGÀY|DOANH THU THÁNG/);
+});
