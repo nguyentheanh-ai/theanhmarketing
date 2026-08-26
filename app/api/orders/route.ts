@@ -139,6 +139,8 @@ export async function POST(request: Request) {
       courseSlugs,
       paymentPlan,
       leadId: databaseLeadId || null,
+      ipAddress,
+      userAgent,
       attribution,
       invoice: invoiceResult.value,
     });

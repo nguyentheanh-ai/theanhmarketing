@@ -9,6 +9,7 @@ function read(relativePath) {
 
 test("Meta Purchase uses a lease-fenced seven-day outbox", () => {
   const sql = read("supabase/migrations/20260727150000_meta_purchase_outbox.sql");
+  const matchKeyMigration = read("supabase/migrations/20260826120000_meta_purchase_match_keys.sql");
 
   assert.match(sql, /claim_meta_purchase_orders/);
   assert.match(sql, /finish_meta_purchase_order/);
@@ -18,6 +19,10 @@ test("Meta Purchase uses a lease-fenced seven-day outbox", () => {
   assert.match(sql, /purchase_event_sent\s*=\s*p_succeeded/i);
   assert.match(sql, /grant execute on function public\.claim_meta_purchase_orders[\s\S]*service_role/i);
   assert.match(sql, /grant execute on function public\.finish_meta_purchase_order[\s\S]*service_role/i);
+  assert.match(matchKeyMigration, /add column if not exists ip_address text/i);
+  assert.match(matchKeyMigration, /add column if not exists user_agent text/i);
+  assert.match(matchKeyMigration, /'ip_address', o\.ip_address/);
+  assert.match(matchKeyMigration, /'user_agent', o\.user_agent/);
 });
 
 test("shared dispatcher preserves paid time and stable order-code event id", () => {
@@ -28,6 +33,8 @@ test("shared dispatcher preserves paid time and stable order-code event id", () 
   assert.match(source, /finish_meta_purchase_order/);
   assert.match(source, /orderCode:\s*order\.order_code/);
   assert.match(source, /paidAt:\s*order\.paid_at/);
+  assert.match(source, /ipAddress:\s*order\.ip_address/);
+  assert.match(source, /userAgent:\s*order\.user_agent/);
   assert.match(source, /computeMetaPurchaseRetryDelayMinutes/);
   assert.doesNotMatch(source, /console\.(?:log|warn|error)\([^\n]*(?:email|phone)/i);
 });

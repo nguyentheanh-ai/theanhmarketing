@@ -127,6 +127,8 @@ type DbOrder = {
   fbc?: string | null;
   fbp?: string | null;
   landing_page?: string | null;
+  ip_address?: string | null;
+  user_agent?: string | null;
   invoice_requested?: boolean | null;
   invoice_tax_code?: string | null;
   invoice_company_name?: string | null;
@@ -136,9 +138,9 @@ type DbOrder = {
 };
 
 const orderBaseSelectFields =
-  "id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items,payment_email_sent_at,payment_email_last_error,accounting_email_sent_at,accounting_email_last_error" as const;
+  "id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items,payment_email_sent_at,payment_email_last_error,accounting_email_sent_at,accounting_email_last_error,ip_address,user_agent" as const;
 const orderSelectFields =
-  "id,lead_id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items,payment_email_sent_at,payment_email_last_error,accounting_email_sent_at,accounting_email_last_error,purchase_event_sent,payment_plan,parent_order_code,utm_source,utm_campaign,utm_content,utm_medium,utm_id,utm_term,campaign_id,campaign_name,adset_id,ad_id,ad_name,fbclid,fbc,fbp,landing_page,invoice_requested,invoice_tax_code,invoice_company_name,invoice_company_address,invoice_email" as const;
+  "id,lead_id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items,payment_email_sent_at,payment_email_last_error,accounting_email_sent_at,accounting_email_last_error,purchase_event_sent,payment_plan,parent_order_code,utm_source,utm_campaign,utm_content,utm_medium,utm_id,utm_term,campaign_id,campaign_name,adset_id,ad_id,ad_name,fbclid,fbc,fbp,landing_page,ip_address,user_agent,invoice_requested,invoice_tax_code,invoice_company_name,invoice_company_address,invoice_email" as const;
 
 export type PaymentConfirmationResult = {
   order: PaymentOrder;
@@ -153,6 +155,8 @@ export type CreatePaymentOrderInput = {
   courseSlugs?: string[];
   paymentPlan?: string;
   leadId?: string | null;
+  ipAddress?: string | null;
+  userAgent?: string | null;
   attribution?: AttributionInput;
   invoice?: InvoiceDetails;
 };
@@ -535,6 +539,8 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
       payment_qr_url: paymentQrUrl,
       expires_at: expiresAt,
       order_items: orderItems,
+      ip_address: input.ipAddress ?? null,
+      user_agent: input.userAgent ?? null,
       purchase_event_sent: false,
       payment_plan: input.paymentPlan || null,
       parent_order_code: null,

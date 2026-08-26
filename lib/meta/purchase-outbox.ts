@@ -29,6 +29,8 @@ type ClaimedPurchaseOrder = {
   fbc?: string | null;
   fbp?: string | null;
   landing_page?: string | null;
+  ip_address?: string | null;
+  user_agent?: string | null;
   meta_purchase_attempt_count: number;
   meta_purchase_lease_token: string;
 };
@@ -128,6 +130,8 @@ export async function dispatchMetaPurchaseOrders(
         fbclid: order.fbclid ?? undefined,
         fbp: order.fbp ?? undefined,
         fbc: order.fbc ?? undefined,
+        ipAddress: order.ip_address ?? undefined,
+        userAgent: order.user_agent ?? undefined,
         paidAt: order.paid_at,
         orderItems: order.order_items ?? undefined,
       });

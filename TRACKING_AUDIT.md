@@ -1,5 +1,12 @@
 # Tracking Audit - Facebook Pixel / Meta CAPI
 
+## 2026-08-26 - Purchase match-key remediation (local candidate)
+
+- Live Dataset readback for `Purchase` was `7.4/10`: email, phone, fbp and external ID were present, `fbc` covered `75%`, while `ip_address` and `user_agent` were absent.
+- The candidate stores the checkout request IP and User Agent on `public.orders`, returns them from the lease-fenced Purchase claim RPC and passes them to CAPI as `client_ip_address` and `client_user_agent`.
+- Scope is server-side `Purchase` only. Browser Pixel, stable `event_id=order_code`, `paid_at`, value/currency, attribution and retry idempotency are unchanged.
+- Status: `LOCAL_CANDIDATE / NOT_DEPLOYED`; migration is not applied and no real order or test credential was created in this session.
+
 ## 2026-08-21 - Facebook Ads engagement event contract
 
 - Route: `/academy/facebook-ads-master-2026`; Pixel/Dataset remains `1315653423712065`.
@@ -71,7 +78,7 @@ Date: 2026-06-10
 2. Visitor views main landing/course page: browser sends `ViewContent`.
 3. Visitor submits real contact/payment form: API stores lead with UTM/fbclid/fbc/fbp, then browser/CAPI send `Lead` with `event_id=lead_id`.
 4. System creates a real order/checkout code: browser sends `InitiateCheckout` with `event_id=order_code`.
-5. SePay or protected manual confirm marks order paid: server sends CAPI `Purchase` with `event_id=order_code`, value, VND currency, product, order id, campaign/adset/ad, hashed email/phone, fbc/fbp.
+5. SePay or protected manual confirm marks order paid: server sends CAPI `Purchase` with `event_id=order_code`, value, VND currency, product, order id, campaign/adset/ad, hashed email/phone, fbc/fbp, and the stored request IP/User Agent when available.
 6. If Meta CAPI request succeeds, `orders.purchase_event_sent=true`.
 
 ## UTM va attribution

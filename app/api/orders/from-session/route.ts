@@ -129,6 +129,8 @@ export async function POST(request: Request) {
       phone: phone || "Chưa cập nhật",
       courseSlug,
       courseSlugs,
+      ipAddress,
+      userAgent,
       attribution,
       invoice: invoiceResult.value,
     });

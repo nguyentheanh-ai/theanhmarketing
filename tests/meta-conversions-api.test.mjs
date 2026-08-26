@@ -131,6 +131,8 @@ test("Meta Purchase uses paid time and raw order code for deduplication", () => 
     adId: "ad-1",
     fbp: "fb.1.1779.abc",
     fbc: "fb.1.1779.click",
+    ipAddress: "203.0.113.10",
+    userAgent: "Mozilla/5.0 Meta QA",
   });
 
   assert.equal(event.event_name, "Purchase");
@@ -143,6 +145,8 @@ test("Meta Purchase uses paid time and raw order code for deduplication", () => 
   assert.equal(event.custom_data.campaign_id, "cmp-1");
   assert.equal(event.custom_data.adset_id, "as-1");
   assert.equal(event.custom_data.ad_id, "ad-1");
+  assert.equal(event.user_data.client_ip_address, "203.0.113.10");
+  assert.equal(event.user_data.client_user_agent, "Mozilla/5.0 Meta QA");
 });
 
 test("Meta InitiateCheckout uses the order code shared with the browser event", () => {
@@ -177,6 +181,7 @@ test("order and payment routes emit Meta Lead, InitiateCheckout and durable Purc
   assert.match(orderRoute, /await sendMetaLeadEvent\(/);
   assert.match(orderRoute, /Meta Lead event failed/);
   assert.match(orderRoute, /userAgent/);
+  assert.match(orderRoute, /ipAddress,\s*userAgent/);
   assert.match(orderRoute, /body\.fbp/);
   assert.match(orderRoute, /body\.fbc/);
   assert.match(orderRoute, /body\.leadId/);
@@ -188,6 +193,7 @@ test("order and payment routes emit Meta Lead, InitiateCheckout and durable Purc
   assert.match(sessionOrderRoute, /await sendMetaLeadEvent\(/);
   assert.match(sessionOrderRoute, /Meta Lead event failed/);
   assert.match(sessionOrderRoute, /sendMetaInitiateCheckoutEvent/);
+  assert.match(sessionOrderRoute, /ipAddress,\s*userAgent/);
   assert.match(sessionOrderRoute, /eventId:\s*order\.orderCode/);
 
   assert.match(sepayRoute, /dispatchMetaPurchaseOrders/);

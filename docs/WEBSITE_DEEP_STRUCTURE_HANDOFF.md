@@ -1,5 +1,16 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-08-26 - Meta Purchase match-key remediation (local candidate)
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Scope | Bổ sung `client_ip_address` và `client_user_agent` cho server-side `Purchase` CAPI theo live Events Manager readback của Dataset `1315653423712065`. |
+| Root cause | `lib/meta/conversions-api.ts` đã hỗ trợ hai match key nhưng durable `lib/meta/purchase-outbox.ts` không nhận chúng từ order; `public.orders` cũng chưa lưu chúng qua vòng đời pending -> paid. |
+| Fix | Lưu IP/User Agent từ checkout thường và checkout đăng nhập; claim RPC trả hai trường; dispatcher truyền chúng vào `sendMetaPurchaseEvent`. Không thay đổi browser Pixel, event ID, giá trị, currency, paid time hoặc retry/lease. |
+| Database | Candidate migration `supabase/migrations/20260826120000_meta_purchase_match_keys.sql` thêm hai cột và cập nhật `claim_meta_purchase_orders`; chưa apply production trong phiên này. |
+| Evidence boundary | Live readback hiện là Purchase EMQ `7.4/10`, `fbc` phủ `75%`, chưa có `ip_address`/`user_agent`; sau deploy cần gửi một Purchase thật đủ điều kiện rồi đọc lại Meta. Không tạo order/payment/test credential trong local QA. |
+| Verification | Focused Meta suite `17/17` pass. Full repo typecheck/lint/build và production readback còn pending; chưa commit/deploy. |
+
 ## 2026-08-26 - Canonical release integration, checkout countdown và Telegram report (local)
 
 | Hạng mục | Chi tiết |
