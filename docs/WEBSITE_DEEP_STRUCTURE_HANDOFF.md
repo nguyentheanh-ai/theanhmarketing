@@ -1478,4 +1478,13 @@ Before changing these, run targeted tests and full build.
 - Scope: form copy/CTA and minimum server price guard only; no schema, payment route, email template, tracking event, entitlement or other landing section changed.
 - Verification before deploy: focused landing `22/22`, TypeScript, targeted ESLint, source/published byte equality and Next production build 100 route pass.
 - Release: GitHub `main` SHA `75c4ef6f7e91c88d66e282f67c5bc284cd27f008`; preview `dpl_CSLThahsmsC6GgrqasH8KiXDkcfw` READY; production `dpl_VqFpMoALxMff8x3kb99qKPYSGS8g` READY with `www.theanhmarketing.com` and apex aliases.
+
+## 2026-08-26 - Facebook Ads promo footer + mobile registration behavior
+
+- Route/source: `/academy/facebook-ads-master-2026`; synchronized `public/ladipage/facebook-ads-2026.html` and `public/academy/facebook-ads-master-2026.html`.
+- Sticky registration footer now explicitly says `Ưu đãi Việt Nam thắng Thái Lan`; discount remains combo-only at 878.400đ through 31/08, while standalone remains 799.000đ.
+- Mobile `[data-cta]` controls call `jumpToPaymentFormOnMobile()` and scroll `.form-card` into view. An `IntersectionObserver` on `#hoc-phi` toggles `is-form-section-visible`, hiding the sticky footer only while pricing/form is visible; desktop behavior is unchanged.
+- Verification: focused landing `24/24`, TypeScript, targeted ESLint, source/published equality, `git diff --check`, and Webpack build 100 routes passed. No form submission or QA order.
+- Release: GitHub `main` SHA `8d4e82e96f3c849c11b34029c7b644ef3eac8387`; preview `dpl_9h9Y2n1uxBHW5gwSzVAsx32SRqEJ` READY; production `dpl_tt5WMRGePFh3Q8DsLSDYQx5jiAEy` READY with `www.theanhmarketing.com` and apex aliases. Live readback returned 200 with all offer/interaction markers; route runtime errors for 15 minutes were empty.
+- Browser limitation: `agent-browser` was unavailable and local Chrome headless did not produce a usable dump/screenshot, so production click behavior is regression/source-readback verified rather than claimed as visual-browser verified.
 - Live readback: route `200`; exact promotion CTA, `878.400đ`, promo plan ID, `2026-08-31` and standalone `799.000đ` all present. Vercel runtime error scan for the route found no errors.
