@@ -262,6 +262,33 @@ test("Facebook Ads mobile plan selection jumps straight to the payment form", ()
   );
 });
 
+test("Facebook Ads sticky registration footer communicates the Vietnam-Thailand combo offer", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+  const stickyFooter = html.match(/<div class="sticky-cta"[\s\S]*?<\/div>\s*<div id="toast"/)?.[0] || "";
+
+  assert.match(stickyFooter, /Ưu đãi Việt Nam thắng Thái Lan/i);
+  assert.match(stickyFooter, /Combo Facebook Ads \+ Ebook giảm 20%/);
+  assert.match(stickyFooter, /878\.400đ/);
+  assert.match(stickyFooter, /31\/08/);
+});
+
+test("Facebook Ads mobile CTAs jump to registration and hide the sticky footer only across the pricing section", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+
+  assert.match(html, /var pricingSection = document\.getElementById\("hoc-phi"\);/);
+  assert.match(
+    html,
+    /cta\.addEventListener\("click", function \(event\) \{[\s\S]*?event\.preventDefault\(\);[\s\S]*?jumpToPaymentFormOnMobile\(\);/
+  );
+  assert.match(html, /new IntersectionObserver\(function \(entries\)/);
+  assert.match(html, /pricingObserver\.observe\(pricingSection\);/);
+  assert.match(html, /stickyCta\.classList\.toggle\("is-form-section-visible", isVisible\);/);
+  assert.match(
+    html,
+    /@media \(max-width:\s*820px\)[\s\S]*?\.sticky-cta\.is-form-section-visible\s*\{[\s\S]*?transform:\s*translateY\(calc\(100% \+ env\(safe-area-inset-bottom\)\)\);[\s\S]*?opacity:\s*0;[\s\S]*?pointer-events:\s*none;/
+  );
+});
+
 test("Facebook Ads plan cards are clickable selection targets", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
 
