@@ -64,7 +64,16 @@ test("Facebook Ads and Ebook checkout prioritizes payment and real Zalo proof", 
   assert.match(page, /payment-notice-label/);
   assert.match(page, /@keyframes payment-notice-float/);
   assert.match(page, /const isFacebookAdsConversionCheckout/);
-  assert.match(page, /isFacebookAdsConversionCheckout \? null : \(/);
+  assert.match(
+    page,
+    /<PaymentOfferCountdown[\s\S]*?currentPriceLabel=\{paymentOffer\.currentPriceLabel\}[\s\S]*?deadline=\{offerDeadline\}/,
+    "Facebook Ads and Ebook checkout must keep the shared offer countdown",
+  );
+  assert.doesNotMatch(
+    page,
+    /isFacebookAdsConversionCheckout \? null : \(\s*<div className="mt-5">\s*<PaymentOfferCountdown/,
+    "Facebook Ads conversion checkout must not hide the offer countdown",
+  );
   assert.match(page, /<ZaloSupportProof \/>/);
   assert.match(page, /href="https:\/\/zalo\.me\/0367928921"/);
   assert.match(page, /payment-floating-zalo[^\n]*fixed/);

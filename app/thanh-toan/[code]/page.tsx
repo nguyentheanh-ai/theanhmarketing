@@ -832,15 +832,13 @@ export default async function PaymentPage({
                 </div>
               </div>
 
-              {isFacebookAdsConversionCheckout ? null : (
-                <div className="mt-5">
-                  <PaymentOfferCountdown
-                    currentPriceLabel={paymentOffer.currentPriceLabel}
-                    deadline={offerDeadline}
-                    originalPriceLabel={paymentOffer.originalPriceLabel}
-                  />
-                </div>
-              )}
+              <div className="mt-5">
+                <PaymentOfferCountdown
+                  currentPriceLabel={paymentOffer.currentPriceLabel}
+                  deadline={offerDeadline}
+                  originalPriceLabel={paymentOffer.originalPriceLabel}
+                />
+              </div>
 
               <BankAppHandoff
                 amount={order.amount}

@@ -1,5 +1,16 @@
 # Deploy & Domain Checklist
 
+## Canonical release gate
+
+Deploy only from the protected worktree `/Users/theanh/CodexProjects/TheAnh-Web/worktrees/theanhmarketing-email-account-hotfix` after the release branch has been reviewed and synchronized with the intended production commits. Before any deploy, require all of the following:
+
+- `git branch --show-current` identifies the reviewed canonical release branch.
+- `git status --porcelain` returns no output; do not deploy a dirty worktree.
+- `git log --oneline -n 5` and the release diff confirm the intended landing, payment and report changes are present.
+- The release tests, typecheck/lint and production build pass; deployment and live readback remain separate evidence.
+
+The old WIP stash is preserved for review and must not be popped into the deploy worktree during a release.
+
 Project ID: `theanh-main`. Direct `vercel --prod` is forbidden.
 
 - Preview: `node E:\_workspace-control\scripts\workspace.mjs deploy theanh-main preview`

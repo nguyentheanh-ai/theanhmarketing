@@ -1,5 +1,16 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-08-26 - Canonical release integration, checkout countdown và Telegram report (local)
+
+| Hạng mục | Chi tiết |
+|---|---|
+| Scope | Đồng bộ local cho `main-site`: checkout `/thanh-toan/[code]`, source release Facebook Ads/Ebook và report Telegram 17:00. Chưa deploy hoặc push. |
+| Checkout fix | Bỏ nhánh render ẩn countdown với Facebook Ads/Ebook; mọi checkout dùng `PaymentOfferCountdown` chung, deadline ưu tiên `order.expiresAt`, fallback 20 phút từ `createdAt`. |
+| Canonical source | Worktree `/Users/theanh/CodexProjects/TheAnh-Web/worktrees/theanhmarketing-email-account-hotfix`, branch `codex/production-canonical-20260826`; đã merge `0efb129` (Facebook Ads/Ebook) và `20a90a1` (hợp nhất support/report). |
+| WIP safety | WIP có trước phiên được giữ nguyên trong stash `codex-preserve-pre-existing-wip-20260826-before-canonical-integration`; không deploy từ root `Kinh doanh` hoặc worktree bẩn. |
+| Telegram contract | Chỉ cron `/api/reports/telegram/full-day` `5 10 * * *` (17:05 VN); full-day gửi một message tổng hợp Greezhub 01 và TAM01. `/morning` chỉ còn manual-only, không có trong Vercel cron. |
+| Verification | Payment/report MJS `25/25`; Telegram service TypeScript `6/6`; `git diff --check` pass. Live production readback và deploy gate còn pending. |
+
 ## 2026-08-21 - Facebook Ads mobile readability and Zalo proof fix (production)
 
 | Hạng mục | Chi tiết |
