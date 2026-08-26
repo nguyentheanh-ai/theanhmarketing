@@ -154,7 +154,7 @@ test("all active static course landings opt into the shared invoice fieldset", (
 
 test("Facebook Ads checkout owns its approved product-specific copy", () => {
   const source = read("public/ladipage/facebook-ads-2026.html");
-  assert.match(source, /Đăng ký và nhận khóa học Facebook Ads Master 2026 ngay hôm nay/);
-  assert.match(source, /Nhận khóa học \+ AI Agent - 799\.000đ/);
+  assert.match(source, /Nhận toàn bộ hệ thống Facebook Ads – 799\.000đ/);
+  assert.match(source, /Gói 799\.000đ gồm khóa video, AI Agent và bộ công cụ triển khai/);
   assert.doesNotMatch(source, /Đăng ký và tạo QR thanh toán/);
 });

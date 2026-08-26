@@ -1,5 +1,16 @@
 # Tracking Audit - Facebook Pixel / Meta CAPI
 
+## 2026-08-21 - Facebook Ads engagement event contract
+
+- Route: `/academy/facebook-ads-master-2026`; Pixel/Dataset remains `1315653423712065`.
+- `public/landing-assets/facebook-ads-event-contract.js` emits browser-only custom events with `fbq('trackCustom', ...)`: `EngagedView` after 30 visible seconds, `ScrollDepth` once at 50/75/90, and `CTAClick` only for six explicit primary CTA annotations with `cta_id`, `cta_text`, `destination_url`.
+- `VideoProgress` supports 25/50/75/95 only for real `video[data-meta-video-id]` elements. Current route has zero HTML video elements, so the event is `NOT_APPLICABLE` and no substitute event is fabricated for the GIF proof.
+- `PageView` and `ViewContent` remain unchanged. Browser `Lead` now waits for a successful `/api/orders` response containing an order code, then reuses `leadId` as its browser/server dedup ID. No early `InitiateCheckout`, browser `Purchase`, `LandingPageView`, `Contact` or `FindLocation` was added.
+- Purchase remains server-authoritative with existing order-code event ID, value, VND currency, content IDs and durable outbox/dedup behavior.
+- Regression coverage: `tests/facebook-ads-event-contract.test.mjs`, `tests/facebook-ads-landing.test.mjs`, `tests/meta-conversions-api.test.mjs` and `tests/invoice-checkout-flow.test.mjs`.
+- Production runtime: commit `17bdabb`, Vercel `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL`, clean route and event script 200. Live HTML/JS SHA-256 matches local exactly; post-release Web aggregate stats returned `EngagedView=3`, `ScrollDepth=4`, `CTAClick=1` in the one-hour readback window.
+- Evidence boundary: the aggregate stats confirm dataset receipt but are not Events Manager Test Events. The current connector has no Test Events stream and no browser test code/token was entered; mark the Test Events UI check `BLOCKED/NOT_AVAILABLE`.
+
 Date: 2026-06-10
 
 ## Pixel chinh

@@ -17,17 +17,18 @@ test("Facebook Ads active pair uses the approved hybrid section order", () => {
   assert.match(source, /<body[^>]+data-kstudy-hybrid="true"/);
 
   const orderedAnchors = [
+    'id="dau-trang"',
     'id="van-de"',
     'id="tich-luy"',
-    'id="gioi-thieu"',
-    'id="doi-tuong"',
     'id="ket-qua"',
-    'id="phuong-phap"',
-    'id="lo-trinh"',
-    'id="san-pham-thuc-te"',
     'id="agent-tu-dong-len-quang-cao"',
+    'id="feedback"',
+    'id="giang-vien"',
+    'id="bo-cong-cu"',
+    'id="gia-tri"',
     'id="hoc-phi"',
     'id="faq"',
+    'id="bat-dau"',
   ];
   let previousIndex = -1;
   for (const anchor of orderedAnchors) {
@@ -37,92 +38,42 @@ test("Facebook Ads active pair uses the approved hybrid section order", () => {
   }
 });
 
-test("Facebook Ads consolidated annotations use Dataset industries formats and the approved profile", () => {
+test("Facebook Ads system copy keeps the approved Data, AI, instructor and support contracts", () => {
   const source = read("public/ladipage/facebook-ads-2026.html");
-  const visibleSource = source.replace(/<section class="curriculum-section legacy-curriculum"[\s\S]*?<\/section>/, "");
-  const industries = [
-    "Thời trang",
-    "Bán lẻ",
-    "Bất động sản",
-    "B2B",
-    "Nội thất",
-    "SPA / Thẩm mỹ viện",
-    "Khóa học Online",
-    "Sản phẩm số",
-    "Affiliate",
-  ];
 
-  assert.match(source, /Phần lớn anh chị chủ doanh nghiệp mới chỉ chạy Facebook Ads ở mức cơ bản/);
-  assert.match(source, /Quảng cáo là một hệ thống tích lũy/);
-  assert.match(source, /Mỗi đồng tiền anh chị tiêu trên quảng cáo phải được tích lũy/);
-  assert.match(source, /Khóa học Online qua video có sẵn/);
-  assert.match(source, /1:1 trực tiếp tại HCM/);
-  assert.match(source, /1 kèm 1 qua Zoom online/);
-  assert.equal((source.match(/data-industry=/g) ?? []).length, 9);
-  assert.equal((source.match(/class="industry-image"/g) ?? []).length, 9);
-  for (const asset of [
-    "industry-fashion.webp",
-    "industry-retail.webp",
-    "industry-real-estate.webp",
-    "industry-b2b.webp",
-    "industry-interior.webp",
-    "industry-spa.webp",
-    "industry-online-course.webp",
-    "industry-digital-product.webp",
-    "industry-affiliate.webp",
-  ]) {
-    assert.match(source, new RegExp(asset.replaceAll(".", "\\.")));
-  }
-  for (const industry of industries) assert.match(source, new RegExp(industry.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-  assert.match(source, /Dataset Meta AI/);
-  assert.match(source, /Kết nối Dataset AI/);
-  assert.match(source, /Founder Greezhub Agency/);
-  assert.match(source, /Triển khai hơn 10\.000 chiến dịch/);
-  assert.match(source, /Chi tiêu hơn 40 tỷ tiền quảng cáo/);
-  assert.match(source, /Đối tác chính thức của Meta/);
-  assert.match(source, /Hỗ trợ Zoom 1:1 trên chính vấn đề của từng học viên gặp phải/);
-  assert.match(source, /class="curriculum-portrait-cutout"/);
-  assert.match(source, /data-profile-position="waist"/);
-  assert.match(source, /--curriculum-portrait-zoom:/);
-  assert.match(source, /--curriculum-profile-lift:/);
-  assert.match(source, /margin:\s*var\(--curriculum-profile-lift\)/);
-  assert.doesNotMatch(visibleSource, /Auto Inbox/i);
-  assert.doesNotMatch(source, /id="co-che"|id="chuyen-gia"|id="minh-chung"|id="phu-hop"|id="vi-sao-the-anh"/);
-  assert.doesNotMatch(source, /Facebook Ads<\/span> cho chủ doanh nghiệp: học như một/);
+  assert.match(source, /Quảng cáo là <span>tài sản tích lũy<\/span>/);
+  assert.match(source, /Mỗi đồng ngân sách phải để lại dữ liệu cho lần chạy tiếp theo/);
+  assert.match(source, /Dataset/);
+  assert.match(source, /Meta AI/);
+  assert.match(source, /CEO Greezhub Việt Nam/);
+  assert.match(source, /<strong>10\.000\+<\/strong>/);
+  assert.match(source, /<strong>40 tỷ\+<\/strong>/);
+  assert.match(source, /Gói 799\.000đ gồm khóa video, AI Agent và bộ công cụ triển khai/);
+  assert.match(source, /Zoom 1:1 là dịch vụ riêng, không nằm trong gói 799\.000đ/);
+  assert.doesNotMatch(source, /Hỗ trợ Zoom 1:1 trên chính vấn đề|21 bài|Sáu module|id="lo-trinh"/);
 });
 
-test("Facebook Ads curriculum groups the exact lesson titles into six unnumbered modules", () => {
+test("Facebook Ads replaces curriculum with twelve buyer outcomes", () => {
   const source = read("public/ladipage/facebook-ads-2026.html");
-  const curriculum = source.match(/<section[^>]+id="lo-trinh"[\s\S]*?<\/section>/)?.[0] ?? "";
-  const exactTitles = [
-    "Nền tảng Facebook Ads 2026 và tư duy phễu",
-    "Thuật ngữ chuyên ngành trong Quảng Cáo Facebook",
-    "Những sai lầm phổ biến khi chạy Quảng cáo Facebook",
-    "Hướng dẫn mua VIA",
-    "Tất tần tật về Fanpage Facebook P.1",
-    "Tất tần tật về Fanpage Facebook P.2",
-    "Hướng dẫn nhanh thiết kế Poster - Cover - Avatar Facebook",
-    "Đăng bài trên Facebook",
-    "Tại sao content lại quan trọng, các dạng content phổ biến",
-    "Hướng dẫn nghiên cứu đối thủ, lập kế hoạch quảng cáo",
-    "Tổng quan về quảng cáo Facebook",
-    "Hướng dẫn quản trị tài khoản doanh nghiệp BM",
-    "Hướng dẫn thêm thẻ thanh toán trên Facebook Ads",
-    "Tất tần tật về Target trên Facebook Ads",
-    "Thiết lập và đọc các chỉ số trên Facebook Ads",
-    "Scale ngân sách quảng cáo",
-    "Hướng dẫn lên quảng cáo tin nhắn",
-    "Giới thiệu về Dataset",
-    "Dataset - Bán hàng trực tiếp trên Business Suite",
-    "Dataset - Bán hàng trên Pancake",
-    "Dataset - Bán hàng thông qua website/landing page",
-    "Cách loại trừ 90% tệp khách rác không mua hàng trên quảng cáo Facebook",
+  const outcomes = source.match(/<section class="hybrid-section" id="ket-qua">[\s\S]*?<\/section>/)?.[0] ?? "";
+  const exactOutcomes = [
+    "Fanpage quảng cáo chuyên nghiệp",
+    "Hệ thống tài nguyên quảng cáo an toàn",
+    "Hệ thống Content có khả năng bán hàng",
+    "Tự setup quảng cáo đúng cấu trúc",
+    "Xây Dataset giúp quảng cáo ngày càng hiểu khách hàng",
+    "Giảm khách rác – tăng tín hiệu chất lượng",
+    "Biết chính xác quảng cáo đang lỗi ở đâu",
+    "Cách tối ưu quảng cáo triệt để",
+    "Biết khi nào tắt – giữ – sửa – tăng ngân sách",
+    "Scale quảng cáo có nguyên tắc",
+    "Framework test quảng cáo có hệ thống",
+    "Khả năng tự vận hành Facebook Ads",
   ];
 
-  assert.equal((curriculum.match(/class="course-module"/g) ?? []).length, 6);
-  assert.equal((curriculum.match(/data-module-trigger/g) ?? []).length, 6);
-  assert.doesNotMatch(curriculum, />\s*Bài\s+\d+/);
-  for (const title of exactTitles) assert.match(curriculum, new RegExp(title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.equal((outcomes.match(/data-outcome-card=/g) ?? []).length, 12);
+  assert.doesNotMatch(source, /data-module-trigger|class="course-module"|>\s*Bài\s+\d+/);
+  for (const title of exactOutcomes) assert.match(outcomes, new RegExp(title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 });
 
 test("Facebook Ads hybrid keeps real brand proof motion and checkout contracts", () => {
@@ -131,7 +82,7 @@ test("Facebook Ads hybrid keeps real brand proof motion and checkout contracts",
   assert.match(source, /facebook-ads-kstudy-hero\/the-anh\.png/);
   assert.match(source, /Nguyễn Thế Anh/);
   assert.match(source, /CEO Greezhub Việt Nam/);
-  assert.equal((source.match(/data-zalo-proof=/g) ?? []).length, 12);
+  assert.equal((source.match(/class="proof-case-card"/g) ?? []).length, 5);
   assert.match(source, /zalo-proof-12-support-schedule\.webp/);
   assert.match(source, /facebook-ads-agent-demo\.gif/);
   assert.match(source, /1315653423712065/);
@@ -159,17 +110,17 @@ test("Facebook Ads annotated hero keeps concise copy, unique card elements and f
   assert.match(source, /\.course-hero-copy-mobile\s*\{[\s\S]*?display:\s*block\s*!important/);
   assert.doesNotMatch(hero, /class="course-hero-promise"/);
   assert.doesNotMatch(hero, /Anh sẽ hướng dẫn bạn từ cách chuẩn bị nội dung/);
-  assert.equal((hero.match(/data-outcome-element=/g) ?? []).length, 4);
-  assert.equal(new Set([...hero.matchAll(/data-outcome-element="([^"]+)"/g)].map((match) => match[1])).size, 4);
+  const pillarNumbers = [...hero.matchAll(/class="course-outcome-element"[^>]*>(\d{2})<\/span>/g)].map((match) => match[1]);
+  assert.deepEqual(pillarNumbers, ["01", "02", "03", "04"]);
   assert.equal((hero.match(/data-facebook-float=/g) ?? []).length, 4);
   assert.match(source, /@keyframes\s+facebook-float/);
   assert.match(source, /\.course-portrait\s*\{[\s\S]*?scale\(/);
   assert.match(source, /mask-image:\s*linear-gradient\(to bottom,[\s\S]*?transparent/);
   assert.match(hero, /Trực tiếp hướng dẫn/i);
-  assert.match(hero, /Hiểu cách Facebook Ads vận hành/);
-  assert.match(hero, /Cách setup Dataset cho từng loại hình kinh doanh/);
+  assert.match(hero, /Tự xây dựng và vận hành hệ thống/);
+  assert.match(hero, /Dataset đến đọc số – tối ưu – scale/);
   assert.doesNotMatch(hero, />Cài đặt tracking và dữ liệu</);
-  assert.match(hero, /Đọc chỉ số và tối ưu quảng cáo/);
+  assert.match(hero, /Tự đọc số &amp; tối ưu/);
   assert.deepEqual(duplicateIds, []);
 });
 
@@ -200,13 +151,13 @@ test("Facebook Ads landing uses a course-specific desktop sticky and one concise
   assert.match(source, /id="sticky-section-menu"[^>]+class="sticky-section-menu"[^>]+hidden/);
   assert.match(source, /class="sticky-menu-open-icon"[\s\S]*?<svg/);
   assert.match(source, /class="sticky-menu-close-icon"[^>]*>×/);
-  assert.match(source, /href="#dau-trang">Đầu trang/);
-  assert.match(source, /href="#lo-trinh">Nội dung khóa học/);
-  assert.match(source, /href="#hoc-phi">Học phí &amp; đăng ký/);
+  assert.match(source, /href="#van-de">Vấn đề/);
+  assert.match(source, /href="#ket-qua">Bạn sẽ làm được gì/);
+  assert.match(source, /href="#hoc-phi">Học phí/);
   assert.match(source, /class="sticky-course-title">Facebook Ads Master 2026/);
-  assert.match(source, /class="sticky-course-meta">Khóa học Online qua video <span[^>]*>•<\/span> <strong>799\.000đ<\/strong> <span[^>]*>•<\/span> Tặng AI Agent/);
-  assert.match(source, /class="sticky-cta-label sticky-cta-label-desktop">Đăng ký ngay/);
-  assert.match(source, /class="sticky-cta-label sticky-cta-label-mobile"><strong>ĐĂNG KÝ NGAY<\/strong><small>Nhận hỗ trợ đúng vấn đề đang gặp phải<\/small>/);
+  assert.match(source, /class="sticky-course-meta">Khóa video \+ AI Agent \+ bộ công cụ <span[^>]*>•<\/span> <strong>799\.000đ<\/strong>/);
+  assert.match(source, /class="sticky-cta-label sticky-cta-label-desktop">Nhận toàn bộ hệ thống – 799\.000đ/);
+  assert.match(source, /class="sticky-cta-label sticky-cta-label-mobile"><strong>NHẬN TOÀN BỘ HỆ THỐNG<\/strong><small>Facebook Ads \+ AI Agent · 799\.000đ<\/small>/);
   assert.match(source, /\.sticky-cta-inner\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) minmax\(250px, 320px\) 48px/);
   assert.match(source, /@media \(max-width: 680px\)[\s\S]*?\.sticky-cta-inner\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) 46px/);
   assert.match(source, /@media \(max-width: 680px\)[\s\S]*?\.sticky-course-summary\s*\{[\s\S]*?display:\s*none/);
@@ -226,23 +177,24 @@ test("Facebook Ads phone hero expands below the portrait for the short descripti
   const hero = source.match(/<section class="course-hero"[\s\S]*?<\/section>/)?.[0] ?? "";
 
   assert.match(hero, /class="course-hero-mobile-details"/);
-  assert.match(hero, /class="course-hero-copy course-hero-copy-mobile"[\s\S]*?Khóa học dành cho chủ doanh nghiệp/);
-  assert.match(hero, /class="course-hero-actions-mobile"[\s\S]*?href="#hoc-phi"[^>]*>Đăng ký ngay – 799\.000đ/);
-  assert.match(hero, /class="course-bonus-line-mobile"[\s\S]*?Tặng AI Agent hỗ trợ lên kế hoạch quảng cáo/);
+  assert.match(hero, /class="course-hero-copy course-hero-copy-mobile"[\s\S]*?Dataset đến đọc số – tối ưu – scale/);
+  assert.match(hero, /class="course-hero-actions-mobile"[\s\S]*?href="#hoc-phi"[^>]*>Nhận toàn bộ hệ thống Facebook Ads – 799\.000đ/);
+  assert.match(hero, /class="course-bonus-line-mobile"[\s\S]*?Bao gồm AI Agent hỗ trợ nghiên cứu, lập kế hoạch và triển khai quảng cáo/);
   assert.match(source, /@media \(max-width: 1020px\)[\s\S]*?\.course-hero-mobile-details\s*\{[\s\S]*?display:\s*block/);
   assert.match(source, /@media \(max-width: 680px\)[\s\S]*?\.course-hero-mobile-details\s*\{[\s\S]*?padding:\s*28px 6px 52px/);
   assert.doesNotMatch(source, /\.course-hero-copy-mobile\s*\{[\s\S]{0,180}?margin-top:\s*-84px/);
 });
 
-test("Facebook Ads pain point four is about Dataset instead of auto messaging", () => {
+test("Facebook Ads pain section keeps exactly three system-level problems", () => {
   const source = read("public/ladipage/facebook-ads-2026.html");
   const painSection = source.match(/<section id="van-de"[\s\S]*?<\/section>/)?.[0] ?? "";
-  const painFour = painSection.match(/<span class="number">4<\/span>[\s\S]*?<\/details>/)?.[0] ?? "";
 
-  assert.match(painFour, /Không cài đặt Dataset đúng cho mô hình kinh doanh/);
-  assert.match(painFour, /Meta AI/);
-  assert.match(painFour, /sự kiện/);
-  assert.doesNotMatch(painFour, /auto nhắn|phản hồi tự động|nuôi khách/i);
+  assert.equal((painSection.match(/class="panel"/g) ?? []).length, 3);
+  assert.match(painSection, /Không tạo đơn ổn định/);
+  assert.match(painSection, /Có lead nhưng sai khách/);
+  assert.match(painSection, /Có số nhưng không biết tối ưu/);
+  assert.match(painSection, /Dữ liệu chưa sạch/);
+  assert.doesNotMatch(painSection, /auto nhắn|phản hồi tự động|nuôi khách/i);
 });
 
 test("Facebook Ads landing images resolve in direct-file review and the academy HTTP route", () => {
@@ -251,7 +203,7 @@ test("Facebook Ads landing images resolve in direct-file review and the academy 
     .map((match) => match[1])
     .filter((src) => !src.startsWith("https://"));
 
-  assert.ok(localImageSources.length >= 20);
+  assert.ok(localImageSources.length >= 10);
   assert.doesNotMatch(source, /<img[^>]+src="\/ladipage\/assets\//);
   assert.ok(localImageSources.every((src) => src.startsWith("../ladipage/assets/") || src.startsWith("../landing-assets/")));
 });

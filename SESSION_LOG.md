@@ -1,5 +1,33 @@
 # Session Log
 
+## 2026-08-21 - Facebook Ads value stack two-panel grouping
+
+- Grouped value cards 01-03 into one continuous responsive panel and grouped the crossed-out total plus today's 799K price into a second panel; content and values did not change.
+- Added the two-cluster regression before implementation. Focused landing/event tests pass 27/27; full Node 591/591, TypeScript, tracking, diff check, 96-page Webpack build and ESLint 0 errors/1 unchanged warning pass.
+- Preserved byte-identical source/published HTML, checkout form, invoice, `/api/orders`, 799K/Ebook plans, SEO/canonical, Pixel/CAPI and event JS. No order, payment, email or customer-data mutation was made.
+- Pushed commit `dceb20b`, validated Git preview `dpl_89EoChcRay5GQVX7Q9YumNUh89rt`, then promoted exact commit as production `dpl_FFoE7Ny1bG2bFaFGai7Q4n1Hxhqj`. Prior production `dpl_EFWWGpZnaBbwuCjJp6d3DhTLBVXz` is the rollback target.
+- Live HTML matches local/source SHA-256 `f500d2d9be40633d843b8cb0808f0fecebe0e32402d0982fa197ca2856ac26f7`; event JS remains `e6d272f21c2458bfb78e0a5e35d40724254e67ec29a0026024cb27c5bb721a19`. Production Browser 390/320/1440 has exactly two clusters and no overflow; protected guards and runtime-error scan are clean.
+
+## 2026-08-21 - Facebook Ads pricing header simplification
+
+- Implemented the exact owner follow-up: line-through on total value 5.997.000đ; removed the pricing kicker and repeated 799K heading; retained the separate 799K ownership line and complete registration form.
+- Added a regression contract before implementation. Focused landing/event tests pass 27/27; full Node 591/591, TypeScript, tracking, diff check and 96-page Webpack build pass. ESLint reports 0 errors and the existing unrelated warning only.
+- Preserved source/published byte equality, invoice/order/payment form, plans, SEO, Pixel/CAPI and the complete custom event script. No real order, email, account or customer-data mutation was used.
+- Pushed commit `dac8111`, validated Git preview `dpl_FDF9LMRTeZfNCeBdTHWoxaJERLeV`, then promoted production `dpl_EFWWGpZnaBbwuCjJp6d3DhTLBVXz`. Prior production `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL` is the rollback target.
+- Live HTML is byte-identical to local at SHA-256 `916c9b223ac2d98902a08bfe3dab56ecf78ef828fb60a538e0c97638d2575a45`; event JS hash remains `e6d272f21c2458bfb78e0a5e35d40724254e67ec29a0026024cb27c5bb721a19`. Browser 1440/390/320 has no horizontal overflow or console warnings/errors; protected guards and Vercel runtime-error scan are clean.
+
+## 2026-08-21 - Facebook Ads Master event contract production release
+
+- Implemented the owner-approved custom browser contract on `/academy/facebook-ads-master-2026`: one-shot `EngagedView` after 30 visible seconds, `ScrollDepth` at 50/75/90, and `CTAClick` only for six explicit primary CTAs with stable ID/text/destination parameters.
+- Kept standard Meta semantics: no fake LPV, Contact or FindLocation; no early InitiateCheckout or browser Purchase. Browser Lead moved from CTA click to the successful `/api/orders` response and keeps the existing `leadId` dedup key. Server Purchase/CAPI code was not changed.
+- `VideoProgress` is `NOT_APPLICABLE` because the page has no HTML video; the Agent proof is a GIF. Source and published HTML are byte-identical with SHA-256 `247f45406d36c00bcdac74848db7836e4f5e86af2737dde8d7dc279fd5593358`.
+- TDD observed the new event and Next 16 compatibility guards fail before implementation. Verification: focused `59/59`, full Node `591/591`, TypeScript, tracking verification, diff check, ESLint 0 errors/1 unchanged warning, and 96-page Webpack production build.
+- In-app Browser QA at 1440/390/320 found no overflow, broken images, mojibake or console errors. Main CTA navigation, mobile menu, SEO/canonical, form fields, `zoom-kit` and Ebook/invoice controls were checked without submitting an order.
+- Release commit `17bdabb` was built as production candidate `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL` with `--skip-domain`, smoke-tested while `www` remained on rollback deployment `dpl_CpvZrvvxbQQauZkbAUi8dmTRoWvG`, then promoted. The final alias is `READY` on the new deployment.
+- Live HTML and JS return 200 and exactly match local SHA-256 hashes. Readback confirms the six CTA IDs, primary Pixel, ViewContent, `/api/orders`, canonical, no early InitiateCheckout/browser Purchase, zero HTML video and zero mojibake. Route guards are `/admin` 307 and protected API GETs 405; runtime error/warning/fatal scans are empty.
+- Meta dataset aggregate stats for the post-release one-hour window returned `EngagedView=3`, `ScrollDepth=4`, `CTAClick=1` from Web. Events Manager Test Events remains unavailable through the current authenticated channels; no test code/token or real order was used.
+- GitHub push follow-up is `RESOLVED`: installed the official GitHub CLI 2.97.0 after SHA-256 checksum verification, completed the owner-approved device authorization for `nguyentheanh-ai`, configured HTTPS Git credential access through the macOS keyring, and pushed the full branch with upstream tracking. Remote readback matched commits `17bdabb0691593c8778686241791eef9e548a2f6` and `36c26e8b8205b8154b96c6e6251825e88356f831`; no production deploy or rollback was performed in this authentication-only follow-up.
+
 ## 2026-08-03 - Restore durable Meta Purchase CAPI
 
 - Traced the zero-attempt paid-order gap to a deploy-branch regression and restored the seven-day lease-fenced Purchase outbox/retry route/cron across every paid source.
@@ -279,6 +307,18 @@ Change: inserted four published `enrolled_only` video lessons for Dataset introd
 Verification: production has 23 published lessons; the four Dataset lessons are global positions 19 through 22 and the exclusion lesson is position 23. Authenticated live Chrome QA confirmed the same titles, order, Premium labels, and no site runtime errors.
 Safety: no existing lesson content/video/access was changed except the exclusion lesson order; no student progress, entitlement, payment, email, or tracking data changed.
 
+## 2026-08-21 - Facebook Ads mobile readability and Zalo proof production release
+
+Scope: `main-site` route `/academy/facebook-ads-master-2026` in the existing `facebook-ads-master-rewrite-20260821` worktree. Implemented owner-approved cream-section option 1 and repaired Zalo proof cards without changing copy, offer, form, checkout, SEO or tracking contracts.
+
+Files: source/published Facebook Ads HTML pair, `tests/facebook-ads-landing.test.mjs`, and the approved design/implementation notes under `docs/superpowers/`.
+
+Verification: TDD RED/GREEN; full Node 592/592; TypeScript; ESLint 0 errors/1 pre-existing warning; tracking; diff check; 96-page Webpack build; local and production Browser QA at 1440/390/320. Source, published and live HTML are byte-identical.
+
+Deploy: commit `3fef504`; preview `dpl_HxgCVALaiDseameKhtmeVyiwvzXy`; production `dpl_5kEZoPX1YAtoGdXHBgpJrzqixeNA` Ready; rollback `dpl_FFoE7Ny1bG2bFaFGai7Q4n1Hxhqj`.
+
+Production QA order: `TAMMT24TKS5A3FIN`, 799.000 VND, pending. QR loads; pending-payment email and Telegram markers succeeded. No payment, Purchase, success email, provisioning, Auth account or entitlement was created.
+
 ## 2026-08-02 | main-site | Unified course prices and removed legacy offer UI | local ready
 
 - Updated course catalog data so eight courses display `990.000đ`, while Facebook Ads remains `799.000đ` and Ebook remains `399.000đ`; original prices also use full VND formatting instead of `K`.
@@ -301,3 +341,20 @@ Safety: no existing lesson content/video/access was changed except the exclusion
 - Generated and installed two square v3 course covers derived from the approved landing visual language; the other eight catalog covers and six coming-soon gates remain unchanged.
 - Browser QA verified 10 cards, 4 live/6 coming, zero coming-soon academy links, correct v3 CSS backgrounds, both landing forms/CTAs, no legacy prices and no horizontal overflow at default and 390px. No form submission or external mutation occurred.
 - Verification: focused TDD passed during each change; full Node 478/478, TypeScript, ESLint 0 errors/1 pre-existing unrelated warning, `git diff --check`, and 91-page Next.js build pass. Local only; no deploy.
+
+## 2026-08-21 - Premium Ebook rewrite theo workbook (production)
+
+- Scope: `main-site` route `/academy/ebook-facebook-ads-2026-premium` trong worktree hiện có. Đã đọc toàn bộ 9 sheet workbook và triển khai P0 rồi P1, không thay đổi offer, payment plan, API order, email/access delivery, SEO hay Pixel/CAPI semantics.
+- Files: source/published Premium Ebook HTML pair, `tests/ebook-facebook-ads-landing.test.mjs`, design note và implementation plan trong `docs/superpowers/`.
+- Verification: TDD RED/GREEN; focused 86/86; full Node 594/594; TypeScript; tracking; ESLint 0 error/1 pre-existing warning; Webpack production build 96 routes; Browser local 1440/390/320 đạt, gồm fix overflow form 320px. Exact Ebook, preview, paid reader và PDF routes trả 200. Không submit form, không tạo order/payment/email/data.
+- Release: runtime commit `a4db95a`; Git preview `dpl_J1ME2GVxtcHAez9fQs8GvtgQ9gXk` được smoke-test trước khi promote thành production `dpl_Ak1fTmaTMb2NnKvrTtW4CtnjqpTh` (`READY`). Rollback `dpl_5kEZoPX1YAtoGdXHBgpJrzqixeNA`. Không có feedback Ebook thật và chưa có policy thật về access duration, future updates, refund nên các mục này tiếp tục được để BLOCKED thay vì bịa.
+
+## 2026-08-21 - Premium Ebook hero refinement (local)
+
+Scope: `main-site` Premium Ebook landing only. Applied the owner-provided wireframe: removed the top header, compacted the result-first copy into three bullets, centered and raised the real book mockup, added two real interior-page previews, a 471/10/2026 fact row and three closing proof points. The source and published HTML remain byte-identical; checkout, order form, invoice, payment, SEO and Meta semantics are unchanged.
+
+Verification: new RED/GREEN regression; Ebook suite 23/23; full Node 595/595; TypeScript; `git diff --check`; Webpack production build 96 routes. Browser QA at 1440/390/320 confirmed all hero images loaded, no horizontal overflow, no console warnings/errors, fixed CTAs still target `#price`, Pixel remains present and browser InitiateCheckout remains absent. No form submission or order was created. Local only; not deployed.
+
+Follow-up: direct `file://` preview showed no images because 33 bundled sources were root-relative. Converted only the bundled Ebook images and invoice helper to `../` paths, which resolve from both `public/ladipage` and `public/academy` while retaining the same HTTP production URLs. Added a regression that resolves every referenced local asset against disk. HTTP browser readback shows the hero images and invoice helper load correctly; file-URL browser automation is blocked by browser security, so the filesystem resolver is the authoritative file-preview check.
+
+Owner final UI pass: removed the visible `Quy mô`, `Nội dung` and `Phiên bản` captions from the hero fact row while retaining `471 trang`, `10 phần` and `2026 cập nhật`. Reduced the landing interaction radii to 14px for CTA/menu/sticky purchase controls and 12px for page arrows; pagination dots and status badges keep their semantic shapes. TDD RED/GREEN, local 1440/390 QA, full Node 597/597, TypeScript, tracking, ESLint 0 errors/1 unchanged warning and Webpack 96-route build pass. Production readback: live/source/published SHA-256 `f272b6fb4d8734b472ac22e17064d90b0d3fe81d1fc61b6a8a75689cee0f2248`, 29/29 image URLs 200, Browser 1440/390/320 zero overflow/console errors, intact form and Pixel, no early InitiateCheckout/browser Purchase, no order submission.

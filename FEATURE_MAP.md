@@ -77,17 +77,27 @@ Files: `public/ladipage/facebook-ads-2026.html`, `public/academy/facebook-ads-ma
 
 ## Facebook Ads Master 2026 public offer
 
-Description: `/academy/facebook-ads-master-2026` exposes one active public package: the 799K AI Agent plan. The form defaults to and submits `paymentPlan=zoom-kit`; browser `ViewContent` and lead values use `799000`.
+Description: `/academy/facebook-ads-master-2026` sells the ability to build and operate a Facebook Ads system with Data & AI, not a curriculum. The canonical order is `dau-trang`, `van-de`, `tich-luy`, `ket-qua`, `agent-tu-dong-len-quang-cao`, `feedback`, `giang-vien`, `bo-cong-cu`, `gia-tri`, `hoc-phi`, `faq`, `bat-dau`.
 
-Agent proof area: `#agent-tu-dong-len-quang-cao` sits after `#san-pham-thuc-te` and before `#lo-trinh`. It uses `/ladipage/assets/facebook-ads-agent-demo.gif` for automatic looping playback, a reduced-motion poster fallback, three execution-result cards, and exactly 12 Zalo proof cards in a duplicated CSS marquee. The accessible sequence is marked with `data-zalo-proof`; the visual duplicate is `aria-hidden`. Proof cards use a uniform `15:32` frame, `300px` desktop width, `244px` mobile width, `12px` gap and centered `object-fit: cover` crop.
+Content contract: no visible/hidden lesson list, `Bài 1/Bài 2`, `21 bài`, six-module accordion or `#lo-trinh`. `#ket-qua` contains exactly 12 buyer outcomes. `#tich-luy` states that advertising is a compounding asset immediately after the pain section. `#feedback` keeps exactly five content-rich proof images and excludes the call-duration-only gallery.
+
+Agent/support contract: AI Agent is core, not a bonus. It researches/plans and directly creates Campaign – Ad Set – Ads in `PAUSED` for review. The 799K offer includes the video course, AI Agent and implementation tools. Zoom 1:1 is a separate service and is not included in 799K.
+
+Value/CTA contract: the value stack immediately precedes checkout and uses `Giá trị`: 2.999.000đ + 1.999.000đ + 999.000đ = 5.997.000đ, revealed at 799.000đ. Primary CTA is `Nhận toàn bộ hệ thống Facebook Ads – 799.000đ`.
 
 Routes: `/academy/facebook-ads-master-2026`, static compatibility route `/academy/facebook-ads-master-2026.html`, order API `/api/orders`, checkout `/thanh-toan/[code]`.
 
-Main files: `public/ladipage/facebook-ads-2026.html`, `public/academy/facebook-ads-master-2026.html`, `public/ladipage/assets/facebook-ads-agent-demo.gif`, `public/ladipage/assets/facebook-ads-agent-demo-poster.webp`, `public/ladipage/assets/zalo-support/*.webp`, `tests/facebook-ads-landing.test.mjs`.
+Main files: `public/ladipage/facebook-ads-2026.html`, `public/academy/facebook-ads-master-2026.html`, `public/landing-assets/facebook-ads-event-contract.js`, `public/ladipage/assets/facebook-ads-agent-demo.gif`, `public/ladipage/assets/facebook-ads-agent-demo-poster.webp`, `public/ladipage/assets/zalo-support/*.webp`, `tests/facebook-ads-landing.test.mjs`, `tests/facebook-ads-event-contract.test.mjs`.
 
-Guard: keep source and published HTML byte-identical; do not restore the 399K card or `video` plan on this landing without owner approval. Preserve historical 399K order/checkout/email handling and do not alter the separate Ebook Facebook Ads 399K landing flows. Keep exactly 12 accessible Zalo proofs, the fitted `15:32` card geometry, visible call-duration highlights, privacy masks on support screenshots, and the GIF below 12 MB with its reduced-motion poster.
+Meta event contract: `EngagedView` fires once after 30 visible seconds; `ScrollDepth` fires once per threshold at 50/75/90; `CTAClick` binds only the six annotated primary CTAs and sends `cta_id`, `cta_text`, and absolute `destination_url`. All three use `fbq('trackCustom', ...)`. `VideoProgress` is intentionally inactive/`NOT_APPLICABLE` until a real `<video data-meta-video-id>` exists; the current looping proof is a GIF, not a video.
 
-Search: `data-plan-card="zoom-kit"`, `paymentPlan`, `799000`, `Facebook Ads landing offers only the 799K AI Agent plan`.
+Standard-event preservation: keep `PageView`/`ViewContent`; send browser `Lead` only after `/api/orders` accepts the request and returns an order code, reusing the existing `leadId` for browser/server dedup. Do not fire `InitiateCheckout` before the order/checkout context. Purchase remains server-authoritative with stable order-code `event_id`, value, VND currency, content IDs and the durable dedup/outbox flow.
+
+Guard: keep source and published HTML byte-identical; preserve `paymentPlan=zoom-kit`, optional `zoom-kit-ebook-299`, shared invoice fields, `/api/orders`, Pixel/CAPI attribution, `ViewContent=799000`, title/meta/canonical, historical order compatibility and the separate Ebook landing. Do not restore the 399K card, curriculum, call-duration proof gallery or Zoom-included wording without owner approval. Keep the Agent GIF below 12 MB with its reduced-motion poster.
+
+Release state: LIVE from runtime commit `17bdabb`, Vercel `dpl_9deCAWFg8Uuwixw9WGqtMdsqgpmL` (`READY`) on `www.theanhmarketing.com`. Exact live HTML/JS hashes match the release artifact; rollback target is `dpl_CpvZrvvxbQQauZkbAUi8dmTRoWvG`.
+
+Search: `data-outcome-card`, `proof-case-card`, `data-plan-card="zoom-kit"`, `paymentPlan`, `799000`, `Facebook Ads P0 rewrite`.
 
 ## Facebook Ads lesson reference downloads
 
@@ -291,3 +301,13 @@ Guard: order payload and lead payload are different contracts; preserve text for
 | Mở app ngân hàng an toàn | LOCAL READY | `/thanh-toan/[code]?openBank=1` | Existing QR, copy details, polling and SePay | Official VietQR app directory; customer gesture required; QR/copy stays as fallback |
 | Zalo OAuth rotation | LOCAL READY / NOT SEEDED | Private schema + service-role RPCs | Existing Supabase service role boundary | Atomic rotating refresh token; no credential in committed artifacts |
 | ZBS production rollout | BLOCKED BY EXTERNAL GATES | Zalo ZBS + Supabase Cron | Fail-closed feature flag | Requires approved template, applied migration, controlled test and owner-approved daily cap before enablement |
+
+## 2026-08-21 - Premium Ebook conversion landing
+
+| Feature | Status | Code | Flow giữ nguyên | Ghi chú |
+|---|---|---|---|---|
+| Landing thư viện tra cứu 471 trang | LIVE | Premium Ebook source/published HTML pair | 399K, bundle 1.098M, invoice, order, SePay, email, access | Commit `a4db95a`; production `dpl_Ak1fTmaTMb2NnKvrTtW4CtnjqpTh`; P0/P1 theo workbook |
+| Honest-price/trust guard | LOCAL CONTRACT LOCKED | Landing + `tests/ebook-facebook-ads-landing.test.mjs` | Server-known plans và giá khóa add-on giữ nguyên | Không dùng Ebook old-price 799K; không bịa testimonial, lifetime, update hoặc refund |
+| Mobile 320px containment | LOCAL READY | Scoped `<=339px` offer/form CSS | Form fields, invoice helper và checkout JS không đổi | Browser readback `scrollWidth=clientWidth`; 390/1440 cũng không overflow |
+| Header-free visual hero | LIVE | Premium Ebook hero HTML/CSS + regression test | CTA, form, order API, SEO và Pixel/CAPI không đổi | Book + 2 page previews + 471/10/2026 facts; production Browser 1440/390/320 đạt |
+| Compact hero facts and buttons | LIVE | Premium Ebook hero/button CSS + regression test | Commerce/tracking/SEO unchanged | Bỏ 3 caption; nút 14px, page arrow 12px; live hash khớp local |
