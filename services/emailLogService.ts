@@ -161,10 +161,13 @@ export async function updateEmailLogFromResendEvent(event: {
     .update(patch)
     .eq("resend_email_id", resendEmailId)
     .select(emailLogSelect)
-    .single();
+    .maybeSingle();
 
-  if (update.error || !update.data) {
-    return { ok: false, error: update.error?.message ?? "Could not update email log" };
+  if (update.error) {
+    return { ok: false, error: update.error.message };
+  }
+  if (!update.data) {
+    return { ok: true, skipped: true };
   }
 
   const log = mapEmailLog(update.data as DbEmailLog);

@@ -1488,3 +1488,12 @@ Before changing these, run targeted tests and full build.
 - Release: GitHub `main` SHA `8d4e82e96f3c849c11b34029c7b644ef3eac8387`; preview `dpl_9h9Y2n1uxBHW5gwSzVAsx32SRqEJ` READY; production `dpl_tt5WMRGePFh3Q8DsLSDYQx5jiAEy` READY with `www.theanhmarketing.com` and apex aliases. Live readback returned 200 with all offer/interaction markers; route runtime errors for 15 minutes were empty.
 - Browser limitation: `agent-browser` was unavailable and local Chrome headless did not produce a usable dump/screenshot, so production click behavior is regression/source-readback verified rather than claimed as visual-browser verified.
 - Live readback: route `200`; exact promotion CTA, `878.400đ`, promo plan ID, `2026-08-31` and standalone `799.000đ` all present. Vercel runtime error scan for the route found no errors.
+
+## 2026-08-27 - Scheduled Facebook Ads promotion email and measurement contract
+
+- Production worker `/api/email/campaigns/send-due` runs daily at 09:00 Vietnam, is protected by `CRON_SECRET`, atomically claims due campaigns and fails closed when Supabase, Resend, unsubscribe signing or the signed measurement webhook is unavailable.
+- Audience is rebuilt from authoritative `public.orders` at dispatch time: include Facebook Ads 2026 interest, deduplicate normalized email, exclude any paid matching customer, obvious test domains and CRM/legacy suppression signals.
+- Each recipient receives a signed one-click unsubscribe URL. Delivery/open/click/bounce/complaint events require the official Svix signature over the raw request body and update `crm_v2.email_sends`, events, suppression and campaign metrics.
+- Attribution is message-specific through `utm_source=email`, `utm_medium=email`, one campaign key and a separate `utm_content`; paid orders and revenue are read from authoritative `public.orders`.
+- Asset: `public/email-assets/vietnam-thang-thai-lan-combo-20-202608.jpg`, optimized from the owner-approved 1122x1402 artwork without changing its visible design.
+- Local verification: focused TypeScript/ESLint pass, email unit `6/6`, relevant contract `29/29`, and Next production build 103 routes pass. Production deployment, campaign rows and first provider event readback are recorded separately after release.

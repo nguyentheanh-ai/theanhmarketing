@@ -2775,7 +2775,7 @@ export async function recordCrmEmailWebhookEvent(event: {
     ? await insertCrmEventFromWebhook(client, event, contactId, emailEventResult.emailEventId ?? null)
     : { ok: true };
 
-  return { ok: crmEventResult.ok, skipped: false, error: crmEventResult.error };
+  return { ok: crmEventResult.ok, skipped: false, error: crmEventResult.error, campaignId: emailSend?.campaign_id ?? null };
 }
 
 async function findEmailSendForWebhookEvent(client: ReturnType<typeof createSupabaseAdminClient>, providerMessageId?: string) {
@@ -2783,12 +2783,12 @@ async function findEmailSendForWebhookEvent(client: ReturnType<typeof createSupa
   const { data, error } = await client
     .schema("crm_v2")
     .from("email_sends")
-    .select("id,contact_id")
+    .select("id,contact_id,campaign_id")
     .eq("provider_message_id", providerMessageId)
     .maybeSingle();
 
   if (error) throw new Error(error.message);
-  return data as { id: string; contact_id: string | null } | null;
+  return data as { id: string; contact_id: string | null; campaign_id: string | null } | null;
 }
 
 async function resolveEmailEventContactId(
@@ -2890,15 +2890,21 @@ async function applyEmailSuppressionFromWebhook(
   const normalized = normalizeEmail(event.recipient ?? null);
   if (!normalized) return { ok: true };
 
-  const { error: suppressionError } = await client.schema("crm_v2").from("email_suppression_list").upsert({
-    contact_id: contactId,
-    email: event.recipient ?? null,
-    normalized_email: normalized,
-    reason,
-    provider: event.provider,
-    suppressed_at: event.occurredAt,
-    metadata: { raw_type: event.type, payload: asJson(event.payload) },
-  });
+  const { error: suppressionError } = await client
+    .schema("crm_v2")
+    .from("email_suppression_list")
+    .upsert(
+      {
+        contact_id: contactId,
+        email: event.recipient ?? null,
+        normalized_email: normalized,
+        reason,
+        provider: event.provider,
+        suppressed_at: event.occurredAt,
+        metadata: { raw_type: event.type, payload: asJson(event.payload) },
+      },
+      { onConflict: "normalized_email,reason" },
+    );
   if (suppressionError) return { ok: false, error: suppressionError.message };
 
   const contactPatch =

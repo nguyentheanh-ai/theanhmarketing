@@ -965,8 +965,11 @@ test("crm v2 email and payment actions execute real server outcomes", () => {
 test("crm v2 Resend webhook records email events, CRM events, and suppression state", () => {
   const dataLayer = read("lib/crm-v2/data.ts");
   const route = read("app/api/webhooks/resend/route.ts");
+  const handler = read("lib/email/resend-webhook.ts");
 
-  assert.match(route, /recordCrmEmailWebhookEvent/, "Resend webhook route must call CRM v2 recorder");
+  assert.match(route, /handleResendWebhookRequest/, "Resend webhook route must call the verified shared handler");
+  assert.match(handler, /recordCrmEmailWebhookEvent/, "verified Resend handler must call CRM v2 recorder");
+  assert.match(handler, /svix-signature/, "Resend webhook must verify official Svix signatures");
   assert.match(dataLayer, /from\("webhook_events"\)/, "webhook payloads must be preserved");
   assert.match(dataLayer, /from\("email_events"\)/, "normalized email events must be inserted");
   assert.match(dataLayer, /from\("crm_events"\)/, "contact timeline must receive email events");
