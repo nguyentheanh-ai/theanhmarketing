@@ -221,22 +221,32 @@ test("Facebook Ads pricing keeps 799K featured and the registration button direc
   assert.doesNotMatch(html, /\.zoom-addon/);
 });
 
-test("Facebook Ads form offers an optional 299K Ebook add-on with a server-known bundle plan", () => {
+test("Facebook Ads form applies the Vietnam-Thailand 20% offer to the combo only", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
   const orderService = read("services/orderService.ts");
 
   assert.match(html, /<input id="ebook-addon" name="ebookAddon" type="checkbox" \/>/);
-  assert.match(html, /Mua kèm Ebook Facebook Ads/);
-  assert.match(html, /299\.000đ/);
-  assert.match(html, /<del>799\.000đ<\/del>/);
+  assert.match(html, /Combo Ebook \+ Khóa học Facebook Ads/);
+  assert.match(html, /878\.400đ/);
+  assert.match(html, /<del>1\.098\.000đ<\/del>/);
   assert.match(html, /"zoom-kit-ebook-299":\s*\{[\s\S]*?amount:\s*1098000/);
-  assert.match(html, /ebookAddon\.checked\s*\?\s*plans\["zoom-kit-ebook-299"\]\s*:\s*selectedPlan/);
+  assert.match(html, /promotionPlanId/);
+  assert.match(html, /amount:\s*878400/);
+  assert.match(html, /Ưu đãi Việt Nam Thắng Thái Lan/);
+  assert.match(html, /ebookAddon\.checked[\s\S]*plans\[promotionPlanId\][\s\S]*plans\["zoom-kit-ebook-299"\]/);
   assert.match(html, /ebookAddon\.addEventListener\("change", syncCheckoutState\)/);
 
   assert.match(orderService, /"zoom-kit-ebook-299":\s*\{[\s\S]*?amount:\s*1098000/);
   assert.match(orderService, /slug:\s*"facebook-ads-2026"[\s\S]*?price:\s*799000/);
   assert.match(orderService, /slug:\s*"ebook-facebook-ads-2026"[\s\S]*?price:\s*299000/);
   assert.match(orderService, /plan\.orderItems\.map\(\(item\) => item\.slug\)\.join\(","\)/);
+  assert.match(orderService, /zoom-kit-ebook-vietnam-thang-thai-lan-20/);
+  assert.match(orderService, /amount:\s*878400/);
+  assert.match(orderService, /price:\s*639200/);
+  assert.match(orderService, /price:\s*239200/);
+  assert.match(orderService, /2026-08-26/);
+  assert.match(orderService, /2026-08-31/);
+  assert.match(orderService, /paymentPlan === VIETNAM_THANG_THAI_LAN_PROMOTION_PLAN/);
 });
 
 test("Facebook Ads mobile plan selection jumps straight to the payment form", () => {

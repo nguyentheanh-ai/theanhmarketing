@@ -5185,7 +5185,7 @@
                   <label class="ebook-addon" for="ebook-addon">
                     <input id="ebook-addon" name="ebookAddon" type="checkbox" />
                     <span class="ebook-addon-control" aria-hidden="true"></span>
-                    <span><strong>Mua kèm Ebook Facebook Ads</strong><span class="ebook-addon-price">299.000đ <del>799.000đ</del></span></span>
+                    <span><strong>Combo Ebook + Khóa học Facebook Ads</strong><span class="ebook-addon-price">878.400đ <del>1.098.000đ</del></span></span>
                   </label>
                   <button class="btn btn-primary" type="submit" id="payment-submit">Nhận toàn bộ hệ thống Facebook Ads – 799.000đ</button>
                 </form>
@@ -5280,7 +5280,19 @@
             note: "Gói đang chọn: hệ thống Facebook Ads + Ebook - tổng 1.098.000đ, nhận quyền truy cập cả hai sản phẩm.",
             submitText: "Nhận hệ thống Facebook Ads + Ebook – 1.098.000đ",
           },
+          "zoom-kit-ebook-vietnam-thang-thai-lan-20": {
+            id: "zoom-kit-ebook-vietnam-thang-thai-lan-20",
+            label: "Combo Việt Nam thắng Thái Lan",
+            price: "878,4K",
+            amount: 878400,
+            summary: "Ưu đãi Việt Nam Thắng Thái Lan: combo hệ thống Facebook Ads + Ebook giảm 20%, còn 878.400đ (từ 1.098.000đ). Áp dụng đến hết 31/08/2026.",
+            note: "Combo đang chọn: hệ thống Facebook Ads + Ebook - Ưu đãi Việt Nam Thắng Thái Lan giảm 20%, còn 878.400đ.",
+            submitText: "Đăng ký combo - Ưu đãi Việt Nam Thắng Thái Lan",
+          },
         };
+        var promotionPlanId = "zoom-kit-ebook-vietnam-thang-thai-lan-20";
+        var promotionStartDate = "2026-08-26";
+        var promotionEndDate = "2026-08-31";
         var selectedPlan = plans["zoom-kit"];
         var cartKey = "tam-cart-courses";
         var form = document.getElementById("payment-form");
@@ -5290,6 +5302,7 @@
         var planNote = document.getElementById("selected-plan-note");
         var submitButton = document.getElementById("payment-submit");
         var ebookAddon = document.getElementById("ebook-addon");
+        var ebookAddonPrice = document.querySelector(".ebook-addon-price");
         var stickyCta = document.querySelector(".sticky-cta");
         var stickyMenu = document.getElementById("sticky-section-menu");
         var stickyMenuToggle = document.querySelector("[data-sticky-menu-toggle]");
@@ -5329,8 +5342,28 @@
           }
         }
 
+        function getVietnamDateKey() {
+          var parts = new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Asia/Ho_Chi_Minh",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          }).formatToParts(new Date());
+          var values = {};
+          parts.forEach(function (part) {
+            if (part.type !== "literal") values[part.type] = part.value;
+          });
+          return values.year + "-" + values.month + "-" + values.day;
+        }
+
+        function isVietnamThangThaiLanPromotionActive() {
+          var today = getVietnamDateKey();
+          return today >= promotionStartDate && today <= promotionEndDate;
+        }
+
         function resolveSelectedPlan() {
-          return ebookAddon.checked ? plans["zoom-kit-ebook-299"] : selectedPlan;
+          if (!ebookAddon.checked) return selectedPlan;
+          return isVietnamThangThaiLanPromotionActive() ? plans[promotionPlanId] : plans["zoom-kit-ebook-299"];
         }
 
         function addCourseToCart() {
@@ -5347,7 +5380,7 @@
               return item && item.slug !== course.slug && item.slug !== "ebook-facebook-ads-2026";
             });
             current.push(courseCartItem);
-            if (checkoutPlan.id === "zoom-kit-ebook-299") {
+            if (checkoutPlan.id === "zoom-kit-ebook-299" || checkoutPlan.id === promotionPlanId) {
               current.push({
                 slug: "ebook-facebook-ads-2026",
                 title: "Ebook Facebook Ads 2026 - Mua kèm ưu đãi",
@@ -5373,6 +5406,9 @@
           planSummary.textContent = checkoutPlan.summary;
           planNote.textContent = checkoutPlan.note;
           submitButton.textContent = checkoutPlan.submitText;
+          ebookAddonPrice.innerHTML = isVietnamThangThaiLanPromotionActive()
+            ? "878.400đ <del>1.098.000đ</del>"
+            : "1.098.000đ";
         }
 
         function jumpToPaymentFormOnMobile() {

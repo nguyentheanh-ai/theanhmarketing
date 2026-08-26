@@ -1469,3 +1469,11 @@ Before changing these, run targeted tests and full build.
 | Safety | Source/published mirror byte-identical; form, bundle, invoice, `/api/orders`, payment, SEO and Pixel/CAPI unchanged. |
 | Local gate | TDD RED/GREEN; Ebook 25/25; full Node 597/597; TypeScript; tracking; ESLint 0 errors/1 unchanged warning; Webpack build 96 routes; Browser 1440/390 has no overflow or console warnings/errors. |
 | Release state | LIVE from commit `a4db95a`: preview `dpl_J1ME2GVxtcHAez9fQs8GvtgQ9gXk`, production `dpl_Ak1fTmaTMb2NnKvrTtW4CtnjqpTh` READY, rollback `dpl_5kEZoPX1YAtoGdXHBgpJrzqixeNA`. Live/source/published SHA-256 `f272b6fb4d8734b472ac22e17064d90b0d3fe81d1fc61b6a8a75689cee0f2248`; 29/29 image URLs 200; Browser 1440/390/320 has zero overflow and console errors; guards 307/405/405 and runtime error scan clean. No order submitted. |
+
+## 2026-08-26 - Facebook Ads combo promotion in registration form
+
+- Route/source: `/academy/facebook-ads-master-2026`; synchronized `public/ladipage/facebook-ads-2026.html` and `public/academy/facebook-ads-master-2026.html`.
+- Offer: the optional Facebook Ads + Ebook combo is `878.400đ` during 26/08/2026–31/08/2026, down 20% from `1.098.000đ`; standalone system remains `799.000đ`.
+- Contract: browser selects `zoom-kit-ebook-vietnam-thang-thai-lan-20`; `services/orderService.ts` is the price authority and rejects that plan outside the Vietnam-date window. Historical `zoom-kit-ebook-299` remains unchanged.
+- Scope: form copy/CTA and minimum server price guard only; no schema, payment route, email template, tracking event, entitlement or other landing section changed.
+- Verification before deploy: focused landing `22/22`, TypeScript, targeted ESLint and source/published byte equality pass. Production deploy and live readback pending.

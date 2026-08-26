@@ -361,6 +361,26 @@ type CoursePaymentPlan = {
   orderItems?: OrderItem[];
 };
 
+const VIETNAM_THANG_THAI_LAN_PROMOTION_PLAN = "zoom-kit-ebook-vietnam-thang-thai-lan-20";
+const VIETNAM_THANG_THAI_LAN_PROMOTION_START = "2026-08-26";
+const VIETNAM_THANG_THAI_LAN_PROMOTION_END = "2026-08-31";
+
+function getVietnamDateKey(now = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function isVietnamThangThaiLanPromotionActive(now = new Date()) {
+  const today = getVietnamDateKey(now);
+  return today >= VIETNAM_THANG_THAI_LAN_PROMOTION_START && today <= VIETNAM_THANG_THAI_LAN_PROMOTION_END;
+}
+
 function getFixedPaymentPackage(input: CreatePaymentOrderInput) {
   if (input.courseSlug !== CONSULTATION_PRODUCT_SLUG || input.paymentPlan !== CONSULTATION_PAYMENT_PLAN) {
     return null;
@@ -397,6 +417,22 @@ const coursePaymentPlans: Record<string, Record<string, CoursePaymentPlan>> = {
           slug: "ebook-facebook-ads-2026",
           title: "Ebook Facebook Ads 2026 - Mua kèm ưu đãi 299K",
           price: 299000,
+        },
+      ],
+    },
+    [VIETNAM_THANG_THAI_LAN_PROMOTION_PLAN]: {
+      title: "Combo hệ thống Facebook Ads + Ebook - Ưu đãi Việt Nam Thắng Thái Lan giảm 20%",
+      amount: 878400,
+      orderItems: [
+        {
+          slug: "facebook-ads-2026",
+          title: "Quảng cáo Facebook Master 2026 - Combo ưu đãi Việt Nam Thắng Thái Lan",
+          price: 639200,
+        },
+        {
+          slug: "ebook-facebook-ads-2026",
+          title: "Ebook Facebook Ads 2026 - Combo ưu đãi Việt Nam Thắng Thái Lan",
+          price: 239200,
         },
       ],
     },
@@ -446,6 +482,10 @@ function buildOrderPackage(
   if (paymentPlan) {
     const selectedCourse = selectedCourses[0];
     const plan = selectedCourse ? coursePaymentPlans[selectedCourse.slug]?.[paymentPlan] : undefined;
+
+    if (paymentPlan === VIETNAM_THANG_THAI_LAN_PROMOTION_PLAN && !isVietnamThangThaiLanPromotionActive()) {
+      throw new Error("Ưu đãi Việt Nam Thắng Thái Lan đã kết thúc.");
+    }
 
     if (selectedCourses.length !== 1 || !selectedCourse || !plan) {
       throw new Error("Gói thanh toán không hợp lệ.");
