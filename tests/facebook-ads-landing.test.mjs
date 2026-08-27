@@ -393,6 +393,17 @@ test("Facebook Ads landing shows the restored left rail that fills green through
   assert.match(html, /@media \(max-width:\s*339px\)[\s\S]*?\.section-progress-rail\s*\{[\s\S]*?display:\s*none/);
 });
 
+test("Facebook Ads form keeps a visible 3-2-1 transition before checkout navigation", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+
+  assert.match(html, /id="checkout-transition"[^>]+aria-live="assertive"[^>]+hidden/);
+  assert.match(html, /id="checkout-countdown">3<\/strong>/);
+  assert.match(html, /var countdownValues = \["3", "2", "1"\]/);
+  assert.match(html, /var checkoutTransitionPromise = startCheckoutTransition\(\);/);
+  assert.match(html, /await checkoutTransitionPromise;/);
+  assert.match(html, /stopCheckoutTransition\(\);/);
+});
+
 test("production build is blocked when the Facebook Ads rail or checkout countdown regresses", () => {
   const packageJson = JSON.parse(read("package.json"));
 

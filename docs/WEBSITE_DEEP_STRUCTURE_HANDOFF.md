@@ -1,5 +1,11 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-08-28 - Restore the landing-to-checkout 3-2-1 transition
+
+- Clarification: this is the full-screen `3 → 2 → 1` transition shown after a valid Facebook Ads registration creates an order and before navigation to `/thanh-toan/{orderCode}`; it is separate from both the 12-section reading rail and the offer countdown rendered inside the payment page.
+- Restored only the existing transition overlay from the earlier implementation. API/order creation still happens first; navigation waits for the short countdown; an API error closes the overlay and restores the form. No payment, SePay, Pixel/CAPI, email or access contract changed.
+- Regression coverage is part of the mandatory revenue-critical `prebuild` gate.
+
 ## 2026-08-28 - Revenue-critical UI pre-build gate
 
 - Root cause addressed: landing regression tests previously existed but were optional and therefore could be skipped by a rewrite/deploy session.
