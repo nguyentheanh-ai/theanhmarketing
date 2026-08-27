@@ -2027,6 +2027,25 @@
         transform: translateX(2px);
       }
 
+      .sticky-section-menu a.is-active {
+        background: rgba(246, 102, 40, 0.18);
+        color: #fff;
+      }
+
+      .sticky-section-menu a.is-active::before {
+        display: grid;
+        width: 22px;
+        height: 22px;
+        flex: 0 0 22px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--primary);
+        color: #170905;
+        content: "✓";
+        font-size: 13px;
+        font-weight: 900;
+      }
+
       .sticky-menu-toggle {
         display: grid;
         width: 48px;
@@ -2108,6 +2127,84 @@
 
       .toast.is-danger {
         background: #7f1d1d;
+      }
+
+      body.is-checkout-transitioning {
+        overflow: hidden;
+      }
+
+      .checkout-transition[hidden] {
+        display: none;
+      }
+
+      .checkout-transition {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: rgba(7, 9, 14, 0.9);
+        backdrop-filter: blur(14px);
+      }
+
+      .checkout-transition-card {
+        width: min(420px, 100%);
+        border: 1px solid rgba(255, 124, 67, 0.42);
+        border-radius: 30px;
+        background: linear-gradient(145deg, rgba(31, 24, 27, 0.98), rgba(12, 14, 20, 0.98));
+        padding: 38px 24px 34px;
+        box-shadow: 0 28px 80px rgba(0, 0, 0, 0.5), 0 0 54px rgba(255, 97, 31, 0.14);
+        color: #fff;
+        text-align: center;
+      }
+
+      .checkout-transition-spinner-wrap {
+        position: relative;
+        display: grid;
+        width: 142px;
+        height: 142px;
+        margin: 0 auto 26px;
+        place-items: center;
+      }
+
+      .checkout-transition-spinner {
+        position: absolute;
+        inset: 0;
+        border: 6px solid rgba(255, 255, 255, 0.12);
+        border-top-color: var(--primary-2);
+        border-right-color: var(--primary);
+        border-radius: 50%;
+        animation: checkout-transition-spin 0.8s linear infinite;
+      }
+
+      #checkout-countdown {
+        color: #fff;
+        font-size: 68px;
+        font-weight: 900;
+        letter-spacing: -0.06em;
+        line-height: 1;
+        text-shadow: 0 4px 26px rgba(255, 97, 31, 0.42);
+      }
+
+      #checkout-transition-message {
+        margin: 0;
+        font-size: clamp(22px, 5vw, 30px);
+        font-weight: 900;
+        letter-spacing: -0.035em;
+        line-height: 1.2;
+      }
+
+      .checkout-transition-note {
+        display: block;
+        margin-top: 12px;
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      @keyframes checkout-transition-spin {
+        to { transform: rotate(360deg); }
       }
 
       body::before {
@@ -5273,6 +5370,16 @@
         </div>
       </div>
       <div id="toast" class="toast" role="status" aria-live="polite"></div>
+      <div id="checkout-transition" class="checkout-transition" role="status" aria-live="assertive" aria-busy="true" hidden>
+        <div class="checkout-transition-card">
+          <div class="checkout-transition-spinner-wrap">
+            <span class="checkout-transition-spinner" aria-hidden="true"></span>
+            <strong id="checkout-countdown">3</strong>
+          </div>
+          <p id="checkout-transition-message">Đang tạo trang thanh toán</p>
+          <small class="checkout-transition-note">Vui lòng giữ nguyên màn hình</small>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -5317,6 +5424,9 @@
         var cartKey = "tam-cart-courses";
         var form = document.getElementById("payment-form");
         var toast = document.getElementById("toast");
+        var checkoutTransition = document.getElementById("checkout-transition");
+        var checkoutCountdown = document.getElementById("checkout-countdown");
+        var checkoutTransitionMessage = document.getElementById("checkout-transition-message");
         var planInput = form.querySelector('[name="paymentPlan"]');
         var planSummary = document.getElementById("payment-plan-summary");
         var planNote = document.getElementById("selected-plan-note");
@@ -5327,6 +5437,7 @@
         var stickyMenu = document.getElementById("sticky-section-menu");
         var stickyMenuToggle = document.querySelector("[data-sticky-menu-toggle]");
         var pricingSection = document.getElementById("hoc-phi");
+        var stickyMenuLinks = Array.from(stickyMenu.querySelectorAll("a[href^='#']"));
 
         function setStickyMenuOpen(open) {
           if (!stickyCta || !stickyMenu || !stickyMenuToggle) return;
@@ -5350,6 +5461,29 @@
           document.addEventListener("keydown", function (event) {
             if (event.key === "Escape") setStickyMenuOpen(false);
           });
+
+          function markActiveSection(sectionId) {
+            stickyMenuLinks.forEach(function (link) {
+              var isActive = link.getAttribute("href") === "#" + sectionId;
+              link.classList.toggle("is-active", isActive);
+              if (isActive) link.setAttribute("aria-current", "location");
+              else link.removeAttribute("aria-current");
+            });
+          }
+
+          if (typeof window.IntersectionObserver === "function") {
+            var sectionObserver = new IntersectionObserver(function (entries) {
+              var visibleSection = entries
+                .filter(function (entry) { return entry.isIntersecting; })
+                .sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; })[0];
+              if (visibleSection) markActiveSection(visibleSection.target.id);
+            }, { rootMargin: "-25% 0px -55%", threshold: [0, 0.1, 0.25, 0.5] });
+
+            stickyMenuLinks.forEach(function (link) {
+              var section = document.querySelector(link.getAttribute("href"));
+              if (section) sectionObserver.observe(section);
+            });
+          }
         }
 
         if (stickyCta && pricingSection && typeof window.IntersectionObserver === "function") {
@@ -5463,6 +5597,42 @@
           }, 4200);
         }
 
+        function startCheckoutTransition() {
+          var countdownValues = ["3", "2", "1"];
+          var countdownIndex = 0;
+
+          window.clearInterval(checkoutTransition.timer);
+          checkoutCountdown.textContent = countdownValues[countdownIndex];
+          checkoutTransitionMessage.textContent = "Đang tạo trang thanh toán";
+          checkoutTransition.hidden = false;
+          document.body.classList.add("is-checkout-transitioning");
+
+          return new Promise(function (resolve) {
+            checkoutTransition.timer = window.setInterval(function () {
+              countdownIndex += 1;
+              if (countdownIndex < countdownValues.length) {
+                checkoutCountdown.textContent = countdownValues[countdownIndex];
+                return;
+              }
+
+              window.clearInterval(checkoutTransition.timer);
+              checkoutTransition.timer = null;
+              checkoutCountdown.textContent = "";
+              checkoutTransitionMessage.textContent = "Đang đến trang thanh toán...";
+              window.setTimeout(resolve, 350);
+            }, 700);
+          });
+        }
+
+        function stopCheckoutTransition() {
+          window.clearInterval(checkoutTransition.timer);
+          checkoutTransition.timer = null;
+          checkoutTransition.hidden = true;
+          checkoutCountdown.textContent = "3";
+          checkoutTransitionMessage.textContent = "Đang tạo trang thanh toán";
+          document.body.classList.remove("is-checkout-transitioning");
+        }
+
         function getFormValue(name) {
           var input = form.querySelector('[name="' + name + '"]');
           return input && input.value ? input.value.trim() : "";
@@ -5538,6 +5708,7 @@
 
           button.disabled = true;
           button.textContent = "Đang tạo mã thanh toán...";
+          var checkoutTransitionPromise = startCheckoutTransition();
           showToast("Đang tạo đơn thanh toán " + new Intl.NumberFormat("vi-VN").format(checkoutPlan.amount) + "đ...");
           try {
             var response = await fetch("/api/orders", {
@@ -5581,8 +5752,10 @@
               value: checkoutPlan.amount,
               event_id: leadId,
             });
+            await checkoutTransitionPromise;
             window.location.href = "/thanh-toan/" + encodeURIComponent(payload.order.orderCode);
           } catch (error) {
+            stopCheckoutTransition();
             button.disabled = false;
             button.textContent = oldText;
             showToast(error && error.message ? error.message : "Chưa tạo được đơn thanh toán, bạn thử lại giúp em.", true);

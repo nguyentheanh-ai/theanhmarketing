@@ -1,5 +1,12 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-08-28 - Restore Facebook Ads landing section tick and checkout transition
+
+- Root cause: the Facebook Ads P1 rewrite removed the landing-side `3-2-1` checkout transition and its regression test, while the section control became a hidden menu without active-section state. The shared countdown on `/thanh-toan/[code]` remained a separate checkout-page contract.
+- Fix: `/academy/facebook-ads-master-2026` restores the blocking `3-2-1` transition after form validation while `/api/orders` creates the order, then redirects only after both the order code and transition complete. Failed order creation closes the overlay and restores the form.
+- Navigation: the existing sticky menu observes its seven mapped sections and marks the current one with `aria-current="location"` plus a visible orange `✓`.
+- Guard: source/published HTML remain byte-identical. Order payload, promotion plan IDs/prices, invoice fields, Meta Lead timing/dedup, SePay, polling, email and access behavior are unchanged. Regression coverage lives in `tests/facebook-ads-landing.test.mjs`.
+
 ## 2026-08-26 - Meta Purchase match-key remediation (production)
 
 | Hạng mục | Chi tiết |
