@@ -48,6 +48,10 @@ export async function ensureResendMeasurementWebhook(apiKey = process.env.RESEND
     webhook = await resendWebhookRequest<ResendWebhook>(apiKey, `/webhooks/${webhook.id}`);
   }
 
+  if (webhook?.id && !webhook.signing_secret) {
+    webhook = await resendWebhookRequest<ResendWebhook>(apiKey, `/webhooks/${webhook.id}`);
+  }
+
   const secret = webhook.signing_secret;
   if (!webhook.id || !secret) throw new Error("Resend webhook signing secret is unavailable");
   cacheWebhookSecret(secret);
@@ -60,7 +64,10 @@ export async function resolveResendWebhookSecret(apiKey = process.env.RESEND_API
   if (cachedWebhookSecret && cachedWebhookSecret.expiresAt > Date.now()) return cachedWebhookSecret.value;
   if (!apiKey) return "";
   const endpoint = getResendWebhookEndpoint();
-  const webhook = (await listResendWebhooks(apiKey)).find((entry) => entry.endpoint === endpoint);
+  let webhook = (await listResendWebhooks(apiKey)).find((entry) => entry.endpoint === endpoint);
+  if (webhook?.id && !webhook.signing_secret) {
+    webhook = await resendWebhookRequest<ResendWebhook>(apiKey, `/webhooks/${webhook.id}`);
+  }
   const secret = webhook?.status === "enabled" ? webhook.signing_secret ?? "" : "";
   if (secret) cacheWebhookSecret(secret);
   return secret;

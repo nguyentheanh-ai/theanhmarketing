@@ -42,3 +42,12 @@ test("scheduled worker fails closed unless the signed Resend measurement webhook
   assert.match(webhook, /resolveResendWebhookSecret/);
   assert.match(webhook, /verifyResendWebhookRequest/);
 });
+
+test("CRM v2 is exposed to PostgREST without granting anonymous schema access", () => {
+  const migration = read("supabase/migrations/20260827040000_expose_crm_v2_to_postgrest.sql");
+
+  assert.match(migration, /alter role authenticator set pgrst\.db_schemas\s*=\s*'public, graphql_public, crm_v2'/i);
+  assert.match(migration, /grant usage on schema crm_v2 to authenticated, service_role/i);
+  assert.doesNotMatch(migration, /grant usage on schema crm_v2 to[^;]*anon/i);
+  assert.match(migration, /notify pgrst, 'reload config'/i);
+});

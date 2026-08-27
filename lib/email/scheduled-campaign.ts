@@ -13,6 +13,9 @@ export type CampaignAudienceOrder = {
   created_at?: string | null;
 };
 
+type CampaignRecipient = { email: string; name: string; retrySendId?: string };
+type ExistingCampaignSend = { id?: string | null; recipient_email?: string | null; status?: string | null };
+
 type CampaignSendMetricRow = {
   sent_at?: string | null;
   delivered_at?: string | null;
@@ -98,6 +101,28 @@ export function selectUnpaidFacebookAdsRecipients(
     .sort((left, right) => left.email.localeCompare(right.email));
 }
 
+export function selectRetryableCampaignRecipients(
+  recipients: Array<{ email: string; name: string }>,
+  existingSends: ExistingCampaignSend[],
+) {
+  const existingByEmail = new Map(
+    existingSends.map((row) => [normalizeCampaignEmail(row.recipient_email), row]),
+  );
+  let skipped = 0;
+  const retryable: CampaignRecipient[] = [];
+  for (const recipient of recipients) {
+    const existing = existingByEmail.get(normalizeCampaignEmail(recipient.email));
+    if (!existing) {
+      retryable.push(recipient);
+    } else if (String(existing.status ?? "").toLowerCase() === "failed" && existing.id) {
+      retryable.push({ ...recipient, retrySendId: existing.id });
+    } else {
+      skipped += 1;
+    }
+  }
+  return { recipients: retryable, skipped };
+}
+
 export function buildAttributedEmailUrl(baseUrl: string, campaignKey: string, contentKey: string) {
   const url = new URL(baseUrl);
   url.searchParams.set("utm_source", "email");
@@ -113,7 +138,7 @@ export function isSafeMarketingEmailPayload(payload: { subject: string; html: st
   if (!/<meta\s+charset=["']?utf-8["']?\s*\/?\s*>/i.test(payload.html)) return false;
   if (/\{\{[^}]+\}\}/.test(combined)) return false;
   if (/https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?/i.test(combined)) return false;
-  if (/Ã|Â|â€|ðŸ|á»|áº/.test(combined)) return false;
+  if (/â€|ðŸ|á»|áº|Ä[\u0080-\u00bf]|Æ[\u0080-\u00bf]|Ã[\u0080-\u00bf]|Â[\u0080-\u00bf]/.test(combined)) return false;
   return true;
 }
 
@@ -254,11 +279,15 @@ async function dispatchClaimedCampaign(client: SupabaseAdminClient, campaign: Sc
   const [orders, suppressions, existing] = await Promise.all([
     fetchFacebookAdsOrders(client),
     fetchSuppressedEmails(client),
-    client.schema("crm_v2").from("email_sends").select("recipient_email").eq("campaign_id", campaign.id).limit(5000),
+    client.schema("crm_v2").from("email_sends").select("id,recipient_email,status").eq("campaign_id", campaign.id).limit(5000),
   ]);
-  const alreadyQueued = new Set((existing.data ?? []).map((row) => normalizeCampaignEmail(row.recipient_email)));
-  const recipients = selectUnpaidFacebookAdsRecipients(orders, suppressions).filter((recipient) => !alreadyQueued.has(recipient.email));
-  const skipped = alreadyQueued.size;
+  if (existing.error) throw new Error(`Existing send lookup failed: ${existing.error.message}`);
+  const queue = selectRetryableCampaignRecipients(
+    selectUnpaidFacebookAdsRecipients(orders, suppressions),
+    (existing.data ?? []) as ExistingCampaignSend[],
+  );
+  const recipients = queue.recipients;
+  const skipped = queue.skipped;
   if (!recipients.length) {
     const status = skipped > 0 ? "sent" : "skipped";
     await client.schema("crm_v2").from("email_campaigns").update({ status, sent_at: status === "sent" ? new Date().toISOString() : null, updated_at: new Date().toISOString() }).eq("id", campaign.id);
@@ -304,7 +333,7 @@ async function dispatchClaimedCampaign(client: SupabaseAdminClient, campaign: Sc
 async function sendRecipientBatch(
   client: SupabaseAdminClient,
   campaign: ScheduledCampaign,
-  recipients: Array<{ email: string; name: string }>,
+  recipients: CampaignRecipient[],
   batchIndex: number,
 ) {
   const template = Array.isArray(campaign.email_templates) ? campaign.email_templates[0] : campaign.email_templates;
@@ -314,6 +343,7 @@ async function sendRecipientBatch(
   const queuedRows = recipients.map((recipient) => {
     const recipientHash = createHash("sha256").update(recipient.email).digest("hex").slice(0, 24);
     return {
+      ...(recipient.retrySendId ? { id: recipient.retrySendId } : {}),
       campaign_id: campaign.id,
       template_id: campaign.template_id,
       contact_id: null,
@@ -322,6 +352,13 @@ async function sendRecipientBatch(
       status: "queued",
       subject: String(template?.subject ?? ""),
       idempotency_key: `crm-v2:campaign:${campaign.id}:email:${recipientHash}`,
+      provider_message_id: null,
+      sent_at: null,
+      delivered_at: null,
+      opened_at: null,
+      clicked_at: null,
+      bounced_at: null,
+      complained_at: null,
       metadata: { source: "scheduled-email-campaign", campaign_id: campaign.id },
       created_at: now,
       updated_at: now,
@@ -349,7 +386,7 @@ async function sendRecipientBatch(
   if (messages.some((message) => !isSafeMarketingEmailPayload({ subject: message.subject, html: message.html, text: message.text }))) {
     return { sent: 0, failed: recipients.length };
   }
-  const inserted = await client.schema("crm_v2").from("email_sends").insert(queuedRows).select("*");
+  const inserted = await client.schema("crm_v2").from("email_sends").upsert(queuedRows, { onConflict: "id" }).select("*");
   if (inserted.error || !inserted.data?.length) return { sent: 0, failed: recipients.length };
   const response = await fetch("https://api.resend.com/emails/batch", {
     method: "POST",

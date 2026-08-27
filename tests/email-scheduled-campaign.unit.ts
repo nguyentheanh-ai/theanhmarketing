@@ -6,11 +6,13 @@ import {
   buildAttributedEmailUrl,
   isSafeMarketingEmailPayload,
   createEmailUnsubscribeToken,
+  selectRetryableCampaignRecipients,
   summarizeEmailCampaignMetrics,
   selectUnpaidFacebookAdsRecipients,
   verifyEmailUnsubscribeToken,
 } from "../lib/email/scheduled-campaign";
 import { verifyResendWebhookRequest } from "../lib/email/resend-webhook";
+import { ensureResendMeasurementWebhook } from "../lib/email/resend-webhook-config";
 
 test("unpaid Facebook Ads audience excludes paid customers, tests, duplicates, and suppressions", () => {
   const recipients = selectUnpaidFacebookAdsRecipients(
@@ -27,6 +29,26 @@ test("unpaid Facebook Ads audience excludes paid customers, tests, duplicates, a
   );
 
   assert.deepEqual(recipients, [{ email: "buyer@example.vn", name: "Mới" }]);
+});
+
+test("partial campaign retry sends only failed recipients and preserves their send rows", () => {
+  const result = selectRetryableCampaignRecipients(
+    [
+      { email: "sent@example.vn", name: "Đã gửi" },
+      { email: "failed@example.vn", name: "Gửi lại" },
+      { email: "new@example.vn", name: "Mới" },
+    ],
+    [
+      { id: "send_sent", recipient_email: "sent@example.vn", status: "delivered" },
+      { id: "send_failed", recipient_email: "failed@example.vn", status: "failed" },
+    ],
+  );
+
+  assert.equal(result.skipped, 1);
+  assert.deepEqual(result.recipients, [
+    { email: "failed@example.vn", name: "Gửi lại", retrySendId: "send_failed" },
+    { email: "new@example.vn", name: "Mới" },
+  ]);
 });
 
 test("campaign metrics separate provider delivery from opens, clicks, and paid orders", () => {
@@ -103,8 +125,45 @@ test("Resend webhook verification uses the raw payload and Svix headers", () => 
 
 test("marketing payload blocks placeholders, mojibake, localhost, and missing UTF-8", () => {
   assert.equal(isSafeMarketingEmailPayload({ subject: "Ưu đãi", html: '<meta charset="UTF-8"><a href="https://www.theanhmarketing.com">CTA</a>', text: "Ưu đãi" }), true);
+  assert.equal(isSafeMarketingEmailPayload({ subject: "ƯU ĐÃI", html: '<meta charset="UTF-8"><p>NHẬN ƯU ĐÃI NGAY</p>', text: "NHẬN ƯU ĐÃI NGAY" }), true);
   assert.equal(isSafeMarketingEmailPayload({ subject: "Ưu đãi", html: '<meta charset="UTF-8">{{name}}', text: "Ưu đãi" }), false);
   assert.equal(isSafeMarketingEmailPayload({ subject: "Ưu đãi", html: '<meta charset="UTF-8"><a href="http://localhost:3000">CTA</a>', text: "Ưu đãi" }), false);
   assert.equal(isSafeMarketingEmailPayload({ subject: "Ưu đãi", html: "<p>Ưu đãi</p>", text: "Ưu đãi" }), false);
   assert.equal(isSafeMarketingEmailPayload({ subject: "Viá»‡t Nam", html: '<meta charset="UTF-8">', text: "Viá»‡t Nam" }), false);
+});
+
+test("existing Resend webhook is retrieved before requiring its signing secret", async () => {
+  const originalFetch = globalThis.fetch;
+  const requestedUrls: string[] = [];
+  globalThis.fetch = async (input) => {
+    const url = String(input);
+    requestedUrls.push(url);
+    if (url.endsWith("/webhooks?limit=100")) {
+      return Response.json({
+        data: [{
+          id: "webhook_123",
+          endpoint: "https://www.theanhmarketing.com/api/resend/webhook",
+          status: "enabled",
+          events: ["email.sent", "email.delivered", "email.opened", "email.clicked", "email.bounced", "email.complained", "email.failed", "email.suppressed"],
+        }],
+      });
+    }
+    if (url.endsWith("/webhooks/webhook_123")) {
+      return Response.json({
+        id: "webhook_123",
+        endpoint: "https://www.theanhmarketing.com/api/resend/webhook",
+        status: "enabled",
+        signing_secret: "whsec_test",
+      });
+    }
+    return Response.json({ message: "Unexpected request" }, { status: 500 });
+  };
+
+  try {
+    const result = await ensureResendMeasurementWebhook("re_test");
+    assert.equal(result.verified, true);
+    assert.ok(requestedUrls.some((url) => url.endsWith("/webhooks/webhook_123")));
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });

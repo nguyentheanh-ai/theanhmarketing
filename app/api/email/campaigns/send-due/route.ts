@@ -13,6 +13,16 @@ function isAuthorized(request: Request) {
 async function handle(request: Request) {
   if (!isAuthorized(request)) return NextResponse.json({ ok: false }, { status: 401 });
   const result = await dispatchDueEmailCampaigns();
+  if (!result.ok) {
+    console.error("Scheduled email campaign dispatch failed", {
+      claimed: result.claimed,
+      sent: result.sent,
+      skipped: result.skipped,
+      failed: result.failed,
+      error: "error" in result ? result.error : undefined,
+      campaigns: "campaigns" in result ? result.campaigns : undefined,
+    });
+  }
   return NextResponse.json(result, { status: result.ok ? 200 : 503 });
 }
 
