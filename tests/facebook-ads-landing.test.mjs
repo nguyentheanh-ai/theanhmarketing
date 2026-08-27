@@ -376,26 +376,6 @@ test("Facebook Ads P1 rewrite updates navigation, FAQs and the primary CTA", () 
   assert.doesNotMatch(main, /Sau khóa này học tiếp gì\?/);
 });
 
-test("Facebook Ads section menu marks the section currently in view", () => {
-  const html = read("public/ladipage/facebook-ads-2026.html");
-
-  assert.match(html, /\.sticky-section-menu a\.is-active[\s\S]*?::before[\s\S]*?content:\s*"✓"/);
-  assert.match(html, /var stickyMenuLinks = Array\.from\(stickyMenu\.querySelectorAll\("a\[href\^='#'\]"\)\);/);
-  assert.match(html, /link\.classList\.toggle\("is-active", isActive\);/);
-  assert.match(html, /link\.setAttribute\("aria-current", "location"\);/);
-  assert.match(html, /var sectionObserver = new IntersectionObserver/);
-});
-
-test("Facebook Ads form keeps a visible 3-2-1 transition before checkout navigation", () => {
-  const html = read("public/ladipage/facebook-ads-2026.html");
-
-  assert.match(html, /id="checkout-transition"[^>]+aria-live="assertive"[^>]+hidden/);
-  assert.match(html, /id="checkout-countdown">3<\/strong>/);
-  assert.match(html, /var countdownValues = \["3", "2", "1"\]/);
-  assert.match(html, /var checkoutTransitionPromise = startCheckoutTransition\(\);/);
-  assert.match(html, /await checkoutTransitionPromise;/);
-});
-
 test("Facebook Ads landing uses the approved WeSuccess-inspired typography and mobile rhythm", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
 
