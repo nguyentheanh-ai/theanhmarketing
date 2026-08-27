@@ -1,5 +1,11 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-08-28 - Revenue-critical UI pre-build gate
+
+- Root cause addressed: landing regression tests previously existed but were optional and therefore could be skipped by a rewrite/deploy session.
+- `package.json` now runs the Facebook Ads landing contract and shared payment-page contract automatically in `prebuild`. A missing 12-section rail, green active/reached state, controller, source/published sync, or checkout countdown/payment contract makes the production build fail before Next.js compiles.
+- Durable commands: `npm run verify:revenue-critical-ui` for an explicit check; `npm run build`/Vercel invokes the same two test files automatically through the standard `prebuild` lifecycle.
+
 ## 2026-08-28 - Restore the existing Facebook Ads section progress rail
 
 - Root cause: the left-side 12-section progress rail implemented in the protected WIP on 17/08 was not carried into the later Facebook Ads P1 rewrite. The rewrite kept the section content and popup menu but dropped the rail CSS, markup, controller and regression guard.

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node --test tests/facebook-ads-landing.test.mjs tests/payment-page-reference-ui.test.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -14,6 +15,7 @@
     "verify:admin-quality": "node scripts/verify-admin-quality.mjs",
     "verify:site-quality": "node scripts/verify-site-quality.mjs",
     "verify:courses": "node scripts/verify-course-funnel.mjs",
+    "verify:revenue-critical-ui": "node --test tests/facebook-ads-landing.test.mjs tests/payment-page-reference-ui.test.mjs",
     "verify:blog-assets": "node scripts/verify-blog-assets.mjs"
   },
   "dependencies": {

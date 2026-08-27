@@ -393,6 +393,19 @@ test("Facebook Ads landing shows the restored left rail that fills green through
   assert.match(html, /@media \(max-width:\s*339px\)[\s\S]*?\.section-progress-rail\s*\{[\s\S]*?display:\s*none/);
 });
 
+test("production build is blocked when the Facebook Ads rail or checkout countdown regresses", () => {
+  const packageJson = JSON.parse(read("package.json"));
+
+  assert.equal(
+    packageJson.scripts["verify:revenue-critical-ui"],
+    "node --test tests/facebook-ads-landing.test.mjs tests/payment-page-reference-ui.test.mjs"
+  );
+  assert.equal(
+    packageJson.scripts.prebuild,
+    "node --test tests/facebook-ads-landing.test.mjs tests/payment-page-reference-ui.test.mjs"
+  );
+});
+
 test("Facebook Ads landing uses the approved WeSuccess-inspired typography and mobile rhythm", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
 
