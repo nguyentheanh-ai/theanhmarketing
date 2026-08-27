@@ -1,5 +1,11 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-08-28 - Restore the existing Facebook Ads section progress rail
+
+- Root cause: the left-side 12-section progress rail implemented in the protected WIP on 17/08 was not carried into the later Facebook Ads P1 rewrite. The rewrite kept the section content and popup menu but dropped the rail CSS, markup, controller and regression guard.
+- Restoration: reused the original 17/08 `section-progress-rail` implementation (green fill, reached/active dots, `aria-current="step"`, IntersectionObserver plus scroll/resize fallback and page-bottom guard). Only the 12 anchor targets/labels were mapped to the current P1 section IDs through `#bat-dau`.
+- Responsive contract: fixed left rail on desktop/tablet, narrower safe-left rail on mobile, hidden only below 340px, reduced-motion transitions disabled. No order, promotion, checkout, Pixel/CAPI, SePay, email or access logic changed.
+
 ## 2026-08-26 - Meta Purchase match-key remediation (production)
 
 | Hạng mục | Chi tiết |
