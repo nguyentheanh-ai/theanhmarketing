@@ -254,8 +254,9 @@ test("Facebook Ads mobile plan selection jumps straight to the payment form", ()
 
   assert.match(html, /function jumpToPaymentFormOnMobile\(\)/);
   assert.match(html, /window\.matchMedia\("\(max-width: 820px\)"\)\.matches/);
-  assert.match(html, /form\.closest\("\.form-card"\) \|\| form/);
+  assert.match(html, /form\.querySelector\('\[name="name"\]'\) \|\| form/);
   assert.match(html, /target\.scrollIntoView\(\{ behavior: "smooth", block: "start" \}\)/);
+  assert.doesNotMatch(html, /form\.closest\("\.form-card"\) \|\| form/);
   assert.match(
     html,
     /setSelectedPlan\(button\.getAttribute\("data-plan-select"\)\);\s*jumpToPaymentFormOnMobile\(\);/
@@ -272,21 +273,22 @@ test("Facebook Ads sticky registration footer communicates the Vietnam-Thailand 
   assert.match(stickyFooter, /31\/08/);
 });
 
-test("Facebook Ads mobile CTAs jump to registration and hide the sticky footer only across the pricing section", () => {
+test("Facebook Ads CTAs jump to the first field on mobile and hide the sticky footer while the form is visible", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
 
-  assert.match(html, /var pricingSection = document\.getElementById\("hoc-phi"\);/);
+  assert.match(html, /var paymentFormCard = form\.closest\("\.form-card"\);/);
   assert.match(
     html,
     /cta\.addEventListener\("click", function \(event\) \{[\s\S]*?event\.preventDefault\(\);[\s\S]*?jumpToPaymentFormOnMobile\(\);/
   );
   assert.match(html, /new IntersectionObserver\(function \(entries\)/);
-  assert.match(html, /pricingObserver\.observe\(pricingSection\);/);
+  assert.match(html, /formObserver\.observe\(paymentFormCard\);/);
   assert.match(html, /stickyCta\.classList\.toggle\("is-form-section-visible", isVisible\);/);
   assert.match(
     html,
-    /@media \(max-width:\s*820px\)[\s\S]*?\.sticky-cta\.is-form-section-visible\s*\{[\s\S]*?transform:\s*translateY\(calc\(100% \+ env\(safe-area-inset-bottom\)\)\);[\s\S]*?opacity:\s*0;[\s\S]*?pointer-events:\s*none;/
+    /\.sticky-cta\.is-form-section-visible\s*\{[\s\S]*?transform:\s*translateY\(calc\(100% \+ env\(safe-area-inset-bottom\)\)\);[\s\S]*?opacity:\s*0;[\s\S]*?pointer-events:\s*none;/
   );
+  assert.doesNotMatch(html, /var isMobile =[\s\S]*?stickyCta\.classList\.toggle\("is-form-section-visible"/);
 });
 
 test("Facebook Ads plan cards are clickable selection targets", () => {

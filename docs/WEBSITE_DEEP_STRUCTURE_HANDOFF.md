@@ -1,5 +1,11 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-08-28 - Payment-form sticky footer visibility and mobile CTA target
+
+- When the actual `.form-card` intersects the viewport, the promotional sticky footer now slides out on desktop and mobile so it cannot cover the submit/invoice controls. It returns after the form leaves the viewport.
+- On mobile (`max-width: 820px`), every `[data-cta]` now scrolls directly to the first `name` field inside `#payment-form`, not to the top of the pricing section/form card.
+- Offer, order creation, 3-2-1 transition, Pixel/CAPI, payment, SePay, email and access contracts are unchanged. Both behaviors are locked in `tests/facebook-ads-landing.test.mjs` and the mandatory prebuild gate.
+
 ## 2026-08-28 - Restore the landing-to-checkout 3-2-1 transition
 
 - Clarification: this is the full-screen `3 → 2 → 1` transition shown after a valid Facebook Ads registration creates an order and before navigation to `/thanh-toan/{orderCode}`; it is separate from both the 12-section reading rail and the offer countdown rendered inside the payment page.
