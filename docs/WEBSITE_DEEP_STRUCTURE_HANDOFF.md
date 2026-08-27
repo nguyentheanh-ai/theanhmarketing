@@ -1511,3 +1511,10 @@ Before changing these, run targeted tests and full build.
 - Attribution is message-specific through `utm_source=email`, `utm_medium=email`, one campaign key and a separate `utm_content`; paid orders and revenue are read from authoritative `public.orders`.
 - Asset: `public/email-assets/vietnam-thang-thai-lan-combo-20-202608.jpg`, optimized from the owner-approved 1122x1402 artwork without changing its visible design.
 - Local verification: focused TypeScript/ESLint pass, email unit `6/6`, relevant contract `29/29`, and Next production build 103 routes pass. Production deployment, campaign rows and first provider event readback are recorded separately after release.
+
+## 2026-08-28 - Legacy payment remarketing disabled
+
+- Scope is only the obsolete seven-step `payment_remarketing_runs` automation. The CRM v2 scheduled campaign worker and all transactional order/payment/access emails remain active.
+- Production database: dropped `payment_remarketing_runs_after_order_insert`; `seed_payment_remarketing_runs` is now a no-op; `claim_due_payment_remarketing_runs` returns `[]`; removed 1,707 non-sent rows and retained 8 sent rows.
+- Safety readback: orders remained 710 total / 287 paid / 2 pending / 420 expired; payment-email markers remained 279 and Meta Purchase markers remained 172.
+- Source guard: `/api/email/worker/send-due` returns HTTP 410 `PAYMENT_REMARKETING_DISABLED` without provider/database calls. Regression coverage is in `tests/payment-remarketing-disabled.test.mjs`.
