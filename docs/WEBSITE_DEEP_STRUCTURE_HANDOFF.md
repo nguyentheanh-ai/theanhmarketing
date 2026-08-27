@@ -5,6 +5,7 @@
 - Root cause addressed: landing regression tests previously existed but were optional and therefore could be skipped by a rewrite/deploy session.
 - `package.json` now runs the Facebook Ads landing contract and shared payment-page contract automatically in `prebuild`. A missing 12-section rail, green active/reached state, controller, source/published sync, or checkout countdown/payment contract makes the production build fail before Next.js compiles.
 - Durable commands: `npm run verify:revenue-critical-ui` for an explicit check; `npm run build`/Vercel invokes the same two test files automatically through the standard `prebuild` lifecycle.
+- Production proof: commit `0264f2f`, deployment `JNZ3vVSsGyJdpox1S82CTea6LJTP`. Vercel build logs show `prebuild` ran first with 36/36 passing, then `next build`; production alias is `https://www.theanhmarketing.com`.
 
 ## 2026-08-28 - Restore the existing Facebook Ads section progress rail
 
