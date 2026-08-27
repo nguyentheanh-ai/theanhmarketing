@@ -5,6 +5,7 @@
 - Clarification: this is the full-screen `3 → 2 → 1` transition shown after a valid Facebook Ads registration creates an order and before navigation to `/thanh-toan/{orderCode}`; it is separate from both the 12-section reading rail and the offer countdown rendered inside the payment page.
 - Restored only the existing transition overlay from the earlier implementation. API/order creation still happens first; navigation waits for the short countdown; an API error closes the overlay and restores the form. No payment, SePay, Pixel/CAPI, email or access contract changed.
 - Regression coverage is part of the mandatory revenue-critical `prebuild` gate.
+- Production proof: commit `997afec`, deployment `9gG64YLJBtbRHR4EX7KmeFpvNKX3`; live HTML is byte-identical to the published source and contains the overlay, `3-2-1` sequence, transition start, awaited navigation and error reset.
 
 ## 2026-08-28 - Revenue-critical UI pre-build gate
 
