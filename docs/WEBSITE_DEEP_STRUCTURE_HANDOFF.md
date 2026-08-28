@@ -1540,3 +1540,11 @@ Before changing these, run targeted tests and full build.
 - Mobile `[data-cta]` controls scroll directly to the `name` input, not the top of the pricing card.
 - Regression gate: 37/37 revenue-critical tests, source/published byte equality, `git diff --check`, TypeScript and production build 104/104 routes passed.
 - Release: commit `e06db69`; production `https://theanhmarketing-q9wv2v1d3-theanhs-projects-509d0c97.vercel.app`, aliased to `https://www.theanhmarketing.com`, READY. Live route and published source are byte-identical with SHA-256 `57e847afcb6039f06eb26b79dcb1a4d75abadcefd292b1f180506bb35759ec40`.
+
+## 2026-08-28 - Two-step unpaid-order reminder automation
+
+- The immediate checkout-entry pending-payment email remains unchanged. New pending orders with a non-empty email now seed reminder 1 for `created_at + 10 minutes`; reminder 2 is created only after reminder 1 is accepted by Resend and is due four hours after that actual send.
+- Reminder 1 may run at any hour. Reminder 2 is claimable only from 09:00 inclusive to 21:00 exclusive in `Asia/Ho_Chi_Minh`. It requires the first run to be `sent`; opening the first email is not required.
+- Every claim checks `orders.status='pending'`; the worker re-reads the order immediately before Resend. Paid, expired or failed orders cancel unsent runs. Resend requests use a per-run idempotency key and failures retry after one hour.
+- Rollout safety: no historical order backfill. The eight old sent rows remain, unsent count stayed zero at activation, and the obsolete Supabase `payment-remarketing-send-due` cron was removed to prevent duplicate calls. Vercel owns the five-minute schedule and protects the route with `CRON_SECRET`.
+- Verification/release: focused 19/19, TypeScript, targeted ESLint, Next production build 104 routes. Full Node baseline was 623/625; the two failures are unrelated pre-existing Facebook Ads landing assertions. Commit `5208e50`; preview `dpl_FU7cwyDYQ5LPQ11NgNusTssbZwXp` READY; production `dpl_5PUd4rfbwBbA418RD28kSrciGVpw` READY on apex/`www`. Live homepage returns 200 and unauthenticated worker returns 401.
