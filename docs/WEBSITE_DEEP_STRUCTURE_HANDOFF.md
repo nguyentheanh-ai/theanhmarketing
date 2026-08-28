@@ -1532,3 +1532,11 @@ Before changing these, run targeted tests and full build.
 - Safety readback: orders remained 710 total / 287 paid / 2 pending / 420 expired; payment-email markers remained 279 and Meta Purchase markers remained 172.
 - Source guard: `/api/email/worker/send-due` returns HTTP 410 `PAYMENT_REMARKETING_DISABLED` without provider/database calls. Regression coverage is in `tests/payment-remarketing-disabled.test.mjs`.
 - Verification/release: focused 97/97, TypeScript, targeted ESLint and direct Next build 104 routes pass. Commit `994e5ba`; preview `dpl_5YRmGx47vwoDdGRNXUYGpifDAcZP` READY; apex and `www` point to that exact deployment. Live worker GET/POST return 410, landing returns 200, campaign and SePay unauthenticated guards return 401, runtime error scan is empty.
+
+## 2026-08-28 - Facebook Ads payment-form sticky footer and mobile jump fix
+
+- Route/source: `/academy/facebook-ads-master-2026`; synchronized `public/ladipage/facebook-ads-2026.html` and `public/academy/facebook-ads-master-2026.html`.
+- Sticky offer footer now hides whenever the actual `.form-card` intersects the viewport on desktop and mobile; the observer no longer treats the whole `#hoc-phi` pricing section as the form.
+- Mobile `[data-cta]` controls scroll directly to the `name` input, not the top of the pricing card.
+- Regression gate: 37/37 revenue-critical tests, source/published byte equality, `git diff --check`, TypeScript and production build 104/104 routes passed.
+- Release: commit `e06db69`; production `https://theanhmarketing-q9wv2v1d3-theanhs-projects-509d0c97.vercel.app`, aliased to `https://www.theanhmarketing.com`, READY. Live route and published source are byte-identical with SHA-256 `57e847afcb6039f06eb26b79dcb1a4d75abadcefd292b1f180506bb35759ec40`.
