@@ -1,19 +1,34 @@
 import { NextResponse } from "next/server";
 
-const disabledResponse = () =>
-  NextResponse.json(
-    {
-      ok: false,
-      code: "PAYMENT_REMARKETING_DISABLED",
-      message: "Legacy payment remarketing is disabled.",
-    },
-    { status: 410 },
-  );
+import { dispatchDuePaymentReminderRuns } from "@/lib/notifications/payment-reminder-email";
 
-export async function GET() {
-  return disabledResponse();
+export const runtime = "nodejs";
+export const maxDuration = 60;
+
+function isAuthorized(request: Request) {
+  const secret = process.env.CRON_SECRET;
+  return Boolean(secret && request.headers.get("Authorization") === `Bearer ${secret}`);
 }
 
-export async function POST() {
-  return disabledResponse();
+async function handle(request: Request) {
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ ok: false }, { status: 401 });
+  }
+
+  const result = await dispatchDuePaymentReminderRuns();
+  if (!result.ok) {
+    console.error("Payment reminder dispatch failed", {
+      claimed: result.claimed,
+      sent: result.sent,
+      cancelled: result.cancelled,
+      retried: result.retried,
+      lostLease: result.lostLease,
+      error: result.error,
+    });
+  }
+
+  return NextResponse.json(result, { status: result.ok ? 200 : 503 });
 }
+
+export const GET = handle;
+export const POST = handle;
