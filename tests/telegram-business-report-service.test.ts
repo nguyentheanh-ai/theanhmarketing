@@ -142,6 +142,38 @@ test("the concise 17h report sends only one Telegram message", async () => {
   assert.equal(result.parts, 1);
 });
 
+test("17h report does not send or mark sent when either Ads account snapshot is incomplete", async () => {
+  let sends = 0;
+  let finish: Record<string, unknown> | undefined;
+  const result = await runTelegramBusinessReport(
+    { slot: "full-day", now: new Date("2026-08-04T10:05:00.000Z") },
+    dependencies({
+      readAds: async () => ({
+        available: false,
+        campaigns: [],
+        reason: "Snapshot MCP thiếu giờ tài khoản.",
+        accounts: [
+          { accountName: "Greezhub 01", accountId: "1255736315302940", available: false, reason: "0/24 giờ final" },
+          { accountName: "TAM01", accountId: "1103665698635605", available: true, spend: 600_000, purchases: 2 },
+        ],
+      }),
+      send: async () => {
+        sends += 1;
+        return { ok: true, skipped: false, status: 200 };
+      },
+      finish: async (input) => {
+        finish = input;
+        return { ok: true };
+      },
+    }),
+  );
+
+  assert.equal(result.ok, false);
+  assert.equal(sends, 0);
+  assert.equal(finish?.outcome, "failed");
+  assert.match(String(finish?.reason), /Greezhub 01.*0\/24 giờ final/i);
+});
+
 test("hourly MCP snapshots must cover and reconcile every account hour", () => {
   const window = { startIso: "2026-08-03T07:00:00.000Z", endIso: "2026-08-03T09:00:00.000Z" };
   const account = (hour: string, spend: number) => ({

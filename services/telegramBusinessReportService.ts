@@ -258,6 +258,10 @@ export async function runTelegramBusinessReport(
     let messages: string[];
     if (input.slot === "full-day") {
       const currentAds = await dependencies.readAds(window);
+      const incompleteAccount = currentAds.accounts?.find((account) => !account.available);
+      if (incompleteAccount) {
+        throw new Error(`${incompleteAccount.accountName}: ${incompleteAccount.reason || "snapshot Ads chưa đủ 24 giờ final"}`);
+      }
       messages = [buildTelegramAdAccountSummaryMessage({
         test: input.test,
         startIso: window.startIso,
