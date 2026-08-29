@@ -51,7 +51,6 @@ test("login password can be shown or hidden with an accessible eye button", () =
 });
 
 test("login supporting copy stays visible on the public light card", () => {
-  assert.match(source, /tracking-\[0\.12em\] text-slate-500/);
   assert.match(source, /text-xs font-bold text-sky-700 hover:text-sky-800/);
   assert.match(source, /border-slate-200 bg-slate-50[^>]*text-slate-700/);
   assert.match(source, /bg-slate-50[^>]*text-slate-600/);
@@ -59,7 +58,6 @@ test("login supporting copy stays visible on the public light card", () => {
 
 test("login behavior and recovery controls remain intact", () => {
   for (const behavior of [
-    "handleGoogleLogin",
     'href="/quen-mat-khau"',
     "rememberLogin",
     "signInWithPassword",

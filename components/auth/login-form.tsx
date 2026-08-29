@@ -68,38 +68,9 @@ export function LoginForm() {
     router.refresh();
   }
 
-  async function handleGoogleLogin() {
-    setMessage("");
-    const supabase = createSupabaseBrowserClient();
-
-    if (!supabase) {
-      setMessage("Chưa cấu hình Supabase. Vui lòng kiểm tra biến môi trường.");
-      return;
-    }
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}${nextPath}`,
-      },
-    });
-
-    if (error) {
-      setMessage(error.message);
-    }
-  }
-
   return (
     <>
       <form onSubmit={handleSubmit} className="grid gap-4">
-        <Button variant="secondary" type="button" onClick={handleGoogleLogin}>
-          Đăng nhập với Google
-        </Button>
-        <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-          <span className="h-px flex-1 bg-slate-200" />
-          hoặc
-          <span className="h-px flex-1 bg-slate-200" />
-        </div>
         <div className="grid gap-2">
           <label className="text-sm font-bold text-slate-900">Email</label>
           <input
@@ -158,6 +129,12 @@ export function LoginForm() {
           Chưa có tài khoản?{" "}
           <Link className="font-bold text-sky-700 hover:text-sky-800" href="/dang-ky">
             Đăng ký Growth Hub
+          </Link>
+        </p>
+        <p>
+          Bạn đã đăng ký?{" "}
+          <Link className="font-bold text-sky-700 hover:text-sky-800" href="/huong-dan">
+            Xem hướng dẫn đăng nhập
           </Link>
         </p>
       </div>

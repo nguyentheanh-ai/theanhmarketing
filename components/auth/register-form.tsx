@@ -162,40 +162,9 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
     router.push(`/thanh-toan/${orderData.order.orderCode}`);
   }
 
-  async function handleGoogleLogin() {
-    setMessage("");
-    const supabase = createSupabaseBrowserClient();
-
-    if (!supabase) {
-      setMessage("Chưa cấu hình Supabase. Vui lòng kiểm tra biến môi trường.");
-      return;
-    }
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}${nextPath}`,
-      },
-    });
-
-    if (error) {
-      setMessage(error.message);
-    } else {
-      setMessage("Đang chuyển sang Google để đăng nhập.");
-    }
-  }
-
   return (
     <>
       <form onSubmit={handleSubmit} className="grid gap-4">
-        <Button variant="secondary" type="button" onClick={handleGoogleLogin}>
-          Đăng ký / đăng nhập với Google
-        </Button>
-        <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-          <span className="h-px flex-1 bg-slate-200" />
-          hoặc tạo bằng email
-          <span className="h-px flex-1 bg-slate-200" />
-        </div>
         <div className="grid gap-2">
           <label className="text-sm font-bold text-slate-900">Họ và tên</label>
           <input

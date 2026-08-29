@@ -1,5 +1,12 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-08-29 - Customer Google Auth entry points removed
+
+- Customer-facing Google OAuth was removed from the student login form, registration form, and AI Marketing trial modal. Existing Google-linked Auth identities and production data were not mutated.
+- Email/password login, registration, forgot-password, remember-login, post-login redirects, checkout and learning-access flows remain intact.
+- `/dang-nhap` now includes `Bạn đã đăng ký? Xem hướng dẫn đăng nhập`, linked to the existing public `/huong-dan` route.
+- Regression guard: `tests/customer-google-auth-entrypoints.test.mjs` rejects Google OAuth handlers/labels across all three customer surfaces and locks the guide link plus preserved account flows.
+
 ## 2026-08-28 - Payment-form sticky footer visibility and mobile CTA target
 
 - When the actual `.form-card` intersects the viewport, the promotional sticky footer now slides out on desktop and mobile so it cannot cover the submit/invoice controls. It returns after the form leaves the viewport.

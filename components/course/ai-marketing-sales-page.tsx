@@ -782,27 +782,6 @@ function TrialAccessModal({
     onSuccess();
   }
 
-  async function handleGoogleLogin() {
-    setMessage("");
-    const supabase = createSupabaseBrowserClient();
-
-    if (!supabase) {
-      setMessage("Chưa cấu hình Supabase. Vui lòng kiểm tra lại hệ thống.");
-      return;
-    }
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`,
-      },
-    });
-
-    if (error) {
-      setMessage(error.message);
-    }
-  }
-
   return (
     <div className="fixed inset-0 z-[90] grid place-items-center bg-black/48 px-4 py-8">
       <div className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-3xl bg-white p-6 shadow-[0_28px_90px_rgba(0,0,0,0.25)]">
@@ -837,9 +816,6 @@ function TrialAccessModal({
         </div>
 
         <form className="mt-5 grid gap-4" onSubmit={handleSubmit}>
-          <Button variant="secondary" type="button" onClick={handleGoogleLogin}>
-            Tiếp tục với Google
-          </Button>
           {mode === "register" ? (
             <>
               <input className="min-h-12 rounded-2xl border border-black/10 px-4" name="name" placeholder="Họ và tên" required />

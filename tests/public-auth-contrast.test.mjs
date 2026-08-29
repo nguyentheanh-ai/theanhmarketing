@@ -36,7 +36,6 @@ test("registration form has no copied white-on-light field or supporting text st
   }
 
   assert.match(registerSource, /select\s+className="auth-readable-input/);
-  assert.match(registerSource, /tracking-\[0\.12em\] text-slate-500/);
   assert.doesNotMatch(registerSource, /text-sm font-semibold text-white\/60/);
   assert.match(registerSource, /text-sm leading-6 text-slate-700/);
   assert.match(registerSource, /bg-slate-50[^"]*text-slate-700/);
@@ -53,8 +52,6 @@ test("forgot-password and registration behavior remain intact", () => {
   }
 
   for (const behavior of [
-    "handleGoogleLogin",
-    "signInWithOAuth",
     "router.push(`/thanh-toan/${orderData.order.orderCode}`)",
     "CompleteRegistration",
   ]) {
