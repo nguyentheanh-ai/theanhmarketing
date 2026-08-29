@@ -6,6 +6,7 @@
 - Email/password login, registration, forgot-password, remember-login, post-login redirects, checkout and learning-access flows remain intact.
 - `/dang-nhap` now includes `Bạn đã đăng ký? Xem hướng dẫn đăng nhập`, linked to the existing public `/huong-dan` route.
 - Regression guard: `tests/customer-google-auth-entrypoints.test.mjs` rejects Google OAuth handlers/labels across all three customer surfaces and locks the guide link plus preserved account flows.
+- Production: commit `6fe02d6`, Vercel deployment `dpl_2AazSwvxenXbFJ9QGzECcCU2cPqm` is `READY` and aliased to `https://www.theanhmarketing.com`. Vercel build/TypeScript and mandatory prebuild `37/37` passed; mobile live readback confirmed no Google label, the guide link points to `/huong-dan`, and both routes have zero horizontal overflow.
 
 ## 2026-08-28 - Payment-form sticky footer visibility and mobile CTA target
 
