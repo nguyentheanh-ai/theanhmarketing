@@ -1,5 +1,14 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-08-29 - Telegram 17h account-summary completeness guard
+
+- Root cause: the 17:00 Meta sync treated account timezone buckets as Vietnam-time buckets and treated omitted zero-delivery hours as missing. Greezhub 01 is `America/Los_Angeles`; TAM01 is `Asia/Bangkok`. Snapshot refresh therefore stopped while the 17:05 route still sent `CHƯA ĐỦ DỮ LIỆU` and marked the window sent.
+- Automation `audit-meta-capi-14h-h-ng-ng-y` now reads each account timezone, queries each account calendar day separately, converts account-hour buckets into the exact UTC 17h-to-17h window, treats `purchase_value` as optional, and may create a final zero bucket only when a successful daily query plus daily/hourly reconciliation proves the omitted hour had no delivery.
+- `/api/reports/telegram/full-day` now refuses to send or mark `sent` if either account lacks 24 continuous final account-hour rows. Campaign-hourly mismatch remains `partial` for diagnosis but does not block the concise account-summary, which uses only account spend and account Purchase count.
+- Production readback for `[2026-08-28T10:00Z, 2026-08-29T10:00Z)` is 24/24 final account rows for both accounts: Greezhub 1.360.514đ / 5 Purchase; TAM01 484.559đ / 1 Purchase. Greezhub campaign rows remain partial because campaign-hourly allocation does not reconcile to account-hourly; they are not used by the Telegram account summary.
+- TDD guard passed 7/7; TypeScript, targeted ESLint, 104-route production build, unauthenticated cron 401 and Vercel runtime-error scan passed. Full legacy `tests/*.mjs` still has an unrelated pre-existing Facebook Ads KStudy sticky-title assertion failure.
+- Release: commit `073d051`, production deployment `dpl_9LjVDWSgxBxvchXoRwaHU9DNb7JR` is READY and aliased to apex/`www`.
+
 ## 2026-08-29 - Customer Google Auth entry points removed
 
 - Customer-facing Google OAuth was removed from the student login form, registration form, and AI Marketing trial modal. Existing Google-linked Auth identities and production data were not mutated.
