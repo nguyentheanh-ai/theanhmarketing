@@ -1,11 +1,11 @@
 # Current State - theanh-main
 
-## 2026-08-31 - Meta Ads audit workbook download (owner-approved release candidate)
+## 2026-08-31 - Meta Ads audit workbook download (live verified)
 
 - `/tai-lieu` now serves the approved 22 KB Excel workbook `checklist-audit-tai-khoan-quang-cao-meta.xlsx` with 50 audit criteria, dropdown statuses, formula summaries and a seven-day action plan.
 - The existing production database row `Checklist audit tài khoản quảng cáo` keeps its identity. When `file_url` is blank, `resourceService` maps only that exact slug to the bundled public file; the fallback catalog carries the same file URL.
 - The resource card renders `Tải file Excel →` and uses the native download attribute for `.xlsx`, `.docx`, `.pdf` and `.zip` files. External/non-file resources keep `Mở tài liệu →`.
-- TDD observed the missing file/fallback failures before implementation. Focused public-service tests pass `6/6`; TypeScript, targeted ESLint, mandatory revenue-critical UI `37/37` and the 104-route Webpack build pass. Production release/readback remains pending.
+- TDD observed the missing file/fallback failures before implementation. Focused public-service tests pass `6/6`; TypeScript, targeted ESLint, mandatory revenue-critical UI `37/37` and the 104-route Webpack build pass. Commit `0a30e87` is live as production deployment `dpl_BqNGMkHfSKHzppx63CnFpdscveWn`; `/tai-lieu` and the workbook return HTTP 200, the live workbook checksum matches the approved source, and no `/tai-lieu` runtime errors were found in the 30-minute release window.
 
 ## 2026-08-21 - Facebook Ads mobile readability and Zalo proof fix (production)
 

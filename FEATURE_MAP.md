@@ -8,6 +8,8 @@ Source: `public/tai-lieu/checklist-audit-tai-khoan-quang-cao-meta.xlsx`, `data/r
 
 Behavior: the approved workbook is available as a direct download from the existing `Checklist audit tài khoản quảng cáo` card. If the Supabase row has no `file_url`, only the exact slug `checklist-audit-tai-khoan-quang-cao` receives the bundled file path; an explicit database URL still wins.
 
+Live proof: production deployment `dpl_BqNGMkHfSKHzppx63CnFpdscveWn` from commit `0a30e87`; page/file HTTP 200 and live SHA-256 `95fc443894030c8fd57034c9f949fbb88676545475ced7e94e2df4fe41d9465f` equals the approved workbook.
+
 Guard: do not create a duplicate resource row, upload customer data, or move the file into the student-resource app. Payment, Auth, LMS, Pixel/CAPI and active landing pages are outside this feature.
 
 ## Paid student support booking - 1.000.000đ
