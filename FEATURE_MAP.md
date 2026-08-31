@@ -1,5 +1,15 @@
 # Feature Map - theanh-main
 
+## Public Meta Ads audit workbook
+
+Route: `/tai-lieu`; file: `/tai-lieu/checklist-audit-tai-khoan-quang-cao-meta.xlsx`.
+
+Source: `public/tai-lieu/checklist-audit-tai-khoan-quang-cao-meta.xlsx`, `data/resources.ts`, `services/resourceService.ts`, `app/tai-lieu/page.tsx`.
+
+Behavior: the approved workbook is available as a direct download from the existing `Checklist audit tài khoản quảng cáo` card. If the Supabase row has no `file_url`, only the exact slug `checklist-audit-tai-khoan-quang-cao` receives the bundled file path; an explicit database URL still wins.
+
+Guard: do not create a duplicate resource row, upload customer data, or move the file into the student-resource app. Payment, Auth, LMS, Pixel/CAPI and active landing pages are outside this feature.
+
 ## Paid student support booking - 1.000.000đ
 
 Product: server-known `support-session-30m`, fixed at 1.000.000đ for every new order and 30-minute booking.

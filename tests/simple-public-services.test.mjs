@@ -57,6 +57,22 @@ test("resources is a real page and retained pages do not link to removed routes"
   assert.doesNotMatch(`${workshop}\n${home}`, /\/he-sinh-thai|\/hoc-vien|\/blog/);
 });
 
+test("Meta Ads audit workbook is bundled and downloadable from the resource card", () => {
+  const workbookPath = "public/tai-lieu/checklist-audit-tai-khoan-quang-cao-meta.xlsx";
+  const fallbackResources = read("data/resources.ts");
+  const resourceService = read("services/resourceService.ts");
+  const resourcesPage = read("app/tai-lieu/page.tsx");
+
+  assert.equal(existsSync(workbookPath), true, "approved workbook must be bundled in public/tai-lieu");
+  assert.match(fallbackResources, /title: "Checklist audit tài khoản quảng cáo"/);
+  assert.match(fallbackResources, /fileUrl: "\/tai-lieu\/checklist-audit-tai-khoan-quang-cao-meta\.xlsx"/);
+  assert.match(resourceService, /checklist-audit-tai-khoan-quang-cao/);
+  assert.match(resourceService, /\/tai-lieu\/checklist-audit-tai-khoan-quang-cao-meta\.xlsx/);
+  assert.match(resourcesPage, /isDirectDownload/);
+  assert.match(resourcesPage, /download=\{isDirectDownload \? true : undefined\}/);
+  assert.match(resourcesPage, /Tải file Excel →/);
+});
+
 test("public sitemap advertises only the approved public information architecture", () => {
   const sitemap = read("app/sitemap.ts");
   for (const route of ["/gioi-thieu", "/he-sinh-thai", "/doi-tac", "/blog", "/hoc-vien", "/lien-he"]) {

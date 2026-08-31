@@ -1,11 +1,12 @@
 export const resources = [
   {
-    slug: "ai-growth-system-audit",
-    title: "AI Growth System Audit Checklist",
+    slug: "checklist-audit-tai-khoan-quang-cao",
+    title: "Checklist audit tài khoản quảng cáo",
     type: "Checklist",
     access: "Miễn phí",
     description:
-      "Danh sách câu hỏi giúp rà soát nhanh Content Engine, Ads Engine, Funnel, Automation và CRM/Data trước khi tăng ngân sách.",
+      "File Excel tương tác với 50 tiêu chí rà soát tài khoản, tracking, chiến dịch, creative và landing page trước khi tăng ngân sách.",
+    fileUrl: "/tai-lieu/checklist-audit-tai-khoan-quang-cao-meta.xlsx",
   },
   {
     slug: "funnel-template-7-ngay",

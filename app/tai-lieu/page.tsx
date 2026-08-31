@@ -17,13 +17,22 @@ export default async function ResourcesPage() {
         <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {resources.map((resource) => {
             const fileUrl = "fileUrl" in resource && typeof resource.fileUrl === "string" ? resource.fileUrl : "";
+            const isDirectDownload = /\.(?:xlsx|docx|pdf|zip)$/i.test(fileUrl);
             return (
             <article className="tam-card tam-lift p-6" key={resource.slug}>
               <FileText className="text-[var(--tam-accent-strong)]" aria-hidden="true" />
               <p className="mt-5 text-xs font-black uppercase tracking-[0.12em] text-[var(--tam-accent-strong)]">{resource.type} · {resource.access}</p>
               <h2 className="mt-3 text-xl font-black text-[var(--tam-ink)]">{resource.title}</h2>
               <p className="mt-3 text-sm font-medium leading-7 text-[var(--tam-muted)]">{resource.description}</p>
-              {fileUrl ? <a className="mt-5 inline-flex font-black text-[var(--tam-accent-strong)]" href={fileUrl}>Mở tài liệu →</a> : null}
+              {fileUrl ? (
+                <a
+                  className="mt-5 inline-flex font-black text-[var(--tam-accent-strong)]"
+                  download={isDirectDownload ? true : undefined}
+                  href={fileUrl}
+                >
+                  {fileUrl.toLowerCase().endsWith(".xlsx") ? "Tải file Excel →" : "Mở tài liệu →"}
+                </a>
+              ) : null}
             </article>
             );
           })}

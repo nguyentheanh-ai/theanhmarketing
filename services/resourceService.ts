@@ -20,6 +20,10 @@ type DbResource = {
 
 const resourceSelectFields = "id,title,description,thumbnail,file_url,access_type,created_at" as const;
 
+const bundledResourceFiles: Record<string, string> = {
+  "checklist-audit-tai-khoan-quang-cao": "/tai-lieu/checklist-audit-tai-khoan-quang-cao-meta.xlsx",
+};
+
 function slugify(value: string) {
   return value
     .toLowerCase()
@@ -30,9 +34,11 @@ function slugify(value: string) {
 }
 
 function mapDbResource(resource: DbResource): ResourceItem {
+  const slug = slugify(resource.title || resource.id);
+
   return {
     id: resource.id,
-    slug: slugify(resource.title || resource.id),
+    slug,
     title: resource.title,
     type: "Toolkit",
     access:
@@ -43,7 +49,7 @@ function mapDbResource(resource: DbResource): ResourceItem {
           : "Miễn phí",
     description: resource.description ?? "",
     thumbnail: resource.thumbnail ?? "",
-    fileUrl: resource.file_url ?? "",
+    fileUrl: resource.file_url?.trim() || bundledResourceFiles[slug] || "",
   };
 }
 

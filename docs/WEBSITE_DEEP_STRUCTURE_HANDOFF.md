@@ -659,6 +659,7 @@ Core services:
 - `services/courseService.ts`: load courses, modules, lessons, normalize Supabase + fallback data.
 - `services/blogService.ts`: blog posts.
 - `services/resourceService.ts`: resources/docs.
+- `services/resourceService.ts` preserves database `file_url` as the first choice and maps the exact legacy slug `checklist-audit-tai-khoan-quang-cao` to the bundled workbook only when that field is blank. The customer file lives at `public/tai-lieu/checklist-audit-tai-khoan-quang-cao-meta.xlsx`; `/tai-lieu` renders it as a native Excel download. Do not create a duplicate database row for this resource.
 - `services/testimonialService.ts`: testimonials.
 - `services/orderService.ts`: order/payment data.
 - `services/leadService.ts`: leads; Admin Lead read-model maps payment from `orders`, sale status from `leads.sale_status`, sheet metadata from `leads.google_sheet_*`, and resend count from `lead_email_logs`.
