@@ -190,3 +190,11 @@ Updated: 2026-07-22
 - Hero refinement theo wireframe owner: bỏ header, bố cục copy trái / sách + 2 trang mẫu + 3 thông số phải, 3 lợi ích chạy ngang cuối hero. Browser 1440/390/320 đạt; source/published byte-identical; commerce và tracking giữ nguyên. Vẫn local only.
 - Direct-file preview fix: toàn bộ bundled Ebook image và `checkout-invoice.js` dùng đường dẫn tương đối `../`, nên cùng HTML chạy được qua `file://`, `/ladipage/...` và `/academy/...`; regression xác minh từng asset tồn tại thật.
 - Final owner UI pass live: hero fact row chỉ còn `471 trang`, `10 phần`, `2026 cập nhật`; CTA/menu/sticky controls dùng góc 14px và page arrows 12px thay cho pill radius. Source/published/live SHA-256 cùng là `f272b6fb4d8734b472ac22e17064d90b0d3fe81d1fc61b6a8a75689cee0f2248`; 29/29 URL ảnh trả 200, responsive 1440/390/320 không overflow, guards 307/405/405 và runtime error scan sạch. Không submit form hoặc tạo order.
+
+## 2026-09-04 - Checkout and Facebook Ads landing compositor stabilization (local verified)
+
+- Video evidence showed the site foreground disappearing for roughly two 30 fps frames while browser chrome and the page background remained, consistent with a compositor-layer dropout rather than navigation or network reload.
+- `/thanh-toan/[code]` no longer uses full-viewport `blur-3xl`, `backdrop-blur`, floating notice/Zalo animations, or a continuously translated duplicate Zalo marquee. The proof gallery remains complete as a manual horizontal snap scroller.
+- `/academy/facebook-ads-master-2026` no longer runs idle infinite decoration animations or blurred backdrop surfaces. Finite interaction/reveal behavior and the checkout transition spinner remain intact.
+- Offer, pricing, QR/SePay, polling, invoice, email/access, Pixel/CAPI and CTA contracts are unchanged. Source/published landing HTML remains byte-identical.
+- Verification: focused regression `39/39`, targeted ESLint, `git diff --check`, Chrome local readback `200` for landing and demo checkout with zero running animations/backdrop blurs, and Webpack production build `104/104` routes. Local only; no production deployment or real order.

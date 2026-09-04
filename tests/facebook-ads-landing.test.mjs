@@ -447,3 +447,29 @@ test("Facebook Ads legacy decorative portrait styles cannot block mobile interac
     /\.curriculum-portrait-cutout,[\s\S]*?\.curriculum-portrait-cutout img,[\s\S]*?\.curriculum-orbit\s*\{[\s\S]*?pointer-events:\s*none/
   );
 });
+
+test("Facebook Ads landing avoids perpetual compositor effects that can flash the page blank", () => {
+  const html = read("public/ladipage/facebook-ads-2026.html");
+  const perpetualAnimations = [
+    "button-shine",
+    "zalo-proof-scroll",
+    "grid-drift",
+    "signal-pulse",
+    "border-flow",
+    "icon-float",
+    "hero-orbit-drift",
+    "facebook-float",
+    "hybrid-grid-drift",
+  ];
+
+  for (const animationName of perpetualAnimations) {
+    assert.doesNotMatch(
+      html,
+      new RegExp(`animation:\\s*${animationName}[^;]*infinite`),
+      `${animationName} must not keep an offscreen compositor layer repainting`,
+    );
+  }
+
+  assert.doesNotMatch(html, /backdrop-filter:\s*blur\(/);
+  assert.doesNotMatch(html, /will-change:\s*transform/);
+});

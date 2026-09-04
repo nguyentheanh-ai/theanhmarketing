@@ -335,3 +335,10 @@ Guard: order payload and lead payload are different contracts; preserve text for
 | Mobile 320px containment | LOCAL READY | Scoped `<=339px` offer/form CSS | Form fields, invoice helper và checkout JS không đổi | Browser readback `scrollWidth=clientWidth`; 390/1440 cũng không overflow |
 | Header-free visual hero | LIVE | Premium Ebook hero HTML/CSS + regression test | CTA, form, order API, SEO và Pixel/CAPI không đổi | Book + 2 page previews + 471/10/2026 facts; production Browser 1440/390/320 đạt |
 | Compact hero facts and buttons | LIVE | Premium Ebook hero/button CSS + regression test | Commerce/tracking/SEO unchanged | Bỏ 3 caption; nút 14px, page arrow 12px; live hash khớp local |
+
+## 2026-09-04 - Checkout and Facebook Ads rendering stability
+
+| Feature | Status | Code | Flow giữ nguyên | Ghi chú |
+|---|---|---|---|---|
+| Checkout compositor stabilization | LOCAL VERIFIED | `/thanh-toan/[code]`, payment countdown, Zalo proof gallery | QR/SePay, polling, invoice, pricing, email/access and tracking unchanged | Removes full-screen blur and perpetual transform animation; all 12 Zalo proofs remain in a manual snap scroller |
+| Facebook Ads landing compositor stabilization | LOCAL VERIFIED | Synchronized Facebook Ads source/published HTML + regression tests | Offer, form, order API, Pixel/CAPI, CTA and SEO unchanged | Removes idle infinite decorative animations and backdrop blur; finite interactions remain |

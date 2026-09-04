@@ -53,7 +53,7 @@ export function PaymentOfferCountdown({
   const timeParts = formatTimeParts(secondsLeft);
 
   return (
-    <div className="payment-countdown-card rounded-[26px] border border-blue-100 bg-white/95 p-4 text-left shadow-[0_22px_70px_rgba(0,97,255,0.12)] backdrop-blur-2xl sm:rounded-[30px] sm:p-6">
+    <div className="payment-countdown-card rounded-[26px] border border-blue-100 bg-white/95 p-4 text-left shadow-[0_22px_70px_rgba(0,97,255,0.12)] sm:rounded-[30px] sm:p-6">
       <p className="inline-flex rounded-full bg-red-50 px-4 py-2 text-[11px] font-black uppercase tracking-[0.14em] text-red-500 sm:px-5 sm:text-xs">
         Ưu đãi đã áp dụng
       </p>

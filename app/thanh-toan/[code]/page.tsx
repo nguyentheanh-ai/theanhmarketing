@@ -571,26 +571,8 @@ export default async function PaymentPage({
           line-height: 1.35;
         }
 
-        .payment-topbar-content {
-          animation: payment-notice-float 2.4s ease-in-out infinite;
-        }
-
         .payment-notice-label {
           color: #dc2626;
-        }
-
-        .payment-floating-zalo {
-          animation: payment-zalo-float 2.2s ease-in-out infinite;
-        }
-
-        @keyframes payment-notice-float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-3px); }
-        }
-
-        @keyframes payment-zalo-float {
-          0%, 100% { transform: translateY(0); box-shadow: 0 16px 40px rgba(0, 104, 255, 0.34); }
-          50% { transform: translateY(-6px); box-shadow: 0 22px 48px rgba(0, 104, 255, 0.46); }
         }
 
         .payment-checkout-page .payment-header,
@@ -725,19 +707,7 @@ export default async function PaymentPage({
           }
 
         }
-
-        @media (prefers-reduced-motion: reduce) {
-          .payment-topbar-content,
-          .payment-floating-zalo {
-            animation: none;
-          }
-        }
       `}</style>
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -right-28 -top-32 size-[460px] rounded-full bg-blue-500/18 blur-3xl" />
-        <div className="absolute -left-28 top-1/3 size-[390px] rounded-full bg-cyan-400/16 blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 size-[320px] rounded-full bg-orange-300/12 blur-3xl" />
-      </div>
 
       <div className="payment-topbar fixed inset-x-0 top-0 z-50 bg-gradient-to-r from-blue-600 to-cyan-400 px-4 py-3 text-center text-base font-black text-white shadow-lg">
         <div className="payment-topbar-content mx-auto max-w-6xl">
@@ -753,7 +723,7 @@ export default async function PaymentPage({
         </div>
       </div>
 
-      <header className="payment-header relative z-10 border-b border-slate-900/8 bg-white/88 px-5 py-4 backdrop-blur-2xl">
+      <header className="payment-header relative z-10 border-b border-slate-900/8 bg-white/88 px-5 py-4">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
           <Link className="flex items-center gap-3 font-black text-slate-950" href={content.productHref}>
             <span className="grid size-11 place-items-center overflow-hidden rounded-2xl bg-white shadow-[0_10px_28px_rgba(15,23,42,0.12)]">
@@ -769,7 +739,7 @@ export default async function PaymentPage({
 
       <section className="relative z-10 mx-auto flex max-w-6xl flex-col gap-7 px-3 pb-16 pt-8 sm:px-5 lg:pt-10">
         <div className="order-2 mx-auto w-full max-w-5xl">
-          <div className="payment-soft-card rounded-[28px] border border-white/80 bg-white/82 p-5 shadow-[0_16px_54px_rgba(0,97,255,0.08)] backdrop-blur-xl sm:p-6">
+          <div className="payment-soft-card rounded-[28px] border border-white/80 bg-white/82 p-5 shadow-[0_16px_54px_rgba(0,97,255,0.08)] sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-600">Thông tin đơn hàng</p>
@@ -810,7 +780,7 @@ export default async function PaymentPage({
           ) : null}
         </div>
 
-        <div className="payment-card order-1 mx-auto w-full max-w-5xl rounded-[26px] border border-blue-100 bg-white/94 p-2.5 shadow-[0_28px_90px_rgba(0,97,255,0.14)] backdrop-blur-2xl sm:rounded-[34px] sm:p-6" id="qr-payment-section">
+        <div className="payment-card order-1 mx-auto w-full max-w-5xl rounded-[26px] border border-blue-100 bg-white/94 p-2.5 shadow-[0_28px_90px_rgba(0,97,255,0.14)] sm:rounded-[34px] sm:p-6" id="qr-payment-section">
           <div className="payment-qr-shell rounded-[24px] bg-gradient-to-br from-blue-500 to-cyan-300 p-0.5 sm:rounded-[28px] sm:p-1">
             <div className="payment-qr-inner rounded-[22px] bg-[#fbfdff] p-3 sm:rounded-[24px] sm:p-7">
               <div className="flex flex-wrap items-start justify-between gap-4">

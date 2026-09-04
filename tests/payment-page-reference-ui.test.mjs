@@ -62,7 +62,6 @@ test("Facebook Ads and Ebook checkout prioritizes payment and real Zalo proof", 
   assert.match(page, /payment-topbar-desktop/);
   assert.match(page, /payment-topbar-mobile/);
   assert.match(page, /payment-notice-label/);
-  assert.match(page, /@keyframes payment-notice-float/);
   assert.match(page, /const isFacebookAdsConversionCheckout/);
   assert.match(
     page,
@@ -80,14 +79,27 @@ test("Facebook Ads and Ebook checkout prioritizes payment and real Zalo proof", 
   assert.match(page, /Nhắn Zalo Thế Anh/);
   assert.ok(
     page.indexOf('className="payment-floating-zalo') > page.lastIndexOf("</section>"),
-    "floating Zalo button must live outside every checkout section and backdrop-filter box",
+    "floating Zalo button must live outside every checkout section",
   );
 
   assert.equal((proof.match(/zalo-proof-\d{2}-/g) || []).length, 12);
-  assert.match(proof, /animation:\s*payment-zalo-scroll 92s linear infinite/);
-  assert.match(proof, /animation-play-state:\s*paused/);
-  assert.match(proof, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(proof, /overflow-x:\s*auto/);
+  assert.match(proof, /scroll-snap-type:\s*x mandatory/);
   assert.match(proof, /Học viên được hỗ trợ thật qua Zalo/);
+});
+
+test("Facebook Ads checkout avoids continuously composited surfaces that can flash blank", () => {
+  const page = read("app/thanh-toan/[code]/page.tsx");
+  const proof = read("components/payment/zalo-support-proof.tsx");
+
+  assert.doesNotMatch(page, /backdrop-blur/);
+  assert.doesNotMatch(page, /blur-3xl/);
+  assert.doesNotMatch(page, /payment-notice-float|payment-zalo-float/);
+  assert.doesNotMatch(proof, /animation:\s*payment-zalo-scroll/);
+  assert.doesNotMatch(proof, /will-change:\s*transform/);
+  assert.match(proof, /overflow-x:\s*auto/);
+  assert.match(proof, /scroll-snap-type:\s*x mandatory/);
+  assert.doesNotMatch(proof, /\[false, true\]\.map/);
 });
 
 test("local product demos preserve their product-specific checkout prices", () => {

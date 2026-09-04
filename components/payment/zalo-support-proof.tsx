@@ -26,30 +26,24 @@ export function ZaloSupportProof() {
 
       <div className="payment-zalo-marquee mt-6" aria-label="Phản hồi và hỗ trợ Zalo thực tế từ học viên">
         <div className="payment-zalo-track">
-          {[false, true].map((duplicate) => (
-            <div className="payment-zalo-sequence" aria-hidden={duplicate || undefined} key={duplicate ? "duplicate" : "primary"}>
-              {zaloProofs.map(([file, alt]) => (
-                <figure className="payment-zalo-card" key={`${duplicate ? "duplicate" : "primary"}-${file}`}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img alt={duplicate ? "" : alt} height="1385" loading="lazy" src={`/ladipage/assets/zalo-support/${file}`} width="640" />
-                </figure>
-              ))}
-            </div>
-          ))}
+          <div className="payment-zalo-sequence">
+            {zaloProofs.map(([file, alt]) => (
+              <figure className="payment-zalo-card" key={file}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img alt={alt} height="1385" loading="lazy" src={`/ladipage/assets/zalo-support/${file}`} width="640" />
+              </figure>
+            ))}
+          </div>
         </div>
       </div>
 
       <style>{`
-        .payment-zalo-marquee { overflow: hidden; width: 100%; }
-        .payment-zalo-track { animation: payment-zalo-scroll 92s linear infinite; display: flex; width: max-content; will-change: transform; }
-        .payment-zalo-marquee:hover .payment-zalo-track,
-        .payment-zalo-marquee:focus-within .payment-zalo-track { animation-play-state: paused; }
-        .payment-zalo-sequence { align-items: stretch; display: flex; gap: 12px; padding-right: 12px; }
-        .payment-zalo-card { aspect-ratio: 15 / 32; background: #e9edf6; border: 1px solid #dbeafe; border-radius: 18px; box-shadow: 0 18px 44px rgba(15,23,42,.16); flex: 0 0 auto; overflow: hidden; width: 244px; }
+        .payment-zalo-marquee { overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x mandatory; width: 100%; }
+        .payment-zalo-track { display: block; width: max-content; }
+        .payment-zalo-sequence { align-items: stretch; display: flex; gap: 12px; padding: 0 12px; }
+        .payment-zalo-card { aspect-ratio: 15 / 32; background: #e9edf6; border: 1px solid #dbeafe; border-radius: 18px; box-shadow: 0 18px 44px rgba(15,23,42,.16); flex: 0 0 auto; overflow: hidden; scroll-snap-align: start; width: 244px; }
         .payment-zalo-card img { display: block; height: 100%; object-fit: cover; object-position: center; width: 100%; }
-        @keyframes payment-zalo-scroll { to { transform: translateX(-50%); } }
         @media (min-width: 768px) { .payment-zalo-card { width: 280px; } }
-        @media (prefers-reduced-motion: reduce) { .payment-zalo-track { animation: none; } .payment-zalo-sequence[aria-hidden="true"] { display: none; } }
       `}</style>
     </section>
   );

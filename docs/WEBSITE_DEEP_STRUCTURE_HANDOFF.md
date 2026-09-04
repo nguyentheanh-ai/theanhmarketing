@@ -1566,3 +1566,11 @@ Before changing these, run targeted tests and full build.
 - Every claim checks `orders.status='pending'`; the worker re-reads the order immediately before Resend. Paid, expired or failed orders cancel unsent runs. Resend requests use a per-run idempotency key and failures retry after one hour.
 - Rollout safety: no historical order backfill. The eight old sent rows remain, unsent count stayed zero at activation, and the obsolete Supabase `payment-remarketing-send-due` cron was removed to prevent duplicate calls. Vercel owns the five-minute schedule and protects the route with `CRON_SECRET`.
 - Verification/release: focused 19/19, TypeScript, targeted ESLint, Next production build 104 routes. Full Node baseline was 623/625; the two failures are unrelated pre-existing Facebook Ads landing assertions. Commit `5208e50`; preview `dpl_FU7cwyDYQ5LPQ11NgNusTssbZwXp` READY; production `dpl_5PUd4rfbwBbA418RD28kSrciGVpw` READY on apex/`www`. Live homepage returns 200, unauthenticated worker returns 401, and the first scheduled Vercel invocation returned 200 at 00:30 UTC with zero queued/new runs and no route runtime errors.
+
+## 2026-09-04 - Rendering flicker mitigation for Facebook Ads landing and checkout
+
+- Evidence: the supplied 30 fps recording contains a two-frame interval where foreground layers disappear but Chrome UI, scrollbar and the page background remain. This points to compositing failure, not a document reload.
+- Checkout mitigation: remove full-viewport blurred blobs, backdrop blur and perpetual topbar/Zalo/marquee transforms; retain the complete proof set as a user-controlled horizontal snap gallery.
+- Landing mitigation: remove idle infinite decoration transforms, `will-change: transform` and blurred backdrop surfaces; keep finite reveal/hover interactions and the submit-only checkout transition.
+- Protected contracts: no order, price, QR/SePay, payment polling, invoice, email/access, Pixel/CAPI, CTA or SEO behavior changed.
+- Local verification: `39/39` focused regressions, targeted ESLint, byte-identical landing files, Chrome `200` render at top/mid page with zero running animations and zero computed backdrop blur, and Webpack production build of all 104 routes. Production remains not deployed pending the release gate.
