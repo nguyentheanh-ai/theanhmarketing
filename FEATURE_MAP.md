@@ -340,5 +340,5 @@ Guard: order payload and lead payload are different contracts; preserve text for
 
 | Feature | Status | Code | Flow giữ nguyên | Ghi chú |
 |---|---|---|---|---|
-| Checkout compositor stabilization | LOCAL VERIFIED | `/thanh-toan/[code]`, payment countdown, Zalo proof gallery | QR/SePay, polling, invoice, pricing, email/access and tracking unchanged | Removes full-screen blur and perpetual transform animation; all 12 Zalo proofs remain in a manual snap scroller |
-| Facebook Ads landing compositor stabilization | LOCAL VERIFIED | Synchronized Facebook Ads source/published HTML + regression tests | Offer, form, order API, Pixel/CAPI, CTA and SEO unchanged | Removes idle infinite decorative animations and backdrop blur; finite interactions remain |
+| Checkout compositor stabilization | PRODUCTION | `/thanh-toan/[code]`, payment countdown, Zalo proof gallery | QR/SePay, polling, invoice, pricing, email/access and tracking unchanged | Runtime `7846ba4`, production `dpl_3fFL3SV8nNYT87vVUkUxU4zeyHbm`; removes full-screen blur and perpetual transform animation; all 12 Zalo proofs remain in a manual snap scroller |
+| Facebook Ads landing compositor stabilization | PRODUCTION LIVE VERIFIED | Synchronized Facebook Ads source/published HTML + regression tests | Offer, form, order API, Pixel/CAPI, CTA and SEO unchanged | Live/source SHA-256 matches; zero running animation/backdrop blur/broken image/overflow/browser error; finite interactions remain |
