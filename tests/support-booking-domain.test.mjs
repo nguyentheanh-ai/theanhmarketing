@@ -38,16 +38,36 @@ function loadSupportDomain() {
 
 const now = new Date("2026-07-25T02:00:00.000Z"); // 09:00 Vietnam
 
-test("support booking window locks today through day 6 and includes day 30", () => {
+test("support booking window locks today through day 2 and includes day 30", () => {
   const { getSupportBookingWindow, isSupportDateBookable } = loadSupportDomain();
   const window = getSupportBookingWindow(now);
 
-  assert.deepEqual(window, { minDate: "2026-08-01", maxDate: "2026-08-24" });
+  assert.deepEqual(window, { minDate: "2026-07-28", maxDate: "2026-08-24" });
   assert.equal(isSupportDateBookable("2026-07-25", now), false);
-  assert.equal(isSupportDateBookable("2026-07-31", now), false);
+  assert.equal(isSupportDateBookable("2026-07-27", now), false);
+  assert.equal(isSupportDateBookable("2026-07-28", now), true);
   assert.equal(isSupportDateBookable("2026-08-01", now), true);
   assert.equal(isSupportDateBookable("2026-08-24", now), true);
   assert.equal(isSupportDateBookable("2026-08-25", now), false);
+});
+
+test("support booking excludes Sundays without excluding Saturday or Monday", () => {
+  const { isSupportDateBookable } = loadSupportDomain();
+  for (const sunday of ["2026-08-02", "2026-08-09", "2026-08-16", "2026-08-23"]) {
+    assert.equal(isSupportDateBookable(sunday, now), false);
+  }
+  assert.equal(isSupportDateBookable("2026-08-01", now), true);
+  assert.equal(isSupportDateBookable("2026-08-03", now), true);
+  assert.equal(isSupportDateBookable("2026-02-30", now), false);
+});
+
+test("three-day window follows Vietnam midnight and skips a Sunday at its lower bound", () => {
+  const { getSupportBookingWindow, isSupportDateBookable } = loadSupportDomain();
+  assert.equal(getSupportBookingWindow(new Date("2026-09-04T16:59:59Z")).minDate, "2026-09-07");
+  assert.equal(getSupportBookingWindow(new Date("2026-09-04T17:00:00Z")).minDate, "2026-09-08");
+  const thursday = new Date("2026-09-03T02:00:00Z");
+  assert.equal(isSupportDateBookable("2026-09-06", thursday), false);
+  assert.equal(isSupportDateBookable("2026-09-07", thursday), true);
 });
 
 test("support slots follow the approved morning and afternoon schedule", () => {
@@ -89,8 +109,12 @@ test("booking input is normalized and rejects invalid or unavailable requests", 
   assert.equal(valid.startsAt, "2026-08-01T02:30:00.000Z");
 
   assert.throws(
-    () => validateSupportBookingInput({ ...valid, appointmentDate: "2026-07-31" }, now),
-    /chỉ có thể đặt từ 7 đến 30 ngày tới/i,
+    () => validateSupportBookingInput({ ...valid, appointmentDate: "2026-07-27" }, now),
+    /chỉ có thể đặt từ 3 đến 30 ngày tới/i,
+  );
+  assert.throws(
+    () => validateSupportBookingInput({ ...valid, appointmentDate: "2026-08-02" }, now),
+    /không nhận lịch hỗ trợ vào Chủ nhật/i,
   );
   assert.throws(
     () => validateSupportBookingInput({ ...valid, appointmentTime: "12:00" }, now),
@@ -113,7 +137,7 @@ test("verified owner can preview booking without fabricating a paid course order
   assert.match(page, /isAdmin/);
   assert.match(page, /allowOwnerPreview: isAdmin/);
   assert.match(route, /allowOwnerPreview: isAdmin/);
-  assert.match(form, /Chế độ xem thử của quản trị viên/);
+  assert.doesNotMatch(form, /previewMode|quản trị|xem thử|không tạo dữ liệu|luồng của khách hàng/);
   assert.match(form, /SUPPORT_PRICE_LABEL/);
   assert.doesNotMatch(form, /500\.000đ/);
   assert.doesNotMatch(service, /status\s*:\s*["']paid["']/);

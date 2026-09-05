@@ -1,5 +1,16 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-09-05 - Support booking: three-day notice, Sundays closed, customer copy
+
+- Status: LOCAL VERIFIED; production deployment awaits owner confirmation under workspace AGENTS.md. No push, deployment, database mutation, email or real booking was performed.
+- Scope: main-site `/dat-lich-ho-tro`, its success page and the existing CRM support calendar. The shared minimum is 3 Vietnam calendar days; maximum remains 30 days. Every Sunday is unavailable in the customer/admin calendars and in server availability, booking validation and admin reopening validation.
+- Customer copy: removed all owner-preview notices and Telegram/internal processing text; customer and owner render the same form. Calendar labels distinguish days not yet open, Sundays and unavailable dates.
+- Preserved: verified owner eligibility, existing paid-student eligibility, price/duration, reservation conflict protection, live holds, payment/SePay, notifications, tracking and existing confirmed bookings. No migration is required: production RPC catalog confirms only service_role can reserve; anon/authenticated cannot call it directly.
+- Source: `lib/support-booking/constants.ts`, `lib/support-booking/domain.ts`, `services/supportBookingService.ts`, both support calendar components and `app/dat-lich-ho-tro/thanh-cong/page.tsx`; existing support tests updated plus `tests/support-booking-schedule.test.mjs`.
+- Verification: focused support/guide 26/26; customer and owner static renders match and hide internal notices; Sunday/lead-time requests fail before DB access; confirmed/live-hold/expired-hold/busy-date handling is covered. TypeScript passes; targeted ESLint has 0 errors and 1 unchanged CRM warning. Required revenue-critical prebuild passes 39/39. Final Webpack production build passed (104/104 routes); git diff --check passed.
+- Baseline limits: full Node suite 633/637 with 4 failures in unchanged Facebook Ads event/legacy hero/sticky tests. Failing test files and all relevant landing inputs were byte-compared to unchanged HEAD `a5f7265`. Full ESLint still reports 103 existing errors / 7275 warnings, mainly bundled public JS and an unrelated preorder test. No unrelated landing or lint cleanup was made.
+
+
 ## 2026-08-29 - Telegram 17h account-summary completeness guard
 
 - Root cause: the 17:00 Meta sync treated account timezone buckets as Vietnam-time buckets and treated omitted zero-delivery hours as missing. Greezhub 01 is `America/Los_Angeles`; TAM01 is `Asia/Bangkok`. Snapshot refresh therefore stopped while the 17:05 route still sent `CHƯA ĐỦ DỮ LIỆU` and marked the window sent.

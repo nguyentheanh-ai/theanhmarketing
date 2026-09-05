@@ -7,6 +7,7 @@ import {
 } from "@/lib/support-booking/constants";
 import {
   getSupportBookingWindow,
+  isSupportSunday,
   listSupportSlots,
   validateSupportBookingInput,
   type SupportBookingInput,
@@ -151,8 +152,8 @@ export async function getSupportAvailability(now = new Date()): Promise<{
       maxLeadDays: SUPPORT_MAX_LEAD_DAYS,
       days: dates.map((date) => ({
         date,
-        busy: false,
-        slots: slots.map((time) => ({ time, available: true })),
+        busy: isSupportSunday(date),
+        slots: slots.map((time) => ({ time, available: !isSupportSunday(date) })),
       })),
     };
   }
@@ -186,10 +187,10 @@ export async function getSupportAvailability(now = new Date()): Promise<{
     maxLeadDays: SUPPORT_MAX_LEAD_DAYS,
     days: dates.map((date) => ({
       date,
-      busy: busyDates.has(date),
+      busy: isSupportSunday(date) || busyDates.has(date),
       slots: slots.map((time) => ({
         time,
-        available: !busyDates.has(date) && !occupied.has(`${date}:${time}`),
+        available: !isSupportSunday(date) && !busyDates.has(date) && !occupied.has(`${date}:${time}`),
       })),
     })),
   };
@@ -354,7 +355,8 @@ export async function listSupportBusyDates(now = new Date()) {
 
 export async function setSupportBusyDate(input: { date: string; busy: boolean; note?: string; actorId?: string | null }, now = new Date()) {
   const { minDate, maxDate } = getSupportBookingWindow(now);
-  if (input.date < minDate && !input.busy) throw new Error("7 ngày gần nhất luôn bận và không thể mở lịch.");
+  if (input.date < minDate && !input.busy) throw new Error(`Chỉ có thể mở lịch từ ${SUPPORT_MIN_LEAD_DAYS} ngày tới.`);
+  if (isSupportSunday(input.date) && !input.busy) throw new Error("Không nhận lịch hỗ trợ vào Chủ nhật.");
   if (input.date > maxDate || !/^\d{4}-\d{2}-\d{2}$/.test(input.date)) throw new Error("Ngày bận không hợp lệ.");
   if (isLocalDemo()) return { ok: true, demo: true };
   const supabase = createSupabaseAdminClient();

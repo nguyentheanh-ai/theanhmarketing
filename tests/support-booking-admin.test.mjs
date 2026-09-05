@@ -31,5 +31,5 @@ test("support booking admin mutations authenticate owner before parsing", () => 
   assert.match(route, /setSupportBusyDate/);
   assert.match(service, /listConfirmedSupportBookings/);
   assert.match(service, /\.eq\("status", "confirmed"\)/);
-  assert.match(service, /7 ngày gần nhất luôn bận/);
+  assert.doesNotMatch(service, /7 ngày gần nhất luôn bận/);
 });

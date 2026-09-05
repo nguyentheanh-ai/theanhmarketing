@@ -2,6 +2,8 @@
 
 import { CalendarDays, Clock3, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { SUPPORT_MIN_LEAD_DAYS } from "@/lib/support-booking/constants";
+import { isSupportSunday } from "@/lib/support-booking/domain";
 import type { SupportBookingAdminRow } from "@/services/supportBookingService";
 
 function addDays(value: string, days: number) {
@@ -49,12 +51,13 @@ export function SupportBookingsClient({ bookings, busyDates: initialBusyDates, t
   return (
     <div className="space-y-5">
       <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="flex items-center gap-3"><CalendarDays className="size-5 text-blue-600" /><div><h2 className="font-black">Ngày bận</h2><p className="text-sm font-semibold text-slate-500">7 ngày đầu luôn khóa. Bấm các ngày còn lại để bật hoặc tắt trạng thái bận.</p></div></div>
+        <div className="flex items-center gap-3"><CalendarDays className="size-5 text-blue-600" /><div><h2 className="font-black">Ngày bận</h2><p className="text-sm font-semibold text-slate-500">Nhận lịch từ {SUPPORT_MIN_LEAD_DAYS} ngày tới, nghỉ Chủ nhật. Bấm các ngày còn lại để bật hoặc tắt trạng thái bận.</p></div></div>
         <div className="mt-5 grid grid-cols-4 gap-2 sm:grid-cols-7 lg:grid-cols-10">
           {dates.map((date, index) => {
-            const fixed = index < 7;
+            const sunday = isSupportSunday(date);
+            const fixed = index < SUPPORT_MIN_LEAD_DAYS || sunday;
             const busy = fixed || busyDates.has(date);
-            return <button className={`min-h-16 rounded-xl border p-2 text-xs font-black ${busy ? "border-rose-200 bg-rose-50 text-rose-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`} disabled={fixed || pending === date} key={date} onClick={() => toggle(date, !busy)} type="button">{pending === date ? <Loader2 className="mx-auto size-4 animate-spin" /> : <><span className="block">{dateLabel(date)}</span><span className="mt-1 block">{busy ? "Bận" : "Còn lịch"}</span></>}</button>;
+            return <button className={`min-h-16 rounded-xl border p-2 text-xs font-black ${busy ? "border-rose-200 bg-rose-50 text-rose-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`} disabled={fixed || pending === date} key={date} onClick={() => toggle(date, !busy)} type="button">{pending === date ? <Loader2 className="mx-auto size-4 animate-spin" /> : <><span className="block">{dateLabel(date)}</span><span className="mt-1 block">{sunday ? "Nghỉ" : index < SUPPORT_MIN_LEAD_DAYS ? "Chưa mở" : busy ? "Bận" : "Còn lịch"}</span></>}</button>;
           })}
         </div>
         {message ? <p className="mt-3 text-sm font-bold text-slate-600">{message}</p> : null}

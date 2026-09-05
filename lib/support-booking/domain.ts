@@ -79,9 +79,14 @@ export function getSupportBookingWindow(now = new Date()) {
   };
 }
 
+export function isSupportSunday(value: string) {
+  const dayNumber = dateToDayNumber(value);
+  return Number.isFinite(dayNumber) && new Date(dayNumber * 86_400_000).getUTCDay() === 0;
+}
+
 export function isSupportDateBookable(value: string, now = new Date()) {
   const dayNumber = dateToDayNumber(value);
-  if (!Number.isFinite(dayNumber)) return false;
+  if (!Number.isFinite(dayNumber) || isSupportSunday(value)) return false;
   const { minDate, maxDate } = getSupportBookingWindow(now);
   return dayNumber >= dateToDayNumber(minDate) && dayNumber <= dateToDayNumber(maxDate);
 }
@@ -117,8 +122,11 @@ export function validateSupportBookingInput(input: unknown, now = new Date()): S
   if (phone.length < 9 || phone.length > 15) throw new Error("Số điện thoại không hợp lệ.");
   if (!SUPPORT_TOPICS.some((item) => item.value === topic)) throw new Error("Chủ đề hỗ trợ không hợp lệ.");
   if (note.length < 10) throw new Error("Nội dung cần hỗ trợ phải có ít nhất 10 ký tự.");
+  if (isSupportSunday(appointmentDate)) {
+    throw new Error("Không nhận lịch hỗ trợ vào Chủ nhật. Vui lòng chọn ngày khác.");
+  }
   if (!isSupportDateBookable(appointmentDate, now)) {
-    throw new Error("Lịch chỉ có thể đặt từ 7 đến 30 ngày tới.");
+    throw new Error(`Lịch chỉ có thể đặt từ ${SUPPORT_MIN_LEAD_DAYS} đến ${SUPPORT_MAX_LEAD_DAYS} ngày tới.`);
   }
   if (!listSupportSlots().includes(appointmentTime)) throw new Error("Khung giờ không hợp lệ.");
 

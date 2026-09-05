@@ -4,7 +4,7 @@ export const SUPPORT_PRICE_VND = 1_000_000;
 export const SUPPORT_PRICE_LABEL = "1.000.000đ";
 export const SUPPORT_DURATION_MINUTES = 30;
 export const SUPPORT_HOLD_MINUTES = 20;
-export const SUPPORT_MIN_LEAD_DAYS = 7;
+export const SUPPORT_MIN_LEAD_DAYS = 3;
 export const SUPPORT_MAX_LEAD_DAYS = 30;
 export const SUPPORT_TIME_ZONE = "Asia/Ho_Chi_Minh";
 

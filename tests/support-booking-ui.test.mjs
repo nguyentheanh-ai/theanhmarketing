@@ -19,7 +19,8 @@ test("paid student support booking page uses authenticated customer details", ()
   assert.match(page, /customer=\{customer\}/);
   assert.match(form, /Chọn ngày/);
   assert.match(form, /Chọn giờ/);
-  assert.match(form, /7 ngày gần nhất luôn hiển thị bận/);
+  assert.match(form, /Vui lòng đặt lịch trước ít nhất/);
+  assert.match(form, /SUPPORT_MIN_LEAD_DAYS/);
   assert.match(form, /Nội dung cần hỗ trợ/);
   assert.match(form, /\/api\/support-bookings/);
   assert.match(form, /customer\.customerName/);
@@ -32,6 +33,6 @@ test("paid student support booking page uses authenticated customer details", ()
 test("support booking has a public paid confirmation route", () => {
   const success = read("app/dat-lich-ho-tro/thanh-cong/page.tsx");
   assert.match(success, /Lịch hỗ trợ đã được ghi nhận/);
-  assert.match(success, /Telegram/);
+  assert.doesNotMatch(success, /Telegram|Hệ thống đã khóa/);
   assert.match(success, /30 phút/);
 });
