@@ -1,6 +1,6 @@
 # Đặt lịch hỗ trợ: giá theo đối tượng và thời lượng
 
-Trạng thái ngày 05/09/2026: **đã hoàn tất mã nguồn và kiểm tra local; chưa cập nhật production**.
+Trạng thái ngày 05/09/2026: **anh đã duyệt triển khai; cấu trúc dữ liệu mới đã cập nhật, đang phát hành website**.
 
 ## Mức giá đã xác nhận
 
@@ -36,9 +36,14 @@ Lệnh tái kiểm tra SQL: đặt `SUPPORT_SQL_TEST_MODULE` trỏ tới PGlite 
 ## Triển khai sau xác nhận
 
 1. Có xác nhận production cho lần mở rộng này; xác nhận trước chỉ áp dụng bản lịch 3 ngày/Chủ nhật đã live.
-2. Kiểm lại production không có held/confirmed overlap, rồi apply `supabase/migrations/20260905053406_support_booking_public_duration.sql` vào đúng project `vsxxgdzwtscuxcmjfckt`; đọc lại schema/grants. Không xóa hoặc đổi giá lịch cũ. Migration đã local verified, chưa apply production.
+2. Kiểm lại production không có held/confirmed overlap, rồi apply `supabase/migrations/20260905055235_support_booking_public_duration.sql` vào đúng project `vsxxgdzwtscuxcmjfckt`; đọc lại schema/grants. Không xóa hoặc đổi giá lịch cũ. Migration đã local verified, chưa apply production.
 3. Tích hợp commit feature vào canonical sạch `/Users/theanh/CodexProjects/TheAnh-Web/worktrees/theanhmarketing-email-account-hotfix`, doctor/check remote, push và preflight exact root theo registry. Feature root không có quyền deploy.
 4. Git-integrated build/promote production bằng guard. Không dùng `vercel --prod` trực tiếp. Preview thiếu service-role credential là giới hạn đã biết; không sao chép credential hoặc mở RLS.
 5. Xác minh READY, domain, page public 200, giá, availability, Sundays, protected landing checks và runtime errors. Chỉ tạo giao dịch kiểm thử thật nếu anh yêu cầu.
 
 Rollback: quay về runtime trước e3b0b2b/168abe2 bằng release guard; giữ migration cộng thêm. Old RPC wrapper hỗ trợ 30 phút/1M và exclusion constraint vẫn bảo vệ các booking dài đã tạo. Giao diện cũ chỉ đánh dấu giờ bắt đầu, nên nếu đã phát sinh booking dài, rollback cần readback cẩn thận và khôi phục bản mới sớm; RPC vẫn từ chối overlap. Không drop cột hay xóa lịch mới để rollback.
+
+
+## Xác nhận cập nhật dữ liệu thật
+
+Anh xác nhận “làm đi em”. Migration đã được áp dụng qua Supabase vào đúng project, phiên bản thực tế `20260905055235`; tên file nguồn được đồng bộ với sổ migration để tránh chạy lại. Đã đọc lại đủ hai cột, bốn ràng buộc, quyền RPC chỉ dành cho service_role, số lịch cũ sai giá/thời lượng bằng 0. Không tạo đơn hay lịch thử.

@@ -12,7 +12,7 @@ test("duration migration executes on PostgreSQL with preserved history, overlap 
     await db.exec(fs.readFileSync("supabase/migrations/20260725021737_support_booking.sql", "utf8"));
     await db.exec("insert into public.support_bookings(customer_name,email,phone,topic,note,appointment_date,appointment_time,starts_at,ends_at,hold_expires_at,status,amount) values ('Test','test@example.com','0900000000','test','Historical test booking','2020-01-01','09:00','2020-01-01T02:00Z','2020-01-01T02:30Z','2020-01-01T01:00Z','cancelled',500000);");
     await db.exec(fs.readFileSync("supabase/migrations/20260816152642_support_booking_price_1m.sql", "utf8"));
-    await db.exec(fs.readFileSync("supabase/migrations/20260905053406_support_booking_public_duration.sql", "utf8"));
+    await db.exec(fs.readFileSync("supabase/migrations/20260905055235_support_booking_public_duration.sql", "utf8"));
     const { rows } = await db.query("select ((now() at time zone 'Asia/Ho_Chi_Minh')::date + 3)::text as day");
     let date = new Date(rows[0].day + "T00:00:00Z");
     if (date.getUTCDay() === 0) date.setUTCDate(date.getUTCDate() + 1);
