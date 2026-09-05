@@ -422,3 +422,8 @@ Migration `20260802161009_add_order_invoice_fields.sql` adds five nullable/addit
 Migration `20260803090000_add_accounting_email_markers.sql` adds nullable `accounting_email_sent_at timestamptz` and `accounting_email_last_error text` columns to `public.orders`. They are server-written operational state only; no public order DTO exposes them and no RLS policy or table ownership changes.
 
 Production migration version `20260803080509` is applied. The first approved backfill completed with 6 non-null sent markers, zero remaining accounting errors and an aggregate paid amount of 4.592.000đ; no customer PII is stored in either marker.
+
+
+## 2026-09-05 - Đã cập nhật dữ liệu đặt lịch
+
+Migration `20260905055235_support_booking_public_duration.sql` đã áp dụng và đọc lại trên hệ thống thật. Trạng thái chưa áp dụng ở phần ghi chú bản thử phía trên đã được thay thế. Đủ hai cột, ràng buộc loại/giá/thời lượng/chống trùng và quyền RPC chỉ cho service_role; không có dữ liệu lịch sử sai sau cập nhật. Bản website ae7fcda đã hoạt động với cấu trúc này.
