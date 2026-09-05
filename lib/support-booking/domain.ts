@@ -1,5 +1,8 @@
 import {
   SUPPORT_DURATION_MINUTES,
+  SUPPORT_MAX_DURATION_MINUTES,
+  SUPPORT_BOOKING_PLANS,
+  type SupportBookingType,
   SUPPORT_MAX_LEAD_DAYS,
   SUPPORT_MIN_LEAD_DAYS,
   SUPPORT_TIME_ZONE,
@@ -17,6 +20,9 @@ export type SupportBookingInput = {
   appointmentTime: string;
   startsAt: string;
   endsAt: string;
+  durationMinutes: number;
+  bookingType: SupportBookingType;
+  amount: number;
 };
 
 const datePattern = /^\d{4}-\d{2}-\d{2}$/;
@@ -71,6 +77,36 @@ export function listSupportSlots() {
   return [...range(9 * 60, 11 * 60 + 30), ...range(13 * 60 + 30, 20 * 60)];
 }
 
+export function getSupportBookingQuote(bookingType: SupportBookingType, durationMinutes: number) {
+  if (!Object.hasOwn(SUPPORT_BOOKING_PLANS, bookingType)) throw new Error("Loại lịch không hợp lệ.");
+  const plan = SUPPORT_BOOKING_PLANS[bookingType];
+  if (!Number.isInteger(durationMinutes) || durationMinutes < plan.baseMinutes || durationMinutes > SUPPORT_MAX_DURATION_MINUTES || durationMinutes % SUPPORT_DURATION_MINUTES !== 0) {
+    throw new Error("Thời lượng buổi hỗ trợ không hợp lệ.");
+  }
+  return {
+    bookingType,
+    durationMinutes,
+    amount: plan.basePrice + (durationMinutes - plan.baseMinutes) / SUPPORT_DURATION_MINUTES * plan.extraHalfHourPrice,
+    title: `${plan.title} cùng Thế Anh - ${durationMinutes} phút`,
+  };
+}
+
+export function getSupportCoveredSlots(time: string, durationMinutes: number) {
+  if (!timePattern.test(time) || !Number.isInteger(durationMinutes) || durationMinutes < SUPPORT_DURATION_MINUTES || durationMinutes > SUPPORT_MAX_DURATION_MINUTES || durationMinutes % SUPPORT_DURATION_MINUTES !== 0) return [];
+  const [hours, minutes] = time.split(":").map(Number);
+  const allowed = new Set(listSupportSlots());
+  const slots = Array.from({ length: durationMinutes / SUPPORT_DURATION_MINUTES }, (_, index) => {
+    const value = hours * 60 + minutes + index * SUPPORT_DURATION_MINUTES;
+    return `${String(Math.floor(value / 60)).padStart(2,"0")}:${String(value % 60).padStart(2,"0")}`;
+  });
+  return slots.every((slot) => allowed.has(slot)) ? slots : [];
+}
+
+export function isSupportSlotAvailable(slots: Array<{time: string; available: boolean}>, time: string, durationMinutes: number) {
+  const covered = getSupportCoveredSlots(time, durationMinutes);
+  return covered.length > 0 && covered.every((value) => slots.some((slot) => slot.time === value && slot.available));
+}
+
 export function getSupportBookingWindow(now = new Date()) {
   const today = getVietnamToday(now);
   return {
@@ -91,7 +127,7 @@ export function isSupportDateBookable(value: string, now = new Date()) {
   return dayNumber >= dateToDayNumber(minDate) && dayNumber <= dateToDayNumber(maxDate);
 }
 
-export function toVietnamAppointment(date: string, time: string) {
+export function toVietnamAppointment(date: string, time: string, durationMinutes = SUPPORT_DURATION_MINUTES) {
   if (!Number.isFinite(dateToDayNumber(date)) || !timePattern.test(time)) {
     throw new Error("Ngày hoặc khung giờ không hợp lệ.");
   }
@@ -99,11 +135,11 @@ export function toVietnamAppointment(date: string, time: string) {
   if (Number.isNaN(startsAtDate.getTime())) {
     throw new Error("Ngày hoặc khung giờ không hợp lệ.");
   }
-  const endsAtDate = new Date(startsAtDate.getTime() + SUPPORT_DURATION_MINUTES * 60_000);
+  const endsAtDate = new Date(startsAtDate.getTime() + durationMinutes * 60_000);
   return { startsAt: startsAtDate.toISOString(), endsAt: endsAtDate.toISOString() };
 }
 
-export function validateSupportBookingInput(input: unknown, now = new Date()): SupportBookingInput {
+export function validateSupportBookingInput(input: unknown, now = new Date(), bookingType: SupportBookingType = "student"): SupportBookingInput {
   if (!input || typeof input !== "object" || Array.isArray(input)) {
     throw new Error("Thông tin đặt lịch không hợp lệ.");
   }
@@ -116,6 +152,8 @@ export function validateSupportBookingInput(input: unknown, now = new Date()): S
   const note = typeof body.note === "string" ? body.note.trim().slice(0, 2_000) : "";
   const appointmentDate = cleanText(body.appointmentDate, 10);
   const appointmentTime = cleanText(body.appointmentTime, 5);
+  const durationMinutes = (body.durationMinutes ?? SUPPORT_BOOKING_PLANS[bookingType]?.baseMinutes) as number;
+  const quote = getSupportBookingQuote(bookingType, durationMinutes);
 
   if (customerName.length < 2) throw new Error("Vui lòng nhập họ tên đầy đủ.");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Email không hợp lệ.");
@@ -129,6 +167,7 @@ export function validateSupportBookingInput(input: unknown, now = new Date()): S
     throw new Error(`Lịch chỉ có thể đặt từ ${SUPPORT_MIN_LEAD_DAYS} đến ${SUPPORT_MAX_LEAD_DAYS} ngày tới.`);
   }
   if (!listSupportSlots().includes(appointmentTime)) throw new Error("Khung giờ không hợp lệ.");
+  if (!getSupportCoveredSlots(appointmentTime, durationMinutes).length) throw new Error("Khung giờ không đủ thời gian cho buổi hỗ trợ. Vui lòng chọn giờ khác.");
 
   return {
     customerName,
@@ -138,6 +177,9 @@ export function validateSupportBookingInput(input: unknown, now = new Date()): S
     note,
     appointmentDate,
     appointmentTime,
-    ...toVietnamAppointment(appointmentDate, appointmentTime),
+    durationMinutes,
+    bookingType,
+    amount: quote.amount,
+    ...toVietnamAppointment(appointmentDate, appointmentTime, durationMinutes),
   };
 }

@@ -1,6 +1,7 @@
 import {
   SUPPORT_HOLD_MINUTES,
   SUPPORT_MAX_LEAD_DAYS,
+  type SupportBookingType,
   SUPPORT_MIN_LEAD_DAYS,
   SUPPORT_PRICE_VND,
   SUPPORT_PRODUCT_SLUG,
@@ -8,6 +9,7 @@ import {
 import {
   getSupportBookingWindow,
   isSupportSunday,
+  toVietnamAppointment,
   listSupportSlots,
   validateSupportBookingInput,
   type SupportBookingInput,
@@ -27,6 +29,8 @@ type SupportBookingRow = {
   appointment_time: string;
   starts_at: string;
   ends_at: string;
+  duration_minutes?: number;
+  booking_type?: SupportBookingType;
   status: "held" | "confirmed" | "needs_review" | "cancelled";
   hold_expires_at: string;
   order_id?: string | null;
@@ -42,6 +46,8 @@ export type ConfirmedSupportBooking = {
   topic: string;
   note: string;
   status: SupportBookingRow["status"];
+  durationMinutes: number;
+  bookingType: SupportBookingType;
 };
 
 export type SupportBookingAdminRow = ConfirmedSupportBooking & {
@@ -112,7 +118,6 @@ export async function getEligibleSupportCustomer(
     || normalizedEmail.split("@")[0];
   const phone = latest.order.phone.trim()
     || (typeof metadata?.phone === "string" ? metadata.phone.trim() : "");
-  if (!phone) return null;
   return {
     customerName,
     email: normalizedEmail,
@@ -165,7 +170,7 @@ export async function getSupportAvailability(now = new Date()): Promise<{
     supabase.from("support_busy_dates").select("busy_date").gte("busy_date", minDate).lte("busy_date", maxDate),
     supabase
       .from("support_bookings")
-      .select("appointment_date,appointment_time,status,hold_expires_at")
+      .select("appointment_date,appointment_time,starts_at,ends_at,status,hold_expires_at")
       .gte("appointment_date", minDate)
       .lte("appointment_date", maxDate)
       .in("status", ["held", "confirmed"]),
@@ -176,11 +181,9 @@ export async function getSupportAvailability(now = new Date()): Promise<{
   }
 
   const busyDates = new Set((busyResult.data ?? []).map((row) => String(row.busy_date)));
-  const occupied = new Set(
-    (bookingResult.data ?? [])
-      .filter((row) => row.status === "confirmed" || Date.parse(String(row.hold_expires_at)) > now.getTime())
-      .map((row) => `${row.appointment_date}:${String(row.appointment_time).slice(0, 5)}`),
-  );
+  const occupied = (bookingResult.data ?? [])
+    .filter((row) => row.status === "confirmed" || Date.parse(String(row.hold_expires_at)) > now.getTime())
+    .map((row) => ({ start: Date.parse(String(row.starts_at)), end: Date.parse(String(row.ends_at)) }));
 
   return {
     minLeadDays: SUPPORT_MIN_LEAD_DAYS,
@@ -188,16 +191,18 @@ export async function getSupportAvailability(now = new Date()): Promise<{
     days: dates.map((date) => ({
       date,
       busy: isSupportSunday(date) || busyDates.has(date),
-      slots: slots.map((time) => ({
-        time,
-        available: !isSupportSunday(date) && !busyDates.has(date) && !occupied.has(`${date}:${time}`),
-      })),
+      slots: slots.map((time) => {
+        const appointment = toVietnamAppointment(date, time);
+        const start = Date.parse(appointment.startsAt);
+        const end = Date.parse(appointment.endsAt);
+        return { time, available: !isSupportSunday(date) && !busyDates.has(date) && !occupied.some((range) => range.start < end && range.end > start) };
+      }),
     })),
   };
 }
 
-export async function reserveSupportBooking(input: unknown, now = new Date()) {
-  const bookingInput = validateSupportBookingInput(input, now);
+export async function reserveSupportBooking(input: unknown, now = new Date(), bookingType: SupportBookingType = "student") {
+  const bookingInput = validateSupportBookingInput(input, now, bookingType);
 
   if (isLocalDemo()) {
     return {
@@ -213,7 +218,7 @@ export async function reserveSupportBooking(input: unknown, now = new Date()) {
   if (!supabase) throw new Error("Chưa cấu hình dữ liệu lịch hỗ trợ.");
   const holdExpiresAt = new Date(now.getTime() + SUPPORT_HOLD_MINUTES * 60_000).toISOString();
 
-  const reservation = await supabase.rpc("reserve_support_booking", {
+  const reservation = await supabase.rpc("reserve_support_booking_v2", {
     p_customer_name: bookingInput.customerName,
     p_email: bookingInput.email,
     p_phone: bookingInput.phone,
@@ -224,6 +229,8 @@ export async function reserveSupportBooking(input: unknown, now = new Date()) {
     p_starts_at: bookingInput.startsAt,
     p_ends_at: bookingInput.endsAt,
     p_hold_expires_at: holdExpiresAt,
+    p_duration_minutes: bookingInput.durationMinutes,
+    p_booking_type: bookingInput.bookingType,
   });
 
   if (reservation.error || !reservation.data) {
@@ -241,6 +248,8 @@ export async function reserveSupportBooking(input: unknown, now = new Date()) {
       email: bookingInput.email,
       phone: bookingInput.phone,
       expiresAt: holdExpiresAt,
+      durationMinutes: bookingInput.durationMinutes,
+      bookingType: bookingInput.bookingType,
     });
     const linked = await supabase
       .from("support_bookings")
@@ -289,6 +298,8 @@ export async function confirmSupportBookingForPaidOrder(order: { id: string; ord
     topic: row.topic ?? "",
     note: row.note ?? "",
     status: row.status,
+    durationMinutes: row.duration_minutes ?? Math.round((Date.parse(row.ends_at) - Date.parse(row.starts_at)) / 60_000),
+    bookingType: row.booking_type ?? "student",
   } satisfies ConfirmedSupportBooking;
 }
 
@@ -317,6 +328,8 @@ export async function listConfirmedSupportBookings(now = new Date()): Promise<Su
       topic: "Kiểm tra quảng cáo",
       note: "Kiểm tra cấu trúc chiến dịch và đề xuất một mẫu quảng cáo để test trong 7 ngày.",
       status: "confirmed",
+      durationMinutes: 30,
+      bookingType: "student",
       customerName: "Nguyễn Minh Anh",
       email: "minhanh.demo@gmail.com",
       phone: "0900000000",
@@ -329,7 +342,7 @@ export async function listConfirmedSupportBookings(now = new Date()): Promise<Su
   if (!supabase) throw new Error("Chưa cấu hình dữ liệu lịch hỗ trợ.");
   const result = await supabase
     .from("support_bookings")
-    .select("id,customer_name,email,phone,topic,note,appointment_date,appointment_time,starts_at,ends_at,status,amount,order_code,paid_at")
+    .select("id,customer_name,email,phone,topic,note,appointment_date,appointment_time,starts_at,ends_at,duration_minutes,booking_type,status,amount,order_code,paid_at")
     .eq("status", "confirmed")
     .gte("starts_at", now.toISOString())
     .order("starts_at", { ascending: true })
@@ -340,6 +353,7 @@ export async function listConfirmedSupportBookings(now = new Date()): Promise<Su
     startsAt: String(row.starts_at), endsAt: String(row.ends_at), topic: String(row.topic), note: String(row.note), status: "confirmed" as const,
     customerName: String(row.customer_name), email: String(row.email), phone: String(row.phone), amount: Number(row.amount),
     orderCode: String(row.order_code ?? ""), paidAt: String(row.paid_at ?? ""),
+    durationMinutes: Number(row.duration_minutes ?? 30), bookingType: (row.booking_type ?? "student") as SupportBookingType,
   }));
 }
 

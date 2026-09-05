@@ -168,7 +168,7 @@ export function PaymentStatusPoller({
 
   const paid = order.status === "paid";
   const paidStatusMessage = hasExactCourseSlug(order, supportBookingSlug)
-    ? "Thanh toán đã được xác nhận. Lịch hỗ trợ 30 phút của bạn đã được ghi nhận. Đang chuyển tới trang xác nhận..."
+    ? "Thanh toán đã được xác nhận. Lịch hẹn của bạn đã được ghi nhận. Đang chuyển tới trang xác nhận..."
     : hasExactCourseSlug(order, consultationSlug)
       ? "Thanh toán đã được xác nhận. The Anh sẽ chủ động liên hệ để sắp xếp buổi tư vấn."
     : isFacebookAdsCourseOrder(order)

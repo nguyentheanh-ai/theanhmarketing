@@ -2,14 +2,14 @@
 
 import { CalendarDays, Check, Clock3, Loader2, ShieldCheck } from "lucide-react";
 import { useMemo, useState } from "react";
-import { SUPPORT_MIN_LEAD_DAYS, SUPPORT_PRICE_LABEL, SUPPORT_TOPICS } from "@/lib/support-booking/constants";
-import { isSupportSunday } from "@/lib/support-booking/domain";
+import { SUPPORT_MIN_LEAD_DAYS, SUPPORT_MAX_DURATION_MINUTES, SUPPORT_BOOKING_PLANS, SUPPORT_TOPICS } from "@/lib/support-booking/constants";
+import { getSupportBookingQuote, isSupportSlotAvailable, isSupportSunday } from "@/lib/support-booking/domain";
 import type { EligibleSupportCustomer, SupportAvailabilityDay } from "@/services/supportBookingService";
 
 type Props = {
   today: string;
   bookableDays: SupportAvailabilityDay[];
-  customer: EligibleSupportCustomer;
+  customer: EligibleSupportCustomer | null;
 };
 
 function addDays(value: string, days: number) {
@@ -22,6 +22,12 @@ function formatDate(value: string, options: Intl.DateTimeFormatOptions) {
 }
 
 export function SupportBookingForm({ today, bookableDays, customer }: Props) {
+  const bookingType = customer ? "student" : "consultation";
+  const plan = SUPPORT_BOOKING_PLANS[bookingType];
+  const [durationMinutes, setDurationMinutes] = useState<number>(plan.baseMinutes);
+  const quote = getSupportBookingQuote(bookingType, durationMinutes);
+  const durations = Array.from({length: (SUPPORT_MAX_DURATION_MINUTES - plan.baseMinutes) / 30 + 1}, (_, index) => plan.baseMinutes + index * 30);
+  const amountLabel = (amount: number) => `${new Intl.NumberFormat("vi-VN").format(amount)}đ`;
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [error, setError] = useState("");
@@ -48,6 +54,9 @@ export function SupportBookingForm({ today, bookableDays, customer }: Props) {
           note: form.get("note"),
           appointmentDate: selectedDate,
           appointmentTime: selectedTime,
+          durationMinutes,
+          phone: form.get("phone"),
+          ...(!customer ? { customerName: form.get("customerName"), email: form.get("email"), phone: form.get("phone") } : {}),
         }),
       });
       const payload = await response.json();
@@ -61,16 +70,28 @@ export function SupportBookingForm({ today, bookableDays, customer }: Props) {
 
   return (
     <form className="space-y-6" onSubmit={submit}>
+      <section className="rounded-[28px] border border-slate-200 bg-white p-5 sm:p-8">
+        <p className="text-xs font-black uppercase tracking-[0.14em] text-blue-600">Bước 1</p>
+        <h2 className="mt-1 text-xl font-black">Chọn thời lượng</h2>
+        <p className="mt-2 text-sm leading-6 text-slate-600">{plan.title}: {plan.baseMinutes} phút đầu {amountLabel(plan.basePrice)}, mỗi 30 phút thêm {amountLabel(plan.extraHalfHourPrice)}.</p>
+        <fieldset className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <legend className="sr-only">Thời lượng buổi hỗ trợ</legend>
+          {durations.map((minutes) => <label key={minutes} className={`cursor-pointer rounded-2xl border p-4 ${durationMinutes === minutes ? "border-blue-600 bg-blue-50" : "border-slate-200"}`}>
+            <input type="radio" name="durationMinutes" value={minutes} checked={durationMinutes === minutes} onChange={() => { setDurationMinutes(minutes); setSelectedDate(""); setSelectedTime(""); }} className="mr-2 accent-blue-600" />
+            <span className="font-black">{minutes} phút</span><span className="mt-2 block text-sm font-bold text-blue-700">{amountLabel(getSupportBookingQuote(bookingType, minutes).amount)}</span>
+          </label>)}
+        </fieldset>
+      </section>
       <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_22px_70px_rgba(15,23,42,0.08)] sm:p-8">
         <div className="flex items-center gap-3">
           <span className="grid size-10 place-items-center rounded-2xl bg-blue-50 text-blue-600"><CalendarDays className="size-5" /></span>
-          <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-600">Bước 1</p><h2 className="text-xl font-black text-slate-950">Chọn ngày</h2></div>
+          <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-600">Bước 2</p><h2 className="text-xl font-black text-slate-950">Chọn ngày</h2></div>
         </div>
         <div className="mt-6 grid grid-cols-4 gap-2 sm:grid-cols-7">
           {displayDates.map((date, index) => {
             const day = availabilityByDate.get(date);
             const sunday = isSupportSunday(date);
-            const locked = index < SUPPORT_MIN_LEAD_DAYS || sunday || !day || day.busy || !day.slots.some((slot) => slot.available);
+            const locked = index < SUPPORT_MIN_LEAD_DAYS || sunday || !day || day.busy || !day.slots.some((slot) => isSupportSlotAvailable(day.slots, slot.time, durationMinutes));
             const selected = date === selectedDate;
             return (
               <button
@@ -94,40 +115,47 @@ export function SupportBookingForm({ today, bookableDays, customer }: Props) {
       <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_22px_70px_rgba(15,23,42,0.08)] sm:p-8">
         <div className="flex items-center gap-3">
           <span className="grid size-10 place-items-center rounded-2xl bg-blue-50 text-blue-600"><Clock3 className="size-5" /></span>
-          <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-600">Bước 2</p><h2 className="text-xl font-black text-slate-950">Chọn giờ</h2></div>
+          <div><p className="text-xs font-black uppercase tracking-[0.14em] text-blue-600">Bước 3</p><h2 className="text-xl font-black text-slate-950">Chọn giờ bắt đầu</h2></div>
         </div>
         {selectedDay ? (
           <>
             <p className="mt-5 text-sm font-bold text-slate-600">Ngày đã chọn: <span className="text-blue-600">{formatDate(selectedDate, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</span></p>
             <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
-              {selectedDay.slots.map((slot) => (
+              {selectedDay.slots.map((slot) => {
+                const available = isSupportSlotAvailable(selectedDay.slots, slot.time, durationMinutes);
+                return (
                 <button
-                  className={`min-h-12 rounded-xl border text-sm font-black transition ${selectedTime === slot.time ? "border-blue-600 bg-blue-600 text-white" : slot.available ? "border-slate-200 bg-white text-slate-800 hover:border-blue-300 hover:bg-blue-50" : "cursor-not-allowed border-slate-100 bg-slate-50 text-slate-300 line-through"}`}
-                  disabled={!slot.available}
+                  className={`min-h-12 rounded-xl border text-sm font-black transition ${selectedTime === slot.time ? "border-blue-600 bg-blue-600 text-white" : available ? "border-slate-200 bg-white text-slate-800 hover:border-blue-300 hover:bg-blue-50" : "cursor-not-allowed border-slate-100 bg-slate-50 text-slate-300 line-through"}`}
+                  disabled={!available}
                   key={slot.time}
                   onClick={() => setSelectedTime(slot.time)}
                   type="button"
                 >{slot.time}</button>
-              ))}
+              ); })}
             </div>
           </>
-        ) : <p className="mt-5 rounded-2xl bg-slate-50 p-5 text-sm font-semibold text-slate-500">Chọn một ngày còn lịch để xem các khung giờ 30 phút.</p>}
+        ) : <p className="mt-5 rounded-2xl bg-slate-50 p-5 text-sm font-semibold text-slate-500">Chọn một ngày còn lịch để xem giờ bắt đầu cho buổi {durationMinutes} phút.</p>}
       </section>
 
       <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_22px_70px_rgba(15,23,42,0.08)] sm:p-8">
-        <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-2xl bg-emerald-50 text-emerald-600"><Check className="size-5" /></span><div><p className="text-xs font-black uppercase tracking-[0.14em] text-emerald-600">Bước 3</p><h2 className="text-xl font-black text-slate-950">Thông tin hỗ trợ</h2></div></div>
-        <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+        <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-2xl bg-emerald-50 text-emerald-600"><Check className="size-5" /></span><div><p className="text-xs font-black uppercase tracking-[0.14em] text-emerald-600">Bước 4</p><h2 className="text-xl font-black text-slate-950">Thông tin hỗ trợ</h2></div></div>
+        {customer ? <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
           <p className="text-xs font-black uppercase tracking-[0.14em] text-emerald-700">Thông tin của bạn</p>
           <p className="mt-2 text-lg font-black text-slate-950">{customer.customerName}</p>
-          <p className="mt-1 text-sm font-semibold text-slate-600">{customer.email} · {customer.phone}</p>
-        </div>
+          <p className="mt-1 text-sm font-semibold text-slate-600">{customer.email}{customer.phone ? ` · ${customer.phone}` : ""}</p>
+          {!customer.phone ? <label className="mt-4 grid gap-2 text-sm font-bold text-slate-700">Bổ sung số điện thoại<input className="min-h-12 rounded-2xl border border-slate-200 bg-white px-4" name="phone" type="tel" autoComplete="tel" minLength={9} maxLength={30} required /></label> : null}
+        </div> : <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          <label className="grid gap-2 text-sm font-bold text-slate-700 sm:col-span-2">Họ và tên<input className="min-h-12 rounded-2xl border border-slate-200 px-4" name="customerName" autoComplete="name" minLength={2} maxLength={120} required /></label>
+          <label className="grid gap-2 text-sm font-bold text-slate-700">Email<input className="min-h-12 rounded-2xl border border-slate-200 px-4" name="email" type="email" autoComplete="email" maxLength={160} required /></label>
+          <label className="grid gap-2 text-sm font-bold text-slate-700">Số điện thoại<input className="min-h-12 rounded-2xl border border-slate-200 px-4" name="phone" type="tel" autoComplete="tel" minLength={9} maxLength={30} required /></label>
+        </div>}
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <label className="grid gap-2 text-sm font-bold text-slate-700">Chủ đề hỗ trợ<select className="min-h-12 rounded-2xl border border-slate-200 bg-white px-4 outline-none focus:border-blue-500" defaultValue="kiem-tra-quang-cao" name="topic">{SUPPORT_TOPICS.map((topic) => <option key={topic.value} value={topic.value}>{topic.label}</option>)}</select></label>
           <label className="grid gap-2 text-sm font-bold text-slate-700 sm:col-span-2">Nội dung cần hỗ trợ<textarea className="min-h-32 rounded-2xl border border-slate-200 p-4 leading-6 outline-none focus:border-blue-500" minLength={10} name="note" placeholder="Ví dụ: kiểm tra cấu trúc chiến dịch, lên một mẫu quảng cáo, tư vấn hệ thống bán hàng..." required /></label>
         </div>
         {error ? <p className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">{error}</p> : null}
         <div className="mt-6 flex flex-col gap-4 rounded-2xl bg-slate-950 p-5 text-white sm:flex-row sm:items-center sm:justify-between">
-          <div><p className="text-xs font-black uppercase tracking-[0.14em] text-white/50">Buổi hỗ trợ 1:1 · 30 phút</p><p className="mt-1 text-2xl font-black">{SUPPORT_PRICE_LABEL}</p><p className="mt-1 text-xs text-white/55">Lịch hẹn được xác nhận sau khi bạn thanh toán thành công.</p></div>
+          <div><p className="text-xs font-black uppercase tracking-[0.14em] text-white/50">{plan.title} · {durationMinutes} phút</p><p className="mt-1 text-2xl font-black">{amountLabel(quote.amount)}</p><p className="mt-1 text-xs text-white/55">Lịch hẹn được xác nhận sau khi bạn thanh toán thành công.</p></div>
           <button className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-blue-500 px-7 text-sm font-black text-white hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-50" disabled={submitting || !selectedDate || !selectedTime} type="submit">
             {submitting ? <Loader2 className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />}{submitting ? "Đang giữ lịch..." : "Giữ lịch và thanh toán"}
           </button>

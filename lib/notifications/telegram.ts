@@ -101,6 +101,7 @@ type TelegramSupportBooking = {
   topic: string;
   note: string;
   status: string;
+  durationMinutes?: number;
 };
 
 export function buildTelegramSupportBookingMessage(
@@ -111,6 +112,7 @@ export function buildTelegramSupportBookingMessage(
     "[PAID SUPPORT BOOKING] The Anh Marketing",
     `Ma don: ${order.orderCode}`,
     `Lich: ${booking.appointmentDate} ${booking.appointmentTime} (GMT+7)` ,
+    `Thoi luong: ${booking.durationMinutes ?? 30} phut`,
     `Khach: ${order.studentName || "Chua co ten"}`,
     `SDT: ${order.phone || "Chua co SDT"}`,
     `Email: ${order.email || "Chua co email"}`,

@@ -6,19 +6,20 @@ function read(file) {
   return fs.readFileSync(file, "utf8");
 }
 
-test("support booking service reserves a slot and creates the fixed-price order", () => {
+test("support booking service reserves a slot and creates the server-priced duration order", () => {
   const constants = read("lib/support-booking/constants.ts");
   const service = read("services/supportBookingService.ts");
   const orders = read("services/orderService.ts");
 
-  assert.match(service, /validateSupportBookingInput\(input, now\)/);
-  assert.match(service, /\.rpc\("reserve_support_booking"/);
+  assert.match(service, /validateSupportBookingInput\(input, now, bookingType\)/);
+  assert.match(service, /\.rpc\("reserve_support_booking_v2"/);
   assert.match(service, /createSupportPaymentOrder/);
   assert.match(service, /status: "cancelled"/);
   assert.match(service, /SUPPORTDEMO/);
   assert.match(orders, /export async function createSupportPaymentOrder/);
   assert.match(orders, /course_slug: SUPPORT_PRODUCT_SLUG/);
-  assert.match(orders, /amount: SUPPORT_PRICE_VND/);
+  assert.match(orders, /getSupportBookingQuote\(input.bookingType, input.durationMinutes\)/);
+  assert.match(orders, /amount: quote.amount/);
   assert.match(orders, /expires_at: input\.expiresAt/);
   assert.match(constants, /SUPPORT_PRICE_VND = 1_000_000/);
   assert.match(constants, /SUPPORT_PRICE_LABEL = "1\.000\.000đ"/);
@@ -41,11 +42,10 @@ test("public support booking APIs are bounded, no-store, and return conflict saf
   assert.match(create, /reserveSupportBooking/);
   assert.match(create, /getCurrentAuth/);
   assert.match(create, /getEligibleSupportCustomer/);
-  assert.match(create, /status: 401/);
-  assert.match(create, /status: 403/);
-  assert.match(create, /customerName: customer\.customerName/);
-  assert.match(create, /email: customer\.email/);
-  assert.match(create, /phone: customer\.phone/);
+  assert.doesNotMatch(create, /status: 401|status: 403|isAuthGuardEnabled/);
+  assert.match(create, /customerName: customer\?\.customerName/);
+  assert.match(create, /email: customer\?\.email/);
+  assert.match(create, /phone: customer\?\.phone/);
   assert.match(create, /await request\.json\(\)/);
   assert.match(create, /SupportBookingConflictError/);
   assert.match(create, /status: 409/);

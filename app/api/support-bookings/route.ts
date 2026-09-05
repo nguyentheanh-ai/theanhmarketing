@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
+import { getCurrentAuth } from "@/lib/auth/session";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 import { getEligibleSupportCustomer, reserveSupportBooking, SupportBookingConflictError } from "@/services/supportBookingService";
 
@@ -13,25 +13,17 @@ export async function POST(request: Request) {
   });
   if (!rateLimit.ok) return rateLimitResponse(rateLimit.resetAt);
 
-  const { user, isAdmin } = await getCurrentAuth();
-  if (isAuthGuardEnabled() && !user?.email) {
-    return NextResponse.json({ ok: false, message: "Vui lòng đăng nhập tài khoản học viên để đặt lịch hỗ trợ." }, { status: 401, headers: noStoreHeaders });
-  }
-  const customer = await getEligibleSupportCustomer(user?.email ?? "", user?.user_metadata, {
-    allowOwnerPreview: isAdmin,
-  });
-  if (!customer) {
-    return NextResponse.json({ ok: false, message: "Chỉ học viên đã mua khóa học mới được đặt lịch hỗ trợ." }, { status: 403, headers: noStoreHeaders });
-  }
-
   try {
+    const { user } = await getCurrentAuth();
+    const customer = user?.email ? await getEligibleSupportCustomer(user.email, user.user_metadata) : null;
     const body = await request.json();
+    if (!body || typeof body !== "object" || Array.isArray(body)) throw new Error("Thông tin đặt lịch không hợp lệ.");
     const result = await reserveSupportBooking({
       ...body,
-      customerName: customer.customerName,
-      email: customer.email,
-      phone: customer.phone,
-    });
+      customerName: customer?.customerName ?? body.customerName,
+      email: customer?.email ?? body.email,
+      phone: customer?.phone || body.phone,
+    }, new Date(), customer ? "student" : "consultation");
     return NextResponse.json({ ok: true, ...result }, { status: 201, headers: noStoreHeaders });
   } catch (error) {
     if (error instanceof SupportBookingConflictError) {

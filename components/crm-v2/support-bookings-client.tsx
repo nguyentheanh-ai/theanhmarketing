@@ -70,7 +70,7 @@ export function SupportBookingsClient({ bookings, busyDates: initialBusyDates, t
             <article className="grid gap-4 p-5 lg:grid-cols-[180px_1fr_220px]" key={booking.id}>
               <div><p className="flex items-center gap-2 font-black text-blue-700"><Clock3 className="size-4" />{dateLabel(booking.appointmentDate)} · {booking.appointmentTime}</p><p className="mt-2 text-sm font-black text-emerald-700">Đã thanh toán · {amountLabel(booking.amount)}</p><p className="mt-1 text-xs font-semibold text-slate-400">{booking.orderCode}</p></div>
               <div><p className="font-black">{booking.customerName}</p><p className="mt-1 text-sm font-semibold text-slate-500">{booking.phone} · {booking.email}</p><p className="mt-4 text-xs font-black uppercase tracking-[0.1em] text-slate-400">Nội dung cần hỗ trợ</p><p className="mt-1 text-sm font-semibold leading-6 text-slate-700">{booking.note}</p></div>
-              <div className="rounded-xl bg-slate-50 p-4"><p className="text-xs font-black uppercase text-slate-400">Chủ đề</p><p className="mt-2 font-black text-slate-800">{booking.topic}</p><p className="mt-4 text-xs font-semibold text-slate-500">30 phút · GMT+7</p></div>
+              <div className="rounded-xl bg-slate-50 p-4"><p className="text-xs font-black uppercase text-slate-400">Chủ đề</p><p className="mt-2 font-black text-slate-800">{booking.topic}</p><p className="mt-4 text-xs font-semibold text-slate-500">{booking.durationMinutes} phút · GMT+7</p><p className="mt-1 text-xs font-semibold text-slate-500">{booking.bookingType === "consultation" ? "Tư vấn" : "Hỗ trợ học viên"}</p></div>
             </article>
           )) : <p className="p-8 text-center text-sm font-semibold text-slate-500">Chưa có lịch đã thanh toán.</p>}
         </div>

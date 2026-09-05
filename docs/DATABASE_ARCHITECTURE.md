@@ -1,5 +1,9 @@
 # Database Architecture
 
+## 2026-09-05 - Support duration candidate (not applied)
+
+Migration `20260905053406_support_booking_public_duration.sql` adds duration/type, computed price constraints and a held/confirmed interval exclusion constraint. Private reserve v2 and compatible old RPC use a day lock shared with confirmation. Historical amounts remain valid. See `docs/SUPPORT_BOOKING_PUBLIC_DURATION_20260905.md` for local verification and release prerequisites.
+
 ## Current Verified Database State - 2026-05-13
 
 Supabase is now active for the current project. The architecture is no longer future-only.

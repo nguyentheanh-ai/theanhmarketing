@@ -82,6 +82,41 @@ test("support slots follow the approved morning and afternoon schedule", () => {
   ]);
 });
 
+test("student and consultation duration prices are server-known and reject unsupported lengths", () => {
+  const { getSupportBookingQuote } = loadSupportDomain();
+  for (const [minutes, amount] of [[30,1000000],[60,1500000],[90,2000000],[120,2500000]]) {
+    assert.equal(getSupportBookingQuote("student", minutes).amount, amount);
+  }
+  for (const [minutes, amount] of [[60,2000000],[90,2700000],[120,3400000]]) {
+    assert.equal(getSupportBookingQuote("consultation", minutes).amount, amount);
+  }
+  for (const value of [0, 45, 150, "60", NaN]) {
+    assert.throws(() => getSupportBookingQuote("student", value), /thời lượng/i);
+  }
+  assert.throws(() => getSupportBookingQuote("consultation", 30), /thời lượng/i);
+  assert.throws(() => getSupportBookingQuote("unknown", 60), /loại lịch/i);
+});
+
+test("long sessions require consecutive half-hour blocks and cannot cross lunch or closing time", () => {
+  const { getSupportCoveredSlots, isSupportSlotAvailable } = loadSupportDomain();
+  assert.deepEqual(getSupportCoveredSlots("10:00", 120), ["10:00","10:30","11:00","11:30"]);
+  assert.deepEqual(getSupportCoveredSlots("11:30", 60), []);
+  assert.deepEqual(getSupportCoveredSlots("20:00", 60), []);
+  const slots = ["09:00","09:30","10:00","10:30"].map((time) => ({time,available:time!=="09:30"}));
+  assert.equal(isSupportSlotAvailable(slots,"09:00",60),false);
+  assert.equal(isSupportSlotAvailable(slots,"10:00",60),true);
+});
+
+test("booking validation uses trusted customer type and ignores browser pricing claims", () => {
+  const { validateSupportBookingInput } = loadSupportDomain();
+  const input = {customerName:"Khách kiểm tra",email:"test@example.com",phone:"0900000000",topic:"kiem-tra-quang-cao",note:"Kiểm tra lịch tư vấn",appointmentDate:"2026-08-01",appointmentTime:"09:00",durationMinutes:90,amount:1,bookingType:"student"};
+  const result = validateSupportBookingInput(input,now,"consultation");
+  assert.equal(result.amount,2700000);
+  assert.equal(result.bookingType,"consultation");
+  assert.equal(result.endsAt,"2026-08-01T03:30:00.000Z");
+  assert.throws(() => validateSupportBookingInput({...input,appointmentTime:"11:30"},now,"consultation"),/khung giờ/i);
+});
+
 test("Vietnam appointment conversion produces exact UTC 30-minute bounds", () => {
   const { toVietnamAppointment } = loadSupportDomain();
 
@@ -126,7 +161,7 @@ test("booking input is normalized and rejects invalid or unavailable requests", 
   );
 });
 
-test("verified owner can preview booking without fabricating a paid course order", () => {
+test("student pricing requires verified purchase rather than an owner preview flag", () => {
   const service = fs.readFileSync(path.join(process.cwd(), "services/supportBookingService.ts"), "utf8");
   const page = fs.readFileSync(path.join(process.cwd(), "app/dat-lich-ho-tro/page.tsx"), "utf8");
   const route = fs.readFileSync(path.join(process.cwd(), "app/api/support-bookings/route.ts"), "utf8");
@@ -134,11 +169,10 @@ test("verified owner can preview booking without fabricating a paid course order
 
   assert.match(service, /allowOwnerPreview/);
   assert.match(service, /previewMode: true/);
-  assert.match(page, /isAdmin/);
-  assert.match(page, /allowOwnerPreview: isAdmin/);
-  assert.match(route, /allowOwnerPreview: isAdmin/);
+  assert.doesNotMatch(page, /allowOwnerPreview|requireStudentAuth/);
+  assert.doesNotMatch(route, /allowOwnerPreview/);
   assert.doesNotMatch(form, /previewMode|quản trị|xem thử|không tạo dữ liệu|luồng của khách hàng/);
-  assert.match(form, /SUPPORT_PRICE_LABEL/);
+  assert.match(form, /getSupportBookingQuote/);
   assert.doesNotMatch(form, /500\.000đ/);
   assert.doesNotMatch(service, /status\s*:\s*["']paid["']/);
 });

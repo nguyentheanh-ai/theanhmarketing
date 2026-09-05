@@ -19,10 +19,10 @@ import {
 import { attributionToDbColumns, normalizeAttribution, type Attribution, type AttributionInput } from "@/lib/tracking/attribution";
 import { getCourseBySlug, getCourses } from "@/services/courseService";
 import {
-  SUPPORT_PRICE_VND,
   SUPPORT_PRODUCT_SLUG,
-  SUPPORT_PRODUCT_TITLE,
+  type SupportBookingType,
 } from "@/lib/support-booking/constants";
+import { getSupportBookingQuote } from "@/lib/support-booking/domain";
 import {
   CONSULTATION_PAYMENT_PLAN,
   CONSULTATION_PRICE_VND,
@@ -171,6 +171,8 @@ export type CreateSupportPaymentOrderInput = {
   email: string;
   phone: string;
   expiresAt: string;
+  durationMinutes: number;
+  bookingType: SupportBookingType;
 };
 
 export type ConfirmPaymentInput = {
@@ -718,6 +720,7 @@ export async function createAgentKitRemainingPaymentOrders(now = new Date()): Pr
 }
 
 export async function createSupportPaymentOrder(input: CreateSupportPaymentOrderInput) {
+  const quote = getSupportBookingQuote(input.bookingType, input.durationMinutes);
   const supabase = createSupabaseAdminClient();
 
   if (!supabase) {
@@ -726,12 +729,12 @@ export async function createSupportPaymentOrder(input: CreateSupportPaymentOrder
 
   const orderCode = createOrderCode();
   const paymentQrUrl = isSepayConfigured()
-    ? createSepayQrUrl({ amount: SUPPORT_PRICE_VND, orderCode })
+    ? createSepayQrUrl({ amount: quote.amount, orderCode })
     : "";
   const orderItems: OrderItem[] = [{
     slug: SUPPORT_PRODUCT_SLUG,
-    title: SUPPORT_PRODUCT_TITLE,
-    price: SUPPORT_PRICE_VND,
+    title: quote.title,
+    price: quote.amount,
   }];
 
   const result = await supabase
@@ -742,8 +745,8 @@ export async function createSupportPaymentOrder(input: CreateSupportPaymentOrder
       email: input.email,
       phone: input.phone,
       course_slug: SUPPORT_PRODUCT_SLUG,
-      course_title: SUPPORT_PRODUCT_TITLE,
-      amount: SUPPORT_PRICE_VND,
+      course_title: quote.title,
+      amount: quote.amount,
       currency: "VND",
       status: "pending",
       payment_status: "pending",
