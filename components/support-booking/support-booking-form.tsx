@@ -128,13 +128,12 @@ export function SupportBookingForm({ today, bookableDays, customer, isAuthentica
     <div className="overflow-hidden rounded-[28px] border border-slate-200/80 bg-white shadow-[0_16px_60px_-30px_rgba(15,23,42,0.2)]">
       <nav aria-label="Tiến trình đặt lịch" className="border-b border-slate-100 px-4 py-5 sm:px-8">
         <ol className="flex items-start justify-between gap-1">
-          {stepLabels.map((label, index) => {
-            const number = index + 1;
-            const skipped = !visibleSteps.includes(number);
-            const complete = number < step || skipped;
+          {visibleSteps.map((number, index) => {
+            const label = stepLabels[number - 1];
+            const complete = number < step;
             return <li key={label} aria-current={step === number ? "step" : undefined} className={`flex min-w-0 flex-1 flex-col items-center gap-2 text-center ${step === number ? "text-blue-700" : "text-slate-500"}`}>
-              <span className={`grid size-8 place-items-center rounded-full text-xs font-bold ${step === number ? "bg-blue-600 text-white ring-4 ring-blue-50" : complete ? "bg-slate-100 text-slate-500" : "border border-slate-200"}`}>{complete ? <Check aria-hidden="true" className="size-4" /> : number}</span>
-              <span className="text-[10px] font-semibold sm:text-xs">{label}<span className="sr-only">{skipped ? " — Bỏ qua" : complete ? " — Đã hoàn thành" : ""}</span></span>
+              <span className={`grid size-8 place-items-center rounded-full text-xs font-bold ${step === number ? "bg-blue-600 text-white ring-4 ring-blue-50" : complete ? "bg-slate-100 text-slate-500" : "border border-slate-200"}`}>{complete ? <Check aria-hidden="true" className="size-4" /> : index + 1}</span>
+              <span className="text-[10px] font-semibold sm:text-xs">{label}<span className="sr-only">{complete ? " — Đã hoàn thành" : ""}</span></span>
             </li>;
           })}
         </ol>
@@ -142,7 +141,7 @@ export function SupportBookingForm({ today, bookableDays, customer, isAuthentica
       <form onSubmit={submit} className="p-5 sm:p-8">
         <fieldset disabled={submitting} className="min-w-0">
           <div className="mb-7">
-            <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-blue-600">Bước {step} / 5</p>
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-blue-600">Bước {visibleSteps.indexOf(step) + 1} / {visibleSteps.length}</p>
             <h2 ref={headingRef} tabIndex={-1} className="whitespace-pre-line text-2xl font-bold leading-tight tracking-tight text-slate-950 outline-none sm:text-3xl">{title}</h2>
             <p className="mt-3 text-sm leading-6 text-slate-500">{descriptions[step]}</p>
           </div>
@@ -170,7 +169,7 @@ export function SupportBookingForm({ today, bookableDays, customer, isAuthentica
             {topic && <label className="mt-6 grid gap-2 text-sm font-semibold text-slate-700">Nội dung cần hỗ trợ <span className="text-xs font-normal text-slate-500">Không bắt buộc · Bạn có thể trao đổi thêm trong buổi hẹn.</span><textarea className={`${inputClass} min-h-28 py-3 leading-6`} name="note" value={note} onChange={(event) => setNote(event.target.value)} maxLength={2000} placeholder="Bạn đang gặp khó khăn gì hoặc muốn được hướng dẫn cụ thể điều gì?" /></label>}
           </div>}
 
-          {step === 3 && <div className="grid gap-5">
+          {!customer && step === 3 && <div className="grid gap-5">
             <label className="grid gap-2 text-sm font-semibold text-slate-700">Email<input className={inputClass} name="email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} maxLength={160} placeholder="Email nhận thông tin lịch hẹn" required /></label>
             <div className="grid gap-5 sm:grid-cols-2">
               <label className="grid gap-2 text-sm font-semibold text-slate-700">Số điện thoại<input className={inputClass} name="phone" type="tel" autoComplete="tel" value={phone} onChange={(event) => setPhone(event.target.value)} minLength={9} maxLength={30} placeholder="Số điện thoại liên hệ" required /></label>

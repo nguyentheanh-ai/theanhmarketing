@@ -32,3 +32,7 @@
 - Correction: keep controlled wizard values, pass them explicitly to the unchanged API, relax the note constraint with an additive migration, and test branching/state retention plus late conflict refresh. Test selectors extract child text without serializing React owners and format dates with the same declared locale options.
 - Verification: 44 focused tests pass with interaction and local PostgreSQL runtimes enabled, including empty note, skipped contact step, saved entries and 409 recovery. Database keeps upper bound and old notes.
 - Limits: local tested; production migration and release await owner action-time approval. React tests do not establish browser layout or real login/payment. Do not fake missing notes or weaken contact/eligibility validation.
+
+## Student progress must use the actual route
+
+- Applicability: conditional support wizard steps. Observation: verified students skipped contact in routing but still saw all five navigation items with skipped checkmarks. Cause VERIFIED by source and failed regression5!=3. Correction: render and number progress from visibleSteps; only noncustomers can render contact. Verification:44/44 support tests including student3-step navigation, guest contacts and next/back. Limit: role eligibility and existing missing-phone completion stay unchanged; no access-rule changes.

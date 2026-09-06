@@ -62,6 +62,8 @@ test("booking wizard preserves data, skips verified student contacts and submits
     await t.test("guest walks all steps, retains entries on back, rejects invalid contacts, and sends optional empty note", async () => {
       await start();
       assert.match(heading(), /Bạn có phải học viên/);
+      assert.equal(view.root.findByType("nav").findAllByType("li").length, 5);
+      assert.match(textOf(view.root.findByType("nav").props.children), /Thông tin/);
       assert.equal(view.root.findByType("a").props.href, "/dang-nhap?next=%2Fdat-lich-ho-tro");
       await click("Không, tôi chưa là học viên");
       assert.equal(view.root.findAllByType("textarea").length, 0);
@@ -91,6 +93,9 @@ test("booking wizard preserves data, skips verified student contacts and submits
     await t.test("students skip contacts; duration changes clear the time; calendar spans months and excludes Sundays", async () => {
       await start({ customerName: "Student test", email: "student@example.com", phone: "0900000000" });
       assert.match(heading(), /Bạn cần hướng dẫn/);
+      assert.equal(view.root.findByType("nav").findAllByType("li").length, 3);
+      assert.doesNotMatch(textOf(view.root.findByType("nav").props.children), /Thông tin|Bắt đầu|Bỏ qua/);
+      assert.ok(view.root.findAllByType("p").some((node) => textOf(node.props.children) === "Bước 1 / 3"));
       await chooseTopic(); await submit();
       assert.match(heading(), /Chọn lịch và thời lượng/);
       assert.equal(field("phone"), undefined);
@@ -131,6 +136,7 @@ test("booking wizard preserves data, skips verified student contacts and submits
     await t.test("authenticated nonbuyer skips the question but still supplies contacts", async () => {
       await start(null, true);
       assert.match(heading(), /Bạn cần hướng dẫn/);
+      assert.match(textOf(view.root.findByType("nav").props.children), /Thông tin/);
       await chooseTopic(); await submit();
       assert.match(heading(), /Thông tin liên hệ/);
       await act(() => view.unmount());
