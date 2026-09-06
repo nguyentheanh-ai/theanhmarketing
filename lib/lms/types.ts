@@ -83,6 +83,11 @@ export type LmsCourseStats = {
 };
 
 export type LmsCourse = {
+  price?: number;
+  originalPrice?: number;
+  duration?: string;
+  level?: string;
+  ctaText?: string;
   id: string;
   position: number;
   title: string;

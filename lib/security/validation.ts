@@ -1,3 +1,7 @@
+export function isValidUuid(value: unknown): value is string {
+  return typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phonePattern = /^[0-9+()\s.-]{8,24}$/;
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;

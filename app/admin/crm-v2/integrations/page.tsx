@@ -1,3 +1,4 @@
+import { requireAdminAuth } from "@/lib/auth/session";
 import { CrmDataTable, IconButton, InsightRow, IntegrationActionButtons, MetricGrid, PageHeader, Plug, RightInsightPanel, StatusBadge } from "@/components/crm-v2";
 import { listCrmV2Integrations, normalizeCrmListQuery } from "@/lib/crm-v2/data";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -7,6 +8,7 @@ type PageProps = {
 };
 
 export default async function CrmV2IntegrationsPage({ searchParams }: PageProps) {
+  await requireAdminAuth("/admin/crm-v2/integrations", ["owner"]);
   const query = normalizeCrmListQuery(await searchParams);
   const integrations = await listCrmV2Integrations(query);
 

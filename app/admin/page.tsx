@@ -5,7 +5,7 @@ export default async function AdminIndexPage() {
   const { adminRole } = await getCurrentAuth();
 
   if (adminRole === "editor") {
-    redirect("/admin/khoa-hoc");
+    redirect("/admin/crm-v2/courses");
   }
 
   redirect("/admin/crm-v2");

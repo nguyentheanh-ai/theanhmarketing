@@ -32,6 +32,7 @@ function roleBadgeClass(role: AdminRole) {
 }
 
 export function AdminMembersClient() {
+  const [creating, setCreating] = useState(false);
   const [members, setMembers] = useState<AdminMember[]>([]);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<AdminRole | "all">("all");
@@ -103,29 +104,31 @@ export function AdminMembersClient() {
   }
 
   async function updateRole(member: AdminMember, role: AdminRole | "remove") {
+    if (savingUserId || !window.confirm(`${role === "remove" ? "Thu quyền quản trị" : `Đổi quyền thành ${role}`} của ${member.email}?`)) return;
     const previousMembers = members;
-    setSavingUserId(member.id);
-    setNotice("");
-    optimisticUpdateRole(member, role);
-
-    const response = await fetch("/api/admin/members", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: member.id,
-        role,
-      }),
-    });
-    const payload = (await response.json().catch(() => null)) as { ok?: boolean; message?: string } | null;
-
-    if (!response.ok || !payload?.ok) {
-      setMembers(previousMembers);
-      setNotice(payload?.message ?? "Không cập nhật được quyền admin.");
-    }
-
-    setSavingUserId("");
+    setSavingUserId(member.id); setNotice(""); optimisticUpdateRole(member, role);
+    try {
+      const response = await fetch("/api/admin/members", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId: member.id, role }) });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok || !payload?.ok) throw new Error(payload?.message || "Không cập nhật được quyền admin.");
+      setNotice("Đã cập nhật quyền quản trị.");
+    } catch (error) { setMembers(previousMembers); setNotice(error instanceof Error ? error.message : "Kết nối bị gián đoạn; hãy tải lại để kiểm tra quyền."); }
+    finally { setSavingUserId(""); }
+  }
+  async function addMember(form: HTMLFormElement) {
+    if (creating) return;
+    const data = new FormData(form);
+    const email = String(data.get("email") ?? "").trim();
+    const role = String(data.get("role") ?? "editor");
+    if (!window.confirm(`Cấp quyền ${role} cho ${email}?`)) return;
+    setCreating(true); setNotice("");
+    try {
+      const response = await fetch("/api/admin/crm-v2/team/actions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "add_member", member: email, role }) });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.ok) throw new Error(result?.message || "Chưa thêm được thành viên.");
+      form.reset(); await loadMembers({ forceRefresh: true }); setNotice("Đã cấp quyền. Thành viên dùng tài khoản hiện có; nếu chưa có mật khẩu, dùng Quên mật khẩu trên trang đăng nhập.");
+    } catch (error) { setNotice(error instanceof Error ? error.message : "Chưa thêm được thành viên."); }
+    finally { setCreating(false); }
   }
 
   return (
@@ -150,6 +153,11 @@ export function AdminMembersClient() {
         </button>
       </div>
 
+      <form onSubmit={(event) => { event.preventDefault(); void addMember(event.currentTarget); }} className="mt-5 flex flex-wrap gap-3 rounded-xl border border-slate-200 bg-white p-4">
+        <input aria-label="Email thành viên" type="email" name="email" required placeholder="Email thành viên" className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+        <select aria-label="Quyền thành viên mới" name="role" defaultValue="editor" className="rounded-lg border border-slate-200 px-3 text-sm"><option value="editor">Editor</option><option value="owner">Owner</option></select>
+        <button disabled={creating} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-50">{creating ? "Đang cấp quyền..." : "Thêm thành viên"}</button>
+      </form>
       <div className="mt-4 grid gap-3 rounded-md border border-slate-200 bg-white p-3 md:grid-cols-[1fr_auto_auto] md:items-center">
         <label className="flex h-10 items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 text-sm text-slate-500">
           <span aria-hidden="true">⌕</span>

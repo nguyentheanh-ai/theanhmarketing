@@ -1,4 +1,4 @@
-﻿import assert from "node:assert/strict";
+import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
@@ -78,27 +78,14 @@ test("crm v2 production actions fail closed instead of silently mocking", () => 
 });
 
 test("crm v2 is the canonical admin destination with compatibility redirects", () => {
-  const adminIndex = read("app/admin/page.tsx");
-  const adminDashboard = read("app/admin/dashboard/page.tsx");
-  const legacyLeads = read("app/admin/leads/page.tsx");
-  const legacyOrders = read("app/admin/don-hang/page.tsx");
-  const legacyStudents = read("app/admin/hoc-vien/page.tsx");
-  const legacyCourses = read("app/admin/khoa-hoc/page.tsx");
-  const legacyReports = read("app/admin/bao-cao/page.tsx");
-  const crmLayout = read("app/admin/crm-v2/layout.tsx");
-  const crmDashboard = read("app/admin/crm-v2/page.tsx");
-
-  assert.match(adminIndex, /redirect\(\"\/admin\/crm-v2\"\)/, "admin index must default owners to CRM v2");
-  assert.match(adminIndex, /redirect\(\"\/admin\/khoa-hoc\"\)/, "editor must keep the role-safe legacy course workspace");
-  assert.match(adminDashboard, /redirect\(\"\/admin\/crm-v2\"\)/, "old dashboard must redirect to the canonical overview");
-  assert.match(legacyLeads, /redirect\(\"\/admin\/crm-v2\/leads\"\)/);
-  assert.match(legacyOrders, /redirect\(\"\/admin\/crm-v2\/leads\"\)/);
-  assert.match(legacyStudents, /redirect\(\"\/admin\/crm-v2\/students\"\)/);
-  assert.match(legacyCourses, /redirect\(\"\/admin\/crm-v2\/courses\"\)/);
-  assert.match(legacyReports, /redirect\(\"\/admin\/crm-v2\/reports\"\)/);
-  assert.match(crmLayout, /requireAdminAuth\(\"\/admin\/crm-v2\", \[\"owner\"\]\)/, "CRM v2 routes must remain owner-gated");
-  assert.match(crmLayout, /isCrmV2Enabled/, "CRM v2 routes must keep their availability gate");
-  assert.match(crmDashboard, /getCrmV2Dashboard/, "CRM v2 dashboard must remain available behind its route gate");
+  for (const route of ["dashboard", "leads", "hoc-vien", "khoa-hoc", "bao-cao", "thanh-vien-admin", "cai-dat"]) {
+    const source=read(`app/admin/${route}/page.tsx`);
+    assert.match(source,/requireAdminAuth/);
+    assert.match(source,/redirect\(/);
+    assert.doesNotMatch(source,/<AdminShell|<ProtectedAdminShell|CourseEditor|LeadManager|CommandCenterDashboard/);
+  }
+  assert.match(read("app/admin/crm-v2/layout.tsx"),/isCrmV2Enabled/);
+  assert.match(read("app/admin/page.tsx"),/\/admin\/crm-v2\/courses/);
 });
 
 test("crm v2 shell exposes the executive operating system navigation", () => {
@@ -116,32 +103,17 @@ test("crm v2 shell exposes the executive operating system navigation", () => {
   }
 
   assert.ok(!components.includes('href: "/admin/crm-v2/orders"'), "orders must only appear inside customer profiles");
-  assert.match(components, /Executive Operating System/);
+  assert.match(components, /Quản trị hệ thống/);
   assert.match(components, /bg-\[#f4f6f9\]/);
   assert.match(components, /Nâng cao/);
   assert.doesNotMatch(components, /CRM hiện tại vẫn giữ nguyên\./);
 });
 
-test("lean solo admin keeps only verified modules and CRM-owned settings", () => {
-  const shell = read("components/crm-v2/crm-components.tsx");
-  const dataLayer = read("lib/crm-v2/data.ts");
-
-  for (const href of [
-    "/admin/crm-v2",
-    "/admin/crm-v2/leads",
-    "/admin/crm-v2/students",
-    "/admin/crm-v2/courses",
-    "/admin/crm-v2/reports",
-    "/admin/crm-v2/settings",
-  ]) assert.ok(shell.includes(`href: "${href}"`), `lean navigation must include ${href}`);
-
-  for (const hiddenHref of ["/admin/crm-v2/email", "/admin/crm-v2/automation", "/admin/crm-v2/segments", "/admin/crm-v2/team", "/admin/crm-v2/integrations", "/admin/cai-dat"]) {
-    assert.ok(!shell.includes(`href: "${hiddenHref}"`), `operator navigation must hide ${hiddenHref}`);
-  }
-
-  assert.ok(!shell.includes('href: "/admin/crm-v2/orders"'), "lean navigation must not expose a separate orders table");
-  assert.ok(exists("app/admin/crm-v2/settings/page.tsx"));
-  assert.ok(dataLayer.indexOf('\\bebook\\b') < dataLayer.indexOf('if (/facebook/i.test(text)) return "FB Ads"'));
+test("canonical admin exposes retained operations with role filtering", () => {
+  const shell=read("components/crm-v2/crm-components.tsx");
+  for(const route of ["/admin/crm-v2/courses", "/admin/crm-v2/students", "/admin/crm-v2/reports", "/admin/crm-v2/team", "/admin/cms", "/admin/viec-can-xu-ly"]) assert.ok(shell.includes(`href: "${route}"`));
+  assert.match(shell,/visibleNav/);assert.match(shell,/editorPaths/);
+  assert.ok(!shell.includes('href: "/admin/cai-dat"'));
 });
 
 test("canonical dashboard renders only real actionable operating data", () => {
@@ -340,7 +312,6 @@ test("crm v2 outline hides implementation-only language from operators", () => {
     "read-model",
     "Migration",
     "webhook",
-    "owner",
     "stage",
     "Smart list",
   ];
@@ -423,9 +394,9 @@ test("crm v2 route surface is gated and complete", () => {
     ["app/admin/crm-v2/email/page.tsx", "Remarketing Email"],
     ["app/admin/crm-v2/automation/page.tsx", "Automation Workflow"],
     ["app/admin/crm-v2/orders/page.tsx", "Đơn hàng & Thanh toán"],
-    ["app/admin/crm-v2/students/page.tsx", "Học viên & Khóa học"],
+    ["app/admin/crm-v2/students/page.tsx", "Học viên"],
     ["app/admin/crm-v2/reports/page.tsx", "Báo cáo doanh thu & quảng cáo"],
-    ["app/admin/crm-v2/team/page.tsx", "Team & Phân quyền"],
+    ["app/admin/crm-v2/team/page.tsx", "Thành viên & phân quyền"],
     ["app/admin/crm-v2/integrations/page.tsx", "Tích hợp"],
   ]);
 
@@ -657,8 +628,8 @@ test("crm v2 shared controls expose real actions instead of inert buttons", () =
   assert.match(emailPage, /EmailActionButtons/, "email campaign actions must be backed by an action API client");
   assert.match(segmentsPage, /SegmentActionPanel/, "segments page must expose API-backed segment actions");
   assert.match(ordersPage, /redirect\(\"\/admin\/crm-v2\/leads\"\)/, "orders actions must live inside customer profiles");
-  assert.match(studentsPage, /StudentActionButtons/, "students page must expose API-backed student actions");
-  assert.match(teamPage, /TeamActionButtons/, "team page must expose API-backed team actions");
+  assert.match(studentsPage, /StudentAccessPanel/, "students page must expose API-backed student actions");
+  assert.match(teamPage, /AdminMembersClient/, "team page must expose API-backed team actions");
   assert.match(integrationsPage, /IntegrationActionButtons/, "integrations page must expose API-backed integration actions");
   assert.match(emailActionsApi, /save_draft/, "email action API must save campaign drafts");
   assert.match(emailActionsApi, /preview_audience/, "email action API must preview real audiences");
@@ -705,14 +676,12 @@ test("crm v2 operator modules use real filters, live reports, permissions, email
   assert.match(dataLayer, /getCrmV2ReportSnapshot[\s\S]*getCrmV2Dashboard\(query\)/, "Reports must reuse live dashboard RPC summary instead of isolated private-table reads");
   assert.match(dataLayer, /paid_at/, "Reports must include paid_at so paid-today orders are counted even if created earlier");
   assert.match(dataLayer, /dailyRevenue/, "Reports must carry daily revenue from the direct order attribution source");
-  assert.match(dataLayer, /buildReportDailyRevenueSeries/, "Reports must build daily revenue from paid public orders for the selected range");
-  assert.match(dataLayer, /reportDailyRevenue[\s\S]*\.reverse\(\)/, "Reports daily revenue must render newest/today first instead of oldest first");
+  assert.match(dataLayer, /buildAdaptiveRevenueSeries/, "Reports must build daily revenue from paid public orders for the selected range");
   assert.match(dataLayer, /dateLowerBound\(dateRange\.from\)[\s\S]*dateUpperBoundExclusive\(dateRange\.to\)/, "Reports attribution must use Vietnam-day date bounds");
-  assert.match(dataLayer, /totalRevenue = attributionTotals\.revenue \|\| summary\.revenue/, "Reports KPI revenue must prefer direct order attribution totals");
-  assert.match(dataLayer, /totalPaid = attributionTotals\.paid \|\| summary\.paidOrders/, "Reports KPI paid orders must prefer direct order attribution totals");
-  assert.match(dataLayer, /deriveReportAttributionRowsFromDashboard/, "Reports must derive non-demo attribution rows from live dashboard sources when pipeline metrics are unavailable");
   assert.doesNotMatch(dataLayer, /getCrmV2ReportSnapshot[\s\S]*demoReportAttributionRows/, "Reports must not fall back to demo attribution rows in live mode");
-  assert.match(dataLayer, /buildEmptyReportSnapshot/, "Reports must expose empty/config state instead of demo data when live data is unavailable");
+  assert.match(dataLayer, /aggregateRevenueAttribution/);
+  assert.match(dataLayer, /readReportPages/);
+  assert.doesNotMatch(dataLayer, /deriveReportAttributionRowsFromDashboard/);
 
   assert.match(teamActionsApi, /grant_role/, "Team API must support granting permissions");
   assert.match(teamActionsApi, /revoke_role/, "Team API must support revoking permissions");
@@ -831,7 +800,7 @@ test("crm v2 dashboard and unified pipeline use production source-of-truth data"
   const leadActionsApi = read("app/api/admin/crm-v2/leads/actions/route.ts");
   const leadsPage = read("app/admin/crm-v2/leads/page.tsx");
 
-  assert.match(dataLayer, /countPublicLeadsForRange/, "dashboard must count true new leads from public.leads");
+  assert.match(dataLayer, /listReportLeadsForRange/, "dashboard must count CRM leads within the selected period");
   assert.match(dataLayer, /listPublicOrdersForRange/, "dashboard paid and revenue metrics must read public.orders");
   assert.match(dataLayer, /buildCrmV2RecentActivity/, "dashboard must build recent activity from real event sources");
   assert.match(dataLayer, /listCrmV2ActivityHistory/, "data layer must expose the full CRM activity history feed");

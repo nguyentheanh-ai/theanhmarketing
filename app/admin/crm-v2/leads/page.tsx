@@ -1,3 +1,4 @@
+import { requireAdminAuth } from "@/lib/auth/session";
 import LeadsPageClient from "@/components/crm-v2/leads-page-client";
 import { getCrmV2LeadStageSummary, listCrmV2UnifiedCustomers, normalizeCrmListQuery } from "@/lib/crm-v2/data";
 import type { CrmListQuery, CrmUnifiedCustomerRow } from "@/lib/crm-v2/types";
@@ -13,6 +14,7 @@ type PageProps = {
 };
 
 export default async function CrmV2LeadsPage({ searchParams }: PageProps) {
+  await requireAdminAuth("/admin/crm-v2/leads", ["owner"]);
   const query: CrmListQuery = normalizeCrmListQuery(await searchParams);
   const [leads, stageRows, courses] = await Promise.all([listCrmV2UnifiedCustomers(query), getCrmV2LeadStageSummary(), getCourses()]);
   const rows: CrmUnifiedCustomerRow[] = leads.rows;

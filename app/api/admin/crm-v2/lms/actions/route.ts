@@ -23,7 +23,7 @@ import {
   updateLmsResource,
   validateEnrollmentIdentity,
 } from "@/services/lmsService";
-import { requireCrmV2OwnerRequest } from "../../_shared";
+import { requireCrmV2EditorRequest } from "../../_shared";
 
 const publishStatusSchema = z.enum(["draft", "published", "archived"]);
 const visibilitySchema = z.enum(["public", "private", "enrolled"]);
@@ -47,7 +47,7 @@ function parseBody(value: unknown) {
 }
 
 export async function POST(request: Request) {
-  const blocked = await requireCrmV2OwnerRequest(request, "admin:crm-v2:lms:actions");
+  const blocked = await requireCrmV2EditorRequest(request, "admin:crm-v2:lms:actions");
   if (blocked) return blocked;
 
   try {
@@ -83,6 +83,11 @@ export async function POST(request: Request) {
       const input = z
         .object({
           courseId: z.string().min(1),
+          price: z.number().int().min(0).max(2147483647).optional(),
+          originalPrice: z.number().int().min(0).max(2147483647).optional(),
+          duration: z.string().max(160).optional(),
+          level: z.string().max(160).optional(),
+          ctaText: z.string().max(160).optional(),
           title: optionalText,
           slug: optionalText,
           description: optionalText,
@@ -154,7 +159,7 @@ export async function POST(request: Request) {
     if (body.action === "delete_module") {
       const input = z.object({ moduleId: z.string().uuid(), cascadeLessons: z.boolean().optional() }).parse(body);
       await deleteLmsModule(input);
-      return ok({ message: "Đã xóa module." });
+      return ok({ message: "Đã lưu trữ module; bài học và tiến độ được giữ nguyên." });
     }
 
     if (body.action === "reorder_modules") {

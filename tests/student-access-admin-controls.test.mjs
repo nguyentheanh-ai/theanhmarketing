@@ -79,14 +79,14 @@ test("admin student access controls can update multiple courses for one student"
   assert.match(actions, /const action = submitter\?\.value \|\| String\(formData\.get\("action"\)/);
   assert.match(actions, /action,\s*[\r\n]\s*courseSlugs: checkedCourseSlugs/);
   assert.match(actions, /const canManageAccess = Boolean\(student\.email\)/);
-  assert.match(actions, /const canDeleteStudent = Boolean\(student\.email \|\| student\.phone\)/);
+  assert.match(actions, /const canDeleteStudent = canDelete && Boolean\(student\.email \|\| student\.phone\)/);
 });
 
 test("admin student page follows the compact student-management layout", () => {
-  const page = read("app/admin/hoc-vien/page.tsx");
+  const page = read("components/admin/student-access-panel.tsx") + read("app/admin/crm-v2/students/page.tsx");
   const createDialog = read("components/admin/student-create-dialog.tsx");
 
-  assert.match(page, /Tổng học viên/);
+  assert.match(page, /Học viên đã lọc/);
   assert.match(page, /Đã cấp quyền/);
   assert.match(page, /Đang chờ/);
   assert.match(page, /StudentCreateDialog/);
@@ -165,13 +165,13 @@ test("dashboard and learning room bypass paid-order checks for admin role", () =
 });
 
 test("admin student table has per-student grant and revoke controls", () => {
-  const page = read("app/admin/hoc-vien/page.tsx");
+  const page = read("components/admin/student-access-panel.tsx") + read("app/admin/crm-v2/students/page.tsx");
   const route = read("app/api/admin/students/access/route.ts");
   const actions = read("components/admin/student-access-actions.tsx");
 
   assert.match(page, /StudentAccessActions/);
-  assert.match(route, /admin-access-grant/);
-  assert.match(route, /admin-access-revoke/);
+  assert.match(route, /setStudentAccessAtomically/);
+  assert.match(read("supabase/migrations/20260906120600_admin_lms_atomic_operations.sql"), /admin-access-revoke/);
   assert.match(route, /canAccessAdminRole\(adminRole, \["owner", "editor"\]\)/);
   assert.match(route, /ensureStudentAccountForAccessGrant/);
   assert.match(route, /sendStudentAccessEmail/);
@@ -180,7 +180,7 @@ test("admin student table has per-student grant and revoke controls", () => {
 });
 
 test("admin payment link form creates a pending order and sends UTF-8 payment email", () => {
-  const page = read("app/admin/hoc-vien/page.tsx");
+  const page = read("components/admin/student-access-panel.tsx") + read("app/admin/crm-v2/students/page.tsx");
   const route = read("app/api/admin/payment-links/route.ts");
   const form = read("components/admin/payment-link-form.tsx");
   const createDialog = read("components/admin/student-create-dialog.tsx");

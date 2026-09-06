@@ -6,28 +6,15 @@ import test from "node:test";
 
 const read = (file) => fs.readFileSync(path.resolve(file), "utf8").replace(/\r\n/g, "\n");
 
-function parseAdminNavItems(shell) {
-  const navGroupsSource = shell.match(/const adminNavGroups = \[([\s\S]*?)\] satisfies Array</)?.[1];
-  assert.ok(navGroupsSource, "adminNavGroups source must be available to verify its exact contract");
-
-  return [...navGroupsSource.matchAll(
-    /\{\s*label:\s*"([^"]+)",\s*href:\s*"([^"]+)",\s*icon:\s*"[^"]+",\s*allowedRoles:\s*\[([^\]]*)\]\s*\}/g,
-  )].map((match) => ({
-    label: match[1],
-    href: match[2],
-    allowedRoles: [...match[3].matchAll(/"([^"]+)"/g)].map((role) => role[1]),
-  }));
-}
-
 test("the complete admin entry chain defaults owners to canonical CRM v2", () => {
   const index = read("app/admin/page.tsx");
   const dashboard = read("app/admin/dashboard/page.tsx");
-
   assert.match(index, /redirect\("\/admin\/crm-v2"\)/);
-  assert.match(index, /redirect\("\/admin\/khoa-hoc"\)/);
-  assert.match(dashboard, /await requireAdminAuth\("\/admin\/dashboard", \["owner"\]\)/);
-  assert.ok(dashboard.indexOf("await requireAdminAuth") < dashboard.indexOf('redirect("/admin/crm-v2")'));
-  assert.match(dashboard, /redirect\("\/admin\/crm-v2"\)/);
+  assert.match(index, /redirect\("\/admin\/crm-v2\/courses"\)/);
+  assert.ok(dashboard.indexOf("await requireAdminAuth") < dashboard.indexOf("  redirect("));
+  assert.match(dashboard, /dateFrom/);
+  assert.match(read("components/auth/admin-login-form.tsx"), /"\/admin"/);
+
 });
 
 test("command center service performs bounded independent real-data reads", () => {
@@ -208,39 +195,22 @@ test("primary command center sources contain no fake or advertising-profit metri
 });
 
 test("owner shell exposes the approved solo navigation", () => {
-  const shell = read("components/app/admin-shell.tsx");
-  const navItems = parseAdminNavItems(shell);
+  const shell = read("components/crm-v2/crm-components.tsx");
+  for (const route of ["/admin/crm-v2/students", "/admin/crm-v2/courses", "/admin/crm-v2/leads", "/admin/crm-v2/reports", "/admin/crm-v2/settings", "/admin/viec-can-xu-ly"]) assert.ok(shell.includes(route));
+  assert.match(read("components/app/admin-shell.tsx"), /<CrmShell/);
+  assert.doesNotMatch(read("components/app/admin-shell.tsx"), /<aside/);
+  assert.match(shell, /visibleNav/);
 
-  const ownerItems = navItems
-    .filter((item) => item.allowedRoles.includes("owner"))
-    .map(({ label, href }) => ({ label, href }));
-
-  assert.deepEqual(ownerItems, [
-    { label: "Tổng quan", href: "/admin/dashboard" },
-    { label: "Việc cần xử lý", href: "/admin/viec-can-xu-ly" },
-    { label: "Học viên", href: "/admin/hoc-vien" },
-    { label: "Đơn hàng", href: "/admin/don-hang" },
-    { label: "Leads", href: "/admin/leads" },
-    { label: "Khóa học", href: "/admin/khoa-hoc" },
-    { label: "Báo cáo", href: "/admin/bao-cao" },
-    { label: "Cài đặt", href: "/admin/cai-dat" },
-  ]);
-
-  assert.doesNotMatch(shell, /Team|Automation|Segments|Integrations/);
 });
 
 test("editor shell and settings preserve the approved role boundaries", () => {
-  const shell = read("components/app/admin-shell.tsx");
-  const settings = read("app/admin/cai-dat/page.tsx");
-  const editorItems = parseAdminNavItems(shell)
-    .filter((item) => item.allowedRoles.includes("editor"))
-    .map(({ label, href }) => ({ label, href }));
+  const shell = read("components/crm-v2/crm-components.tsx");
+  const paths = shell.match(/const editorPaths = new Set\(\[([^\]]+)\]/)?.[1] ?? "";
+  assert.match(paths, /crm-v2\/students/);
+  assert.match(paths, /crm-v2\/courses/);
+  assert.doesNotMatch(paths, /reports|team|settings|database/);
+  assert.match(read("app/admin/crm-v2/settings/page.tsx"), /requireAdminAuth\("\/admin\/crm-v2\/settings", \["owner"\]\)/);
 
-  assert.deepEqual(editorItems, [
-    { label: "Học viên", href: "/admin/hoc-vien" },
-    { label: "Khóa học", href: "/admin/khoa-hoc" },
-  ]);
-  assert.match(settings, /allowedRoles=\{\["owner"\]\}/);
 });
 
 test("queue remains real while legacy report redirects to canonical CRM reports", () => {
@@ -256,8 +226,8 @@ test("queue remains real while legacy report redirects to canonical CRM reports"
 
   const report = read("app/admin/bao-cao/page.tsx");
   assert.match(report, /requireAdminAuth\("\/admin\/bao-cao", \["owner"\]\)/);
-  assert.ok(report.indexOf("await requireAdminAuth") < report.indexOf('redirect("/admin/crm-v2/reports")'));
-  assert.match(report, /redirect\("\/admin\/crm-v2\/reports"\)/);
+  assert.ok(report.indexOf("await requireAdminAuth") < report.indexOf("  redirect("));
+  assert.match(report, /redirect\(`\/admin\/crm-v2\/reports/);
 });
 
 test("detailed report reuses lazy accessible charts and exposes only truthful aggregates", () => {

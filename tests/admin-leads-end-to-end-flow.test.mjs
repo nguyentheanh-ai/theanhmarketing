@@ -111,7 +111,7 @@ test("schema migration documents lead status, sheet sync metadata and resend log
 test("admin chrome removes unused Ads/revenue surfaces and fixes the black student search button", () => {
   const shell = read("components/app/admin-shell.tsx");
   const index = read("app/admin/page.tsx");
-  const studentPage = read("app/admin/hoc-vien/page.tsx");
+  const studentPage = read("components/admin/student-access-panel.tsx");
 
   assert.doesNotMatch(shell, /Ads & doanh thu/);
   assert.doesNotMatch(shell, /Báo cáo ads/);

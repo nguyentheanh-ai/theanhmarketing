@@ -7,103 +7,23 @@ function read(relativePath) {
   return fs.readFileSync(path.resolve(relativePath), "utf8");
 }
 
-test("admin shell uses the light management workspace and avoids fixed logout overlap", () => {
-  const source = read("components/app/admin-shell.tsx");
-  const settings = read("app/admin/cai-dat/page.tsx");
-
-  assert.match(source, /data-admin-theme="light"/);
-  assert.match(source, /bg-\[#f7f8fb\]/);
-  assert.match(source, /\/brand\/ta-logo\.svg/);
-  assert.match(source, /Admin Panel/);
-  assert.match(source, /\/admin\/leads/);
-  assert.match(source, /\/admin\/cai-dat/);
-  assert.doesNotMatch(source, /\/admin\/thanh-vien-admin/);
-  assert.match(settings, /\/admin\/thanh-vien-admin/);
-  assert.match(source, /lg:flex/);
-  assert.match(source, /lg:ml-\[244px\]/);
-  assert.match(source, /lg:px-8/);
-  assert.match(source, /xl:px-10/);
-  assert.match(source, /lg:py-6/);
-  assert.doesNotMatch(source, /backdrop-blur/);
-  assert.doesNotMatch(source, /absolute inset-x-5 bottom-5/);
-  assert.doesNotMatch(source, /Ads & doanh thu/);
-  assert.doesNotMatch(source, /Báo cáo ads/);
-  assert.doesNotMatch(source, /\/admin\/facebook-ads/);
-  assert.doesNotMatch(source, /Remarketing/);
-  assert.doesNotMatch(source, /SEO\/Tracking/);
+test("admin routes share one role-aware shell and explicit sign out", () => {
+  const adapter = read("components/app/admin-shell.tsx");
+  const shell = read("components/crm-v2/crm-components.tsx");
+  assert.match(adapter, /CrmShell adminRole/);
+  assert.match(shell, /data-admin-theme="light"/);
+  assert.match(shell, /SignOutButton mode="admin"/);
+  assert.match(shell, /CrmMobileNav adminRole/);
 });
-
-test("legacy orders page redirects into the roomy customer workspace", () => {
-  const ui = read("components/admin/crm-ui.tsx");
-  const uiShell = read("components/app/admin-shell.tsx");
-  const ordersPage = read("app/admin/don-hang/page.tsx");
-
-  assert.match(ui, /rounded-\[1\.35rem\]/);
-  assert.match(ui, /shadow-\[0_22px_70px/);
-  assert.match(uiShell, /w-\[244px\]/);
-  assert.match(ordersPage, /redirect\(\"\/admin\/crm-v2\/leads\"\)/);
-});
-
-test("admin course page renders real official courses instead of empty blocks", () => {
-  const source = read("app/admin/khoa-hoc/page.tsx");
-
-  assert.match(source, /Nguồn dữ liệu/);
-  assert.match(source, /CourseEditor initialCourses/);
-  assert.doesNotMatch(source, /demo/i);
-  assert.doesNotMatch(source, /QuÃƒÆ’|ÃƒÂ¡Ã‚Âº|ÃƒÆ’Ã‚Â¡|Ãƒâ€ž|Ãƒâ€ /i);
-});
-
-test("course editor uses a focused two-pane workspace with lazy heavy panels", () => {
-  const page = read("app/admin/khoa-hoc/page.tsx");
-  const source = read("components/admin/course-editor.tsx");
-
-  assert.match(page, /getAdminCourses/);
-  assert.doesNotMatch(page, /getCourses/);
-  assert.doesNotMatch(page, /AdminPageHeader/);
-  assert.doesNotMatch(page, /AdminPanel/);
-  assert.match(source, /courseSearch/);
-  assert.match(source, /statusFilter/);
-  assert.match(source, /filteredCourses/);
-  assert.match(source, /activePanel/);
-  assert.match(source, /Tổng quan/);
-  assert.match(source, /Media/);
-  assert.match(source, /Nội dung/);
-  assert.match(source, /getCourseStats/);
-  assert.match(source, /Quản trị dữ liệu/);
-  assert.match(source, /activePanel === "media"/);
-  assert.match(source, /activePanel === "content"/);
-  assert.doesNotMatch(source, /<SoftCard/);
-  assert.doesNotMatch(source, /rounded-3xl/);
-});
-
-test("course editor follows LMS outline patterns instead of showing heavy lesson previews", () => {
-  const source = read("components/admin/course-editor.tsx");
-
-  assert.match(source, /useState<CourseEditorPanel>\("overview"\)/);
-  assert.match(source, /Course outline/);
-  assert.match(source, /Module title/);
-  assert.match(source, /Lesson title/);
-  assert.match(source, /Add item/);
-  assert.match(source, /Tutor LMS/);
-  assert.match(source, /Course Builder/);
-  assert.match(source, /Canvas/);
-  assert.match(source, /Open edX/);
-  assert.doesNotMatch(source, /toYouTubeThumbnailUrl/);
-  assert.doesNotMatch(source, /cleanLessonTitle/);
-  assert.doesNotMatch(source, /Preview đồng bộ ngoài website/);
-});
-
-test("course editor starts as a Tutor LMS style course list and opens editing on demand", () => {
-  const source = read("components/admin/course-editor.tsx");
-
-  assert.match(source, /editorMode/);
-  assert.match(source, /useState<"list" \| "edit">\("list"\)/);
-  assert.match(source, /editorMode === "list"/);
-  assert.match(source, /editorMode === "edit"/);
-  assert.match(source, /openCourseEditor/);
-  assert.match(source, /Mở phần sửa/);
-  assert.match(source, /Quay lại danh sách/);
-  assert.doesNotMatch(source, /xl:grid-cols-\[320px_minmax\(0,1fr\)\]/);
+test("course aliases cannot invoke the destructive retired editor", () => {
+  const alias = read("app/admin/khoa-hoc/page.tsx");
+  assert.match(alias, /redirect/);
+  assert.doesNotMatch(alias, /CourseEditor/);
+  assert.match(read("app/admin/crm-v2/courses/page.tsx"), /getAdminLmsSnapshot/);
+  const studio = read("components/crm-v2/lms-management-client.tsx");
+  for (const field of ["price", "originalPrice", "ctaText", "CourseImageInput"]) assert.ok(studio.includes(field));
+  assert.match(studio, /update_course/);
+  assert.doesNotMatch(studio, /from\("course_modules"\)\.delete/);
 });
 
 test("customer workspace owns contact details and order history", () => {

@@ -1,3 +1,4 @@
+import { listAdminLmsCourses, isEnrollmentCurrentlyActive } from "@/services/lmsService";
 import { getCourseAccessSlugs, getConfiguredAdminEmails, parseAccessOverrideSource } from "@/lib/course-access";
 import { getActiveDeletedStudentKeys } from "@/services/adminDeletionService";
 import type { LeadItem } from "@/services/leadService";
@@ -12,7 +13,8 @@ export type StudentAccessRecord = {
   phone: string;
   role: "Học viên" | "Lead";
   accessStatus: "Có quyền học" | "Chưa cấp quyền";
-  paymentStatus: "Đã thanh toán" | "Chờ thanh toán";
+  paymentStatus: "Đã thanh toán" | "Chờ thanh toán" | "Không có đơn thanh toán";
+  accessibleCourseSlugs?: string[];
   courseTitles: string[];
   courseSlugs: string[];
   paidOrderCodes: string[];
@@ -189,10 +191,11 @@ function markAdminRecord(record: StudentAccessRecord) {
 }
 
 export async function getStudentAccessRecords() {
-  const [orders, leads, activeDeletedStudentKeys] = await Promise.all([
+  const [orders, leads, activeDeletedStudentKeys, lmsCourses] = await Promise.all([
     getPaymentOrders({ includeFallback: false }),
     getLeads({ includeFallback: false }),
     getActiveDeletedStudentKeys(),
+    listAdminLmsCourses(),
   ]);
   const records = new Map<string, StudentAccessRecord>();
   const deletedStudentKeys = new Set([
@@ -264,6 +267,23 @@ export async function getStudentAccessRecords() {
     records.set(key, record);
   }
 
+  for (const course of lmsCourses) {
+    for (const enrollment of course.enrollments) {
+      const key = getStudentKey(enrollment);
+      if (deletedStudentKeys.has(key)) continue;
+      const record = records.get(key) ?? emptyRecord({ id: key, name: enrollment.studentName, email: enrollment.email, phone: enrollment.phone, source: "LMS", updatedAt: enrollment.updatedAt ?? enrollment.createdAt });
+      record.courseSlugs = mergeUnique(record.courseSlugs, [course.slug]);
+      record.courseTitles = mergeUnique(record.courseTitles, [course.title]);
+      if (isEnrollmentCurrentlyActive(enrollment)) record.accessibleCourseSlugs = mergeUnique(record.accessibleCourseSlugs ?? [], [course.slug]);
+      records.set(key, record);
+    }
+  }
+  for (const record of records.values()) {
+    record.accessibleCourseSlugs = mergeUnique(record.accessibleCourseSlugs ?? [], getCourseAccessSlugs({ email: record.email, leads, orders }));
+    record.accessStatus = record.accessibleCourseSlugs.length ? "Có quyền học" : "Chưa cấp quyền";
+    if (record.accessibleCourseSlugs.length) record.role = "Học viên";
+    record.paymentStatus = record.paidOrderCodes.length ? "Đã thanh toán" : record.pendingOrderCodes.length ? "Chờ thanh toán" : "Không có đơn thanh toán";
+  }
   const adminEmails = new Set(getConfiguredAdminEmails());
   for (const record of records.values()) {
     if (adminEmails.has(record.email.trim().toLowerCase())) {

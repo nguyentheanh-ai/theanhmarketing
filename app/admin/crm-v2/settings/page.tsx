@@ -1,3 +1,5 @@
+import { requireAdminAuth } from "@/lib/auth/session";
+import Link from "next/link";
 import { PageHeader, StatusBadge } from "@/components/crm-v2";
 
 const services = [
@@ -18,10 +20,18 @@ const services = [
   },
 ] as const;
 
-export default function CrmSettingsPage() {
+export default async function CrmSettingsPage() {
+  await requireAdminAuth("/admin/crm-v2/settings", ["owner"]);
   return (
     <div className="space-y-5">
       <PageHeader eyebrow="Hệ thống" title="Cài đặt" />
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {[
+          ["Thành viên & phân quyền", "/admin/crm-v2/team"], ["Nội dung website", "/admin/cms"],
+          ["Email & tự động hóa", "/admin/crm-v2/email"], ["Tích hợp", "/admin/crm-v2/integrations"],
+          ["SEO", "/admin/seo"], ["Vận hành dữ liệu", "/admin/database"],
+        ].map(([label, href]) => <Link key={href} href={href} className="rounded-xl border border-slate-200 bg-white p-5 text-sm font-bold text-slate-900 transition hover:border-blue-400 hover:text-blue-700">{label} →</Link>)}
+      </div>
       <div className="grid gap-4 lg:grid-cols-3">
         {services.map((service) => (
           <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm" key={service.name}>

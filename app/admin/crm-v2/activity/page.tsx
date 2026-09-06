@@ -1,3 +1,4 @@
+import { requireAdminAuth } from "@/lib/auth/session";
 import { ChartCard, EmptyState, PageHeader, Timeline } from "@/components/crm-v2";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getCrmDateRange, listCrmV2ActivityHistory, normalizeCrmListQuery } from "@/lib/crm-v2/data";
@@ -7,6 +8,7 @@ type PageProps = {
 };
 
 export default async function CrmV2ActivityPage({ searchParams }: PageProps) {
+  await requireAdminAuth("/admin/crm-v2/activity", ["owner"]);
   const query = normalizeCrmListQuery(await searchParams);
   const range = getCrmDateRange(query);
   const client = createSupabaseAdminClient();

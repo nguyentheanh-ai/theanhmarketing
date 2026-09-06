@@ -1,3 +1,4 @@
+import { requireAdminAuth } from "@/lib/auth/session";
 import {
   ChartCard,
   CrmDataTable,
@@ -24,6 +25,7 @@ type PageProps = {
 };
 
 export default async function CrmV2EmailPage({ searchParams }: PageProps) {
+  await requireAdminAuth("/admin/crm-v2/email", ["owner"]);
   const query = normalizeCrmListQuery(await searchParams);
   const [campaignsResult, kpis, segmentsResult, legacyEmailConfigs, courseOptions] = await Promise.all([
     listCrmV2EmailCampaigns(query),

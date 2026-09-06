@@ -5,6 +5,12 @@ import { isCrmV2Enabled } from "@/lib/crm-v2/feature-flag";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
 
 export async function requireCrmV2OwnerRequest(request: Request, scope: string) {
+  return requireCrmV2Request(request, scope, ["owner"]);
+}
+export async function requireCrmV2EditorRequest(request: Request, scope: string) {
+  return requireCrmV2Request(request, scope, ["owner", "editor"]);
+}
+async function requireCrmV2Request(request: Request, scope: string, allowedRoles: Array<"owner" | "editor">) {
   const rateLimit = checkRateLimit({
     key: rateLimitKey(request, scope),
     limit: 120,
@@ -15,7 +21,7 @@ export async function requireCrmV2OwnerRequest(request: Request, scope: string) 
 
   if (isAuthGuardEnabled() || process.env.NODE_ENV !== "development") {
     const { adminRole } = await getCurrentAuth();
-    if (!canAccessAdminRole(adminRole, ["owner"])) {
+    if (!canAccessAdminRole(adminRole, allowedRoles)) {
       return NextResponse.json({ ok: false, message: "Bạn không có quyền xem CRM v2." }, { status: 403 });
     }
   }

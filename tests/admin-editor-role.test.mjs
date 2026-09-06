@@ -19,25 +19,10 @@ test("admin auth supports owner and editor roles from safe metadata", () => {
 });
 
 test("editor admin can open content pages but not sensitive operations pages", () => {
-  const protectedShell = read("components/app/protected-admin-shell.tsx");
-  const adminShell = read("components/app/admin-shell.tsx");
-
-  for (const route of ["cms", "khoa-hoc", "bai-viet", "tai-lieu", "feedback", "hoc-vien"]) {
-    const page = read(`app/admin/${route}/page.tsx`);
-    assert.match(page, /allowedRoles=\{\["owner", "editor"\]\}/, `${route} should allow editor`);
-  }
-
-  for (const route of ["dashboard", "leads", "don-hang", "remarketing", "seo", "database"]) {
-    const page = read(`app/admin/${route}/page.tsx`);
-    assert.doesNotMatch(page, /allowedRoles=\{\["owner", "editor"\]\}/, `${route} should stay owner-only`);
-  }
-
-  assert.match(protectedShell, /allowedRoles/);
-  assert.match(protectedShell, /adminRole/);
-  assert.match(adminShell, /adminRole/);
-  assert.match(adminShell, /allowedRoles/);
-  assert.match(adminShell, /href: "\/admin\/hoc-vien"[\s\S]*allowedRoles: \["owner", "editor"\]/);
-  assert.match(adminShell, /filter/);
+  for (const route of ["cms", "bai-viet", "tai-lieu", "feedback"]) assert.match(read(`app/admin/${route}/page.tsx`), /allowedRoles=\{\["owner", "editor"\]\}/);
+  for (const route of ["courses", "students"]) assert.match(read(`app/admin/crm-v2/${route}/page.tsx`), /requireAdminAuth\([^;]+\["owner", "editor"\]/);
+  for (const route of ["reports", "leads", "team", "email", "automation"]) assert.match(read(`app/admin/crm-v2/${route}/page.tsx`), /requireAdminAuth\([^;]+\["owner"\]/);
+  assert.match(read("components/app/admin-shell.tsx"), /CrmShell adminRole/);
 });
 
 test("editor can upload media and operate student accounts without owner-only deletion", () => {

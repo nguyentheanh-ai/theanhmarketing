@@ -1,3 +1,5 @@
+import { chartResolution, chartDateLabel } from "@/lib/crm-v2/time-buckets";
+
 export type RevenueResolution = "hour" | "day" | "week";
 
 type DateRange = { range: string; from: string; to: string };
@@ -29,7 +31,7 @@ function revenue(row: RevenueRow) {
 }
 
 export function buildAdaptiveRevenueSeries(rows: RevenueRow[], range: DateRange): { resolution: RevenueResolution; rows: Array<{ label: string; value: number }> } {
-  if (range.range === "today") {
+  if (chartResolution(range) === "hour") {
     const buckets = Array.from({ length: 24 }, (_, hour) => ({ label: `${String(hour).padStart(2, "0")}:00`, value: 0 }));
     for (const row of rows) {
       const amount = revenue(row);
@@ -49,15 +51,15 @@ export function buildAdaptiveRevenueSeries(rows: RevenueRow[], range: DateRange)
     if (amount && daily.has(key)) daily.set(key, (daily.get(key) ?? 0) + amount);
   }
 
-  if (range.range !== "90d" && daily.size <= 45) {
-    return { resolution: "day", rows: [...daily].map(([date, value]) => ({ label: date.slice(5), value })) };
+  if (chartResolution(range) === "day") {
+    return { resolution: "day", rows: [...daily].map(([date, value]) => ({ label: chartDateLabel(date, range), value })) };
   }
 
   const entries = [...daily];
   const weekly: Array<{ label: string; value: number }> = [];
   for (let index = 0; index < entries.length; index += 7) {
     const chunk = entries.slice(index, index + 7);
-    weekly.push({ label: chunk[0][0].slice(5), value: chunk.reduce((sum, [, value]) => sum + value, 0) });
+    weekly.push({ label: chartDateLabel(chunk[0][0], range), value: chunk.reduce((sum, [, value]) => sum + value, 0) });
   }
   return { resolution: "week", rows: weekly };
 }

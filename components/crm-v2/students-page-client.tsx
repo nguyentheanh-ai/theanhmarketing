@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { StudentCreateDialog } from "@/components/admin/student-create-dialog";
 
 import {
   CrmDataTable,
@@ -20,9 +19,10 @@ type StudentsPageClientProps = {
   query: CrmListQuery;
   studentsResult: CrmListResult<CrmStudentRow>;
   courses: Course[];
+  canCreateTicket?: boolean;
 };
 
-export default function StudentsPageClient({ courses, query, studentsResult }: StudentsPageClientProps) {
+export default function StudentsPageClient({ courses, query, studentsResult, canCreateTicket = false }: StudentsPageClientProps) {
   const students = studentsResult.rows;
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
@@ -33,36 +33,30 @@ export default function StudentsPageClient({ courses, query, studentsResult }: S
     return sum + (Number.isFinite(value) && value > 0 ? 1 : 0);
   }, 0);
 
-  const courseOptions = Array.from(
-    new Map(students.map((row) => [row.courseSlug || row.course, { label: row.course, value: row.courseSlug || row.course }])).values(),
-  ).filter((option) => Boolean(option.value));
-  const statusOptions = Array.from(new Set(students.map((row) => row.status).filter(Boolean))).map((value) => ({ label: value, value }));
-  const ownerOptions = Array.from(
-    new Map(students.filter((row) => row.ownerId).map((row) => [row.ownerId || row.owner, { label: row.owner, value: row.ownerId || row.owner }])).values(),
-  );
-  const selectedStudent = students.find((row) => row.id === selectedIds[0]) ?? students[0];
+  const courseOptions = courses.map((course) => ({ label: course.title, value: course.slug }));
+  const statusOptions = ["active", "paused", "completed", "revoked"].map((value) => ({ label: value, value }));
+  const selectedStudent = selectedIds.length === 1 ? students.find((row) => row.id === selectedIds[0]) : undefined;
 
   return (
     <div className="space-y-4">
       <PageHeader eyebrow="Student success" title="Học viên" />
-      <StudentCreateDialog canReviewEmail courses={courses} />
-      <StudentActionButtons contactId={selectedStudent?.contactId} />
+      {canCreateTicket ? <StudentActionButtons contactId={selectedStudent?.contactId} /> : null}
       <MetricGrid
         metrics={[
-          { label: "Tổng học viên đã lọc", value: `${studentsResult.total}`, tone: "blue", series: [studentsResult.total] },
+          { label: "Lượt ghi danh đã lọc", value: `${studentsResult.total}`, tone: "blue", series: [studentsResult.total] },
           { label: "Đang học trên trang", value: `${pendingOrActive}`, tone: "green", series: [pendingOrActive] },
           { label: "Không hoạt động trên trang", value: `${students.length - pendingOrActive}`, tone: "orange", series: [students.length - pendingOrActive] },
           {
-            label: "Tỷ lệ hoàn thành khóa",
+            label: "Hoàn thành trên trang",
             value: `${students.length > 0 ? Math.round((completed / Math.max(students.length, 1)) * 100) : 0}%`,
             tone: "purple",
             series: [students.length > 0 ? Math.round((completed / students.length) * 100) : 0],
           },
-          { label: "Có dữ liệu upsell", value: `${upsell}`, tone: "green", series: [upsell] },
+          { label: "Có dữ liệu upsell trên trang", value: `${upsell}`, tone: "green", series: [upsell] },
         ]}
       />
       <CrmPaginationBar
-        basePath="/admin/crm-v2/students"
+        basePath="/admin/crm-v2/students?view=progress"
         query={query}
         page={studentsResult.page}
         pageSize={studentsResult.pageSize}
@@ -75,7 +69,6 @@ export default function StudentsPageClient({ courses, query, studentsResult }: S
             items={[
               { label: "Khóa học", value: query.filters?.course, param: "course", options: courseOptions },
               { label: "Trạng thái học", value: query.filters?.status, param: "status", options: statusOptions },
-              { label: "Owner CSKH", value: query.filters?.owner, param: "owner", options: ownerOptions },
             ]}
           />
           <CrmDataTable<CrmStudentRow>

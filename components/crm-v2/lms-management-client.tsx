@@ -1,4 +1,7 @@
 "use client";
+import { ImageUploadField } from "@/components/admin/image-upload-field";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { uploadMediaFile } from "@/lib/supabase/media-upload";
 
 import {
   Archive,
@@ -444,6 +447,22 @@ function MiniStat({ label, value }: { label: string; value: string | number }) {
   );
 }
 
+function CourseImageInput({ course, name, label }: { course: LmsCourse; name: "thumbnailImage" | "bannerImage"; label: string }) {
+  const [url, setUrl] = useState(course[name]);
+  const [uploading, setUploading] = useState(false);
+  const [message, setMessage] = useState("");
+  async function upload(file: File | undefined) {
+    if (!file) return;
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) { setMessage("Chưa kết nối được kho ảnh."); return; }
+    setUploading(true); setMessage("");
+    try { setUrl(await uploadMediaFile({ file, folder: `courses/${course.slug}/${name}`, supabase })); setMessage("Ảnh đã tải lên. Bấm Lưu thay đổi để dùng ảnh này."); }
+    catch (error) { setMessage(error instanceof Error ? error.message : "Không tải được ảnh."); }
+    finally { setUploading(false); }
+  }
+  return <div><input type="hidden" name={name} value={url} /><ImageUploadField label={label} value={url} onUrlChange={setUrl} isUploading={uploading} onFileSelect={(file) => void upload(file)} />{message ? <p role="status" className="mt-2 text-xs text-slate-600">{message}</p> : null}</div>;
+}
+
 function SalesContentTab({ busy, course, submitAction }: { busy: boolean; course: LmsCourse; submitAction: SubmitAction }) {
   return (
     <div className="grid gap-4">
@@ -459,6 +478,11 @@ function SalesContentTab({ busy, course, submitAction }: { busy: boolean; course
               courseId: course.id,
               title,
               slug: value(formData, "slug") || slugifyVietnamese(title),
+              price: Number(value(formData, "price")),
+              originalPrice: Number(value(formData, "originalPrice")),
+              duration: value(formData, "courseDuration"),
+              level: value(formData, "level"),
+              ctaText: value(formData, "ctaText"),
               shortDescription: value(formData, "shortDescription"),
               description: value(formData, "description"),
               thumbnailImage: value(formData, "thumbnailImage"),
@@ -483,7 +507,7 @@ function SalesContentTab({ busy, course, submitAction }: { busy: boolean; course
               <input className={inputClass()} defaultValue={course.title} name="title" required />
             </Field>
             <Field label="Slug">
-              <input className={inputClass()} defaultValue={course.slug} name="slug" required />
+              <input className={inputClass()} defaultValue={course.slug} name="slug" readOnly aria-describedby="course-slug-help" />
             </Field>
             <Field label="Trạng thái">
               <select className={inputClass()} defaultValue={course.status} name="status">
@@ -502,6 +526,14 @@ function SalesContentTab({ busy, course, submitAction }: { busy: boolean; course
               </select>
             </Field>
           </div>
+          <p id="course-slug-help" className="text-xs text-slate-500">Slug được giữ cố định để bảo toàn liên kết khóa học và đơn hàng.</p>
+          <div className="grid gap-3 md:grid-cols-2">
+            <Field label="Giá bán (VND)"><input className={inputClass()} type="number" min="0" max="2147483647" step="1" name="price" defaultValue={course.price ?? 0} required /></Field>
+            <Field label="Giá gốc (VND)"><input className={inputClass()} type="number" min="0" max="2147483647" step="1" name="originalPrice" defaultValue={course.originalPrice ?? 0} required /></Field>
+            <Field label="Thời lượng khóa"><input className={inputClass()} name="courseDuration" defaultValue={course.duration ?? ""} /></Field>
+            <Field label="Trình độ"><input className={inputClass()} name="level" defaultValue={course.level ?? ""} /></Field>
+            <Field label="Nhãn nút đăng ký"><input className={inputClass()} name="ctaText" defaultValue={course.ctaText ?? ""} /></Field>
+          </div>
           <Field label="Mô tả ngắn">
             <textarea className={textareaClass("min-h-20")} defaultValue={course.shortDescription} name="shortDescription" />
           </Field>
@@ -509,12 +541,8 @@ function SalesContentTab({ busy, course, submitAction }: { busy: boolean; course
             <textarea className={textareaClass()} defaultValue={course.description} name="description" />
           </Field>
           <div className="grid gap-3 md:grid-cols-3">
-            <Field label="Thumbnail URL">
-              <input className={inputClass()} defaultValue={course.thumbnailImage} name="thumbnailImage" />
-            </Field>
-            <Field label="Banner URL">
-              <input className={inputClass()} defaultValue={course.bannerImage} name="bannerImage" />
-            </Field>
+            <CourseImageInput key={`${course.id}:thumbnail`} course={course} name="thumbnailImage" label="Ảnh đại diện" />
+            <CourseImageInput key={`${course.id}:banner`} course={course} name="bannerImage" label="Ảnh bìa" />
             <Field label="Video preview">
               <input className={inputClass()} defaultValue={course.previewVideoUrl} name="previewVideoUrl" />
             </Field>
@@ -950,7 +978,15 @@ function LessonFormModal({
           <div className="rounded-lg border border-slate-200 p-4">
             <h4 className="text-sm font-black text-slate-950">Mô tả và nội dung học</h4>
             <div className="mt-3 grid gap-3">
-              <Field label="Mô tả ngắn">
+              <p id="course-slug-help" className="text-xs text-slate-500">Slug được giữ cố định để bảo toàn liên kết khóa học và đơn hàng.</p>
+          <div className="grid gap-3 md:grid-cols-2">
+            <Field label="Giá bán (VND)"><input className={inputClass()} type="number" min="0" max="2147483647" step="1" name="price" defaultValue={course.price ?? 0} required /></Field>
+            <Field label="Giá gốc (VND)"><input className={inputClass()} type="number" min="0" max="2147483647" step="1" name="originalPrice" defaultValue={course.originalPrice ?? 0} required /></Field>
+            <Field label="Thời lượng khóa"><input className={inputClass()} name="courseDuration" defaultValue={course.duration ?? ""} /></Field>
+            <Field label="Trình độ"><input className={inputClass()} name="level" defaultValue={course.level ?? ""} /></Field>
+            <Field label="Nhãn nút đăng ký"><input className={inputClass()} name="ctaText" defaultValue={course.ctaText ?? ""} /></Field>
+          </div>
+          <Field label="Mô tả ngắn">
                 <textarea className={textareaClass("min-h-20")} defaultValue={lesson?.description ?? ""} name="description" />
               </Field>
               <Field label="Nội dung học">
@@ -1309,7 +1345,7 @@ function SettingsTab({ busyAction, course, submitAction }: { busyAction: string;
         <h3 className="text-base font-black text-slate-950">Xuất bản và quyền truy cập</h3>
         <div className="mt-4 grid gap-3 md:grid-cols-[1fr_180px_220px_auto]">
           <Field label="Slug / SEO">
-            <input className={inputClass()} defaultValue={course.slug} name="slug" required />
+            <input className={inputClass()} defaultValue={course.slug} name="slug" readOnly aria-describedby="course-slug-help" />
           </Field>
           <Field label="Status">
             <select className={inputClass()} defaultValue={course.status} name="status">

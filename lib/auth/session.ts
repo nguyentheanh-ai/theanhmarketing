@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import type { User } from "@supabase/supabase-js";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getConfiguredOwnerEmails } from "@/lib/admin/admin-emails";
 import { shouldRequirePasswordChange } from "@/lib/auth/student-account";
@@ -110,14 +110,16 @@ export async function requireAdminAuth(nextPath: string, allowedRoles: AdminRole
     return null;
   }
 
+  const requestPath = (await headers()).get("x-admin-return-to");
+  const returnTo = requestPath && requestPath.startsWith("/admin/") && !requestPath.includes("\\") && !/[\r\n]/.test(requestPath) ? requestPath : nextPath;
   const { user, isAdmin, adminRole } = await getCurrentAuth();
 
   if (!user) {
-    redirect(`/admin/login?next=${encodeURIComponent(nextPath)}`);
+    redirect(`/admin/login?next=${encodeURIComponent(returnTo)}`);
   }
 
   if (!isAdmin || !canAccessAdminRole(adminRole, allowedRoles)) {
-    redirect(`/admin/login?next=${encodeURIComponent(nextPath)}&error=admin`);
+    redirect(`/admin/login?next=${encodeURIComponent(returnTo)}&error=admin`);
   }
 
   return { user, adminRole };

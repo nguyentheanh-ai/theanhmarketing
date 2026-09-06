@@ -1,3 +1,4 @@
+import { requireAdminAuth } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 
 type PageProps = {
@@ -6,6 +7,7 @@ type PageProps = {
 };
 
 export default async function CourseWorkspacePage({ params, searchParams }: PageProps) {
+  await requireAdminAuth("/admin/crm-v2/courses/[courseSlug]", ["owner", "editor"]);
   const { courseSlug } = await params;
   const query = await searchParams;
   const rawStep = Array.isArray(query?.step) ? query.step[0] : query?.step;

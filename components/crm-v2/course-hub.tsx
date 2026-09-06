@@ -73,7 +73,7 @@ export function CourseHub({ snapshot }: { snapshot: AdminLmsSnapshot }) {
       });
       const result = (await response.json().catch(() => null)) as { ok?: boolean; message?: string; course?: { slug?: string } } | null;
       if (!response.ok || !result?.ok || !result.course?.slug) throw new Error(result?.message || "Không tạo được khóa học.");
-      window.open(`/admin/course-studio/${result.course.slug}`, "_blank", "noopener,noreferrer");
+      router.push(`/admin/course-studio/${result.course.slug}`);
       setCreating(false);
       router.refresh();
     } catch (cause) {
@@ -122,7 +122,7 @@ export function CourseHub({ snapshot }: { snapshot: AdminLmsSnapshot }) {
                 <button aria-label={`Đưa ${course.title} xuống`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 font-black text-slate-700 disabled:opacity-40" disabled={reorderBusy || orderedCourses.at(-1)?.id === course.id} onClick={() => moveCourse(course.id, 1)} type="button"><ArrowDown className="size-4" /> Xuống</button>
               </div>
             ) : (
-              <Link className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-xl bg-slate-950 px-3 text-sm font-black text-white hover:bg-blue-700" href={`/admin/course-studio/${course.slug}`} rel="noopener noreferrer" target="_blank">Mở Course Studio</Link>
+              <Link className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-xl bg-slate-950 px-3 text-sm font-black text-white hover:bg-blue-700" href={`/admin/course-studio/${course.slug}`} rel="noopener noreferrer">Mở Course Studio</Link>
             )}
           </article>
         ))}

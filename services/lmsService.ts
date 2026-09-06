@@ -1,3 +1,4 @@
+import { isValidUuid as isUuid } from "@/lib/security/validation";
 import { normalizeEmail } from "@/lib/crm-v2/normalize";
 import type {
   AdminLmsSnapshot,
@@ -83,9 +84,7 @@ function nowIso() {
   return new Date().toISOString();
 }
 
-function isUuid(value: string | null | undefined) {
-  return Boolean(value && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(value));
-}
+
 
 function slugify(value: string) {
   const ascii = value
@@ -266,6 +265,8 @@ function mapCourse(
     .sort((a, b) => a.position - b.position);
   const courseEnrollments = enrollments.filter((enrollment) => enrollment.courseSlug === courseSlug || enrollment.courseId === courseId);
   const course: Omit<LmsCourse, "stats"> = {
+    price: numberValue(row.price), originalPrice: numberValue(row.original_price),
+    duration: text(row.duration), level: text(row.level), ctaText: text(row.cta_text),
     id: courseId,
     position: numberValue(row.sort_order ?? row.position, 1),
     title: text(row.title, "Khóa học"),
@@ -368,20 +369,22 @@ async function fetchCourseRows(client: SupabaseClient) {
   return asArray(data);
 }
 
-async function fetchCourseResourceRows(client: SupabaseClient) {
+async function fetchCourseResourceRows(client: SupabaseClient, strict = true) {
   const { data, error } = await client.from("course_resources").select("*").order("sort_order", { ascending: true });
 
   if (error) {
+    if (strict) throw new Error(`Không đọc được tài nguyên khóa học: ${error.message}`);
     return [];
   }
 
   return asArray(data);
 }
 
-async function fetchEnrollmentRows(client: SupabaseClient) {
+async function fetchEnrollmentRows(client: SupabaseClient, strict = true) {
   const { data, error } = await client.rpc("crm_v2_lms_enrollments_raw");
 
   if (error) {
+    if (strict) throw new Error(`Không đọc được quyền học và tiến độ: ${error.message}`);
     return { enrollmentRows: [], progressRows: [] };
   }
 
@@ -444,11 +447,11 @@ export async function getCommandCenterEnrollmentsStrict(
   });
 }
 
-async function loadAdminLmsData(client: SupabaseClient) {
+async function loadAdminLmsData(client: SupabaseClient, strict = true) {
   const [courseRows, courseResourceRows, enrollmentResult] = await Promise.all([
     fetchCourseRows(client),
-    fetchCourseResourceRows(client),
-    fetchEnrollmentRows(client),
+    fetchCourseResourceRows(client, strict),
+    fetchEnrollmentRows(client, strict),
   ]);
   const courseIndex = buildEnrollmentCourseIndex(courseRows);
   const enrollments = enrollmentResult.enrollmentRows
@@ -586,6 +589,11 @@ export async function createLmsCourse(input: {
 }
 
 export async function updateLmsCourse(input: {
+  price?: number;
+  originalPrice?: number;
+  duration?: string;
+  level?: string;
+  ctaText?: string;
   courseId: string;
   title?: string;
   slug?: string;
@@ -602,6 +610,15 @@ export async function updateLmsCourse(input: {
   const updates: Row = { updated_at: nowIso() };
   if (input.title !== undefined) updates.title = cleanText(input.title, 220);
   if (input.description !== undefined) updates.description = cleanText(input.description, 5000);
+  for (const [key, value] of [["price", input.price], ["original_price", input.originalPrice]] as const) {
+    if (value !== undefined) {
+      if (!Number.isSafeInteger(value) || value < 0 || value > 2147483647) throw new Error("Giá khóa học phải là số nguyên VND hợp lệ.");
+      updates[key] = value;
+    }
+  }
+  if (input.duration !== undefined) updates.duration = cleanText(input.duration, 160);
+  if (input.level !== undefined) updates.level = cleanText(input.level, 160);
+  if (input.ctaText !== undefined) updates.cta_text = cleanText(input.ctaText, 160);
   if (input.shortDescription !== undefined) updates.short_description = cleanText(input.shortDescription, 500);
   if (input.thumbnailImage !== undefined) updates.thumbnail_image = cleanText(input.thumbnailImage, 500);
   if (input.bannerImage !== undefined) updates.banner_image = cleanText(input.bannerImage, 500);
@@ -614,8 +631,7 @@ export async function updateLmsCourse(input: {
   }
   if (input.slug !== undefined) {
     const slug = sanitizeSlug(input.slug, text(updates.title) || text(course.title));
-    await ensureCourseSlugIsAvailable(client, slug, text(course.id));
-    updates.slug = slug;
+    if (slug !== text(course.slug)) throw new Error("Slug là định danh quyền học và đơn hàng; không thể đổi trên khóa đã tạo.");
   }
 
   const { error } = await client.from("courses").update(updates).eq("id", text(course.id));
@@ -624,21 +640,14 @@ export async function updateLmsCourse(input: {
 }
 
 export async function reorderLmsCourses(input: { courseIds: string[] }) {
+  const ids = input.courseIds;
+  if (!ids.length || ids.some((id) => !isUuid(id)) || new Set(ids).size !== ids.length) {
+    throw new Error("Danh sách sắp xếp không hợp lệ hoặc trùng ID.");
+  }
   const client = getClientOrThrow();
-  const ids = [...new Set(input.courseIds)];
-  if (!ids.length || ids.length !== input.courseIds.length) throw new Error("Danh sách khóa học sắp xếp không hợp lệ.");
-
-  const { data, error } = await client.from("courses").select("id,sort_order").in("id", ids);
-  if (error) throw new Error(`Không kiểm tra được khóa học: ${error.message}`);
-  const rows = asArray(data);
-  if (rows.length !== ids.length) throw new Error("Danh sách khóa học sắp xếp có khóa không tồn tại.");
-
-  const currentPositions = new Map(rows.map((row) => [text(row.id), numberValue(row.sort_order, 0)]));
-  const changed = ids.flatMap((id, index) => (currentPositions.get(id) === index + 1 ? [] : [{ id, position: index + 1 }]));
-  const results = await Promise.all(changed.map(({ id, position }) => client.from("courses").update({ sort_order: position, updated_at: nowIso() }).eq("id", id)));
-  const failed = results.find((result) => result.error)?.error;
-  if (failed) throw new Error(`Không lưu được thứ tự khóa học: ${failed.message}`);
-  return { ok: true, changed: changed.length };
+  const { data, error } = await client.rpc("admin_lms_reorder", { p_kind: "courses", p_parent_id: null, p_ids: ids });
+  if (error) throw new Error(`Không lưu được thứ tự: ${error.message}`);
+  return { ok: true, changed: numberValue(asRecord(data).changed) };
 }
 
 export async function deleteLmsCourse(input: { courseId: string; archiveIfUnsafe?: boolean }) {
@@ -708,27 +717,19 @@ export async function updateLmsModule(input: {
 }
 
 export async function deleteLmsModule(input: { moduleId: string; cascadeLessons?: boolean }) {
-  const client = getClientOrThrow();
-  const moduleRow = await findModuleRow(client, input.moduleId);
-  const { count } = await client.from("lessons").select("id", { count: "exact", head: true }).eq("module_id", input.moduleId);
-  if ((count ?? 0) > 0 && !input.cascadeLessons) {
-    throw new Error("Module đang có bài học. Hãy xóa/chuyển bài học trước khi xóa module.");
-  }
-  const { error } = await client.from("course_modules").delete().eq("id", text(moduleRow.id));
-  if (error) throw new Error(`Không xóa được module: ${error.message}`);
-  return { ok: true };
+  await updateLmsModule({ moduleId: input.moduleId, status: "archived" });
+  return { ok: true, archived: true };
 }
 
 export async function reorderLmsModules(input: { courseId: string; moduleIds: string[] }) {
+  const ids = input.moduleIds;
+  if (!ids.length || ids.some((id) => !isUuid(id)) || new Set(ids).size !== ids.length) {
+    throw new Error("Danh sách sắp xếp không hợp lệ hoặc trùng ID.");
+  }
   const client = getClientOrThrow();
-  const course = await findCourseRow(client, input.courseId);
-  const ids = Array.from(new Set(input.moduleIds.filter(isUuid)));
-  if (!ids.length) throw new Error("Thiếu danh sách module cần sắp xếp.");
-  const { data, error } = await client.from("course_modules").select("id").eq("course_id", text(course.id)).in("id", ids);
-  if (error) throw new Error(`Không kiểm tra được module: ${error.message}`);
-  if (asArray(data).length !== ids.length) throw new Error("Danh sách module sắp xếp không thuộc cùng khóa học.");
-  await Promise.all(ids.map((id, index) => client.from("course_modules").update({ sort_order: index + 1, updated_at: nowIso() }).eq("id", id)));
-  return { ok: true };
+  const { data, error } = await client.rpc("admin_lms_reorder", { p_kind: "modules", p_parent_id: input.courseId, p_ids: ids });
+  if (error) throw new Error(`Không lưu được thứ tự: ${error.message}`);
+  return { ok: true, changed: numberValue(asRecord(data).changed) };
 }
 
 export async function createLmsLesson(input: {
@@ -855,15 +856,14 @@ export async function deleteLmsLesson(input: { lessonId: string; archiveIfProgre
 }
 
 export async function reorderLmsLessons(input: { moduleId: string; lessonIds: string[] }) {
+  const ids = input.lessonIds;
+  if (!ids.length || ids.some((id) => !isUuid(id)) || new Set(ids).size !== ids.length) {
+    throw new Error("Danh sách sắp xếp không hợp lệ hoặc trùng ID.");
+  }
   const client = getClientOrThrow();
-  await findModuleRow(client, input.moduleId);
-  const ids = Array.from(new Set(input.lessonIds.filter(isUuid)));
-  if (!ids.length) throw new Error("Thiếu danh sách bài học cần sắp xếp.");
-  const { data, error } = await client.from("lessons").select("id").eq("module_id", input.moduleId).in("id", ids);
-  if (error) throw new Error(`Không kiểm tra được bài học: ${error.message}`);
-  if (asArray(data).length !== ids.length) throw new Error("Danh sách bài học sắp xếp không thuộc cùng module.");
-  await Promise.all(ids.map((id, index) => client.from("lessons").update({ sort_order: index + 1, updated_at: nowIso() }).eq("id", id)));
-  return { ok: true };
+  const { data, error } = await client.rpc("admin_lms_reorder", { p_kind: "lessons", p_parent_id: input.moduleId, p_ids: ids });
+  if (error) throw new Error(`Không lưu được thứ tự: ${error.message}`);
+  return { ok: true, changed: numberValue(asRecord(data).changed) };
 }
 
 export async function createLmsResource(input: {
@@ -966,6 +966,16 @@ export async function addLmsEnrollment(input: {
   return asRecord(data);
 }
 
+export async function setStudentAccessAtomically(input: { action: "grant" | "revoke"; courseSlugs: string[]; email: string; name: string; phone: string; userId: string | null }) {
+  const client = getClientOrThrow();
+  const { data, error } = await client.rpc("admin_lms_set_student_access", {
+    p_action: input.action, p_course_slugs: input.courseSlugs, p_email: cleanEmail(input.email),
+    p_name: cleanText(input.name, 160), p_phone: cleanPhone(input.phone), p_user_id: isUuid(input.userId) ? input.userId : null,
+  });
+  if (error || asRecord(data).ok !== true) throw new Error("Chưa cập nhật được quyền học. Các thay đổi quyền trong lần thao tác này đã được hủy.");
+  return { ok: true };
+}
+
 export async function provisionLmsEnrollmentAtomically(input: {
   operationId: string;
   leaseToken: string;
@@ -1014,7 +1024,7 @@ export async function updateLmsEnrollment(input: {
     .find((enrollment) => enrollment.id === input.enrollmentId);
   if (!existingEnrollment) throw new Error("Không tìm thấy enrollment học viên.");
 
-  const { error } = await client.rpc("crm_v2_lms_update_enrollment", {
+  const { error } = await client.rpc("admin_lms_update_enrollment", {
     p_enrollment_id: input.enrollmentId,
     p_status: input.status !== undefined ? sanitizeEnrollmentStatus(input.status) : existingEnrollment.status,
     p_expires_at: input.expiresAt !== undefined ? input.expiresAt || null : existingEnrollment.expiresAt,
@@ -1065,7 +1075,7 @@ export async function getStudentLmsAccess(input: {
     return { ownedSlugs: [], progressBySlug: {}, completedLessonIds: [], enrollmentIdsBySlug: {} };
   }
 
-  const { courses, progressRows } = await loadAdminLmsData(client);
+  const { courses, progressRows } = await loadAdminLmsData(client, false);
   const published = activePublishedCourses(courses);
 
   if (input.isAdmin) {

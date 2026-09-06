@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { getAdminLmsSnapshot } from "@/services/lmsService";
-import { requireCrmV2OwnerRequest } from "../_shared";
+import { requireCrmV2EditorRequest } from "../_shared";
 
 export async function GET(request: Request) {
-  const blocked = await requireCrmV2OwnerRequest(request, "admin:crm-v2:lms");
+  const blocked = await requireCrmV2EditorRequest(request, "admin:crm-v2:lms");
   if (blocked) return blocked;
 
   const url = new URL(request.url);

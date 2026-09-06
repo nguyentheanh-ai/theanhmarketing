@@ -210,14 +210,18 @@ export async function createAdminMember({
     throw new Error("Email nhân viên không hợp lệ.");
   }
 
-  const { data: listData, error: listError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
-  if (listError) throw new Error(listError.message);
-  const existing = listData.users.find((user) => user.email?.toLowerCase() === normalizedEmail);
+  let existing: Awaited<ReturnType<typeof supabase.auth.admin.getUserById>>["data"]["user"] = null;
+  for (let page = 1; page <= 100; page++) {
+    const { data: listData, error: listError } = await supabase.auth.admin.listUsers({ page, perPage: 1000 });
+    if (listError) throw new Error(listError.message);
+    existing = listData.users.find((user) => user.email?.toLowerCase() === normalizedEmail) ?? null;
+    if (existing || listData.users.length < 1000) break;
+    if (page === 100) throw new Error("Chưa đọc đủ tài khoản để xác minh thành viên.");
+  }
+  if (existing) return updateAdminMemberRole({ userId: existing.id, role });
 
-  const appMetadata = { ...(existing?.app_metadata ?? {}), admin_role: role };
-  const result = existing
-    ? await supabase.auth.admin.updateUserById(existing.id, { app_metadata: appMetadata })
-    : await supabase.auth.admin.createUser({
+  const appMetadata = { admin_role: role };
+  const result = await supabase.auth.admin.createUser({
         email: normalizedEmail,
         email_confirm: true,
         app_metadata: appMetadata,

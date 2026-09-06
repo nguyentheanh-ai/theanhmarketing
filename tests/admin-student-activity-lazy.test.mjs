@@ -21,7 +21,7 @@ function loadTsModule(relativePath) {
 }
 
 test("student page does not eagerly fetch activity for visible students", () => {
-  const page = read("app/admin/hoc-vien/page.tsx");
+  const page = read("components/admin/student-access-panel.tsx");
 
   assert.doesNotMatch(page, /getStudentActivityLogs/);
   assert.doesNotMatch(page, /activityLogEntries/);

@@ -1,3 +1,4 @@
+import { requireAdminAuth } from "@/lib/auth/session";
 ﻿import Link from "next/link";
 import {
   CrmDataTable,
@@ -138,6 +139,7 @@ function parseTab(raw: string | string[] | undefined): TabId {
 }
 
 export default async function CrmV2LeadProfilePage({ params, searchParams }: PageProps) {
+  await requireAdminAuth("/admin/crm-v2/leads/[id]", ["owner"]);
   const { id } = await params;
   const rawSearchParams = await searchParams;
   const activeTab = parseTab(rawSearchParams?.tab);

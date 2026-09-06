@@ -65,7 +65,7 @@ test("reports use the live BI surface with Meta Ads and truthful unit economics"
   assert.match(page, /getMetaAdsReport/);
   assert.match(page, /ReportBiCharts/);
   assert.match(page, /Chi phí \/ đơn thanh toán/);
-  assert.match(page, /Chi phí \/ khách hàng mới/);
+  assert.match(page, /Chi phí \/ khách mua trong kỳ/);
   assert.match(page, /Chưa đủ dữ liệu/);
   assert.match(charts, /layout="vertical"/);
   assert.match(charts, /Chi phí Ads/);

@@ -35,12 +35,14 @@ function InfoRow({ label, value }: { label: string; value: ReactNode }) {
 export function StudentAccessActions({
   courses,
   student,
+  canDelete = false,
 }: {
   courses: Course[];
   student: StudentAccessRecord;
+  canDelete?: boolean;
 }) {
   const router = useRouter();
-  const initialCourseSlugs = student.courseSlugs.length > 0 ? student.courseSlugs : courses.slice(0, 1).map((course) => course.slug);
+  const initialCourseSlugs = student.accessibleCourseSlugs ?? student.courseSlugs;
   const [checkedCourseSlugs, setCheckedCourseSlugs] = useState<string[]>(initialCourseSlugs);
   const [isEditing, setIsEditing] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -49,7 +51,7 @@ export function StudentAccessActions({
   const [isDeleting, setIsDeleting] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const canManageAccess = Boolean(student.email);
-  const canDeleteStudent = Boolean(student.email || student.phone);
+  const canDeleteStudent = canDelete && Boolean(student.email || student.phone);
 
   function toggleCourse(slug: string) {
     setCheckedCourseSlugs((current) =>
@@ -71,25 +73,31 @@ export function StudentAccessActions({
     const formData = new FormData(event.currentTarget);
     const submitter = (event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
     const action = submitter?.value || String(formData.get("action") ?? "");
-    const response = await fetch("/api/admin/students/access", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action,
-        courseSlugs: checkedCourseSlugs,
-        email: student.email,
-        name: student.name,
-        phone: student.phone,
-      }),
-    });
-    const result = (await response.json()) as { ok: boolean; message?: string };
+    try {
+      const response = await fetch("/api/admin/students/access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action,
+          courseSlugs: checkedCourseSlugs,
+          email: student.email,
+          name: student.name,
+          phone: student.phone,
+        }),
+      });
+      const result = (await response.json()) as { ok: boolean; accessUpdated?: boolean; message?: string };
 
-    setIsSaving(false);
-    setMessage(result.message ?? "Đã cập nhật quyền học.");
+      setMessage(result.message ?? "Đã cập nhật quyền học.");
 
-    if (response.ok && result.ok) {
-      setIsEditing(false);
+      if ((response.ok && result.ok) || result.accessUpdated) {
+        setIsEditing(false);
+        router.refresh();
+      }
+    } catch {
+      setMessage("Mất kết nối. Hãy tải lại để kiểm tra kết quả trước khi thao tác lại.");
       router.refresh();
+    } finally {
+      setIsSaving(false);
     }
   }
 
@@ -109,23 +117,29 @@ export function StudentAccessActions({
 
     setIsResettingPassword(true);
 
-    const response = await fetch("/api/admin/students/password-reset", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: student.email,
-        name: student.name,
-        phone: student.phone,
-        courseSlugs: checkedCourseSlugs,
-      }),
-    });
-    const result = (await response.json()) as { ok: boolean; message?: string };
+    try {
+      const response = await fetch("/api/admin/students/password-reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: student.email,
+          name: student.name,
+          phone: student.phone,
+          courseSlugs: checkedCourseSlugs,
+        }),
+      });
+      const result = (await response.json()) as { ok: boolean; accessUpdated?: boolean; message?: string };
 
-    setIsResettingPassword(false);
-    setMessage(result.message ?? "Đã cấp lại mật khẩu và gửi email đăng nhập mới cho học viên.");
+      setMessage(result.message ?? "Đã cấp lại mật khẩu và gửi email đăng nhập mới cho học viên.");
 
-    if (response.ok && result.ok) {
+      if (response.ok && result.ok) {
+        router.refresh();
+      }
+    } catch {
+      setMessage("Mất kết nối. Hãy tải lại để kiểm tra kết quả trước khi thao tác lại.");
       router.refresh();
+    } finally {
+      setIsResettingPassword(false);
     }
   }
 
@@ -147,6 +161,7 @@ export function StudentAccessActions({
 
     setIsDeleting(true);
 
+        try {
     const response = await fetch("/api/admin/students/delete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -156,15 +171,20 @@ export function StudentAccessActions({
         phone: student.phone,
       }),
     });
-    const result = (await response.json()) as { ok: boolean; message?: string };
+    const result = (await response.json()) as { ok: boolean; accessUpdated?: boolean; message?: string };
 
-    setIsDeleting(false);
     setMessage(result.message ?? "Đã xóa học viên khỏi danh sách quản lý.");
 
     if (response.ok && result.ok) {
       setIsEditing(false);
       setIsPreviewOpen(false);
       router.refresh();
+    }
+    } catch {
+      setMessage("Mất kết nối. Hãy tải lại để kiểm tra kết quả trước khi thao tác lại.");
+      router.refresh();
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -185,7 +205,7 @@ export function StudentAccessActions({
           onClick={() => setIsEditing((current) => !current)}
           type="button"
         >
-          Edit
+          Quản lý quyền
         </button>
         <span className="text-slate-300">|</span>
         <button

@@ -4,7 +4,7 @@ import { requireAdminAuth } from "@/lib/auth/session";
 import { isCrmV2Enabled } from "@/lib/crm-v2/feature-flag";
 
 export const metadata: Metadata = {
-  title: "CRM v2 | The Anh Marketing",
+  title: "Quản trị | The Anh Marketing",
   robots: {
     index: false,
     follow: false,
@@ -18,18 +18,18 @@ export default async function CrmV2Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await requireAdminAuth("/admin/crm-v2", ["owner"]);
+  const auth = await requireAdminAuth("/admin/crm-v2", ["owner", "editor"]);
   const enabled = isCrmV2Enabled(); // CRM_V2_ENABLED production gate
 
   return (
-    <CrmShell disabled={!enabled}>
+    <CrmShell adminRole={auth?.adminRole ?? "owner"} disabled={!enabled}>
       {enabled ? (
         children
       ) : (
         <div className="mx-auto max-w-3xl py-20">
           <EmptyState
-            title="CRM mới chưa mở cho vận hành"
-            description="Khi chủ hệ thống bật CRM mới, dữ liệu thật đã được đối chiếu sẽ hiển thị tại đây. Các màn admin hiện tại vẫn hoạt động bình thường."
+            title="Khu quản trị chưa khả dụng"
+            description="Khu quản trị đang tạm đóng theo cấu hình hệ thống. Anh kiểm tra cấu hình CRM_V2_ENABLED trước khi vận hành."
           />
           <div className="mt-4 flex justify-center">
             <StatusBadge tone="orange">Chưa khả dụng</StatusBadge>

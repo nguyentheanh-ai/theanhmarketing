@@ -8,7 +8,7 @@ function read(relativePath) {
 }
 
 test("admin student table can delete a student without deleting paid orders", () => {
-  const page = read("app/admin/hoc-vien/page.tsx");
+  const page = read("components/admin/student-access-panel.tsx");
   const deleteRoute = read("app/api/admin/students/delete/route.ts");
   const service = read("services/studentAccessService.ts");
   const actions = read("components/admin/student-access-actions.tsx");
@@ -45,7 +45,7 @@ test("admin deletion flow stores tombstones and purges after retention window", 
 });
 
 test("admin student view opens a detail preview modal", () => {
-  const page = read("app/admin/hoc-vien/page.tsx");
+  const page = read("components/admin/student-access-panel.tsx");
   const service = read("services/studentAccessService.ts");
   const actions = read("components/admin/student-access-actions.tsx");
 

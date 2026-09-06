@@ -10,7 +10,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 export function AdminLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nextPath = getSafeNextPath(searchParams.get("next"), "/admin/cms", {
+  const nextPath = getSafeNextPath(searchParams.get("next"), "/admin", {
     requiredPrefix: "/admin",
   });
   const [message, setMessage] = useState("");

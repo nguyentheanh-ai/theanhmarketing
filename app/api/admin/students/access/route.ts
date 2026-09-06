@@ -6,16 +6,10 @@ import { cleanEmail, cleanPhone, cleanSlug, cleanText, isValidEmail, isValidSlug
 import { invalidateAdminModules } from "@/services/adminDataService";
 import { logStudentActivity } from "@/services/activityLogService";
 import { getCourses } from "@/services/courseService";
-import { createLeadAdmin } from "@/services/leadService";
-import { addLmsEnrollment } from "@/services/lmsService";
+import { setStudentAccessAtomically } from "@/services/lmsService";
 import { ensureStudentAccountForAccessGrant } from "@/services/studentAccountService";
 
 type AccessAction = "grant" | "revoke";
-
-const accessSourcePrefix: Record<AccessAction, string> = {
-  grant: "admin-access-grant",
-  revoke: "admin-access-revoke",
-};
 
 function isAccessAction(value: string): value is AccessAction {
   return value === "grant" || value === "revoke";
@@ -28,6 +22,7 @@ function normalizeCourseSlugs(input: { courseSlug?: string; courseSlugs?: string
 }
 
 export async function POST(request: Request) {
+  let accessUpdated = false;
   try {
     const rateLimit = checkRateLimit({
       key: rateLimitKey(request, "admin:students:access"),
@@ -102,7 +97,7 @@ export async function POST(request: Request) {
           courseTitle: coursesToUpdate.map((course) => course.title).join(" | "),
         },
         {
-          forcePasswordUpdate: true,
+          preserveExistingAuth: true,
         },
       );
 
@@ -114,37 +109,12 @@ export async function POST(request: Request) {
       }
     }
 
+    await setStudentAccessAtomically({ action, courseSlugs, email, name, phone, userId: studentAccount?.userId ?? null });
+    accessUpdated = true;
+    invalidateAdminModules(["leads", "students"]);
+
     for (const course of coursesToUpdate) {
-      const result = await createLeadAdmin({
-        name,
-        email,
-        phone,
-        source: `${accessSourcePrefix[action]}:${course.slug}`,
-        message: [
-          `Quyền học: ${action === "grant" ? "Cấp quyền" : "Thu quyền"}`,
-          `Khóa học: ${course.title}`,
-          `Slug: ${course.slug}`,
-        ].join("\n"),
-      });
-
-      if (!result.ok) {
-        return NextResponse.json(
-          { ok: false, message: `Chưa cập nhật được quyền học: ${result.error}` },
-          { status: 500 },
-        );
-      }
-
-      await addLmsEnrollment({
-        courseSlug: course.slug,
-        studentName: name,
-        email,
-        phone,
-        userId: studentAccount?.userId ?? null,
-        status: action === "grant" ? "active" : "revoked",
-      });
-
       await logStudentActivity({
-        leadId: result.lead?.id ?? null,
         studentEmail: email,
         studentPhone: phone,
         eventType: action === "grant" ? "course_access_granted" : "course_access_revoked",
@@ -194,6 +164,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           ok: false,
+          accessUpdated: true,
           message: `Đã cập nhật quyền học nhưng chưa gửi được email cho khách: ${
             emailResult.reason ?? "không rõ lý do"
           }`,
@@ -206,14 +177,15 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       ok: true,
+      accessUpdated: true,
       message:
         action === "grant"
           ? `Đã cấp quyền ${coursesToUpdate.length} khóa, tạo/cập nhật tài khoản và gửi email cho ${email}.`
           : `Đã thu quyền ${coursesToUpdate.length} khóa và gửi email thông báo cho ${email}.`,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { ok: false, message: error instanceof Error ? error.message : "Không cập nhật được quyền học." },
+      { ok: false, accessUpdated, message: accessUpdated ? "Quyền học đã được cập nhật; bước thông báo gặp lỗi. Hãy kiểm tra trạng thái trước khi gửi lại." : "Chưa cập nhật được quyền học. Hãy kiểm tra trạng thái tài khoản trước khi thử lại." },
       { status: 500 },
     );
   }

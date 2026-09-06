@@ -1,3 +1,4 @@
+import { requireAdminAuth } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 
 export const metadata = {
@@ -9,6 +10,7 @@ type PageProps = {
 };
 
 export default async function CrmV2OrdersPage({ searchParams }: PageProps) {
+  await requireAdminAuth("/admin/crm-v2/orders", ["owner"]);
   await searchParams;
   redirect("/admin/crm-v2/leads");
 }

@@ -1,3 +1,4 @@
+import { requireAdminAuth } from "@/lib/auth/session";
 import { Activity, BarChart3, BookOpen, IconButton, InsightRow, MetricGrid, PageHeader, RightInsightPanel, Timeline } from "@/components/crm-v2";
 import { DashboardCharts } from "@/components/crm-v2/dashboard-charts";
 import { getCrmDateRange, getCrmV2Dashboard, getCrmV2OrderSummary, normalizeCrmListQuery } from "@/lib/crm-v2/data";
@@ -17,6 +18,7 @@ function compactMoney(value: number) {
 }
 
 export default async function CrmV2DashboardPage({ searchParams }: PageProps) {
+  await requireAdminAuth("/admin/crm-v2", ["owner"]);
   const query = normalizeCrmListQuery(await searchParams);
   const range = getCrmDateRange(query);
   const [data, ads, orderSummary] = await Promise.all([getCrmV2Dashboard(query), getMetaAdsReport(range), getCrmV2OrderSummary(query)]);
@@ -25,7 +27,7 @@ export default async function CrmV2DashboardPage({ searchParams }: PageProps) {
     ? [
         { label: ads.quality.status === "partial" ? "Chi phí Ads tạm tính" : "Chi phí quảng cáo", value: compactMoney(ads.totals.spend), tone: "orange", series: ads.rows.map((row) => row.spend) },
         { label: ads.quality.status === "partial" ? "ROAS tạm tính" : "ROAS", value: ads.totals.spend ? `${((data.reportSummary?.revenue ?? 0) / ads.totals.spend).toFixed(2)}x` : "—", tone: "purple", series: [] },
-        { label: "CAC", value: (data.reportSummary?.paidOrders ?? 0) ? compactMoney(ads.totals.spend / (data.reportSummary?.paidOrders ?? 1)) : "—", tone: "orange", series: [] },
+        { label: "Chi phí / đơn thanh toán", value: (data.reportSummary?.paidOrders ?? 0) ? compactMoney(ads.totals.spend / (data.reportSummary?.paidOrders ?? 1)) : "—", tone: "orange", series: [] },
         { label: "CPC", value: compactMoney(ads.totals.cpc), tone: "blue", series: [] },
         { label: "CTR", value: `${ads.totals.ctr.toFixed(2)}%`, tone: "green", series: [] },
       ]

@@ -1,3 +1,4 @@
+import { isValidUuid as isUuid } from "@/lib/security/validation";
 import { NextResponse } from "next/server";
 
 import { assertCanRunLiveEmailAction, sendCrmV2PaymentReminder } from "@/lib/crm-v2/email-actions";
@@ -11,9 +12,7 @@ function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
 }
 
-function isUuid(value: string) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(value);
-}
+
 
 export async function POST(request: Request) {
   const blocked = await requireCrmV2OwnerRequest(request, "admin:crm-v2:orders:actions");

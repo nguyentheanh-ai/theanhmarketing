@@ -77,6 +77,7 @@ async function getMetaHourlyRows(range: Pick<ReportRange, "from" | "to">) {
     }
     next = result.payload.paging?.next;
   }
+  if (next) return { ok: false as const, report: empty("Dữ liệu Meta Ads vượt giới hạn phân trang; chưa thể đối soát đủ kỳ đã chọn.") };
   return { ok: true as const, advertiserTimezone, hourlyRows };
 }
 

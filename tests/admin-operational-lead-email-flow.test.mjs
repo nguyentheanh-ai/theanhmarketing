@@ -118,7 +118,7 @@ test("lead operations have database-backed notes, activities, email logs, and ca
 });
 
 test("admin UI surfaces real activities, lead notes, email history, and refresh controls", () => {
-  const dashboardPage = read("app/admin/dashboard/page.tsx");
+  const dashboardPage = read("app/admin/crm-v2/page.tsx");
   const commandCenterService = read("services/adminCommandCenterService.ts");
   const dashboard = read("components/admin/admin-overview-dashboard.tsx");
   const leadManager = read("components/admin/lead-manager.tsx");
@@ -130,7 +130,7 @@ test("admin UI surfaces real activities, lead notes, email history, and refresh 
   assert.match(adminData, /activities:\s*"admin:activities"/);
   assert.match(adminData, /getAdminLeadActivities/);
   assert.match(adminData, /invalidateAdminModules\(.*activities/s);
-  assert.match(dashboardPage, /getSoloCommandCenterModel\(range\)/);
+  assert.match(dashboardPage, /getCrmV2Dashboard/);
   assert.match(commandCenterService, /getCommandCenterStudentActivities\(range\)/);
   assert.match(dashboard, /activities/);
   assert.match(dashboard, /\/api\/admin\/activities\/recent\?refresh=1/);

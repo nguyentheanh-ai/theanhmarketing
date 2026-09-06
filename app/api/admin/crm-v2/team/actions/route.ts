@@ -1,3 +1,4 @@
+import { isValidUuid as isUuid } from "@/lib/security/validation";
 import { NextResponse } from "next/server";
 
 import { createAdminMember, listAdminMembers, updateAdminMemberRole } from "@/lib/admin/admin-members";
@@ -7,9 +8,7 @@ import { requireCrmV2OwnerRequest } from "../../_shared";
 
 const teamActionValues = new Set(["record_permission_audit", "grant_role", "revoke_role", "add_member", "create_admin_member", "invite_admin_member"]);
 
-function isUuid(value: string) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(value);
-}
+
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};

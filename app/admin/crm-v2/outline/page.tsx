@@ -1,3 +1,4 @@
+import { requireAdminAuth } from "@/lib/auth/session";
 import { ChartCard, IconButton, InsightRow, PageHeader, RightInsightPanel, ShieldCheck, StatusBadge } from "@/components/crm-v2";
 
 const modules = [
@@ -63,7 +64,8 @@ const modules = [
   },
 ];
 
-export default function CrmV2OutlinePage() {
+export default async function CrmV2OutlinePage() {
+  await requireAdminAuth("/admin/crm-v2/outline", ["owner"]);
   return (
     <div className="space-y-4">
       <PageHeader

@@ -1,3 +1,4 @@
+import { requireAdminAuth } from "@/lib/auth/session";
 import {
   CrmDataTable,
   FilterBar,
@@ -16,6 +17,7 @@ type PageProps = {
 };
 
 export default async function CrmV2SegmentsPage({ searchParams }: PageProps) {
+  await requireAdminAuth("/admin/crm-v2/segments", ["owner"]);
   const query = normalizeCrmListQuery(await searchParams);
   const segmentsResult = await listCrmV2SegmentsRows(query);
   const segments: CrmSegmentRow[] = segmentsResult.rows;

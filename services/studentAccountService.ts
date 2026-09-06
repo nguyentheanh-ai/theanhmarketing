@@ -506,6 +506,7 @@ export async function ensureStudentAccountForAccessGrant(
         skipped: true,
         created: false,
         reason: "Student account already exists.",
+        userId: existingUser.id,
       };
     }
 

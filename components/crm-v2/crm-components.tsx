@@ -32,6 +32,8 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { SignOutButton } from "@/components/auth/sign-out-button";
+import type { AdminRole } from "@/lib/auth/session";
 import type { MouseEventHandler, ReactNode } from "react";
 import type { CrmEvent, CrmListQuery, CrmTableColumn, KpiMetric } from "@/lib/crm-v2/types";
 
@@ -46,10 +48,31 @@ const primaryNavItems = [
 ];
 
 const advancedNavItems = [
+  { href: "/admin/viec-can-xu-ly", label: "Việc cần xử lý", icon: Inbox },
+  { href: "/admin/crm-v2/email", label: "Email", icon: Mail },
+  { href: "/admin/crm-v2/automation", label: "Tự động hóa", icon: Bot },
+  { href: "/admin/crm-v2/segments", label: "Phân khúc", icon: Tags },
+  { href: "/admin/crm-v2/team", label: "Thành viên & phân quyền", icon: Users },
+  { href: "/admin/cms", label: "Nội dung website", icon: BookOpen },
+  { href: "/admin/bai-viet", label: "Bài viết", icon: BookOpen },
+  { href: "/admin/tai-lieu", label: "Tài liệu", icon: BookOpen },
+  { href: "/admin/feedback", label: "Phản hồi", icon: Inbox },
+  { href: "/admin/seo", label: "SEO", icon: Search },
+  { href: "/admin/remarketing", label: "Chăm sóc lại", icon: Mail },
+  { href: "/admin/crm-v2/integrations", label: "Tích hợp", icon: Plug },
+  { href: "/admin/database", label: "Vận hành dữ liệu", icon: Settings2 },
+] as const;
+
+const editorPaths = new Set(["/admin/crm-v2/students", "/admin/crm-v2/courses", "/admin/cms", "/admin/bai-viet", "/admin/tai-lieu", "/admin/feedback"]);
+function visibleNav(items: readonly CrmNavItem[], role: AdminRole) {
+  return items.filter((item) => role === "owner" || editorPaths.has(item.href));
+}
+
+const activityNavItems = [
   { href: "/admin/crm-v2/activity", label: "Lịch sử hoạt động", icon: Activity },
 ];
 
-type CrmNavItem = (typeof primaryNavItems)[number] | (typeof advancedNavItems)[number];
+type CrmNavItem = (typeof primaryNavItems)[number] | (typeof advancedNavItems)[number] | (typeof activityNavItems)[number];
 
 const toneClasses = {
   blue: "border-blue-200 bg-blue-50 text-blue-700",
@@ -100,15 +123,15 @@ function announceCrmRouteFeedback(detail: CrmRouteFeedbackDetail = {}) {
   window.dispatchEvent(new CustomEvent<CrmRouteFeedbackDetail>(crmRouteFeedbackEvent, { detail }));
 }
 
-export function CrmShell({ children, disabled = false }: { children: ReactNode; disabled?: boolean }) {
+export function CrmShell({ children, disabled = false, adminRole = "owner" }: { children: ReactNode; disabled?: boolean; adminRole?: AdminRole }) {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#f4f6f9] text-slate-950">
+    <div data-admin-theme="light" className="min-h-screen overflow-x-hidden bg-[#f4f6f9] text-slate-950">
       <CrmRouteFeedback />
       <div className="flex min-h-screen">
-        <CrmSidebar />
+        <CrmSidebar adminRole={adminRole} />
         <div className="min-w-0 flex-1 overflow-x-hidden">
           <CrmTopbar disabled={disabled} />
-          <CrmMobileNav />
+          <CrmMobileNav adminRole={adminRole} />
           <main className="mx-auto w-full min-w-0 max-w-[1560px] px-4 py-4 sm:px-6 lg:px-8">{children}</main>
         </div>
       </div>
@@ -182,7 +205,7 @@ export function CrmRouteFeedback() {
 
       const destination = new URL(href, window.location.href);
       const current = new URL(window.location.href);
-      if (destination.origin !== current.origin || !destination.pathname.startsWith("/admin/crm-v2")) {
+      if (destination.origin !== current.origin || !destination.pathname.startsWith("/admin/")) {
         return;
       }
       if (destination.href === current.href) {
@@ -251,7 +274,7 @@ export function CrmRouteFeedback() {
   );
 }
 
-export function CrmSidebar() {
+export function CrmSidebar({ adminRole = "owner" }: { adminRole?: AdminRole }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -290,21 +313,21 @@ export function CrmSidebar() {
           <div className="flex items-center gap-3">
             <div className="grid size-10 place-items-center rounded-xl bg-slate-950 text-sm font-black text-white">TA</div>
             <div>
-              <div className="text-[10px] font-black uppercase tracking-[0.12em] text-blue-700">Executive Operating System</div>
+              <div className="text-[10px] font-black uppercase tracking-[0.12em] text-blue-700">Quản trị hệ thống</div>
               <div className="mt-0.5 text-base font-black text-slate-950">The Anh Marketing</div>
             </div>
           </div>
         </div>
         <nav className="flex-1 overflow-y-auto px-3 py-4">
-          <div className="space-y-1">{primaryNavItems.map(renderItem)}</div>
+          <div className="space-y-1">{visibleNav(primaryNavItems, adminRole).map(renderItem)}</div>
           <div className="my-4 border-t border-slate-200" />
           <p className="mb-2 px-3 text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">Nâng cao</p>
-          <div className="space-y-1">{advancedNavItems.map(renderItem)}</div>
+          <div className="space-y-1">{visibleNav([...advancedNavItems, ...activityNavItems], adminRole).map(renderItem)}</div>
         </nav>
         <div className="border-t border-slate-200 p-4">
           <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900">
             <div className="flex items-center gap-2 font-black"><ShieldCheck className="size-4" /> Chế độ vận hành an toàn</div>
-            <div className="mt-1.5 leading-5 text-emerald-800">Mọi chỉ số trên màn hình được đọc từ dữ liệu thật.</div>
+            <div className="mt-1.5 leading-5 text-emerald-800">Quản lý nội dung, học viên và vận hành tại một nơi.</div>
           </div>
         </div>
       </div>
@@ -312,12 +335,12 @@ export function CrmSidebar() {
   );
 }
 
-export function CrmMobileNav() {
+export function CrmMobileNav({ adminRole = "owner" }: { adminRole?: AdminRole }) {
   const pathname = usePathname();
   return (
     <nav className="border-b border-slate-200 bg-white px-4 py-2 lg:hidden" aria-label="Điều hướng quản trị">
       <div className="flex gap-2 overflow-x-auto pb-1">
-        {primaryNavItems.map((item) => {
+        {visibleNav([...primaryNavItems, ...advancedNavItems, ...activityNavItems], adminRole).map((item) => {
           const itemPath = item.href.split("?")[0];
           const active = pathname === itemPath;
           return (
@@ -363,7 +386,7 @@ export function CrmTopbar({ disabled = false }: { disabled?: boolean }) {
             Tìm
           </button>
         </form>
-        <CrmGlobalDateControl />
+        {["/admin/crm-v2", "/admin/crm-v2/reports", "/admin/crm-v2/leads", "/admin/crm-v2/orders", "/admin/crm-v2/activity"].includes(pathname) ? <CrmGlobalDateControl /> : null}
         <button
           aria-label="Đồng bộ CRM v2"
           className="order-1 inline-flex min-h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 sm:order-none"
@@ -377,8 +400,9 @@ export function CrmTopbar({ disabled = false }: { disabled?: boolean }) {
         >
           <RefreshCw className="h-4 w-4" />
         </button>
+        <SignOutButton mode="admin" className="order-1 rounded-lg px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 sm:order-none" />
         <span className="order-1 sm:order-none">
-          <StatusBadge tone={disabled ? "orange" : "green"}>{disabled ? "Chưa khả dụng" : "Bản CRM mới"}</StatusBadge>
+          <StatusBadge tone={disabled ? "orange" : "green"}>{disabled ? "Chưa khả dụng" : "Quản trị"}</StatusBadge>
         </span>
       </div>
     </header>
@@ -448,7 +472,7 @@ export function CrmPaginationBar({
   total: number;
 }) {
   const createPath = (nextPage: number, nextPageSize = query.pageSize) => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(basePath.split("?")[1] ?? "");
     if (query.search) params.set("q", query.search);
     if (query.range) params.set("range", query.range);
     if (query.dateFrom) params.set("dateFrom", query.dateFrom);
@@ -464,13 +488,14 @@ export function CrmPaginationBar({
     params.set("page", String(nextPage));
     params.set("pageSize", String(nextPageSize));
     const qs = params.toString();
-    return `${basePath}${qs ? `?${qs}` : ""}`;
+    return `${basePath.split("?")[0]}${qs ? `?${qs}` : ""}`;
   };
 
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-3">
       <div className="grid gap-3 sm:flex sm:items-center sm:justify-between">
-        <form className="flex flex-wrap gap-2" action={basePath} method="get">
+        <form className="flex flex-wrap gap-2" action={basePath.split("?")[0]} method="get">
+          {Array.from(new URLSearchParams(basePath.split("?")[1] ?? "")).map(([key, value]) => <input key={key} type="hidden" name={key} value={value} />)}
           <input
             name="q"
             defaultValue={query.search ?? ""}

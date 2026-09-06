@@ -1,18 +1,7 @@
-import TeamPageClient from "@/components/crm-v2/team-page-client";
-import { listCrmV2TeamMembers, normalizeCrmListQuery } from "@/lib/crm-v2/data";
-
-export const metadata = {
-  title: "Team & Phân quyền",
-};
-
-type PageProps = {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-};
-
-export default async function CrmV2TeamPage({ searchParams }: PageProps) {
-  const query = normalizeCrmListQuery(await searchParams);
-  const membersResult = await listCrmV2TeamMembers(query);
-
-  // TeamPageClient renders TeamActionButtons for grant/revoke permission actions.
-  return <TeamPageClient query={query} membersResult={membersResult} />;
+import { requireAdminAuth } from "@/lib/auth/session";
+import { AdminMembersClient } from "@/components/admin/admin-members-client";
+export const metadata = { title: "Thành viên & phân quyền" };
+export default async function CrmV2TeamPage() {
+  await requireAdminAuth("/admin/crm-v2/team", ["owner"]);
+  return <AdminMembersClient />;
 }

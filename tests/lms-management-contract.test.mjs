@@ -19,7 +19,7 @@ test("crm v2 LMS uses a real shared service instead of placeholder UI", () => {
 
   const service = read("services/lmsService.ts");
   const coursesPage = read("app/admin/crm-v2/courses/page.tsx");
-  const studentsClient = read("components/crm-v2/students-page-client.tsx");
+  const studentsClient = read("components/crm-v2/students-page-client.tsx") + read("app/admin/crm-v2/students/page.tsx");
   const manager = read("components/crm-v2/lms-management-client.tsx");
 
   for (const exportedName of [
@@ -68,17 +68,17 @@ test("course management uses a progressive Course Hub and dedicated workspace", 
   const studioPage = read("app/admin/course-studio/[courseSlug]/page.tsx");
   const legacyWorkspace = read("app/admin/crm-v2/courses/[courseSlug]/page.tsx");
   const manager = read("components/crm-v2/lms-management-client.tsx");
-  const studentsClient = read("components/crm-v2/students-page-client.tsx");
+  const studentsClient = read("components/crm-v2/students-page-client.tsx") + read("app/admin/crm-v2/students/page.tsx");
 
   assert.match(hub, /create_course/, "Course Hub must create real courses");
   assert.match(hub, /reorder_courses/, "Course Hub must persist course order through the owner-only LMS action route");
   assert.match(hub, /aria-label={`Đưa \$\{course\.title\} lên`}/, "Course order must be keyboard accessible");
   assert.match(hub, /aria-label={`Đưa \$\{course\.title\} xuống`}/, "Course order must be keyboard accessible");
   assert.match(hub, /\/admin\/course-studio\/\$\{/, "Course Hub must open the focused Course Studio route");
-  assert.match(hub, /target="_blank"/, "existing courses must open Course Studio in a new browser tab");
+  assert.doesNotMatch(hub, /target="_blank"|window.open/, "Course Studio stays in the current admin tab");
   assert.match(studioPage, /requireAdminAuth/, "Course Studio must enforce owner auth in the server route");
   assert.match(studioPage, /CourseLmsManager[\s\S]*studioMode/, "Course Studio must render the focused manager mode");
-  assert.doesNotMatch(studioPage, /CrmShell/, "Course Studio must not render the CRM shell");
+  assert.match(studioPage, /CrmShell/, "Course Studio shares the canonical admin navigation");
   assert.match(legacyWorkspace, /redirect\(/, "legacy CRM workspace URL must redirect to Course Studio");
   assert.doesNotMatch(manager, /function CourseListPanel/, "course list must not compete with the editor");
   assert.doesNotMatch(manager, /function EnrollmentFormModal/, "course workspace must not bypass account provisioning");
@@ -88,7 +88,7 @@ test("course management uses a progressive Course Hub and dedicated workspace", 
 
 test("course workspace uses free guided steps, real analytics, and visible save state", () => {
   const manager = read("components/crm-v2/lms-management-client.tsx");
-  const studentsClient = read("components/crm-v2/students-page-client.tsx");
+  const studentsClient = read("components/crm-v2/students-page-client.tsx") + read("app/admin/crm-v2/students/page.tsx");
 
   for (const label of [
     "Tổng quan",
@@ -125,8 +125,8 @@ test("crm v2 LMS admin and student API routes are server guarded", () => {
   const adminRead = read("app/api/admin/crm-v2/lms/route.ts");
   const progress = read("app/api/student/progress/route.ts");
 
-  assert.match(adminActions, /requireCrmV2OwnerRequest/, "admin mutations must use CRM v2 owner guard");
-  assert.match(adminRead, /requireCrmV2OwnerRequest/, "admin reads must use CRM v2 owner guard");
+  assert.match(adminActions, /requireCrmV2EditorRequest/, "admin mutations must use CRM v2 owner guard");
+  assert.match(adminRead, /requireCrmV2EditorRequest/, "admin reads must use CRM v2 owner guard");
   assert.match(adminActions, /z\./, "admin LMS mutations must validate payloads with zod");
   assert.match(adminActions, /createLmsCourse[\s\S]*updateLmsLesson[\s\S]*addLmsEnrollment[\s\S]*removeLmsEnrollment/, "admin action route must cover course, lesson, and enrollment operations");
   assert.match(adminActions, /body\.action === "reorder_courses"[\s\S]*reorderLmsCourses/, "admin action route must validate and persist course order");

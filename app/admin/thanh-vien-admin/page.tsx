@@ -1,10 +1,12 @@
-import { AdminMembersClient } from "@/components/admin/admin-members-client";
-import { ProtectedAdminShell } from "@/components/app/protected-admin-shell";
-
-export default function AdminMembersPage() {
-  return (
-    <ProtectedAdminShell nextPath="/admin/thanh-vien-admin" allowedRoles={["owner"]}>
-      <AdminMembersClient />
-    </ProtectedAdminShell>
-  );
+import { redirect } from "next/navigation";
+import { requireAdminAuth } from "@/lib/auth/session";
+export default async function AdminMembersPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  await requireAdminAuth("/admin/thanh-vien-admin", ["owner"]);
+  const raw = (await searchParams) ?? {};
+  const params = new URLSearchParams();
+  for (const key of ["q", "page", "pageSize", "range", "dateFrom", "dateTo", "source", "course", "status", "owner"]) {
+    if (typeof raw[key] === "string") params.set(key, raw[key] as string);
+  }
+  if (typeof raw.from === "string" && typeof raw.to === "string") { params.set("range", "custom"); params.set("dateFrom", raw.from); params.set("dateTo", raw.to); }
+  redirect(`/admin/crm-v2/team${params.size ? `?${params}` : ""}`);
 }

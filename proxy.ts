@@ -126,6 +126,9 @@ export function proxy(request: NextRequest) {
   const nonce = btoa(String.fromCharCode(...nonceBytes));
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-csp-nonce", nonce);
+  if (isAdminRoute(request.nextUrl.pathname)) {
+    requestHeaders.set("x-admin-return-to", `${request.nextUrl.pathname}${request.nextUrl.search}`);
+  }
 
   const response = NextResponse.next({
     request: {

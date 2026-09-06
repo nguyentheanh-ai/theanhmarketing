@@ -1,3 +1,4 @@
+import { isValidUuid as isUuid } from "@/lib/security/validation";
 import { NextResponse } from "next/server";
 
 import { getCrmV2MissingLiveConfigMessage, shouldUseCrmV2DemoData } from "@/lib/crm-v2/feature-flag";
@@ -10,9 +11,7 @@ function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
 }
 
-function isUuid(value: string) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(value);
-}
+
 
 export async function POST(request: Request) {
   const blocked = await requireCrmV2OwnerRequest(request, "admin:crm-v2:students:actions");
@@ -25,6 +24,7 @@ export async function POST(request: Request) {
   }
 
   const contactId = typeof body.contactId === "string" && isUuid(body.contactId) ? body.contactId : null;
+  if (!contactId) return NextResponse.json({ ok: false, message: "Chọn đúng một học viên có liên hệ hợp lệ trước khi tạo yêu cầu hỗ trợ." }, { status: 400 });
   const subject = typeof body.subject === "string" && body.subject.trim() ? body.subject.trim() : "CRM v2 CSKH follow-up";
   const client = createSupabaseAdminClient();
   if (shouldUseCrmV2DemoData()) {

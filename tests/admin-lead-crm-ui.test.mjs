@@ -9,18 +9,11 @@ function read(relativePath) {
 
 test("lead CRM page uses the light management page header instead of the legacy header", () => {
   const page = read("app/admin/leads/page.tsx");
-  const source = read("components/admin/lead-manager.tsx");
+  assert.match(page, /requireAdminAuth/);
+  assert.match(page, /crm-v2\/leads/);
+  assert.doesNotMatch(page, /LeadManager/);
+  assert.match(read("app/admin/crm-v2/leads/page.tsx"), /LeadsPageClient/);
 
-  assert.doesNotMatch(page, /AdminPageHeader/);
-  assert.match(source, /Quản lý Lead/);
-  assert.match(source, /khách hàng tiềm năng/);
-  assert.match(source, /Tổng số lead/);
-  assert.match(source, /Đã thanh toán/);
-  assert.match(source, /Chưa thanh toán/);
-  assert.match(source, /Chưa liên hệ/);
-  assert.match(source, /border-slate-200/);
-  assert.match(source, /text-slate-950/);
-  assert.match(page, /max-w-\[1480px\]/);
 });
 
 test("lead manager summarizes remarketing payloads instead of dumping raw tracking logs", () => {

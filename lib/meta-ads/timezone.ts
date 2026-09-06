@@ -1,3 +1,5 @@
+import { chartResolution, chartDateLabel } from "@/lib/crm-v2/time-buckets";
+
 export type MetaHourlyRow = {
   metaDate: string;
   metaHour: number;
@@ -92,17 +94,17 @@ export function buildExpandedMetaDateWindow(range: Pick<ReportRange, "from" | "t
   return { since: shiftDate(range.from, -1), until: shiftDate(range.to, 1) };
 }
 
-export function aggregateMetaAdsForVietnam(rows: MetaHourlyRow[], range: ReportRange, advertiserTimezone: string, now = new Date()) {
+export function aggregateMetaAdsForVietnam(rows: MetaHourlyRow[], range: ReportRange, advertiserTimezone: string, _now = new Date()) {
+  void _now;
   const scoped = rows.flatMap((row) => {
     const bucket = metaHourToVietnamBucket(row.metaDate, row.metaHour, advertiserTimezone);
     return bucket.date >= range.from && bucket.date <= range.to ? [{ ...row, ...bucket }] : [];
   });
   const totals = scoped.reduce((sum, row) => ({ spend: sum.spend + row.spend, impressions: sum.impressions + row.impressions, clicks: sum.clicks + row.clicks }), { spend: 0, impressions: 0, clicks: 0 });
   const normalizedTotals = { ...totals, ctr: totals.impressions ? (totals.clicks / totals.impressions) * 100 : 0, cpc: totals.clicks ? totals.spend / totals.clicks : 0 };
-  const todayVietnam = dateAndHourInTimezone(now, vietnamTimezone).date;
-  const quality = { status: range.to >= todayVietnam ? "partial" as const : "final" as const, timezone: advertiserTimezone };
+  const quality = { status: "partial" as const, timezone: advertiserTimezone };
 
-  if (range.range === "today" || range.range === "yesterday") {
+  if (chartResolution(range) === "hour") {
     const buckets = Array.from({ length: 24 }, (_, hour) => ({ label: `${String(hour).padStart(2, "0")}:00`, spend: 0, impressions: 0, clicks: 0 }));
     for (const row of scoped) {
       buckets[row.hour].spend += row.spend;
@@ -112,7 +114,7 @@ export function aggregateMetaAdsForVietnam(rows: MetaHourlyRow[], range: ReportR
     return { rows: buckets, totals: normalizedTotals, quality };
   }
 
-  const daily = new Map(datesBetween(range.from, range.to).map((date) => [date, { label: date.slice(5), spend: 0, impressions: 0, clicks: 0 }]));
+  const daily = new Map(datesBetween(range.from, range.to).map((date) => [date, { label: chartDateLabel(date, range), spend: 0, impressions: 0, clicks: 0 }]));
   for (const row of scoped) {
     const bucket = daily.get(row.date);
     if (!bucket) continue;
@@ -121,7 +123,7 @@ export function aggregateMetaAdsForVietnam(rows: MetaHourlyRow[], range: ReportR
     bucket.clicks += row.clicks;
   }
   const dailyRows = [...daily.values()];
-  if (range.range !== "90d") return { rows: dailyRows, totals: normalizedTotals, quality };
+  if (chartResolution(range) === "day") return { rows: dailyRows, totals: normalizedTotals, quality };
 
   const weeklyRows = Array.from({ length: Math.ceil(dailyRows.length / 7) }, (_, index) => {
     const chunk = dailyRows.slice(index * 7, index * 7 + 7);

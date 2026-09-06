@@ -8,40 +8,21 @@ function read(relativePath) {
 }
 
 test("admin shell matches the focused solo command center chrome", () => {
-  const shell = read("components/app/admin-shell.tsx");
+  const shell = read("components/crm-v2/crm-components.tsx");
+  for (const route of ["/admin/crm-v2/students", "/admin/crm-v2/courses", "/admin/crm-v2/leads", "/admin/crm-v2/reports", "/admin/crm-v2/settings", "/admin/viec-can-xu-ly"]) assert.ok(shell.includes(route));
+  assert.match(read("components/app/admin-shell.tsx"), /<CrmShell/);
+  assert.doesNotMatch(read("components/app/admin-shell.tsx"), /<aside/);
+  assert.match(shell, /visibleNav/);
 
-  for (const item of ["Tổng quan", "Việc cần xử lý", "Học viên", "Đơn hàng", "Leads", "Khóa học", "Báo cáo", "Cài đặt"]) {
-    assert.match(shell, new RegExp(item));
-  }
-
-  assert.match(shell, /Admin Panel/);
-  assert.match(shell, /lg:ml-\[244px\]/);
-  assert.doesNotMatch(shell, /moduleSearch/);
 });
 
 test("admin navigation is centralized into focused management modules without unused ads/revenue", () => {
-  const shell = read("components/app/admin-shell.tsx");
-  const index = read("app/admin/page.tsx");
-
-  for (const item of [
-    "Học viên",
-    "Đơn hàng",
-    "Leads",
-    "Khóa học",
-    "Báo cáo",
-    "Cài đặt",
-  ]) {
-    assert.match(shell, new RegExp(item));
-  }
-
-  assert.match(index, /\/admin\/crm-v2/);
-  assert.match(index, /\/admin\/khoa-hoc/);
-  assert.doesNotMatch(shell, /Ads & doanh thu/);
-  assert.doesNotMatch(shell, /Báo cáo ads/);
-  assert.doesNotMatch(shell, /doanh thu/);
-  assert.doesNotMatch(shell, /Remarketing/);
-  assert.doesNotMatch(shell, /SEO\/Tracking/);
-  assert.doesNotMatch(shell, /Feedback/);
+  const shell = read("components/crm-v2/crm-components.tsx");
+  for (const route of ["/admin/crm-v2/students", "/admin/crm-v2/courses", "/admin/crm-v2/leads", "/admin/crm-v2/reports", "/admin/crm-v2/settings", "/admin/viec-can-xu-ly"]) assert.ok(shell.includes(route));
+  assert.match(read("components/app/admin-shell.tsx"), /<CrmShell/);
+  assert.doesNotMatch(read("components/app/admin-shell.tsx"), /<aside/);
+  assert.match(shell, /visibleNav/);
+  assert.match(read("app/admin/page.tsx"), /crm-v2\/courses/);
 });
 
 test("admin members route is owner-only and edits app metadata roles", () => {
@@ -50,7 +31,8 @@ test("admin members route is owner-only and edits app metadata roles", () => {
   const route = read("app/api/admin/members/route.ts");
   const service = read("lib/admin/admin-members.ts");
 
-  assert.match(page, /allowedRoles=\{\["owner"\]\}/);
+  assert.match(page, /requireAdminAuth\("\/admin\/thanh-vien-admin", \["owner"\]\)/);
+  assert.match(read("app/admin/crm-v2/team/page.tsx"), /AdminMembersClient/);
   assert.match(route, /canAccessAdminRole\(adminRole, \["owner"\]\)/);
   assert.match(service, /app_metadata/);
   assert.match(service, /admin_role/);
