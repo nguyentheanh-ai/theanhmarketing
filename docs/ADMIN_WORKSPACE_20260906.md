@@ -1,6 +1,6 @@
 # Không gian quản trị mới
 
-Trạng thái: đã phát hành. Kiểm tra bản dựng và các hành vi mới đạt; bằng chứng triển khai và đối chiếu sau phát hành được giữ trong bảng theo dõi riêng.
+Trạng thái: đã phát hành. Kiểm tra bản dựng và các hành vi mới đạt; bằng chứng triển khai và đối chiếu sau phát hành được giữ trong workspace riêng.
 
 Tổng quan và báo cáo dùng cùng bộ lọc ngày/sản phẩm, số tiền đã thanh toán, xu hướng, bảng sản phẩm và phễu của cùng nhóm đơn. Chi phí quảng cáo tải riêng; không dùng sự thiếu dữ liệu Ads để chặn báo cáo doanh thu. Đơn nhiều sản phẩm phân bổ bảo toàn tổng tiền; sản phẩm tặng không nhận doanh thu âm. Chi tiết và định nghĩa mở bằng cửa sổ.
 
