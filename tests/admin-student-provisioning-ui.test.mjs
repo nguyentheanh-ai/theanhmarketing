@@ -158,7 +158,7 @@ test("partial provisioning outcomes enter the safe recovery queue by operation i
   const activities = read("services/activityLogService.ts");
   const adapter = read("services/adminCommandCenterService.ts");
   const model = read("lib/admin/solo-command-center.ts");
-  const page = read("app/admin/crm-v2/students/page.tsx");
+  const page = read("app/admin/crm-v2/customers/page.tsx");
   const dialog = read("components/admin/student-create-dialog.tsx");
   assert.match(activities, /student_provisioning_partial/);
   assert.match(activities, /student_provisioning_failed/);
@@ -168,7 +168,7 @@ test("partial provisioning outcomes enter the safe recovery queue by operation i
   assert.match(model, /operation_id/);
   assert.match(model, /add_student=1&operation_id=/);
   assert.match(page, /operation_id/);
-  assert.match(page, /canReviewEmail=\{adminRole === "owner"\}/);
+  assert.match(page, /canReviewEmail=\{role === "owner"\}/);
   assert.match(dialog, /resumeOperationId/);
   assert.match(read("components/admin/student-provisioning-wizard.tsx"), /provisioning-status\?operationId=/);
   assert.match(read("components/admin/student-provisioning-wizard.tsx"), /Nhập lại thông tin để tiếp tục/);

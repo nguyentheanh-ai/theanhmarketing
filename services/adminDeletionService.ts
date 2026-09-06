@@ -1,3 +1,5 @@
+import { readAllAdminRows } from "@/lib/admin/read-all-rows";
+import { getConfiguredOwnerEmails } from "@/lib/admin/admin-emails";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 const retentionDays = 30;
@@ -61,13 +63,18 @@ function mapStudent(row: DbSoftDeletedStudent): SoftDeletedStudent {
   };
 }
 
-export async function getActiveDeletedStudentKeys() {
+export async function getActiveDeletedStudentKeys(options: { strict?: boolean } = {}) {
   const supabase = createSupabaseAdminClient();
 
   if (!supabase) {
+    if (options.strict) throw new Error("Không đọc được danh sách hồ sơ đã xóa.");
     return new Set<string>();
   }
 
+  if (options.strict) {
+    const rows = await readAllAdminRows((from, to) => supabase.from("admin_deleted_students").select("id,student_key", { count: "exact" }).is("restored_at", null).order("id").range(from, to), "hồ sơ đã xóa");
+    return new Set(rows.map((row) => String(row.student_key)));
+  }
   const { data, error } = await supabase
     .from("admin_deleted_students")
     .select("student_key,restored_at")
@@ -188,6 +195,7 @@ export async function purgeExpiredAdminDeletes(now = new Date()) {
     .from("admin_deleted_students")
     .select("id,student_key,email,phone,name,deleted_at,delete_after,purged_at")
     .is("purged_at", null)
+    .is("restored_at", null)
     .lte("delete_after", nowIso);
 
   if (studentReadError) {
@@ -206,17 +214,25 @@ export async function purgeExpiredAdminDeletes(now = new Date()) {
     const phone = normalizePhone(student.phone);
 
     if (email) {
-      await supabase.from("leads").delete().eq("email", email).or("source.ilike.admin-student%,source.ilike.admin-access-%");
-
       const user = await findAuthUserByEmail(supabase, email);
+      if (getConfiguredOwnerEmails().includes(email) || ["owner", "editor"].includes(user?.app_metadata?.admin_role)) continue;
+      const markerDelete = await supabase.from("leads").delete().eq("email", email).or("source.ilike.admin-student%,source.ilike.admin-access-%");
+      if (markerDelete.error) continue;
       if (user) {
         const { error } = await supabase.auth.admin.deleteUser(user.id);
-        if (!error) deletedAuthUsers += 1;
+        if (error) continue;
+        deletedAuthUsers += 1;
       }
     }
 
-    if (phone) {
-      await supabase.from("leads").delete().eq("phone", phone).or("source.ilike.admin-student%,source.ilike.admin-access-%");
+    if (!email && phone) {
+      let failed = false;
+      for (const absentEmail of [null, ""] as const) {
+        const query = supabase.from("leads").delete().eq("phone", phone).or("source.ilike.admin-student%,source.ilike.admin-access-%");
+        const markerDelete = absentEmail === null ? await query.is("email", null) : await query.eq("email", "");
+        if (markerDelete.error) { failed = true; break; }
+      }
+      if (failed) continue;
     }
 
     const { error } = await supabase

@@ -12,7 +12,9 @@ test("lead CRM page uses the light management page header instead of the legacy 
   assert.match(page, /requireAdminAuth/);
   assert.match(page, /crm-v2\/leads/);
   assert.doesNotMatch(page, /LeadManager/);
-  assert.match(read("app/admin/crm-v2/leads/page.tsx"), /LeadsPageClient/);
+  assert.match(read("app/admin/crm-v2/leads/page.tsx"), /redirect\(`\/admin\/crm-v2\/customers/);
+  assert.match(read("app/admin/crm-v2/customers/page.tsx"), /CustomerDirectory/);
+  assert.doesNotMatch(read("app/admin/crm-v2/customers/page.tsx"), /LeadManager|LeadsPageClient/);
 
 });
 

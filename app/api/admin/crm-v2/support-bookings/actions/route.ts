@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     if (!body || typeof body !== "object" || typeof body.date !== "string" || typeof body.busy !== "boolean") {
       return NextResponse.json({ ok: false, message: "Dữ liệu ngày bận không hợp lệ." }, { status: 400, headers: noStoreHeaders });
     }
-    const result = await setSupportBusyDate({ date: body.date.slice(0, 10), busy: body.busy, note: typeof body.note === "string" ? body.note : "", actorId: user?.id ?? null });
+    const result = await setSupportBusyDate({ date: body.date, busy: body.busy, note: typeof body.note === "string" ? body.note : "", actorId: user?.id ?? null });
     return NextResponse.json(result, { headers: noStoreHeaders });
   } catch (error) {
     return NextResponse.json({ ok: false, message: error instanceof Error ? error.message : "Không cập nhật được ngày bận." }, { status: 400, headers: noStoreHeaders });

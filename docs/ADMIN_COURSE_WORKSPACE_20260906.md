@@ -1,0 +1,11 @@
+# Quản lý khóa học — giao diện mới ngày 06/09/2026
+
+Bản sửa thay Course Hub và trình soạn cũ bằng danh sách khóa học có tìm kiếm/lọc trạng thái; mỗi khóa mở một workspace gồm Nội dung khóa học, Tài liệu, Học viên, Thông tin & xuất bản. Chương nằm bên trái, bài của chương đang chọn nằm bên phải; tạo/sửa chương, bài và tài liệu mở cửa sổ riêng. Học viên mở hồ sơ hợp nhất qua `/admin/crm-v2/customers?q=…&course=…&profile=…`.
+
+Các cửa sổ chỉ đóng khi API xác nhận lưu thành công. Lỗi kết nối/validation giữ nguyên bản nháp và cho phép thử lại; hủy xác nhận bỏ thay đổi giữ nguyên form đang gắn. Thông tin khóa học giữ form khi chuyển tab. Slug khóa học không đổi; lưu trữ chương/bài/khóa dùng hợp đồng hiện tại để giữ nội dung, quyền học và tiến độ. Không gọi xóa nguồn cũ, backfill, sửa Auth hoặc gửi email trong công việc này.
+
+Backend giữ các API LMS hiện có. Bổ sung chặn chuyển bài sang khóa khác, chuyển bài trong cùng khóa đặt vào cuối chương đích, không giả định vị trí đầu khi đọc thứ tự lỗi. Tài liệu hiển thị hợp nhất từ `course_resources` và `lesson_resources`; sửa/gỡ tìm đúng bản ghi và đúng bảng, ID không tồn tại không được báo thành công. Kiểm tra khóa/chương/bài của tài liệu trước ghi; tiêu đề trống và URL thực thi mã bị từ chối. Bảng `lesson_resources` yêu cầu `lesson_id`, vì vậy đổi tài liệu loại này thành tài liệu toàn khóa cần thêm liên kết toàn khóa mới; bản cũ được giữ nguyên. Không có migration mới. API revalidate cả đường dẫn studio động sau thay đổi.
+
+Kiểm chứng cục bộ: 10 kiểm thử hành vi React/backend mới trong `tests/admin-course-workspace.test.mjs`; cùng các hợp đồng LMS/admin có tổng 22/22 đạt. TypeScript toàn worktree và lint các file khóa học đạt tại thời điểm bàn giao cho tác vụ chính. Các kiểm thử dùng fixture riêng, không tạo/sửa khách hoặc khóa học thật. Việc dựng/phát hành và nghiệm thu production thuộc tác vụ chính; không coi kiểm thử thành bằng chứng đăng nhập hay thao tác trình duyệt thật.
+
+Lệnh kiểm tra: `SUPPORT_UI_TEST_MODULE=/private/tmp/theanh-admin-db-tests/package.json node --test tests/admin-course-workspace.test.mjs tests/lms-management-contract.test.mjs tests/admin-solo-ops-regression.test.mjs`. Runtime React bên ngoài phải được dùng nhất quán với test renderer; test mock icon/Link/Image để không trộn hai bản React. Không thêm dependency production.

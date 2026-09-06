@@ -19,7 +19,7 @@ test("crm v2 LMS uses a real shared service instead of placeholder UI", () => {
 
   const service = read("services/lmsService.ts");
   const coursesPage = read("app/admin/crm-v2/courses/page.tsx");
-  const studentsClient = read("components/crm-v2/students-page-client.tsx") + read("app/admin/crm-v2/students/page.tsx");
+  const studentsClient = read("components/admin/customer-directory.tsx") + read("app/admin/crm-v2/customers/page.tsx");
   const manager = read("components/crm-v2/lms-management-client.tsx");
 
   for (const exportedName of [
@@ -55,7 +55,7 @@ test("crm v2 LMS uses a real shared service instead of placeholder UI", () => {
   assert.doesNotMatch(manager, /\b(mock|demo)\b|LmsPlaceholder/gi, "LMS manager must not implement mock-only behavior");
   assert.match(manager, /\/api\/admin\/crm-v2\/lms\/actions/, "admin LMS UI must call the real mutation route");
   assert.match(manager, /router\.refresh\(\)/, "admin LMS UI must refresh server data after mutations");
-  assert.match(manager, /confirm\(/, "dangerous LMS actions must ask for confirmation");
+  assert.match(manager, /AdminDialog open=\{Boolean\(confirm\)\}/, "archive and removal actions must ask for confirmation in a focused dialog");
 });
 
 test("course management uses a progressive Course Hub and dedicated workspace", () => {
@@ -68,7 +68,7 @@ test("course management uses a progressive Course Hub and dedicated workspace", 
   const studioPage = read("app/admin/course-studio/[courseSlug]/page.tsx");
   const legacyWorkspace = read("app/admin/crm-v2/courses/[courseSlug]/page.tsx");
   const manager = read("components/crm-v2/lms-management-client.tsx");
-  const studentsClient = read("components/crm-v2/students-page-client.tsx") + read("app/admin/crm-v2/students/page.tsx");
+  const studentsClient = read("components/admin/customer-directory.tsx") + read("app/admin/crm-v2/customers/page.tsx");
 
   assert.match(hub, /create_course/, "Course Hub must create real courses");
   assert.match(hub, /reorder_courses/, "Course Hub must persist course order through the owner-only LMS action route");
@@ -86,34 +86,17 @@ test("course management uses a progressive Course Hub and dedicated workspace", 
   assert.doesNotMatch(studentsClient, /CourseLmsManager|LmsStudentsOverview/, "student operations and course authoring must be separated");
 });
 
-test("course workspace uses free guided steps, real analytics, and visible save state", () => {
+test("course workspace keeps four focused tabs and real LMS mutation contracts", () => {
   const manager = read("components/crm-v2/lms-management-client.tsx");
-  const studentsClient = read("components/crm-v2/students-page-client.tsx") + read("app/admin/crm-v2/students/page.tsx");
-
-  for (const label of [
-    "Tổng quan",
-    "Nội dung bán hàng",
-    "Curriculum",
-    "Media & tài liệu",
-    "Học viên & quyền học",
-    "Analytics",
-    "Kiểm tra & xuất bản",
-  ]) {
-    assert.match(manager, new RegExp(label), `guided workspace must include ${label}`);
+  for (const label of ["Nội dung khóa học", "Tài liệu", "Học viên", "Thông tin & xuất bản"]) {
+    assert.ok(manager.includes(label), `course workspace must include ${label}`);
   }
-
-  assert.match(manager, /Course Workspace/);
-  assert.match(manager, /Chuyển tự do giữa các bước/);
-  assert.match(manager, /setActiveStepState\(step\)/, "step changes must update immediately without waiting for route navigation");
-  assert.match(manager, /window\.history\.replaceState/, "step state may synchronize its shareable URL without a server navigation");
-  assert.doesNotMatch(manager, /router\.replace\(`\$\{basePath\}/, "step clicks must not depend on a Next route transition");
-  assert.doesNotMatch(manager, />\{lesson\.slug\}</, "lesson slugs must not leak into the operator UI");
-  assert.match(manager, /Đang lưu|Đã lưu|Lỗi lưu/, "mutations must expose save state");
-  assert.match(manager, /CurriculumWorkspace/);
-  assert.match(manager, /CourseAnalytics/);
-  assert.doesNotMatch(manager, /localStorage/);
-  assert.doesNotMatch(studentsClient, /NPS\/đánh giá[\s\S]*8\.7/);
-  assert.doesNotMatch(studentsClient, /Ticket hỗ trợ[\s\S]*2 mở/);
+  assert.match(manager, /window\.history\.replaceState/);
+  assert.doesNotMatch(manager, /localStorage|function EnrollmentFormModal/);
+  assert.match(manager, /\/admin\/crm-v2\/customers/, "course students must open the unified profile flow");
+  assert.match(manager, /onSubmit[\s\S]*submit\(payload\)\.then\(\(ok\) => \{ if \(ok\) setEditor\(null\)/, "a failed save must leave its editor mounted");
+  assert.match(manager, /resources[\s\S]*module\.lessons\.flatMap/, "course and lesson materials must be available together");
+  assert.doesNotMatch(manager, /action:\s*"add_enrollment"/, "course editing must preserve the account provisioning boundary");
 });
 
 test("crm v2 LMS admin and student API routes are server guarded", () => {

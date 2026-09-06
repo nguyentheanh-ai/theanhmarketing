@@ -1,3 +1,4 @@
+import { readAllAdminRows } from "@/lib/admin/read-all-rows";
 import { fallbackLeads } from "@/data/platform";
 import { syncLeadToGoogleSheet } from "@/lib/notifications/google-sheets";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -657,7 +658,9 @@ export async function getLeads(options: { includeFallback?: boolean; strict?: bo
       : [];
   }
 
-  const primaryRead = await supabase
+  const primaryRead = strict
+    ? { data: await readAllAdminRows((from, to) => supabase.from("leads").select(leadSelectFields, { count: "exact" }).is("deleted_at", null).order("id", { ascending: true }).range(from, to), "leads"), error: null }
+    : await supabase
     .from("leads")
     .select(leadSelectFields)
     .is("deleted_at", null)

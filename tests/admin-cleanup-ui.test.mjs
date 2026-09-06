@@ -21,18 +21,20 @@ test("course aliases cannot invoke the destructive retired editor", () => {
   assert.doesNotMatch(alias, /CourseEditor/);
   assert.match(read("app/admin/crm-v2/courses/page.tsx"), /getAdminLmsSnapshot/);
   const studio = read("components/crm-v2/lms-management-client.tsx");
-  for (const field of ["price", "originalPrice", "ctaText", "CourseImageInput"]) assert.ok(studio.includes(field));
+  for (const field of ["price", "originalPrice", "ctaText", "thumbnailImage", "bannerImage", "uploadMediaFile"]) assert.ok(studio.includes(field));
   assert.match(studio, /update_course/);
   assert.doesNotMatch(studio, /from\("course_modules"\)\.delete/);
 });
 
 test("customer workspace owns contact details and order history", () => {
   const page = read("app/admin/don-hang/page.tsx");
-  const customerProfile = read("app/admin/crm-v2/leads/[id]/page.tsx");
+  const alias = read("app/admin/crm-v2/leads/[id]/page.tsx");
+  const customerProfile = read("components/admin/customer-directory.tsx");
 
   assert.match(page, /redirect\(\"\/admin\/crm-v2\/leads\"\)/);
-  assert.match(customerProfile, /id: "orders"/);
-  assert.match(customerProfile, /profile\.contact\.phone/);
+  assert.match(alias, /redirect[\s\S]*\/admin\/crm-v2\/customers/);
+  assert.match(customerProfile, /tab === "orders"/);
+  assert.match(customerProfile, /student\.phone/);
 });
 
 test("AI Master X10 course data has real modules for dashboard access", () => {

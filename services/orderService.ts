@@ -1,3 +1,4 @@
+import { readAllAdminRows } from "@/lib/admin/read-all-rows";
 import { fallbackOrders } from "@/data/platform";
 import { emptyInvoiceDetails, type InvoiceDetails } from "@/lib/orders/invoice";
 import { dispatchMetaPurchaseOrders } from "@/lib/meta/purchase-outbox";
@@ -918,7 +919,9 @@ export async function getPaymentOrders(options: { includeFallback?: boolean; str
     return includeFallback ? getFallbackOrders() : [];
   }
 
-  const primaryRead = await supabase
+  const primaryRead = strict
+    ? { data: await readAllAdminRows((from, to) => supabase.from("orders").select(orderSelectFields, { count: "exact" }).order("id", { ascending: true }).range(from, to), "orders"), error: null }
+    : await supabase
     .from("orders")
     .select(orderSelectFields)
     .order("created_at", { ascending: false });
@@ -949,7 +952,7 @@ export async function getPaymentOrders(options: { includeFallback?: boolean; str
     return getFallbackOrders();
   }
 
-  return rows.map(mapDbOrder);
+  return rows.map(mapDbOrder).sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
 }
 
 export type AccountingBackfillCandidate = {

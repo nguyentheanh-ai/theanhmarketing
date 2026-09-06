@@ -1,1396 +1,192 @@
 "use client";
-import { ImageUploadField } from "@/components/admin/image-upload-field";
+
+import { Archive, ArrowDown, ArrowLeft, ArrowUp, BookOpen, Check, ChevronRight, FileText, Layers3, Pencil, Plus, Search, Settings, Trash2, Upload, Users, Video } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
+import { AdminDialog } from "@/components/admin/admin-dialog";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { uploadMediaFile } from "@/lib/supabase/media-upload";
-
-import {
-  Archive,
-  ArrowDown,
-  ArrowUp,
-  BarChart3,
-  BookOpen,
-  CheckCircle2,
-  ExternalLink,
-  Layers3,
-  Pencil,
-  Plus,
-  Search,
-  Settings,
-  Trash2,
-  Users,
-  X,
-} from "lucide-react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
-
-import { PageHeader } from "@/components/crm-v2";
-import type {
-  AdminLmsSnapshot,
-  LmsCourse,
-  LmsEnrollment,
-  LmsLesson,
-  LmsModule,
-  LmsPublishStatus,
-  LmsResource,
-} from "@/lib/lms/types";
+import { toYouTubeEmbedUrl } from "@/lib/youtube";
+import type { AdminLmsSnapshot, LmsCourse, LmsLesson, LmsModule, LmsResource } from "@/lib/lms/types";
 
 type ActionPayload = Record<string, unknown> & { action: string };
-type SubmitAction = (payload: ActionPayload, confirmText?: string) => Promise<void>;
-type CourseStep = "overview" | "sales" | "curriculum" | "media" | "students" | "analytics" | "publish";
-type SaveState = "idle" | "saving" | "saved" | "error";
+type SubmitAction = (payload: ActionPayload) => Promise<boolean>;
+type Tab = "curriculum" | "resources" | "students" | "settings";
+type Editor = { kind: "module"; module?: LmsModule } | { kind: "lesson"; lesson?: LmsLesson; moduleId: string } | { kind: "resource"; resource?: LmsResource } | null;
+const tabs = [{ id: "curriculum", label: "Nội dung khóa học", icon: Layers3 }, { id: "resources", label: "Tài liệu", icon: FileText }, { id: "students", label: "Học viên", icon: Users }, { id: "settings", label: "Thông tin & xuất bản", icon: Settings }] as const;
+const states = [["draft", "Bản nháp"], ["published", "Đang xuất bản"], ["archived", "Đã lưu trữ"]] as const;
+const inputClass = "min-h-10 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-slate-50";
+const primaryClass = "inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50";
+const secondaryClass = "inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40";
+function allResources(course: LmsCourse) { return [...new Map([...course.resources, ...course.modules.flatMap((module) => module.lessons.flatMap((lesson) => lesson.resources))].map((resource) => [resource.id, resource])).values()]; }
+const get = (data: FormData, key: string) => String(data.get(key) ?? "").trim();
+function normalizedTab(value: string | null): Tab { if (value === "media" || value === "resources") return "resources"; if (value === "students" || value === "analytics") return "students"; if (value === "sales" || value === "publish" || value === "settings") return "settings"; return "curriculum"; }
+function statusLabel(status: string) { return states.find(([key]) => key === status)?.[1] ?? ({ active: "Đang học", completed: "Hoàn thành", paused: "Tạm dừng", revoked: "Đã thu quyền" } as Record<string, string>)[status] ?? status; }
+function Badge({ status }: { status: string }) { return <span className={`inline-flex shrink-0 rounded-full px-2 py-1 text-xs font-medium ${status === "published" || status === "active" ? "bg-emerald-50 text-emerald-700" : status === "draft" ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-600"}`}>{statusLabel(status)}</span>; }
+function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) { return <label className="grid min-w-0 gap-1.5 text-sm font-medium text-slate-700"><span>{label}</span>{children}{hint ? <span className="text-xs font-normal leading-5 text-slate-500">{hint}</span> : null}</label>; }
+function Notice({ message, error = false }: { message: string; error?: boolean }) { return message ? <p role={error ? "alert" : "status"} className={`rounded-lg border px-3 py-2 text-sm ${error ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}>{message}</p> : null; }
+function Empty({ children }: { children: ReactNode }) { return <div className="grid min-h-48 place-items-center p-8 text-center text-sm leading-6 text-slate-500">{children}</div>; }
+function StatusSelect({ status = "draft" }: { status?: string }) { return <select className={inputClass} name="status" defaultValue={status}>{states.map(([key, label]) => <option value={key} key={key}>{label}</option>)}</select>; }
 
-const courseSteps: Array<{ id: CourseStep; label: string; icon: React.ComponentType<{ className?: string }> }> = [
-  { id: "overview", label: "Tổng quan", icon: BookOpen },
-  { id: "sales", label: "Nội dung bán hàng", icon: Pencil },
-  { id: "curriculum", label: "Curriculum", icon: Layers3 },
-  { id: "media", label: "Media & tài liệu", icon: Archive },
-  { id: "students", label: "Học viên & quyền học", icon: Users },
-  { id: "analytics", label: "Analytics", icon: BarChart3 },
-  { id: "publish", label: "Kiểm tra & xuất bản", icon: Settings },
-];
-
-const publishStatuses: Array<[LmsPublishStatus, string]> = [
-  ["draft", "Nháp"],
-  ["published", "Xuất bản"],
-  ["archived", "Lưu trữ"],
-];
-
-const enrollmentStatuses = [
-  ["active", "Đang học"],
-  ["paused", "Tạm dừng"],
-  ["completed", "Hoàn thành"],
-  ["revoked", "Thu quyền"],
-] as const;
-
-const lessonTypes = [
-  ["video", "Video"],
-  ["text", "Text"],
-  ["file", "File"],
-  ["link", "Link"],
-  ["live", "Live"],
-] as const;
-
-const accessTypes = [
-  ["free_preview", "Xem thử"],
-  ["enrolled_only", "Học viên"],
-  ["locked", "Khóa"],
-] as const;
-
-function value(formData: FormData, key: string) {
-  return String(formData.get(key) ?? "").trim();
-}
-
-function slugifyVietnamese(input: string) {
-  return input
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[đĐ]/g, "d")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .replace(/-+/g, "-");
-}
-
-function inputClass(extra = "") {
-  return `min-h-10 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 ${extra}`;
-}
-
-function textareaClass(extra = "") {
-  return `min-h-28 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold leading-6 text-slate-900 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 ${extra}`;
-}
-
-function buttonClass(tone: "primary" | "secondary" | "danger" | "ghost" = "secondary") {
-  if (tone === "primary") return "bg-slate-950 text-white hover:bg-slate-800";
-  if (tone === "danger") return "border border-red-200 bg-white text-red-700 hover:bg-red-50";
-  if (tone === "ghost") return "text-slate-600 hover:bg-slate-100";
-  return "border border-slate-200 bg-white text-slate-800 hover:bg-slate-50";
-}
-
-function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
-  return (
-    <label className="grid gap-1.5 text-sm font-bold text-slate-700">
-      <span>{label}</span>
-      {children}
-      {hint ? <span className="text-xs font-semibold text-slate-400">{hint}</span> : null}
-    </label>
-  );
-}
-
-function ActionButton({
-  busy,
-  children,
-  className = "",
-  tone = "secondary",
-  type = "button",
-  onClick,
-}: {
-  busy?: boolean;
-  children: React.ReactNode;
-  className?: string;
-  tone?: "primary" | "secondary" | "danger" | "ghost";
-  type?: "button" | "submit";
-  onClick?: () => void;
-}) {
-  return (
-    <button
-      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3 text-sm font-black transition disabled:cursor-not-allowed disabled:opacity-60 ${buttonClass(tone)} ${className}`}
-      disabled={busy}
-      onClick={onClick}
-      type={type}
-    >
-      {busy ? "Đang lưu..." : children}
-    </button>
-  );
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    published: "border-emerald-200 bg-emerald-50 text-emerald-700",
-    active: "border-emerald-200 bg-emerald-50 text-emerald-700",
-    draft: "border-slate-200 bg-slate-50 text-slate-600",
-    paused: "border-amber-200 bg-amber-50 text-amber-700",
-    completed: "border-blue-200 bg-blue-50 text-blue-700",
-    archived: "border-orange-200 bg-orange-50 text-orange-700",
-    revoked: "border-red-200 bg-red-50 text-red-700",
-    locked: "border-red-200 bg-red-50 text-red-700",
-    enrolled_only: "border-violet-200 bg-violet-50 text-violet-700",
-    free_preview: "border-blue-200 bg-blue-50 text-blue-700",
-  };
-  const labels: Record<string, string> = {
-    published: "Published",
-    draft: "Draft",
-    archived: "Archived",
-    active: "Active",
-    paused: "Paused",
-    completed: "Completed",
-    revoked: "Revoked",
-    enrolled_only: "Học viên",
-    free_preview: "Xem thử",
-    locked: "Khóa",
-  };
-  return (
-    <span className={`inline-flex min-h-7 items-center rounded-full border px-2.5 text-xs font-black ${map[status] ?? "border-slate-200 bg-slate-50 text-slate-600"}`}>
-      {labels[status] ?? status}
-    </span>
-  );
-}
-
-function Panel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <section className={`rounded-lg border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/40 ${className}`}>{children}</section>;
-}
-
-function EmptyState({ title, description, action }: { title: string; description?: string; action?: React.ReactNode }) {
-  return (
-    <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-6 text-center">
-      <div className="text-sm font-black text-slate-900">{title}</div>
-      {description ? <p className="mx-auto mt-1 max-w-md text-sm font-semibold text-slate-500">{description}</p> : null}
-      {action ? <div className="mt-4">{action}</div> : null}
-    </div>
-  );
-}
-
-function ActionMessage({ message }: { message: string }) {
-  if (!message) return null;
-  return <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-bold text-blue-800">{message}</div>;
-}
-
-function ModalShell({
-  children,
-  onClose,
-  title,
-  subtitle,
-  width = "max-w-3xl",
-}: {
-  children: React.ReactNode;
-  onClose: () => void;
-  title: string;
-  subtitle?: string;
-  width?: string;
-}) {
-  return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 p-4 backdrop-blur-sm">
-      <div className={`max-h-[90vh] w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl ${width}`}>
-        <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4">
-          <div>
-            <h3 className="text-lg font-black text-slate-950">{title}</h3>
-            {subtitle ? <p className="mt-1 text-sm font-semibold text-slate-500">{subtitle}</p> : null}
-          </div>
-          <button className="grid size-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100" onClick={onClose} type="button" aria-label="Đóng">
-            <X className="size-4" />
-          </button>
-        </div>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function formatDate(value: string | null | undefined) {
-  if (!value) return "Chưa có";
-  return new Date(value).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
-}
-
-function getCourseLessons(course: LmsCourse) {
-  return course.modules.flatMap((module) => module.lessons.map((lesson) => ({ lesson, module })));
-}
-
-function getFirstLessonHref(course: LmsCourse) {
-  const firstLesson = getCourseLessons(course).find(({ lesson }) => lesson.status === "published")?.lesson ?? getCourseLessons(course)[0]?.lesson;
-  return firstLesson ? `/learn/${course.slug}/${firstLesson.id}` : `/khoa-hoc/${course.slug}`;
+/** Each editor stays mounted on failure; closing a changed draft requires an explicit choice. */
+function EditorDialog({ title, onClose, busy, error, children, onSubmit }: { title: string; onClose: () => void; busy: boolean; error: string; children: ReactNode; onSubmit: (data: FormData) => void }) {
+  const [dirty, setDirty] = useState(false);
+  const [discard, setDiscard] = useState(false);
+  return <AdminDialog open onClose={() => { if (!busy) { if (dirty) setDiscard(true); else onClose(); } }} title={discard ? "Bỏ các thay đổi chưa lưu?" : title} wide>
+    <div hidden={!discard} className="space-y-4"><p className="text-sm text-slate-600">Các thay đổi trong cửa sổ này chưa được lưu.</p><div className="flex justify-end gap-2"><button type="button" onClick={() => setDiscard(false)} className={secondaryClass}>Tiếp tục sửa</button><button type="button" onClick={onClose} className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white">Bỏ thay đổi</button></div></div><form hidden={discard} onChange={() => setDirty(true)} onSubmit={(event) => { event.preventDefault(); onSubmit(new FormData(event.currentTarget)); }} className="mx-auto max-w-3xl space-y-4">
+      <fieldset disabled={busy} className="min-w-0 space-y-4">{children}</fieldset>
+      <Notice message={error} error />
+      <footer className="sticky bottom-0 flex items-center justify-between gap-3 border-t border-slate-200 bg-white py-3"><span className="text-xs text-slate-500">{busy ? "Đang lưu thay đổi…" : dirty ? "Có thay đổi chưa lưu" : ""}</span><div className="flex gap-2"><button type="button" disabled={busy} className={secondaryClass} onClick={() => dirty ? setDiscard(true) : onClose()}>Hủy</button><button type="submit" disabled={busy} className={primaryClass}><Check className="size-4" />{busy ? "Đang lưu…" : "Lưu thay đổi"}</button></div></footer>
+    </form>
+  </AdminDialog>;
 }
 
 export function CourseLmsManager({ lmsSnapshot, studioMode = false }: { lmsSnapshot: AdminLmsSnapshot; studioMode?: boolean }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [tab, setTab] = useState<Tab>(() => normalizedTab(searchParams.get("step")));
+  const [editor, setEditor] = useState<Editor>(null);
+  const [busy, setBusy] = useState(false);
+  const [refreshing, startRefresh] = useTransition();
+  const pending = useRef(false);
+  const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [busyAction, setBusyAction] = useState("");
-  const [saveState, setSaveState] = useState<SaveState>("idle");
-  const [lessonEditor, setLessonEditor] = useState<{ mode: "create" | "edit"; lesson?: LmsLesson; moduleId?: string } | null>(null);
+  const [confirm, setConfirm] = useState<{ title: string; description: string; payload: ActionPayload } | null>(null);
+  const course = lmsSnapshot.selectedCourse;
+  const locked = busy || refreshing;
 
-  const requestedStep = searchParams.get("step");
-  const [activeStep, setActiveStepState] = useState<CourseStep>(() => courseSteps.some((step) => step.id === requestedStep) ? (requestedStep as CourseStep) : "overview");
-  const setActiveStep = (step: CourseStep) => {
-    setActiveStepState(step);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("step", step);
-    const basePath = studioMode ? `/admin/course-studio/${selectedCourse?.slug}` : `/admin/crm-v2/courses/${selectedCourse?.slug}`;
-    window.history.replaceState(window.history.state, "", `${basePath}?${params.toString()}`);
-  };
-
-  const selectedCourse = lmsSnapshot.selectedCourse ?? lmsSnapshot.courses[0] ?? null;
-
-  const submitAction: SubmitAction = async (payload, confirmText) => {
-    if (confirmText && !window.confirm(confirmText)) return;
-    setBusyAction(payload.action);
-    setSaveState("saving");
-    setMessage("");
+  const submit: SubmitAction = async (payload) => {
+    if (pending.current || refreshing) return false;
+    pending.current = true; setBusy(true); setError(""); setMessage("");
     try {
-      const response = await fetch("/api/admin/crm-v2/lms/actions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const result = (await response.json().catch(() => null)) as { ok?: boolean; message?: string; course?: { slug?: string } } | null;
-      if (!response.ok || !result?.ok) throw new Error(result?.message ?? "Không lưu được thay đổi LMS.");
-      setMessage(result.message ?? "Đã cập nhật.");
-      setSaveState("saved");
-      router.refresh();
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Không lưu được thay đổi LMS.");
-      setSaveState("error");
-    } finally {
-      setBusyAction("");
-    }
+      const response = await fetch("/api/admin/crm-v2/lms/actions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.ok) throw new Error(result?.message || "Không lưu được thay đổi. Nội dung đã nhập vẫn còn để anh thử lại.");
+      setMessage(result.message || "Đã lưu thay đổi.");
+      startRefresh(() => router.refresh());
+      return true;
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Kết nối gián đoạn. Anh có thể thử lưu lại."); return false; }
+    finally { pending.current = false; setBusy(false); }
   };
+  const openEditor = (next: Editor) => { if (locked) return; setError(""); setMessage(""); setEditor(next); };
+  const archive = (title: string, payload: ActionPayload, resource = false) => { setError(""); setConfirm({ title, description: resource ? "Gỡ liên kết tài liệu này khỏi khóa học. Tệp gốc trong kho lưu trữ không bị xóa." : "Nội dung sẽ ngừng hiển thị với học viên. Bài học, tài liệu và tiến độ đã ghi nhận được giữ lại; anh có thể xuất bản lại sau.", payload }); };
+  const changeTab = (next: Tab) => { setTab(next); const query = new URLSearchParams(searchParams.toString()); query.set("step", next); window.history.replaceState(window.history.state, "", `${studioMode ? "/admin/course-studio" : "/admin/crm-v2/courses"}/${encodeURIComponent(course?.slug || "")}?${query}`); };
+  if (!lmsSnapshot.ok || !course) return <div className="space-y-4"><Link href="/admin/crm-v2/courses" className={secondaryClass}><ArrowLeft className="size-4" />Khóa học</Link><div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-5"><h1 className="font-semibold">{lmsSnapshot.ok ? "Không tìm thấy khóa học" : "Chưa tải được nội dung khóa học"}</h1><p className="mt-2 text-sm">{lmsSnapshot.message || "Anh có thể tải lại hoặc quay về danh sách khóa học."}</p><button type="button" className={`${secondaryClass} mt-3`} onClick={() => router.refresh()}>Tải lại</button></div></div>;
 
-  return (
-    <div className={studioMode ? "min-h-screen space-y-4 bg-slate-100 p-4 lg:p-6" : "space-y-4"}>
-      <PageHeader eyebrow="LMS · Course Workspace" title={selectedCourse?.title || "Khóa học"} />
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
-        <p className="text-sm font-bold text-blue-950">Chuyển tự do giữa các bước — không bắt buộc hoàn thành theo thứ tự.</p>
-        <SaveStateBadge state={saveState} />
+  return <div className="min-w-0 space-y-3 text-slate-900">
+    <header className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex min-w-0 flex-1 items-center gap-3"><Link href="/admin/crm-v2/courses" aria-label="Về danh sách khóa học" className={`${secondaryClass} shrink-0`}><ArrowLeft className="size-4" /></Link><div className="min-w-0"><p className="text-xs text-slate-500">Khóa học</p><h1 className="break-words text-xl font-bold leading-7">{course.title}</h1></div></div>
+      <div className="flex items-center gap-2"><Badge status={course.status} /><Link className={secondaryClass} href={`/khoa-hoc/${encodeURIComponent(course.slug)}`} target="_blank" rel="noopener noreferrer">Xem trang khóa học</Link></div>
+    </header>
+    {!editor && !confirm ? <><Notice message={error} error /><Notice message={message} /></> : null}
+    <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="flex items-center justify-between gap-2 border-b border-slate-200 px-3"><nav aria-label="Các phần của khóa học" className="flex min-w-0 gap-1 overflow-x-auto">{tabs.map(({ id, label, icon: Icon }) => <button key={id} type="button" aria-current={tab === id ? "page" : undefined} onClick={() => changeTab(id)} className={`inline-flex shrink-0 items-center gap-2 border-b-2 px-3 py-3.5 text-sm font-medium ${tab === id ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-900"}`}><Icon className="size-4" />{label}</button>)}</nav><span role="status" className="hidden shrink-0 text-xs text-slate-500 xl:block">{locked ? "Đang cập nhật…" : `${course.stats.publishedLessons}/${course.stats.lessons} bài đã xuất bản`}</span></div>
+      <div className="min-w-0 lg:h-[calc(100dvh-230px)] lg:min-h-[440px] lg:overflow-auto">
+        {tab === "curriculum" ? <Curriculum course={course} busy={locked} onEdit={openEditor} submit={submit} archive={archive} /> : null}
+        {tab === "resources" ? <ResourceList course={course} busy={locked} onEdit={openEditor} archive={archive} /> : null}
+        {tab === "students" ? <CourseStudents course={course} /> : null}
+        <div hidden={tab !== "settings"}><CourseSettings key={`${course.id}:${course.updatedAt}`} course={course} busy={locked} error={error} submit={submit} archive={archive} /></div>
       </div>
-      <ActionMessage message={message || lmsSnapshot.message || ""} />
-      <Link className="inline-flex min-h-10 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 hover:bg-slate-50" href="/admin/crm-v2/courses">← Về Course Hub</Link>
-      <div className="min-w-0">
-        <div className="min-w-0 space-y-4">
-          {selectedCourse ? (
-            <>
-              <CourseHeader course={selectedCourse} />
-              <div className="grid min-w-0 gap-4 lg:grid-cols-[230px_minmax(0,1fr)]">
-                <CourseSteps activeStep={activeStep} onChange={setActiveStep} />
-                <Panel className="min-h-[620px]">
-                  {activeStep === "overview" ? <CourseOverview course={selectedCourse} onChangeStep={setActiveStep} /> : null}
-                  {activeStep === "sales" ? <SalesContentTab busy={busyAction === "update_course"} course={selectedCourse} submitAction={submitAction} /> : null}
-                  {activeStep === "curriculum" ? <CurriculumWorkspace busyAction={busyAction} course={selectedCourse} submitAction={submitAction} onAddLesson={(moduleId) => setLessonEditor({ mode: "create", moduleId })} onEditLesson={setLessonEditor} /> : null}
-                  {activeStep === "media" ? <ResourcesTab busyAction={busyAction} course={selectedCourse} submitAction={submitAction} /> : null}
-                  {activeStep === "students" ? <StudentsTab busyAction={busyAction} course={selectedCourse} submitAction={submitAction} /> : null}
-                  {activeStep === "analytics" ? <CourseAnalytics course={selectedCourse} /> : null}
-                  {activeStep === "publish" ? <PublishReview busyAction={busyAction} course={selectedCourse} submitAction={submitAction} /> : null}
-                </Panel>
-              </div>
-            </>
-          ) : (
-            <EmptyState title="Chưa có khóa học" description="Quay lại Course Hub để chọn hoặc tạo khóa học." />
-          )}
-        </div>
-      </div>
-      {selectedCourse && lessonEditor ? (
-        <LessonFormModal
-          busy={busyAction === "create_lesson" || busyAction === "update_lesson"}
-          course={selectedCourse}
-          editor={lessonEditor}
-          onClose={() => setLessonEditor(null)}
-          submitAction={async (payload) => {
-            await submitAction(payload);
-            setLessonEditor(null);
-          }}
-        />
-      ) : null}
-    </div>
-  );
+    </section>
+    {editor ? <EditorDialog title={editor.kind === "module" ? editor.module ? "Sửa chương học" : "Thêm chương học" : editor.kind === "lesson" ? editor.lesson ? "Sửa bài học" : "Thêm bài học" : editor.resource ? "Sửa tài liệu" : "Thêm tài liệu"} onClose={() => setEditor(null)} busy={locked} error={error} onSubmit={(data) => {
+      const payload: ActionPayload = editor.kind === "module" ? { action: editor.module ? "update_module" : "create_module", courseId: course.id, moduleId: editor.module?.id, title: get(data, "title"), description: get(data, "description"), status: get(data, "status") } : editor.kind === "lesson" ? { action: editor.lesson ? "update_lesson" : "create_lesson", courseId: course.id, lessonId: editor.lesson?.id, moduleId: get(data, "moduleId"), title: get(data, "title"), slug: get(data, "slug") || undefined, description: get(data, "description"), content: get(data, "content"), lessonType: get(data, "lessonType"), duration: get(data, "duration"), youtubeUrl: get(data, "youtubeUrl"), embedUrl: editor.lesson && get(data, "youtubeUrl") !== editor.lesson.youtubeUrl && get(data, "embedUrl") === editor.lesson.embedUrl && editor.lesson.embedUrl === toYouTubeEmbedUrl(editor.lesson.youtubeUrl) ? "" : get(data, "embedUrl"), accessType: get(data, "accessType"), status: get(data, "status") } : (() => { const lessonId = get(data, "lessonId"); const parent = course.modules.find((module) => module.lessons.some((lesson) => lesson.id === lessonId)); return { action: editor.resource ? "update_resource" : "create_resource", courseId: course.id, resourceId: editor.resource?.id, moduleId: parent?.id ?? null, lessonId: lessonId || null, title: get(data, "title"), type: get(data, "type"), url: get(data, "url"), description: get(data, "description") }; })();
+      void submit(payload).then((ok) => { if (ok) setEditor(null); });
+    }}>
+      {editor.kind === "module" ? <ModuleFields module={editor.module} /> : editor.kind === "lesson" ? <LessonFields course={course} lesson={editor.lesson} moduleId={editor.moduleId} /> : <ResourceFields course={course} resource={editor.resource} />}
+    </EditorDialog> : null}
+    <AdminDialog open={Boolean(confirm)} onClose={() => { if (!locked) setConfirm(null); }} title={confirm?.title || "Xác nhận"}><p className="text-sm leading-6 text-slate-600">{confirm?.description}</p><div className="mt-3"><Notice message={error} error /></div><div className="mt-5 flex justify-end gap-2"><button type="button" className={secondaryClass} disabled={locked} onClick={() => setConfirm(null)}>Hủy</button><button type="button" className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50" disabled={locked} onClick={() => { if (confirm) void submit(confirm.payload).then((ok) => { if (ok) setConfirm(null); }); }}>{locked ? "Đang xử lý…" : "Xác nhận"}</button></div></AdminDialog>
+  </div>;
 }
 
-function CourseHeader({ course }: { course: LmsCourse }) {
-  return (
-    <Panel className="p-5">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <div className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">Khóa đang chọn</div>
-          <h2 className="mt-1 max-w-4xl text-2xl font-black leading-tight text-slate-950">{course.title}</h2>
-          <p className="mt-2 max-w-3xl text-sm font-semibold leading-6 text-slate-500">{course.shortDescription || course.description || course.slug}</p>
-        </div>
-        <div className="flex flex-wrap justify-end gap-2">
-          <Link className={`inline-flex min-h-10 items-center gap-2 rounded-lg px-3 text-sm font-black ${buttonClass("secondary")}`} href={`/khoa-hoc/${course.slug}`} target="_blank">
-            <ExternalLink className="size-4" /> Xem trang bán
-          </Link>
-          <Link className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-emerald-50 px-3 text-sm font-black text-emerald-700 ring-1 ring-emerald-200 hover:bg-emerald-100" href={getFirstLessonHref(course)} target="_blank">
-            <BookOpen className="size-4" /> Xem phòng học
-          </Link>
-        </div>
-      </div>
-      <div className="mt-4 flex flex-wrap gap-2">
-        <StatusBadge status={course.status} />
-        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-700">{course.stats.activeStudents} học viên active</span>
-        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-700">
-          {course.stats.publishedLessons}/{course.stats.lessons} bài published
-        </span>
-        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-700">{course.stats.modules} module</span>
-      </div>
-    </Panel>
-  );
-}
-
-function SaveStateBadge({ state }: { state: SaveState }) {
-  const config = {
-    idle: { label: "Sẵn sàng", className: "border-slate-200 bg-white text-slate-700" },
-    saving: { label: "Đang lưu", className: "border-blue-200 bg-white text-blue-700" },
-    saved: { label: "Đã lưu", className: "border-emerald-200 bg-emerald-50 text-emerald-800" },
-    error: { label: "Lỗi lưu", className: "border-red-200 bg-red-50 text-red-800" },
-  }[state];
-  return (
-    <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-black ${config.className}`} aria-live="polite">
-      <CheckCircle2 className="size-4" /> {config.label}
-    </span>
-  );
-}
-
-function CourseSteps({ activeStep, onChange }: { activeStep: CourseStep; onChange: (step: CourseStep) => void }) {
-  return (
-    <div aria-label="Các phần của khóa học" className="grid content-start gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-sm" role="navigation">
-      {courseSteps.map((step, index) => {
-        const Icon = step.icon;
-        return (
-          <button
-            className={`flex min-h-14 items-center gap-2 rounded-lg px-3 text-left text-xs font-black transition ${
-              activeStep === step.id ? "bg-blue-600 text-white shadow-sm shadow-blue-600/20" : "bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-950"
-            }`}
-            key={step.id}
-            onClick={() => onChange(step.id)}
-            type="button"
-          >
-            <span className={`grid size-7 shrink-0 place-items-center rounded-md ${activeStep === step.id ? "bg-white/15" : "bg-white"}`}>
-              <Icon className="size-4" />
-            </span>
-            <span><span className="block text-[10px] opacity-70">Bước {index + 1}</span>{step.label}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-function CourseOverview({ course, onChangeStep }: { course: LmsCourse; onChangeStep: (step: CourseStep) => void }) {
-  const lessonCount = getCourseLessons(course).length;
-  const averageProgress = course.enrollments.length
-    ? Math.round(course.enrollments.reduce((sum, enrollment) => sum + enrollment.progressPercent, 0) / course.enrollments.length)
-    : 0;
-  const healthChecks = [
-    { label: "Thông tin bán hàng", ready: Boolean(course.title && (course.shortDescription || course.description)), step: "sales" as CourseStep },
-    { label: "Curriculum", ready: course.modules.length > 0 && lessonCount > 0, step: "curriculum" as CourseStep },
-    { label: "Media & tài liệu", ready: Boolean(course.thumbnailImage || course.bannerImage || course.resources.length), step: "media" as CourseStep },
-    { label: "Thiết lập xuất bản", ready: course.status === "published", step: "publish" as CourseStep },
-  ];
-  return (
-    <div className="grid gap-5">
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <MiniStat label="Học viên active" value={course.stats.activeStudents} />
-        <MiniStat label="Bài đã xuất bản" value={`${course.stats.publishedLessons}/${lessonCount}`} />
-        <MiniStat label="Module" value={course.stats.modules} />
-        <MiniStat label="Tiến độ trung bình" value={`${averageProgress}%`} />
-      </div>
-      <div>
-        <h3 className="text-base font-black text-slate-950">Sức khỏe khóa học</h3>
-        <p className="mt-1 text-sm font-semibold text-slate-600">Các bước là gợi ý kiểm tra nhanh, không khóa thao tác của anh.</p>
-        <div className="mt-4 grid gap-3 md:grid-cols-2">
-          {healthChecks.map((item) => (
-            <button key={item.label} className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-4 text-left hover:border-blue-200 hover:bg-blue-50" onClick={() => onChangeStep(item.step)} type="button">
-              <span className="font-black text-slate-900">{item.label}</span>
-              <span className={`rounded-full px-2.5 py-1 text-xs font-black ${item.ready ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
-                {item.ready ? "Sẵn sàng" : "Cần bổ sung"}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MiniStat({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-      <div className="text-xs font-black uppercase tracking-[0.08em] text-slate-400">{label}</div>
-      <div className="mt-2 text-2xl font-black text-slate-950">{value}</div>
-    </div>
-  );
-}
-
-function CourseImageInput({ course, name, label }: { course: LmsCourse; name: "thumbnailImage" | "bannerImage"; label: string }) {
-  const [url, setUrl] = useState(course[name]);
-  const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState("");
-  async function upload(file: File | undefined) {
-    if (!file) return;
-    const supabase = createSupabaseBrowserClient();
-    if (!supabase) { setMessage("Chưa kết nối được kho ảnh."); return; }
-    setUploading(true); setMessage("");
-    try { setUrl(await uploadMediaFile({ file, folder: `courses/${course.slug}/${name}`, supabase })); setMessage("Ảnh đã tải lên. Bấm Lưu thay đổi để dùng ảnh này."); }
-    catch (error) { setMessage(error instanceof Error ? error.message : "Không tải được ảnh."); }
-    finally { setUploading(false); }
-  }
-  return <div><input type="hidden" name={name} value={url} /><ImageUploadField label={label} value={url} onUrlChange={setUrl} isUploading={uploading} onFileSelect={(file) => void upload(file)} />{message ? <p role="status" className="mt-2 text-xs text-slate-600">{message}</p> : null}</div>;
-}
-
-function SalesContentTab({ busy, course, submitAction }: { busy: boolean; course: LmsCourse; submitAction: SubmitAction }) {
-  return (
-    <div className="grid gap-4">
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
-        <form
-          className="grid gap-4 rounded-lg border border-slate-200 bg-white p-4"
-          onSubmit={(event) => {
-            event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const title = value(formData, "title");
-            void submitAction({
-              action: "update_course",
-              courseId: course.id,
-              title,
-              slug: value(formData, "slug") || slugifyVietnamese(title),
-              price: Number(value(formData, "price")),
-              originalPrice: Number(value(formData, "originalPrice")),
-              duration: value(formData, "courseDuration"),
-              level: value(formData, "level"),
-              ctaText: value(formData, "ctaText"),
-              shortDescription: value(formData, "shortDescription"),
-              description: value(formData, "description"),
-              thumbnailImage: value(formData, "thumbnailImage"),
-              bannerImage: value(formData, "bannerImage"),
-              previewVideoUrl: value(formData, "previewVideoUrl"),
-              status: value(formData, "status"),
-              visibility: value(formData, "visibility"),
-            });
-          }}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h3 className="text-base font-black text-slate-950">Thông tin khóa học</h3>
-              <p className="mt-1 text-sm font-semibold text-slate-500">Nội dung này dùng chung cho CRM v2 và khu vực học viên.</p>
-            </div>
-            <ActionButton busy={busy} tone="primary" type="submit">
-              Lưu thay đổi
-            </ActionButton>
-          </div>
-          <div className="grid gap-3 md:grid-cols-2">
-            <Field label="Tên khóa">
-              <input className={inputClass()} defaultValue={course.title} name="title" required />
-            </Field>
-            <Field label="Slug">
-              <input className={inputClass()} defaultValue={course.slug} name="slug" readOnly aria-describedby="course-slug-help" />
-            </Field>
-            <Field label="Trạng thái">
-              <select className={inputClass()} defaultValue={course.status} name="status">
-                {publishStatuses.map(([status, label]) => (
-                  <option key={status} value={status}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label="Visibility">
-              <select className={inputClass()} defaultValue={course.visibility} name="visibility">
-                <option value="enrolled">Chỉ học viên được cấp quyền</option>
-                <option value="public">Công khai</option>
-                <option value="private">Riêng tư</option>
-              </select>
-            </Field>
-          </div>
-          <p id="course-slug-help" className="text-xs text-slate-500">Slug được giữ cố định để bảo toàn liên kết khóa học và đơn hàng.</p>
-          <div className="grid gap-3 md:grid-cols-2">
-            <Field label="Giá bán (VND)"><input className={inputClass()} type="number" min="0" max="2147483647" step="1" name="price" defaultValue={course.price ?? 0} required /></Field>
-            <Field label="Giá gốc (VND)"><input className={inputClass()} type="number" min="0" max="2147483647" step="1" name="originalPrice" defaultValue={course.originalPrice ?? 0} required /></Field>
-            <Field label="Thời lượng khóa"><input className={inputClass()} name="courseDuration" defaultValue={course.duration ?? ""} /></Field>
-            <Field label="Trình độ"><input className={inputClass()} name="level" defaultValue={course.level ?? ""} /></Field>
-            <Field label="Nhãn nút đăng ký"><input className={inputClass()} name="ctaText" defaultValue={course.ctaText ?? ""} /></Field>
-          </div>
-          <Field label="Mô tả ngắn">
-            <textarea className={textareaClass("min-h-20")} defaultValue={course.shortDescription} name="shortDescription" />
-          </Field>
-          <Field label="Mô tả đầy đủ">
-            <textarea className={textareaClass()} defaultValue={course.description} name="description" />
-          </Field>
-          <div className="grid gap-3 md:grid-cols-3">
-            <CourseImageInput key={`${course.id}:thumbnail`} course={course} name="thumbnailImage" label="Ảnh đại diện" />
-            <CourseImageInput key={`${course.id}:banner`} course={course} name="bannerImage" label="Ảnh bìa" />
-            <Field label="Video preview">
-              <input className={inputClass()} defaultValue={course.previewVideoUrl} name="previewVideoUrl" />
-            </Field>
-          </div>
-        </form>
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-          <div className="text-sm font-black text-slate-950">Preview card</div>
-          <div className="mt-3 aspect-video overflow-hidden rounded-lg bg-slate-200">
-            {course.thumbnailImage || course.bannerImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img alt={course.title} className="size-full object-cover" src={course.thumbnailImage || course.bannerImage} />
-            ) : (
-              <div className="grid size-full place-items-center text-sm font-black text-slate-400">Chưa có ảnh</div>
-            )}
-          </div>
-          <div className="mt-3 line-clamp-2 text-sm font-black text-slate-950">{course.title}</div>
-          <div className="mt-1 line-clamp-3 text-sm font-semibold text-slate-500">{course.shortDescription || course.description || "Chưa có mô tả."}</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CurriculumWorkspace({
-  busyAction,
-  course,
-  onAddLesson,
-  onEditLesson,
-  submitAction,
-}: {
-  busyAction: string;
-  course: LmsCourse;
-  onAddLesson: (moduleId: string) => void;
-  onEditLesson: (editor: { mode: "create" | "edit"; lesson?: LmsLesson; moduleId?: string }) => void;
-  submitAction: SubmitAction;
-}) {
-  const [selectedModuleId, setSelectedModuleId] = useState(course.modules[0]?.id ?? "");
-  const selectedModule = course.modules.find((module) => module.id === selectedModuleId) ?? course.modules[0];
-  return (
-    <div className="grid min-w-0 gap-5 xl:grid-cols-[300px_minmax(0,1fr)]">
-      <div className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3">
-        <p className="px-2 pb-3 text-xs font-black uppercase tracking-[0.12em] text-slate-500">Cấu trúc khóa học</p>
-        <div className="grid gap-2">
-          {course.modules.map((module, index) => (
-            <button className={`rounded-xl border p-3 text-left transition ${selectedModule?.id === module.id ? "border-blue-300 bg-white shadow-sm ring-2 ring-blue-100" : "border-transparent hover:border-slate-200 hover:bg-white"}`} key={module.id} onClick={() => setSelectedModuleId(module.id)} type="button">
-              <span className="text-[10px] font-black uppercase text-slate-400">Module {index + 1}</span>
-              <span className="mt-1 block line-clamp-2 text-sm font-black text-slate-950">{module.title}</span>
-              <span className="mt-1 block text-xs font-bold text-slate-500">{module.lessons.length} bài học</span>
-            </button>
-          ))}
-        </div>
-        <details className="mt-3 border-t border-slate-200 pt-3">
-          <summary className="cursor-pointer rounded-lg px-2 py-2 text-sm font-black text-blue-700 hover:bg-white">Quản lý module</summary>
-          <div className="mt-3"><ModulesTab busyAction={busyAction} course={course} onAddLesson={onAddLesson} submitAction={submitAction} /></div>
-        </details>
-      </div>
-      <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
-        <p className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">Bài học của module</p>
-        <h3 className="mb-4 mt-1 text-xl font-black text-slate-950">{selectedModule?.title ?? "Chọn một module"}</h3>
-        <LessonsTab busyAction={busyAction} course={course} moduleId={selectedModule?.id} onEditLesson={onEditLesson} submitAction={submitAction} />
-      </div>
-    </div>
-  );
-}
-
-function ModulesTab({
-  busyAction,
-  course,
-  onAddLesson,
-  submitAction,
-}: {
-  busyAction: string;
-  course: LmsCourse;
-  onAddLesson: (moduleId: string) => void;
-  submitAction: SubmitAction;
-}) {
-  const [editor, setEditor] = useState<LmsModule | "new" | null>(null);
-  const moveModule = (index: number, direction: -1 | 1) => {
-    const ids = course.modules.map((module) => module.id);
-    const target = Math.max(0, Math.min(ids.length - 1, index + direction));
-    if (target === index) return;
-    [ids[index], ids[target]] = [ids[target], ids[index]];
-    void submitAction({ action: "reorder_modules", courseId: course.id, moduleIds: ids });
-  };
-  return (
-    <div className="grid gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h3 className="text-base font-black text-slate-950">Module</h3>
-          <p className="mt-1 text-sm font-semibold text-slate-500">Quản lý cấu trúc khóa học theo từng phần nội dung.</p>
-        </div>
-        <ActionButton onClick={() => setEditor("new")} tone="primary">
-          <Plus className="size-4" /> Thêm module
-        </ActionButton>
-      </div>
-      {course.modules.length === 0 ? <EmptyState title="Chưa có module" description="Tạo module đầu tiên để bắt đầu thêm bài học." /> : null}
-      <div className="grid gap-3">
-        {course.modules.map((module, index) => (
-          <div className="rounded-lg border border-slate-200 bg-white p-4" key={module.id}>
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="min-w-0">
-                <div className="text-xs font-black text-slate-400">MODULE #{index + 1}</div>
-                <div className="mt-1 line-clamp-2 text-base font-black text-slate-950">{module.title}</div>
-                <p className="mt-1 line-clamp-2 text-sm font-semibold text-slate-500">{module.description || "Chưa có mô tả."}</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <StatusBadge status={module.status} />
-                  <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-black text-slate-600">{module.lessons.length} bài học</span>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <ActionButton onClick={() => moveModule(index, -1)} tone="ghost">
-                  <ArrowUp className="size-4" />
-                </ActionButton>
-                <ActionButton onClick={() => moveModule(index, 1)} tone="ghost">
-                  <ArrowDown className="size-4" />
-                </ActionButton>
-                <ActionButton onClick={() => onAddLesson(module.id)}>
-                  <Plus className="size-4" /> Bài
-                </ActionButton>
-                <ActionButton onClick={() => setEditor(module)}>
-                  <Pencil className="size-4" /> Sửa
-                </ActionButton>
-                <ActionButton
-                  onClick={() =>
-                    void submitAction(
-                      { action: "delete_module", moduleId: module.id },
-                      "Xóa module này? Nếu module còn bài học, hệ thống sẽ chặn để bảo vệ dữ liệu.",
-                    )
-                  }
-                  tone="danger"
-                >
-                  <Trash2 className="size-4" />
-                </ActionButton>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      {editor ? (
-        <ModuleFormModal
-          busy={busyAction === "create_module" || busyAction === "update_module"}
-          course={course}
-          module={editor === "new" ? null : editor}
-          onClose={() => setEditor(null)}
-          submitAction={async (payload) => {
-            await submitAction(payload);
-            setEditor(null);
-          }}
-        />
-      ) : null}
-    </div>
-  );
-}
-
-function ModuleFormModal({
-  busy,
-  course,
-  module,
-  onClose,
-  submitAction,
-}: {
-  busy: boolean;
-  course: LmsCourse;
-  module: LmsModule | null;
-  onClose: () => void;
-  submitAction: SubmitAction;
-}) {
-  return (
-    <ModalShell onClose={onClose} title={module ? "Sửa module" : "Thêm module"} width="max-w-2xl">
-      <form
-        className="grid gap-4 p-5"
-        onSubmit={(event) => {
-          event.preventDefault();
-          const formData = new FormData(event.currentTarget);
-          void submitAction({
-            action: module ? "update_module" : "create_module",
-            courseId: course.id,
-            moduleId: module?.id,
-            title: value(formData, "title"),
-            description: value(formData, "description"),
-            status: value(formData, "status"),
-            position: module?.position,
-          });
-        }}
-      >
-        <Field label="Tên module">
-          <input className={inputClass()} defaultValue={module?.title ?? ""} name="title" required />
-        </Field>
-        <Field label="Mô tả">
-          <textarea className={textareaClass("min-h-24")} defaultValue={module?.description ?? ""} name="description" />
-        </Field>
-        <Field label="Trạng thái">
-          <select className={inputClass()} defaultValue={module?.status ?? "published"} name="status">
-            {publishStatuses.map(([status, label]) => (
-              <option key={status} value={status}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <div className="flex justify-end gap-2 border-t border-slate-100 pt-4">
-          <ActionButton onClick={onClose}>Hủy</ActionButton>
-          <ActionButton busy={busy} tone="primary" type="submit">
-            Lưu module
-          </ActionButton>
-        </div>
-      </form>
-    </ModalShell>
-  );
-}
-
-function LessonsTab({
-  busyAction,
-  course,
-  moduleId,
-  onEditLesson,
-  submitAction,
-}: {
-  busyAction: string;
-  course: LmsCourse;
-  moduleId?: string;
-  onEditLesson: (editor: { mode: "create" | "edit"; lesson?: LmsLesson; moduleId?: string }) => void;
-  submitAction: SubmitAction;
-}) {
-  const lessons = getCourseLessons(course);
-  const [moduleFilter, setModuleFilter] = useState(moduleId ?? "all");
-  const [statusFilter, setStatusFilter] = useState("all");
+type ArchiveAction = (title: string, payload: ActionPayload, resource?: boolean) => void;
+function Curriculum({ course, busy, onEdit, submit, archive }: { course: LmsCourse; busy: boolean; onEdit: (editor: Editor) => void; submit: SubmitAction; archive: ArchiveAction }) {
+  const [moduleId, setModuleId] = useState(course.modules.find((item) => item.status !== "archived")?.id || course.modules[0]?.id || "");
   const [search, setSearch] = useState("");
-  const visibleLessons = lessons.filter(({ lesson, module }) => {
-    const effectiveModule = moduleId ?? moduleFilter;
-    if (effectiveModule !== "all" && module.id !== effectiveModule) return false;
-    if (statusFilter !== "all" && lesson.status !== statusFilter) return false;
-    return `${lesson.title} ${lesson.slug} ${module.title}`.toLowerCase().includes(search.trim().toLowerCase());
-  });
-  const moveLesson = (module: LmsModule, lesson: LmsLesson, direction: -1 | 1) => {
-    const ids = module.lessons.map((item) => item.id);
-    const index = ids.indexOf(lesson.id);
-    const target = Math.max(0, Math.min(ids.length - 1, index + direction));
-    if (target === index) return;
-    [ids[index], ids[target]] = [ids[target], ids[index]];
-    void submitAction({ action: "reorder_lessons", moduleId: module.id, lessonIds: ids });
+  const [showArchived, setShowArchived] = useState(false);
+  const visibleModules = course.modules.filter((item) => showArchived || item.status !== "archived");
+  const selected = visibleModules.find((item) => item.id === moduleId) || visibleModules[0];
+  const lessons = (selected?.lessons || []).filter((lesson) => (showArchived || lesson.status !== "archived") && lesson.title.toLocaleLowerCase("vi").includes(search.trim().toLocaleLowerCase("vi")));
+  const move = (kind: "module" | "lesson", id: string, direction: number) => {
+    const items = kind === "module" ? course.modules : selected?.lessons || [];
+    const ids = items.map((item) => item.id); const from = ids.indexOf(id); const to = from + direction;
+    if (busy || from < 0 || to < 0 || to >= ids.length) return;
+    [ids[from], ids[to]] = [ids[to], ids[from]];
+    void submit(kind === "module" ? { action: "reorder_modules", courseId: course.id, moduleIds: ids } : { action: "reorder_lessons", moduleId: selected?.id, lessonIds: ids });
   };
-
-  return (
-    <div className="grid gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h3 className="text-base font-black text-slate-950">Bài học</h3>
-          <p className="mt-1 text-sm font-semibold text-slate-500">Danh sách compact, chỉ mở form khi thêm hoặc sửa một bài.</p>
-        </div>
-        <ActionButton onClick={() => onEditLesson({ mode: "create", moduleId: moduleId ?? course.modules[0]?.id })} tone="primary">
-          <Plus className="size-4" /> Thêm bài học
-        </ActionButton>
-      </div>
-      <div className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 md:grid-cols-[1fr_220px_180px_auto]">
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-          <input className={inputClass("pl-9")} onChange={(event) => setSearch(event.target.value)} placeholder="Tìm bài học..." value={search} />
-        </div>
-        <select className={inputClass()} onChange={(event) => setModuleFilter(event.target.value)} value={moduleFilter}>
-          <option value="all">Tất cả module</option>
-          {course.modules.map((module) => (
-            <option key={module.id} value={module.id}>
-              {module.title}
-            </option>
-          ))}
-        </select>
-        <select className={inputClass()} onChange={(event) => setStatusFilter(event.target.value)} value={statusFilter}>
-          <option value="all">Tất cả trạng thái</option>
-          {publishStatuses.map(([status, label]) => (
-            <option key={status} value={status}>
-              {label}
-            </option>
-          ))}
-        </select>
-        <div className="rounded-lg bg-white px-3 py-2 text-sm font-black text-slate-600">{visibleLessons.length} bài</div>
-      </div>
-      {visibleLessons.length === 0 ? <EmptyState title="Không có bài học phù hợp" description="Thử đổi bộ lọc hoặc thêm bài học mới." /> : null}
-      <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
-        <div className="grid grid-cols-[64px_minmax(260px,1.6fr)_minmax(170px,0.9fr)_110px_120px_110px_110px_150px] gap-3 border-b border-slate-100 bg-slate-50 px-4 py-3 text-xs font-black uppercase tracking-[0.06em] text-slate-500">
-          <div>STT</div>
-          <div>Tiêu đề</div>
-          <div>Module</div>
-          <div>Loại</div>
-          <div>Quyền xem</div>
-          <div>Status</div>
-          <div>Thời lượng</div>
-          <div className="text-right">Action</div>
-        </div>
-        <div className="divide-y divide-slate-100 overflow-x-auto">
-          {visibleLessons.map(({ lesson, module }, index) => (
-            <div className="grid min-w-[1120px] grid-cols-[64px_minmax(260px,1.6fr)_minmax(170px,0.9fr)_110px_120px_110px_110px_150px] items-center gap-3 px-4 py-3" key={lesson.id}>
-              <div className="text-sm font-black text-slate-400">#{index + 1}</div>
-              <div className="min-w-0">
-                <div className="line-clamp-2 text-sm font-black text-slate-950">{lesson.title}</div>
-              </div>
-              <div className="line-clamp-2 text-sm font-bold text-slate-600">{module.title}</div>
-              <div className="text-sm font-bold text-slate-600">{lesson.lessonType}</div>
-              <StatusBadge status={lesson.accessType} />
-              <StatusBadge status={lesson.status} />
-              <div className="text-sm font-bold text-slate-600">{lesson.duration || "-"}</div>
-              <div className="flex justify-end gap-1">
-                <ActionButton onClick={() => moveLesson(module, lesson, -1)} tone="ghost">
-                  <ArrowUp className="size-4" />
-                </ActionButton>
-                <ActionButton onClick={() => moveLesson(module, lesson, 1)} tone="ghost">
-                  <ArrowDown className="size-4" />
-                </ActionButton>
-                <ActionButton onClick={() => onEditLesson({ mode: "edit", lesson })}>
-                  <Pencil className="size-4" />
-                </ActionButton>
-                <ActionButton
-                  busy={busyAction === "delete_lesson"}
-                  onClick={() => void submitAction({ action: "delete_lesson", lessonId: lesson.id }, "Xóa/lưu trữ bài học này?")}
-                  tone="danger"
-                >
-                  <Trash2 className="size-4" />
-                </ActionButton>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+  return <div className="grid min-h-full min-w-0 md:grid-cols-[260px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)]">
+    <aside className="min-w-0 border-b border-slate-200 bg-slate-50/70 md:border-b-0 md:border-r">
+      <div className="flex items-center justify-between gap-2 border-b border-slate-200 p-3"><h2 className="text-sm font-semibold">Chương học <span className="font-normal text-slate-400">{visibleModules.length}</span></h2><button type="button" aria-label="Thêm chương học" disabled={busy} onClick={() => onEdit({ kind: "module" })} className="rounded-lg p-2 text-blue-600 hover:bg-blue-50 disabled:opacity-40"><Plus className="size-4" /></button></div>
+      <div className="max-h-64 space-y-1 overflow-auto p-2 md:max-h-none">{visibleModules.map((module, index) => <div key={module.id} className={`rounded-lg border ${selected?.id === module.id ? "border-blue-200 bg-white shadow-sm" : "border-transparent"}`}>
+        <button type="button" onClick={() => { setModuleId(module.id); setSearch(""); }} aria-pressed={selected?.id === module.id} className="flex w-full items-start gap-2 p-3 text-left"><span className="mt-0.5 text-xs tabular-nums text-slate-400">{String(index + 1).padStart(2, "0")}</span><span className="min-w-0 flex-1"><span className={`block break-words text-sm font-semibold leading-5 ${selected?.id === module.id ? "text-blue-700" : "text-slate-700"}`}>{module.title}</span><span className="mt-1 block text-xs text-slate-500">{module.lessons.filter((lesson) => lesson.status !== "archived").length} bài · {statusLabel(module.status)}</span></span><ChevronRight className="mt-1 size-3 shrink-0 text-slate-400" /></button>
+        {selected?.id === module.id ? <div className="flex justify-end gap-1 border-t border-slate-100 px-2 py-1">{[-1, 1].map((direction) => <button key={direction} type="button" aria-label={`${direction < 0 ? "Đưa chương lên" : "Đưa chương xuống"}: ${module.title}`} disabled={busy || (direction < 0 ? course.modules[0]?.id === module.id : course.modules.at(-1)?.id === module.id)} onClick={() => move("module", module.id, direction)} className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 disabled:opacity-25">{direction < 0 ? <ArrowUp className="size-3.5" /> : <ArrowDown className="size-3.5" />}</button>)}<button type="button" aria-label={`Sửa chương: ${module.title}`} disabled={busy} onClick={() => onEdit({ kind: "module", module })} className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100"><Pencil className="size-3.5" /></button></div> : null}
+      </div>)}</div>
+      {!visibleModules.length ? <div className="px-4 py-6 text-sm text-slate-500">Thêm chương để bắt đầu soạn bài học.</div> : null}
+      <label className="flex items-center gap-2 border-t border-slate-200 px-3 py-3 text-xs text-slate-500"><input type="checkbox" checked={showArchived} onChange={(event) => setShowArchived(event.target.checked)} />Hiện nội dung đã lưu trữ</label>
+    </aside>
+    <div className="min-w-0">
+      {selected ? <><div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 p-4"><div className="min-w-0"><h2 className="break-words text-base font-semibold">{selected.title}</h2><p className="mt-1 text-xs text-slate-500">{selected.lessons.filter((lesson) => lesson.status === "published").length} bài đã xuất bản · {selected.lessons.length} bài tổng cộng</p></div><button type="button" disabled={busy || selected.status === "archived"} onClick={() => onEdit({ kind: "lesson", moduleId: selected.id })} className={primaryClass}><Plus className="size-4" />Thêm bài học</button></div>
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 p-3"><label className="relative w-full max-w-xs"><Search className="absolute left-3 top-3 size-4 text-slate-400" /><input className={`${inputClass} pl-9`} aria-label="Tìm bài học" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Tìm trong chương này…" /></label><div className="flex gap-2"><button type="button" disabled={busy} onClick={() => onEdit({ kind: "module", module: selected })} className="px-2 py-2 text-xs font-medium text-slate-500 hover:text-blue-600">Sửa chương</button>{selected.status !== "archived" ? <button type="button" disabled={busy} onClick={() => archive("Lưu trữ chương học?", { action: "delete_module", moduleId: selected.id })} className="px-2 py-2 text-xs font-medium text-slate-500 hover:text-red-600">Lưu trữ</button> : null}</div></div>
+      <div>{lessons.map((lesson) => <article key={lesson.id} className="flex flex-wrap items-center gap-3 border-b border-slate-100 p-4 hover:bg-slate-50/60"><button type="button" disabled={busy} onClick={() => onEdit({ kind: "lesson", lesson, moduleId: selected.id })} className="flex min-w-0 flex-1 items-center gap-3 text-left"><span className="grid size-9 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-500">{lesson.lessonType === "video" ? <Video className="size-4" /> : <FileText className="size-4" />}</span><span className="min-w-0"><span className="block break-words text-sm font-medium leading-5 hover:text-blue-600">{lesson.title}</span><span className="mt-1 block text-xs text-slate-500">{lesson.duration || "Chưa có thời lượng"} · {lesson.accessType === "free_preview" ? "Xem thử" : lesson.accessType === "locked" ? "Đang khóa" : "Dành cho học viên"}{lesson.resources.length ? ` · ${lesson.resources.length} tài liệu` : ""}</span></span></button><Badge status={lesson.status} /><div className="flex items-center gap-1">{[-1, 1].map((direction) => <button key={direction} type="button" aria-label={`${direction < 0 ? "Đưa bài lên" : "Đưa bài xuống"}: ${lesson.title}`} disabled={busy || (direction < 0 ? selected.lessons[0]?.id === lesson.id : selected.lessons.at(-1)?.id === lesson.id)} onClick={() => move("lesson", lesson.id, direction)} className="rounded-md p-2 text-slate-400 hover:bg-slate-100 disabled:opacity-25">{direction < 0 ? <ArrowUp className="size-3.5" /> : <ArrowDown className="size-3.5" />}</button>)}<button type="button" aria-label={`Sửa bài: ${lesson.title}`} disabled={busy} onClick={() => onEdit({ kind: "lesson", lesson, moduleId: selected.id })} className="rounded-md p-2 text-blue-600 hover:bg-blue-50"><Pencil className="size-4" /></button>{lesson.status !== "archived" ? <button type="button" aria-label={`Lưu trữ bài: ${lesson.title}`} disabled={busy} onClick={() => archive("Lưu trữ bài học?", { action: "delete_lesson", lessonId: lesson.id })} className="rounded-md p-2 text-slate-400 hover:bg-red-50 hover:text-red-600"><Archive className="size-4" /></button> : null}</div></article>)}</div>
+      {!lessons.length ? <Empty>{search ? "Không có bài học khớp tìm kiếm." : "Chương này chưa có bài học. Bấm Thêm bài học để soạn nội dung."}</Empty> : null}</> : <Empty><div><BookOpen className="mx-auto mb-3 size-8 text-slate-300" /><p>Nội dung khóa học bắt đầu từ một chương.</p><button type="button" disabled={busy} onClick={() => onEdit({ kind: "module" })} className={`${primaryClass} mt-4`}><Plus className="size-4" />Thêm chương đầu tiên</button></div></Empty>}
     </div>
-  );
+  </div>;
 }
 
-function LessonFormModal({
-  busy,
-  course,
-  editor,
-  onClose,
-  submitAction,
-}: {
-  busy: boolean;
-  course: LmsCourse;
-  editor: { mode: "create" | "edit"; lesson?: LmsLesson; moduleId?: string };
-  onClose: () => void;
-  submitAction: SubmitAction;
-}) {
-  const lesson = editor.lesson;
-  const defaultModuleId = lesson?.moduleId ?? editor.moduleId ?? course.modules[0]?.id ?? "";
-  return (
-    <ModalShell onClose={onClose} title={lesson ? "Sửa bài học" : "Thêm bài học"} subtitle="Form chỉ mở cho một bài, không làm dài toàn bộ tab." width="max-w-4xl">
-      <form
-        className="max-h-[calc(90vh-78px)] overflow-y-auto"
-        onSubmit={(event) => {
-          event.preventDefault();
-          const formData = new FormData(event.currentTarget);
-          const title = value(formData, "title");
-          const statusOverride = value(formData, "statusOverride");
-          void submitAction({
-            action: lesson ? "update_lesson" : "create_lesson",
-            courseId: course.id,
-            lessonId: lesson?.id,
-            moduleId: value(formData, "moduleId"),
-            title,
-            slug: value(formData, "slug") || slugifyVietnamese(title),
-            status: statusOverride || value(formData, "status"),
-            accessType: value(formData, "accessType"),
-            lessonType: value(formData, "lessonType"),
-            duration: value(formData, "duration"),
-            youtubeUrl: value(formData, "youtubeUrl"),
-            embedUrl: value(formData, "embedUrl"),
-            description: value(formData, "description"),
-            content: value(formData, "content"),
-            position: lesson?.position,
-          });
-        }}
-      >
-        <div className="grid gap-5 p-5">
-          <div className="rounded-lg border border-slate-200 p-4">
-            <h4 className="text-sm font-black text-slate-950">Thông tin cơ bản</h4>
-            <div className="mt-3 grid gap-3 md:grid-cols-2">
-              <Field label="Module">
-                <select className={inputClass()} defaultValue={defaultModuleId} name="moduleId" required>
-                  {course.modules.map((module) => (
-                    <option key={module.id} value={module.id}>
-                      {module.title}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field label="Tiêu đề">
-                <input className={inputClass()} defaultValue={lesson?.title ?? ""} name="title" required />
-              </Field>
-              <Field label="Slug">
-                <input className={inputClass()} defaultValue={lesson?.slug ?? ""} name="slug" placeholder="tu-dong-neu-de-trong" />
-              </Field>
-              <Field label="Status">
-                <select className={inputClass()} defaultValue={lesson?.status ?? "draft"} name="status">
-                  {publishStatuses.map(([status, label]) => (
-                    <option key={status} value={status}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field label="Quyền xem">
-                <select className={inputClass()} defaultValue={lesson?.accessType ?? "enrolled_only"} name="accessType">
-                  {accessTypes.map(([access, label]) => (
-                    <option key={access} value={access}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field label="Loại bài">
-                <select className={inputClass()} defaultValue={lesson?.lessonType ?? "video"} name="lessonType">
-                  {lessonTypes.map(([type, label]) => (
-                    <option key={type} value={type}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-            </div>
-          </div>
-          <div className="rounded-lg border border-slate-200 p-4">
-            <h4 className="text-sm font-black text-slate-950">Nội dung video</h4>
-            <div className="mt-3 grid gap-3 md:grid-cols-3">
-              <Field label="YouTube URL">
-                <input className={inputClass()} defaultValue={lesson?.youtubeUrl ?? ""} name="youtubeUrl" />
-              </Field>
-              <Field label="Embed URL">
-                <input className={inputClass()} defaultValue={lesson?.embedUrl ?? ""} name="embedUrl" />
-              </Field>
-              <Field label="Thời lượng">
-                <input className={inputClass()} defaultValue={lesson?.duration ?? ""} name="duration" placeholder="12 phút" />
-              </Field>
-            </div>
-          </div>
-          <div className="rounded-lg border border-slate-200 p-4">
-            <h4 className="text-sm font-black text-slate-950">Mô tả và nội dung học</h4>
-            <div className="mt-3 grid gap-3">
-              <p id="course-slug-help" className="text-xs text-slate-500">Slug được giữ cố định để bảo toàn liên kết khóa học và đơn hàng.</p>
-          <div className="grid gap-3 md:grid-cols-2">
-            <Field label="Giá bán (VND)"><input className={inputClass()} type="number" min="0" max="2147483647" step="1" name="price" defaultValue={course.price ?? 0} required /></Field>
-            <Field label="Giá gốc (VND)"><input className={inputClass()} type="number" min="0" max="2147483647" step="1" name="originalPrice" defaultValue={course.originalPrice ?? 0} required /></Field>
-            <Field label="Thời lượng khóa"><input className={inputClass()} name="courseDuration" defaultValue={course.duration ?? ""} /></Field>
-            <Field label="Trình độ"><input className={inputClass()} name="level" defaultValue={course.level ?? ""} /></Field>
-            <Field label="Nhãn nút đăng ký"><input className={inputClass()} name="ctaText" defaultValue={course.ctaText ?? ""} /></Field>
-          </div>
-          <Field label="Mô tả ngắn">
-                <textarea className={textareaClass("min-h-20")} defaultValue={lesson?.description ?? ""} name="description" />
-              </Field>
-              <Field label="Nội dung học">
-                <textarea className={textareaClass("min-h-36")} defaultValue={lesson?.content ?? ""} name="content" />
-              </Field>
-            </div>
-          </div>
-          {lesson?.resources.length ? (
-            <div className="rounded-lg border border-slate-200 p-4">
-              <h4 className="text-sm font-black text-slate-950">Tài nguyên đang gắn</h4>
-              <div className="mt-3 grid gap-2">
-                {lesson.resources.map((resource) => (
-                  <div className="rounded-lg bg-slate-50 px-3 py-2 text-sm font-bold text-slate-600" key={resource.id}>
-                    {resource.title} · {resource.type}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
-        </div>
-        <div className="sticky bottom-0 flex flex-wrap justify-end gap-2 border-t border-slate-100 bg-white px-5 py-4">
-          <ActionButton onClick={onClose}>Hủy</ActionButton>
-          <ActionButton busy={busy} type="submit">
-            Lưu bài
-          </ActionButton>
-          <button name="statusOverride" value="draft" className={`min-h-10 rounded-lg px-3 text-sm font-black ${buttonClass("secondary")}`} disabled={busy} type="submit">
-            Lưu nháp
-          </button>
-          <button name="statusOverride" value="published" className={`min-h-10 rounded-lg px-3 text-sm font-black ${buttonClass("primary")}`} disabled={busy} type="submit">
-            Xuất bản
-          </button>
-        </div>
-      </form>
-    </ModalShell>
-  );
-}
-
-function StudentsTab({ busyAction, course, submitAction }: { busyAction: string; course: LmsCourse; submitAction: SubmitAction }) {
-  return (
-    <div className="grid gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h3 className="text-base font-black text-slate-950">Học viên</h3>
-          <p className="mt-1 text-sm font-semibold text-slate-500">Theo dõi enrollment, trạng thái và tiến độ học thật.</p>
-        </div>
-        <Link className={`inline-flex min-h-10 items-center rounded-lg px-3 text-sm font-black ${buttonClass("primary")}`} href="/admin/crm-v2/students">Quản lý học viên</Link>
-      </div>
-      <EnrollmentTable busyAction={busyAction} enrollments={course.enrollments} submitAction={submitAction} />
+function ModuleFields({ module }: { module?: LmsModule }) { return <><Field label="Tên chương học"><input name="title" className={inputClass} defaultValue={module?.title || ""} maxLength={220} required autoFocus /></Field><Field label="Mô tả"><textarea name="description" rows={4} className={inputClass} defaultValue={module?.description || ""} maxLength={2000} /></Field><Field label="Trạng thái"><StatusSelect status={module?.status || "published"} /></Field></>; }
+function LessonFields({ course, lesson, moduleId }: { course: LmsCourse; lesson?: LmsLesson; moduleId: string }) {
+  const [section, setSection] = useState("content");
+  const [type, setType] = useState(lesson?.lessonType || "video");
+  return <><Field label="Tên bài học"><input name="title" className={inputClass} defaultValue={lesson?.title || ""} maxLength={220} required autoFocus /></Field><div className="flex gap-1 rounded-lg bg-slate-100 p-1" role="group" aria-label="Chi tiết bài học">{[["content", "Nội dung"], ["settings", "Thiết lập & quyền xem"]].map(([key, label]) => <button key={key} type="button" aria-pressed={section === key} className={`flex-1 rounded-md px-3 py-2 text-sm font-medium ${section === key ? "bg-white text-blue-700 shadow-sm" : "text-slate-500"}`} onClick={() => setSection(key)}>{label}</button>)}</div>
+    <div hidden={section !== "content"} className="space-y-4"><div className="grid gap-4 sm:grid-cols-2"><Field label="Loại bài học"><select className={inputClass} name="lessonType" value={type} onChange={(event) => setType(event.target.value as typeof type)}>{[["video", "Video"], ["text", "Bài viết"], ["file", "Tệp tài liệu"], ["link", "Liên kết"], ["live", "Buổi học trực tuyến"]].map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></Field><Field label="Thời lượng"><input className={inputClass} name="duration" defaultValue={lesson?.duration || ""} maxLength={160} placeholder="Ví dụ: 12 phút" /></Field></div>
+      <div className="grid gap-4 sm:grid-cols-2"><Field label="Đường dẫn video / buổi học"><input className={inputClass} name="youtubeUrl" defaultValue={lesson?.youtubeUrl || ""} placeholder="https://…" maxLength={500} /></Field><Field label="Đường dẫn nhúng" hint="Có thể để trống với video YouTube."><input className={inputClass} name="embedUrl" defaultValue={lesson?.embedUrl || ""} placeholder="https://…" maxLength={500} /></Field></div>
+      <Field label="Giới thiệu ngắn"><textarea className={inputClass} rows={2} name="description" defaultValue={lesson?.description || ""} maxLength={3000} /></Field><Field label="Nội dung bài học" hint="Nội dung văn bản/HTML được giữ theo định dạng phòng học hiện tại."><textarea className={`${inputClass} min-h-48 font-mono leading-6`} name="content" defaultValue={lesson?.content || ""} maxLength={40000} /></Field>
     </div>
-  );
+    <div hidden={section !== "settings"} className="space-y-4"><Field label="Chương học"><select className={inputClass} name="moduleId" defaultValue={moduleId}>{course.modules.filter((module) => module.status !== "archived" || module.id === moduleId).map((module) => <option key={module.id} value={module.id}>{module.title}</option>)}</select></Field><Field label="Đường dẫn bài học" hint="Để trống khi tạo mới để lấy từ tên bài."><input className={inputClass} name="slug" defaultValue={lesson?.slug || ""} /></Field><div className="grid gap-4 sm:grid-cols-2"><Field label="Trạng thái"><StatusSelect status={lesson?.status} /></Field><Field label="Quyền xem"><select className={inputClass} name="accessType" defaultValue={lesson?.accessType || "enrolled_only"}><option value="enrolled_only">Học viên được cấp quyền</option><option value="free_preview">Cho phép xem thử</option><option value="locked">Tạm khóa bài học</option></select></Field></div></div>
+  </>;
 }
 
-function EnrollmentTable({ busyAction, enrollments, submitAction }: { busyAction: string; enrollments: LmsEnrollment[]; submitAction: SubmitAction }) {
+function ResourceList({ course, busy, onEdit, archive }: { course: LmsCourse; busy: boolean; onEdit: (editor: Editor) => void; archive: ArchiveAction }) {
+  const [search, setSearch] = useState("");
+  const [scope, setScope] = useState("all");
+  const available = allResources(course);
+  const resources = available.filter((resource) => resource.title.toLocaleLowerCase("vi").includes(search.toLocaleLowerCase("vi")) && (scope === "all" || (scope === "course" ? !resource.lessonId : Boolean(resource.lessonId))));
+  return <div className="min-w-0"><div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 p-4"><div><h2 className="text-base font-semibold">Tài liệu khóa học</h2><p className="mt-1 text-xs text-slate-500">{available.length} tài liệu · dùng cho toàn khóa hoặc một bài học</p></div><button type="button" disabled={busy} onClick={() => onEdit({ kind: "resource" })} className={primaryClass}><Plus className="size-4" />Thêm tài liệu</button></div><div className="flex flex-wrap gap-3 border-b border-slate-100 p-3"><input aria-label="Tìm tài liệu" value={search} onChange={(event) => setSearch(event.target.value)} className={`${inputClass} max-w-xs`} placeholder="Tìm tài liệu…" /><select aria-label="Phạm vi tài liệu" value={scope} onChange={(event) => setScope(event.target.value)} className={`${inputClass} max-w-48`}><option value="all">Tất cả tài liệu</option><option value="course">Dùng cho toàn khóa</option><option value="lesson">Theo bài học</option></select></div>{resources.map((resource) => { const lesson = course.modules.flatMap((module) => module.lessons).find((item) => item.id === resource.lessonId); return <article key={resource.id} className="flex items-center gap-3 border-b border-slate-100 p-4"><FileText className="size-5 shrink-0 text-slate-400" /><button type="button" disabled={busy} onClick={() => onEdit({ kind: "resource", resource })} className="min-w-0 flex-1 text-left"><span className="block break-words text-sm font-medium text-slate-800 hover:text-blue-600">{resource.title}</span><span className="mt-1 block break-words text-xs text-slate-500">{lesson?.title || "Toàn khóa"} · {resource.type}</span></button><button type="button" aria-label={`Sửa tài liệu: ${resource.title}`} disabled={busy} onClick={() => onEdit({ kind: "resource", resource })} className="rounded-lg p-2 text-blue-600 hover:bg-blue-50"><Pencil className="size-4" /></button><button type="button" aria-label={`Gỡ tài liệu: ${resource.title}`} disabled={busy} onClick={() => archive("Gỡ tài liệu khỏi khóa học?", { action: "delete_resource", resourceId: resource.id }, true)} className="rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600"><Trash2 className="size-4" /></button></article>; })}{!resources.length ? <Empty>Chưa có tài liệu phù hợp.</Empty> : null}</div>;
+}
+function ResourceFields({ course, resource }: { course: LmsCourse; resource?: LmsResource }) { return <><Field label="Tên tài liệu"><input name="title" required maxLength={220} defaultValue={resource?.title || ""} className={inputClass} autoFocus /></Field><div className="grid gap-4 sm:grid-cols-2"><Field label="Phạm vi sử dụng"><select name="lessonId" defaultValue={resource?.lessonId || ""} className={inputClass}><option value="">Toàn khóa học</option>{course.modules.map((module) => <optgroup key={module.id} label={module.title}>{module.lessons.map((lesson) => <option key={lesson.id} value={lesson.id}>{lesson.title}</option>)}</optgroup>)}</select></Field><Field label="Loại tài liệu"><select name="type" defaultValue={resource?.type || "link"} className={inputClass}>{[["link", "Liên kết"], ["file", "Tệp tài liệu"], ["worksheet", "Bài tập"], ["template", "Biểu mẫu"], ["video", "Video"], ["other", "Khác"]].map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></Field></div><Field label="Đường dẫn tài liệu" hint="Dùng liên kết HTTPS hoặc đường dẫn tệp bắt đầu bằng /."><input name="url" required maxLength={1000} defaultValue={resource?.url || ""} className={inputClass} placeholder="https://…" /></Field><Field label="Mô tả"><textarea name="description" rows={3} maxLength={2000} defaultValue={resource?.description || ""} className={inputClass} /></Field></>; }
+
+function CourseStudents({ course }: { course: LmsCourse }) {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
-  const visibleEnrollments = enrollments.filter((enrollment) => {
-    if (status !== "all" && enrollment.status !== status) return false;
-    return `${enrollment.studentName} ${enrollment.email} ${enrollment.phone}`.toLowerCase().includes(search.trim().toLowerCase());
-  });
-  return (
-    <div className="grid gap-3">
-      <div className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 md:grid-cols-[1fr_180px_auto]">
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-          <input className={inputClass("pl-9")} onChange={(event) => setSearch(event.target.value)} placeholder="Tìm tên, email, SĐT..." value={search} />
-        </div>
-        <select className={inputClass()} onChange={(event) => setStatus(event.target.value)} value={status}>
-          <option value="all">Tất cả status</option>
-          {enrollmentStatuses.map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
-        <div className="rounded-lg bg-white px-3 py-2 text-sm font-black text-slate-600">{visibleEnrollments.length} học viên</div>
-      </div>
-      {visibleEnrollments.length === 0 ? <EmptyState title="Chưa có học viên phù hợp" description="Thử đổi bộ lọc hoặc enroll học viên mới." /> : null}
-      <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
-        <div className="grid grid-cols-[minmax(220px,1.3fr)_150px_160px_130px_150px_170px] gap-3 border-b border-slate-100 bg-slate-50 px-4 py-3 text-xs font-black uppercase tracking-[0.06em] text-slate-500">
-          <div>Học viên</div>
-          <div>Trạng thái</div>
-          <div>Tiến độ</div>
-          <div>Lần học gần nhất</div>
-          <div>Ngày enroll</div>
-          <div className="text-right">Action</div>
-        </div>
-        <div className="divide-y divide-slate-100 overflow-x-auto">
-          {visibleEnrollments.map((enrollment) => (
-            <div className="grid min-w-[980px] grid-cols-[minmax(220px,1.3fr)_150px_160px_130px_150px_170px] items-center gap-3 px-4 py-3" key={enrollment.id}>
-              <div className="min-w-0">
-                <div className="truncate text-sm font-black text-slate-950">{enrollment.studentName || "Chưa có tên"}</div>
-                <div className="mt-1 truncate text-xs font-bold text-slate-500">{enrollment.email || enrollment.phone || "Chưa có liên hệ"}</div>
-              </div>
-              <StatusBadge status={enrollment.status} />
-              <div>
-                <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-                  <div className="h-full rounded-full bg-emerald-500" style={{ width: `${Math.max(0, Math.min(100, enrollment.progressPercent))}%` }} />
-                </div>
-                <div className="mt-1 text-xs font-black text-slate-500">{enrollment.progressPercent}%</div>
-              </div>
-              <div className="text-xs font-bold text-slate-500">{formatDate(enrollment.lastAccessedAt)}</div>
-              <div className="text-xs font-bold text-slate-500">{formatDate(enrollment.enrolledAt)}</div>
-              <div className="flex justify-end gap-2">
-                <select
-                  className="min-h-9 rounded-lg border border-slate-200 bg-white px-2 text-xs font-black text-slate-700"
-                  defaultValue={enrollment.status}
-                  onChange={(event) => void submitAction({ action: "update_enrollment", enrollmentId: enrollment.id, status: event.target.value })}
-                >
-                  {enrollmentStatuses.map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-                <ActionButton
-                  busy={busyAction === "remove_enrollment"}
-                  onClick={() => void submitAction({ action: "remove_enrollment", enrollmentId: enrollment.id }, "Gỡ quyền học của học viên này?")}
-                  tone="danger"
-                >
-                  Gỡ
-                </ActionButton>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+  const rows = course.enrollments.filter((item) => (status === "all" || item.status === status) && `${item.studentName} ${item.email} ${item.phone}`.toLocaleLowerCase("vi").includes(search.toLocaleLowerCase("vi")));
+  const current = course.enrollments.filter((item) => item.status === "active" || item.status === "completed");
+  const average = current.length ? Math.round(current.reduce((sum, item) => sum + Math.max(0, Math.min(100, item.progressPercent)), 0) / current.length) : 0;
+  return <div><div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 p-4"><div><h2 className="text-base font-semibold">Học viên của khóa</h2><p className="mt-1 text-xs text-slate-500">{course.enrollments.length} lượt ghi danh · tiến độ trung bình {average}% của học viên đang học/hoàn thành</p></div><Link href={`/admin/crm-v2/customers?course=${encodeURIComponent(course.slug)}`} className={primaryClass}><Users className="size-4" />Quản lý hồ sơ & quyền học</Link></div><div className="flex flex-wrap gap-3 border-b border-slate-100 p-3"><input aria-label="Tìm học viên trong khóa" value={search} onChange={(event) => setSearch(event.target.value)} className={`${inputClass} max-w-xs`} placeholder="Tên, email, số điện thoại…" /><select aria-label="Lọc quyền học" value={status} onChange={(event) => setStatus(event.target.value)} className={`${inputClass} max-w-48`}><option value="all">Tất cả trạng thái</option>{["active", "completed", "paused", "revoked"].map((key) => <option key={key} value={key}>{statusLabel(key)}</option>)}</select></div>{rows.map((enrollment) => <Link key={enrollment.id} href={`/admin/crm-v2/customers?q=${encodeURIComponent(enrollment.email || enrollment.phone)}&course=${encodeURIComponent(course.slug)}&profile=${encodeURIComponent(enrollment.email || enrollment.phone)}`} className="flex flex-wrap items-center gap-4 border-b border-slate-100 p-4 hover:bg-blue-50/40"><div className="min-w-0 flex-1"><p className="break-words text-sm font-medium">{enrollment.studentName || enrollment.email || "Chưa có tên"}</p><p className="mt-1 break-words text-xs text-slate-500">{enrollment.email || enrollment.phone}</p></div><Badge status={enrollment.status} /><div className="w-28"><div className="mb-1 flex justify-between text-xs text-slate-500"><span>Tiến độ</span><span>{enrollment.progressPercent}%</span></div><div className="h-1.5 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-blue-600" style={{ width: `${Math.max(0, Math.min(100, enrollment.progressPercent))}%` }} /></div></div><ChevronRight className="size-4 text-slate-400" /></Link>)}{!rows.length ? <Empty>Chưa có học viên phù hợp.</Empty> : null}</div>;
 }
 
-function ResourcesTab({ busyAction, course, submitAction }: { busyAction: string; course: LmsCourse; submitAction: SubmitAction }) {
-  const [editor, setEditor] = useState<LmsResource | "new" | null>(null);
-  const lessons = getCourseLessons(course);
-  const resources = [...course.resources, ...course.modules.flatMap((module) => module.lessons.flatMap((lesson) => lesson.resources))];
-  return (
-    <div className="grid gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h3 className="text-base font-black text-slate-950">Tài nguyên</h3>
-          <p className="mt-1 text-sm font-semibold text-slate-500">Quản lý link/file gắn với khóa học hoặc từng bài.</p>
-        </div>
-        <ActionButton onClick={() => setEditor("new")} tone="primary">
-          <Plus className="size-4" /> Thêm tài nguyên
-        </ActionButton>
-      </div>
-      {resources.length === 0 ? <EmptyState title="Chưa có tài nguyên" description="Thêm URL hoặc file liên quan để học viên tải về." /> : null}
-      <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
-        <div className="grid grid-cols-[minmax(220px,1fr)_110px_minmax(240px,1.2fr)_160px] gap-3 border-b border-slate-100 bg-slate-50 px-4 py-3 text-xs font-black uppercase tracking-[0.06em] text-slate-500">
-          <div>Title</div>
-          <div>Type</div>
-          <div>URL</div>
-          <div className="text-right">Action</div>
-        </div>
-        <div className="divide-y divide-slate-100 overflow-x-auto">
-          {resources.map((resource) => (
-            <div className="grid min-w-[780px] grid-cols-[minmax(220px,1fr)_110px_minmax(240px,1.2fr)_160px] items-center gap-3 px-4 py-3" key={resource.id}>
-              <div className="min-w-0">
-                <div className="truncate text-sm font-black text-slate-950">{resource.title}</div>
-                <div className="mt-1 truncate text-xs font-bold text-slate-400">{resource.description || "Không có mô tả"}</div>
-              </div>
-              <StatusBadge status={resource.type} />
-              <div className="truncate text-sm font-bold text-slate-500">{resource.url}</div>
-              <div className="flex justify-end gap-2">
-                <ActionButton onClick={() => setEditor(resource)}>
-                  <Pencil className="size-4" /> Sửa
-                </ActionButton>
-                <ActionButton
-                  busy={busyAction === "delete_resource"}
-                  onClick={() => void submitAction({ action: "delete_resource", resourceId: resource.id }, "Xóa tài nguyên này?")}
-                  tone="danger"
-                >
-                  <Trash2 className="size-4" />
-                </ActionButton>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      {editor ? (
-        <ResourceFormModal
-          busy={busyAction === "create_resource" || busyAction === "update_resource"}
-          course={course}
-          lessons={lessons}
-          onClose={() => setEditor(null)}
-          resource={editor === "new" ? null : editor}
-          submitAction={async (payload) => {
-            await submitAction(payload);
-            setEditor(null);
-          }}
-        />
-      ) : null}
-    </div>
-  );
+function CourseSettings({ course, busy, error, submit, archive }: { course: LmsCourse; busy: boolean; error: string; submit: SubmitAction; archive: ArchiveAction }) {
+  const [section, setSection] = useState("general");
+  const [dirty, setDirty] = useState(false);
+  const [uploads, setUploads] = useState(0);
+  const setUploading = (active: boolean) => setUploads((count) => Math.max(0, count + (active ? 1 : -1)));
+  useEffect(() => { if (!dirty) return; const beforeUnload = (event: BeforeUnloadEvent) => { event.preventDefault(); }; window.addEventListener("beforeunload", beforeUnload); return () => window.removeEventListener("beforeunload", beforeUnload); }, [dirty]);
+  return <form className="mx-auto max-w-5xl p-4 md:p-5" onInvalidCapture={(event) => { const target = event.target as HTMLInputElement; if (["price", "originalPrice", "duration", "level", "ctaText"].includes(target.name)) setSection("pricing"); else if (["thumbnailImage", "bannerImage", "previewVideoUrl"].includes(target.name)) setSection("media"); else setSection("general"); }} onChange={() => setDirty(true)} onSubmit={(event) => { event.preventDefault(); const data = new FormData(event.currentTarget); void submit({ action: "update_course", courseId: course.id, title: get(data, "title"), slug: course.slug, shortDescription: get(data, "shortDescription"), description: get(data, "description"), price: Number(get(data, "price")), originalPrice: Number(get(data, "originalPrice")), duration: get(data, "duration"), level: get(data, "level"), ctaText: get(data, "ctaText"), thumbnailImage: get(data, "thumbnailImage"), bannerImage: get(data, "bannerImage"), previewVideoUrl: get(data, "previewVideoUrl"), status: get(data, "status"), visibility: get(data, "visibility") }).then((ok) => { if (ok) setDirty(false); }); }}>
+    <div className="mb-5 flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-base font-semibold">Thông tin & xuất bản</h2><p className="mt-1 text-xs text-slate-500">{dirty ? "Có thay đổi chưa lưu" : "Cập nhật nội dung hiển thị của khóa học"}</p></div><button type="submit" disabled={busy || uploads > 0} className={primaryClass}><Check className="size-4" />{busy ? "Đang lưu…" : "Lưu thay đổi"}</button></div>
+    <div role="group" aria-label="Thông tin khóa học" className="mb-5 flex gap-1 overflow-x-auto rounded-lg bg-slate-100 p-1">{[["general", "Thông tin chung"], ["pricing", "Giá & giới thiệu"], ["media", "Ảnh & video"], ["publishing", "Xuất bản"]].map(([id, label]) => <button key={id} type="button" aria-pressed={section === id} onClick={() => setSection(id)} className={`shrink-0 rounded-md px-3 py-2 text-sm font-medium ${section === id ? "bg-white text-blue-700 shadow-sm" : "text-slate-500"}`}>{label}</button>)}</div>
+    <fieldset disabled={busy} className="space-y-4">
+      <div hidden={section !== "general"} className="space-y-4"><Field label="Tên khóa học"><input name="title" required maxLength={220} className={inputClass} defaultValue={course.title} /></Field><Field label="Đường dẫn khóa học" hint="Giữ cố định để các liên kết, đơn hàng và quyền học hiện có tiếp tục hoạt động."><input className={`${inputClass} bg-slate-50 text-slate-500`} value={course.slug} readOnly /></Field><Field label="Mô tả ngắn"><textarea name="shortDescription" className={inputClass} rows={3} maxLength={500} defaultValue={course.shortDescription} /></Field><Field label="Mô tả đầy đủ"><textarea name="description" className={inputClass} rows={6} maxLength={5000} defaultValue={course.description} /></Field></div>
+      <div hidden={section !== "pricing"} className="grid gap-4 sm:grid-cols-2"><Field label="Giá bán (VND)"><input type="number" min={0} max={2147483647} step={1} name="price" className={inputClass} defaultValue={course.price ?? 0} /></Field><Field label="Giá gốc (VND)"><input type="number" min={0} max={2147483647} step={1} name="originalPrice" className={inputClass} defaultValue={course.originalPrice ?? 0} /></Field><Field label="Thời lượng"><input name="duration" maxLength={160} className={inputClass} defaultValue={course.duration || ""} /></Field><Field label="Trình độ"><input name="level" maxLength={160} className={inputClass} defaultValue={course.level || ""} /></Field><Field label="Nhãn nút đăng ký"><input name="ctaText" maxLength={160} className={inputClass} defaultValue={course.ctaText || ""} /></Field></div>
+      <div hidden={section !== "media"} className="space-y-4"><div className="grid gap-4 md:grid-cols-2"><CourseImage course={course} name="thumbnailImage" label="Ảnh đại diện" onUploading={setUploading} onDirty={() => setDirty(true)} /><CourseImage course={course} name="bannerImage" label="Ảnh bìa" onUploading={setUploading} onDirty={() => setDirty(true)} /></div><Field label="Video giới thiệu"><input name="previewVideoUrl" className={inputClass} defaultValue={course.previewVideoUrl} maxLength={500} /></Field></div>
+      <div hidden={section !== "publishing"} className="space-y-5"><div className="grid gap-4 sm:grid-cols-2"><Field label="Trạng thái khóa học"><StatusSelect status={course.status} /></Field><Field label="Phạm vi truy cập"><select name="visibility" className={inputClass} defaultValue={course.visibility}><option value="enrolled">Học viên được cấp quyền</option><option value="public">Công khai</option><option value="private">Riêng tư</option></select></Field></div><div className="rounded-lg border border-slate-200 p-4"><h3 className="text-sm font-semibold">Kiểm tra nội dung</h3><ul className="mt-3 space-y-2 text-sm text-slate-600">{[[Boolean(course.title), "Tên khóa học"], [Boolean(course.shortDescription || course.description), "Mô tả khóa học"], [Boolean(course.thumbnailImage || course.bannerImage), "Ảnh đại diện"], [course.modules.some((module) => module.status === "published" && module.lessons.some((lesson) => lesson.status === "published")), "Có bài học được xuất bản trong chương đang hiển thị"]].map(([ready, label]) => <li key={String(label)} className="flex items-center justify-between gap-3"><span>{String(label)}</span><span className={`text-xs font-medium ${ready ? "text-emerald-600" : "text-amber-600"}`}>{ready ? "Đã có" : "Chưa có"}</span></li>)}</ul></div>{course.status !== "archived" ? <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 p-4"><div><h3 className="text-sm font-semibold">Lưu trữ khóa học</h3><p className="mt-1 text-xs text-slate-500">Ngừng hiển thị; giữ nội dung và lịch sử học viên.</p></div><button type="button" disabled={busy} onClick={() => archive("Lưu trữ khóa học?", { action: "archive_course", courseId: course.id })} className={secondaryClass}><Archive className="size-4" />Lưu trữ</button></div> : <p className="text-sm text-slate-500">Khóa đã lưu trữ. Chọn Đang xuất bản và lưu để mở lại.</p>}</div>
+    </fieldset>
+    <div className="mt-4"><Notice message={error} error /></div>
+  </form>;
 }
-
-function ResourceFormModal({
-  busy,
-  course,
-  lessons,
-  onClose,
-  resource,
-  submitAction,
-}: {
-  busy: boolean;
-  course: LmsCourse;
-  lessons: Array<{ lesson: LmsLesson; module: LmsModule }>;
-  onClose: () => void;
-  resource: LmsResource | null;
-  submitAction: SubmitAction;
-}) {
-  return (
-    <ModalShell onClose={onClose} title={resource ? "Sửa tài nguyên" : "Thêm tài nguyên"} width="max-w-2xl">
-      <form
-        className="grid gap-4 p-5"
-        onSubmit={(event) => {
-          event.preventDefault();
-          const formData = new FormData(event.currentTarget);
-          const lessonId = value(formData, "lessonId");
-          const selectedLesson = lessons.find((item) => item.lesson.id === lessonId);
-          void submitAction({
-            action: resource ? "update_resource" : "create_resource",
-            courseId: course.id,
-            resourceId: resource?.id,
-            moduleId: selectedLesson?.module.id ?? null,
-            lessonId: lessonId || null,
-            title: value(formData, "title"),
-            type: value(formData, "type"),
-            url: value(formData, "url"),
-            description: value(formData, "description"),
-          });
-        }}
-      >
-        <Field label="Gắn với bài">
-          <select className={inputClass()} defaultValue={resource?.lessonId ?? ""} name="lessonId">
-            <option value="">Toàn khóa</option>
-            {lessons.map(({ lesson, module }) => (
-              <option key={lesson.id} value={lesson.id}>
-                {module.title} · {lesson.title}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <div className="grid gap-3 md:grid-cols-2">
-          <Field label="Tiêu đề">
-            <input className={inputClass()} defaultValue={resource?.title ?? ""} name="title" required />
-          </Field>
-          <Field label="Loại">
-            <select className={inputClass()} defaultValue={resource?.type ?? "link"} name="type">
-              <option value="link">Link</option>
-              <option value="file">File</option>
-              <option value="worksheet">Worksheet</option>
-              <option value="template">Template</option>
-              <option value="video">Video</option>
-              <option value="other">Khác</option>
-            </select>
-          </Field>
-        </div>
-        <Field label="URL / File path">
-          <input className={inputClass()} defaultValue={resource?.url ?? ""} name="url" required />
-        </Field>
-        <Field label="Mô tả">
-          <textarea className={textareaClass("min-h-20")} defaultValue={resource?.description ?? ""} name="description" />
-        </Field>
-        <div className="flex justify-end gap-2 border-t border-slate-100 pt-4">
-          <ActionButton onClick={onClose}>Hủy</ActionButton>
-          <ActionButton busy={busy} tone="primary" type="submit">
-            Lưu tài nguyên
-          </ActionButton>
-        </div>
-      </form>
-    </ModalShell>
-  );
+function CourseImage({ course, name, label, onUploading, onDirty }: { course: LmsCourse; name: "thumbnailImage" | "bannerImage"; label: string; onUploading: (value: boolean) => void; onDirty: () => void }) {
+  const [url, setUrl] = useState(course[name]);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function upload(file: File | undefined) { if (!file || busy) return; const client = createSupabaseBrowserClient(); if (!client) { setError("Chưa kết nối được kho ảnh."); return; } setBusy(true); onUploading(true); setError(""); try { const next = await uploadMediaFile({ file, folder: `courses/${course.slug}/${name}`, supabase: client }); setUrl(next); onDirty(); } catch (cause) { setError(cause instanceof Error ? cause.message : "Không tải được ảnh."); } finally { setBusy(false); onUploading(false); } }
+  return <div className="space-y-3 rounded-lg border border-slate-200 p-3"><p className="text-sm font-medium">{label}</p><div className="grid aspect-[3/1] place-items-center overflow-hidden rounded-lg bg-slate-50">{url ? <Image alt={label} src={url} width={600} height={200} unoptimized className="size-full object-contain" /> : <span className="text-xs text-slate-400">Chưa có ảnh</span>}</div><label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-200 p-2 text-xs font-medium"><Upload className="size-3.5" />{busy ? "Đang tải ảnh…" : "Tải ảnh lên"}<input disabled={busy} accept="image/*" type="file" className="sr-only" onChange={(event) => { void upload(event.target.files?.[0]); event.currentTarget.value = ""; }} /></label><input aria-label={`Đường dẫn ${label.toLowerCase()}`} name={name} className={inputClass} value={url} onChange={(event) => { setUrl(event.target.value); onDirty(); }} maxLength={500} placeholder="https://…" /><Notice message={error} error /></div>;
 }
-
-function CourseAnalytics({ course }: { course: LmsCourse }) {
-  const total = course.enrollments.length;
-  const active = course.enrollments.filter((item) => item.status === "active").length;
-  const completed = course.enrollments.filter((item) => item.status === "completed" || item.progressPercent >= 100).length;
-  const averageProgress = total ? Math.round(course.enrollments.reduce((sum, item) => sum + item.progressPercent, 0) / total) : 0;
-  const progressBands = [
-    { label: "Chưa bắt đầu", count: course.enrollments.filter((item) => item.progressPercent === 0).length, color: "bg-slate-500" },
-    { label: "Đang học", count: course.enrollments.filter((item) => item.progressPercent > 0 && item.progressPercent < 100).length, color: "bg-blue-600" },
-    { label: "Hoàn thành", count: completed, color: "bg-emerald-600" },
-  ];
-  return (
-    <div className="grid gap-5">
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <MiniStat label="Tổng enrollment" value={total} />
-        <MiniStat label="Đang học" value={active} />
-        <MiniStat label="Hoàn thành" value={completed} />
-        <MiniStat label="Tiến độ trung bình" value={`${averageProgress}%`} />
-      </div>
-      <div className="rounded-xl border border-slate-200 bg-white p-5">
-        <h3 className="text-base font-black text-slate-950">Phân bố tiến độ thực tế</h3>
-        <p className="mt-1 text-sm font-semibold text-slate-600">Tính trực tiếp từ enrollment và phần trăm tiến độ của khóa đang chọn.</p>
-        <div className="mt-5 grid gap-4">
-          {progressBands.map((band) => (
-            <div key={band.label}>
-              <div className="flex items-center justify-between text-sm font-bold text-slate-700"><span>{band.label}</span><span>{band.count}</span></div>
-              <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-slate-100">
-                <div className={`h-full rounded-full ${band.color}`} style={{ width: `${total ? Math.round((band.count / total) * 100) : 0}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function PublishReview({ busyAction, course, submitAction }: { busyAction: string; course: LmsCourse; submitAction: SubmitAction }) {
-  const lessons = getCourseLessons(course);
-  const checks = [
-    { label: "Tên và mô tả khóa học", ready: Boolean(course.title && (course.shortDescription || course.description)) },
-    { label: "Có ít nhất một module", ready: course.modules.length > 0 },
-    { label: "Có bài học sẵn sàng", ready: lessons.some(({ lesson }) => lesson.status === "published") },
-    { label: "Có hình ảnh khóa học", ready: Boolean(course.thumbnailImage || course.bannerImage) },
-  ];
-  return (
-    <div className="grid gap-5">
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-        <h3 className="text-base font-black text-slate-950">Kiểm tra trước khi xuất bản</h3>
-        <div className="mt-4 grid gap-2 md:grid-cols-2">
-          {checks.map((check) => (
-            <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-3" key={check.label}>
-              <span className="text-sm font-bold text-slate-800">{check.label}</span>
-              <span className={`rounded-full px-2.5 py-1 text-xs font-black ${check.ready ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
-                {check.ready ? "Đạt" : "Cần bổ sung"}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <SettingsTab busyAction={busyAction} course={course} submitAction={submitAction} />
-    </div>
-  );
-}
-
-function SettingsTab({ busyAction, course, submitAction }: { busyAction: string; course: LmsCourse; submitAction: SubmitAction }) {
-  return (
-    <div className="grid gap-4">
-      <form
-        className="rounded-lg border border-slate-200 bg-white p-4"
-        onSubmit={(event) => {
-          event.preventDefault();
-          const formData = new FormData(event.currentTarget);
-          void submitAction({
-            action: "update_course",
-            courseId: course.id,
-            slug: value(formData, "slug") || slugifyVietnamese(course.title),
-            status: value(formData, "status"),
-            visibility: value(formData, "visibility"),
-          });
-        }}
-      >
-        <h3 className="text-base font-black text-slate-950">Xuất bản và quyền truy cập</h3>
-        <div className="mt-4 grid gap-3 md:grid-cols-[1fr_180px_220px_auto]">
-          <Field label="Slug / SEO">
-            <input className={inputClass()} defaultValue={course.slug} name="slug" readOnly aria-describedby="course-slug-help" />
-          </Field>
-          <Field label="Status">
-            <select className={inputClass()} defaultValue={course.status} name="status">
-              {publishStatuses.map(([status, label]) => (
-                <option key={status} value={status}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Visibility">
-            <select className={inputClass()} defaultValue={course.visibility} name="visibility">
-              <option value="enrolled">Enrollment</option>
-              <option value="public">Public</option>
-              <option value="private">Private</option>
-            </select>
-          </Field>
-          <div className="flex items-end">
-            <ActionButton busy={busyAction === "update_course"} tone="primary" type="submit">
-              Lưu cài đặt
-            </ActionButton>
-          </div>
-        </div>
-      </form>
-      <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-        <h3 className="text-base font-black text-red-800">Danger zone</h3>
-        <p className="mt-1 text-sm font-semibold text-red-700">Các hành động này có confirm và sẽ bảo vệ enrollment/progress nếu khóa đang có dữ liệu học viên.</p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <ActionButton
-            busy={busyAction === "archive_course"}
-            onClick={() => void submitAction({ action: "archive_course", courseId: course.id }, "Lưu trữ khóa học này?")}
-            tone="danger"
-          >
-            <Archive className="size-4" /> Lưu trữ khóa
-          </ActionButton>
-          <ActionButton
-            busy={busyAction === "delete_course"}
-            onClick={() => void submitAction({ action: "delete_course", courseId: course.id }, "Xóa/lưu trữ khóa học này? Enrollment và progress sẽ được bảo vệ.")}
-            tone="danger"
-          >
-            <Trash2 className="size-4" /> Xóa khóa
-          </ActionButton>
-        </div>
-      </div>
-    </div>
-  );
-}
-

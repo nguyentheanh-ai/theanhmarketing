@@ -12,7 +12,7 @@ test("admin dashboard mounts the truthful solo command center without ad-cost UI
   assert.match(page, /requireAdminAuth/);
   assert.match(page, /redirect\(`/);
   assert.doesNotMatch(page, /CommandCenterDashboard|getSoloCommandCenterModel/);
-  assert.match(readSource("app/admin/crm-v2/page.tsx"), /getCrmV2Dashboard/);
+  assert.match(readSource("app/admin/crm-v2/page.tsx"), /AnalyticsPage/);
   assert.match(readSource("lib/crm-v2/report-source.ts"), /readReportPages/);
 
 });
@@ -65,7 +65,7 @@ test("Click events tab renders tracking analytics instead of a placeholder", () 
 
 test("admin shell uses the website logo and compact solo command center navigation", () => {
   const shell = readSource("components/crm-v2/crm-components.tsx");
-  for (const route of ["/admin/crm-v2/students", "/admin/crm-v2/courses", "/admin/crm-v2/leads", "/admin/crm-v2/reports", "/admin/crm-v2/settings", "/admin/viec-can-xu-ly"]) assert.ok(shell.includes(route));
+  for (const route of ["/admin/crm-v2/customers", "/admin/crm-v2/courses", "/admin/crm-v2/support-bookings", "/admin/crm-v2/reports", "/admin/crm-v2/settings", "/admin/viec-can-xu-ly"]) assert.ok(shell.includes(route));
   assert.match(readSource("components/app/admin-shell.tsx"), /<CrmShell/);
   assert.doesNotMatch(readSource("components/app/admin-shell.tsx"), /<aside/);
   assert.match(shell, /visibleNav/);

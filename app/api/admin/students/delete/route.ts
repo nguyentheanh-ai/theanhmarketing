@@ -1,3 +1,4 @@
+import { findCustomerAccount, isProtectedCustomerAccount } from "@/services/adminCustomerService";
 import { NextResponse } from "next/server";
 import { canAccessAdminRole, getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
 import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/rate-limit";
@@ -39,6 +40,11 @@ export async function POST(request: Request) {
         { ok: false, message: "Thiếu email hoặc số điện thoại hợp lệ để xóa học viên." },
         { status: 400 },
       );
+    }
+
+    if (email) {
+      const account = await findCustomerAccount(email);
+      if (isProtectedCustomerAccount(email, account)) return NextResponse.json({ ok: false, message: "Không thể xóa tài khoản quản trị từ hồ sơ khách hàng." }, { status: 403 });
     }
 
     const result = await softDeleteStudent({

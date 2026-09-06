@@ -82,28 +82,28 @@ test("admin student access controls can update multiple courses for one student"
   assert.match(actions, /const canDeleteStudent = canDelete && Boolean\(student\.email \|\| student\.phone\)/);
 });
 
-test("admin student page follows the compact student-management layout", () => {
-  const page = read("components/admin/student-access-panel.tsx") + read("app/admin/crm-v2/students/page.tsx");
+test("unified customer directory opens provisioning and profile actions in separate windows", () => {
+  const page = read("app/admin/crm-v2/customers/page.tsx");
+  const directory = read("components/admin/customer-directory.tsx");
   const createDialog = read("components/admin/student-create-dialog.tsx");
-
-  assert.match(page, /Học viên đã lọc/);
-  assert.match(page, /Đã cấp quyền/);
-  assert.match(page, /Đang chờ/);
+  assert.match(page, /listAdminCustomerProfiles/);
+  assert.match(page, /CustomerDirectory/);
   assert.match(page, /StudentCreateDialog/);
-  assert.doesNotMatch(page, /StudentIntakeForm/);
-  assert.doesNotMatch(page, /PaymentLinkForm/);
+  assert.match(page, /canManageAccount=\{role === "owner"\}/);
+  assert.doesNotMatch(page, /StudentIntakeForm|PaymentLinkForm/);
   assert.match(createDialog, /Tạo học viên/);
   assert.match(createDialog, /Thao tác có kiểm soát/);
   assert.match(createDialog, /StudentProvisioningWizard/);
   assert.match(createDialog, /PaymentLinkForm/);
   assert.match(createDialog, /Gửi form thanh toán/);
-  assert.match(page, /Danh sách học viên/);
-  assert.match(page, /Tên\/liên hệ/);
-  assert.match(page, /Thao tác/);
-  assert.match(page, /name="q"/);
-  assert.match(page, /getSearchText/);
-  assert.match(page, /visibleStudents/);
-  assert.doesNotMatch(page, /Total Students|Active Access|Add New Student|Student List|Name\/Contact|>Actions</);
+  assert.match(directory, /Khách hàng & học viên/);
+  assert.match(directory, /Hồ sơ \/ liên hệ/);
+  assert.match(directory, /aria-label="Tìm trong hồ sơ"/);
+  assert.match(directory, /aria-label="Lọc khóa học"/);
+  assert.match(directory, /AdminDialog open=\{Boolean\(selected\)\}/);
+  assert.match(directory, /CustomerProfile key=\{selected\.id\}/);
+  assert.match(directory, /filtered\.slice/);
+  assert.doesNotMatch(directory, /Total Students|Active Access|Add New Student|Student List|Name\/Contact|>Actions</);
 });
 
 test("access overrides can grant and revoke a paid course without mutating orders", () => {
@@ -165,11 +165,13 @@ test("dashboard and learning room bypass paid-order checks for admin role", () =
 });
 
 test("admin student table has per-student grant and revoke controls", () => {
-  const page = read("components/admin/student-access-panel.tsx") + read("app/admin/crm-v2/students/page.tsx");
+  const page = read("app/admin/crm-v2/customers/page.tsx");
   const route = read("app/api/admin/students/access/route.ts");
-  const actions = read("components/admin/student-access-actions.tsx");
+  const actions = read("components/admin/customer-directory.tsx");
 
-  assert.match(page, /StudentAccessActions/);
+  assert.match(page, /CustomerDirectory/);
+  assert.match(actions, /CustomerProfile key=\{selected\.id\}/);
+  assert.match(actions, /\/api\/admin\/students\/access/);
   assert.match(route, /setStudentAccessAtomically/);
   assert.match(read("supabase/migrations/20260906130340_admin_lms_atomic_operations.sql"), /admin-access-revoke/);
   assert.match(route, /canAccessAdminRole\(adminRole, \["owner", "editor"\]\)/);
@@ -180,7 +182,7 @@ test("admin student table has per-student grant and revoke controls", () => {
 });
 
 test("admin payment link form creates a pending order and sends UTF-8 payment email", () => {
-  const page = read("components/admin/student-access-panel.tsx") + read("app/admin/crm-v2/students/page.tsx");
+  const page = read("app/admin/crm-v2/customers/page.tsx");
   const route = read("app/api/admin/payment-links/route.ts");
   const form = read("components/admin/payment-link-form.tsx");
   const createDialog = read("components/admin/student-create-dialog.tsx");

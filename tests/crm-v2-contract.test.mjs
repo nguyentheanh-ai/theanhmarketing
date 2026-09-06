@@ -93,8 +93,8 @@ test("crm v2 shell exposes the executive operating system navigation", () => {
 
   for (const href of [
     "/admin/crm-v2",
-    "/admin/crm-v2/leads",
-    "/admin/crm-v2/students",
+    "/admin/crm-v2/customers",
+    "/admin/crm-v2/support-bookings",
     "/admin/crm-v2/courses",
     "/admin/crm-v2/reports",
     "/admin/crm-v2/settings",
@@ -103,68 +103,56 @@ test("crm v2 shell exposes the executive operating system navigation", () => {
   }
 
   assert.ok(!components.includes('href: "/admin/crm-v2/orders"'), "orders must only appear inside customer profiles");
-  assert.match(components, /Quản trị hệ thống/);
+  assert.match(components, /Không gian quản trị/);
   assert.match(components, /bg-\[#f4f6f9\]/);
-  assert.match(components, /Nâng cao/);
+  assert.doesNotMatch(components, /<summary[^>]*>Nâng cao/);
   assert.doesNotMatch(components, /CRM hiện tại vẫn giữ nguyên\./);
 });
 
 test("canonical admin exposes retained operations with role filtering", () => {
   const shell=read("components/crm-v2/crm-components.tsx");
-  for(const route of ["/admin/crm-v2/courses", "/admin/crm-v2/students", "/admin/crm-v2/reports", "/admin/crm-v2/team", "/admin/cms", "/admin/viec-can-xu-ly"]) assert.ok(shell.includes(`href: "${route}"`));
+  for(const route of ["/admin/crm-v2/courses", "/admin/crm-v2/customers", "/admin/crm-v2/reports", "/admin/crm-v2/team", "/admin/cms", "/admin/viec-can-xu-ly"]) assert.ok(shell.includes(`href: "${route}"`));
   assert.match(shell,/visibleNav/);assert.match(shell,/editorPaths/);
   assert.ok(!shell.includes('href: "/admin/cai-dat"'));
 });
 
-test("canonical dashboard renders only real actionable operating data", () => {
-  const dashboardPage = read("app/admin/crm-v2/page.tsx");
-  const dashboardCharts = read("components/crm-v2/dashboard-charts.tsx");
-  const dataLayer = read("lib/crm-v2/data.ts");
-
-  assert.match(dashboardPage, /getCrmV2Dashboard\(query\)/);
-  assert.match(dashboardPage, /Trung tâm điều hành/);
-  assert.match(dashboardPage, /Việc cần xử lý/);
-  assert.match(dashboardPage, /href="\/admin\/crm-v2\/courses"/);
-  assert.match(dashboardCharts, /Hiệu quả khóa học/);
-  assert.doesNotMatch(dashboardPage, /data\.campaigns\.map/);
-  assert.doesNotMatch(dashboardPage, /data\.workflows\.map/);
-  assert.match(dataLayer, /label: "Doanh thu đã thanh toán"/);
-  assert.match(dataLayer, /if \(error \|\| !data\) return getCrmV2DashboardDirectDataApi\(query\)/);
-  assert.doesNotMatch(dataLayer, /const newLeadsToday = publicLeadCount/, "range lead count must not be mislabeled as today's count");
-  assert.match(dataLayer, /query\.range === "today" \? "Lead mới hôm nay" : "Lead mới trong kỳ"/);
+test("canonical dashboard and reports share one sales workspace", () => {
+  for (const path of ["app/admin/crm-v2/page.tsx", "app/admin/crm-v2/reports/page.tsx"]) {
+    const page = read(path);
+    assert.match(page, /requireAdminAuth/);
+    assert.match(page, /AnalyticsPage/);
+    assert.doesNotMatch(page, /getCrmV2Dashboard|getCrmV2ReportSnapshot|getMetaAdsReport|DashboardCharts|ReportBiCharts/);
+  }
+  const server = read("components/crm-v2/analytics-page.tsx");
+  assert.match(server, /getAnalyticsSelection/);
+  assert.match(server, /getAdminAnalytics/);
 });
 
 test("orders use selected-range aggregates instead of the current page and fake series", () => {
   const page = read("app/admin/crm-v2/orders/page.tsx");
-  const profile = read("app/admin/crm-v2/leads/[id]/page.tsx");
+  const profile = read("components/admin/customer-directory.tsx");
   const dataLayer = read("lib/crm-v2/data.ts");
 
   assert.match(page, /redirect\(\"\/admin\/crm-v2\/leads\"\)/);
-  assert.match(profile, /id:\s*"orders"/);
+  assert.match(profile, /tab === "orders"/);
   assert.match(dataLayer, /dateLowerBound\(dateRange\.from\)[\s\S]*dateUpperBoundExclusive\(dateRange\.to\)/);
   assert.match(dataLayer, /export async function getCrmV2OrderSummary/);
 });
 
-test("solo dashboard uses adaptive charts and a fail-closed Meta Ads adapter", () => {
-  const page = read("app/admin/crm-v2/page.tsx");
-  const charts = read("components/crm-v2/dashboard-charts.tsx");
+test("sales workspace loads fail-closed Meta data on demand", () => {
+  const workspace = read("components/crm-v2/analytics-workspace.tsx");
   const meta = read("services/metaAdsReportService.ts");
-
-  assert.doesNotMatch(page, /SimpleBars|Hiệu quả Remarketing Email|Automation đang chạy/);
-  assert.match(page, /getMetaAdsReport/);
-  for (const chart of ["AreaChart", "BarChart", "PieChart", "ComposedChart", "ResponsiveContainer"]) assert.match(charts, new RegExp(chart));
+  assert.match(workspace, /AreaChart/);
+  assert.match(workspace, /ResponsiveContainer/);
+  assert.match(workspace, /Lũy kế/);
+  assert.match(workspace, /role="tabpanel"/);
+  assert.match(workspace, /\/api\/admin\/analytics\/ads/);
   assert.match(meta, /META_ADS_ACCESS_TOKEN/);
   assert.match(meta, /META_ADS_AD_ACCOUNT_ID/);
   assert.match(meta, /hourly_stats_aggregated_by_advertiser_time_zone/);
-  assert.match(meta, /time_increment["']\s*,\s*["']1["']/, "hourly breakdown must remain separated by advertiser calendar day");
-  assert.match(meta, /timezone_name/, "Meta adapter must read the account timezone instead of hard-coding a US offset");
-  assert.match(meta, /aggregateMetaAdsForVietnam/, "Meta adapter must aggregate advertiser hours into Vietnam business buckets");
-  assert.match(meta, /paging\?\.next/, "Meta adapter must follow pagination for long report ranges");
+  assert.match(meta, /aggregateMetaAdsForVietnam/);
+  assert.match(meta, /paging\?\.next/);
   assert.doesNotMatch(meta, /mock|demo/i);
-  assert.match(charts, /function CourseRankingTick/, "long course names need a dedicated non-overlapping axis renderer");
-  assert.match(charts, /Math\.max\(288,\s*data\.courses\.length \* 64\)/, "course chart height must grow with the number of courses");
-  assert.match(charts, /Doanh thu lũy kế/, "BI dashboard must include cumulative revenue");
-  assert.match(charts, /Trạng thái đơn hàng/, "BI dashboard must include a real order-status mix");
 });
 
 test("crm v2 source strings remain readable Vietnamese without mojibake", () => {
@@ -274,13 +262,13 @@ test("crm v2 visible Vietnamese copy keeps diacritics", () => {
     "Migration & Data Safety",
   ];
   const requiredCopy = [
-    "Tổng quan CRM",
-    "Đơn hàng & Thanh toán",
+    "Tổng quan kinh doanh",
+    "Phễu thanh toán",
     "Gửi nhắc thanh toán",
-    "Tìm tên, email, số điện thoại, mã đơn",
-    "Bản đồ vận hành",
-    "Ưu tiên vận hành",
-    "Chế độ vận hành an toàn",
+    "Tìm khách hàng, email, mã đơn…",
+    "Khách hàng & học viên",
+    "Đối chiếu đơn",
+    "Không gian quản trị",
   ];
   const content = pathsToScan
     .flatMap((scanPath) => walkFiles(scanPath, new Set([".ts", ".tsx", ".mjs"])))
@@ -386,16 +374,17 @@ test("crm v2 migration is private, additive, and contains required tables", () =
 
 test("crm v2 route surface is gated and complete", () => {
   const routes = new Map([
-    ["app/admin/crm-v2/page.tsx", "Tổng quan CRM"],
+    ["app/admin/crm-v2/page.tsx", "AnalyticsPage"],
     ["app/admin/crm-v2/outline/page.tsx", "Outline CRM chuyên sâu"],
-    ["app/admin/crm-v2/leads/page.tsx", "Leads & Pipeline"],
-    ["app/admin/crm-v2/leads/[id]/page.tsx", "Hồ sơ liên hệ 360"],
+    ["app/admin/crm-v2/leads/page.tsx", "Khách hàng & học viên"],
+    ["app/admin/crm-v2/leads/[id]/page.tsx", "Hồ sơ khách hàng"],
     ["app/admin/crm-v2/segments/page.tsx", "Phân khúc & Tag"],
     ["app/admin/crm-v2/email/page.tsx", "Remarketing Email"],
     ["app/admin/crm-v2/automation/page.tsx", "Automation Workflow"],
     ["app/admin/crm-v2/orders/page.tsx", "Đơn hàng & Thanh toán"],
-    ["app/admin/crm-v2/students/page.tsx", "Học viên"],
-    ["app/admin/crm-v2/reports/page.tsx", "Báo cáo doanh thu & quảng cáo"],
+    ["app/admin/crm-v2/students/page.tsx", "Khách hàng & học viên"],
+    ["app/admin/crm-v2/customers/page.tsx", "Khách hàng & học viên"],
+    ["app/admin/crm-v2/reports/page.tsx", "AnalyticsPage"],
     ["app/admin/crm-v2/team/page.tsx", "Thành viên & phân quyền"],
     ["app/admin/crm-v2/integrations/page.tsx", "Tích hợp"],
   ]);
@@ -483,7 +472,8 @@ test("crm v2 live data mapping uses true source counts and course slugs", () => 
   assert.match(dataLayer, /rpc\("crm_v2_orders_list_raw"/, "orders list must read live private-schema data through server-only RPC");
   assert.match(dataLayer, /rpc\("crm_v2_students_list_raw"/, "students list must read live private-schema data through server-only RPC");
   assert.match(dataLayer, /if \(error \|\| !data\) return getCrmV2DashboardDirectDataApi\(query\)/, "live RPC errors must fall back to direct production queries, not demo numbers");
-  assert.match(leadsPage, /getCrmV2LeadStageSummary/, "leads page must use total stage summary");
+  assert.match(leadsPage, /redirect\(`/, "legacy leads must redirect into unified profiles");
+  assert.match(read("app/admin/crm-v2/customers/page.tsx"), /listAdminCustomerProfiles/, "customer page must read all canonical profile records");
   assert.doesNotMatch(leadsPage, /leads\.rows\.filter\(\(lead\) => lead\.stage === stage\)/, "stage cards must not count only the current page");
   assert.match(dataLayer, /from\("leads"\)[\s\S]*course_slug[\s\S]*builder = builder\.eq\("course_slug", query\.filters\.course\)/, "leads filters must use course_slug");
   assert.match(dataLayer, /from\("orders"\)[\s\S]*course_slug[\s\S]*builder = builder\.eq\("course_slug", query\.filters\.course\)/, "orders filters must use course_slug");
@@ -628,7 +618,8 @@ test("crm v2 shared controls expose real actions instead of inert buttons", () =
   assert.match(emailPage, /EmailActionButtons/, "email campaign actions must be backed by an action API client");
   assert.match(segmentsPage, /SegmentActionPanel/, "segments page must expose API-backed segment actions");
   assert.match(ordersPage, /redirect\(\"\/admin\/crm-v2\/leads\"\)/, "orders actions must live inside customer profiles");
-  assert.match(studentsPage, /StudentAccessPanel/, "students page must expose API-backed student actions");
+  assert.match(studentsPage, /redirect\(`/, "legacy students route must redirect into unified profiles");
+  assert.match(read("components/admin/customer-directory.tsx"), /\/api\/admin\/students\/access/, "unified profiles must expose the existing access actions");
   assert.match(teamPage, /AdminMembersClient/, "team page must expose API-backed team actions");
   assert.match(integrationsPage, /IntegrationActionButtons/, "integrations page must expose API-backed integration actions");
   assert.match(emailActionsApi, /save_draft/, "email action API must save campaign drafts");
@@ -664,15 +655,9 @@ test("crm v2 operator modules use real filters, live reports, permissions, email
   assert.doesNotMatch(shell, /Outline CRM chuyên sâu|\/admin\/crm-v2\/outline/, "CRM v2 sidebar must remove internal Outline from operator navigation");
   assert.match(shell, /label:\s*"Báo cáo"/, "CRM v2 sidebar must keep Reports in the operator menu");
   assert.match(reportsPage, /searchParams/, "Reports page must accept the shared query contract");
-  assert.match(reportsPage, /normalizeCrmListQuery/, "Reports page must normalize filters/range");
-  assert.match(reportsPage, /getCrmV2ReportSnapshot\(query\)/, "Reports must pass query/range to live report data");
-  assert.doesNotMatch(reportsPage, /ReportRangeControls/, "Reports must not own a separate date/range control");
-  assert.doesNotMatch(reportsPage, /name="dateFrom"/, "Reports must use the global CRM date picker, not its own dateFrom input");
-  assert.doesNotMatch(reportsPage, /name="dateTo"/, "Reports must use the global CRM date picker, not its own dateTo input");
-  assert.match(reportsPage, /ReportBiCharts/, "Reports must render the live BI chart surface");
-  assert.match(reportsPage, /getMetaAdsReport/, "Reports must include live Meta Ads spend");
-  assert.match(reportsPage, /Chi phí \/ đơn thanh toán/, "Reports must expose paid-order acquisition cost");
-  assert.match(reportsPage, /Chưa đủ dữ liệu/, "Reports must fail closed when a KPI denominator is missing");
+  assert.match(reportsPage, /AnalyticsPage/, "Reports must reuse the same analytical workspace");
+  assert.match(read("components/crm-v2/analytics-page.tsx"), /getAdminAnalytics/, "Reports must read canonical paid orders");
+  assert.doesNotMatch(reportsPage, /getMetaAdsReport/, "Optional Ads must not delay internal sales reports");
   assert.match(dataLayer, /getCrmV2ReportSnapshot[\s\S]*getCrmV2Dashboard\(query\)/, "Reports must reuse live dashboard RPC summary instead of isolated private-table reads");
   assert.match(dataLayer, /paid_at/, "Reports must include paid_at so paid-today orders are counted even if created earlier");
   assert.match(dataLayer, /dailyRevenue/, "Reports must carry daily revenue from the direct order attribution source");
@@ -729,68 +714,26 @@ test("crm v2 operator modules use real filters, live reports, permissions, email
   assert.match(workflowBuilder, /Trigger[\s\S]*Điều kiện[\s\S]*Hành động[\s\S]*Log/, "Automation recipes must explain trigger, condition, action, and logs");
 });
 
-test("crm v2 date range is a real dashboard/list query input", () => {
-  const types = read("lib/crm-v2/types.ts");
-  const query = read("lib/crm-v2/query.ts");
-  const dataLayer = read("lib/crm-v2/data.ts");
-  const dashboardPage = read("app/admin/crm-v2/page.tsx");
-  const topbar = read("components/crm-v2/crm-components.tsx");
-  const serverRpc = read("supabase/migrations/20260616161000_crm_v2_range_rpc.sql");
-
-  assert.match(types, /range:\s*"today"\s*\|\s*"yesterday"\s*\|\s*"7d"\s*\|\s*"30d"\s*\|\s*"90d"\s*\|\s*"custom"/, "CrmListQuery must carry the selected range");
-  assert.match(types, /dateFrom\?: string/, "CrmListQuery must carry custom dateFrom");
-  assert.match(types, /dateTo\?: string/, "CrmListQuery must carry custom dateTo");
-  assert.match(query, /export function getCrmDateRange/, "query layer must build a date window");
-  assert.match(query, /value === "today"/, "query layer must accept the today range");
-  assert.match(query, /value === "yesterday"/, "query layer must accept the yesterday range");
-  assert.match(query, /shiftDateYmd\(today,\s*-1\)/, "yesterday range must resolve to the previous Vietnam date");
-  assert.match(query, /days:\s*1/, "today range must resolve to a one-day dashboard window");
-  assert.match(query, /range: normalizeCrmRange/, "normalizeCrmListQuery must parse range");
-  assert.match(topbar, /CrmGlobalDateControl/, "topbar must expose one global CRM date control");
-  assert.match(topbar, /CalendarDays/, "global CRM date control must show a calendar icon");
-  assert.match(topbar, /label: "Hôm nay", value: "today"/, "topbar must include a Hôm nay range button");
-  assert.match(topbar, /label: "Hôm qua", value: "yesterday"/, "topbar must include a Hôm qua range button");
-  assert.match(topbar, /rangeParams\.set\("range", option\.value\)/, "topbar range controls must change the active query");
-  assert.match(dashboardPage, /searchParams/, "overview dashboard must receive searchParams");
-  assert.match(dashboardPage, /normalizeCrmListQuery/, "overview dashboard must normalize the same query contract");
-  assert.match(dashboardPage, /getCrmV2Dashboard\(query\)/, "overview dashboard must pass range query to data layer");
-  assert.match(dataLayer, /getCrmDateRange\(query/, "data layer must convert range to dates");
-  assert.match(dataLayer, /p_date_from/, "RPC reads must pass p_date_from");
-  assert.match(dataLayer, /p_date_to/, "RPC reads must pass p_date_to");
-  assert.match(serverRpc, /p_date_from date default null/i, "range RPC migration must accept date_from");
-  assert.match(serverRpc, /p_date_to date default null/i, "range RPC migration must accept date_to");
+test("analytics owns one date and product filter while the shell stays neutral", () => {
+  const workspace = read("components/crm-v2/analytics-workspace.tsx");
+  const selection = read("lib/crm-v2/analytics.ts");
+  assert.match(workspace, /params\.set\("dateFrom", from\)/);
+  assert.match(workspace, /params\.set\("dateTo", to\)/);
+  assert.match(workspace, /params\.set\("course", course\)/);
+  assert.match(selection, /getCrmDateRange/);
+  assert.match(selection, /normalizeCrmListQuery/);
+  for (const preset of ["today", "yesterday", "7d", "30d", "90d", "custom"]) assert.ok(workspace.includes(`value="${preset}"`));
 });
 
-test("crm v2 overview daily revenue uses live public orders with clear money labels", () => {
-  const dataLayer = read("lib/crm-v2/data.ts");
-  const dashboardPage = read("app/admin/crm-v2/page.tsx");
-  const dashboardCharts = read("components/crm-v2/dashboard-charts.tsx");
-  const types = read("lib/crm-v2/types.ts");
-
-  assert.match(dataLayer, /buildDashboardRevenueSeries/, "overview must build its adaptive revenue chart from the live order source");
-  assert.match(dataLayer, /buildAdaptiveRevenueSeries\(rows, dateRange\)/, "overview must use the selected range for adaptive aggregation");
-  assert.match(dataLayer, /revenueResolution:/, "overview must tell the chart whether it is hourly, daily, or weekly");
-  assert.doesNotMatch(
-    dataLayer,
-    /revenue:\s*dailySeries\.map\(\(row\)\s*=>\s*\(\{\s*label:\s*String\(row\.metric_date\)/,
-    "overview revenue chart must not be driven directly by crm_daily_metrics metric_date rows",
-  );
-  assert.match(dataLayer, /timestampToCrmDateKey/, "overview revenue aggregation must respect Vietnam-day timestamps");
-  assert.match(dataLayer, /formatExactVnd/, "overview daily revenue labels must use exact VND amounts, not rounded compact labels");
-  assert.doesNotMatch(
-    dataLayer,
-    /buildDashboardRevenueSeries[\s\S]*displayValue:\s*formatMoney\(row\.value\)/,
-    "overview daily revenue labels must not use rounded compact formatMoney labels",
-  );
-  assert.doesNotMatch(
-    dataLayer,
-    /dashboardRevenue\.rows\.map\(\(row\)\s*=>\s*Math\.round/,
-    "overview daily revenue KPI series must keep real values instead of rounded million buckets",
-  );
-  assert.match(types, /displayValue\?: string/, "CRM dashboard bar rows must support a separate display label");
-  assert.match(dashboardCharts, /formatter=\{\(value\) => money\(Number\(value\)\)\}/, "revenue tooltip must display exact VND");
-  assert.match(dashboardPage, /DashboardCharts/, "overview must pass live data to the adaptive chart surface");
-  assert.doesNotMatch(dashboardPage, /value:\s*Math\.round\(row\.value\)/, "overview revenue bars must keep the real amount, not round it before rendering");
+test("analytics reads canonical public orders without a mirrored CRM fallback", () => {
+  const service = read("services/adminAnalyticsService.ts");
+  const workspace = read("components/crm-v2/analytics-workspace.tsx");
+  assert.match(service, /readReportPages/);
+  assert.match(service, /from\("orders"\)/);
+  assert.match(service, /paid_at/);
+  assert.match(service, /order_items/);
+  assert.doesNotMatch(service, /schema\("crm_v2"\)|demo|mock|getMetaAdsReport/);
+  assert.match(workspace, /formatter=\{\(value\) => currency\(Number\(value\)\)\}/);
 });
 
 test("crm v2 dashboard and unified pipeline use production source-of-truth data", () => {
@@ -832,7 +775,7 @@ test("crm v2 dashboard and unified pipeline use production source-of-truth data"
 
   const dashboardPage = read("app/admin/crm-v2/page.tsx");
   const activityPage = read("app/admin/crm-v2/activity/page.tsx");
-  assert.match(dashboardPage, /\/admin\/crm-v2\/activity/, "overview recent activity card must link to the full activity history");
+  assert.match(dashboardPage, /AnalyticsPage/, "overview uses a compact analytics workspace; activity is a separate operator window");
   assert.match(activityPage, /listCrmV2ActivityHistory/, "full activity page must use the shared live activity history feed");
   assert.match(activityPage, /limit:\s*100/, "full activity page must show a longer activity history than the overview");
   assert.match(activityPage, /Hoạt động CRM/, "full activity page must be clearly labeled as CRM activity history");
@@ -858,8 +801,9 @@ test("crm v2 dashboard and unified pipeline use production source-of-truth data"
   assert.match(leadsClient, /hasZaloMessaged/, "expanded detail must derive whether Zalo was already messaged");
   assert.match(leadsClient, /label="Zalo"[\s\S]*hasZaloMessaged\(row\)/, "expanded detail must show Zalo messaged status");
 
-  assert.match(leadsPage, /getCourses/, "CRM leads page must load real courses for customer-detail access actions");
-  assert.match(leadsPage, /courseOptions=\{courseOptions\}/, "CRM leads page must pass course options into the expanded detail UI");
+  assert.match(leadsPage, /\/admin\/crm-v2\/customers/, "legacy leads must route to unified customer profiles");
+  assert.match(read("app/admin/crm-v2/customers/page.tsx"), /getAdminCourses/, "customer profile access selector uses real courses");
+  assert.match(read("app/admin/crm-v2/customers/page.tsx"), /courses=\{courses\}/, "customer directory receives real course options");
   assert.match(leadsClient, /type CourseOption/, "Leads client must define a compact real course option contract");
   assert.match(leadsClient, /function CustomerLearningActions/, "customer learning actions must live inside the expanded customer detail");
   assert.match(leadsClient, /<CustomerLearningActions[\s\S]*row=\{row\}/, "expanded lead detail must render learning actions for the clicked customer");
@@ -881,7 +825,7 @@ test("crm v2 LMS and permissions are focused and owner-safe", () => {
 
   assert.match(courseWorkspace, /CourseLmsManager/, "dedicated course route must render a focused LMS manager");
   assert.match(courseWorkspace, /selectedCourseSlug:\s*courseSlug/, "LMS manager must edit one selected course at a time");
-  assert.match(lmsManager, /Tổng quan[\s\S]*Nội dung bán hàng[\s\S]*Curriculum[\s\S]*Media & tài liệu[\s\S]*Học viên & quyền học[\s\S]*Analytics[\s\S]*Kiểm tra & xuất bản/, "LMS manager must use the approved guided workspace");
+  assert.match(lmsManager, /Nội dung khóa học[\s\S]*Tài liệu[\s\S]*Học viên[\s\S]*Thông tin & xuất bản/, "LMS manager groups content and publishing into focused panels");
   assert.doesNotMatch(studentsClient, /courses\.map[\s\S]*textarea[\s\S]*courses\.map/s, "LMS manager must not dump all course edit forms on one screen");
 
   assert.match(adminEmails, /theanhnguyen\.marketing@gmail\.com/, "main owner email must be part of configured owner source");

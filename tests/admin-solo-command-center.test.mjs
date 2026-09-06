@@ -196,7 +196,7 @@ test("primary command center sources contain no fake or advertising-profit metri
 
 test("owner shell exposes the approved solo navigation", () => {
   const shell = read("components/crm-v2/crm-components.tsx");
-  for (const route of ["/admin/crm-v2/students", "/admin/crm-v2/courses", "/admin/crm-v2/leads", "/admin/crm-v2/reports", "/admin/crm-v2/settings", "/admin/viec-can-xu-ly"]) assert.ok(shell.includes(route));
+  for (const route of ["/admin/crm-v2/customers", "/admin/crm-v2/courses", "/admin/crm-v2/support-bookings", "/admin/crm-v2/reports", "/admin/crm-v2/settings", "/admin/viec-can-xu-ly"]) assert.ok(shell.includes(route));
   assert.match(read("components/app/admin-shell.tsx"), /<CrmShell/);
   assert.doesNotMatch(read("components/app/admin-shell.tsx"), /<aside/);
   assert.match(shell, /visibleNav/);
@@ -206,10 +206,14 @@ test("owner shell exposes the approved solo navigation", () => {
 test("editor shell and settings preserve the approved role boundaries", () => {
   const shell = read("components/crm-v2/crm-components.tsx");
   const paths = shell.match(/const editorPaths = new Set\(\[([^\]]+)\]/)?.[1] ?? "";
-  assert.match(paths, /crm-v2\/students/);
+  assert.match(paths, /crm-v2\/customers/);
   assert.match(paths, /crm-v2\/courses/);
-  assert.doesNotMatch(paths, /reports|team|settings|database/);
-  assert.match(read("app/admin/crm-v2/settings/page.tsx"), /requireAdminAuth\("\/admin\/crm-v2\/settings", \["owner"\]\)/);
+  assert.match(paths, /crm-v2\/settings/);
+  assert.doesNotMatch(paths, /reports|team|database/);
+  assert.match(read("app/admin/crm-v2/settings/page.tsx"), /requireAdminAuth\("\/admin\/crm-v2\/settings", \["owner", "editor"\]\)/);
+  const settings = read("components/admin/admin-settings-workspace.tsx");
+  assert.match(settings, /role === "owner" \|\| item\.id === "content"/);
+  assert.match(settings, /role === "owner" \|\| href !== "\/admin\/seo"/);
 
 });
 

@@ -9,7 +9,7 @@ function read(relativePath) {
 
 test("admin shell matches the focused solo command center chrome", () => {
   const shell = read("components/crm-v2/crm-components.tsx");
-  for (const route of ["/admin/crm-v2/students", "/admin/crm-v2/courses", "/admin/crm-v2/leads", "/admin/crm-v2/reports", "/admin/crm-v2/settings", "/admin/viec-can-xu-ly"]) assert.ok(shell.includes(route));
+  for (const route of ["/admin/crm-v2/customers", "/admin/crm-v2/courses", "/admin/crm-v2/support-bookings", "/admin/crm-v2/reports", "/admin/crm-v2/settings", "/admin/viec-can-xu-ly"]) assert.ok(shell.includes(route));
   assert.match(read("components/app/admin-shell.tsx"), /<CrmShell/);
   assert.doesNotMatch(read("components/app/admin-shell.tsx"), /<aside/);
   assert.match(shell, /visibleNav/);
@@ -18,7 +18,7 @@ test("admin shell matches the focused solo command center chrome", () => {
 
 test("admin navigation is centralized into focused management modules without unused ads/revenue", () => {
   const shell = read("components/crm-v2/crm-components.tsx");
-  for (const route of ["/admin/crm-v2/students", "/admin/crm-v2/courses", "/admin/crm-v2/leads", "/admin/crm-v2/reports", "/admin/crm-v2/settings", "/admin/viec-can-xu-ly"]) assert.ok(shell.includes(route));
+  for (const route of ["/admin/crm-v2/customers", "/admin/crm-v2/courses", "/admin/crm-v2/support-bookings", "/admin/crm-v2/reports", "/admin/crm-v2/settings", "/admin/viec-can-xu-ly"]) assert.ok(shell.includes(route));
   assert.match(read("components/app/admin-shell.tsx"), /<CrmShell/);
   assert.doesNotMatch(read("components/app/admin-shell.tsx"), /<aside/);
   assert.match(shell, /visibleNav/);

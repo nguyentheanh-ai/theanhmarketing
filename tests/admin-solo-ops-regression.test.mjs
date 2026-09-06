@@ -4,13 +4,12 @@ import test from "node:test";
 
 const read = (path) => fs.readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 
-test("Course Studio keeps all step navigation inside the independent studio", () => {
+test("Course Studio tab navigation retains its route and focuses the selected curriculum", () => {
   const manager = read("components/crm-v2/lms-management-client.tsx");
-  assert.match(manager, /studioMode\s*\?\s*`\/admin\/course-studio\/\$\{selectedCourse\?\.slug\}`/);
-  assert.doesNotMatch(manager, /router\.replace\(`\/admin\/crm-v2\/courses\/\$\{selectedCourse\?\.slug\}/);
-  assert.match(manager, /selectedModuleId/);
-  assert.match(manager, /Bài học của module/);
-  assert.match(manager, /setActiveStepState\(step\)/);
+  assert.match(manager, /studioMode \? "\/admin\/course-studio" : "\/admin\/crm-v2\/courses"/);
+  assert.match(manager, /encodeURIComponent\(course\?\.slug/);
+  assert.match(manager, /setTab\(next\)/);
+  assert.match(manager, /visibleModules\.find\(\(item\) => item\.id === moduleId\)/);
   assert.doesNotMatch(manager, />\{lesson\.slug\}</);
 });
 
@@ -53,24 +52,22 @@ test("Ebook order slug determines the short CRM label when the product title onl
 test("orders only live inside customer profiles", () => {
   const shell = read("components/crm-v2/crm-components.tsx");
   const ordersPage = read("app/admin/crm-v2/orders/page.tsx");
-  const profile = read("app/admin/crm-v2/leads/[id]/page.tsx");
+  const profile = read("components/admin/customer-directory.tsx");
   assert.doesNotMatch(shell, /href:\s*"\/admin\/crm-v2\/orders"/);
   assert.match(ordersPage, /redirect\("\/admin\/crm-v2\/leads"\)/);
-  assert.match(profile, /id:\s*"orders"/);
+  assert.match(profile, /tab === "orders"/);
 });
 
-test("reports use the live BI surface with Meta Ads and truthful unit economics", () => {
+test("reports share the sales workspace and keep optional Ads isolated", () => {
   const page = read("app/admin/crm-v2/reports/page.tsx");
-  const charts = read("components/crm-v2/report-bi-charts.tsx");
-  assert.match(page, /getMetaAdsReport/);
-  assert.match(page, /ReportBiCharts/);
-  assert.match(page, /Chi phí \/ đơn thanh toán/);
-  assert.match(page, /Chi phí \/ khách mua trong kỳ/);
-  assert.match(page, /Chưa đủ dữ liệu/);
-  assert.match(charts, /layout="vertical"/);
-  assert.match(charts, /Chi phí Ads/);
-  assert.match(charts, /Doanh thu/);
-  const components = read("components/crm-v2/crm-components.tsx");
-  assert.doesNotMatch(components, /metric\.delta \?\? "On track"/);
-  assert.doesNotMatch(components, /metric\.series \?\? \[1, 2, 3, 4, 5\]/);
+  const workspace = read("components/crm-v2/analytics-workspace.tsx");
+  const server = read("components/crm-v2/analytics-page.tsx");
+  assert.match(page, /AnalyticsPage/);
+  assert.match(server, /getAdminAnalytics/);
+  assert.doesNotMatch(server, /getMetaAdsReport/);
+  assert.match(workspace, /AdminDialog/);
+  assert.match(workspace, /table-fixed/);
+  assert.match(workspace, /break-words/);
+  assert.match(workspace, /MER/);
+  assert.doesNotMatch(workspace, /Chưa đủ dữ liệu/);
 });

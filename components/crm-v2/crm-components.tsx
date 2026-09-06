@@ -18,13 +18,13 @@ import {
   Filter,
   Gauge,
   GitBranch,
+  ShieldCheck,
   Inbox,
   Mail,
   Plug,
   RefreshCw,
   Search,
   Settings2,
-  ShieldCheck,
   Sparkles,
   Tags,
   Users,
@@ -39,8 +39,7 @@ import type { CrmEvent, CrmListQuery, CrmTableColumn, KpiMetric } from "@/lib/cr
 
 const primaryNavItems = [
   { href: "/admin/crm-v2", label: "Tổng quan", icon: Gauge, exact: true },
-  { href: "/admin/crm-v2/leads", label: "Khách hàng", icon: GitBranch },
-  { href: "/admin/crm-v2/students", label: "Học viên", icon: Users, excludeView: "courses" },
+  { href: "/admin/crm-v2/customers", label: "Khách hàng & học viên", icon: Users },
   { href: "/admin/crm-v2/courses", label: "Khóa học", icon: BookOpen },
   { href: "/admin/crm-v2/support-bookings", label: "Lịch hỗ trợ", icon: CalendarDays },
   { href: "/admin/crm-v2/reports", label: "Báo cáo", icon: BarChart3 },
@@ -63,7 +62,7 @@ const advancedNavItems = [
   { href: "/admin/database", label: "Vận hành dữ liệu", icon: Settings2 },
 ] as const;
 
-const editorPaths = new Set(["/admin/crm-v2/students", "/admin/crm-v2/courses", "/admin/cms", "/admin/bai-viet", "/admin/tai-lieu", "/admin/feedback"]);
+const editorPaths = new Set(["/admin/crm-v2/customers", "/admin/crm-v2/settings", "/admin/crm-v2/students", "/admin/crm-v2/courses", "/admin/cms", "/admin/bai-viet", "/admin/tai-lieu", "/admin/feedback"]);
 function visibleNav(items: readonly CrmNavItem[], role: AdminRole) {
   return items.filter((item) => role === "owner" || editorPaths.has(item.href));
 }
@@ -125,14 +124,14 @@ function announceCrmRouteFeedback(detail: CrmRouteFeedbackDetail = {}) {
 
 export function CrmShell({ children, disabled = false, adminRole = "owner" }: { children: ReactNode; disabled?: boolean; adminRole?: AdminRole }) {
   return (
-    <div data-admin-theme="light" className="min-h-screen overflow-x-hidden bg-[#f4f6f9] text-slate-950">
+    <div data-admin-theme="light" className="h-dvh overflow-hidden bg-[#f4f6f9] text-slate-950">
       <CrmRouteFeedback />
-      <div className="flex min-h-screen">
+      <div className="flex h-full">
         <CrmSidebar adminRole={adminRole} />
-        <div className="min-w-0 flex-1 overflow-x-hidden">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
           <CrmTopbar disabled={disabled} />
           <CrmMobileNav adminRole={adminRole} />
-          <main className="mx-auto w-full min-w-0 max-w-[1560px] px-4 py-4 sm:px-6 lg:px-8">{children}</main>
+          <main id="admin-workspace" className="min-h-0 flex-1 overflow-y-auto overscroll-contain"><div className="mx-auto w-full min-w-0 max-w-[1800px] p-4 sm:p-5">{children}</div></main>
         </div>
       </div>
     </div>
@@ -143,7 +142,7 @@ export function CrmRouteFeedback() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [active, setActive] = useState(false);
-  const [label, setLabel] = useState("Đang tải màn CRM");
+  const [label, setLabel] = useState("Đang tải trang");
   const [width, setWidth] = useState(0);
   const fallbackRef = useRef<number | null>(null);
   const finishRef = useRef<number | null>(null);
@@ -172,7 +171,7 @@ export function CrmRouteFeedback() {
 
     const start = (detail: CrmRouteFeedbackDetail = {}) => {
       clearTimers();
-      setLabel(detail.label ?? "Đang tải màn CRM");
+      setLabel(detail.label ?? "Đang tải trang");
       setActive(true);
       setWidth(16);
       document.documentElement.setAttribute("data-crm-route-pending", "true");
@@ -212,7 +211,7 @@ export function CrmRouteFeedback() {
         return;
       }
 
-      start({ label: "Đang chuyển màn CRM" });
+      start({ label: "Đang chuyển trang" });
     };
 
     const onSubmit = (event: SubmitEvent) => {
@@ -220,7 +219,7 @@ export function CrmRouteFeedback() {
       if (!form) return;
       const action = new URL(form.action || window.location.href, window.location.href);
       if (action.origin === window.location.origin && action.pathname.startsWith("/admin/crm-v2")) {
-        start({ label: "Đang lọc dữ liệu CRM" });
+        start({ label: "Đang lọc dữ liệu" });
       }
     };
 
@@ -274,139 +273,54 @@ export function CrmRouteFeedback() {
   );
 }
 
+export function isAdminNavActive(href: string, pathname: string) {
+  if (href === "/admin/crm-v2") return pathname === href;
+  if (href === "/admin/crm-v2/customers") return ["customers", "students", "leads"].some((part) => pathname.startsWith(`/admin/crm-v2/${part}`));
+  if (href === "/admin/crm-v2/courses") return pathname.startsWith(href) || pathname.startsWith("/admin/course-studio/");
+  if (href === "/admin/crm-v2/settings") return pathname === href || [...advancedNavItems, ...activityNavItems].some((item) => pathname === item.href || pathname.startsWith(`${item.href}/`));
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function CrmSidebar({ adminRole = "owner" }: { adminRole?: AdminRole }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const isActive = (item: CrmNavItem) => {
-    const itemPath = item.href.split("?")[0];
-    const pathMatches = "exact" in item && item.exact ? pathname === itemPath : pathname === itemPath || pathname.startsWith(`${itemPath}/`);
-    if (!pathMatches) return false;
-    if ("requiredView" in item && item.requiredView) return searchParams.get("view") === item.requiredView;
-    if ("excludeView" in item && item.excludeView) return searchParams.get("view") !== item.excludeView;
-    return true;
-  };
-
-  const renderItem = (item: CrmNavItem) => {
-    const Icon = item.icon;
-    const active = isActive(item);
-    return (
-      <Link
-        key={item.href}
-        href={item.href}
-        className={`group flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm font-bold transition ${
-          active
-            ? "bg-blue-600 text-white shadow-sm shadow-blue-600/20"
-            : "text-slate-700 hover:bg-slate-100 hover:text-slate-950"
-        }`}
-      >
-        <Icon className={`h-4 w-4 ${active ? "text-white" : "text-slate-500 group-hover:text-slate-800"}`} />
-        <span className="truncate">{item.label}</span>
-      </Link>
-    );
-  };
-
-  return (
-    <aside className="hidden w-[260px] shrink-0 border-r border-slate-200 bg-white lg:block">
-      <div className="sticky top-0 flex h-screen flex-col">
-        <div className="border-b border-slate-200 px-5 py-5">
-          <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-xl bg-slate-950 text-sm font-black text-white">TA</div>
-            <div>
-              <div className="text-[10px] font-black uppercase tracking-[0.12em] text-blue-700">Quản trị hệ thống</div>
-              <div className="mt-0.5 text-base font-black text-slate-950">The Anh Marketing</div>
-            </div>
-          </div>
-        </div>
-        <nav className="flex-1 overflow-y-auto px-3 py-4">
-          <div className="space-y-1">{visibleNav(primaryNavItems, adminRole).map(renderItem)}</div>
-          <div className="my-4 border-t border-slate-200" />
-          <p className="mb-2 px-3 text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">Nâng cao</p>
-          <div className="space-y-1">{visibleNav([...advancedNavItems, ...activityNavItems], adminRole).map(renderItem)}</div>
-        </nav>
-        <div className="border-t border-slate-200 p-4">
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900">
-            <div className="flex items-center gap-2 font-black"><ShieldCheck className="size-4" /> Chế độ vận hành an toàn</div>
-            <div className="mt-1.5 leading-5 text-emerald-800">Quản lý nội dung, học viên và vận hành tại một nơi.</div>
-          </div>
-        </div>
-      </div>
-    </aside>
-  );
+  return <aside className="hidden h-full w-[228px] shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
+    <Link href={adminRole === "owner" ? "/admin/crm-v2" : "/admin/crm-v2/customers"} className="flex h-16 shrink-0 items-center gap-3 border-b border-slate-200 px-5">
+      <span className="grid size-9 place-items-center rounded-xl bg-blue-600 text-sm font-black text-white">TA</span>
+      <span><span className="block text-sm font-bold">The Anh Marketing</span><span className="block text-xs text-slate-500">Không gian quản trị</span></span>
+    </Link>
+    <nav aria-label="Điều hướng chính" className="flex-1 space-y-1 overflow-y-auto p-3">
+      {visibleNav(primaryNavItems, adminRole).map((item) => { const Icon = item.icon; const active = isAdminNavActive(item.href, pathname); return <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined}
+        className={`flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold transition ${active ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}><Icon className="size-4 shrink-0" /><span>{item.label}</span></Link>; })}
+    </nav>
+    <div className="border-t border-slate-200 p-4 text-xs text-slate-500">{adminRole === "owner" ? "Chủ hệ thống" : "Biên tập viên"}<Link href="/" target="_blank" rel="noopener noreferrer" className="mt-2 block font-semibold text-blue-700">Xem website ↗</Link></div>
+  </aside>;
 }
 
 export function CrmMobileNav({ adminRole = "owner" }: { adminRole?: AdminRole }) {
   const pathname = usePathname();
-  return (
-    <nav className="border-b border-slate-200 bg-white px-4 py-2 lg:hidden" aria-label="Điều hướng quản trị">
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {visibleNav([...primaryNavItems, ...advancedNavItems, ...activityNavItems], adminRole).map((item) => {
-          const itemPath = item.href.split("?")[0];
-          const active = pathname === itemPath;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`whitespace-nowrap rounded-lg px-3 py-2 text-xs font-black ${active ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700"}`}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
-      </div>
-    </nav>
-  );
+  return <nav className="shrink-0 overflow-x-auto border-b border-slate-200 bg-white px-3 py-2 lg:hidden" aria-label="Điều hướng quản trị">
+    <div className="flex gap-1">{visibleNav(primaryNavItems, adminRole).map((item) => <Link key={item.href} href={item.href} aria-current={isAdminNavActive(item.href, pathname) ? "page" : undefined}
+      className={`whitespace-nowrap rounded-lg px-3 py-2 text-xs font-semibold ${isAdminNavActive(item.href, pathname) ? "bg-blue-50 text-blue-700" : "text-slate-600"}`}>{item.label}</Link>)}</div>
+  </nav>;
 }
 
 export function CrmTopbar({ disabled = false }: { disabled?: boolean }) {
-  const pathname = usePathname();
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const hiddenParams: Array<[string, string]> = [];
-  searchParams.forEach((value, key) => {
-    if (key !== "q" && key !== "page" && value) hiddenParams.push([key, value]);
-  });
-  return (
-    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex min-h-16 max-w-[1560px] flex-wrap items-center gap-3 px-4 py-2 sm:flex-nowrap sm:px-6 lg:px-8">
-        <form action={pathname} method="get" className="order-2 flex w-full min-w-0 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500 sm:order-none sm:min-w-[320px] sm:flex-1 lg:min-w-[360px] xl:min-w-[420px]">
-          {hiddenParams.map(([key, value]) => (
-            <input key={`${key}:${value}`} type="hidden" name={key} value={value} />
-          ))}
-          <Search className="h-4 w-4 shrink-0" />
-          <input
-            aria-label="Tìm kiếm CRM v2"
-            className="min-w-0 flex-1 bg-transparent text-slate-800 outline-none placeholder:text-slate-400"
-            defaultValue={searchParams.get("q") ?? ""}
-            name="q"
-            placeholder="Tìm tên, email, số điện thoại, mã đơn..."
-            type="search"
-          />
-          <button className="rounded-md bg-blue-600 px-2.5 py-1 text-xs font-black text-white" type="submit">
-            Tìm
-          </button>
-        </form>
-        {["/admin/crm-v2", "/admin/crm-v2/reports", "/admin/crm-v2/leads", "/admin/crm-v2/orders", "/admin/crm-v2/activity"].includes(pathname) ? <CrmGlobalDateControl /> : null}
-        <button
-          aria-label="Đồng bộ CRM v2"
-          className="order-1 inline-flex min-h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 sm:order-none"
-          data-crm-action="button"
-          onClick={() => {
-            announceCrmRouteFeedback({ label: "Đang đồng bộ CRM", fallbackMs: 1200 });
-            router.refresh();
-          }}
-          title="Đồng bộ"
-          type="button"
-        >
-          <RefreshCw className="h-4 w-4" />
-        </button>
-        <SignOutButton mode="admin" className="order-1 rounded-lg px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 sm:order-none" />
-        <span className="order-1 sm:order-none">
-          <StatusBadge tone={disabled ? "orange" : "green"}>{disabled ? "Chưa khả dụng" : "Quản trị"}</StatusBadge>
-        </span>
+  return <header className="z-20 shrink-0 border-b border-slate-200 bg-white">
+    <div className="flex min-h-16 items-center gap-3 px-4 sm:px-5">
+      <form action="/admin/crm-v2/customers" method="get" className="flex min-w-0 max-w-md flex-1 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500">
+        <Search className="size-4 shrink-0" /><input key={pathname} aria-label="Tìm khách hàng hoặc học viên" defaultValue={pathname === "/admin/crm-v2/customers" ? searchParams.get("q") ?? "" : ""} name="q" placeholder="Tìm khách hàng, email, mã đơn…" type="search" className="min-w-0 flex-1 bg-transparent text-slate-800 outline-none" />
+        <button className="rounded px-1 text-xs font-semibold text-blue-700" type="submit">Tìm</button>
+      </form>
+      <div className="ml-auto flex shrink-0 items-center gap-2">
+        {disabled ? <StatusBadge tone="orange">Chưa khả dụng</StatusBadge> : null}
+        <button type="button" aria-label="Tải lại dữ liệu" title="Tải lại dữ liệu" className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" onClick={() => { announceCrmRouteFeedback({ label: "Đang tải dữ liệu", fallbackMs: 1500 }); router.refresh(); }}><RefreshCw className="size-4" /></button>
+        <SignOutButton mode="admin" className="rounded-lg px-2 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100" />
       </div>
-    </header>
-  );
+    </div>
+  </header>;
 }
 
 export function CrmGlobalDateControl() {

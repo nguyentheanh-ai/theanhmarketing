@@ -1,3 +1,5 @@
+import { randomBytes } from "node:crypto";
+import { findCustomerAccount, isProtectedCustomerAccount } from "@/services/adminCustomerService";
 import { NextResponse } from "next/server";
 import { canAccessAdminRole, getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
 import { sendStudentAccessEmail } from "@/lib/notifications/student-access-email";
@@ -82,6 +84,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, message: "Email học viên không hợp lệ." }, { status: 400 });
     }
 
+    const account = await findCustomerAccount(email);
+    if (isProtectedCustomerAccount(email, account, adminActor?.id)) return NextResponse.json({ ok: false, message: "Không thể cấp lại mật khẩu quản trị từ hồ sơ khách hàng." }, { status: 403 });
+
     const latestPaidOrder = await getLatestPaidOrder(email);
     const courses = await getCourses();
     const requestedCourseSlugs = normalizeCourseSlugs(body);
@@ -89,7 +94,7 @@ export async function POST(request: Request) {
       requestedCourseSlugs.length > 0
         ? requestedCourseSlugs
         : latestPaidOrder?.course_slug
-          ? [cleanSlug(latestPaidOrder.course_slug)]
+          ? latestPaidOrder.course_slug.split(",").map((slug) => cleanSlug(slug)).filter(Boolean)
           : [];
     const coursesToEmail = courseSlugs
       .map((courseSlug) => courses.find((course) => course.slug === courseSlug))
@@ -106,13 +111,12 @@ export async function POST(request: Request) {
     if (
       !name ||
       !email ||
-      !phone ||
       courseSlugs.length === 0 ||
       courseSlugs.some((courseSlug) => !isValidSlug(courseSlug)) ||
       courseTitles.length === 0
     ) {
       return NextResponse.json(
-        { ok: false, message: "Thiếu tên, số điện thoại hoặc khóa học để cấp lại mật khẩu." },
+        { ok: false, message: "Thiếu tên hoặc khóa học để cấp lại mật khẩu." },
         { status: 400 },
       );
     }
@@ -128,6 +132,7 @@ export async function POST(request: Request) {
       },
       {
         forcePasswordUpdate: true,
+        temporaryPassword: randomBytes(18).toString("base64url"),
       },
     );
 
@@ -172,6 +177,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           ok: false,
+          accountUpdated: true,
           message: `Đã cấp lại mật khẩu nhưng chưa gửi được email cho khách: ${
             emailResult.reason ?? "không rõ lý do"
           }`,

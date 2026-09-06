@@ -127,7 +127,7 @@ test('every CRM page checks owner/editor permissions before fetching protected d
     const uncalled=new Proxy({}, {get:()=>()=>{throw new Error('data-read-before-auth')}});
     new Function('require','module','exports',code)((name)=>name==='@/lib/auth/session'?{requireAdminAuth:deny}:name==='react/jsx-runtime'?require(name):uncalled,mod,mod.exports);
     await assert.rejects(mod.exports.default({params:Promise.resolve({}),searchParams:Promise.resolve({})}),/permission-denied/,file);
-    const shared=file.includes('/courses/')||file.endsWith('/students/page.tsx');
+    const shared=file.includes('/courses/')||['students','customers','leads','settings'].some(route=>file.endsWith(`/${route}/page.tsx`));
     assert.deepEqual(allowed,shared?['owner','editor']:['owner'],file);
   }
 });
@@ -141,18 +141,31 @@ test('student compatibility URL preserves search and resumable operation without
   const url=new URL(location,'https://example.invalid');
   assert.equal(url.pathname,'/admin/crm-v2/students');assert.equal(url.searchParams.get('operation_id'),id);assert.equal(url.searchParams.get('q'),'Fixture');assert.equal(url.searchParams.has('unsafe'),false);
 });
-test('shared shell renders only editor capabilities and includes all owner operations without a second sidebar',()=>{
+test('shared shell uses unified profiles, stable settings navigation, and role-filtered tools',()=>{
   const React=require('react');const {renderToStaticMarkup}=require('react-dom/server');
+  let pathname='/admin/crm-v2/settings';
+  const link=({href,children,...props})=>React.createElement('a',{href,...props},children);
   const shell=load('components/crm-v2/crm-components.tsx',{
-    'next/navigation':{usePathname:()=>'/admin/crm-v2/courses',useSearchParams:()=>new URLSearchParams(),useRouter:()=>({refresh(){}})},
-    'next/link':({href,children,...props})=>React.createElement('a',{href,...props},children),
+    'next/navigation':{usePathname:()=>pathname,useSearchParams:()=>new URLSearchParams(),useRouter:()=>({refresh(){}})},
+    'next/link':link,
     '@/components/auth/sign-out-button':{SignOutButton:()=>React.createElement('button',null,'Đăng xuất')},
   });
+  const settings=load('components/admin/admin-settings-workspace.tsx',{'next/link':link});
   const render=adminRole=>renderToStaticMarkup(React.createElement(shell.CrmShell,{adminRole},'Fixture'));
   const editor=render('editor'),owner=render('owner');
-  assert.ok(editor.includes('href="/admin/crm-v2/courses"'));assert.ok(editor.includes('href="/admin/crm-v2/students"'));
-  for(const route of ['/admin/crm-v2/reports','/admin/crm-v2/team','/admin/database']){assert.ok(!editor.includes(`href="${route}"`));assert.ok(owner.includes(`href="${route}"`))}
-  assert.equal((owner.match(/<aside/g)||[]).length,1);assert.ok(owner.includes('Đăng xuất'));
+  for(const html of [editor,owner]) {
+    assert.ok(html.includes('href="/admin/crm-v2/courses"'));assert.ok(html.includes('href="/admin/crm-v2/customers"'));
+    assert.ok(!html.includes('href="/admin/crm-v2/leads"'));assert.ok(!html.includes('href="/admin/crm-v2/students"'));
+    assert.ok(html.includes('href="/admin/crm-v2/settings" aria-current="page"'));
+    assert.equal((html.match(/<aside/g)||[]).length,1);assert.ok(html.includes('Đăng xuất'));
+    assert.ok(html.includes('action="/admin/crm-v2/customers"'));assert.ok(!html.includes('Nâng cao'));
+  }
+  assert.ok(!editor.includes('href="/admin/crm-v2/reports"'));assert.ok(owner.includes('href="/admin/crm-v2/reports"'));
+  const settingsHtml=role=>renderToStaticMarkup(React.createElement(settings.AdminSettingsWorkspace,{role}));
+  const ownerTools=settingsHtml('owner'),editorTools=settingsHtml('editor');
+  for(const route of ['/admin/crm-v2/team','/admin/database','/admin/crm-v2/integrations']){assert.ok(ownerTools.includes(`href="${route}"`));assert.ok(!editorTools.includes(`href="${route}"`))}
+  assert.ok(editorTools.includes('href="/admin/cms"'));assert.ok(!editorTools.includes('href="/admin/seo"'));
+  pathname='/admin/crm-v2/team';assert.ok(render('owner').includes('href="/admin/crm-v2/settings" aria-current="page"'));
 });
 
 test('access panel recovers from network failure and distinguishes committed access from failed email', async () => {

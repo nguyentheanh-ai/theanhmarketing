@@ -4,18 +4,18 @@ import test from "node:test";
 
 function read(file) { return fs.readFileSync(file, "utf8"); }
 
-test("canonical CRM exposes a paid support booking admin", () => {
+test("canonical CRM exposes one support calendar with registered booking details", () => {
   const shell = read("components/crm-v2/crm-components.tsx");
   const page = read("app/admin/crm-v2/support-bookings/page.tsx");
   const client = read("components/crm-v2/support-bookings-client.tsx");
 
   assert.match(shell, /\/admin\/crm-v2\/support-bookings/);
   assert.match(shell, /Lịch hỗ trợ/);
-  assert.match(page, /listConfirmedSupportBookings/);
-  assert.match(page, /listSupportBusyDates/);
+  assert.match(page, /getSupportCalendar/);
+  assert.match(client, /busyDates/);
   assert.match(client, /Nội dung cần hỗ trợ/);
-  assert.match(page, /SUPPORT_PRICE_LABEL/);
-  assert.match(client, /booking\.amount/);
+  assert.match(client, /calendarStatusLabels/);
+  assert.match(client, /selectedBooking\.amount/);
   assert.doesNotMatch(`${page}\n${client}`, /500\.000đ/);
   assert.match(client, /Ngày bận/);
 });

@@ -1,0 +1,132 @@
+"use client";
+
+import { useId, useState, useTransition } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { ArrowUpRight, ChevronLeft, ChevronRight, Download, Info, RefreshCw, Search } from "lucide-react";
+import { AdminDialog } from "@/components/admin/admin-dialog";
+import type { AnalyticsSnapshot } from "@/lib/crm-v2/analytics";
+import type { MetaAdsReport } from "@/services/metaAdsReportService";
+
+type Tab = "overview" | "products" | "funnel" | "sources" | "ads";
+const tabs: Array<{ value: Tab; label: string }> = [{ value: "overview", label: "Doanh thu" }, { value: "products", label: "Sản phẩm" }, { value: "funnel", label: "Phễu thanh toán" }, { value: "sources", label: "Nguồn doanh thu" }, { value: "ads", label: "Quảng cáo" }];
+const currency = (value: number) => `${new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 0 }).format(value)} ₫`;
+const integer = (value: number) => new Intl.NumberFormat("vi-VN").format(value);
+const compact = (value: number) => new Intl.NumberFormat("vi-VN", { notation: "compact", maximumFractionDigits: 1 }).format(value);
+const pct = (value: number | null) => value === null ? "—" : `${value.toFixed(1)}%`;
+const dateLabel = (value: string) => value.split("-").reverse().join("/");
+const buttonClass = "inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-blue-600 disabled:opacity-50";
+
+export function AnalyticsWorkspace({ data, report = false }: { data: AnalyticsSnapshot; report?: boolean }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [tab, setTab] = useState<Tab>("overview");
+  const [dialog, setDialog] = useState<"orders" | "definitions" | null>(null);
+  const [preset, setPreset] = useState(data.selection.range.range);
+  const [from, setFrom] = useState(data.selection.range.from);
+  const [to, setTo] = useState(data.selection.range.to);
+  const [product, setProduct] = useState(data.selection.product);
+  const [validation, setValidation] = useState("");
+  const [ads, setAds] = useState<MetaAdsReport | null>(null);
+  const [adsLoading, setAdsLoading] = useState(false);
+  const [adsError, setAdsError] = useState("");
+  const selectedTitle = data.products.find((row) => row.slug === data.selection.product)?.title || data.selection.product;
+  const totals = data.totals;
+  const rangeText = `${dateLabel(data.selection.range.from)} – ${dateLabel(data.selection.range.to)}`;
+  function applyFilter(course = product) {
+    if (preset === "custom" && (!from || !to || from > to)) { setValidation("Ngày bắt đầu phải nằm trước hoặc bằng ngày kết thúc."); return; }
+    const params = new URLSearchParams({ range: preset });
+    if (preset === "custom") { params.set("dateFrom", from); params.set("dateTo", to); }
+    if (course) params.set("course", course);
+    setValidation("");
+    startTransition(() => router.push(`${pathname}?${params}`));
+  }
+  async function loadAds() {
+    setAdsLoading(true); setAdsError("");
+    try {
+      const params = new URLSearchParams({ range: "custom", dateFrom: data.selection.range.from, dateTo: data.selection.range.to });
+      const response = await fetch(`/api/admin/analytics/ads?${params}`, { cache: "no-store", signal: AbortSignal.timeout(45_000) });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || "Không tải được quảng cáo.");
+      setAds(payload);
+    } catch { setAdsError("Kết nối quảng cáo chưa phản hồi. Báo cáo doanh thu vẫn sử dụng dữ liệu đơn hàng đã thanh toán."); }
+    finally { setAdsLoading(false); }
+  }
+  function selectTab(value: Tab) { setTab(value); if (value === "ads" && !ads && !adsLoading) void loadAds(); }
+  return (
+    <div className="min-w-0 space-y-4" aria-busy={pending}>
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div><h1 className="text-2xl font-semibold tracking-tight text-slate-950">{report ? "Báo cáo kinh doanh" : "Tổng quan kinh doanh"}</h1><p className="mt-1 text-sm text-slate-500">{rangeText} · Giờ Việt Nam{selectedTitle ? ` · ${selectedTitle}` : " · Tất cả sản phẩm"}</p></div>
+        <div className="flex gap-2"><button className={buttonClass} onClick={() => setDialog("definitions")} aria-label="Cách tính số liệu"><Info size={16} /></button><button className={buttonClass} onClick={() => startTransition(() => router.refresh())} disabled={pending}><RefreshCw size={15} className={pending ? "animate-spin" : ""} />Làm mới</button><button className={buttonClass} onClick={() => setDialog("orders")}><ArrowUpRight size={15} />Đối chiếu đơn</button></div>
+      </header>
+      <form onSubmit={(event) => { event.preventDefault(); applyFilter(); }} className="flex flex-wrap items-end gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+        <label className="grid gap-1 text-xs font-medium text-slate-600">Khoảng thời gian<select value={preset} onChange={(event) => setPreset(event.target.value)} className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900"><option value="today">Hôm nay</option><option value="yesterday">Hôm qua</option><option value="7d">7 ngày qua</option><option value="30d">30 ngày qua</option><option value="90d">90 ngày qua</option><option value="custom">Tùy chọn ngày</option></select></label>
+        {preset === "custom" && <><label className="grid gap-1 text-xs font-medium text-slate-600">Từ ngày<input type="date" required value={from} max={to} onChange={(event) => setFrom(event.target.value)} className="h-9 rounded-lg border border-slate-200 px-2 text-sm" /></label><label className="grid gap-1 text-xs font-medium text-slate-600">Đến ngày<input type="date" required value={to} min={from} onChange={(event) => setTo(event.target.value)} className="h-9 rounded-lg border border-slate-200 px-2 text-sm" /></label></>}
+        <label className="grid min-w-0 flex-1 basis-52 gap-1 text-xs font-medium text-slate-600">Sản phẩm<select value={product} onChange={(event) => setProduct(event.target.value)} className="h-9 w-full min-w-0 max-w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900"><option value="">Tất cả sản phẩm</option>{data.products.map((row) => <option value={row.slug} key={row.slug}>{row.title}</option>)}{product && !data.products.some((row) => row.slug === product) && <option value={product}>{product}</option>}</select></label>
+        <button type="submit" disabled={pending} className="h-9 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">{pending ? "Đang tải…" : "Áp dụng"}</button>
+        {validation && <p role="alert" className="w-full text-sm text-red-600">{validation}</p>}
+      </form>
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-5">
+        <Metric title="Doanh thu thanh toán" value={currency(totals.revenue)} description="Tiền đã nhận trong kỳ" primary />
+        <Metric title="Đơn đã thanh toán" value={integer(totals.paidOrders)} description="Mỗi mã đơn tính một lần" />
+        <Metric title="Khách thanh toán" value={integer(totals.buyers)} description="Khách mua trong kỳ" />
+        <Metric title={data.selection.product ? "Giá trị sản phẩm / đơn" : "Giá trị đơn trung bình"} value={currency(totals.averageOrder)} description="Doanh thu / đơn thanh toán" />
+        <Metric title="Tỷ lệ thanh toán" value={pct(totals.conversion)} description={`${integer(totals.cohortPaidOrders)} / ${integer(totals.createdOrders)} đơn tạo trong kỳ`} />
+      </div>
+      <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div role="tablist" aria-label="Góc nhìn phân tích" className="flex gap-1 overflow-x-auto border-b border-slate-200 px-3 pt-2">{tabs.map((item) => <button role="tab" aria-selected={tab === item.value} aria-controls={`analytics-${item.value}`} id={`tab-${item.value}`} key={item.value} onClick={() => selectTab(item.value)} className={`shrink-0 border-b-2 px-3 py-3 text-sm font-medium transition ${tab === item.value ? "border-blue-600 text-blue-700" : "border-transparent text-slate-500 hover:text-slate-900"}`}>{item.label}</button>)}</div>
+        <div role="tabpanel" id={`analytics-${tab}`} aria-labelledby={`tab-${tab}`} className="min-w-0 p-4 sm:p-5">
+          {tab === "overview" && <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.8fr)_minmax(260px,1fr)]"><RevenueChart data={data} /><div className="min-w-0 xl:border-l xl:border-slate-100 xl:pl-5"><div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-sm font-semibold text-slate-900">Sản phẩm nổi bật</h2><button className="text-xs font-medium text-blue-600" onClick={() => setTab("products")}>Xem tất cả</button></div><ProductRanking data={data} onSelect={(slug) => { setProduct(slug); applyFilter(slug); }} /><div className="mt-5 border-t border-slate-100 pt-4"><div className="flex justify-between text-sm"><span className="text-slate-500">Đơn tạo trong kỳ</span><strong>{integer(totals.createdOrders)}</strong></div><div className="mt-2 flex justify-between text-sm"><span className="text-slate-500">Hoàn tất thanh toán</span><strong className="text-emerald-600">{pct(totals.conversion)}</strong></div><button onClick={() => setTab("funnel")} className="mt-3 text-xs font-medium text-blue-600">Phân tích phễu thanh toán →</button></div></div></div>}
+          {tab === "products" && <ProductTable data={data} onSelect={(slug) => { setProduct(slug); applyFilter(slug); }} />}
+          {tab === "funnel" && <PaymentFunnel data={data} />}
+          {tab === "sources" && <SourceTable data={data} />}
+          {tab === "ads" && <AdsPanel report={ads} loading={adsLoading} error={adsError} retry={loadAds} data={data} />}
+        </div>
+      </section>
+      <p className="text-xs leading-5 text-slate-500">Doanh thu theo ngày thanh toán. Phễu theo nhóm đơn tạo trong kỳ. Đơn nhiều sản phẩm được phân bổ theo giá lưu trong đơn. <button onClick={() => setDialog("definitions")} className="font-medium text-blue-600">Cách tính</button></p>
+      <AdminDialog open={dialog === "definitions"} onClose={() => setDialog(null)} title="Cách tính số liệu" description="Tổng quan và Báo cáo dùng chung bộ lọc và nguồn đơn hàng.">
+        <dl className="space-y-4 text-sm leading-6 text-slate-600"><Definition title="Doanh thu thanh toán">Tổng số tiền của các đơn có trạng thái đã thanh toán, theo paid_at trong khoảng ngày đã chọn, múi giờ Việt Nam. Đơn chờ, lỗi, hết hạn, hoàn tiền không được cộng vào doanh thu.</Definition><Definition title="Đơn nhiều sản phẩm">Doanh thu chia theo tỷ trọng giá từng sản phẩm đã lưu trong đơn; phần làm tròn được phân bổ theo phần dư, chỉ cho sản phẩm có giá để tổng luôn bằng số tiền đơn. Khi lọc sản phẩm, doanh thu chỉ là phần của sản phẩm đó. Một đơn combo có thể xuất hiện ở nhiều dòng sản phẩm; tổng số đơn toàn trang vẫn tính một lần.</Definition><Definition title="Phễu thanh toán">Cùng một nhóm đơn có created_at trong kỳ: đơn khởi tạo → đơn đã thanh toán trước cuối kỳ. Đơn tạo trước kỳ nhưng thanh toán trong kỳ được tính doanh thu; không đưa vào phễu của nhóm đơn mới. Các trạng thái còn lại là trạng thái hiện tại.</Definition><Definition title="Khách thanh toán">Đếm email chuẩn hóa duy nhất của các đơn đã thanh toán. {totals.anonymousBuyerOrders ? `${totals.anonymousBuyerOrders} đơn không có email được tính riêng theo mã đơn.` : "Một khách mua nhiều lần vẫn tính là một khách."}</Definition><Definition title="Nguồn doanh thu">Dựa vào UTM source lưu trên đơn. Nguồn trống được ghi là “Chưa rõ nguồn”, không tự suy đoán là quảng cáo.</Definition><Definition title="Quảng cáo">Dữ liệu Meta được tải riêng khi mở tab Quảng cáo. Chi phí toàn tài khoản không được tự gán cho từng sản phẩm. Doanh thu / chi phí toàn tài khoản là MER, không phải ROAS quy nguồn hay lợi nhuận.</Definition>{totals.legacyPaymentDates > 0 && <Definition title="Đơn lịch sử">Có {totals.legacyPaymentDates} đơn đã thanh toán thiếu paid_at; ngày tạo được dùng thay thế cho các đơn này.</Definition>}</dl>
+      </AdminDialog>
+      <AdminDialog open={dialog === "orders"} onClose={() => setDialog(null)} title="Đối chiếu đơn đã thanh toán" description={`${rangeText} · ${integer(totals.paidOrders)} đơn · ${currency(totals.revenue)}`} wide><OrderDetail data={data} /></AdminDialog>
+    </div>
+  );
+}
+
+function Definition({ title, children }: { title: string; children: React.ReactNode }) { return <div><dt className="font-semibold text-slate-900">{title}</dt><dd className="mt-1">{children}</dd></div>; }
+function Metric({ title, value, description, primary = false }: { title: string; value: string; description: string; primary?: boolean }) { return <div className={`min-w-0 rounded-xl border p-4 ${primary ? "border-blue-200 bg-blue-50/60" : "border-slate-200 bg-white"}`}><p className="text-xs font-medium text-slate-500">{title}</p><p className={`mt-2 break-words text-xl font-semibold tracking-tight 2xl:text-2xl ${primary ? "text-blue-700" : "text-slate-950"}`}>{value}</p><p className="mt-1 text-[11px] leading-4 text-slate-500">{description}</p></div>; }
+function Empty({ children }: { children: React.ReactNode }) { return <div className="flex min-h-44 items-center justify-center rounded-lg bg-slate-50 p-6 text-center text-sm text-slate-500">{children}</div>; }
+function RevenueChart({ data }: { data: AnalyticsSnapshot }) {
+  const [cumulative, setCumulative] = useState(false);
+  const gradient = useId().replace(/:/g, "");
+  return <div className="min-w-0"><div className="mb-3 flex items-center justify-between gap-3"><div><h2 className="text-sm font-semibold text-slate-900">Doanh thu theo {data.resolution === "hour" ? "giờ" : data.resolution === "week" ? "tuần" : "ngày"}</h2><p className="mt-1 text-xs text-slate-500">Đơn vị: đồng · ngày thanh toán</p></div><div className="flex rounded-lg bg-slate-100 p-1"><button onClick={() => setCumulative(false)} className={`rounded px-2 py-1 text-xs ${!cumulative ? "bg-white text-blue-700 shadow-sm" : "text-slate-500"}`}>Từng kỳ</button><button onClick={() => setCumulative(true)} className={`rounded px-2 py-1 text-xs ${cumulative ? "bg-white text-blue-700 shadow-sm" : "text-slate-500"}`}>Lũy kế</button></div></div><div className="h-[292px] w-full min-w-0"><ResponsiveContainer width="100%" height="100%" minWidth={0} initialDimension={{ width: 640, height: 292 }}><AreaChart data={data.trend} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}><defs><linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#2563eb" stopOpacity={0.2} /><stop offset="100%" stopColor="#2563eb" stopOpacity={0.01} /></linearGradient></defs><CartesianGrid stroke="#e2e8f0" vertical={false} strokeDasharray="3 3" /><XAxis dataKey="label" minTickGap={32} axisLine={false} tickLine={false} tick={{ fill: "#64748b", fontSize: 11 }} /><YAxis width={58} tickFormatter={compact} axisLine={false} tickLine={false} tick={{ fill: "#64748b", fontSize: 11 }} /><Tooltip formatter={(value) => currency(Number(value))} contentStyle={{ borderRadius: 10, borderColor: "#e2e8f0", fontSize: 12 }} /><Area type="monotone" dataKey={cumulative ? "cumulative" : "value"} name={cumulative ? "Lũy kế" : "Doanh thu"} stroke="#2563eb" fill={`url(#${gradient})`} strokeWidth={2.5} isAnimationActive={false} /></AreaChart></ResponsiveContainer></div></div>;
+}
+function ProductRanking({ data, onSelect }: { data: AnalyticsSnapshot; onSelect: (slug: string) => void }) { return data.productRows.length ? <div className="space-y-4">{data.productRows.slice(0, 4).map((row) => <button key={row.slug} onClick={() => onSelect(row.slug)} className="block w-full text-left"><div className="flex items-start justify-between gap-3 text-xs"><span className="min-w-0 flex-1 break-words font-medium leading-5 text-slate-700">{row.title}</span><span className="shrink-0 pt-1 font-semibold text-slate-900">{compact(row.revenue)} ₫</span></div><div className="mt-1.5 h-1.5 rounded-full bg-slate-100"><div className="h-full rounded-full bg-blue-500" style={{ width: `${data.totals.revenue ? row.revenue / data.totals.revenue * 100 : 0}%` }} /></div></button>)}</div> : <Empty>Chưa có đơn thanh toán trong kỳ này.</Empty>; }
+function ProductTable({ data, onSelect }: { data: AnalyticsSnapshot; onSelect: (slug: string) => void }) {
+  return <div><div className="mb-4 flex flex-wrap justify-between gap-2"><h2 className="text-sm font-semibold">Doanh thu theo sản phẩm</h2><p className="text-xs text-slate-500">Bấm tên sản phẩm để lọc toàn bộ báo cáo</p></div>{data.productRows.length ? <div className="max-h-[380px] overflow-auto"><table className="w-full table-fixed text-left text-sm"><thead className="sticky top-0 bg-slate-50 text-xs text-slate-500"><tr><th className="w-[46%] p-3 font-medium">Sản phẩm</th><th className="w-[15%] p-3 text-right font-medium">Đơn chứa SP</th><th className="w-[24%] p-3 text-right font-medium">Doanh thu</th><th className="w-[15%] p-3 text-right font-medium">Tỷ trọng</th></tr></thead><tbody className="divide-y divide-slate-100">{data.productRows.map((row) => <tr key={row.slug} className="hover:bg-slate-50"><td className="p-3"><button onClick={() => onSelect(row.slug)} className="break-words text-left font-medium leading-6 text-blue-700">{row.title}</button></td><td className="p-3 text-right tabular-nums">{integer(row.paidOrders)}</td><td className="break-words p-3 text-right font-medium tabular-nums">{currency(row.revenue)}</td><td className="p-3 text-right tabular-nums">{pct(data.totals.revenue ? row.revenue / data.totals.revenue * 100 : 0)}</td></tr>)}</tbody></table></div> : <Empty>Chưa có đơn thanh toán trong kỳ này. Có thể chọn khoảng ngày khác.</Empty>}</div>;
+}
+function PaymentFunnel({ data }: { data: AnalyticsSnapshot }) {
+  const [unit, setUnit] = useState<"orders" | "buyers">("orders");
+  const total = unit === "orders" ? data.totals.createdOrders : data.totals.cohortBuyers;
+  const paid = unit === "orders" ? data.totals.cohortPaidOrders : data.totals.paidCohortBuyers;
+  return <div className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(240px,1fr)]"><div><div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-sm font-semibold">Từ tạo đơn đến thanh toán</h2><select aria-label="Đơn vị phễu" className="rounded-lg border border-slate-200 px-2 py-1 text-xs" value={unit} onChange={(event) => setUnit(event.target.value as typeof unit)}><option value="orders">Theo đơn hàng</option><option value="buyers">Theo khách hàng</option></select></div><p className="mb-6 text-xs leading-5 text-slate-500">Cùng nhóm {unit === "orders" ? "đơn" : "khách tạo đơn"} từ {dateLabel(data.selection.range.from)} đến {dateLabel(data.selection.range.to)}.</p>{[{ label: unit === "orders" ? "Đơn đã khởi tạo" : "Khách đã tạo đơn", value: total }, { label: "Đã thanh toán trước cuối kỳ", value: paid }].map((row, index) => <div key={row.label} className="mb-6"><div className="mb-2 flex justify-between text-sm"><span className="text-slate-600">{index + 1}. {row.label}</span><strong>{integer(row.value)}</strong></div><div className="h-10 overflow-hidden rounded-lg bg-slate-100"><div className={`h-full rounded-lg ${index ? "bg-emerald-500" : "bg-blue-500"}`} style={{ width: `${total ? row.value / total * 100 : 0}%` }} /></div></div>)}<p className="text-sm text-slate-600">Tỷ lệ hoàn tất: <strong className="text-emerald-600">{pct(total ? paid / total * 100 : null)}</strong></p></div><div className="rounded-xl bg-slate-50 p-5"><h3 className="text-sm font-semibold">Trạng thái nhóm đơn</h3><div className="mt-5 space-y-4">{data.statuses.map((row) => <div className="flex items-center justify-between gap-3 text-sm" key={row.label}><span className="text-slate-500">{row.label}</span><strong>{integer(row.value)}</strong></div>)}</div><p className="mt-6 text-xs leading-5 text-slate-500">Doanh thu phía trên có thể bao gồm đơn tạo ở kỳ trước. Phễu chỉ theo dõi nhóm đơn mới trong khoảng đang xem.</p></div></div>;
+}
+function SourceTable({ data }: { data: AnalyticsSnapshot }) { return <div><h2 className="mb-4 text-sm font-semibold">Nguồn được ghi nhận trên đơn thanh toán</h2>{data.sourceRows.length ? <div className="max-h-[380px] overflow-auto"><table className="w-full table-fixed text-sm"><thead className="sticky top-0 bg-slate-50 text-xs text-slate-500"><tr><th className="w-1/2 p-3 text-left font-medium">Nguồn</th><th className="p-3 text-right font-medium">Đơn</th><th className="p-3 text-right font-medium">Doanh thu</th></tr></thead><tbody className="divide-y divide-slate-100">{data.sourceRows.map((row) => <tr key={row.title}><td className="break-words p-3 font-medium">{row.title}</td><td className="p-3 text-right">{integer(row.paidOrders)}</td><td className="break-words p-3 text-right">{currency(row.revenue)}</td></tr>)}</tbody></table></div> : <Empty>Chưa có đơn thanh toán trong kỳ này.</Empty>}</div>; }
+function AdsPanel({ report, loading, error, retry, data }: { report: MetaAdsReport | null; loading: boolean; error: string; retry: () => void; data: AnalyticsSnapshot }) {
+  if (loading) return <Empty><RefreshCw className="mr-2 animate-spin" size={16} />Đang tải số liệu từ Meta…</Empty>;
+  if (!report?.available) return <div className="rounded-xl bg-slate-50 p-6"><h2 className="text-sm font-semibold">Kết nối quảng cáo</h2><p className="mt-2 text-sm leading-6 text-slate-600">{error || report?.reason || "Dữ liệu quảng cáo chưa được tải."}</p><p className="mt-2 text-xs text-slate-500">Doanh thu, sản phẩm và phễu thanh toán đã được tổng hợp độc lập từ đơn hàng.</p><button onClick={retry} className={`${buttonClass} mt-4`}><RefreshCw size={14} />Thử lại</button></div>;
+  const partial = report.quality.status !== "final";
+  return <div><div className="mb-5 flex flex-wrap justify-between gap-2"><div><h2 className="text-sm font-semibold">Quảng cáo toàn tài khoản</h2><p className="mt-1 text-xs leading-5 text-slate-500">{partial ? "Số liệu Meta đang tạm tính; chưa đối soát đầy đủ độ phủ giờ." : "Đã đối soát kỳ quảng cáo."}{data.selection.product ? " Bộ lọc sản phẩm không phân bổ chi phí toàn tài khoản." : ""}</p></div><button onClick={retry} className={buttonClass}><RefreshCw size={14} />Tải lại</button></div><div className="grid grid-cols-2 gap-3 xl:grid-cols-4"><Metric title={partial ? "Chi phí tạm tính" : "Chi phí quảng cáo"} value={currency(report.totals.spend)} description="Toàn tài khoản Meta" /><Metric title="Lượt hiển thị" value={integer(report.totals.impressions)} description="Meta Ads" /><Metric title="Lượt nhấp" value={integer(report.totals.clicks)} description={`CTR ${pct(report.totals.ctr)}`} /><Metric title="CPC" value={currency(report.totals.cpc)} description="Chi phí / lượt nhấp" /></div>{!data.selection.product && report.totals.spend > 0 && <div className="mt-5 rounded-lg border border-slate-200 p-4 text-sm"><span className="text-slate-500">MER {partial ? "tạm tính" : ""} · doanh thu / tổng chi phí quảng cáo</span><strong className="ml-3 text-slate-900">{(data.totals.revenue / report.totals.spend).toFixed(2)}x</strong><p className="mt-1 text-xs text-slate-500">Không phải ROAS quy nguồn và không thể hiện lợi nhuận.</p></div>}</div>;
+}
+function OrderDetail({ data }: { data: AnalyticsSnapshot }) {
+  const [search, setSearch] = useState(""); const [page, setPage] = useState(1);
+  const rows = data.orderRows.filter((row) => `${row.code} ${row.product}`.toLocaleLowerCase("vi").includes(search.toLocaleLowerCase("vi")));
+  const pages = Math.max(1, Math.ceil(rows.length / 20)); const currentPage = Math.min(page, pages);
+  function exportCsv() {
+    const safe = (value: string) => `"${(/^[=+@\-\t\r]/.test(value) ? "'" : "") + value.replaceAll('"', '""')}"`;
+    const lines = [["Mã đơn", "Sản phẩm", "Ngày thanh toán", "Doanh thu VND"], ...rows.map((row) => [row.code, row.product, row.paidAt, String(row.amount)])];
+    const blob = new Blob(["\uFEFF" + lines.map((line) => line.map(safe).join(",")).join("\r\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob); const anchor = document.createElement("a"); anchor.href = url; anchor.download = `doi-chieu-${data.selection.range.from}-${data.selection.range.to}.csv`; anchor.click(); URL.revokeObjectURL(url);
+  }
+  return <div><div className="mb-4 flex flex-wrap gap-3"><label className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 px-3"><Search size={16} className="text-slate-400" /><input aria-label="Tìm mã đơn hoặc sản phẩm" placeholder="Tìm mã đơn hoặc sản phẩm" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} className="h-10 min-w-0 flex-1 text-sm outline-none" /></label><button onClick={exportCsv} className={buttonClass}><Download size={15} />Xuất đối chiếu CSV</button></div>{rows.length ? <div className="overflow-x-auto"><table className="w-full table-fixed text-left text-sm"><thead className="bg-slate-50 text-xs text-slate-500"><tr><th className="w-[22%] p-3">Mã đơn</th><th className="w-[38%] p-3">Sản phẩm</th><th className="w-[20%] p-3">Thanh toán</th><th className="w-[20%] p-3 text-right">Doanh thu</th></tr></thead><tbody className="divide-y divide-slate-100">{rows.slice((currentPage - 1) * 20, currentPage * 20).map((row) => <tr key={row.id}><td className="break-all p-3 font-mono text-xs">{row.code}</td><td className="break-words p-3 leading-6">{row.product}</td><td className="p-3 text-xs">{new Date(row.paidAt).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</td><td className="break-words p-3 text-right tabular-nums">{currency(row.amount)}</td></tr>)}</tbody></table></div> : <Empty>Không có đơn phù hợp.</Empty>}<div className="mt-4 flex items-center justify-between text-sm text-slate-500"><span>{integer(rows.length)} đơn · Trang {currentPage}/{pages}</span><div className="flex gap-2"><button aria-label="Trang trước" disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)} className={buttonClass}><ChevronLeft size={16} /></button><button aria-label="Trang sau" disabled={currentPage >= pages} onClick={() => setPage(currentPage + 1)} className={buttonClass}><ChevronRight size={16} /></button></div></div></div>;
+}

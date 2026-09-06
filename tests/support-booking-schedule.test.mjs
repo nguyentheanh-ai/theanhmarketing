@@ -163,6 +163,7 @@ test("checkout persists the selected price in order, item and SePay QR", async (
     "@/lib/consultation/constants": {},
     "@/lib/agent-kit-preorder": {},
     "@/lib/admin/command-center-source": {},
+    "@/lib/admin/read-all-rows": load("lib/admin/read-all-rows.ts"),
     "@/lib/tracking/attribution": { normalizeAttribution: () => ({}) },
     "@/lib/payments/sepay": {
       createOrderCode: () => "UNITTEST",

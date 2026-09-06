@@ -20,8 +20,8 @@ test("admin auth supports owner and editor roles from safe metadata", () => {
 
 test("editor admin can open content pages but not sensitive operations pages", () => {
   for (const route of ["cms", "bai-viet", "tai-lieu", "feedback"]) assert.match(read(`app/admin/${route}/page.tsx`), /allowedRoles=\{\["owner", "editor"\]\}/);
-  for (const route of ["courses", "students"]) assert.match(read(`app/admin/crm-v2/${route}/page.tsx`), /requireAdminAuth\([^;]+\["owner", "editor"\]/);
-  for (const route of ["reports", "leads", "team", "email", "automation"]) assert.match(read(`app/admin/crm-v2/${route}/page.tsx`), /requireAdminAuth\([^;]+\["owner"\]/);
+  for (const route of ["courses", "students", "customers", "leads", "settings"]) assert.match(read(`app/admin/crm-v2/${route}/page.tsx`), /requireAdminAuth\([^;]+\["owner", "editor"\]/);
+  for (const route of ["reports", "team", "email", "automation"]) assert.match(read(`app/admin/crm-v2/${route}/page.tsx`), /requireAdminAuth\([^;]+\["owner"\]/);
   assert.match(read("components/app/admin-shell.tsx"), /CrmShell adminRole/);
 });
 

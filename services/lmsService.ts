@@ -528,7 +528,8 @@ async function ensureLessonSlugIsAvailable(client: SupabaseClient, courseId: str
 }
 
 async function getNextPosition(client: SupabaseClient, table: string, eqColumn: string, eqValue: string) {
-  const { data } = await client.from(table).select("sort_order").eq(eqColumn, eqValue).order("sort_order", { ascending: false }).limit(1);
+  const { data, error } = await client.from(table).select("sort_order").eq(eqColumn, eqValue).order("sort_order", { ascending: false }).limit(1);
+  if (error) throw new Error(`Không đọc được thứ tự nội dung: ${error.message}`);
   return numberValue(asArray(data)[0]?.sort_order, 0) + 1;
 }
 
@@ -608,7 +609,10 @@ export async function updateLmsCourse(input: {
   const client = getClientOrThrow();
   const course = await findCourseRow(client, input.courseId);
   const updates: Row = { updated_at: nowIso() };
-  if (input.title !== undefined) updates.title = cleanText(input.title, 220);
+  if (input.title !== undefined) {
+    updates.title = cleanText(input.title, 220);
+    if (!updates.title) throw new Error("Tiêu đề không được để trống.");
+  }
   if (input.description !== undefined) updates.description = cleanText(input.description, 5000);
   for (const [key, value] of [["price", input.price], ["original_price", input.originalPrice]] as const) {
     if (value !== undefined) {
@@ -707,7 +711,10 @@ export async function updateLmsModule(input: {
   const client = getClientOrThrow();
   await findModuleRow(client, input.moduleId);
   const updates: Row = { updated_at: nowIso() };
-  if (input.title !== undefined) updates.title = cleanText(input.title, 220);
+  if (input.title !== undefined) {
+    updates.title = cleanText(input.title, 220);
+    if (!updates.title) throw new Error("Tiêu đề không được để trống.");
+  }
   if (input.description !== undefined) updates.description = cleanText(input.description, 2000);
   if (input.status !== undefined) updates.status = sanitizeStatus(input.status, "published");
   if (input.position !== undefined) updates.sort_order = Math.max(1, Math.round(input.position));
@@ -802,10 +809,13 @@ export async function updateLmsLesson(input: {
   const client = getClientOrThrow();
   const lesson = await findLessonRow(client, input.lessonId);
   let courseId = text(lesson.course_id);
+  if (!courseId) courseId = text((await findModuleRow(client, text(lesson.module_id))).course_id);
   const updates: Row = { updated_at: nowIso() };
   if (input.moduleId !== undefined) {
     const moduleRow = await findModuleRow(client, input.moduleId);
+    if (text(moduleRow.course_id) !== courseId) throw new Error("Không thể chuyển bài học sang khóa khác; quyền học và tiến độ phải giữ đúng khóa.");
     updates.module_id = input.moduleId;
+    if (input.moduleId !== text(lesson.module_id) && input.position === undefined) updates.sort_order = await getNextPosition(client, "lessons", "module_id", input.moduleId);
     updates.course_id = text(moduleRow.course_id);
     courseId = text(moduleRow.course_id);
   }
@@ -814,7 +824,10 @@ export async function updateLmsLesson(input: {
     courseId = text(moduleRow.course_id);
     updates.course_id = courseId;
   }
-  if (input.title !== undefined) updates.title = cleanText(input.title, 220);
+  if (input.title !== undefined) {
+    updates.title = cleanText(input.title, 220);
+    if (!updates.title) throw new Error("Tiêu đề không được để trống.");
+  }
   if (input.description !== undefined) updates.description = cleanText(input.description, 3000);
   if (input.content !== undefined) updates.content = cleanText(input.content, 40000);
   if (input.lessonType !== undefined) updates.lesson_type = sanitizeLessonType(input.lessonType);
@@ -823,7 +836,7 @@ export async function updateLmsLesson(input: {
     updates.youtube_url = cleanText(input.youtubeUrl, 500);
     if (input.embedUrl === undefined) updates.embed_url = toYouTubeEmbedUrl(String(updates.youtube_url));
   }
-  if (input.embedUrl !== undefined) updates.embed_url = cleanText(input.embedUrl, 500);
+  if (input.embedUrl !== undefined) updates.embed_url = cleanText(input.embedUrl, 500) || toYouTubeEmbedUrl(input.youtubeUrl === undefined ? text(lesson.youtube_url) : text(updates.youtube_url));
   if (input.accessType !== undefined) updates.access_type = input.accessType;
   if (input.position !== undefined) updates.sort_order = Math.max(1, Math.round(input.position));
   if (input.status !== undefined) {
@@ -866,6 +879,41 @@ export async function reorderLmsLessons(input: { moduleId: string; lessonIds: st
   return { ok: true, changed: numberValue(asRecord(data).changed) };
 }
 
+function resourceUrl(value: unknown) {
+  const url = cleanText(value, 1000);
+  if (!url || !(url.startsWith("/") && !url.startsWith("//") && !url.includes("\\") || /^https?:\/\//i.test(url))) {
+    throw new Error("Đường dẫn tài liệu phải là HTTP/HTTPS hoặc đường dẫn tệp bắt đầu bằng /.");
+  }
+  if (/^https?:/i.test(url)) { try { new URL(url); } catch { throw new Error("Đường dẫn tài liệu không hợp lệ."); } }
+  return url;
+}
+
+async function validateResourceParent(client: SupabaseClient, courseId: string, moduleId: string | null, lessonId: string | null) {
+  if (lessonId) {
+    const lesson = await findLessonRow(client, lessonId);
+    const parent = await findModuleRow(client, text(lesson.module_id));
+    if (text(parent.course_id) !== courseId || text(lesson.course_id) && text(lesson.course_id) !== courseId) throw new Error("Bài học không thuộc khóa học của tài liệu.");
+    if (moduleId && moduleId !== text(lesson.module_id)) throw new Error("Bài học không thuộc chương đã chọn.");
+    return { moduleId: text(lesson.module_id), lessonId };
+  }
+  if (moduleId && text((await findModuleRow(client, moduleId)).course_id) !== courseId) throw new Error("Chương không thuộc khóa học của tài liệu.");
+  return { moduleId, lessonId: null };
+}
+
+async function findResourceRow(client: SupabaseClient, resourceId: string) {
+  for (const table of ["course_resources", "lesson_resources"] as const) {
+    const { data, error } = await client.from(table).select("*").eq("id", resourceId).maybeSingle();
+    if (error) throw new Error(`Không đọc được tài liệu: ${error.message}`);
+    if (!data) continue;
+    const row = asRecord(data);
+    if (table === "course_resources") return { table, row, courseId: text(row.course_id) };
+    const lesson = await findLessonRow(client, text(row.lesson_id));
+    const courseId = text(lesson.course_id) || text((await findModuleRow(client, text(lesson.module_id))).course_id);
+    return { table, row, courseId };
+  }
+  throw new Error("Tài liệu không còn tồn tại. Hãy tải lại danh sách.");
+}
+
 export async function createLmsResource(input: {
   courseId: string;
   moduleId?: string | null;
@@ -880,15 +928,16 @@ export async function createLmsResource(input: {
   const client = getClientOrThrow();
   const course = await findCourseRow(client, input.courseId);
   const title = cleanText(input.title, 220);
-  const url = cleanText(input.url, 1000);
-  if (!title || !url) throw new Error("Thiếu tiêu đề hoặc URL tài nguyên.");
+  const url = resourceUrl(input.url);
+  if (!title) throw new Error("Thiếu tiêu đề tài liệu.");
+  const parent = await validateResourceParent(client, text(course.id), input.moduleId || null, input.lessonId || null);
   const position = input.position ?? (await getNextPosition(client, "course_resources", "course_id", text(course.id)));
   const { data, error } = await client
     .from("course_resources")
     .insert({
       course_id: text(course.id),
-      module_id: input.moduleId || null,
-      lesson_id: input.lessonId || null,
+      module_id: parent.moduleId,
+      lesson_id: parent.lessonId,
       title,
       type: sanitizeResourceType(input.type),
       url,
@@ -905,35 +954,38 @@ export async function createLmsResource(input: {
 }
 
 export async function updateLmsResource(input: {
-  resourceId: string;
-  title?: string;
-  type?: string;
-  url?: string;
-  storagePath?: string | null;
-  description?: string;
-  position?: number;
-  moduleId?: string | null;
-  lessonId?: string | null;
+  resourceId: string; title?: string; type?: string; url?: string; storagePath?: string | null;
+  description?: string; position?: number; moduleId?: string | null; lessonId?: string | null;
 }) {
   const client = getClientOrThrow();
+  const existing = await findResourceRow(client, input.resourceId);
   const updates: Row = { updated_at: nowIso() };
-  if (input.title !== undefined) updates.title = cleanText(input.title, 220);
+  if (input.title !== undefined) { updates.title = cleanText(input.title, 220); if (!updates.title) throw new Error("Tiêu đề không được để trống."); }
   if (input.type !== undefined) updates.type = sanitizeResourceType(input.type);
-  if (input.url !== undefined) updates.url = cleanText(input.url, 1000);
-  if (input.storagePath !== undefined) updates.storage_path = cleanText(input.storagePath, 1000) || null;
+  if (input.url !== undefined) updates.url = resourceUrl(input.url);
+  if (input.storagePath !== undefined && existing.table === "course_resources") updates.storage_path = cleanText(input.storagePath, 1000) || null;
   if (input.description !== undefined) updates.description = cleanText(input.description, 2000);
   if (input.position !== undefined) updates.sort_order = Math.max(1, Math.round(input.position));
-  if (input.moduleId !== undefined) updates.module_id = input.moduleId || null;
-  if (input.lessonId !== undefined) updates.lesson_id = input.lessonId || null;
-  const { error } = await client.from("course_resources").update(updates).eq("id", input.resourceId);
-  if (error) throw new Error(`Không lưu được tài nguyên: ${error.message}`);
+  if (input.moduleId !== undefined || input.lessonId !== undefined) {
+    const lessonId = input.lessonId === undefined ? text(existing.row.lesson_id) || null : input.lessonId;
+    const moduleId = input.moduleId === undefined ? null : input.moduleId;
+    const parent = await validateResourceParent(client, existing.courseId, moduleId, lessonId);
+    if (existing.table === "lesson_resources" && !parent.lessonId) throw new Error("Tài liệu bài học cần gắn với một bài. Để dùng chung toàn khóa, hãy thêm liên kết mới ở phạm vi Toàn khóa học.");
+    updates.lesson_id = parent.lessonId;
+    if (existing.table === "course_resources") updates.module_id = parent.moduleId;
+  }
+  const { data, error } = await client.from(existing.table).update(updates).eq("id", input.resourceId).select("id").maybeSingle();
+  if (error) throw new Error(`Không lưu được tài liệu: ${error.message}`);
+  if (!data) throw new Error("Tài liệu đã thay đổi hoặc không còn tồn tại. Hãy tải lại.");
   return { ok: true };
 }
 
 export async function deleteLmsResource(input: { resourceId: string }) {
   const client = getClientOrThrow();
-  const { error } = await client.from("course_resources").delete().eq("id", input.resourceId);
-  if (error) throw new Error(`Không xóa được tài nguyên: ${error.message}`);
+  const existing = await findResourceRow(client, input.resourceId);
+  const { data, error } = await client.from(existing.table).delete().eq("id", input.resourceId).select("id").maybeSingle();
+  if (error) throw new Error(`Không gỡ được tài liệu: ${error.message}`);
+  if (!data) throw new Error("Tài liệu không còn tồn tại. Hãy tải lại danh sách.");
   return { ok: true };
 }
 

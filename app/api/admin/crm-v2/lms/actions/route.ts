@@ -33,10 +33,13 @@ const lessonAccessSchema = z.enum(["free_preview", "enrolled_only", "locked"]);
 
 const optionalText = z.string().trim().optional().nullable();
 const requiredText = z.string().trim().min(1);
+const optionalTitle = z.string().trim().min(1).max(220).optional();
 const idListSchema = z.array(z.string().uuid()).min(1).max(200);
 
 function ok(payload: Record<string, unknown> = {}) {
   revalidatePath("/admin/crm-v2/courses");
+  revalidatePath("/admin/course-studio/[courseSlug]", "page");
+  revalidatePath("/admin/crm-v2/courses/[courseSlug]", "page");
   revalidatePath("/admin/crm-v2/students");
   revalidatePath("/dashboard");
   return NextResponse.json({ ok: true, ...payload });
@@ -88,7 +91,7 @@ export async function POST(request: Request) {
           duration: z.string().max(160).optional(),
           level: z.string().max(160).optional(),
           ctaText: z.string().max(160).optional(),
-          title: optionalText,
+          title: optionalTitle,
           slug: optionalText,
           description: optionalText,
           shortDescription: optionalText,
@@ -142,7 +145,7 @@ export async function POST(request: Request) {
       const input = z
         .object({
           moduleId: z.string().uuid(),
-          title: optionalText,
+          title: optionalTitle,
           description: optionalText,
           status: publishStatusSchema.optional(),
           position: z.coerce.number().int().positive().optional(),
@@ -203,7 +206,7 @@ export async function POST(request: Request) {
         .object({
           lessonId: z.string().uuid(),
           moduleId: z.string().uuid().optional(),
-          title: optionalText,
+          title: optionalTitle,
           slug: optionalText,
           description: optionalText,
           content: optionalText,
@@ -268,7 +271,7 @@ export async function POST(request: Request) {
       const input = z
         .object({
           resourceId: z.string().uuid(),
-          title: optionalText,
+          title: optionalTitle,
           type: optionalText,
           url: optionalText,
           storagePath: optionalText,

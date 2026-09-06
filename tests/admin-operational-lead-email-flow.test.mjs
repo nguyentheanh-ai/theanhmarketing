@@ -130,7 +130,7 @@ test("admin UI surfaces real activities, lead notes, email history, and refresh 
   assert.match(adminData, /activities:\s*"admin:activities"/);
   assert.match(adminData, /getAdminLeadActivities/);
   assert.match(adminData, /invalidateAdminModules\(.*activities/s);
-  assert.match(dashboardPage, /getCrmV2Dashboard/);
+  assert.match(dashboardPage, /AnalyticsPage/);
   assert.match(commandCenterService, /getCommandCenterStudentActivities\(range\)/);
   assert.match(dashboard, /activities/);
   assert.match(dashboard, /\/api\/admin\/activities\/recent\?refresh=1/);

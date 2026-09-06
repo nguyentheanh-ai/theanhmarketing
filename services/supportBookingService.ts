@@ -372,6 +372,8 @@ export async function listSupportBusyDates(now = new Date()) {
 
 export async function setSupportBusyDate(input: { date: string; busy: boolean; note?: string; actorId?: string | null }, now = new Date()) {
   const { minDate, maxDate } = getSupportBookingWindow(now);
+  const parsedDate = new Date(`${input.date}T00:00:00Z`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.date) || !Number.isFinite(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== input.date) throw new Error("Ngày bận không hợp lệ.");
   if (input.date < minDate && !input.busy) throw new Error(`Chỉ có thể mở lịch từ ${SUPPORT_MIN_LEAD_DAYS} ngày tới.`);
   if (isSupportSunday(input.date) && !input.busy) throw new Error("Không nhận lịch hỗ trợ vào Chủ nhật.");
   if (input.date > maxDate || !/^\d{4}-\d{2}-\d{2}$/.test(input.date)) throw new Error("Ngày bận không hợp lệ.");
@@ -379,7 +381,7 @@ export async function setSupportBusyDate(input: { date: string; busy: boolean; n
   const supabase = createSupabaseAdminClient();
   if (!supabase) throw new Error("Chưa cấu hình dữ liệu lịch hỗ trợ.");
   const result = input.busy
-    ? await supabase.from("support_busy_dates").upsert({ busy_date: input.date, note: input.note?.slice(0, 500) || null, created_by: input.actorId ?? null, updated_at: new Date().toISOString() }, { onConflict: "busy_date" })
+    ? await supabase.from("support_busy_dates").upsert({ busy_date: input.date, note: input.note?.trim().slice(0, 500) || null, created_by: input.actorId ?? null, updated_at: new Date().toISOString() }, { onConflict: "busy_date" })
     : await supabase.from("support_busy_dates").delete().eq("busy_date", input.date);
   if (result.error) throw new Error(result.error.message);
   return { ok: true, demo: false };

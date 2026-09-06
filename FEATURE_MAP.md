@@ -442,3 +442,8 @@ Anh xác nhận “Triển khai bản đã kiểm thử”. Migration thực t�
 ## Cập nhật hoàn tất
 
 Bản sửa admin đã được phát hành sau xác nhận của chủ dự án. Kiểm tra sau phát hành đạt. Các trạng thái chờ phát hành trong lịch sử phía trên đã được thay thế. Giới hạn xóa vật lý mã cũ và nghiệm thu trực quan vẫn được giữ như bản bàn giao đã duyệt. Bằng chứng vận hành chi tiết được giữ trong workspace và bảng theo dõi riêng của chủ dự án.
+
+
+## 06/09/2026 — Không gian quản trị theo cửa sổ
+
+Đã làm lại tổng quan/báo cáo với bộ lọc ngày–sản phẩm và các cửa sổ đối chiếu; gộp khách hàng/học viên vào `/admin/crm-v2/customers`; thay trình sửa khóa học bằng cây chương–bài và4tab; lịch hỗ trợ có tháng/tuần/ngày; Cài đặt chia nhóm công cụ. Editor giữ phạm vi học viên, owner quản lý prospects/tài khoản. Các API hiện có tiếp tục phục vụ thao tác; kiểm tra danh tính, parent/nguồn tài liệu và phản hồi lỗi được bổ sung. Không migration hoặc sửa dữ liệu khách để QA, không thay landing/payment/student app riêng. Chi tiết và kiểm thử: `docs/ADMIN_WORKSPACE_20260906.md`. Trạng thái bản sửa này: kiểm chứng cục bộ, đang hoàn tất phát hành; không dùng trạng thái release cũ để xác nhận bản mới.
