@@ -430,4 +430,8 @@ Migration `20260905055235_support_booking_public_duration.sql` đã áp dụng v
 
 ## 2026-09-06 — Optional support note (candidate only)
 
-Migration `20260906100812_support_booking_optional_note.sql` changes only `support_bookings_note_check` to length 0..2000; NOT NULL/history/grants/RPC unchanged. Validated in local PostgreSQL with the full support chain, not applied production. Must precede wizard runtime release. See `SUPPORT_BOOKING_WIZARD_20260906.md`.
+Migration `20260906101941_support_booking_optional_note.sql` changes only `support_bookings_note_check` to length 0..2000; NOT NULL/history/grants/RPC unchanged. Validated in local PostgreSQL with the full support chain, not applied production. Must precede wizard runtime release. See `SUPPORT_BOOKING_WIZARD_20260906.md`.
+
+## 2026-09-06 — Phát hành đã được anh duyệt, migration đã áp dụng
+
+Anh xác nhận “ổn, deloy đi em”. Migration optional note đã áp dụng vào main-site Supabase, phiên bản thực tế20260906101941; tên file đã đồng bộ sổ migration. Readback: note CHECK0..2000, NOT NULL giữ nguyên, RLS bật, anon/authenticated vẫn không được gọi reserve v2. Không ghi/sửa lịch hay tạo đơn thử. Đang tích hợp và phát hành UI qua canonical guard; chưa xác nhận UI live ở thời điểm ghi mục này. Các mục chờ duyệt/migration chưa áp dụng phía trên là lịch sử và được thay thế bởi mục này.

@@ -13,7 +13,7 @@ test("duration migration executes on PostgreSQL with preserved history, overlap 
     await db.exec("insert into public.support_bookings(customer_name,email,phone,topic,note,appointment_date,appointment_time,starts_at,ends_at,hold_expires_at,status,amount) values ('Test','test@example.com','0900000000','test','Historical test booking','2020-01-01','09:00','2020-01-01T02:00Z','2020-01-01T02:30Z','2020-01-01T01:00Z','cancelled',500000);");
     await db.exec(fs.readFileSync("supabase/migrations/20260816152642_support_booking_price_1m.sql", "utf8"));
     await db.exec(fs.readFileSync("supabase/migrations/20260905055235_support_booking_public_duration.sql", "utf8"));
-    await db.exec(fs.readFileSync("supabase/migrations/20260906100812_support_booking_optional_note.sql", "utf8"));
+    await db.exec(fs.readFileSync("supabase/migrations/20260906101941_support_booking_optional_note.sql", "utf8"));
     await t.test("optional notes accept empty and short text while retaining the maximum and existing notes", async () => {
       const historical = (await db.query("select id,note from public.support_bookings where appointment_date='2020-01-01'")).rows[0];
       assert.equal(historical.note, "Historical test booking");

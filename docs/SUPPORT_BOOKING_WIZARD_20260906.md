@@ -20,7 +20,7 @@ Mỗi thời điểm chỉ render nội dung một bước. Quay lại giữ sta
 - `components/support-booking/support-booking-form.tsx`: wizard, lịch tháng, thông tin có điều kiện, review và tái sử dụng API/thanh toán.
 - `lib/support-booking/constants.ts`: bốn chủ đề mới; giữ riêng các mã chủ đề cũ để tương thích trang đang mở/lịch cũ.
 - `lib/support-booking/domain.ts`: cho phép mô tả trống/ngắn, tiếp tục kiểm tra chủ đề và các ràng buộc liên hệ/lịch/giá hiện có.
-- Migration CLI-generated `supabase/migrations/20260906100812_support_booking_optional_note.sql`: chỉ thay CHECK độ dài note từ 10..2000 thành 0..2000. Giữ NOT NULL, dữ liệu cũ, quyền truy cập, RPC, giá và chống trùng lịch. **Chưa áp dụng production.**
+- Migration CLI-generated `supabase/migrations/20260906101941_support_booking_optional_note.sql`: chỉ thay CHECK độ dài note từ 10..2000 thành 0..2000. Giữ NOT NULL, dữ liệu cũ, quyền truy cập, RPC, giá và chống trùng lịch. **Chưa áp dụng production.**
 - Không sửa Auth service, API đặt lịch, order/SePay, email, Pixel/CAPI, CRM, landing quảng cáo hoặc cấu hình deploy.
 
 ## Bằng chứng kiểm tra
@@ -58,3 +58,7 @@ Rollback ứng dụng về fd847c9 nếu cần; giữ constraint mới, không �
 Đã đọc: memory đúng support price; registry/WORKSPACE_RULES/PROJECT_REGISTRY/computer-use-policy; workspace ACTIVE_TASKS, AI_CONTEXT_INDEX, SESSION_STATE, FEATURE_REGISTRY, ROLE_AND_SESSION_PROTOCOL, SESSION_START_CHECKLIST, các mục support trong PAYMENT-FLOW/EMAIL-FLOW/DATABASE-CONTRACT; repo AGENTS, CURRENT_STATE, FEATURE_MAP, WEBSITE_DEEP_STRUCTURE_HANDOFF, DESIGN_RULES, phần liên quan kiến trúc dữ liệu/security, báo cáo support duration, lesson hiện có và tài liệu Next use-client. Memory giá tháng 8 chỉ dùng để nhận biết lịch sử; giá/thời lượng hiện tại lấy từ source và báo cáo release 05/09.
 
 - Full ESLint: 103 errors/7275 warnings, output matches canonical exactly after normalizing root path. Primarily prebuilt public JS and existing test lint; zero changes to those files. Targeted changed-file lint passes. No lint config/baseline fixes included in this UI task.
+
+## 2026-09-06 — Phát hành đã được anh duyệt, migration đã áp dụng
+
+Anh xác nhận “ổn, deloy đi em”. Migration optional note đã áp dụng vào main-site Supabase, phiên bản thực tế20260906101941; tên file đã đồng bộ sổ migration. Readback: note CHECK0..2000, NOT NULL giữ nguyên, RLS bật, anon/authenticated vẫn không được gọi reserve v2. Không ghi/sửa lịch hay tạo đơn thử. Đang tích hợp và phát hành UI qua canonical guard; chưa xác nhận UI live ở thời điểm ghi mục này. Các mục chờ duyệt/migration chưa áp dụng phía trên là lịch sử và được thay thế bởi mục này.
