@@ -235,3 +235,13 @@ Updated: 2026-07-22
 - `/academy/facebook-ads-master-2026` no longer runs idle infinite decoration animations or blurred backdrop surfaces. Finite interaction/reveal behavior and the checkout transition spinner remain intact.
 - Offer, pricing, QR/SePay, polling, invoice, email/access, Pixel/CAPI and CTA contracts are unchanged. Source/published landing HTML remains byte-identical.
 - Verification: focused regression `39/39`, targeted ESLint, `git diff --check`, Chrome local readback `200` for landing and demo checkout with zero running animations/backdrop blurs, and Webpack production build `104/104` routes. Runtime commit `7846ba4`; production `dpl_3fFL3SV8nNYT87vVUkUxU4zeyHbm` is Ready on `www` and apex. Live landing returns `200`, matches source SHA-256 `a787f17a2f3d647036491591d907afed7999c0686455ed458f1aaa47a75a5d52`, has zero running animations/backdrop blurs/broken images/overflow/browser errors, and post-release error logs are empty. No real order was created.
+
+
+## 2026-09-06 — Wizard đặt lịch hỗ trợ (LOCAL VERIFIED / WAITING OWNER)
+
+- Yêu cầu: đổi `/dat-lich-ho-tro` thành từng bước: câu hỏi học viên chỉ khi chưa login → 4 chủ đề + note tùy chọn → liên hệ chỉ khách → thời lượng/lịch tháng/giờ → kiểm tra và checkout hiện có. Học viên thiếu điện thoại bổ sung tại bước chọn lịch; signed-in nonbuyer vẫn dùng mức phí khách.
+- Source: page/form, support constants/domain, migration optional note và support tests. Giữ giá, server eligibility, Auth, order/SePay/email/tracking, lịch +3..+30, Chủ nhật và chống chồng lịch.
+- Bằng chứng: 44/44 support gồm SQL và React interactions, 39/39 prebuild, TypeScript, lint thay đổi, Webpack build 104/104, diff check; full 655/659 với 4 lỗi Facebook Ads tái hiện trên canonical, không có diff các file đó. HTTP local 200. Chưa QA trực quan do managed browser policy; không có transaction/send thật.
+- Root feature `support-booking-public-duration-20260905`, base canonical `fd847c9`; đã dùng lại root sạch. Chưa apply migration `20260906100812_support_booking_optional_note.sql`, chưa deploy. Handoff đầy đủ: `docs/SUPPORT_BOOKING_WIZARD_20260906.md`. Bản xem trước http://127.0.0.1:3106/dat-lich-ho-tro.
+
+- Full ESLint: 103 errors/7275 warnings, output matches canonical exactly after normalizing root path. Primarily prebuilt public JS and existing test lint; zero changes to those files. Targeted changed-file lint passes. No lint config/baseline fixes included in this UI task.

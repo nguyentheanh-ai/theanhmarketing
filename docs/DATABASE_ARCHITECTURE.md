@@ -427,3 +427,7 @@ Production migration version `20260803080509` is applied. The first approved bac
 ## 2026-09-05 - Đã cập nhật dữ liệu đặt lịch
 
 Migration `20260905055235_support_booking_public_duration.sql` đã áp dụng và đọc lại trên hệ thống thật. Trạng thái chưa áp dụng ở phần ghi chú bản thử phía trên đã được thay thế. Đủ hai cột, ràng buộc loại/giá/thời lượng/chống trùng và quyền RPC chỉ cho service_role; không có dữ liệu lịch sử sai sau cập nhật. Bản website ae7fcda đã hoạt động với cấu trúc này.
+
+## 2026-09-06 — Optional support note (candidate only)
+
+Migration `20260906100812_support_booking_optional_note.sql` changes only `support_bookings_note_check` to length 0..2000; NOT NULL/history/grants/RPC unchanged. Validated in local PostgreSQL with the full support chain, not applied production. Must precede wizard runtime release. See `SUPPORT_BOOKING_WIZARD_20260906.md`.

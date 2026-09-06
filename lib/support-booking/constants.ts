@@ -14,11 +14,18 @@ export const SUPPORT_MIN_LEAD_DAYS = 3;
 export const SUPPORT_MAX_LEAD_DAYS = 30;
 export const SUPPORT_TIME_ZONE = "Asia/Ho_Chi_Minh";
 
-export const SUPPORT_TOPICS = [
+export const SUPPORT_LEGACY_TOPICS = [
   { value: "kiem-tra-quang-cao", label: "Kiểm tra quảng cáo" },
   { value: "len-quang-cao-mau", label: "Lên quảng cáo mẫu" },
   { value: "tu-van-xay-dung-he-thong", label: "Tư vấn xây dựng hệ thống" },
   { value: "noi-dung-khac", label: "Nội dung khác" },
 ] as const;
 
-export type SupportTopic = (typeof SUPPORT_TOPICS)[number]["value"];
+export const SUPPORT_TOPICS = [
+  { value: "ai-cho-marketing", label: "AI cho Marketing" },
+  { value: "facebook-ads", label: "Facebook Ads" },
+  { value: "content-media", label: "Content/Media" },
+  { value: "ai-agent", label: "AI Agent" },
+] as const;
+
+export type SupportTopic = (typeof SUPPORT_TOPICS)[number]["value"] | (typeof SUPPORT_LEGACY_TOPICS)[number]["value"];

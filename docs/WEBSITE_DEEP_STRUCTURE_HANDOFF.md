@@ -1611,3 +1611,13 @@ Before changing these, run targeted tests and full build.
 - Landing mitigation: remove idle infinite decoration transforms, `will-change: transform` and blurred backdrop surfaces; keep finite reveal/hover interactions and the submit-only checkout transition.
 - Protected contracts: no order, price, QR/SePay, payment polling, invoice, email/access, Pixel/CAPI, CTA or SEO behavior changed.
 - Verification/release: `39/39` focused regressions, targeted ESLint, byte-identical landing files, Chrome local `200` render at top/mid page with zero running animations and zero computed backdrop blur, and Webpack production build of all 104 routes. Runtime commit `7846ba4` was promoted through Git-integrated preview `dpl_GvPKYEuRfKHVe3rvPtr58GsvPz5d` to production `dpl_3fFL3SV8nNYT87vVUkUxU4zeyHbm`, Ready on `www` and apex. Live landing is byte-identical to source at SHA-256 `a787f17a2f3d647036491591d907afed7999c0686455ed458f1aaa47a75a5d52`; Chrome live check found zero running animation, backdrop blur, broken image, horizontal overflow or console/page errors. Post-release Vercel error log scan is empty. No real order was created; owner-device repetition of the original scroll remains the final symptom confirmation.
+
+
+## 2026-09-06 — Wizard đặt lịch hỗ trợ (LOCAL VERIFIED / WAITING OWNER)
+
+- Yêu cầu: đổi `/dat-lich-ho-tro` thành từng bước: câu hỏi học viên chỉ khi chưa login → 4 chủ đề + note tùy chọn → liên hệ chỉ khách → thời lượng/lịch tháng/giờ → kiểm tra và checkout hiện có. Học viên thiếu điện thoại bổ sung tại bước chọn lịch; signed-in nonbuyer vẫn dùng mức phí khách.
+- Source: page/form, support constants/domain, migration optional note và support tests. Giữ giá, server eligibility, Auth, order/SePay/email/tracking, lịch +3..+30, Chủ nhật và chống chồng lịch.
+- Bằng chứng: 44/44 support gồm SQL và React interactions, 39/39 prebuild, TypeScript, lint thay đổi, Webpack build 104/104, diff check; full 655/659 với 4 lỗi Facebook Ads tái hiện trên canonical, không có diff các file đó. HTTP local 200. Chưa QA trực quan do managed browser policy; không có transaction/send thật.
+- Root feature `support-booking-public-duration-20260905`, base canonical `fd847c9`; đã dùng lại root sạch. Chưa apply migration `20260906100812_support_booking_optional_note.sql`, chưa deploy. Handoff đầy đủ: `docs/SUPPORT_BOOKING_WIZARD_20260906.md`. Bản xem trước http://127.0.0.1:3106/dat-lich-ho-tro.
+
+- Full ESLint: 103 errors/7275 warnings, output matches canonical exactly after normalizing root path. Primarily prebuilt public JS and existing test lint; zero changes to those files. Targeted changed-file lint passes. No lint config/baseline fixes included in this UI task.

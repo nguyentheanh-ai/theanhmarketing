@@ -7,6 +7,7 @@ import {
   SUPPORT_MIN_LEAD_DAYS,
   SUPPORT_TIME_ZONE,
   SUPPORT_TOPICS,
+  SUPPORT_LEGACY_TOPICS,
   type SupportTopic,
 } from "@/lib/support-booking/constants";
 
@@ -158,8 +159,7 @@ export function validateSupportBookingInput(input: unknown, now = new Date(), bo
   if (customerName.length < 2) throw new Error("Vui lòng nhập họ tên đầy đủ.");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Email không hợp lệ.");
   if (phone.length < 9 || phone.length > 15) throw new Error("Số điện thoại không hợp lệ.");
-  if (!SUPPORT_TOPICS.some((item) => item.value === topic)) throw new Error("Chủ đề hỗ trợ không hợp lệ.");
-  if (note.length < 10) throw new Error("Nội dung cần hỗ trợ phải có ít nhất 10 ký tự.");
+  if (![...SUPPORT_TOPICS, ...SUPPORT_LEGACY_TOPICS].some((item) => item.value === topic)) throw new Error("Chủ đề hỗ trợ không hợp lệ.");
   if (isSupportSunday(appointmentDate)) {
     throw new Error("Không nhận lịch hỗ trợ vào Chủ nhật. Vui lòng chọn ngày khác.");
   }

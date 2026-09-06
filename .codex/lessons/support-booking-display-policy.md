@@ -23,3 +23,12 @@
 - Correction: validate contiguous half-hour coverage, use interval exclusion and a consistent day-before-row lock order, price through trusted server tier, permit missing contact completion, and replace the obsolete blanket-price assertion with explicit base/extra prices.
 - Verification: 38 focused tests including executable local PostgreSQL migration, direct overlapping insert rejection, guest body-price tampering, paid-student missing phone and all order/item/QR amounts.
 - Limits: local verified only; no production migration or booking created. PGlite requests do not prove multi-connection PostgreSQL scheduling. Historical prices and the separate consultation product must not be globally replaced.
+
+## Multi-step form and optional detail
+
+- Applicability: this tenant's support wizard replacing the simultaneous form.
+- Observation/evidence: old submit extracted FormData from mounted fields; hiding/unmounting earlier steps would lose those values. The database also enforced note length >=10, so removing HTML required alone would still reject a booking. Previous render tests assumed all fields/calendar appeared initially.
+- Cause status: VERIFIED by source and local SQL constraints. The first focused run exposed obsolete initial-render phone assertions; the interaction harness first failed because React element props include circular owner references and numeric date labels differ from long-month labels.
+- Correction: keep controlled wizard values, pass them explicitly to the unchanged API, relax the note constraint with an additive migration, and test branching/state retention plus late conflict refresh. Test selectors extract child text without serializing React owners and format dates with the same declared locale options.
+- Verification: 44 focused tests pass with interaction and local PostgreSQL runtimes enabled, including empty note, skipped contact step, saved entries and 409 recovery. Database keeps upper bound and old notes.
+- Limits: local tested; production migration and release await owner action-time approval. React tests do not establish browser layout or real login/payment. Do not fake missing notes or weaken contact/eligibility validation.

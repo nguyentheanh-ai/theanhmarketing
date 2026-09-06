@@ -13,6 +13,18 @@ test("duration migration executes on PostgreSQL with preserved history, overlap 
     await db.exec("insert into public.support_bookings(customer_name,email,phone,topic,note,appointment_date,appointment_time,starts_at,ends_at,hold_expires_at,status,amount) values ('Test','test@example.com','0900000000','test','Historical test booking','2020-01-01','09:00','2020-01-01T02:00Z','2020-01-01T02:30Z','2020-01-01T01:00Z','cancelled',500000);");
     await db.exec(fs.readFileSync("supabase/migrations/20260816152642_support_booking_price_1m.sql", "utf8"));
     await db.exec(fs.readFileSync("supabase/migrations/20260905055235_support_booking_public_duration.sql", "utf8"));
+    await db.exec(fs.readFileSync("supabase/migrations/20260906100812_support_booking_optional_note.sql", "utf8"));
+    await t.test("optional notes accept empty and short text while retaining the maximum and existing notes", async () => {
+      const historical = (await db.query("select id,note from public.support_bookings where appointment_date='2020-01-01'")).rows[0];
+      assert.equal(historical.note, "Historical test booking");
+      for (const note of ["", "AI", "x".repeat(2000)]) {
+        await db.query("update public.support_bookings set note=$1 where id=$2", [note, historical.id]);
+        assert.equal((await db.query("select note from public.support_bookings where id=$1", [historical.id])).rows[0].note, note);
+      }
+      await assert.rejects(db.query("update public.support_bookings set note=$1 where id=$2", ["x".repeat(2001), historical.id]), /support_bookings_note_check/);
+      await assert.rejects(db.query("update public.support_bookings set note=null where id=$1", [historical.id]), /null value/);
+      await db.query("update public.support_bookings set note=$1 where id=$2", [historical.note, historical.id]);
+    });
     const { rows } = await db.query("select ((now() at time zone 'Asia/Ho_Chi_Minh')::date + 3)::text as day");
     let date = new Date(rows[0].day + "T00:00:00Z");
     if (date.getUTCDay() === 0) date.setUTCDate(date.getUTCDate() + 1);

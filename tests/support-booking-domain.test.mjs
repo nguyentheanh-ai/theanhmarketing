@@ -155,10 +155,13 @@ test("booking input is normalized and rejects invalid or unavailable requests", 
     () => validateSupportBookingInput({ ...valid, appointmentTime: "12:00" }, now),
     /khung giờ không hợp lệ/i,
   );
-  assert.throws(
-    () => validateSupportBookingInput({ ...valid, note: "ngắn" }, now),
-    /ít nhất 10 ký tự/i,
-  );
+  for (const note of [undefined, "", "   ", "ngắn"]) {
+    assert.equal(validateSupportBookingInput({ ...valid, note }, now).note, (note ?? "").trim());
+  }
+  for (const topic of ["ai-cho-marketing", "facebook-ads", "content-media", "ai-agent"]) {
+    assert.equal(validateSupportBookingInput({ ...valid, topic, note: "" }, now).topic, topic);
+  }
+  assert.throws(() => validateSupportBookingInput({ ...valid, topic: "unknown" }, now), /chủ đề/i);
 });
 
 test("student pricing requires verified purchase rather than an owner preview flag", () => {

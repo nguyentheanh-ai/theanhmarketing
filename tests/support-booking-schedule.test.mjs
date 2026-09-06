@@ -100,35 +100,27 @@ test("local preview follows the same Sunday closure", async () => {
   assert.equal(calls(), 0);
 });
 
-test("student and owner see identical booking forms with no internal notice and disabled Sundays", async () => {
-  const { service } = serviceFixture("development");
-  const { days } = await service.getSupportAvailability(now);
+test("student and owner start at topics without exposing contact or calendar steps", async () => {
   const { SupportBookingForm } = load("components/support-booking/support-booking-form.tsx", aliases);
   const customer = { customerName: "Học viên kiểm tra", email: "test@example.com", phone: "", purchasedCourseSlug: "facebook-ads-2026" };
-  const render = (previewMode) => renderToStaticMarkup(React.createElement(SupportBookingForm, { today: "2026-09-05", bookableDays: days, customer: { ...customer, previewMode } }));
+  const render = (previewMode) => renderToStaticMarkup(React.createElement(SupportBookingForm, { today: "2026-09-05", bookableDays: [], customer: { ...customer, previewMode } }));
   const html = render(false);
   assert.equal(render(true), html);
-  assert.doesNotMatch(html, /quản trị|xem thử|Telegram|không tạo dữ liệu|luồng của khách hàng/);
-  assert.match(html, /ít nhất 3 ngày/);
-  assert.match(html, /1\.000\.000đ/);
-  const buttons = [...html.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/g)];
-  assert.ok(buttons.slice(0, 3).every((button) => button[1].includes("disabled")));
-  assert.ok(!buttons[3][1].includes("disabled"));
-  for (const index of [1, 8, 15, 22, 29]) {
-    assert.ok(buttons[index][1].includes("disabled"));
-    assert.match(buttons[index][2], /Nghỉ/);
-  }
-  assert.ok(buttons.at(-1)[1].includes("disabled"));
+  assert.match(html, /Bạn cần hướng dẫn về gì/);
+  for (const label of ["AI cho Marketing", "Facebook Ads", "Content/Media", "AI Agent"]) assert.ok(html.includes(label));
+  assert.doesNotMatch(html, /name="(?:customerName|email|phone|note)"|Thời lượng buổi hẹn|quản trị|xem thử|Telegram/);
 });
 
-test("public booking form asks for contact details and starts at the consultation package", async () => {
-  const {service}=serviceFixture("development");
-  const {days}=await service.getSupportAvailability(now);
+test("guest starts with the student question, while authenticated nonbuyers start at topics", () => {
   const {SupportBookingForm}=load("components/support-booking/support-booking-form.tsx",aliases);
-  const html=renderToStaticMarkup(React.createElement(SupportBookingForm,{today:"2026-09-05",bookableDays:days,customer:null}));
-  assert.match(html,/name="customerName"/);assert.match(html,/name="email"/);assert.match(html,/name="phone"/);
-  assert.match(html,/2\.000\.000đ/);assert.match(html,/2\.700\.000đ/);assert.match(html,/3\.400\.000đ/);
-  assert.doesNotMatch(html,/value="30"/);assert.match(html,/value="60"/);
+  const props={today:"2026-09-05",bookableDays:[],customer:null};
+  const html=renderToStaticMarkup(React.createElement(SupportBookingForm,props));
+  assert.match(html,/Bạn có phải học viên/);
+  assert.match(html,/href="\/dang-nhap\?next=%2Fdat-lich-ho-tro"/);
+  assert.doesNotMatch(html,/name="(?:customerName|email|phone|topic)"|Thời lượng buổi hẹn/);
+  const signedIn=renderToStaticMarkup(React.createElement(SupportBookingForm,{...props,isAuthenticated:true}));
+  assert.match(signedIn,/Bạn cần hướng dẫn về gì/);
+  assert.doesNotMatch(signedIn,/Bạn có phải học viên/);
 });
 
 test("booking API admits guests but never trusts their claimed student identity or amount", async () => {
@@ -216,13 +208,12 @@ test("paid students without a saved phone retain eligibility and can supply a ph
   assert.equal(customer.phone,"");
   const {SupportBookingForm}=load("components/support-booking/support-booking-form.tsx",aliases);
   const html=renderToStaticMarkup(React.createElement(SupportBookingForm,{today:"2026-09-05",bookableDays:[],customer}));
-  assert.match(html,/Bổ sung số điện thoại/);
-  assert.match(html,/name="phone"/);
-  assert.match(html,/1\.000\.000đ/);
+  assert.match(html,/Bạn cần hướng dẫn về gì/);
+  assert.doesNotMatch(html,/name="phone"/); // Collected on the schedule step, covered by the interaction test.
 });
 
 
-test("public page renders without an account and exposes both pricing tiers", async () => {
+test("public page renders the wizard without requiring an account", async () => {
   const {default:Page}=load("app/dat-lich-ho-tro/page.tsx",{
     ...aliases,
     "@/components/site/brand-mark":{BrandMark:()=>null},
@@ -236,7 +227,5 @@ test("public page renders without an account and exposes both pricing tiers", as
   const html=renderToStaticMarkup(await Page());
   assert.match(html,/PUBLIC FORM/);
   assert.match(html,/Đặt lịch cùng Thế Anh/);
-  assert.match(html,/30 phút · 1\.000\.000đ/);
-  assert.match(html,/60 phút · 2\.000\.000đ/);
   assert.doesNotMatch(html,/Telegram|quản trị|xem thử/);
 });

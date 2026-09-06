@@ -11,12 +11,11 @@ test("paid student support booking page uses authenticated customer details", ()
   const form = read("components/support-booking/support-booking-form.tsx");
 
   assert.match(page, /Đặt lịch cùng Thế Anh/);
-  assert.match(page, /Hỗ trợ học viên/);
-  assert.match(page, /30 phút/);
   assert.match(page, /getSupportAvailability/);
   assert.doesNotMatch(page, /requireStudentAuth/);
   assert.match(page, /getEligibleSupportCustomer/);
   assert.match(page, /customer=\{customer\}/);
+  assert.match(page, /isAuthenticated=\{Boolean\(user\)\}/);
   assert.match(form, /Chọn ngày/);
   assert.match(form, /Chọn giờ/);
   assert.match(form, /Vui lòng đặt lịch trước ít nhất/);
@@ -29,8 +28,6 @@ test("paid student support booking page uses authenticated customer details", ()
   assert.match(form, /name="phone"/);
   assert.match(form, /window\.location\.href = payload\.checkoutUrl/);
   assert.match(form, /getSupportBookingQuote/);
-  assert.match(page, /30 phút · 1\.000\.000đ/);
-  assert.match(page, /Thêm 30 phút: 500\.000đ/);
 });
 
 test("support booking has a public paid confirmation route", () => {
