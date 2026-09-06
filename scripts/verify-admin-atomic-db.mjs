@@ -36,7 +36,7 @@ alter table crm_v2.enrollments alter column id set default gen_random_uuid();
 alter table crm_v2.enrollments add column activated_at timestamptz;
 alter table crm_v2.enrollments add column last_seen_at timestamptz;`);
 await db.exec(fs.readFileSync(root+'/supabase/migrations/20260705131500_lms_rpc_preserve_enrollment_fields.sql','utf8'));
-await db.exec(fs.readFileSync(root+'/supabase/migrations/20260906120600_admin_lms_atomic_operations.sql','utf8'));
+await db.exec(fs.readFileSync(root+'/supabase/migrations/20260906130340_admin_lms_atomic_operations.sql','utf8'));
 const reorder=(kind,parent,ids)=>db.query('select public.admin_lms_reorder($1,$2,$3::uuid[])',[kind,parent,ids]);
 await reorder('modules',id(1),[id(4),id(3)]);
 assert.deepEqual((await db.query('select id from course_modules where course_id=$1 order by sort_order',[id(1)])).rows.map(x=>x.id),[id(4),id(3)]);

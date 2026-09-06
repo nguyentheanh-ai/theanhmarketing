@@ -44,3 +44,8 @@ ADMIN_SQL_TEST_MODULE=/private/tmp/theanh-admin-db-tests/node_modules/@electric-
 node --test tests/facebook-ads-landing.test.mjs tests/payment-page-reference-ui.test.mjs
 node node_modules/next/dist/bin/next build --webpack
 ```
+
+
+## Phát hành đã được duyệt và DB đã cập nhật
+
+Anh xác nhận “Triển khai bản đã kiểm thử”. Migration thực tế20260906130340_admin_lms_atomic_operations đã áp dụng: đúng3RPC, SECURITY INVOKER, anon/authenticated EXECUTE=false, service_role=true. Các tổng cấu trúc khóa học, enrollment, tiến độ và đơn hàng trước/sau giữ nguyên. Không gọi RPC có ghi dữ liệu khách để QA. Đang tích hợp nguồn ứng viên cdb3b46 vào canonical và triển khai qua guard. Các trạng thái chờ xác nhận/chưa migration ở phía trên là lịch sử.

@@ -432,3 +432,8 @@ Quy tắc hiện tại: học viên có paid course hoặc admin được getCur
 Đã thực hiện yêu cầu sửa end-to-end trong worktree feature, nhánh fix/admin-consolidation-20260906. Một shell/menu, route cũ chuyển hướng, UUID/roles/LMS/khóa slug, quyền học nguyên tử và bảo toàn Auth, báo cáo cùng nguồn/khung thời gian, trạng thái lỗi thật, phục hồi URL qua đăng nhập. Build104/104, prebuild39/39, hành vi14/14, toàn dự án666/670 với4 lỗi baseline Facebook Ads,0skip; PostgreSQL rollback/bảo toàn dữ liệu đạt. Lint file đổi0error/0warning. Không gửi hay ghi dữ liệu khách để QA.
 
 Migration thêm3 RPC chưa áp dụng; chưa deploy. Gỡ file nguồn cũ bị cleanup-policy chặn, các UI đó đã ngừng mount trong ứng viên. Không chỉnh policy. Chi tiết docs/ADMIN_CONSOLIDATION_20260906.md; manifest docs/ADMIN_RETIRED_SOURCE_MANIFEST_20260906.json. Phải kiểm tra release/DB/live riêng, không coi test là chứng minh đăng nhập học viên hay email delivered.
+
+
+## Phát hành đã được duyệt và DB đã cập nhật
+
+Anh xác nhận “Triển khai bản đã kiểm thử”. Migration thực tế20260906130340_admin_lms_atomic_operations đã áp dụng: đúng3RPC, SECURITY INVOKER, anon/authenticated EXECUTE=false, service_role=true. Các tổng cấu trúc khóa học, enrollment, tiến độ và đơn hàng trước/sau giữ nguyên. Không gọi RPC có ghi dữ liệu khách để QA. Đang tích hợp nguồn ứng viên cdb3b46 vào canonical và triển khai qua guard. Các trạng thái chờ xác nhận/chưa migration ở phía trên là lịch sử.

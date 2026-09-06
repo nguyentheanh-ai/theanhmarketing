@@ -171,7 +171,7 @@ test("admin student table has per-student grant and revoke controls", () => {
 
   assert.match(page, /StudentAccessActions/);
   assert.match(route, /setStudentAccessAtomically/);
-  assert.match(read("supabase/migrations/20260906120600_admin_lms_atomic_operations.sql"), /admin-access-revoke/);
+  assert.match(read("supabase/migrations/20260906130340_admin_lms_atomic_operations.sql"), /admin-access-revoke/);
   assert.match(route, /canAccessAdminRole\(adminRole, \["owner", "editor"\]\)/);
   assert.match(route, /ensureStudentAccountForAccessGrant/);
   assert.match(route, /sendStudentAccessEmail/);
