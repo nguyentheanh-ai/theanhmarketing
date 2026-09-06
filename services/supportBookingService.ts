@@ -89,7 +89,7 @@ function purchasedCourseSlugs(order: { courseSlug: string; orderItems: Array<{ s
 export async function getEligibleSupportCustomer(
   email: string,
   metadata?: Record<string, unknown> | null,
-  options: { allowOwnerPreview?: boolean } = {},
+  options: { allowOwnerPreview?: boolean; allowAdminBooking?: boolean } = {},
 ): Promise<EligibleSupportCustomer | null> {
   if (isLocalDemo()) {
     return {
@@ -111,18 +111,21 @@ export async function getEligibleSupportCustomer(
 
   const latestPaid = matchingCourseOrders.find((entry) => entry.order.status === "paid");
   const ownerPreview = !latestPaid && options.allowOwnerPreview === true && isAdminEmail(normalizedEmail);
-  const latest = latestPaid ?? (ownerPreview ? matchingCourseOrders[0] : undefined);
-  if (!latest) return null;
-  const customerName = latest.order.studentName.trim()
+  // Only the server-verified getCurrentAuth().isAdmin may enable this path.
+  // Metadata supplies contact text, never admin authorization.
+  const adminBooking = options.allowAdminBooking === true;
+  const latest = latestPaid ?? (ownerPreview || adminBooking ? matchingCourseOrders[0] : undefined);
+  if (!latest && !adminBooking) return null;
+  const customerName = latest?.order.studentName.trim()
     || (typeof metadata?.full_name === "string" ? metadata.full_name.trim() : "")
     || normalizedEmail.split("@")[0];
-  const phone = latest.order.phone.trim()
+  const phone = latest?.order.phone.trim()
     || (typeof metadata?.phone === "string" ? metadata.phone.trim() : "");
   return {
     customerName,
     email: normalizedEmail,
     phone,
-    purchasedCourseSlug: latest.slugs[0],
+    purchasedCourseSlug: latest?.slugs[0] ?? "",
     ...(ownerPreview ? { previewMode: true } : {}),
   };
 }

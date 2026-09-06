@@ -15,8 +15,8 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function SupportBookingPage() {
-  const { user } = await getCurrentAuth();
-  const customer = user?.email ? await getEligibleSupportCustomer(user.email, user.user_metadata) : null;
+  const { user, isAdmin } = await getCurrentAuth();
+  const customer = user?.email ? await getEligibleSupportCustomer(user.email, user.user_metadata, { allowAdminBooking: isAdmin }) : null;
   const today = getVietnamToday();
   const availability = await getSupportAvailability();
   return (

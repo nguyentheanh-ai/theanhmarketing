@@ -164,7 +164,7 @@ test("booking input is normalized and rejects invalid or unavailable requests", 
   assert.throws(() => validateSupportBookingInput({ ...valid, topic: "unknown" }, now), /chủ đề/i);
 });
 
-test("student pricing requires verified purchase rather than an owner preview flag", () => {
+test("student pricing uses verified purchase or trusted admin session, never owner preview", () => {
   const service = fs.readFileSync(path.join(process.cwd(), "services/supportBookingService.ts"), "utf8");
   const page = fs.readFileSync(path.join(process.cwd(), "app/dat-lich-ho-tro/page.tsx"), "utf8");
   const route = fs.readFileSync(path.join(process.cwd(), "app/api/support-bookings/route.ts"), "utf8");

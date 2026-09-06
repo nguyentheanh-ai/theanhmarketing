@@ -14,8 +14,8 @@ export async function POST(request: Request) {
   if (!rateLimit.ok) return rateLimitResponse(rateLimit.resetAt);
 
   try {
-    const { user } = await getCurrentAuth();
-    const customer = user?.email ? await getEligibleSupportCustomer(user.email, user.user_metadata) : null;
+    const { user, isAdmin } = await getCurrentAuth();
+    const customer = user?.email ? await getEligibleSupportCustomer(user.email, user.user_metadata, { allowAdminBooking: isAdmin }) : null;
     const body = await request.json();
     if (!body || typeof body !== "object" || Array.isArray(body)) throw new Error("Thông tin đặt lịch không hợp lệ.");
     const result = await reserveSupportBooking({

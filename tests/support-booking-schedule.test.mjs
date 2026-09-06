@@ -229,3 +229,52 @@ test("public page renders the wizard without requiring an account", async () => 
   assert.match(html,/Đặt lịch cùng Thế Anh/);
   assert.doesNotMatch(html,/Telegram|quản trị|xem thử/);
 });
+
+test("verified admin without a paid order gets the three-step page and trusted identity at checkout", async () => {
+  const admin = { email: "admin@example.com", user_metadata: { full_name: "Admin test", phone: "0900000000" } };
+  const service = load("services/supportBookingService.ts", {
+    ...aliases,
+    "@/lib/course-access": { isAdminEmail: () => false },
+    "@/lib/supabase/admin": {},
+    "@/services/orderService": { getPaymentOrders: async () => [
+      { email: "someone-else@example.com", studentName: "Other person", phone: "0911111111", status: "paid", courseSlug: "facebook-ads-2026", orderItems: [], paidAt: "2026-09-01T00:00Z" },
+    ] },
+  });
+  const { SupportBookingForm } = load("components/support-booking/support-booking-form.tsx", aliases);
+  for (const isAdmin of [true, false]) {
+    const auth = { getCurrentAuth: async () => ({ user: admin, isAdmin }) };
+    const { default: Page } = load("app/dat-lich-ho-tro/page.tsx", {
+      ...aliases,
+      "@/components/site/brand-mark": { BrandMark: () => null },
+      "@/components/support-booking/support-booking-form": { SupportBookingForm },
+      "@/lib/auth/session": auth,
+      "@/services/supportBookingService": { ...service, getSupportAvailability: async () => ({ days: [] }) },
+    });
+    const html = renderToStaticMarkup(await Page());
+    const nav = html.match(/<nav[\s\S]*?<\/nav>/)[0];
+    assert.equal((nav.match(/<li\b/g) ?? []).length, isAdmin ? 3 : 4);
+    assert.equal(nav.includes("Thông tin"), !isAdmin);
+    const route = load("app/api/support-bookings/route.ts", {
+      "@/lib/auth/session": auth,
+      "@/lib/security/rate-limit": { checkRateLimit: () => ({ ok: true }), rateLimitKey: () => "unit-test" },
+      "@/services/supportBookingService": { ...service,
+        reserveSupportBooking: async (input, _now, type) => ({ appointment: domain.validateSupportBookingInput(input, now, type), checkoutUrl: "/thanh-toan/UNITTEST" }),
+      },
+    });
+    // A client cannot grant itself admin status, pick someone else's identity or choose its price.
+    const body = { customerName: "Body name", email: "body@example.com", phone: "0999999999", isAdmin: true, allowAdminBooking: true, bookingType: "student", amount: 1, topic: "ai-agent", note: "", durationMinutes: 60, appointmentDate: "2026-09-08", appointmentTime: "09:00" };
+    const response = await route.POST(new Request("https://example.com/api/support-bookings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }));
+    assert.equal(response.status, 201);
+    const { appointment } = await response.json();
+    assert.equal(appointment.bookingType, isAdmin ? "student" : "consultation");
+    assert.equal(appointment.amount, isAdmin ? 1500000 : 2000000);
+    assert.equal(appointment.email, isAdmin ? admin.email : body.email);
+    assert.equal(appointment.customerName, isAdmin ? "Admin test" : body.customerName);
+    assert.equal(appointment.phone, isAdmin ? admin.user_metadata.phone : body.phone);
+  }
+  assert.equal(await service.getEligibleSupportCustomer(admin.email, { ...admin.user_metadata, isAdmin: true, admin_role: "owner" }), null);
+  const noProfile = await service.getEligibleSupportCustomer(admin.email, {}, { allowAdminBooking: true });
+  assert.equal(noProfile.email, admin.email);
+  assert.equal(noProfile.customerName, "admin");
+  assert.equal(noProfile.phone, ""); // Never borrow the unrelated customer's phone or fabricate one.
+});

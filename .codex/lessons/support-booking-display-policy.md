@@ -36,3 +36,7 @@
 ## Student progress must use the actual route
 
 - Applicability: conditional support wizard steps. Observation: verified students skipped contact in routing but still saw all five navigation items with skipped checkmarks. Cause VERIFIED by source and failed regression5!=3. Correction: render and number progress from visibleSteps; only noncustomers can render contact. Verification:44/44 support tests including student3-step navigation, guest contacts and next/back. Limit: role eligibility and existing missing-phone completion stay unchanged; no access-rule changes.
+
+## Admin is not necessarily a paid student
+
+- Applicability: booking page/API when owner expects the student path from an authenticated admin account. Observation: owner screenshot showed4 steps/contact after the navigation fix; page and API ignored getCurrentAuth().isAdmin and only resolved paid orders. Cause VERIFIED by integration regression4!=3. Correction: trusted server admin option shared across page/API, same-email contact fallback, no synthetic purchase; user-editable metadata and body cannot grant the option. Verification:45 support tests include real page/service/form resolution plus server pricing/identity, both trusted admin and impersonation negatives. Limit: this owner-requested admin exception supersedes the earlier paid-only note for admin only; preserve ordinary paid eligibility and no real customer transaction proof from local tests.
