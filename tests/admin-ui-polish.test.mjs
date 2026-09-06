@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import test from 'node:test';
 import ts from 'typescript';
@@ -20,9 +19,7 @@ test('legacy conversion reproduces reported dark text and no longer overrides mo
  const {parseDocument}=ext('htmlparser2');const css=ext('postcss');const select=ext('css-select');
  const doc=parseDocument('<div data-admin-theme="light"><section data-admin-ui="modern"><button id="primary" class="bg-blue-600 text-white">Create</button><button id="danger" class="bg-red-600 text-white">Discard</button><div id="alert" class="bg-red-50 text-red-800">Failure</div><span id="active" class="bg-blue-50 text-blue-700">Step</span></section><button id="legacy" class="bg-slate-950 text-white">Legacy</button></div><button id="public" class="bg-slate-950 text-white">Public</button>');
  function styles(source,id,base){const el=select.selectOne('#'+id,doc.children);const result={...base};css.parse(source).walkRules(rule=>{if(!rule.selector.startsWith('[data-admin-theme="light"]'))return;if(select.is(el,rule.selector))rule.walkDecls(d=>{if(d.important)result[d.prop]=d.value;});});return result;}
- const old=execFileSync('git',['show','d83597f:app/globals.css'],{encoding:'utf8'});const current=fs.readFileSync('app/globals.css','utf8');
- assert.equal(styles(old,'primary',{color:'#ffffff'}).color,'#ffffff');
- assert.equal(styles(old,'legacy',{color:'#ffffff'}).color,'#0f172a','reported white text was forced dark');
+ const current=fs.readFileSync('app/globals.css','utf8');
  assert.deepEqual(styles(current,'primary',{color:'#ffffff',background:'#2563eb'}),{color:'#ffffff',background:'#2563eb'});
  assert.deepEqual(styles(current,'danger',{color:'#ffffff',background:'#dc2626'}),{color:'#ffffff',background:'#dc2626'});
  assert.equal(styles(current,'alert',{background:'#fef2f2'}).background,'#fef2f2');
@@ -70,14 +67,14 @@ test('profile LMS summaries preserve enrollment and progress while skipping reso
  assert.equal(light[0].enrollments[0].progressPercent,100);assert.equal(queries.length,1);assert.equal(queries[0].fields,'id,slug,title,course_modules(status,lessons(status))');
 });
 
-test('indexed profile access preserves legacy results and bounds scanned records to each email group',async()=>{
+test('indexed profile access preserves paid and revoked outcomes and bounds scanned records to each email group',async()=>{
  const orders=Array.from({length:250},(_,i)=>({id:`order-${i}`,email:`person-${i}@example.invalid`,phone:'',studentName:`Fixture ${i}`,status:'paid',orderCode:`ORDER${i}`,orderItems:[],courseSlug:'fixture',courseTitle:'Fixture',createdAt:'2026-09-06T00:00:00Z',paidAt:'2026-09-06T00:00:00Z'}));
  const leads=orders.map((o,i)=>({id:`lead-${i}`,name:o.studentName,email:o.email,phone:'',source:'admin-access-revoke:fixture',need:'',createdAt:'2026-09-06T01:00:00Z'}));
  const originalAccess=load('lib/course-access.ts',{'@/lib/admin/admin-emails':{getConfiguredOwnerEmails:()=>[]}});let visits=0;
  const mocks={'@/services/lmsService':{listAdminLmsCourses:async()=>[],listAdminLmsStudentSummaries:async()=>[],isEnrollmentCurrentlyActive:()=>true},'@/services/adminDeletionService':{getActiveDeletedStudentKeys:async()=>new Set()},'@/services/leadService':{getLeads:async()=>leads},'@/services/orderService':{getPaymentOrders:async()=>orders},'@/lib/course-access':{...originalAccess,getCourseAccessSlugs:input=>{visits+=input.orders.length+input.leads.length;return originalAccess.getCourseAccessSlugs(input);}}};
- const beforeSource=execFileSync('git',['show','d83597f:services/studentAccessService.ts'],{encoding:'utf8'});
- const before=await load('services/studentAccessService.ts',mocks,beforeSource).getStudentAccessRecords({strict:true,includeAllLeads:true});const beforeVisits=visits;visits=0;
- const after=await load('services/studentAccessService.ts',mocks).getStudentAccessRecords({strict:true,includeAllLeads:true});assert.deepEqual(after,before);assert.equal(visits,500);assert.equal(beforeVisits,250000);assert.ok(after.every(row=>row.accessibleCourseSlugs.length===0));
+ const after=await load('services/studentAccessService.ts',mocks).getStudentAccessRecords({strict:true,includeAllLeads:true});
+ assert.equal(after.length,250);assert.equal(visits,500);assert.equal(new Set(after.map(row=>row.id)).size,250);
+ for(const row of after){const input=orders.find(order=>order.email===row.email);assert.ok(input);assert.equal(row.name,input.studentName);assert.deepEqual(row.paidOrderCodes,[input.orderCode]);assert.equal(row.paymentStatus,'Đã thanh toán');assert.deepEqual(row.courseSlugs,[]);assert.deepEqual(row.accessibleCourseSlugs,[]);}
 });
 
 test('payment form uses its captured form after an asynchronous response and reports server failure without clearing input',async()=>{
