@@ -1,6 +1,6 @@
 # Bản sửa admin — 06/09/2026
 
-Trạng thái: bản ứng viên đã hoàn thiện mã, build và kiểm thử cục bộ; chưa áp dụng migration, chưa triển khai production. Không sửa dữ liệu khách trong quá trình kiểm tra.
+Trạng thái: ĐÃ PHÁT HÀNH; xem cập nhật hoàn tất ở cuối tài liệu.
 
 ## Thay đổi
 
@@ -49,3 +49,8 @@ node node_modules/next/dist/bin/next build --webpack
 ## Phát hành đã được duyệt và DB đã cập nhật
 
 Anh xác nhận “Triển khai bản đã kiểm thử”. Migration thực tế20260906130340_admin_lms_atomic_operations đã áp dụng: đúng3RPC, SECURITY INVOKER, anon/authenticated EXECUTE=false, service_role=true. Các tổng cấu trúc khóa học, enrollment, tiến độ và đơn hàng trước/sau giữ nguyên. Không gọi RPC có ghi dữ liệu khách để QA. Đang tích hợp nguồn ứng viên cdb3b46 vào canonical và triển khai qua guard. Các trạng thái chờ xác nhận/chưa migration ở phía trên là lịch sử.
+
+
+## Cập nhật hoàn tất
+
+Bản sửa admin đã được phát hành sau xác nhận của chủ dự án. Kiểm tra sau phát hành đạt. Các trạng thái chờ phát hành trong lịch sử phía trên đã được thay thế. Giới hạn xóa vật lý mã cũ và nghiệm thu trực quan vẫn được giữ như bản bàn giao đã duyệt. Bằng chứng vận hành chi tiết được giữ trong workspace và bảng theo dõi riêng của chủ dự án.
