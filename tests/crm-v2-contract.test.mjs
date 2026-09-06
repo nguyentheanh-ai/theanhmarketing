@@ -802,7 +802,7 @@ test("crm v2 dashboard and unified pipeline use production source-of-truth data"
   assert.match(leadsClient, /label="Zalo"[\s\S]*hasZaloMessaged\(row\)/, "expanded detail must show Zalo messaged status");
 
   assert.match(leadsPage, /\/admin\/crm-v2\/customers/, "legacy leads must route to unified customer profiles");
-  assert.match(read("app/admin/crm-v2/customers/page.tsx"), /getAdminCourses/, "customer profile access selector uses real courses");
+  assert.match(read("app/admin/crm-v2/customers/page.tsx"), /getCourseSummariesStrict/, "customer profile access selector uses real courses");
   assert.match(read("app/admin/crm-v2/customers/page.tsx"), /courses=\{courses\}/, "customer directory receives real course options");
   assert.match(leadsClient, /type CourseOption/, "Leads client must define a compact real course option contract");
   assert.match(leadsClient, /function CustomerLearningActions/, "customer learning actions must live inside the expanded customer detail");

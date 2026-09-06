@@ -92,7 +92,7 @@ test("unified customer directory opens provisioning and profile actions in separ
   assert.match(page, /canManageAccount=\{role === "owner"\}/);
   assert.doesNotMatch(page, /StudentIntakeForm|PaymentLinkForm/);
   assert.match(createDialog, /Tạo học viên/);
-  assert.match(createDialog, /Thao tác có kiểm soát/);
+  assert.match(createDialog, /busy=\{isBusy\}/);
   assert.match(createDialog, /StudentProvisioningWizard/);
   assert.match(createDialog, /PaymentLinkForm/);
   assert.match(createDialog, /Gửi form thanh toán/);

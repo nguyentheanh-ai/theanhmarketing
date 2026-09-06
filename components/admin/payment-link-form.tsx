@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import type { Course } from "@/data/courses";
@@ -19,8 +19,9 @@ type PaymentLinkResult = {
   };
 };
 
-export function PaymentLinkForm({ courses }: { courses: Course[] }) {
+export function PaymentLinkForm({ courses, onBusyChange }: { courses: Pick<Course, "slug" | "title">[]; onBusyChange?: (busy: boolean) => void }) {
   const router = useRouter();
+  const pending = useRef(false);
   const [message, setMessage] = useState("");
   const [paymentUrl, setPaymentUrl] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -28,38 +29,35 @@ export function PaymentLinkForm({ courses }: { courses: Course[] }) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setMessage("");
-    setPaymentUrl("");
-    setIsSending(true);
-
-    const formData = new FormData(event.currentTarget);
-    const paymentPlan = String(formData.get("paymentPlan") ?? "");
-    const response = await fetch("/api/admin/payment-links", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        studentName: String(formData.get("studentName") ?? ""),
-        phone: String(formData.get("phone") ?? ""),
-        email: String(formData.get("email") ?? ""),
-        courseSlug: String(formData.get("courseSlug") ?? ""),
-        paymentPlan: paymentPlan === "default" ? "" : paymentPlan,
-      }),
-    });
-    const result = (await response.json()) as PaymentLinkResult;
-
-    setIsSending(false);
-    setMessage(result.message ?? "Đã xử lý yêu cầu gửi form thanh toán.");
-
-    if (response.ok && result.ok) {
-      setPaymentUrl(result.paymentUrl ?? "");
-      event.currentTarget.reset();
-      router.refresh();
+    if (pending.current) return;
+    const form = event.currentTarget;
+    pending.current = true;
+    setMessage(""); setPaymentUrl(""); setIsSending(true); onBusyChange?.(true);
+    try {
+      const formData = new FormData(form);
+      const paymentPlan = String(formData.get("paymentPlan") ?? "");
+      const response = await fetch("/api/admin/payment-links", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentName: String(formData.get("studentName") ?? ""), phone: String(formData.get("phone") ?? ""),
+          email: String(formData.get("email") ?? ""), courseSlug: String(formData.get("courseSlug") ?? ""),
+          paymentPlan: paymentPlan === "default" ? "" : paymentPlan,
+        }),
+      });
+      const result = await response.json().catch(() => null) as PaymentLinkResult | null;
+      if (!result || typeof result.ok !== "boolean") throw new Error("invalid_response");
+      setMessage(result.message ?? (response.ok && result.ok ? "Đã xử lý yêu cầu gửi form thanh toán." : "Chưa gửi được form thanh toán. Kiểm tra đơn và email trước khi thử lại."));
+      if (response.ok && result.ok) { setPaymentUrl(result.paymentUrl ?? ""); form.reset(); router.refresh(); }
+    } catch {
+      setMessage("Kết nối gián đoạn; chưa xác nhận được kết quả. Kiểm tra đơn và email trước khi gửi lại. Thông tin đã nhập vẫn được giữ.");
+    } finally {
+      pending.current = false; setIsSending(false); onBusyChange?.(false);
     }
   }
 
   return (
-    <form className="mt-4 grid gap-4" onSubmit={handleSubmit}>
-      <div className="grid gap-3 lg:grid-cols-3">
+    <form data-admin-ui="modern" aria-busy={isSending} className="grid gap-4" onSubmit={handleSubmit}>
+      <fieldset disabled={isSending} className="grid gap-3 lg:grid-cols-3">
         <label className="grid gap-1.5">
           <span className={labelClass}>Họ tên khách</span>
           <input className={inputClass} name="studentName" required />
@@ -92,11 +90,11 @@ export function PaymentLinkForm({ courses }: { courses: Course[] }) {
             <option value="agent-kit-standard-999">Đội ngũ nhân sự AI · Giá chính thức 999K (từ 16/09/2026)</option>
           </select>
         </label>
-      </div>
+      </fieldset>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <Button
-          className="h-10 w-fit rounded-md bg-slate-950 px-5 text-sm shadow-none hover:bg-slate-800"
+          className="h-11 w-fit rounded-lg bg-blue-600 px-5 text-sm text-white shadow-none hover:bg-blue-700"
           isLoading={isSending}
           loadingLabel="Đang gửi..."
           type="submit"
@@ -115,7 +113,7 @@ export function PaymentLinkForm({ courses }: { courses: Course[] }) {
         ) : null}
       </div>
 
-      {message ? <p className="rounded-md bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-600">{message}</p> : null}
+      {message ? <p role="status" className="rounded-md bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-600">{message}</p> : null}
     </form>
   );
 }

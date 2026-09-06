@@ -1,4 +1,4 @@
-import { listAdminLmsCourses, isEnrollmentCurrentlyActive } from "@/services/lmsService";
+import { listAdminLmsStudentSummaries, isEnrollmentCurrentlyActive } from "@/services/lmsService";
 import { getCourseAccessSlugs, getConfiguredAdminEmails, parseAccessOverrideSource } from "@/lib/course-access";
 import { getActiveDeletedStudentKeys } from "@/services/adminDeletionService";
 import type { LeadItem } from "@/services/leadService";
@@ -195,8 +195,20 @@ export async function getStudentAccessRecords(options: { includeAllLeads?: boole
     getPaymentOrders({ includeFallback: false, strict: options.strict }),
     getLeads({ includeFallback: false, strict: options.strict }),
     options.deletedStudentKeys ? Promise.resolve(options.deletedStudentKeys) : getActiveDeletedStudentKeys({ strict: options.strict }),
-    listAdminLmsCourses(),
+    listAdminLmsStudentSummaries(),
   ]);
+  // Index once per request. Keep the existing access precedence and expiry rules.
+  const ordersByEmail = new Map<string, typeof orders>();
+  const leadsByEmail = new Map<string, typeof leads>();
+  for (const order of orders) { const key = normalizeEmail(order.email ?? ""); const group = ordersByEmail.get(key) ?? []; group.push(order); ordersByEmail.set(key, group); }
+  for (const lead of leads) { const key = normalizeEmail(lead.email ?? ""); const group = leadsByEmail.get(key) ?? []; group.push(lead); leadsByEmail.set(key, group); }
+  const accessByEmail = new Map<string, string[]>();
+  const accessFor = (email: string) => {
+    const key = normalizeEmail(email);
+    if (!key) return [];
+    if (!accessByEmail.has(key)) accessByEmail.set(key, getCourseAccessSlugs({ email: key, leads: leadsByEmail.get(key) ?? [], orders: ordersByEmail.get(key) ?? [] }));
+    return accessByEmail.get(key)!;
+  };
   const records = new Map<string, StudentAccessRecord>();
   const deletedStudentKeys = new Set([
     ...activeDeletedStudentKeys,
@@ -253,11 +265,7 @@ export async function getStudentAccessRecords(options: { includeAllLeads?: boole
       });
 
     applyAccessOverride(record, lead);
-    const accessibleSlugs = record.email ? getCourseAccessSlugs({
-      email: record.email,
-      leads,
-      orders,
-    }) : [];
+    const accessibleSlugs = accessFor(record.email);
 
     if (accessibleSlugs.length === 0) {
       record.accessStatus = "Chưa cấp quyền";
@@ -281,7 +289,7 @@ export async function getStudentAccessRecords(options: { includeAllLeads?: boole
     }
   }
   for (const record of records.values()) {
-    record.accessibleCourseSlugs = mergeUnique(record.accessibleCourseSlugs ?? [], record.email ? getCourseAccessSlugs({ email: record.email, leads, orders }) : []);
+    record.accessibleCourseSlugs = mergeUnique(record.accessibleCourseSlugs ?? [], accessFor(record.email));
     record.accessStatus = record.accessibleCourseSlugs.length ? "Có quyền học" : "Chưa cấp quyền";
     if (record.accessibleCourseSlugs.length) record.role = "Học viên";
     record.paymentStatus = record.paidOrderCodes.length ? "Đã thanh toán" : record.pendingOrderCodes.length ? "Chờ thanh toán" : "Không có đơn thanh toán";

@@ -15,7 +15,7 @@ const lead = (id, patch = {}) => ({ id, name: 'Same fixture name', email: '', ph
 const order = (id, createdAt, patch = {}) => ({ id, email, phone: '0900000000', studentName: 'Fixture', status: 'paid', orderCode: id, orderItems: [], courseSlug: 'course-fixture', courseTitle: 'Course fixture', createdAt, paidAt: createdAt, ...patch });
 function studentService({ leads = [], orders = [], courses = [], deleted = new Set() } = {}) {
   return load('services/studentAccessService.ts', {
-    '@/services/lmsService': { listAdminLmsCourses: async () => courses, isEnrollmentCurrentlyActive: (row) => row.status === 'active' },
+    '@/services/lmsService': { listAdminLmsStudentSummaries: async () => courses, isEnrollmentCurrentlyActive: (row) => row.status === 'active' },
     '@/services/adminDeletionService': { getActiveDeletedStudentKeys: async (options) => { assert.equal(options.strict, true); return deleted; } },
     '@/services/leadService': { getLeads: async () => leads },
     '@/services/orderService': { getPaymentOrders: async () => orders },

@@ -1,3 +1,4 @@
+import { readAllAdminRows } from "@/lib/admin/read-all-rows";
 import { isValidUuid as isUuid } from "@/lib/security/validation";
 import { normalizeEmail } from "@/lib/crm-v2/normalize";
 import type {
@@ -463,6 +464,25 @@ async function loadAdminLmsData(client: SupabaseClient, strict = true) {
   );
 
   return { courses, enrollments, progressRows: enrollmentResult.progressRows };
+}
+
+export async function listAdminLmsStudentSummaries(): Promise<Array<Pick<LmsCourse, "slug" | "title" | "enrollments">>> {
+  const client = getClientOrThrow();
+  const [courseRows, enrollmentResult] = await Promise.all([
+    readAllAdminRows((from, to) => client.from("courses")
+      .select("id,slug,title,course_modules(status,lessons(status))", { count: "exact" })
+      .order("sort_order", { ascending: true }).order("created_at", { ascending: false }).order("id", { ascending: true }).range(from, to), "khóa học của hồ sơ"),
+    fetchEnrollmentRows(client),
+  ]);
+  const index = buildEnrollmentCourseIndex(courseRows);
+  const grouped = new Map<string, LmsEnrollment[]>();
+  for (const row of enrollmentResult.enrollmentRows) {
+    const enrollment = mapEnrollment(row, index, enrollmentResult.progressRows);
+    const group = grouped.get(enrollment.courseSlug) ?? [];
+    group.push(enrollment);
+    grouped.set(enrollment.courseSlug, group);
+  }
+  return courseRows.map((course) => ({ slug: text(course.slug), title: text(course.title), enrollments: grouped.get(text(course.slug)) ?? [] }));
 }
 
 export async function listAdminLmsCourses() {

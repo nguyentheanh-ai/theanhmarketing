@@ -55,7 +55,7 @@ export function AnalyticsWorkspace({ data, report = false }: { data: AnalyticsSn
   }
   function selectTab(value: Tab) { setTab(value); if (value === "ads" && !ads && !adsLoading) void loadAds(); }
   return (
-    <div className="min-w-0 space-y-4" aria-busy={pending}>
+    <div data-admin-ui="modern" className="min-w-0 space-y-4" aria-busy={pending}>
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div><h1 className="text-2xl font-semibold tracking-tight text-slate-950">{report ? "Báo cáo kinh doanh" : "Tổng quan kinh doanh"}</h1><p className="mt-1 text-sm text-slate-500">{rangeText} · Giờ Việt Nam{selectedTitle ? ` · ${selectedTitle}` : " · Tất cả sản phẩm"}</p></div>
         <div className="flex gap-2"><button className={buttonClass} onClick={() => setDialog("definitions")} aria-label="Cách tính số liệu"><Info size={16} /></button><button className={buttonClass} onClick={() => startTransition(() => router.refresh())} disabled={pending}><RefreshCw size={15} className={pending ? "animate-spin" : ""} />Làm mới</button><button className={buttonClass} onClick={() => setDialog("orders")}><ArrowUpRight size={15} />Đối chiếu đơn</button></div>

@@ -34,7 +34,7 @@ type WizardState = {
   operationId: string;
 };
 
-const inputClass = "min-h-12 w-full rounded-2xl border border-black/10 bg-white px-4 text-sm font-semibold text-slate-950 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
+const inputClass = "min-h-12 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-950 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
 const stateLabels: Record<StepState, string> = {
   created: "Đã tạo", existing: "Đã có sẵn", granted: "Đã cấp", sent: "Đã gửi", skipped: "Không gửi",
   failed: "Chưa hoàn tất", not_applicable: "Không áp dụng",
@@ -104,7 +104,7 @@ export function StudentProvisioningWizard({
   canReviewEmail = false,
   onBusyChange,
 }: {
-  courses: Course[];
+  courses: Pick<Course, "slug" | "title">[];
   initialOperationId?: string;
   canReviewEmail?: boolean;
   onBusyChange?: (busy: boolean) => void;
@@ -332,7 +332,7 @@ export function StudentProvisioningWizard({
             <h4 className="font-black text-amber-950">Cần anh xác nhận email</h4>
             <p className="mt-2 text-sm font-semibold leading-6 text-amber-900">Hệ thống không thể khẳng định nhà cung cấp đã gửi hay chưa. Không bấm gửi lại trước khi kiểm tra hộp thư/người nhận.</p>
             {canReviewEmail ? <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-              <button className="min-h-11 rounded-full bg-emerald-700 px-4 text-sm font-black text-white disabled:opacity-50" disabled={Boolean(reviewing)} onClick={() => resolveEmailReview("confirm_delivered")} type="button">
+              <button className="min-h-11 rounded-lg bg-blue-600 hover:bg-blue-700 px-4 text-sm font-black text-white disabled:opacity-50" disabled={Boolean(reviewing)} onClick={() => resolveEmailReview("confirm_delivered")} type="button">
                 Xác nhận email đã đến
               </button>
               <button className="min-h-11 rounded-full border border-amber-400 bg-white px-4 text-sm font-black text-amber-950 disabled:opacity-50" disabled={Boolean(reviewing)} onClick={() => resolveEmailReview("confirm_not_delivered")} type="button">
@@ -345,10 +345,10 @@ export function StudentProvisioningWizard({
         {emailRetryAuthorized ? <p className="rounded-2xl bg-blue-50 p-4 text-sm font-bold text-blue-900">Đã cho phép đúng một lần gửi mới. Hãy bấm nút bên dưới để thực hiện.</p> : null}
         {hasTerminalFailureWithoutAction && !stepTwoValid ? <p className="rounded-2xl bg-amber-50 p-4 text-sm font-bold text-amber-900">Thông tin gốc không còn hợp lệ để chạy lại cùng mã thao tác, thường do hạn học thử đã qua. Mở “Việc cần xử lý” để kiểm tra; không tự đổi hạn vì sẽ làm fingerprint xung đột.</p> : null}
         <div className="flex flex-wrap gap-2">
-          {recoveryNeedsDetails ? <button className="min-h-11 rounded-full bg-slate-950 px-5 text-sm font-black text-white" onClick={enterRecoveryDetails} type="button">Nhập lại thông tin để tiếp tục</button> : null}
-          {canContinueFailedOperation ? <button className="min-h-11 rounded-full bg-slate-950 px-5 text-sm font-black text-white disabled:opacity-50" disabled={isSubmitting} onClick={submitOperation} type="button">Tiếp tục cùng mã thao tác</button> : null}
-          {canRetryAccess ? <button className="min-h-11 rounded-full bg-slate-950 px-5 text-sm font-black text-white disabled:opacity-50" disabled={isSubmitting} onClick={submitOperation} type="button">Thử cấp lại quyền</button> : null}
-          {canRetryEmail ? <button className="min-h-11 rounded-full bg-slate-950 px-5 text-sm font-black text-white disabled:opacity-50" disabled={isSubmitting} onClick={submitOperation} type="button">Gửi lại email 1 lần</button> : null}
+          {recoveryNeedsDetails ? <button className="min-h-11 rounded-lg bg-blue-600 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 px-5 text-sm font-black text-white" onClick={enterRecoveryDetails} type="button">Nhập lại thông tin để tiếp tục</button> : null}
+          {canContinueFailedOperation ? <button className="min-h-11 rounded-lg bg-blue-600 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 px-5 text-sm font-black text-white disabled:opacity-50" disabled={isSubmitting} onClick={submitOperation} type="button">Tiếp tục cùng mã thao tác</button> : null}
+          {canRetryAccess ? <button className="min-h-11 rounded-lg bg-blue-600 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 px-5 text-sm font-black text-white disabled:opacity-50" disabled={isSubmitting} onClick={submitOperation} type="button">Thử cấp lại quyền</button> : null}
+          {canRetryEmail ? <button className="min-h-11 rounded-lg bg-blue-600 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 px-5 text-sm font-black text-white disabled:opacity-50" disabled={isSubmitting} onClick={submitOperation} type="button">Gửi lại email 1 lần</button> : null}
           <Link className="inline-flex min-h-11 items-center rounded-full border border-slate-300 px-5 text-sm font-black text-slate-700" href="/admin/viec-can-xu-ly">Mở việc cần xử lý</Link>
           {result.ok ? <button className="min-h-11 rounded-full border border-slate-300 px-5 text-sm font-black text-slate-700" disabled={isSubmitting || Boolean(reviewing)} onClick={startAnother} type="button">Tạo học viên khác</button> : null}
         </div>
@@ -358,11 +358,11 @@ export function StudentProvisioningWizard({
   }
 
   return (
-    <section className="grid gap-5">
+    <section data-admin-ui="modern" className="grid gap-5">
       <ol aria-label="Các bước tạo học viên" className="grid grid-cols-3 gap-2">
         {["Loại học viên", "Thông tin & khóa học", "Kiểm tra & thực hiện"].map((label, index) => {
           const number = (index + 1) as WizardStep;
-          return <li aria-current={state.step === number ? "step" : undefined} className={`rounded-2xl px-3 py-3 text-xs font-black ${state.step === number ? "bg-slate-950 text-white" : "bg-slate-100 text-slate-500"}`} key={label}>{number}. {label}</li>;
+          return <li aria-current={state.step === number ? "step" : undefined} className={`rounded-2xl px-3 py-3 text-xs font-black ${state.step === number ? "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200" : "bg-slate-50 text-slate-500"}`} key={label}>{number}. {label}</li>;
         })}
       </ol>
 
@@ -375,7 +375,7 @@ export function StudentProvisioningWizard({
               ["free", "Miễn phí", "Không tạo doanh thu; cấp quyền học không giới hạn."],
               ["trial", "Học thử", "Không tạo doanh thu; quyền tự hết hạn theo thời gian đã chọn."],
             ] as const).map(([mode, label, detail]) => (
-              <label className={`cursor-pointer rounded-2xl border p-4 ${state.mode === mode ? "border-blue-500 bg-blue-50" : "border-slate-200 bg-white"}`} key={mode}>
+              <label className={`cursor-pointer rounded-xl border p-4 transition-colors focus-within:ring-2 focus-within:ring-blue-500 ${state.mode === mode ? "border-blue-500 bg-blue-50" : "border-slate-200 bg-white"}`} key={mode}>
                 <input checked={state.mode === mode} className="sr-only" name="provisioning-mode" onChange={() => chooseMode(mode)} type="radio" />
                 <span className="font-black text-slate-950">{label}</span>
                 <span className="mt-2 block text-xs font-semibold leading-5 text-slate-600">{detail}</span>
@@ -421,13 +421,13 @@ export function StudentProvisioningWizard({
             </dl>
           </div>
           <p className="text-xs font-semibold text-slate-500">Mỗi lần mở form có một mã thao tác riêng. Nếu mạng lỗi, hệ thống dùng lại mã này để tránh tạo trùng.</p>
-          <button className="min-h-12 rounded-full bg-slate-950 px-6 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-50" disabled={isSubmitting} onClick={submitOperation} type="button">{isSubmitting ? "Đang tạo học viên..." : "Tạo học viên"}</button>
+          <button className="min-h-12 rounded-lg bg-blue-600 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 px-6 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-50" disabled={isSubmitting} onClick={submitOperation} type="button">{isSubmitting ? "Đang tạo học viên..." : "Tạo học viên"}</button>
         </div>
       ) : null}
 
       <div className="flex items-center justify-between gap-3 border-t border-slate-200 pt-4">
         <button className="min-h-11 rounded-full border border-slate-300 px-5 text-sm font-black text-slate-700 disabled:opacity-40" disabled={state.step === 1 || isSubmitting} onClick={() => setState((current) => ({ ...current, step: (current.step - 1) as WizardStep }))} type="button">Quay lại</button>
-        {state.step < 3 ? <button className="min-h-11 rounded-full bg-slate-950 px-5 text-sm font-black text-white disabled:opacity-40" disabled={(state.step === 2 && !stepTwoValid) || isSubmitting} onClick={() => setState((current) => ({ ...current, step: (current.step + 1) as WizardStep }))} type="button">Tiếp tục</button> : null}
+        {state.step < 3 ? <button className="min-h-11 rounded-lg bg-blue-600 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 px-5 text-sm font-black text-white disabled:opacity-40" disabled={(state.step === 2 && !stepTwoValid) || isSubmitting} onClick={() => setState((current) => ({ ...current, step: (current.step + 1) as WizardStep }))} type="button">Tiếp tục</button> : null}
       </div>
       {message ? <p aria-live="polite" className="rounded-2xl bg-red-50 p-4 text-sm font-bold text-red-800">{message}</p> : null}
     </section>

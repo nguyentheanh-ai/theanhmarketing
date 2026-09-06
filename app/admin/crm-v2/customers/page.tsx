@@ -1,6 +1,6 @@
 import { requireAdminAuth } from "@/lib/auth/session";
 import { listAdminCustomerProfiles } from "@/services/adminCustomerService";
-import { getAdminCourses } from "@/services/adminDataService";
+import { getCourseSummariesStrict } from "@/services/courseService";
 import { StudentCreateDialog } from "@/components/admin/student-create-dialog";
 import { CustomerDirectory } from "@/components/admin/customer-directory";
 import { isValidUuid } from "@/lib/security/validation";
@@ -12,7 +12,7 @@ export default async function CustomerPage({ searchParams }: { searchParams?: Pr
   const params = (await searchParams) ?? {};
   const value = (key: string) => typeof params[key] === "string" ? params[key] as string : "";
   const role = auth?.adminRole ?? "editor";
-  const [records, courses] = await Promise.all([listAdminCustomerProfiles({ includeProspects: role === "owner" }), getAdminCourses()]);
+  const [records, courses] = await Promise.all([listAdminCustomerProfiles({ includeProspects: role === "owner" }), getCourseSummariesStrict().then((rows) => rows.reverse())]);
   return <CustomerDirectory records={records} courses={courses} canManageAccount={role === "owner"} initialSearch={value("q")} initialCourse={value("course")} initialProfile={value("profile")}
     createAction={<StudentCreateDialog courses={courses} canReviewEmail={role === "owner"} defaultOpen={value("add_student") === "1" || isValidUuid(value("operation_id"))} resumeOperationId={isValidUuid(value("operation_id")) ? value("operation_id") : undefined} />} />;
 }

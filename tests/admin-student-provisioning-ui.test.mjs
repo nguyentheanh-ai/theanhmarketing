@@ -147,7 +147,8 @@ test("student dialog preserves payment-link mode and dashboard uses the canonica
   assert.match(dialog, /onBusyChange/);
   assert.match(dialog, /disabled=\{isBusy\}/);
   assert.match(dialog, /canReviewEmail/);
-  assert.match(dialog, /dialogRef/);
+  assert.match(dialog, /AdminDialog/);
+  assert.match(read("components/admin/admin-dialog.tsx"), /dialog\.showModal\(\)/);
   assert.match(dialog, /PaymentLinkForm/);
   assert.match(dialog, /Gửi form thanh toán/);
   assert.match(read("components/admin/solo-command-center/command-center-dashboard.tsx"), /\/admin\/hoc-vien\?add_student=1/);

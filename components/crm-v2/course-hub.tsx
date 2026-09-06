@@ -60,7 +60,7 @@ export function CourseHub({ snapshot }: { snapshot: AdminLmsSnapshot }) {
     finally { pending.current = false; setBusy(false); }
   }
 
-  return <div className="space-y-4 text-slate-900">
+  return <div data-admin-ui="modern" className="space-y-4 text-slate-900">
     <header className="flex flex-wrap items-center justify-between gap-3">
       <div><h1 className="text-2xl font-bold tracking-tight">Khóa học</h1><p className="mt-1 text-sm text-slate-500">Nội dung, tài liệu và quyền học trong một nơi.</p></div>
       <button type="button" disabled={!snapshot.ok || busy} onClick={() => { setError(""); setCreating(true); }} className="inline-flex h-10 items-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"><Plus className="size-4" />Tạo khóa học</button>

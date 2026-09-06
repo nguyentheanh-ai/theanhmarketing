@@ -115,7 +115,7 @@ export function SupportBookingsClient({ initialSnapshot, initialError = "", toda
   const dayBookings = (display?.bookings ?? []).filter((booking) => booking.appointmentDate === selectedDate);
   const dayCanChange = Boolean(display && selectedDate >= display.minDate && selectedDate <= display.maxDate && !isSupportSunday(selectedDate));
 
-  return <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" aria-label="Lịch hỗ trợ" aria-busy={loading}>
+  return <section data-admin-ui="modern" className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" aria-label="Lịch hỗ trợ" aria-busy={loading}>
     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 p-3 sm:p-4">
       <div className="flex min-w-0 flex-wrap items-center gap-2">
         <CalendarDays className="mr-1 size-5 text-blue-600" />

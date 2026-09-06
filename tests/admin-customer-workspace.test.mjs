@@ -72,6 +72,7 @@ test('directory opens no arbitrary profile, filters by course, and isolates muta
   assert.equal(view.root.findAllByProps({'data-profile':true}).length,0);assert.equal(calls.length,0);
   await act(()=>view.root.findByProps({'aria-label':'Lọc khóa học'}).props.onChange({target:{value:'course'}}));assert.equal(view.root.findAllByProps({'aria-label':'Mở hồ sơ Fixture'}).length,0);
   await act(()=>view.root.findByProps({'aria-label':'Mở hồ sơ Second'}).props.onClick());
+  assert.equal(calls.length,0,'opening an overview does not scan Auth accounts');
   const button=label=>view.root.findAllByType('button').find(n=>text(n)===label);
   await act(()=>button('Quyền học').props.onClick());await act(()=>button('Thu quyền').props.onClick());assert.equal(calls.filter(x=>x.method==='POST').length,0);
   globalThis.fetch=async(url,options)=>{calls.push({url,...options});return {ok:false,json:async()=>({ok:false,accessUpdated:true,message:'Quyền đã cập nhật; email lỗi'})};};
