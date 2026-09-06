@@ -1,5 +1,7 @@
 # Không gian quản trị mới
 
+Trạng thái: đã phát hành. Kiểm tra bản dựng và các hành vi mới đạt; bằng chứng triển khai và đối chiếu sau phát hành được giữ trong bảng theo dõi riêng.
+
 Tổng quan và báo cáo dùng cùng bộ lọc ngày/sản phẩm, số tiền đã thanh toán, xu hướng, bảng sản phẩm và phễu của cùng nhóm đơn. Chi phí quảng cáo tải riêng; không dùng sự thiếu dữ liệu Ads để chặn báo cáo doanh thu. Đơn nhiều sản phẩm phân bổ bảo toàn tổng tiền; sản phẩm tặng không nhận doanh thu âm. Chi tiết và định nghĩa mở bằng cửa sổ.
 
 Khách hàng/học viên dùng một danh sách, hồ sơ có thông tin, quyền học, đơn hàng, hoạt động và tài khoản. Thao tác cần xác nhận và phản hồi từ máy chủ; cập nhật quyền hoặc mật khẩu thành công nhưng email lỗi được phân biệt. Editor giữ phạm vi học viên trước đây; owner quản lý khách hàng tiềm năng và thao tác tài khoản. Route cũ chuyển về hồ sơ hợp nhất.
