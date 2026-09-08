@@ -1,6 +1,6 @@
 # Feature Map - theanh-main
 
-- Pixel Codex1369910554822777: routing trong lib/meta/codex-pixel.ts, lib/tracking/events.ts, lib/meta/conversions-api.ts và payment poller. Khóa Production/Secret đã lưu; Meta đã nhận3 CAPI test events. Chưa phát hành; handoff docs/CODEX_PIXEL_20260908.md.
+- Pixel Codex1369910554822777: runtime6fd734e LIVE, routing trong lib/meta/codex-pixel.ts, lib/tracking/events.ts, lib/meta/conversions-api.ts và payment poller. Khóa Production/Secret đã lưu; Meta nhận3 CAPI test events. Browser receipt chưa xác nhận vì ERR_BLOCKED_BY_CLIENT; handoff docs/CODEX_PIXEL_20260908.md.
 
 ## 08/09/2026 — Landing Codex cho hiệu suất cá nhân
 

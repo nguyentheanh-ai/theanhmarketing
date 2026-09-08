@@ -1,8 +1,8 @@
 # Current State - theanh-main
 
-## 08/09 — Pixel Codex local, chưa phát hành
+## 08/09 — Pixel Codex live, còn browser verification
 
-Routing browser/CAPI riêng đã viết,20focused/39prebuild/TypeScript/lint/build108 đạt. Khóa Codex đã lưu Production/Secret; Meta API nhận3 và Test Events xác nhận Lead/InitiateCheckout/Purchase đã xử lý. Chưa live release. Handoff `docs/CODEX_PIXEL_20260908.md`; trạng thái landing LIVE bên dưới không chứng minh Pixel mới hoạt động.
+Runtime6fd734e/production dpl_2VV2wyTkHnEw6GRoCWSTbFxNAPbr READY, www/apex200 và chunk Pixel mới đã xác minh;59Meta/revenue tests đạt. Khóa Codex Production/Secret; Meta xử lý3 CAPI Test Events. Browser fbevents.js bị ERR_BLOCKED_BY_CLIENT, AdBlock đang bật; chờ xác nhận tạm dừng riêng miền để test rồi bật lại. Chưa gọi ready-to-ad, không tạo đơn thật. Handoff `docs/CODEX_PIXEL_20260908.md`.
 
 ## 08/09/2026 — Landing Codex đã phát hành
 

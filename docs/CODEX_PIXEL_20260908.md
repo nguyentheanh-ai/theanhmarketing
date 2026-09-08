@@ -1,4 +1,14 @@
-# Pixel Codex — chưa phát hành
+# Pixel Codex — đã phát hành, còn kiểm tra trình duyệt bị chặn
+
+## Trạng thái live mới nhất
+
+- Runtime `6fd734e255eb4c79b5c2ef756dcbb36287a1652b`, preview `dpl_AnDvgYLjhPG5t8rFau6vmsam3s6R` READY/HTTP200; promote dựng production `dpl_2VV2wyTkHnEw6GRoCWSTbFxNAPbr` READY đúng SHA. Cả www/apex200 và HTML tham chiếu đúng deployment. Rollback ứng dụng: `dpl_5pNYu49hDr8WdGznt5EVKvsoUccG`.
+- Live chunk `0dyau30mrihwn.js` chứa Pixel Codex/trackSingle; không có token. Chrome hiển thị đúng999K/799K/cọc399K/nút đăng ký hoạt động sau hydration. Không submit form/đơn thật.
+- Bốn landing tĩnh Facebook Ads/Ebook/Ebook Premium/AI Master giữ nguyên SHA-256 trước/sau; Agent Kit200, source không đổi. GET orders/SePay/Resend/student-progress405. Runtime error/fatal query sau phát hành không có dòng lỗi.59 kiểm tra Meta/revenue PASS trên canonical; TS/lint/build candidate đã đạt.
+- CAPI Test Events: Lead/InitiateCheckout/Purchase đã xử lý, value399000/currencyVND/content_ids đúng sản phẩm. Production chỉ có token, không có test_event_code. Không thử giao dịch thanh toán thật hoặc replay Purchase đơn thật.
+- **Chưa xác nhận browser receipt:** Chrome đang báo `ERR_BLOCKED_BY_CLIENT` với fbevents.js; AdBlock bật trên miền, là nguyên nhân ứng viên chưa A/B. Đã gửi yêu cầu owner cho tạm dừng riêng miền rồi bật lại. Chưa bấm Pause. Meta WEB_ONLY stats chưa có dữ liệu; không gọi ready-to-ad trước khi xác nhận PageView/ViewContent. Computer Use exception giữ mở cho bước này, phải khôi phục khi hoàn tất/hủy.
+
+Các mục chưa phát hành/chờ cấp khóa dưới đây là lịch sử đã được thay thế.
 
 ## 08/09 — Đã cấp khóa và Meta đã nhận sự kiện thử
 

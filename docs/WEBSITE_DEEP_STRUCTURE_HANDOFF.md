@@ -1,8 +1,8 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
-## 08/09 — Pixel Codex candidate, chưa live
+## 08/09 — Pixel Codex đã live, còn browser receipt
 
-Routing Pixel1369910554822777 bổ sung bên cạnh primary chỉ cho landing Codex/checkout có attribution. CAPI dùng khóa riêng Production/Secret, cùng event_id; Purchase outbox chưa hoàn thành nếu một đích lỗi. Không schema/payment/access mutation. Meta đã xử lý3 sự kiện CAPI thử; live release đang chuẩn bị. Xem `CODEX_PIXEL_20260908.md`.
+Runtime6fd734e LIVE qua production dpl_2VV2wyTkHnEw6GRoCWSTbFxNAPbr READY, www/apex/chunk/routes/runtime logs đã kiểm tra. Routing Pixel1369910554822777 bổ sung bên cạnh primary chỉ cho landing Codex/checkout có attribution. CAPI khóa riêng Production/Secret, cùng event_id; outbox không hoàn thành nếu một đích lỗi. Meta xử lý3 CAPI test events. Chưa xác nhận browser receipt vì Chrome chặn fbevents.js ERR_BLOCKED_BY_CLIENT; chờ owner cho tạm dừng AdBlock riêng miền và phục hồi. Không schema/payment/access mutation hoặc đơn thật. Xem `CODEX_PIXEL_20260908.md`.
 
 ## 08/09/2026 — Codex LIVE / hoàn tất audit và deploy
 
