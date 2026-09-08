@@ -1,8 +1,8 @@
 # Current State - theanh-main
 
-## 08/09/2026 — Landing Codex, audit cuối
+## 08/09/2026 — Landing Codex đã phát hành
 
-Route `/academy/codex-x10-hieu-suat`: 15 section, 8 quyền lợi có minh họa chuyển động, bằng chứng thực tế và CTA ghim; cùng sản phẩm/giá/checkout/entitlement Agent Kit. Audit local/build/71 kiểm tra hợp đồng và browser đa kích thước đạt. Đã sửa lỗi tracking tùy chọn gây kẹt/mất form. Full-suite có 19 lỗi trùng canonical chưa sửa; không có hồi quy mới quan sát được. Anh đã yêu cầu deploy nếu đạt; đang chuẩn bị phát hành qua canonical. Chưa xác nhận live ở mục này. Chi tiết và giới hạn: `docs/CODEX_LANDING_20260908.md`.
+Route `/academy/codex-x10-hieu-suat` đã LIVE: runtime1f54159, production `dpl_5pNYu49hDr8WdGznt5EVKvsoUccG` READY, www/apex đã xác nhận. 15 section, 8 quyền lợi/minh họa, 7 video và CTA ghim; cùng Agent Kit/checkout/quyền học. Build108, 71 kiểm tra liên quan, browser local/live 4 viewport, tài nguyên/liên kết và chuyển động đạt; không lỗi runtime sau phát hành. Sửa hai lỗi tracking tùy chọn gây kẹt/mất form. Full suite còn 19 lỗi trùng baseline canonical, không có hồi quy mới quan sát được. Không giao dịch/email thật hoặc đổi dữ liệu học viên. Chi tiết/rollback/giới hạn: `docs/CODEX_LANDING_20260908.md`.
 
 ## 06/09/2026 — Màu sắc và hiệu năng admin
 

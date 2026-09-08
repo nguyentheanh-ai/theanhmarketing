@@ -2,6 +2,8 @@
 
 ## 08/09/2026 — Landing Codex cho hiệu suất cá nhân
 
+LIVE: runtime1f54159 / production `dpl_5pNYu49hDr8WdGznt5EVKvsoUccG` READY; kiểm tra lại trên www/apex, browser 4 viewport và nhật ký lỗi đạt. Không thay backend/giá/quyền học.
+
 `app/academy/codex-x10-hieu-suat/`: landing riêng, cùng Agent Kit. 15 section; marketer/freelancer/văn phòng; 8 kết quả và SVG/CSS chuyển động; 7 video thực tế; form dùng server plan/phase hiện hữu, giá chính thức/ưu đãi/cọc rõ ràng; sticky ẩn khi nhập; lỗi tracking không chặn mua. Bốn browser harness trong `tests/codex-*-browser.mjs`, không gửi đơn thật. Backend/shared assets/schema không thay. Xem `docs/CODEX_LANDING_20260908.md` để biết trạng thái phát hành và giới hạn kiểm chứng.
 
 ## 06/09/2026 — Màu sắc và hiệu năng admin

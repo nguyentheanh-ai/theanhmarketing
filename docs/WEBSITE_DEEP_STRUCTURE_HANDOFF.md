@@ -1,5 +1,9 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 08/09/2026 — Codex LIVE / hoàn tất audit và deploy
+
+Runtime1f54159 đã qua canonical/preflight/preview và lên production `dpl_5pNYu49hDr8WdGznt5EVKvsoUccG` READY. Route `/academy/codex-x10-hieu-suat` 200 trên www/apex. Live browser 4 viewport, 15 section/8 minh họa/7 video, giá/CTA/form/tài nguyên/liên kết đạt; 8 chuyển động và pause đạt. Landing cũ/đường học viên/API bảo vệ giữ trạng thái; ba trang tĩnh kiểm tra giữ hash. Nhật ký error/fatal của bản mới rỗng sau hơn 60 giây READY. Không test giao dịch/email thật, không DB mutation. 19 lỗi test baseline vẫn ghi rõ. Báo cáo và rollback: `CODEX_LANDING_20260908.md`. Mục chuẩn bị/local phía dưới là lịch sử.
+
 ## 08/09/2026 — Codex audit cuối, chuẩn bị release
 
 Audit 15 section/8 minh họa/7 video, giá và CTA, browser 4 viewport, 71/71 hợp đồng và build 108/108 đạt. Sửa riêng cookie/analytics lỗi gây kẹt hoặc mất form. Backend giá/SePay/quyền học không đổi; không gửi đơn thật. Full suite 19 lỗi baseline trùng canonical b9eee18, không quy về landing mới. Owner yêu cầu deploy nếu đạt; theo dõi bản phát hành tại `CODEX_LANDING_20260908.md`. Mục local review dưới đây là lịch sử.

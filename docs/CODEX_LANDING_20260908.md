@@ -1,5 +1,21 @@
 # Landing Codex cho hiệu suất cá nhân
 
+## Đã phát hành và kiểm tra tên miền thật — 08/09/2026
+
+- Live: https://www.theanhmarketing.com/academy/codex-x10-hieu-suat (HTTP 200; tên miền không-www chuyển đúng về www).
+- Runtime `1f541590f768b91c879a2b219b9b7115da93f953`, tích hợp fast-forward vào canonical sạch, push và remote preflight đạt. Preview `dpl_888vKg21zgQNooMA5fyhDAExNQd6` READY, đọc qua xác thực Vercel đúng 15 section/8 phần minh họa/form. Production dựng lại từ preview: `dpl_5pNYu49hDr8WdGznt5EVKvsoUccG`, READY, xác nhận www và apex đều trỏ bản mới; SHA đúng runtime.
+- Browser production: 4 viewport 1440/768/390/320 không tràn ngang hoặc ảnh hỏng; 15 section, 8 minh họa, 7 video; giá chính thức/đặt trước/cọc/còn lại đúng. CTA ghim đưa tới và focus form, tab nghề hoạt động; 12 tài nguyên và 10 liên kết trả 200; không pageerror. Kiểm tra chuyển động riêng trên live: 8/8 cảnh có animation và nút pause hoạt động.
+- Đối chiếu trước/sau: Facebook Ads, Ebook, AI Master và Agent Kit đều 200; ba landing tĩnh đầu giữ nguyên SHA-256. Agent Kit HTML động thay đổi theo markup của bản deploy; source/asset/luồng cũ không nằm trong diff. Login và vào khóa học 200, dashboard/admin chuyển đúng tới đăng nhập. GET orders/SePay/Resend/student-progress vẫn 405; preorder-launch chưa xác thực vẫn 401; availability 200, phản hồi cùng hash.
+- Nhật ký error/fatal của đúng bản production trong cửa sổ 15 phút kết thúc 08:11:09 UTC không có bản ghi, đã chờ hơn 60 giây sau READY. Đây là kiểm tra ngay sau phát hành, không phải cam kết không phát sinh lỗi về sau.
+- Không tạo đơn, thanh toán, gửi mail hoặc đăng nhập học viên thật trong audit. Không migration hoặc thay đổi dữ liệu khách. Các lỗi full-suite baseline và giới hạn LMS ở mục dưới vẫn được giữ, không gọi toàn dự án là hoàn toàn xanh.
+- Rollback ứng dụng: `dpl_DqPdx7bkGZ7BdidxrYHvWzWc297F`. Các đoạn LOCAL/chưa deploy/chuẩn bị dưới đây là lịch sử, được thay thế bởi trạng thái LIVE này.
+
+### Bàn giao
+
+App sửa: main-site `theanh-main`, không phải app học viên. Context đối chiếu gồm control-plane registry/rules/project registry/chính sách trình duyệt/ACTIVE_TASKS; repo AGENTS, CURRENT_STATE, FEATURE_MAP, design/handoff và hợp đồng bảo mật/thanh toán. Nguồn sửa gồm 7 file dưới `app/academy/codex-x10-hieu-suat/`, 4 browser harness, báo cáo/handoff và lesson scoped; không sửa file runtime ngoài route mới. Repo CURRENT_STATE/FEATURE_MAP/handoff và workspace SESSION_STATE/FEATURE_REGISTRY/TASK_LOG/CHANGELOG/ACTIVE_TASKS/PAYMENT-FLOW/NEED_VERIFY đã cập nhật.
+
+Lệnh kiểm tra chính: `next build --webpack`, ESLint 4 TSX, `node --test` 7 file liên quan (71 pass), 4 browser harness; Git diff check, doctor/preflight remote; Vercel preview/promote; live HTTP/browser và runtime error/fatal query. Không cần phát hành thêm cho yêu cầu này. Phiên sau bắt đầu từ canonical mới nhất; chỉ mở xử lý 19 lỗi baseline hoặc test giao dịch thật khi nằm trong yêu cầu được phép.
+
 ## Audit cuối và chuẩn bị phát hành — 08/09/2026
 
 Anh yêu cầu kiểm tra toàn bộ và deploy nếu đạt. Audit xác nhận 15 section, 8 kết quả/8 minh họa, 7 video bằng chứng; nội dung hướng về kết quả khách nhận, không có từ nội bộ trong phần khách đọc. Học phí phân biệt 999K chính thức, 799K đặt trước, 399K cọc/400K còn lại; cùng sản phẩm và quyền học hiện hữu. Các phần lịch sử ghi LOCAL/chưa deploy phía dưới là trạng thái trước vòng phát hành này.
