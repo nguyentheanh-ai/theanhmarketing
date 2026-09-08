@@ -1,5 +1,19 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 08/09/2026 — Codex audit cuối, chuẩn bị release
+
+Audit 15 section/8 minh họa/7 video, giá và CTA, browser 4 viewport, 71/71 hợp đồng và build 108/108 đạt. Sửa riêng cookie/analytics lỗi gây kẹt hoặc mất form. Backend giá/SePay/quyền học không đổi; không gửi đơn thật. Full suite 19 lỗi baseline trùng canonical b9eee18, không quy về landing mới. Owner yêu cầu deploy nếu đạt; theo dõi bản phát hành tại `CODEX_LANDING_20260908.md`. Mục local review dưới đây là lịch sử.
+
+## 08/09/2026 — Landing Codex hiệu suất cá nhân (local review)
+
+Mỗi card quyền lợi có `OutcomeMotion` từ `outcome-motion.tsx` và CSS riêng. Hoạt ảnh 4s thuần SVG/CSS, tạm dừng bằng checkbox/CSS :has và reduced-motion. Không GIF nặng, không request API. Test riêng `codex-motion-browser.mjs`; bằng chứng trong reports/.../motion.
+
+Góp ý mới nhất: danh sách đã tăng thành 8 nhóm, bổ sung gửi email và tách lên kế hoạch thành card riêng. Hero, offer và kiểm tra số lượng đồng bộ. Chỉ mô tả ứng dụng khóa học, không triển khai gửi email hoặc automation thật.
+
+Redesign theo góp ý mới: `outcomes.tsx` chứa 6 nhóm quyền lợi/icon/hero; `redesign.css` scoped theo trang. Sáu kết quả nằm ngay sau hero và dùng cùng dữ liệu tại offer. Nhóm nghề chuyển sang lợi ích; demo thao tác thu gọn trong disclosure. Vẫn 15 section, route và payment contract không đổi. Xem audit cập nhật tại `CODEX_LANDING_20260908.md`.
+
+Trang `/academy/codex-x10-hieu-suat` thêm 15 section cho ba nhóm nghề; cùng course slug, giá/phase, checkout, invoice và event dedup của Đội ngũ nhân sự AI. Source chỉ gồm route/CSS/client sections mới, không sửa landing cũ hoặc dữ liệu. Dựng và kiểm tra trong feature `.codex-local/codex-landing-20260908`; chưa phát hành. Handoff nguồn/giới hạn/audit từng section: `docs/CODEX_LANDING_20260908.md`.
+
 ## 06/09/2026 — Màu sắc và hiệu năng admin
 
 Đã sửa xung đột CSS cũ gây chữ tối trên nút tối; UI mới dùng palette riêng, cửa sổ tạo học viên dùng modal chung và giữ bản nháp khi đổi chế độ. Form gửi thanh toán thoát trạng thái chờ khi lỗi mạng, khóa gửi lặp. Trang hồ sơ chỉ đọc tóm tắt khóa học, lập chỉ mục quyền theo email và tìm kiếm; Auth chỉ được tra khi mở tab tài khoản. Không thay API ghi, schema, payment hay app học viên. Chi tiết: `docs/ADMIN_UI_POLISH_20260906.md`. Trạng thái: đã phát hành; bằng chứng source/test/build/live được giữ trong workspace riêng.

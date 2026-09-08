@@ -1,5 +1,9 @@
 # Feature Map - theanh-main
 
+## 08/09/2026 — Landing Codex cho hiệu suất cá nhân
+
+`app/academy/codex-x10-hieu-suat/`: landing riêng, cùng Agent Kit. 15 section; marketer/freelancer/văn phòng; 8 kết quả và SVG/CSS chuyển động; 7 video thực tế; form dùng server plan/phase hiện hữu, giá chính thức/ưu đãi/cọc rõ ràng; sticky ẩn khi nhập; lỗi tracking không chặn mua. Bốn browser harness trong `tests/codex-*-browser.mjs`, không gửi đơn thật. Backend/shared assets/schema không thay. Xem `docs/CODEX_LANDING_20260908.md` để biết trạng thái phát hành và giới hạn kiểm chứng.
+
 ## 06/09/2026 — Màu sắc và hiệu năng admin
 
 Đã sửa xung đột CSS cũ gây chữ tối trên nút tối; UI mới dùng palette riêng, cửa sổ tạo học viên dùng modal chung và giữ bản nháp khi đổi chế độ. Form gửi thanh toán thoát trạng thái chờ khi lỗi mạng, khóa gửi lặp. Trang hồ sơ chỉ đọc tóm tắt khóa học, lập chỉ mục quyền theo email và tìm kiếm; Auth chỉ được tra khi mở tab tài khoản. Không thay API ghi, schema, payment hay app học viên. Chi tiết: `docs/ADMIN_UI_POLISH_20260906.md`. Trạng thái: đã phát hành; bằng chứng source/test/build/live được giữ trong workspace riêng.
