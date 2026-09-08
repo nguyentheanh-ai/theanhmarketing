@@ -1,5 +1,7 @@
 # Feature Map - theanh-main
 
+- Pixel Codex1369910554822777: routing trong lib/meta/codex-pixel.ts, lib/tracking/events.ts, lib/meta/conversions-api.ts và payment poller. Khóa Production/Secret đã lưu; Meta đã nhận3 CAPI test events. Chưa phát hành; handoff docs/CODEX_PIXEL_20260908.md.
+
 ## 08/09/2026 — Landing Codex cho hiệu suất cá nhân
 
 LIVE: runtime1f54159 / production `dpl_5pNYu49hDr8WdGznt5EVKvsoUccG` READY; kiểm tra lại trên www/apex, browser 4 viewport và nhật ký lỗi đạt. Không thay backend/giá/quyền học.

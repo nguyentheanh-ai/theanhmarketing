@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { CODEX_META_PIXEL_ID, isCodexLanding } from "./codex-pixel";
 
 type MetaActionSource =
   | "email"
@@ -289,8 +290,7 @@ type MetaSuccessResponse = {
   fbtrace_id?: string;
 };
 
-export async function sendMetaConversionEvent(event: MetaServerEvent): Promise<MetaConversionResult> {
-  const config = getMetaConfig();
+async function sendToMetaDataset(event: MetaServerEvent, config: ReturnType<typeof getMetaConfig>): Promise<MetaConversionResult> {
 
   if (!config.accessToken || !config.datasetId) {
     return { ok: true, skipped: true, reason: "Missing Meta CAPI config" };
@@ -343,6 +343,28 @@ export async function sendMetaConversionEvent(event: MetaServerEvent): Promise<M
       reason: error instanceof Error ? error.message : "Meta CAPI request failed",
     };
   }
+}
+
+export async function sendMetaConversionEvent(event: MetaServerEvent): Promise<MetaConversionResult> {
+  const config = getMetaConfig();
+  const primary = await sendToMetaDataset(event, config);
+  const landingPage = event.custom_data?.landing_page;
+  const isCodex = isCodexLanding(typeof landingPage === "string" ? landingPage : "")
+    || isCodexLanding(event.event_source_url);
+  if (!isCodex) return primary;
+
+  // Keep the existing primary signal. Both destinations share stable event IDs;
+  // the durable Purchase outbox retries until BOTH have accepted the event.
+  const accessToken = cleanString(process.env.META_CODEX_CAPI_ACCESS_TOKEN, 2000);
+  if (!accessToken) return { ok: false, skipped: false, reason: "Missing Codex Meta CAPI config" };
+  const codex = await sendToMetaDataset(event, {
+    ...config,
+    datasetId: CODEX_META_PIXEL_ID,
+    accessToken,
+    testEventCode: cleanString(process.env.META_CODEX_CAPI_TEST_EVENT_CODE, 120),
+  });
+  if (!primary.ok || primary.skipped) return { ...primary, ok: false };
+  return codex;
 }
 
 export function sendMetaLeadEvent(input: MetaLeadEventInput) {

@@ -23,7 +23,9 @@ function loadTsModule(relativePath) {
   }).outputText;
   const cjsModule = { exports: {} };
   const runner = new Function("exports", "module", "require", compiled);
-  runner(cjsModule.exports, cjsModule, require);
+  runner(cjsModule.exports, cjsModule, (id) => id.startsWith(".")
+    ? loadTsModule(`${path.resolve(path.dirname(fullPath), id)}.ts`)
+    : require(id));
   return cjsModule.exports;
 }
 

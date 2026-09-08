@@ -93,13 +93,14 @@ export function PaymentStatusPoller({
     trackMarketingEvent("payment_page_view", {
       event_id: `payment-page-view-${order.orderCode}`,
       order_id: order.orderCode,
+      landing_page: order.attribution?.landingPage,
       content_ids: paymentContentIds,
       content_name: order.courseTitle,
       content_type: "product",
       currency: order.currency || "VND",
       value: order.amount,
     });
-  }, [order.orderCode, order.courseTitle, order.currency, order.amount, paymentContentIds]);
+  }, [order.orderCode, order.courseTitle, order.currency, order.amount, order.attribution?.landingPage, paymentContentIds]);
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -126,6 +127,7 @@ export function PaymentStatusPoller({
         trackMarketingEvent("InitiateCheckout", {
           event_id: order.orderCode,
           order_id: order.orderCode,
+          landing_page: order.attribution?.landingPage,
           content_ids: getContentIds(order),
           content_name: order.courseTitle,
           content_type: "product",

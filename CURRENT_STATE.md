@@ -1,5 +1,9 @@
 # Current State - theanh-main
 
+## 08/09 — Pixel Codex local, chưa phát hành
+
+Routing browser/CAPI riêng đã viết,20focused/39prebuild/TypeScript/lint/build108 đạt. Khóa Codex đã lưu Production/Secret; Meta API nhận3 và Test Events xác nhận Lead/InitiateCheckout/Purchase đã xử lý. Chưa live release. Handoff `docs/CODEX_PIXEL_20260908.md`; trạng thái landing LIVE bên dưới không chứng minh Pixel mới hoạt động.
+
 ## 08/09/2026 — Landing Codex đã phát hành
 
 Route `/academy/codex-x10-hieu-suat` đã LIVE: runtime1f54159, production `dpl_5pNYu49hDr8WdGznt5EVKvsoUccG` READY, www/apex đã xác nhận. 15 section, 8 quyền lợi/minh họa, 7 video và CTA ghim; cùng Agent Kit/checkout/quyền học. Build108, 71 kiểm tra liên quan, browser local/live 4 viewport, tài nguyên/liên kết và chuyển động đạt; không lỗi runtime sau phát hành. Sửa hai lỗi tracking tùy chọn gây kẹt/mất form. Full suite còn 19 lỗi trùng baseline canonical, không có hồi quy mới quan sát được. Không giao dịch/email thật hoặc đổi dữ liệu học viên. Chi tiết/rollback/giới hạn: `docs/CODEX_LANDING_20260908.md`.

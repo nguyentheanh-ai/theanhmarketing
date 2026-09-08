@@ -1,3 +1,5 @@
+import { CODEX_META_PIXEL_ID, isCodexLanding } from "../meta/codex-pixel";
+
 export type MarketingEventName =
   | "PageView"
   | "ViewContent"
@@ -21,6 +23,7 @@ declare global {
     fbq?: (...args: unknown[]) => void;
     gtag?: (...args: unknown[]) => void;
     dataLayer?: unknown[];
+    codexPixelInitialized?: boolean;
   }
 }
 
@@ -51,10 +54,19 @@ export function trackMarketingEvent(eventName: MarketingEventName, payload: Mark
   }
 
   if (typeof window.fbq === "function") {
-    if (eventId) {
-      window.fbq("track", eventName, payload, { eventID: eventId });
-    } else {
-      window.fbq("track", eventName, payload);
+    const options = eventId ? [{ eventID: eventId }] : [];
+    // Never broadcast to a Pixel left initialized after client-side navigation.
+    window.fbq("trackSingle", "1315653423712065", eventName, payload, ...options);
+    const codexCheckout = window.location.pathname.startsWith("/thanh-toan/")
+      && isCodexLanding(typeof payload.landing_page === "string" ? payload.landing_page : "");
+    if (isCodexLanding(window.location.href) || codexCheckout) {
+      if (!window.codexPixelInitialized) {
+        window.fbq("set", "autoConfig", false, CODEX_META_PIXEL_ID);
+        window.fbq("init", CODEX_META_PIXEL_ID);
+        window.codexPixelInitialized = true;
+      }
+      const standard = ["PageView", "ViewContent", "Lead", "CompleteRegistration", "AddToCart", "InitiateCheckout", "Purchase"].includes(eventName);
+      window.fbq(standard ? "trackSingle" : "trackSingleCustom", CODEX_META_PIXEL_ID, eventName, payload, ...options);
     }
   }
 }
