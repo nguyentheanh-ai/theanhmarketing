@@ -1,5 +1,9 @@
 # Pixel Codex — đã phát hành, còn kiểm tra trình duyệt bị chặn
 
+## 09/09 — Mở rộng sang Bộ Kit theo yêu cầu owner
+
+Thêm `/academy/bo-kit-agent-doanh-nghiep` vào exact-path matcher hiện có. Browser init/PageView và CAPI/checkout dùng cùng matcher; bundle Kit hiện có tự gửi ViewContent/Lead/InitiateCheckout qua fbq track, không sửa bundle hoặc gửi thêm sự kiện trùng.59Meta/revenue +19Kit =78tests PASS; TypeScript, targeted ESLint và Webpack build PASS. Ba test mới fail trước thay đổi, pass sau thay đổi; có SPA isolation, query/foreign-host rejection, shared event_id và CAPI Purchase fanout. Không đổi khóa, schema, giá, quyền học hoặc đơn thật. Chưa xác nhận sự kiện browser mới trên Meta. Cần ghi deployment/live readback sau phát hành.
+
 ## Trạng thái live mới nhất
 
 - Runtime `6fd734e255eb4c79b5c2ef756dcbb36287a1652b`, preview `dpl_AnDvgYLjhPG5t8rFau6vmsam3s6R` READY/HTTP200; promote dựng production `dpl_2VV2wyTkHnEw6GRoCWSTbFxNAPbr` READY đúng SHA. Cả www/apex200 và HTML tham chiếu đúng deployment. Rollback ứng dụng: `dpl_5pNYu49hDr8WdGznt5EVKvsoUccG`.

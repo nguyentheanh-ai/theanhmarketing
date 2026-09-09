@@ -1,5 +1,9 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 09/09 — Pixel chung Codex + Bộ Kit
+
+Owner mở rộng Pixel1369910554822777 cho `/academy/bo-kit-agent-doanh-nghiep`. `lib/meta/codex-pixel.ts` cho phép đúng hai route; shared browser init/PageView và CAPI/checkout fanout dùng chung matcher. Kit rewrite tới `/khoa-hoc/bo-kit-agent-doanh-nghiep`, bundle `index-BdJ14PRW.js` hiện hữu gửi ViewContent/Lead/InitiateCheckout qua fbq track tới các Pixel đã init; không thêm bản sao sự kiện hoặc sửa bundle. Purchase giữ server/outbox/event_id/value.78focused/revenue/Kit tests PASS. Trạng thái live cập nhật tại CODEX_PIXEL_20260908.md; không coi tests là Meta browser receipt.
+
 ## 08/09 — Pixel Codex đã live, còn browser receipt
 
 Runtime6fd734e LIVE qua production dpl_2VV2wyTkHnEw6GRoCWSTbFxNAPbr READY, www/apex/chunk/routes/runtime logs đã kiểm tra. Routing Pixel1369910554822777 bổ sung bên cạnh primary chỉ cho landing Codex/checkout có attribution. CAPI khóa riêng Production/Secret, cùng event_id; outbox không hoàn thành nếu một đích lỗi. Meta xử lý3 CAPI test events. Chưa xác nhận browser receipt vì Chrome chặn fbevents.js ERR_BLOCKED_BY_CLIENT; chờ owner cho tạm dừng AdBlock riêng miền và phục hồi. Không schema/payment/access mutation hoặc đơn thật. Xem `CODEX_PIXEL_20260908.md`.

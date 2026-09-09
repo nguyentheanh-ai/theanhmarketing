@@ -17,10 +17,11 @@ function load(file) {
   return loadedModule.exports;
 }
 const codexUrl = "https://www.theanhmarketing.com/academy/codex-x10-hieu-suat";
+const kitUrl = "https://www.theanhmarketing.com/academy/bo-kit-agent-doanh-nghiep";
 test("Codex matches exact landing, never shared course or foreign URL", () => {
   const { isCodexLanding } = load("lib/meta/codex-pixel.ts");
-  for (const url of [codexUrl, `${codexUrl}/?utm_source=facebook`, "academy/codex-x10-hieu-suat"]) assert.equal(isCodexLanding(url), true);
-  for (const url of ["https://evil.example/academy/codex-x10-hieu-suat", `${codexUrl}-other`, "/academy/bo-kit-agent-doanh-nghiep", "/?next=/academy/codex-x10-hieu-suat", null]) assert.equal(isCodexLanding(url), false);
+  for (const url of [codexUrl, `${codexUrl}/?utm_source=facebook`, "academy/codex-x10-hieu-suat", kitUrl, `${kitUrl}/?utm_source=facebook`, "academy/bo-kit-agent-doanh-nghiep"]) assert.equal(isCodexLanding(url), true);
+  for (const url of ["https://evil.example/academy/codex-x10-hieu-suat", `${codexUrl}-other`, `${kitUrl}-other`, "https://evil.example/academy/bo-kit-agent-doanh-nghiep", "/academy/ai-master-x10-hieu-suat", "/?next=/academy/bo-kit-agent-doanh-nghiep", null]) assert.equal(isCodexLanding(url), false);
 });
 test("browser targets Codex only on landing or its attributed checkout, including SPA exit", () => {
   const calls = [];
@@ -32,12 +33,20 @@ test("browser targets Codex only on landing or its attributed checkout, includin
     assert.equal(calls.filter(c => c[0] === "init" && c[1] === "1369910554822777").length, 1);
     assert.equal(calls.some(c => c[0] === "trackSingle" && c[1] === "1369910554822777" && c[2] === "Lead" && c[4].eventID === "TEST-ORDER"), true);
     calls.length = 0;
-    window.location = new URL("https://www.theanhmarketing.com/academy/bo-kit-agent-doanh-nghiep");
+    window.location = new URL(kitUrl);
+    for (const event of ["PageView", "ViewContent", "Lead", "InitiateCheckout"]) trackMarketingEvent(event, { event_id: "TEST-KIT" });
+    assert.equal(calls.filter(c => c[1] === "1369910554822777").length, 4);
+    assert.equal(calls.some(c => c[0] === "init"), false, "SPA transition between both landings must not initialize again");
+    calls.length = 0;
+    window.location = new URL("https://www.theanhmarketing.com/academy/ai-master-x10-hieu-suat");
     trackMarketingEvent("PageView");
     assert.equal(calls.some(c => c[1] === "1369910554822777"), false);
     window.location = new URL("https://www.theanhmarketing.com/thanh-toan/TEST-ORDER");
     trackMarketingEvent("InitiateCheckout", { event_id: "TEST-ORDER", landing_page: codexUrl });
     assert.equal(calls.some(c => c[1] === "1369910554822777" && c[2] === "InitiateCheckout"), true);
+    calls.length = 0;
+    trackMarketingEvent("InitiateCheckout", { event_id: "TEST-KIT", landing_page: kitUrl });
+    assert.equal(calls.some(c => c[1] === "1369910554822777" && c[2] === "InitiateCheckout" && c[4].eventID === "TEST-KIT"), true);
     assert.equal(calls.some(c => c[0] === "track"), false);
   } finally { delete global.window; }
 });
@@ -57,6 +66,14 @@ test("server mirrors attributed conversions with same ID, and does not mirror ot
     assert.equal(requests[1].payload.data[0].event_id, "TEST-ORDER");
     requests.length = 0;
     await sendMetaLeadEvent({ courseSlug: "bo-agent-kit-x10-hieu-suat-cong-viec", landingPage: "/academy/bo-kit-agent-doanh-nghiep" });
+    assert.equal(requests.length, 2);
+    requests.length = 0;
+    await sendMetaPurchaseEvent({ orderCode: "TEST-KIT", amount: 399000, currency: "VND", landingPage: kitUrl, pageUrl: "https://www.theanhmarketing.com/thanh-toan/TEST-KIT" });
+    assert.equal(requests.length, 2);
+    assert.deepEqual(requests[0].payload.data, requests[1].payload.data);
+    assert.equal(requests[1].payload.data[0].event_id, "TEST-KIT");
+    requests.length = 0;
+    await sendMetaLeadEvent({ courseSlug: "bo-agent-kit-x10-hieu-suat-cong-viec", landingPage: "/academy/ai-master-x10-hieu-suat" });
     assert.equal(requests.length, 1);
     requests.length = 0;
     delete process.env.META_CODEX_CAPI_ACCESS_TOKEN;

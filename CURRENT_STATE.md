@@ -1,5 +1,9 @@
 # Current State - theanh-main
 
+## 09/09 — Mở rộng Pixel Codex cho landing Bộ Kit (đang phát hành)
+
+Owner yêu cầu dùng Pixel1369910554822777 cho `/academy/bo-kit-agent-doanh-nghiep` bên cạnh Codex. Chỉ mở rộng exact-path allowlist dùng chung browser/CAPI/checkout, không đổi bundle/form/giá/payment/secrets.59Meta/revenue và19AgentKit tests PASS; ba test mới đã fail trước sửa. Browser receipt trước đó bị AdBlock chặn vẫn chưa được xác nhận; không tự tắt AdBlock.
+
 ## 08/09 — Pixel Codex live, còn browser verification
 
 Runtime6fd734e/production dpl_2VV2wyTkHnEw6GRoCWSTbFxNAPbr READY, www/apex200 và chunk Pixel mới đã xác minh;59Meta/revenue tests đạt. Khóa Codex Production/Secret; Meta xử lý3 CAPI Test Events. Browser fbevents.js bị ERR_BLOCKED_BY_CLIENT, AdBlock đang bật; chờ xác nhận tạm dừng riêng miền để test rồi bật lại. Chưa gọi ready-to-ad, không tạo đơn thật. Handoff `docs/CODEX_PIXEL_20260908.md`.
