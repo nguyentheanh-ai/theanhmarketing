@@ -2,6 +2,10 @@
 
 ## 09/09 — Mở rộng sang Bộ Kit theo yêu cầu owner
 
+ĐÃ PHÁT HÀNH: runtime `bf7ad8a7fa32cdf99a2d131bbfa6265fd17b7d18`; preview `dpl_8GL4EmpC8uBKjFoX4tqaBBcdGVZR` READY/200; production `dpl_5Rb61wiJraXsjNj7fre9E9jKFkWt` READY. Kit www/apex200, đúng deployment; live chunk `0gf_s-ovhkgqt.js` chứa Pixel1369910554822777, hai route và trackSingle, không token. Bundle Kit live/source SHA256 `9b7120f60055de5c42099ace4d449085c845a7476b7882d1ec3ea4e4a1b8807a` không đổi;4 landing tĩnh khác giữ hash. Orders/SePay/Resend/student-progress GET405, runtime error/fatal query rỗng. Rollback ứng dụng: `dpl_2VV2wyTkHnEw6GRoCWSTbFxNAPbr`.
+
+Giới hạn: đã xác minh mã live và routing bằng tests; chưa có Meta WEB_ONLY stats/receipt cho Kit, không tạo đơn hoặc giao dịch thật. Trở ngại AdBlock từ phiên trước chưa được xử lý/không tự thay cài đặt. Không cần tạo lại Pixel/token để tiếp tục browser verification. Dòng cần phát hành bên dưới là lịch sử.
+
 Thêm `/academy/bo-kit-agent-doanh-nghiep` vào exact-path matcher hiện có. Browser init/PageView và CAPI/checkout dùng cùng matcher; bundle Kit hiện có tự gửi ViewContent/Lead/InitiateCheckout qua fbq track, không sửa bundle hoặc gửi thêm sự kiện trùng.59Meta/revenue +19Kit =78tests PASS; TypeScript, targeted ESLint và Webpack build PASS. Ba test mới fail trước thay đổi, pass sau thay đổi; có SPA isolation, query/foreign-host rejection, shared event_id và CAPI Purchase fanout. Không đổi khóa, schema, giá, quyền học hoặc đơn thật. Chưa xác nhận sự kiện browser mới trên Meta. Cần ghi deployment/live readback sau phát hành.
 
 ## Trạng thái live mới nhất

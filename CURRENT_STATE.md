@@ -1,6 +1,8 @@
 # Current State - theanh-main
 
-## 09/09 — Mở rộng Pixel Codex cho landing Bộ Kit (đang phát hành)
+## 09/09 — Pixel Codex cho landing Bộ Kit đã LIVE
+
+Runtimebf7ad8a / production dpl_5Rb61wiJraXsjNj7fre9E9jKFkWt READY. Kit www/apex200 và chunk đúng Pixel/hai route; bundle Kit và4landing tĩnh khác giữ hash, guards405, runtime logs không error.78tests/TS/lint/build PASS. Chưa Meta browser receipt; không test đơn thật. Xem docs/CODEX_PIXEL_20260908.md.
 
 Owner yêu cầu dùng Pixel1369910554822777 cho `/academy/bo-kit-agent-doanh-nghiep` bên cạnh Codex. Chỉ mở rộng exact-path allowlist dùng chung browser/CAPI/checkout, không đổi bundle/form/giá/payment/secrets.59Meta/revenue và19AgentKit tests PASS; ba test mới đã fail trước sửa. Browser receipt trước đó bị AdBlock chặn vẫn chưa được xác nhận; không tự tắt AdBlock.
 

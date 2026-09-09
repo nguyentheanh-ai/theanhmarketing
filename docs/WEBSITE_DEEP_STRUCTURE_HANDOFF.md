@@ -2,6 +2,8 @@
 
 ## 09/09 — Pixel chung Codex + Bộ Kit
 
+LIVE runtimebf7ad8a, production dpl_5Rb61wiJraXsjNj7fre9E9jKFkWt READY; www/apex/chunk route allowlist verified. Bundle/4landing tĩnh giữ hash,API guards405,error logs rỗng.78tests/TS/lint/build PASS. Không dữ liệu thật/khóa/quyền truy cập thay đổi; Meta browser receipt còn chưa kiểm chứng. Handoff/rollback trong CODEX_PIXEL_20260908.md.
+
 Owner mở rộng Pixel1369910554822777 cho `/academy/bo-kit-agent-doanh-nghiep`. `lib/meta/codex-pixel.ts` cho phép đúng hai route; shared browser init/PageView và CAPI/checkout fanout dùng chung matcher. Kit rewrite tới `/khoa-hoc/bo-kit-agent-doanh-nghiep`, bundle `index-BdJ14PRW.js` hiện hữu gửi ViewContent/Lead/InitiateCheckout qua fbq track tới các Pixel đã init; không thêm bản sao sự kiện hoặc sửa bundle. Purchase giữ server/outbox/event_id/value.78focused/revenue/Kit tests PASS. Trạng thái live cập nhật tại CODEX_PIXEL_20260908.md; không coi tests là Meta browser receipt.
 
 ## 08/09 — Pixel Codex đã live, còn browser receipt

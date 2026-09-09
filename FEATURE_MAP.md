@@ -1,5 +1,7 @@
 # Feature Map - theanh-main
 
+- 09/09 LIVE: Pixel1369910554822777 dùng cho cả Codex và Bộ Kit, runtimebf7ad8a/prod dpl_5Rb61wiJraXsjNj7fre9E9jKFkWt. Mã live/tests đã kiểm tra; browser receipt vẫn chưa xác minh do giới hạn kiểm tra trước đó.
+
 - 09/09: Pixel Codex mở rộng cho exact route `/academy/bo-kit-agent-doanh-nghiep` và checkout có attribution từ route này; giữ primary và Codex landing. Dùng cùng CAPI token, event_id và outbox; không chọn theo course slug cho các landing ngoài phạm vi.
 
 - Pixel Codex1369910554822777: runtime6fd734e LIVE, routing trong lib/meta/codex-pixel.ts, lib/tracking/events.ts, lib/meta/conversions-api.ts và payment poller. Khóa Production/Secret đã lưu; Meta nhận3 CAPI test events. Browser receipt chưa xác nhận vì ERR_BLOCKED_BY_CLIENT; handoff docs/CODEX_PIXEL_20260908.md.
