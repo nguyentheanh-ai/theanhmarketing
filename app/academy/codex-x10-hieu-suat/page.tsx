@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/data/site";
-import { AudienceExamples, WorkDemo, EfficiencyCalculator, CodexOffer } from "./sections";
+import { AudienceExamples, WorkDemo, EfficiencyCalculator, CodexOffer, HeroPreorder } from "./sections";
 import { HeroResults, OutcomeSection, OfferIcon } from "./outcomes";
 import "./codex.css";
 import "./redesign.css";
@@ -52,7 +52,7 @@ export default function CodexLanding() {
     <a className="cx-skip" href="#noi-dung">Đến nội dung khóa học</a>
     <header className="cx-nav"><Link href="/" className="cx-brand"><Image unoptimized src="/doi-ngu-nhan-su-ai/brand/ta-mark.svg" width={38} height={38} alt="" /><span>THE ANH<span>MARKETING</span></span></Link><nav aria-label="Điều hướng khóa Codex"><a href="#ung-dung">Ứng dụng</a><a href="#noi-dung">Nội dung học</a><a href="#hoc-phi">Học phí</a></nav><a className="cx-btn cx-small" href="#dang-ky">Đăng ký học <span aria-hidden>↗</span></a></header>
     <main>
-      <section className="cx-hero cx-dark" id="gioi-thieu" aria-labelledby="cx-title"><div className="cx-wrap cx-hero-grid"><div><p className="cx-label">KHÓA HỌC CODEX · THE ANH MARKETING</p><h1 id="cx-title">Tự động hóa <em>80% công việc.</em><span>X10 hiệu suất cá nhân.</span></h1><p className="cx-hero-copy">Tự làm video, website, quảng cáo, kế hoạch, email, bài đăng Facebook và báo cáo tài chính với đội ngũ AI. Học Codex để chủ động công việc, nhận thêm dự án và bán hàng.</p><div className="cx-actions"><a className="cx-btn" href="#cach-lam">Xem 8 việc AI làm cho bạn <span aria-hidden>↗</span></a><a className="cx-text-link" href="#noi-dung">Xem nội dung học →</a></div><p className="cx-audiences">Marketer <span>·</span> Freelancer <span>·</span> Nhân viên văn phòng</p><p className="cx-note">Học cách Thế Anh dùng đội ngũ AI để làm nội dung, landing page, video và vận hành quảng cáo.</p></div><HeroResults /></div><div className="cx-wrap cx-hero-facts"><span><b>20+</b> video học sẵn</span><span><b>08</b> Agent đi kèm</span><span><b>08</b> nhóm việc tự động hóa</span></div></section>
+      <section className="cx-hero cx-dark" id="gioi-thieu" aria-labelledby="cx-title"><div className="cx-wrap cx-hero-grid"><div><p className="cx-label">KHÓA HỌC CODEX · THE ANH MARKETING</p><h1 id="cx-title">Tự động hóa <em>80% công việc.</em><span>X10 hiệu suất cá nhân.</span></h1><HeroPreorder /><p className="cx-hero-copy">Tự làm video, website, quảng cáo, kế hoạch, email, bài đăng Facebook và báo cáo tài chính với đội ngũ AI. Học Codex để chủ động công việc, nhận thêm dự án và bán hàng.</p><div className="cx-actions"><a className="cx-btn" href="#cach-lam">Xem 8 việc AI làm cho bạn <span aria-hidden>↗</span></a><a className="cx-text-link" href="#noi-dung">Xem nội dung học →</a></div><p className="cx-audiences">Marketer <span>·</span> Freelancer <span>·</span> Nhân viên văn phòng</p><p className="cx-note">Học cách Thế Anh dùng đội ngũ AI để làm nội dung, landing page, video và vận hành quảng cáo.</p></div><HeroResults /></div><div className="cx-wrap cx-hero-facts"><span><b>20+</b> video học sẵn</span><span><b>08</b> Agent đi kèm</span><span><b>08</b> nhóm việc tự động hóa</span></div></section>
 
       <OutcomeSection />
 

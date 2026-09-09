@@ -10,6 +10,27 @@ import { invoiceInputFromFormData } from "@/lib/orders/invoice";
 import { OfferIcon, outcomes } from "./outcomes";
 
 const money = (value: number) => new Intl.NumberFormat("vi-VN").format(value) + "đ";
+export function HeroPreorder() {
+  const [phase, setPhase] = useState<AgentKitSalePhase | null>(null);
+  useEffect(() => {
+    const refresh = () => setPhase(getAgentKitSalePhase());
+    refresh();
+    const timer = window.setInterval(refresh, 15000);
+    window.addEventListener("focus", refresh);
+    return () => { clearInterval(timer); window.removeEventListener("focus", refresh); };
+  }, []);
+  return <div className="cx-hero-preorder" aria-label="Thông tin học phí">
+    {!phase ? <p role="status">Đang cập nhật học phí…</p> : phase === "preorder" ? <>
+      <p className="cx-hero-list-price">Giá chính thức <s>{money(AGENT_KIT_OFFICIAL_PRICE_VND)}</s></p>
+      <p className="cx-hero-preorder-title"><strong>Preorder {money(AGENT_KIT_PREORDER_PRICE_VND)}</strong> <span>đến hết 15/09/2026</span></p>
+      <p className="cx-hero-preorder-terms">Cọc {money(AGENT_KIT_PREORDER_DEPOSIT_VND)} không hoàn lại · thanh toán {money(AGENT_KIT_PREORDER_REMAINING_VND)} còn lại ngày 16/09/2026 · đã bao gồm VAT</p>
+    </> : <>
+      <p className="cx-hero-preorder-title"><strong>Giá chính thức {money(AGENT_KIT_OFFICIAL_PRICE_VND)}</strong></p>
+      <p className="cx-hero-preorder-terms">Thanh toán một lần · đã bao gồm VAT</p>
+    </>}
+  </div>;
+}
+
 const examples = [
   { name: "Marketer", title: "Lên nội dung từ tài liệu sản phẩm.", request: "Đọc tài liệu sản phẩm và các bài đã duyệt. Đề xuất lịch nội dung tuần tới, ghi rõ phần nào cần mình bổ sung.", input: "Thông tin sản phẩm, chân dung khách và bài viết mẫu.", output: "Lịch nội dung, bản nháp từng bài và danh sách thông tin còn thiếu.", review: "Giá bán, lợi ích sản phẩm, giọng viết và ngày đăng.", tasks: ["Nghiên cứu khách hàng và đối thủ", "Lập kế hoạch nội dung", "Soạn bài và kịch bản video", "Tổng hợp số liệu quảng cáo"] },
   { name: "Freelancer", title: "Chuẩn bị đề xuất từ yêu cầu của khách.", request: "Tóm tắt yêu cầu trong tài liệu này. Soạn đề xuất gồm phạm vi công việc, hạng mục bàn giao và các câu cần hỏi khách. Chưa điền giá khi mình chưa cung cấp.", input: "Yêu cầu khách gửi, mẫu đề xuất và điều kiện làm việc.", output: "Bản đề xuất, danh sách hạng mục và các câu cần làm rõ.", review: "Phạm vi, giá, thời hạn và số vòng chỉnh sửa trước khi gửi.", tasks: ["Tóm tắt yêu cầu khách hàng", "Soạn đề xuất và thư trao đổi", "Chuẩn bị nội dung bàn giao", "Lập bảng theo dõi tiến độ"] },

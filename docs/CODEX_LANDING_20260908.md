@@ -116,3 +116,7 @@ Theo yêu cầu tiếp theo, danh sách nay có 8 nhóm: tách nghiên cứu th�
 
 Node: `/Users/theanh/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node`.
 Chạy `node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3108` sau build; `node tests/codex-landing-browser.mjs` để kiểm tra trên localhost. Chromium headless dùng bản Chrome cài sẵn, không điều khiển cửa sổ/profile đang mở của người dùng.
+
+## 09/09/2026 — Làm rõ preorder dưới tiêu đề Codex
+
+LOCAL_REVIEW: thêm khối giá dưới h1 tại /academy/codex-x10-hieu-suat theo ảnh chủ dự án: chính thức 999.000đ gạch ngang, preorder 799.000đ hết 15/09/2026, cọc399.000đ không hoàn lại, còn400.000đ ngày16/09/2026, VAT. Dùng hằng số và phase hiện có; tự chuyển giá chính thức sau hạn. Không đổi form/payment/tracking. Candidate hiện hữu `.codex-local/codex-landing-20260908`, cùng HEAD2262eff với canonical. Sửa page.tsx, sections.tsx, redesign.css. Remote doctor, targeted ESLint, TypeScript,16tests và diff check đạt. Build Webpack đạt; tổng55/55 kiểm tra liên quan và bảo vệ landing/checkout đạt. Chưa deploy, chưa QA browser do policy; chờ chủ dự án duyệt phát hành theo WORKSPACE_RULES/computer-use-policy.
