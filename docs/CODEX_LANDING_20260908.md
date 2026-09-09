@@ -120,3 +120,9 @@ Chạy `node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3
 ## 09/09/2026 — Làm rõ preorder dưới tiêu đề Codex
 
 LOCAL_REVIEW: thêm khối giá dưới h1 tại /academy/codex-x10-hieu-suat theo ảnh chủ dự án: chính thức 999.000đ gạch ngang, preorder 799.000đ hết 15/09/2026, cọc399.000đ không hoàn lại, còn400.000đ ngày16/09/2026, VAT. Dùng hằng số và phase hiện có; tự chuyển giá chính thức sau hạn. Không đổi form/payment/tracking. Candidate hiện hữu `.codex-local/codex-landing-20260908`, cùng HEAD2262eff với canonical. Sửa page.tsx, sections.tsx, redesign.css. Remote doctor, targeted ESLint, TypeScript,16tests và diff check đạt. Build Webpack đạt; tổng55/55 kiểm tra liên quan và bảo vệ landing/checkout đạt. Chưa deploy, chưa QA browser do policy; chờ chủ dự án duyệt phát hành theo WORKSPACE_RULES/computer-use-policy.
+
+## 09/09/2026 — Preorder dưới tiêu đề Codex ĐÃ PHÁT HÀNH
+
+Chủ dự án duyệt “oke làm đi em”. Runtime c5e6ceb7af2e7ad86fe662d2bb27eb6f12160f68, preview dpl_CWZHcUJoLdrJm7VkvoykWHoFjZX7 READY; remote preflight PASS; production dpl_3EN2iCuqXyBCGBD34n3DjJFdY12o READY. Khối preorder nằm giữa h1 và mô tả hero, dùng giá/phase hiện có, hiển thị đủ hạn15/09, cọc399K không hoàn lại, còn400K ngày16/09 và VAT.
+
+Build Webpack/TypeScript/ESLint và55tests đạt ở candidate đã duyệt. Live www/apex200, xác minh vị trí HTML, chuỗi nội dung client và CSS trong14assets. Facebook Ads/Ebook/AI Master200 và giữ nguyên SHA256; Agent Kit200, source/commerce/tracking không đổi. Runtime error/fatal query15m scoped deployment mới không có kết quả. Chưa kiểm tra trực quan bằng browser do policy; không tạo đơn hoặc gửi giao dịch/sự kiện thử. Rollback: dpl_5Rb61wiJraXsjNj7fre9E9jKFkWt. Evidence: reports/codex-preorder-20260909/live-readback.json trong workspace điều phối. Các trạng thái LOCAL_REVIEW/chờ duyệt của sửa preorder trước đây đã được thay thế.
