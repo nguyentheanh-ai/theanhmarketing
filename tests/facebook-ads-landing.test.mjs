@@ -263,14 +263,12 @@ test("Facebook Ads mobile plan selection jumps straight to the payment form", ()
   );
 });
 
-test("Facebook Ads sticky registration footer communicates the Vietnam-Thailand combo offer", () => {
+test("Facebook Ads sticky registration footer no longer advertises the expired combo offer", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
   const stickyFooter = html.match(/<div class="sticky-cta"[\s\S]*?<\/div>\s*<div id="toast"/)?.[0] || "";
-
-  assert.match(stickyFooter, /Ưu đãi Việt Nam thắng Thái Lan/i);
-  assert.match(stickyFooter, /Combo Facebook Ads \+ Ebook giảm 20%/);
-  assert.match(stickyFooter, /878\.400đ/);
-  assert.match(stickyFooter, /31\/08/);
+  assert.match(stickyFooter, /Facebook Ads Master 2026/);
+  assert.match(stickyFooter, /href="#hoc-phi"/);
+  assert.doesNotMatch(stickyFooter, /Thái Lan|giảm 20%|878\.400đ|31\/08/i);
 });
 
 test("Facebook Ads CTAs jump to the first field on mobile and hide the sticky footer while the form is visible", () => {
