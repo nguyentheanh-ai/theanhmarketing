@@ -142,33 +142,25 @@ test("reader fullscreen mode lets the ebook image use the whole viewport", () =>
   assert.match(reader, /object-contain/);
 });
 
-test("reader preloads a buffered set of protected pages and prioritizes the visible page", () => {
+test("reader loads requested protected pages and prioritizes the visible page", () => {
   const reader = read("components/ebook/facebook-ebook-reader.tsx");
   const route = read("app/api/ebook/facebook-ads/page/route.ts");
 
-  assert.match(reader, /preloadBufferedPages/);
+  assert.doesNotMatch(reader, /preloadBufferedPages|preloadTocTargets/);
   assert.match(reader, /preloadedImagesRef/);
   assert.match(reader, /new Image\(\)/);
   assert.match(reader, /\.decode\(\)/);
-  assert.match(reader, /pageOffset <= 4/);
   assert.match(reader, /decoding="async"/);
   assert.match(reader, /fetchPriority="high"/);
   assert.match(route, /max-age=3600/);
   assert.match(route, /stale-while-revalidate=86400/);
 });
 
-test("reader prefetches table-of-contents targets before cross-part jumps", () => {
+test("reader does not fetch unread chapters on idle, hover, or focus", () => {
   const reader = read("components/ebook/facebook-ebook-reader.tsx");
-
   assert.match(reader, /preloadImageSrc/);
-  assert.match(reader, /preloadTocTargets/);
-  assert.match(reader, /requestIdleCallback/);
-  assert.match(reader, /part\.startAbsolutePage/);
-  assert.match(reader, /part\.topicPages/);
-  assert.match(reader, /handleTocIntent/);
-  assert.match(reader, /onPointerEnter=\{\(\) => handleTocIntent/);
-  assert.match(reader, /onFocus=\{\(\) => handleTocIntent/);
-  assert.match(reader, /onPointerEnter=\{\(\) => void preloadImageSrc\(getImageSrcFromAbsolute\(manifest, result\.absolutePage\)/);
+  assert.doesNotMatch(reader, /preloadTocTargets|requestIdleCallback|handleTocIntent/);
+  assert.doesNotMatch(reader, /onPointerEnter=|onFocus=/);
 });
 
 test("reader decodes a jumped-to image before committing the visible part state", () => {

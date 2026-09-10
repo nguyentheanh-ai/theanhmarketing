@@ -71,11 +71,7 @@ function getImageSrc(part: number, page: number) {
   return `/api/ebook/facebook-ads/page?${params.toString()}`;
 }
 
-function getImageSrcFromAbsolute(manifest: FacebookEbookManifest, absolutePage: number) {
-  const next = getPartPageFromAbsolute(manifest, Math.min(Math.max(absolutePage, 1), manifest.totalPages));
-  return getImageSrc(next.part.part, next.page);
-}
-
+// Load only an explicitly selected page; speculative chapter loads consumed Storage egress.
 function preloadImageSrc(src: string, cache: Map<string, HTMLImageElement>) {
   const cachedImage = cache.get(src);
 
@@ -88,35 +84,6 @@ function preloadImageSrc(src: string, cache: Map<string, HTMLImageElement>) {
   preloadedImage.src = src;
   cache.set(src, preloadedImage);
   return preloadedImage.decode().catch(() => undefined);
-}
-
-function preloadBufferedPages(manifest: FacebookEbookManifest, absolutePage: number, cache: Map<string, HTMLImageElement>) {
-  const pagesToPreload = [absolutePage];
-
-  for (let pageOffset = 1; pageOffset <= 4; pageOffset += 1) {
-    pagesToPreload.push(absolutePage - pageOffset, absolutePage + pageOffset);
-  }
-
-  for (const page of pagesToPreload.filter((item) => item >= 1 && item <= manifest.totalPages)) {
-    const src = getImageSrcFromAbsolute(manifest, page);
-    preloadImageSrc(src, cache);
-  }
-}
-
-function preloadTocTargets(manifest: FacebookEbookManifest, cache: Map<string, HTMLImageElement>) {
-  const targetPages = new Set<number>();
-
-  for (const part of manifest.parts) {
-    targetPages.add(part.startAbsolutePage);
-
-    for (const topicPage of part.topicPages) {
-      targetPages.add(topicPage);
-    }
-  }
-
-  for (const page of Array.from(targetPages).slice(0, 32)) {
-    preloadImageSrc(getImageSrcFromAbsolute(manifest, page), cache);
-  }
 }
 
 function shouldIgnoreKeyboardNavigation(target: EventTarget | null) {
@@ -220,7 +187,6 @@ export function FacebookEbookReader({ manifest }: FacebookEbookReaderProps) {
 
     if (part.part === currentPartNumber && nextPage === currentPage) {
       setPendingAbsolutePage(null);
-      preloadBufferedPages(manifest, targetAbsolutePage, preloadedImagesRef.current);
       return;
     }
 
@@ -236,7 +202,6 @@ export function FacebookEbookReader({ manifest }: FacebookEbookReaderProps) {
     setCurrentPartNumber(part.part);
     setCurrentPage(nextPage);
     setPendingAbsolutePage(null);
-    preloadBufferedPages(manifest, targetAbsolutePage, preloadedImagesRef.current);
   }, [currentPage, currentPartNumber, manifest]);
 
   const goToAbsolutePage = useCallback((nextAbsolutePage: number) => {
@@ -255,16 +220,6 @@ export function FacebookEbookReader({ manifest }: FacebookEbookReaderProps) {
   const changeZoom = useCallback((step: number) => {
     setZoom((value) => Math.min(130, Math.max(75, value + step)));
   }, []);
-
-  const handleTocIntent = useCallback((partNumber: number, page = 1) => {
-    const part = manifest.parts.find((item) => item.part === partNumber);
-
-    if (!part) {
-      return;
-    }
-
-    preloadBufferedPages(manifest, getAbsolutePage(part, page), preloadedImagesRef.current);
-  }, [manifest]);
 
   const toggleTocPart = useCallback((partNumber: number) => {
     setExpandedTocParts((current) => {
@@ -347,24 +302,6 @@ export function FacebookEbookReader({ manifest }: FacebookEbookReaderProps) {
     document.addEventListener("fullscreenchange", handleFullscreenChange);
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, []);
-
-  useEffect(() => {
-    preloadBufferedPages(manifest, absolutePage, preloadedImagesRef.current);
-  }, [absolutePage, manifest]);
-
-  useEffect(() => {
-    function runPreload() {
-      preloadTocTargets(manifest, preloadedImagesRef.current);
-    }
-
-    if ("requestIdleCallback" in window) {
-      const idleId = window.requestIdleCallback(runPreload, { timeout: 1800 });
-      return () => window.cancelIdleCallback(idleId);
-    }
-
-    const timeoutId = globalThis.setTimeout(runPreload, 600);
-    return () => globalThis.clearTimeout(timeoutId);
-  }, [manifest]);
 
   if (showPolicyGate) {
     return (
@@ -452,9 +389,7 @@ export function FacebookEbookReader({ manifest }: FacebookEbookReaderProps) {
                       className="rounded-lg border border-slate-200 bg-white p-3 text-left text-sm transition hover:border-blue-300 hover:bg-blue-50"
                       key={result.id}
                       type="button"
-                      onFocus={() => void preloadImageSrc(getImageSrcFromAbsolute(manifest, result.absolutePage), preloadedImagesRef.current)}
                       onClick={() => openResult(result)}
-                      onPointerEnter={() => void preloadImageSrc(getImageSrcFromAbsolute(manifest, result.absolutePage), preloadedImagesRef.current)}
                     >
                       <span className="block font-black text-blue-700">{result.label}</span>
                       <span className="mt-1 line-clamp-2 block text-xs font-semibold text-slate-600">{result.detail}</span>
@@ -486,12 +421,10 @@ export function FacebookEbookReader({ manifest }: FacebookEbookReaderProps) {
                           className="grid grid-cols-[40px_1fr] gap-3 rounded-md p-1 text-left transition hover:bg-white/70"
                           type="button"
                           onDoubleClick={() => toggleTocPart(part.part)}
-                          onFocus={() => handleTocIntent(part.part)}
                           onClick={() => {
                             expandTocPart(part.part);
                             void goToPart(part.part);
                           }}
-                          onPointerEnter={() => handleTocIntent(part.part)}
                         >
                           <span className={`grid size-9 place-items-center rounded-full text-sm font-black ${isActive ? "bg-blue-600 text-white" : isPending ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-600"}`}>
                             {part.part}
@@ -511,8 +444,6 @@ export function FacebookEbookReader({ manifest }: FacebookEbookReaderProps) {
                           className="grid size-10 place-items-center self-start rounded-md border border-slate-200 bg-white text-blue-700 transition hover:border-blue-300 hover:bg-blue-50"
                           type="button"
                           onClick={() => toggleTocPart(part.part)}
-                          onFocus={() => handleTocIntent(part.part)}
-                          onPointerEnter={() => handleTocIntent(part.part)}
                         >
                           {isExpanded ? <Minus className="size-4" /> : <Plus className="size-4" />}
                         </button>
@@ -532,8 +463,6 @@ export function FacebookEbookReader({ manifest }: FacebookEbookReaderProps) {
                                 key={`${part.part}-${topic}`}
                                 type="button"
                                 onClick={() => goToAbsolutePage(topicAbsolutePage)}
-                                onFocus={() => void preloadImageSrc(getImageSrcFromAbsolute(manifest, topicAbsolutePage), preloadedImagesRef.current)}
-                                onPointerEnter={() => void preloadImageSrc(getImageSrcFromAbsolute(manifest, topicAbsolutePage), preloadedImagesRef.current)}
                               >
                                 <span>{topic}</span>
                                 <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black ${isTopicActive ? "bg-white/15 text-white" : "bg-slate-100 text-slate-500"}`}>

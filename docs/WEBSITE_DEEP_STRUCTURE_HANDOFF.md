@@ -1,5 +1,14 @@
 # The Anh Marketing Website - Deep Structure Handoff
 
+## 2026-09-10 — Ebook image requests only after reader intent
+
+The paid reader previously launched 35 protected image downloads on mount, including before policy acceptance, through the four-page buffer and 32 table-of-contents targets. Hover/focus could download still more chapters. Removed these speculative requests. The visible image and click/keyboard/page-number navigation retain the existing entitlement-checked API and decode-before-switch behavior; private cache headers, Storage, PDF, access and payment are unchanged.
+
+Regression `tests/ebook-bandwidth.test.mjs` executes the real component effects/handlers against deterministic browser boundaries. Before: 35 mount requests and 109 after traversing focus/hover targets. After: zero speculative requests, one visible image, one request for an explicitly selected page. Related Ebook tests 21/21, protected prebuild 39/39, TypeScript, targeted lint and Webpack build pass. Full existing test glob remains non-green due to unavailable isolated React/browser runtimes and unchanged landing assertions; it is not a complete UI acceptance run. Release/live status is recorded separately after deployment.
+
+This reduces future transfers only. Accumulated provider egress is not retroactively removed. Keep any quota/grace-period issue separate from verifying this code correction. Do not make private assets public or alter account permissions to reduce traffic.
+
+
 ## 09/09 — Pixel chung Codex + Bộ Kit
 
 LIVE runtimebf7ad8a, production dpl_5Rb61wiJraXsjNj7fre9E9jKFkWt READY; www/apex/chunk route allowlist verified. Bundle/4landing tĩnh giữ hash,API guards405,error logs rỗng.78tests/TS/lint/build PASS. Không dữ liệu thật/khóa/quyền truy cập thay đổi; Meta browser receipt còn chưa kiểm chứng. Handoff/rollback trong CODEX_PIXEL_20260908.md.
