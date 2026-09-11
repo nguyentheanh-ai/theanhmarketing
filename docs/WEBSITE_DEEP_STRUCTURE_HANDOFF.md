@@ -1733,3 +1733,12 @@ Owner chọn thư viện trong khu vực khóa học, chỉ học viên có quy�
 
 ### Agent library production readback
 Runtime5da27a7 released as `dpl_AWhuUfRbUhNEs78c8WwUqTAsfa5J` READY. Webpack and remote builds PASS. Guest library/admin redirect307, download401, unknownAgent404;7 protected landing URLs200 with unchanged static hashes; deployment error/fatal log query empty. Package upload remains PENDING authenticated owner in task-specific browser; do not claim customer downloads verified until all10 remote hashes are read back. ZIPs remain in kit individual-release, not website public Git. No customer data/entitlement/payment mutation.
+
+
+## 11/09/2026 — Bổ sung đủ file thư viện Agent qua đường nội bộ
+
+Đã tạo bucket `agent-library-private` với `public=false`, giới hạn 52.428.800 byte; upload đủ 10 ZIP `2.2.0-rc3` (42.000.974 byte). Mỗi ZIP được kiểm kích thước/SHA-256 theo catalog trước upload, rồi tải file thật qua signed URL HTTP 200 và kiểm lại hash: 10/10 đạt. Metadata gói trong catalog website khớp catalog bộ kit. Không sửa source website, quyền học viên, dữ liệu khách hay payment; không đưa ZIP lên public.
+
+Owner yêu cầu làm nội bộ, không đăng nhập trình duyệt, và xác nhận triển khai hàm tạm sau khi auto-review yêu cầu duyệt endpoint cụ thể. Hàm `agent-library-delivery-20260911` chỉ nhận đúng byte/hash của 10 gói vào đường dẫn cố định, không overwrite. Sau bàn giao đã thay bằng version 2 chỉ trả HTTP 410, giữ verify_jwt=true; live readback 410. Public object URL trả 400; cả 10 API download website không đăng nhập trả 401.
+
+Giới hạn: chưa bấm 10 nút bằng phiên học viên; chứng cứ tải thật là signed Storage download trong hàm nội bộ, không phải browser E2E. Không coi source/test/build cũ là chứng cứ đăng nhập. Receipt: `/Users/theanh/CodexProjects/Hệ thống quảng cáo/13_Codex_Skills_Dong_Goi/outputs/individual-agents-20260911/deployment.json`.
