@@ -368,3 +368,6 @@ Owner final UI pass: removed the visible `Quy mô`, `Nội dung` and `Phiên b�
 
 ## 2026-09-10 — Remove expired Facebook Ads sticky promotion
 Owner requested removal of Vietnam-Thailand offer. Removed stale desktop/mobile sticky copy only; payment plan history and date-gated checkout unchanged. Runtime f453148; 39/39 revenue-critical tests PASS, remote release preflight PASS, production dpl_4fpeeERLrLQcGwGtX1hUyixteYnT READY. www/apex return 200 and exact source bytes; sticky contains no expired promo. Rollback: dpl_3EN2iCuqXyBCGBD34n3DjJFdY12o. Old test required stale promo; updated it to enforce removal while retaining CTA. Initial broad mirror write was rejected; independent exact edits approved. No real transaction.
+
+## 2026-09-11 — Protected Agent library
+Deployed5da27a7 as dpl_AWhuUfRbUhNEs78c8WwUqTAsfa5J READY.20 access/upload tests,39 revenue-critical tests,TS/lint/local+remote build PASS; guest access guarded,7 landing200/static hashes unchanged. Private ZIP upload pending owner login in task-specific browser. See architecture handoff; no customer download claim yet.
