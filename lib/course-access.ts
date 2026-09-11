@@ -1,10 +1,13 @@
+import { AGENT_KIT_SLUG, isAgentKitPreorderDepositOrder } from "@/lib/agent-kit-preorder";
 import { getConfiguredOwnerEmails } from "@/lib/admin/admin-emails";
 
 export type CourseAccessOrder = {
   email?: string | null;
   status?: string | null;
   courseSlug?: string | null;
-  orderItems?: Array<{ slug?: string | null }> | null;
+  courseTitle?: string | null;
+  paymentPlan?: string | null;
+  orderItems?: Array<{ slug?: string | null; title?: string | null }> | null;
 };
 
 export type CourseAccessLead = {
@@ -82,7 +85,15 @@ export function getCourseAccessSlugs({
       continue;
     }
 
+    const isDeposit = isAgentKitPreorderDepositOrder({
+      courseSlug: order.courseSlug ?? "",
+      courseTitle: order.courseTitle ?? "",
+      paymentPlan: order.paymentPlan,
+      orderItems: (order.orderItems ?? []).map((item) => ({ slug: item.slug ?? "", title: item.title ?? "", price: 0 })),
+    });
     for (const slug of getOrderCourseSlugs(order)) {
+      // A paid deposit reserves the kit; full payment or an explicit grant unlocks it.
+      if (slug === AGENT_KIT_SLUG && isDeposit) continue;
       accessibleSlugs.add(slug);
     }
   }

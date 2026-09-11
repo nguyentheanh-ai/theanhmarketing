@@ -21,6 +21,7 @@ function loadTsModule(relativePath) {
   const cjsModule = { exports: {} };
   const runner = new Function("exports", "module", "require", compiled);
   const requireShim = (specifier) => {
+    if (specifier === "@/lib/agent-kit-preorder") return loadTsModule("lib/agent-kit-preorder.ts");
     if (specifier === "@/lib/admin/admin-emails") {
       return loadTsModule("lib/admin/admin-emails.ts");
     }
