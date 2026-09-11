@@ -53,3 +53,6 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# Paid Agent packages are deployed privately, never committed.
+/private/agent-library/*.zip

@@ -1721,3 +1721,12 @@ Bản sửa admin đã được phát hành sau xác nhận của chủ dự án
 ## 06/09/2026 — Không gian quản trị theo cửa sổ
 
 Đã làm lại tổng quan/báo cáo với bộ lọc ngày–sản phẩm và các cửa sổ đối chiếu; gộp khách hàng/học viên vào `/admin/crm-v2/customers`; thay trình sửa khóa học bằng cây chương–bài và4tab; lịch hỗ trợ có tháng/tuần/ngày; Cài đặt chia nhóm công cụ. Editor giữ phạm vi học viên, owner quản lý prospects/tài khoản. Các API hiện có tiếp tục phục vụ thao tác; kiểm tra danh tính, parent/nguồn tài liệu và phản hồi lỗi được bổ sung. Không migration hoặc sửa dữ liệu khách để QA, không thay landing/payment/student app riêng. Chi tiết và kiểm thử: `docs/ADMIN_WORKSPACE_20260906.md`. Trạng thái bản sửa này: đã phát hành. Source/test/build đã kiểm chứng; giới hạn nghiệm thu trực quan có đăng nhập và xóa vật lý mã cũ được ghi trong tài liệu bàn giao.
+
+
+## 2026-09-11 — Thư viện Agent trong khóa học
+
+Owner chọn thư viện trong khu vực khóa học, chỉ học viên có quyền được tải. Route `/learn/bo-agent-kit-x10-hieu-suat-cong-viec/agents` dùng UI đã duyệt với 10 Agent; learning room cùng khóa có đường dẫn vào thư viện. Page và `/api/agent-library/[agent]/download` dùng chung `lib/agent-library-access.ts`: bắt buộc authenticated user, trusted admin hoặc quyền khóa chính xác từ LMS/legacy; không dùng guest auth-guard bypass. API cấp signed URL 120 giây, no-store.
+
+`data/agent-library-packages.json` chỉ chứa metadata/hash, không ZIP hay đường dẫn máy. ZIP ở bucket Supabase private `agent-library-private`, object `<version>/<filename>`. Source GitHub public không được chứa gói trả phí. `/admin/agent-library` chỉ owner, chọn nhiều ZIP, kiểm kích thước/SHA trước và sau upload trực tiếp qua signed URL. API upload kiểm same-origin/owner/catalog, không overwrite và từ chối bucket public. Khi thiếu kho/gói hiển thị lỗi thật. Cập nhật phiên bản phải cập nhật catalog, upload và verify các file tương ứng.
+
+20 kiểm thử quyền/download/upload/catalog và 39 kiểm tra revenue-critical đạt; TypeScript và focused ESLint đạt. Build/live/storage upload được xác minh riêng trong biên bản phát hành. Không đổi payment, entitlement dữ liệu khách, landing Ads hoặc tracking. Rollback production trước thay đổi: `dpl_B5S88jeUbpa3P8SbGQw96zaH53Ny`.

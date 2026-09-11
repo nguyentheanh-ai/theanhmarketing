@@ -103,6 +103,7 @@ export function LearningRoom({
         </Link>
 
         <nav className="mt-8 grid gap-2 text-sm font-bold">
+          {course.slug === "bo-agent-kit-x10-hieu-suat-cong-viec" && <Link className="rounded-xl bg-white/10 px-4 py-3 text-white" href="/learn/bo-agent-kit-x10-hieu-suat-cong-viec/agents">Thư viện Agent · Tải xuống</Link>}
           <Link
             className="rounded-xl bg-[#159cfb] px-4 py-3 text-white"
             href="/dashboard"

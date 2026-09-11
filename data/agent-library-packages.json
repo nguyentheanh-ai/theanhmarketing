@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "version": "2.2.0-rc3",
+  "source_version": "2.2.0-rc3",
+  "agents": [
+    {
+      "schema_version": 1,
+      "slug": "business-assistant-agent",
+      "name": "Agent - Business Assistant",
+      "technical_name": "business_assistant",
+      "version": "2.2.0-rc3",
+      "source_version": "2.2.0-rc3",
+      "skills": [
+        "ai-growth-system",
+        "market-research",
+        "customer-insight-research",
+        "competitor-analysis",
+        "competitor-and-market-map",
+        "offer-packaging",
+        "funnel-architecture",
+        "campaign-budget-kpi-planner",
+        "crm-data-dashboard",
+        "social-analytics",
+        "optimization-advisor",
+        "premium-excel-workflow-builder"
+      ],
+      "external_dependencies": [
+        "Web/search nếu nghiên cứu nguồn ngoài; Google Sheets khi cần bảng trực tuyến"
+      ],
+      "runtime_status": "UNVERIFIED",
+      "source_release_sha256": "101c3fe13005eb5337c0f11f2770e198f5820a06aa1c00e6c3b9f349741851a2",
+      "filename": "business-assistant-agent-2.2.0-rc3.zip",
+      "sha256": "b2bfd2eb139d4dbc77937437943296984d257bea6b14ce4da38d4ed486a5f3a4",
+      "size_bytes": 451349
+    },
+    {
+      "schema_version": 1,
+      "slug": "market-customer-research-agent",
+      "name": "Agent - Nghiên cứu Thị trường & Khách hàng",
+      "technical_name": "market_customer_research",
+      "version": "2.2.0-rc3",
+      "source_version": "2.2.0-rc3",
+      "skills": [
+        "market-research",
+        "customer-insight-research",
+        "competitor-analysis",
+        "competitor-and-market-map",
+        "social-analytics",
+        "premium-excel-workflow-builder"
+      ],
+      "external_dependencies": [
+        "Web/search; Meta Ad Library khi nghiên cứu Facebook"
+      ],
+      "runtime_status": "UNVERIFIED",
+      "source_release_sha256": "101c3fe13005eb5337c0f11f2770e198f5820a06aa1c00e6c3b9f349741851a2",
+      "filename": "market-customer-research-agent-2.2.0-rc3.zip",
+      "sha256": "2121c8931e6191992d0f955c5be8e7464e2f63aa1c0d76af48c161dbbcb754e7",
+      "size_bytes": 446024
+    },
+    {
+      "schema_version": 1,
+      "slug": "marketing-agent",
+      "name": "Agent - Marketing",
+      "technical_name": "marketing",
+      "version": "2.2.0-rc3",
+      "source_version": "2.2.0-rc3",
+      "skills": [
+        "digital-marketing-plan",
+        "market-research",
+        "customer-insight-research",
+        "competitor-analysis",
+        "competitor-and-market-map",
+        "offer-packaging",
+        "funnel-architecture",
+        "content-calendar-planner",
+        "content-creation",
+        "copywriting",
+        "social-post-design-brief",
+        "ad-script-builder",
+        "objection-handler",
+        "sales-page-blueprint",
+        "viet-landing-page-chuan-chuyen-doi",
+        "lead-magnet-builder",
+        "slogan-tagline-creator",
+        "tiktok-hook-and-script",
+        "stop-slop",
+        "premium-excel-workflow-builder"
+      ],
+      "external_dependencies": [
+        "Research handoff có bằng chứng do khách hoặc chuyên gia cung cấp"
+      ],
+      "runtime_status": "UNVERIFIED",
+      "source_release_sha256": "101c3fe13005eb5337c0f11f2770e198f5820a06aa1c00e6c3b9f349741851a2",
+      "filename": "marketing-agent-2.2.0-rc3.zip",
+      "sha256": "ed8cead4d58ffb38b3d035e481b44038210e3662573f493e048197bbed6398c5",
+      "size_bytes": 474915
+    },
+    {
+      "schema_version": 1,
+      "slug": "content-agent",
+      "name": "Agent - Content",
+      "technical_name": "content",
+      "version": "2.2.0-rc3",
+      "source_version": "2.2.0-rc3",
+      "skills": [
+        "theanh-content-formulas-v4",
+        "copywriting",
+        "content-creation",
+        "stop-slop",
+        "ad-script-builder",
+        "tiktok-hook-and-script"
+      ],
+      "external_dependencies": [
+        "Brief và bằng chứng/Voice DNA do khách cung cấp"
+      ],
+      "runtime_status": "UNVERIFIED",
+      "source_release_sha256": "101c3fe13005eb5337c0f11f2770e198f5820a06aa1c00e6c3b9f349741851a2",
+      "filename": "content-agent-2.2.0-rc3.zip",
+      "sha256": "4d23d8f92d2c004469499d24e3c2a6ae1ee928166d83f5b8c6f347fe36d619e8",
+      "size_bytes": 569746
+    },
+    {
+      "schema_version": 1,
+      "slug": "design-agent",
+      "name": "Agent - Design",
+      "technical_name": "design",
+      "version": "2.2.0-rc3",
+      "source_version": "2.2.0-rc3",
+      "skills": [
+        "social-post-design-brief",
+        "copywriting",
+        "content-creation",
+        "stop-slop"
+      ],
+      "external_dependencies": [
+        "Công cụ tạo ảnh/thiết kế chỉ khi yêu cầu; brief và asset đã duyệt"
+      ],
+      "runtime_status": "UNVERIFIED",
+      "source_release_sha256": "101c3fe13005eb5337c0f11f2770e198f5820a06aa1c00e6c3b9f349741851a2",
+      "filename": "design-agent-2.2.0-rc3.zip",
+      "sha256": "43e24b7ac69cf53ca42265f65bddffc6e75a9d4813bebbbb6ec601bed6f7bb65",
+      "size_bytes": 432484
+    },
+    {
+      "schema_version": 1,
+      "slug": "web-landing-agent",
+      "name": "Agent - Web/Landing Page",
+      "technical_name": "web_landing",
+      "version": "2.2.0-rc3",
+      "source_version": "2.2.0-rc3",
+      "skills": [
+        "viet-landing-page-chuan-chuyen-doi",
+        "sales-page-blueprint",
+        "stop-slop"
+      ],
+      "external_dependencies": [
+        "landing-page-builder hoặc clone-landing-page-vietnamese cần cài riêng theo task; Vercel/Supabase chỉ nếu stack cần; không bundle plugin độc quyền"
+      ],
+      "runtime_status": "UNVERIFIED",
+      "source_release_sha256": "101c3fe13005eb5337c0f11f2770e198f5820a06aa1c00e6c3b9f349741851a2",
+      "filename": "web-landing-agent-2.2.0-rc3.zip",
+      "sha256": "bfff99fe1443114ae5e43b4808ee4db1ff131485db15fcb91729252782144699",
+      "size_bytes": 435871
+    },
+    {
+      "schema_version": 1,
+      "slug": "ads-setup-agent",
+      "name": "Agent - Ads Setup",
+      "technical_name": "ads_setup",
+      "version": "2.2.0-rc3",
+      "source_version": "2.2.0-rc3",
+      "skills": [
+        "facebook-message-ads-setup",
+        "facebook-engagement-reach-ads-setup",
+        "facebook-landingpage-conversion-ads-setup",
+        "campaign-budget-kpi-planner",
+        "ad-script-builder",
+        "meta-pixel-capi-setup"
+      ],
+      "external_dependencies": [
+        "Meta Ads MCP toàn chuỗi exact route; audit/readiness do khách hoặc Ads Report cung cấp; chưa đủ thì không mutation"
+      ],
+      "runtime_status": "UNVERIFIED",
+      "source_release_sha256": "101c3fe13005eb5337c0f11f2770e198f5820a06aa1c00e6c3b9f349741851a2",
+      "filename": "ads-setup-agent-2.2.0-rc3.zip",
+      "sha256": "24546cefba79fb3be04ff27dd6bc7bbfa76ffb5e729ca6c8b13bd9a7a29b4a61",
+      "size_bytes": 462875
+    },
+    {
+      "schema_version": 1,
+      "slug": "ads-report-agent",
+      "name": "Agent - Ads Report",
+      "technical_name": "ads_report",
+      "version": "2.2.0-rc3",
+      "source_version": "2.2.0-rc3",
+      "skills": [
+        "facebook-ads-report-optimizer",
+        "premium-excel-workflow-builder",
+        "optimization-advisor",
+        "crm-data-dashboard",
+        "social-analytics",
+        "campaign-budget-kpi-planner"
+      ],
+      "external_dependencies": [
+        "Meta Ads MCP read hoặc export do khách cung cấp; Data Analytics tùy chọn"
+      ],
+      "runtime_status": "UNVERIFIED",
+      "source_release_sha256": "101c3fe13005eb5337c0f11f2770e198f5820a06aa1c00e6c3b9f349741851a2",
+      "filename": "ads-report-agent-2.2.0-rc3.zip",
+      "sha256": "e873ad922998e350d04e898966e07aba625aeb823bb1e8870f9574c79937d4e6",
+      "size_bytes": 453072
+    },
+    {
+      "schema_version": 1,
+      "slug": "video-agent",
+      "name": "Agent - Video",
+      "technical_name": "video",
+      "version": "2.2.0-rc3",
+      "source_version": "2.2.0-rc3",
+      "skills": [
+        "video-production"
+      ],
+      "external_dependencies": [
+        "Node.js >=22.12; npm dependencies; provider được khách cấu hình cục bộ; chưa xác minh kết nối/render"
+      ],
+      "runtime_status": "UNVERIFIED",
+      "source_release_sha256": "101c3fe13005eb5337c0f11f2770e198f5820a06aa1c00e6c3b9f349741851a2",
+      "filename": "video-agent-2.2.0-rc3.zip",
+      "sha256": "d2df5d1772659c9ae3c7d4d0f0a735ae83a0b6832f8620633c81d85572354729",
+      "size_bytes": 37854798
+    },
+    {
+      "schema_version": 1,
+      "slug": "facebook-publisher-agent",
+      "name": "Agent - Facebook Publisher",
+      "technical_name": "facebook_publisher",
+      "version": "2.2.0-rc3",
+      "source_version": "2.2.0-rc3",
+      "skills": [
+        "facebook-publisher"
+      ],
+      "external_dependencies": [
+        "Computer Use và Meta Page có quyền phù hợp; Google Sheets connector; xác minh từng kết nối trước tác vụ"
+      ],
+      "runtime_status": "UNVERIFIED",
+      "source_release_sha256": "101c3fe13005eb5337c0f11f2770e198f5820a06aa1c00e6c3b9f349741851a2",
+      "filename": "facebook-publisher-agent-2.2.0-rc3.zip",
+      "sha256": "e9f851d8465cec3afc388be79d8341e06d1f344f53b8029d77d15625e62e87bd",
+      "size_bytes": 419840
+    }
+  ]
+}
