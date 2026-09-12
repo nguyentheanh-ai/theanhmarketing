@@ -43,3 +43,6 @@ This checklist tracks the production security work for The Anh Marketing.
 - Apply and verify production Supabase RLS in the dashboard.
 - Add production log routing/alerting for the structured `security_event` logs.
 - Rotate production secrets after deployment hardening is complete.
+
+## 12/09/2026 — Supabase health repair
+Database hardening đã áp dụng và đọc lại; Auth refresh/timeout/Ebook evidence scope đã kiểm thử và build, chờ phát hành source. Chi tiết: docs/SUPABASE_HEALTH_20260912.md. Giữ commerce, entitlement và tracking.

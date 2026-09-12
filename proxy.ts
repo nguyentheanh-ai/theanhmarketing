@@ -1,3 +1,4 @@
+import { refreshRequestSession } from "@/lib/supabase/refresh-session";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -105,7 +106,7 @@ function buildLadiPageContentSecurityPolicy() {
   ].join("; ");
 }
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const host = request.headers.get("host") ?? "";
   const forwardedProto = request.headers.get("x-forwarded-proto");
   const isHttpRequest =
@@ -121,6 +122,10 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(url, 301);
   }
 
+  const refreshedCookies = isLadiPageRoute(request.nextUrl.pathname)
+    ? []
+    : await refreshRequestSession(request);
+
   const nonceBytes = new Uint8Array(16);
   crypto.getRandomValues(nonceBytes);
   const nonce = btoa(String.fromCharCode(...nonceBytes));
@@ -135,6 +140,11 @@ export function proxy(request: NextRequest) {
       headers: requestHeaders,
     },
   });
+
+  for (const { name, value, options } of refreshedCookies) {
+    response.cookies.set(name, value, options);
+  }
+  if (refreshedCookies.length > 0) response.headers.set("Cache-Control", "private, no-store");
 
   const contentSecurityPolicy = isLadiPageRoute(request.nextUrl.pathname)
     ? buildLadiPageContentSecurityPolicy()

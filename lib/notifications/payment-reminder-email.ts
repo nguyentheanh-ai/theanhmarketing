@@ -42,6 +42,7 @@ type DispatchSummary = {
   retried: number;
   lostLease: number;
   error?: string;
+  errorCode?: string;
 };
 
 const orderFields =
@@ -131,6 +132,7 @@ async function sendWithResend(run: ClaimedRun, order: PaymentOrder) {
 
   const payload = buildPaymentReminderEmailPayload(order, run.sequence_index);
   const response = await fetch("https://api.resend.com/emails", {
+    signal: AbortSignal.timeout(10_000),
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -161,12 +163,17 @@ export async function dispatchDuePaymentReminderRuns(): Promise<DispatchSummary>
     retried: 0,
     lostLease: 0,
   };
-  const client = createSupabaseAdminClient();
+  const client = createSupabaseAdminClient({ timeoutMs: 8_000 });
 
   if (!client) return { ...summary, ok: false, error: "Missing Supabase admin client" };
 
-  const claimed = await client.rpc("claim_due_payment_remarketing_runs", { p_limit: 10 });
-  if (claimed.error) return { ...summary, ok: false, error: "Could not claim payment reminder runs" };
+  const claimed = await client.rpc("claim_due_payment_remarketing_runs", { p_limit: 3 });
+  if (claimed.error) return {
+    ...summary,
+    ok: false,
+    error: "Could not claim payment reminder runs",
+    errorCode: /^[A-Z0-9_]{1,32}$/i.test(claimed.error.code ?? "") ? claimed.error.code : "UPSTREAM_ERROR",
+  };
 
   const runs = parseRuns(claimed.data);
   summary.claimed = runs.length;

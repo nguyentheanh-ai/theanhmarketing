@@ -1,8 +1,6 @@
 import { getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
-import { getCourseAccessSlugs } from "@/lib/course-access";
+import { getOwnedCourseSlugs } from "@/services/courseAccessService";
 import { FACEBOOK_EBOOK_COURSE_SLUG, FACEBOOK_EBOOK_READER_HREF } from "@/lib/ebook/facebook-ebook";
-import { getLeads } from "@/services/leadService";
-import { getPaymentOrders } from "@/services/orderService";
 
 export type FacebookEbookAccess =
   | {
@@ -50,15 +48,7 @@ export async function requireFacebookEbookAccess(nextPath = FACEBOOK_EBOOK_READE
     };
   }
 
-  const [orders, leads] = await Promise.all([
-    getPaymentOrders({ includeFallback: false }),
-    getLeads({ includeFallback: false }),
-  ]);
-  const ownedSlugs = getCourseAccessSlugs({
-    email: user.email,
-    leads,
-    orders,
-  });
+  const ownedSlugs = await getOwnedCourseSlugs(user.email);
 
   if (!ownedSlugs.includes(FACEBOOK_EBOOK_COURSE_SLUG)) {
     return {

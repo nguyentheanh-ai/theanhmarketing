@@ -1,3 +1,5 @@
+import { cache } from "react";
+import { createBoundedFetch } from "@/lib/supabase/bounded-fetch";
 import { createServerClient } from "@supabase/ssr";
 import type { User } from "@supabase/supabase-js";
 import { cookies, headers } from "next/headers";
@@ -38,7 +40,7 @@ export function canAccessAdminRole(role: AdminRole | null, allowedRoles: AdminRo
   return Boolean(role && allowedRoles.includes(role));
 }
 
-export async function createSupabaseAuthServerClient() {
+export const createSupabaseAuthServerClient = cache(async function createSupabaseAuthServerClient() {
   if (!hasSupabaseEnv()) {
     return null;
   }
@@ -49,6 +51,7 @@ export async function createSupabaseAuthServerClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      global: { fetch: createBoundedFetch() },
       cookies: {
         getAll() {
           return cookieStore.getAll();
@@ -66,9 +69,9 @@ export async function createSupabaseAuthServerClient() {
       },
     },
   );
-}
+});
 
-export async function getCurrentAuth(): Promise<AuthResult> {
+export const getCurrentAuth = cache(async function getCurrentAuth(): Promise<AuthResult> {
   const supabase = await createSupabaseAuthServerClient();
 
   if (!supabase) {
@@ -85,7 +88,7 @@ export async function getCurrentAuth(): Promise<AuthResult> {
   const isAdmin = Boolean(adminRole);
 
   return { user, isAdmin, adminRole };
-}
+});
 
 export async function requireStudentAuth(nextPath: string) {
   if (!isAuthGuardEnabled()) {

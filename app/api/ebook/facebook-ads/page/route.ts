@@ -9,6 +9,7 @@ import { requireFacebookEbookAccess } from "@/lib/ebook/facebook-ebook-access";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
 const privateImageHeaders = {
@@ -56,7 +57,8 @@ export async function GET(request: NextRequest) {
     return jsonError("Không tìm thấy trang ebook.", 404);
   }
 
-  const access = await requireFacebookEbookAccess(request.nextUrl.pathname);
+  const access = await requireFacebookEbookAccess(request.nextUrl.pathname).catch(() => null);
+  if (!access) return jsonError("Chưa kiểm tra được quyền đọc ebook. Anh/chị vui lòng thử lại.", 503);
 
   if (!access.ok) {
     return jsonError(access.status === 401 ? "Cần đăng nhập để đọc ebook." : "Tài khoản chưa mở quyền đọc ebook.", access.status);
@@ -83,7 +85,8 @@ export async function GET(request: NextRequest) {
   const { data, error } = await supabase.storage.from(bucket).download(page.storagePath);
 
   if (error || !data) {
-    return jsonError("Chưa tìm thấy ảnh trang ebook trong kho riêng.", 404);
+    const missing = error && "statusCode" in error && String(error.statusCode) === "404";
+    return jsonError(missing ? "Chưa tìm thấy ảnh trang ebook trong kho riêng." : "Kho ảnh đang phản hồi chậm. Anh/chị vui lòng thử lại.", missing ? 404 : 503);
   }
 
   return new Response(await data.arrayBuffer(), {

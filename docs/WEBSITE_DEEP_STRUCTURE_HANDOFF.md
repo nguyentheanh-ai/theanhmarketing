@@ -1773,3 +1773,6 @@ Source `db9eaa738d3fb5bafa51e459ab712b572fdad8e6`, production `dpl_6JLuE3zZALzRD
 - Cấp đúng khóa trên sẽ dùng chung thư viện 10 Agent. Không yêu cầu khách mua lại và không tạo enrollment với slug `codex-x10-hieu-suat`.
 - Vẫn xác minh đúng tài khoản và căn cứ cấp quyền: đơn đủ tiền/phần còn lại đã paid hoặc owner cấp thủ công; riêng đơn cọc không tự mở full access.
 - Nguồn kiểm tra: `app/academy/codex-x10-hieu-suat/sections.tsx`, `lib/agent-kit-preorder.ts`; mapping đã có trong code, bổ sung này không đổi runtime.
+
+## 12/09/2026 — Supabase health repair
+Database hardening đã áp dụng và đọc lại; Auth refresh/timeout/Ebook evidence scope đã kiểm thử và build, chờ phát hành source. Chi tiết: docs/SUPABASE_HEALTH_20260912.md. Giữ commerce, entitlement và tracking.

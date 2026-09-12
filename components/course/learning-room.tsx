@@ -103,7 +103,7 @@ export function LearningRoom({
         </Link>
 
         <nav className="mt-8 grid gap-2 text-sm font-bold">
-          {course.slug === "bo-agent-kit-x10-hieu-suat-cong-viec" && <Link className="rounded-xl bg-white/10 px-4 py-3 text-white" href="/learn/bo-agent-kit-x10-hieu-suat-cong-viec/agents">Thư viện Agent · Tải xuống</Link>}
+          {course.slug === "bo-agent-kit-x10-hieu-suat-cong-viec" && <Link className="rounded-xl bg-white/10 px-4 py-3 text-white" prefetch={false} href="/learn/bo-agent-kit-x10-hieu-suat-cong-viec/agents">Thư viện Agent · Tải xuống</Link>}
           <Link
             className="rounded-xl bg-[#159cfb] px-4 py-3 text-white"
             href="/dashboard"
@@ -215,7 +215,7 @@ export function LearningRoom({
                   {previousLesson ? (
                     <Link
                       className={`rounded-xl px-5 py-3 text-center text-sm font-bold ${subtlePanel}`}
-                      href={getLessonHref(course.slug, previousLesson.id)}
+                      prefetch={false} href={getLessonHref(course.slug, previousLesson.id)}
                     >
                       Bài trước
                     </Link>
@@ -223,7 +223,7 @@ export function LearningRoom({
                   {nextLesson ? (
                     <Link
                       className="rounded-xl bg-[#159cfb] px-5 py-3 text-center text-sm font-bold text-white"
-                      href={getLessonHref(course.slug, nextLesson.id)}
+                      prefetch={false} href={getLessonHref(course.slug, nextLesson.id)}
                     >
                       Bài tiếp theo
                     </Link>
@@ -280,7 +280,7 @@ export function LearningRoom({
                         ? "bg-[#159cfb] text-white"
                         : "bg-white/5 text-white/78 hover:bg-white/10"
                     }`}
-                    href={getLessonHref(course.slug, lesson.id)}
+                    prefetch={false} href={getLessonHref(course.slug, lesson.id)}
                   >
                     <span className="relative overflow-hidden rounded-lg bg-black">
                       {itemThumbnail ? (
@@ -316,10 +316,10 @@ export function LearningRoom({
       <nav className="learning-mobile-action" aria-label="Hành động học nhanh trên điện thoại">
         <Link href="/dashboard">Dashboard</Link>
         {previousLesson ? (
-          <Link href={getLessonHref(course.slug, previousLesson.id)}>Bài trước</Link>
+          <Link prefetch={false} href={getLessonHref(course.slug, previousLesson.id)}>Bài trước</Link>
         ) : null}
         {nextLesson ? (
-          <Link href={getLessonHref(course.slug, nextLesson.id)}>Bài tiếp</Link>
+          <Link prefetch={false} href={getLessonHref(course.slug, nextLesson.id)}>Bài tiếp</Link>
         ) : (
           <Link href="/dashboard">Hoàn thành</Link>
         )}

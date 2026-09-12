@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { dispatchDuePaymentReminderRuns } from "@/lib/notifications/payment-reminder-email";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 180;
 
 function isAuthorized(request: Request) {
   const secret = process.env.CRON_SECRET;
@@ -24,6 +24,7 @@ async function handle(request: Request) {
       retried: result.retried,
       lostLease: result.lostLease,
       error: result.error,
+      errorCode: result.errorCode,
     });
   }
 
