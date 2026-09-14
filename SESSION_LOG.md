@@ -371,3 +371,8 @@ Owner requested removal of Vietnam-Thailand offer. Removed stale desktop/mobile 
 
 ## 2026-09-11 — Protected Agent library
 Deployed5da27a7 as dpl_AWhuUfRbUhNEs78c8WwUqTAsfa5J READY.20 access/upload tests,39 revenue-critical tests,TS/lint/local+remote build PASS; guest access guarded,7 landing200/static hashes unchanged. Private ZIP upload pending owner login in task-specific browser. See architecture handoff; no customer download claim yet.
+
+
+## 15/09/2026 — Video Agent với cảnh báo thay bộ thương hiệu
+
+Cập nhật catalog và toàn bộ file tải sang kit 2.2.2, Video Studio 1.1.1. Theo yêu cầu chủ dự án, app dùng nhận diện mẫu The Anh Marketing; mỗi lần mở có cảnh báo và nút Thay bộ thương hiệu. Agent và SOP nhắc thay thương hiệu trước khi xuất, giữ .data/dự án cũ khi nâng cấp. Chỉ metadata và hướng dẫn Video trên website thay đổi; không đổi API, quyền học viên, checkout, email, tracking hoặc landing. 12 file private đã signed-download HTTP 200 và khớp size/SHA. Hàm nạp agent-video-update-20260915 đã đóng bằng version 2 HTTP 410, verify_jwt=true và source readback đạt. 100 kiểm thử website, TypeScript, lint, local build 108 routes đạt; app có 36 test và build đạt. Nghiệm thu cài mới/nâng cấp 10 Agent, 35 skill đạt. Chưa authenticated browser E2E hoặc thử render trên máy khách. Bằng chứng điều phối: reports/video-agent-update-20260915/. Trạng thái: chuẩn bị phát hành.

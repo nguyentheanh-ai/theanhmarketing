@@ -3,16 +3,16 @@
     {
       "slug": "full-kit",
       "name": "Toàn bộ AI Growth Agent Kit",
-      "version": "2.2.1",
-      "filename": "ai-growth-agent-kit-2.2.1.zip",
-      "size_bytes": 38274341,
-      "sha256": "b4a7da2cf762cb0a25de835c71e67e2faf3b8f6758f6b2dfbee07ecb0898a74b",
+      "version": "2.2.2",
+      "filename": "ai-growth-agent-kit-2.2.2.zip",
+      "size_bytes": 38278921,
+      "sha256": "ea9b96f7b16b52078acdfb69f0eb6eef39c545083f4d9b52b34115792614f00c",
       "content_type": "application/zip"
     },
     {
       "slug": "setup-prompt",
       "name": "Prompt thiết lập Codex",
-      "version": "2.2.1",
+      "version": "2.2.2",
       "filename": "Prompt-thiet-lap-Codex-cho-nguoi-moi-1.2.txt",
       "size_bytes": 17471,
       "sha256": "44aae657f322c05be5bdf951c44e4688afd963227fd29c06026a547c09527dd1",

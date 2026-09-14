@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "version": "2.2.1",
-  "source_version": "2.2.1",
+  "version": "2.2.2",
+  "source_version": "2.2.2",
   "agents": [
     {
       "schema_version": 1,
       "slug": "business-assistant-agent",
       "name": "Agent - Business Assistant",
       "technical_name": "business_assistant",
-      "version": "2.2.1",
-      "source_version": "2.2.1",
+      "version": "2.2.2",
+      "source_version": "2.2.2",
       "skills": [
         "ai-growth-system",
         "market-research",
@@ -28,18 +28,18 @@
         "Web/search nếu nghiên cứu nguồn ngoài; Google Sheets khi cần bảng trực tuyến"
       ],
       "runtime_status": "UNVERIFIED",
-      "source_release_sha256": "b4a7da2cf762cb0a25de835c71e67e2faf3b8f6758f6b2dfbee07ecb0898a74b",
-      "filename": "business-assistant-agent-2.2.1.zip",
-      "sha256": "cb9ef3c7c7c166b4a05bcb416bbc28652d623fdfd24374b663dbe5bd6644c726",
-      "size_bytes": 490055
+      "source_release_sha256": "ea9b96f7b16b52078acdfb69f0eb6eef39c545083f4d9b52b34115792614f00c",
+      "filename": "business-assistant-agent-2.2.2.zip",
+      "sha256": "2760eb2447746ae45d1911d80d251e02bd2a31b042baaffe85a573b8e173d2a5",
+      "size_bytes": 491668
     },
     {
       "schema_version": 1,
       "slug": "market-customer-research-agent",
       "name": "Agent - Nghiên cứu Thị trường & Khách hàng",
       "technical_name": "market_customer_research",
-      "version": "2.2.1",
-      "source_version": "2.2.1",
+      "version": "2.2.2",
+      "source_version": "2.2.2",
       "skills": [
         "market-research",
         "customer-insight-research",
@@ -52,18 +52,18 @@
         "Web/search; Meta Ad Library khi nghiên cứu Facebook"
       ],
       "runtime_status": "UNVERIFIED",
-      "source_release_sha256": "b4a7da2cf762cb0a25de835c71e67e2faf3b8f6758f6b2dfbee07ecb0898a74b",
-      "filename": "market-customer-research-agent-2.2.1.zip",
-      "sha256": "85d9b2acbb99525dabde0dfb5485e83d2e28fe8decab5963aa151e2057dc9116",
-      "size_bytes": 484807
+      "source_release_sha256": "ea9b96f7b16b52078acdfb69f0eb6eef39c545083f4d9b52b34115792614f00c",
+      "filename": "market-customer-research-agent-2.2.2.zip",
+      "sha256": "ec0ebe352494099624e935c28072e5177c5b8333dcf3860c1c0e608f0983f444",
+      "size_bytes": 486416
     },
     {
       "schema_version": 1,
       "slug": "marketing-agent",
       "name": "Agent - Marketing",
       "technical_name": "marketing",
-      "version": "2.2.1",
-      "source_version": "2.2.1",
+      "version": "2.2.2",
+      "source_version": "2.2.2",
       "skills": [
         "digital-marketing-plan",
         "market-research",
@@ -90,18 +90,18 @@
         "Research handoff có bằng chứng do khách hoặc chuyên gia cung cấp"
       ],
       "runtime_status": "UNVERIFIED",
-      "source_release_sha256": "b4a7da2cf762cb0a25de835c71e67e2faf3b8f6758f6b2dfbee07ecb0898a74b",
-      "filename": "marketing-agent-2.2.1.zip",
-      "sha256": "0d12828b82e07998e136f16495e768d1e972bd9ecc97bafe87d3f5db24d4167f",
-      "size_bytes": 513592
+      "source_release_sha256": "ea9b96f7b16b52078acdfb69f0eb6eef39c545083f4d9b52b34115792614f00c",
+      "filename": "marketing-agent-2.2.2.zip",
+      "sha256": "f1949f3f39c530dcbf7a32dcc8591b16454560b08f3a1811adfa45b5be886756",
+      "size_bytes": 515206
     },
     {
       "schema_version": 1,
       "slug": "content-agent",
       "name": "Agent - Content",
       "technical_name": "content",
-      "version": "2.2.1",
-      "source_version": "2.2.1",
+      "version": "2.2.2",
+      "source_version": "2.2.2",
       "skills": [
         "theanh-content-formulas-v4",
         "copywriting",
@@ -114,18 +114,18 @@
         "Brief và bằng chứng/Voice DNA do khách cung cấp"
       ],
       "runtime_status": "UNVERIFIED",
-      "source_release_sha256": "b4a7da2cf762cb0a25de835c71e67e2faf3b8f6758f6b2dfbee07ecb0898a74b",
-      "filename": "content-agent-2.2.1.zip",
-      "sha256": "1dcc21a9153b4800fc89483c76ae6c9614958cc95529ff67fe70be1184b5f603",
-      "size_bytes": 608009
+      "source_release_sha256": "ea9b96f7b16b52078acdfb69f0eb6eef39c545083f4d9b52b34115792614f00c",
+      "filename": "content-agent-2.2.2.zip",
+      "sha256": "b9fe85280194f79100c475b89009d2de157fde2ba84b0d5d3978b49232f6d6d8",
+      "size_bytes": 609617
     },
     {
       "schema_version": 1,
       "slug": "design-agent",
       "name": "Agent - Design",
       "technical_name": "design",
-      "version": "2.2.1",
-      "source_version": "2.2.1",
+      "version": "2.2.2",
+      "source_version": "2.2.2",
       "skills": [
         "social-post-design-brief",
         "copywriting",
@@ -136,18 +136,18 @@
         "Công cụ tạo ảnh/thiết kế chỉ khi yêu cầu; brief và asset đã duyệt"
       ],
       "runtime_status": "UNVERIFIED",
-      "source_release_sha256": "b4a7da2cf762cb0a25de835c71e67e2faf3b8f6758f6b2dfbee07ecb0898a74b",
-      "filename": "design-agent-2.2.1.zip",
-      "sha256": "239c54af35ded4d4e779ca42ac4de158e936fee80dc8e120a3a7447255300029",
-      "size_bytes": 471178
+      "source_release_sha256": "ea9b96f7b16b52078acdfb69f0eb6eef39c545083f4d9b52b34115792614f00c",
+      "filename": "design-agent-2.2.2.zip",
+      "sha256": "73b9d78eaf3f1984c9dfd6bba5be2d8a98f77cbcb89b410388704a127bb3a68a",
+      "size_bytes": 472788
     },
     {
       "schema_version": 1,
       "slug": "web-landing-agent",
       "name": "Agent - Web/Landing Page",
       "technical_name": "web_landing",
-      "version": "2.2.1",
-      "source_version": "2.2.1",
+      "version": "2.2.2",
+      "source_version": "2.2.2",
       "skills": [
         "landing-page-builder",
         "clone-landing-page-vietnamese",
@@ -159,18 +159,18 @@
         "Builder và clone portable đã đóng kèm; Node/browser tùy stack; Vercel/Supabase chỉ khi cần tích hợp"
       ],
       "runtime_status": "UNVERIFIED",
-      "source_release_sha256": "b4a7da2cf762cb0a25de835c71e67e2faf3b8f6758f6b2dfbee07ecb0898a74b",
-      "filename": "web-landing-agent-2.2.1.zip",
-      "sha256": "67324c1e4c62176bace8ac676cf13b7c8de6833b10ba31fd463ace7866eeacbd",
-      "size_bytes": 481272
+      "source_release_sha256": "ea9b96f7b16b52078acdfb69f0eb6eef39c545083f4d9b52b34115792614f00c",
+      "filename": "web-landing-agent-2.2.2.zip",
+      "sha256": "bb57af5098e84ce2c72e332d8357d2770a213fc8defcc0331e2f8b9d3d1097ad",
+      "size_bytes": 482885
     },
     {
       "schema_version": 1,
       "slug": "ads-setup-agent",
       "name": "Agent - Ads Setup",
       "technical_name": "ads_setup",
-      "version": "2.2.1",
-      "source_version": "2.2.1",
+      "version": "2.2.2",
+      "source_version": "2.2.2",
       "skills": [
         "facebook-message-ads-setup",
         "facebook-engagement-reach-ads-setup",
@@ -183,18 +183,18 @@
         "Meta Ads MCP toàn chuỗi exact route; audit/readiness do khách hoặc Ads Report cung cấp; chưa đủ thì không mutation"
       ],
       "runtime_status": "UNVERIFIED",
-      "source_release_sha256": "b4a7da2cf762cb0a25de835c71e67e2faf3b8f6758f6b2dfbee07ecb0898a74b",
-      "filename": "ads-setup-agent-2.2.1.zip",
-      "sha256": "838528473ebd3ce1587a82bf735b9f6a2fe0ba475271eacf0ea0c1f0f50a1caa",
-      "size_bytes": 501618
+      "source_release_sha256": "ea9b96f7b16b52078acdfb69f0eb6eef39c545083f4d9b52b34115792614f00c",
+      "filename": "ads-setup-agent-2.2.2.zip",
+      "sha256": "3971cde8534675e6a8721811119d2258852daacabefa51148385d783d3b11f6d",
+      "size_bytes": 503228
     },
     {
       "schema_version": 1,
       "slug": "ads-report-agent",
       "name": "Agent - Ads Report",
       "technical_name": "ads_report",
-      "version": "2.2.1",
-      "source_version": "2.2.1",
+      "version": "2.2.2",
+      "source_version": "2.2.2",
       "skills": [
         "facebook-ads-report-optimizer",
         "premium-excel-workflow-builder",
@@ -207,18 +207,18 @@
         "Meta Ads MCP read hoặc export do khách cung cấp; Data Analytics tùy chọn"
       ],
       "runtime_status": "UNVERIFIED",
-      "source_release_sha256": "b4a7da2cf762cb0a25de835c71e67e2faf3b8f6758f6b2dfbee07ecb0898a74b",
-      "filename": "ads-report-agent-2.2.1.zip",
-      "sha256": "77a376e2e48a83ff2761920644fa010f4aa307824188efb016a4e8b2513c3c98",
-      "size_bytes": 491798
+      "source_release_sha256": "ea9b96f7b16b52078acdfb69f0eb6eef39c545083f4d9b52b34115792614f00c",
+      "filename": "ads-report-agent-2.2.2.zip",
+      "sha256": "bb14d74fac23a8c16851ccd366793b98618770a311708c59e9040b48a8be4017",
+      "size_bytes": 493406
     },
     {
       "schema_version": 1,
       "slug": "video-agent",
       "name": "Agent - Video",
       "technical_name": "video",
-      "version": "2.2.1",
-      "source_version": "2.2.1",
+      "version": "2.2.2",
+      "source_version": "2.2.2",
       "skills": [
         "video-production"
       ],
@@ -226,18 +226,18 @@
         "Node.js >=22.12; npm dependencies; provider được khách cấu hình cục bộ; chưa xác minh kết nối/render"
       ],
       "runtime_status": "UNVERIFIED",
-      "source_release_sha256": "b4a7da2cf762cb0a25de835c71e67e2faf3b8f6758f6b2dfbee07ecb0898a74b",
-      "filename": "video-agent-2.2.1.zip",
-      "sha256": "7906cbb23406bcd5a951c8525b96ac2866cbf01cbb40ae1ef69b2f00cd6da1fc",
-      "size_bytes": 37891681
+      "source_release_sha256": "ea9b96f7b16b52078acdfb69f0eb6eef39c545083f4d9b52b34115792614f00c",
+      "filename": "video-agent-2.2.2.zip",
+      "sha256": "a482aaafa678080e08c69226a5ec130d74c0c3d3d3dd0126e686c16a908dca78",
+      "size_bytes": 37896311
     },
     {
       "schema_version": 1,
       "slug": "facebook-publisher-agent",
       "name": "Agent - Facebook Publisher",
       "technical_name": "facebook_publisher",
-      "version": "2.2.1",
-      "source_version": "2.2.1",
+      "version": "2.2.2",
+      "source_version": "2.2.2",
       "skills": [
         "facebook-publisher"
       ],
@@ -245,10 +245,10 @@
         "Computer Use và Meta Page có quyền phù hợp; Google Sheets connector; xác minh từng kết nối trước tác vụ"
       ],
       "runtime_status": "UNVERIFIED",
-      "source_release_sha256": "b4a7da2cf762cb0a25de835c71e67e2faf3b8f6758f6b2dfbee07ecb0898a74b",
-      "filename": "facebook-publisher-agent-2.2.1.zip",
-      "sha256": "13f998c405e3a1cace0c9814b19888c4ee0575d656fdd00b93d0f67c08b2b9cf",
-      "size_bytes": 458662
+      "source_release_sha256": "ea9b96f7b16b52078acdfb69f0eb6eef39c545083f4d9b52b34115792614f00c",
+      "filename": "facebook-publisher-agent-2.2.2.zip",
+      "sha256": "552a7f36e5e88683172ea53b51821bd31b34433a97b196ce23b71aca64030d13",
+      "size_bytes": 460266
     }
   ]
 }
