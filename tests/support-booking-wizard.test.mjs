@@ -90,29 +90,31 @@ test("booking wizard preserves data, skips verified student contacts and submits
       assert.equal(globalThis.window.location.href, "/thanh-toan/UNITTEST");
       await act(() => view.unmount());
     });
-    await t.test("students skip contacts; duration changes clear the time; calendar spans months and excludes Sundays", async () => {
+    await t.test("students pay one million without duration choices; calendar spans months and excludes Sundays", async () => {
       await start({ customerName: "Student test", email: "student@example.com", phone: "0900000000" });
       assert.match(heading(), /Bạn cần hướng dẫn/);
       assert.equal(view.root.findByType("nav").findAllByType("li").length, 3);
       assert.doesNotMatch(textOf(view.root.findByType("nav").props.children), /Thông tin|Bắt đầu|Bỏ qua/);
       assert.ok(view.root.findAllByType("p").some((node) => textOf(node.props.children) === "Bước 1 / 3"));
       await chooseTopic(); await submit();
-      assert.match(heading(), /Chọn lịch và thời lượng/);
+      assert.match(heading(), /Chọn lịch hẹn/);
       assert.equal(field("phone"), undefined);
       const sundays = view.root.findAllByType("button").filter((node) => node.props["aria-label"]?.includes("Nghỉ Chủ nhật"));
       assert.ok(sundays.length > 0 && sundays.every((node) => node.props.disabled));
       await chooseDate("2026-09-10"); await click("09:00");
-      await act(() => view.root.findAllByType("input").find((node) => node.props.value === 60).props.onChange());
-      assert.equal(button("09:00"), undefined);
-      assert.equal(button("Tiếp tục").props.disabled, true);
-      await click("10:00"); await submit();
-      assert.match(content(), /1.500.000đ/);
+      assert.equal(field("durationMinutes"), undefined);
+      assert.doesNotMatch(content(), /Thời lượng|30 phút|60 phút|90 phút|120 phút|500.000đ/);
+      assert.match(content(), /1.000.000đ/);
+      await submit();
+      assert.match(content(), /1.000.000đ/);
+      assert.doesNotMatch(content(), /30 phút/);
       await click("Sửa lịch");
       await act(() => view.root.findAllByType("button").find((node) => node.props["aria-label"] === "Tháng sau").props.onClick());
       assert.match(content(), /tháng 10/);
       await chooseDate("2026-10-01"); await click("09:00"); await submit(); await submit();
       assert.equal(requests[0].body.appointmentDate, "2026-10-01");
       assert.equal(requests[0].body.email, undefined);
+      assert.equal(requests[0].body.durationMinutes, 30);
       await act(() => view.unmount());
     });
     await t.test("student missing phone completes it on schedule; conflicts return to schedule and refresh availability", async () => {
@@ -126,7 +128,7 @@ test("booking wizard preserves data, skips verified student contacts and submits
         return { ok: false, status: 409, json: async () => ({ ok: false, message: "Khung giờ vừa được chọn." }) };
       };
       await submit();
-      assert.match(heading(), /Chọn lịch và thời lượng/);
+      assert.match(heading(), /Chọn lịch hẹn/);
       assert.match(content(), /Khung giờ vừa được chọn/);
       assert.equal(button("Tiếp tục").props.disabled, true);
       assert.equal(requests[1].url, "/api/support-bookings/availability");

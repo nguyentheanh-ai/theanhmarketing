@@ -67,8 +67,8 @@ export function SupportBookingForm({ today, bookableDays, customer, isAuthentica
   const selectedTopic = SUPPORT_TOPICS.find((item) => item.value === topic);
   const slotAvailable = Boolean(selectedDay && !selectedDay.busy && selectedDate >= minDate && selectedDate <= maxDate && !isSupportSunday(selectedDate) && isSupportSlotAvailable(selectedDay.slots, selectedTime, durationMinutes));
   const visibleSteps = [!isAuthenticated && 1, 2, !customer && 3, 4, 5].filter(Boolean) as number[];
-  const title = ["", "Bạn có phải học viên\nThế Anh Marketing không?", "Bạn cần hướng dẫn về gì?", "Thông tin liên hệ của bạn", "Chọn lịch và thời lượng", "Kiểm tra và thanh toán"][step];
-  const descriptions = ["", "Chọn bên dưới để bắt đầu đặt lịch cùng Thế Anh.", "Chọn một chủ đề bạn muốn trao đổi trong buổi 1:1.", "Thông tin dùng để xác nhận và liên hệ về lịch hẹn.", "Chọn thời lượng phù hợp, sau đó chọn ngày và giờ bắt đầu.", "Kiểm tra lịch hẹn trước khi chuyển sang thanh toán."];
+  const title = ["", "Bạn có phải học viên\nThế Anh Marketing không?", "Bạn cần hướng dẫn về gì?", "Thông tin liên hệ của bạn", customer ? "Chọn lịch hẹn" : "Chọn lịch và thời lượng", "Kiểm tra và thanh toán"][step];
+  const descriptions = ["", "Chọn bên dưới để bắt đầu đặt lịch cùng Thế Anh.", "Chọn một chủ đề bạn muốn trao đổi trong buổi 1:1.", "Thông tin dùng để xác nhận và liên hệ về lịch hẹn.", customer ? "Chọn ngày và giờ bắt đầu buổi hỗ trợ." : "Chọn thời lượng phù hợp, sau đó chọn ngày và giờ bắt đầu.", "Kiểm tra lịch hẹn trước khi chuyển sang thanh toán."];
 
   function goTo(next: number) { setError(""); setStep(next); }
   function back() { goTo(visibleSteps[visibleSteps.indexOf(step) - 1]); }
@@ -178,7 +178,10 @@ export function SupportBookingForm({ today, bookableDays, customer, isAuthentica
           </div>}
 
           {step === 4 && <div className="space-y-6">
-            <fieldset>
+            {customer ? <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4">
+              <p className="text-sm font-semibold">Hỗ trợ học viên</p>
+              <p className="mt-2 text-2xl font-bold text-blue-700">{amountLabel(quote.amount)}<span className="text-sm font-medium">/buổi</span></p>
+            </div> : <fieldset>
               <legend className="text-sm font-semibold">Thời lượng buổi hẹn <span className="font-normal text-slate-500">· {plan.title}</span></legend>
               <div className={`mt-3 grid grid-cols-2 gap-2 ${durations.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-4"}`}>
                 {durations.map((minutes) => <label key={minutes} className={`cursor-pointer rounded-2xl border px-3 py-3 text-center focus-within:ring-2 focus-within:ring-blue-400 ${durationMinutes === minutes ? "border-blue-600 bg-blue-50/60" : "border-slate-200 hover:border-blue-300"}`}>
@@ -187,7 +190,7 @@ export function SupportBookingForm({ today, bookableDays, customer, isAuthentica
                 </label>)}
               </div>
               <p className="mt-2 text-xs leading-5 text-slate-500">{plan.baseMinutes} phút đầu {amountLabel(plan.basePrice)} · Thêm 30 phút: {amountLabel(plan.extraHalfHourPrice)}</p>
-            </fieldset>
+            </fieldset>}
             <div className="grid gap-6 border-t border-slate-100 pt-5 sm:grid-cols-[1.1fr_1fr]">
               <section aria-label="Chọn ngày">
                 <div className="mb-4 flex items-center justify-between"><h3 className="flex items-center gap-2 text-sm font-bold capitalize"><CalendarDays className="size-4 text-blue-600" />{formatDate(firstOfMonth, { month: "long", year: "numeric" })}</h3><div className="flex gap-1">
@@ -213,7 +216,7 @@ export function SupportBookingForm({ today, bookableDays, customer, isAuthentica
                 {selectedDay && <div className="mt-3 grid grid-cols-3 gap-2">
                   {selectedDay.slots.filter((slot) => !selectedDay.busy && isSupportSlotAvailable(selectedDay.slots, slot.time, durationMinutes)).map((slot) => <button key={slot.time} type="button" aria-pressed={selectedTime === slot.time} onClick={() => { setSelectedTime(slot.time); setError(""); }} className={`min-h-10 rounded-xl border text-xs font-semibold transition ${selectedTime === slot.time ? "border-blue-600 bg-blue-600 text-white" : "border-slate-200 hover:border-blue-400 hover:bg-blue-50"}`}>{slot.time}</button>)}
                 </div>}
-                {selectedDay && (selectedDay.busy || !selectedDay.slots.some((slot) => isSupportSlotAvailable(selectedDay.slots, slot.time, durationMinutes))) && <p className="mt-4 text-sm leading-6 text-slate-500">Ngày này không còn giờ trống đủ {durationMinutes} phút. Vui lòng chọn ngày khác.</p>}
+                {selectedDay && (selectedDay.busy || !selectedDay.slots.some((slot) => isSupportSlotAvailable(selectedDay.slots, slot.time, durationMinutes))) && <p className="mt-4 text-sm leading-6 text-slate-500">{customer ? "Ngày này không còn giờ trống. Vui lòng chọn ngày khác." : `Ngày này không còn giờ trống đủ ${durationMinutes} phút. Vui lòng chọn ngày khác.`}</p>}
               </section>
             </div>
             {customer && !customer.phone && <label className="grid gap-2 border-t border-slate-100 pt-5 text-sm font-semibold text-slate-700">Bổ sung số điện thoại<span className="text-xs font-normal text-slate-500">Hồ sơ của bạn chưa có số điện thoại để liên hệ về lịch hẹn.</span><input className={inputClass} name="phone" type="tel" autoComplete="tel" value={phone} onChange={(event) => setPhone(event.target.value)} minLength={9} maxLength={30} required /></label>}
@@ -223,7 +226,7 @@ export function SupportBookingForm({ today, bookableDays, customer, isAuthentica
             <div className="rounded-2xl border border-slate-200 p-5">
               <div className="flex items-center justify-between gap-3"><p className="text-xs font-semibold text-slate-500">Buổi 1:1 cùng Thế Anh</p><button type="button" onClick={() => goTo(4)} className="text-xs font-semibold text-blue-600 underline underline-offset-4">Sửa lịch</button></div>
               <p className="mt-3 text-lg font-bold">{selectedTopic?.label}</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{formatDate(selectedDate, { weekday: "long", day: "numeric", month: "numeric", year: "numeric" })}<br />{selectedTime} · {durationMinutes} phút · Giờ Việt Nam</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{formatDate(selectedDate, { weekday: "long", day: "numeric", month: "numeric", year: "numeric" })}<br />{selectedTime}{!customer && ` · ${durationMinutes} phút`} · Giờ Việt Nam</p>
               {note && <p className="mt-3 whitespace-pre-wrap break-words border-t border-slate-100 pt-3 text-sm leading-6 text-slate-500">{note}</p>}
               <div className="mt-4 flex items-end justify-between gap-3 border-t border-slate-100 pt-4"><span className="text-sm text-slate-500">Tổng thanh toán</span><strong className="text-2xl tracking-tight text-blue-700">{amountLabel(quote.amount)}</strong></div>
             </div>
