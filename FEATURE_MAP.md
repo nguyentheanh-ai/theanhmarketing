@@ -502,3 +502,10 @@ Nguồn: components/support-booking/support-booking-form.tsx; kiểm tra: tests/
 Anh duyệt “làm luôn đi em”. Runtime bb644657ad3b931aca86363fcda86b35028c9a28; production dpl_87mb1PmLv9upzrHUY7pjB48yAdFx READY, www/apex trỏ đúng. Form học viên hiện 1.000.000đ/buổi, bỏ lựa chọn thời lượng/phụ thu và số phút ở bước xác nhận. Khách ngoài, khoảng giữ chỗ 30 phút, API/DB/checkout không đổi.
 36 support tests PASS (1 SQL integration SKIP, không sửa SQL), 39 prebuild PASS, TypeScript/lint và local build108 PASS; preview/production builds PASS. Live www/apex HTTP200 và bundle có nội dung mới, login/success/availability200; 3 ngày báo trước và 4 Chủ nhật đóng. 7 landing HTTP200, 5 static hashes giữ nguyên; hai trang động có hash HTML khác theo bản dựng, source không đổi. Runtime error/fatal scan bản mới không có kết quả lúc04:37UTC. Không browser đăng nhập E2E, đơn thử, thanh toán hoặc gửi email thật.
 Rollback ứng dụng: dpl_EY8qiZ7XfUC8bDpFYXebztUJWGFf. Bằng chứng workspace: reports/support-student-flat-fee-20260914/. Trạng thái DONE, thay thế các ghi chú chờ phát hành phía trên.
+
+
+## 14/09/2026 — Thay bộ Agent Kit 2.2.1
+
+Owner yêu cầu thay bộ kit trên website. Catalog chuyển đủ 10 Agent sang 2.2.1, gồm 35 skill; ZIP đã nạp vào agent-library-private/2.2.1 và tải lại qua signed URL: HTTP 200, kích thước/SHA-256 đúng cả 10. Bộ mới có installer tạo native skill discovery, hai skill landing portable và prompt thiết lập 1.2 cho khách không chuyên. Giữ nguyên route/quyền khóa chính xác, signed URL 120 giây, payment và tracking. Gói cũ giữ để rollback. Hàm nạp tạm agent-library-delivery-20260914 đã thay bằng HTTP 410 sau kiểm tra, verify_jwt=true.
+
+Catalog là thay đổi runtime duy nhất; ZIP trả phí không vào GitHub. Build/release live được ghi tiếp sau xác minh. Chưa kiểm tra đăng nhập học viên thật hoặc cài trên máy khách mới. Chứng cứ: coordinator reports/agent-customer-fix-20260914/private-upload-receipts.json.
