@@ -1808,3 +1808,10 @@ Owner yêu cầu thêm nút tải toàn bộ và prompt như một thẻ tài li
 Gói full ZIP2.2.1 và prompt1.2 đã nạp vào agent-library-private/2.2.1; signed download HTTP200 và size/SHA-256 khớp 2/2. Bucket giữ private và giới hạn50MiB, thêm MIME text/plain để nhận prompt. Admin upload/verify hiện có nhận cả12 mục; không overwrite. Hàm nạp tạm agent-library-resources-20260915 đã vô hiệu hóa bằng version2 chỉ410, verify_jwt=true, source readback xác nhận.
 
 Kiểm tra trước phát hành: 45 test access gồm24 kịch bản x12 download,16 kiểm tài liệu/nút bấm/hash-version đồng bộ và39 revenue-critical; TypeScript/lint đạt. Build/live theo biên bản phát hành. Không thay quyền học viên, checkout, payment, email, tracking hoặc landing Ads. Chưa authenticated browser E2E/visual QA; kiểm UI qua cây React và hành vi handler. Evidence tại coordinator reports/agent-library-downloads-20260915/.
+
+
+## 15/09/2026 — Hai nút tải toàn bộ và prompt ĐÃ LIVE
+
+Đã thêm Tải toàn bộ bộ kit ở header và thẻ Prompt thiết lập Codex tải TXT trong thư viện; giữ10Agent. Runtime36ff445; preview dpl_4tg3tcZHkzPCVsvbsrZ11ZHXeocS và production dpl_EYm7VZmkvrMDrCkGYqNPw5pJZMYx READY, www/apex đúng bản mới. 100 kiểm thử liên quan, TypeScript, lint, local/remote build đạt. Hai file signed Storage HTTP200 đúng size/SHA trước phát hành; bucket private, giữ50MiB và thêm MIMEtext/plain. Nạp tạm đã vô hiệu hóa bằng source410/version2, verify_jwt=true. Hai API mới chuyển404→401 với guest, thư viện redirectlogin;7landing200,5static hash giữ nguyên. Quyền khóa/payment/email/tracking không đổi.
+
+Giới hạn: kiểm nút tải qua hành vi React/API và file thật trong Storage; chưa authenticated browser E2E hoặc visual browser QA. Evidence: coordinator reports/agent-library-downloads-20260915/delivery-state.json. Rollback production: dpl_AZsyeGXRF3vbqKgzqxbrbpxCojjm; file trước giữ nguyên.
