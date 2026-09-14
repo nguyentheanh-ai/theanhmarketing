@@ -535,3 +535,8 @@ Giới hạn: kiểm nút tải qua hành vi React/API và file thật trong Sto
 ## 15/09/2026 — Video Agent với cảnh báo thay bộ thương hiệu
 
 Cập nhật catalog và toàn bộ file tải sang kit 2.2.2, Video Studio 1.1.1. Theo yêu cầu chủ dự án, app dùng nhận diện mẫu The Anh Marketing; mỗi lần mở có cảnh báo và nút Thay bộ thương hiệu. Agent và SOP nhắc thay thương hiệu trước khi xuất, giữ .data/dự án cũ khi nâng cấp. Chỉ metadata và hướng dẫn Video trên website thay đổi; không đổi API, quyền học viên, checkout, email, tracking hoặc landing. 12 file private đã signed-download HTTP 200 và khớp size/SHA. Hàm nạp agent-video-update-20260915 đã đóng bằng version 2 HTTP 410, verify_jwt=true và source readback đạt. 100 kiểm thử website, TypeScript, lint, local build 108 routes đạt; app có 36 test và build đạt. Nghiệm thu cài mới/nâng cấp 10 Agent, 35 skill đạt. Chưa authenticated browser E2E hoặc thử render trên máy khách. Bằng chứng điều phối: reports/video-agent-update-20260915/. Trạng thái: chuẩn bị phát hành.
+
+
+## Video Agent 1.1.1 / kit 2.2.2 — đã phát hành
+
+Thư viện đã cập nhật gói Video và toàn bộ bộ kit. Bản mẫu giữ nhận diện The Anh Marketing, kèm cảnh báo thay bộ thương hiệu khi khởi động và nút mở phần Bộ nhận diện. Đã kiểm tra cài mới, nâng cấp giữ dữ liệu, các file tải và website. Chưa kiểm trên máy khách mới. Trạng thái đã phát hành thay thế ghi chú chuẩn bị phát hành ở trên.
