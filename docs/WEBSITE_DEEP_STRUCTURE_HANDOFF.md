@@ -1799,3 +1799,12 @@ Catalog là thay đổi runtime duy nhất; ZIP trả phí không vào GitHub. B
 ## 14/09/2026 — Agent Kit 2.2.1 đã LIVE, prompt ban đầu đã cập nhật
 
 Đã thay 10 gói trên website theo yêu cầu owner, 35 skill. Runtime afd06a7; production dpl_AZsyeGXRF3vbqKgzqxbrbpxCojjm READY đúng SHA và www/apex. 10 ZIP private được tải lại đúng size/SHA trước chuyển catalog; hàm nạp tạm đã vô hiệu hóa version2, verify_jwt=true. 84 tests, TypeScript, local/remote build đạt; 7 landing200, bốn academy tĩnh giữ hash, guest download401, library redirect login, unknown404, error/fatal query rỗng. Prompt Downloads/Prompt-thiet-lap-Codex-cho-nguoi-moi.txt bản1.2 giống file trong ZIP2.2.1, có backup bản cũ. Không sửa quyền khách/payment/tracking. Chưa authenticated student browser hoặc fresh customer runtime E2E. Trạng thái chờ backend của lượt trước đã được thay thế. Evidence: reports/agent-customer-fix-20260914/delivery-state.json trong workspace điều phối. Rollback Vercel: dpl_87mb1PmLv9upzrHUY7pjB48yAdFx.
+
+
+## 15/09/2026 — Tải toàn bộ và prompt trong thư viện Agent
+
+Owner yêu cầu thêm nút tải toàn bộ và prompt như một thẻ tài liệu trong thư viện. Giữ 10 thẻ Agent; thêm nút Tải toàn bộ bộ kit ở header và thẻ Prompt thiết lập Codex tải TXT. Hai slug full-kit/setup-prompt dùng API download cũ, chung requireAgentLibraryAccess, private signed URL 120 giây, no-store. Metadata hai tài liệu ở data/agent-library-resources.json; phải cập nhật cùng phiên bản catalog Agent (test kiểm full SHA trùng source_release_sha256). Không đưa ZIP/TXT nội dung trả phí vào Git public.
+
+Gói full ZIP2.2.1 và prompt1.2 đã nạp vào agent-library-private/2.2.1; signed download HTTP200 và size/SHA-256 khớp 2/2. Bucket giữ private và giới hạn50MiB, thêm MIME text/plain để nhận prompt. Admin upload/verify hiện có nhận cả12 mục; không overwrite. Hàm nạp tạm agent-library-resources-20260915 đã vô hiệu hóa bằng version2 chỉ410, verify_jwt=true, source readback xác nhận.
+
+Kiểm tra trước phát hành: 45 test access gồm24 kịch bản x12 download,16 kiểm tài liệu/nút bấm/hash-version đồng bộ và39 revenue-critical; TypeScript/lint đạt. Build/live theo biên bản phát hành. Không thay quyền học viên, checkout, payment, email, tracking hoặc landing Ads. Chưa authenticated browser E2E/visual QA; kiểm UI qua cây React và hành vi handler. Evidence tại coordinator reports/agent-library-downloads-20260915/.
