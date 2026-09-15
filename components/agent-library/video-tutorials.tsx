@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { tutorialVideos } from "./tutorial-videos";
 
 export function VideoTutorials() {
@@ -21,7 +21,7 @@ export function VideoTutorials() {
         <div className="video-viewer">
           <div className="video-screen">
             {playing ? <iframe key={video.youtubeId} src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}?rel=0&autoplay=1`} title={video.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" /> :
-              <button className="video-start" onClick={() => setPlaying(true)} aria-label={`Xem video: ${video.title}`}>
+              <button className="video-start" style={{"--video-thumbnail":`url(https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg)`} as CSSProperties} onClick={() => setPlaying(true)} aria-label={`Xem video: ${video.title}`}>
                 <span className="video-play-icon" aria-hidden="true">▶</span><span>Xem video hướng dẫn</span><strong>{video.title}</strong>
               </button>}
           </div>
@@ -34,7 +34,7 @@ export function VideoTutorials() {
 
         </div>
         <ol className="video-lessons" aria-label="Danh sách video hướng dẫn">
-          {tutorialVideos.map((lesson, index) => <li key={lesson.youtubeId}><button type="button" aria-current={index === selected ? "true" : undefined} className={index === selected ? "video-lesson active" : "video-lesson"} onClick={() => selectLesson(index)}><span className="video-lesson-number">{lesson.number}</span><span>{lesson.title}</span><span className="video-lesson-play" aria-hidden="true">{index === selected ? "●" : "▷"}</span></button></li>)}
+          {tutorialVideos.map((lesson, index) => <li key={lesson.youtubeId}><button type="button" aria-current={index === selected ? "true" : undefined} className={index === selected ? "video-lesson active" : "video-lesson"} onClick={() => selectLesson(index)}><span className="lesson-thumbnail" aria-hidden="true" style={{backgroundImage:`url(https://img.youtube.com/vi/${lesson.youtubeId}/mqdefault.jpg)`}}/><span className="lesson-description"><span className="video-lesson-number">Bài {lesson.number}</span><span>{lesson.title}</span></span><span className="video-lesson-play" aria-hidden="true">{index === selected ? "●" : "▷"}</span></button></li>)}
         </ol>
       </div>
           <section className="video-materials" aria-labelledby="video-materials-title" key={video.youtubeId}>

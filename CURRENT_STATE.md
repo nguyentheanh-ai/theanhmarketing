@@ -417,3 +417,7 @@ Theo ảnh/góp ý mới, đầu trang có hai thẻ Video hướng dẫn và Th
 
 ### Hai thẻ đã phát hành — 15/09/2026
 Runtime0f45b7d production READY.104tests/TypeScript/lint/build PASS;13HTTP giữ trạng thái và5landing tĩnh giữ hash. Hai khu vực chỉ hiện một nội dung mỗi lần; chuyển về Agent dừng video. Quyền tải giữ nguyên. Chưa authenticated browser playback QA.
+
+
+## 15/09/2026 — Giao diện vũ trụ AI có ảnh bìa
+Anh yêu cầu nâng cấp hình ảnh và giải thích Astra là phong cách vũ trụ AI. Tạo hai ảnh original bằng imagegen: hành tinh/quỹ đạo và khối AI kết nối; tối ưu JPEG1280px tổng444KB tại public/agent-library-art. Thẻ chọn dùng ảnh bìa, sidebar ink navy, nội dung nền sáng, thẻ Agent có artwork/icon và bài học có thumbnail YouTube đúng ID. Giữ hai khu vực tách biệt, video/navigation/materials/download/access. Không dùng logo/ảnh thương hiệu chưa xác minh. Premium.css chỉ scoped thư viện; không landing/commerce/Auth change.65library tests, TypeScript/lint PASS; đang dựng/phát hành. Preview điều phối cập nhật, chưa browser screenshot QA do policy.
