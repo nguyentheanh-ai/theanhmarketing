@@ -430,3 +430,6 @@ Runtimef804cd5 production READY.104tests/TypeScript/lint/build PASS,13HTTP giữ
 ## 16/09/2026 — Bài 11–14 và tài liệu bài 14
 Thêm 4 video theo catalog, tổng 15 video kể cả bài 5.1; số video trên card tự cập nhật. Bài 14 có tài liệu Markdown qua API download kiểm tra quyền hiện có, lưu trong kho riêng; không đưa nội dung tài liệu vào Git/public. File lưu trữ đã đọc lại và khớp 9.375 bytes cùng SHA-256 catalog. Hàm nạp tạm đã khóa sau khi kiểm tra.
 110 tests, TypeScript, lint và build 108 routes PASS. Chưa kiểm tra phát video hay tải file trong phiên học viên thật. Production release/readback được ghi riêng sau phát hành.
+
+### Xác nhận phát hành
+Runtime e6ae27d production READY, www/apex đúng bản mới. 13 HTTP smoke giữ trạng thái; 5 static landing giữ checksum. Guest tải tài liệu bài 14 trả401. Không thấy error/fatal ở lần truy vấn sau phát hành. Chưa kiểm tra phiên học viên thật.
