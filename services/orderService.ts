@@ -483,6 +483,10 @@ const coursePaymentPlans: Record<string, Record<string, CoursePaymentPlan>> = {
     },
   },
   [AGENT_KIT_SLUG]: {
+    "agent-kit-offer-990": {
+      title: "Đội ngũ nhân sự AI - Ưu đãi trọn bộ",
+      amount: 990000,
+    },
     [AGENT_KIT_PREORDER_PAYMENT_PLAN]: {
       title: `Cọc preorder trước ngày mở bán - tổng ${formatVnd(AGENT_KIT_PREORDER_PRICE_VND)}, còn lại ${formatVnd(AGENT_KIT_PREORDER_REMAINING_VND)} khi mở bán`,
       amount: AGENT_KIT_PREORDER_DEPOSIT_VND,

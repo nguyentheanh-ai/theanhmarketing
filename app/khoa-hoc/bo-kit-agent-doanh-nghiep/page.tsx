@@ -3,7 +3,7 @@ import { AgentKitBundle } from "./agent-kit-bundle";
 
 const landingAssetRoot = "/doi-ngu-nhan-su-ai";
 const landingUrl = "https://www.theanhmarketing.com/academy/bo-kit-agent-doanh-nghiep";
-const landingDescription = "Bộ 8 Nhân viên AI dành cho doanh nghiệp: tự đào tạo theo dữ liệu riêng, SOP vận hành quảng cáo chuyên nghiệp và cọc preorder 399.000đ để giữ tổng giá 799.000đ.";
+const landingDescription = "Bộ 8 Nhân viên AI dành cho doanh nghiệp: tự đào tạo theo dữ liệu riêng, SOP vận hành quảng cáo chuyên nghiệp với giá ưu đãi 990.000đ, giá gốc 2.599.000đ.";
 
 export const metadata: Metadata = {
   title: "Đội ngũ nhân sự AI dành cho doanh nghiệp",
@@ -40,7 +40,7 @@ export default function AgentKitLandingPage() {
     <>
       <link
         rel="stylesheet"
-        href={`${landingAssetRoot}/assets/index-8rH5P9v3.css`}
+        href={`${landingAssetRoot}/assets/index-BthB_yEr.css`}
       />
       <link rel="icon" href={`${landingAssetRoot}/brand/ta-mark.svg`} />
       <AgentKitBundle />

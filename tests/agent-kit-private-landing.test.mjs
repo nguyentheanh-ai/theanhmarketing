@@ -36,8 +36,8 @@ test("academy and static entry load the same current bundle from an absolute ass
 
 test("published bundle contains the reviewed offer phase and semantic demo tracking", () => {
   for (const text of [
-    "agent-kit-standard-999",
-    "Mua ngay 999.000đ",
+    "agent-kit-offer-990",
+    "Tiếp tục thanh toán",
     "agent_demo_view",
     "agent_role_select",
     "agent_demo_complete",
@@ -52,13 +52,10 @@ test("landing bundle includes the approved product, form and commerce contract",
     "Đội ngũ nhân sự AI",
     "Giao bớt việc marketing lặp lại cho đội ngũ Nhân viên AI",
     "Bộ 8 Nhân viên AI dành cho doanh nghiệp",
-    "Đặt cọc 399.000đ",
     "bo-agent-kit-x10-hieu-suat-cong-viec",
-    "agent-kit-preorder-deposit-399",
-    "cọc preorder",
-    "399.000đ",
-    "799.000đ",
-    "400.000đ",
+    "agent-kit-offer-990",
+    "990.000đ",
+    "2.599.000đ",
     "academy/bo-kit-agent-doanh-nghiep",
   ]) {
     assert.ok(bundle.includes(text), `missing bundled contract: ${text}`);
