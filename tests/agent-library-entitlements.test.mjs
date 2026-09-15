@@ -6,7 +6,7 @@ import ts from 'typescript';
 const slug='bo-agent-kit-x10-hieu-suat-cong-viec';
 const email='student@example.invalid',userId='00000000-0000-4000-8000-000000000001';
 const catalog=JSON.parse(fs.readFileSync('data/agent-library-packages.json'));
-const resources={resources:[{slug:'full-kit',version:'2.2.1',filename:'ai-growth-agent-kit-2.2.1.zip'},{slug:'setup-prompt',version:'2.2.1',filename:'Prompt-thiet-lap-Codex-cho-nguoi-moi-1.2.txt'}]};
+const resources=JSON.parse(fs.readFileSync('data/agent-library-resources.json'));
 function load(file,deps={}){const exports={};vm.runInNewContext(ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText,{exports,require:n=>{if(n in deps)return deps[n];throw Error(n)},Response,URL,Date,Set,Map});return exports;}
 const lifecycle=load('lib/agent-kit-preorder.ts');
 const legacy=load('lib/course-access.ts',{'@/lib/admin/admin-emails':{getConfiguredOwnerEmails:()=>[]},'@/lib/agent-kit-preorder':lifecycle});
@@ -33,7 +33,7 @@ const cases=[
  ['paid then atomic revoke',{orders:[order()],enrollments:[enrollment('revoked')],leads:[override('revoke')]},403],
  ['email normalization',{user:{id:userId,email:' STUDENT@EXAMPLE.INVALID '},orders:[order()]},200],
 ];
-for(const [name,scenario,expected] of cases)test(`all twelve library downloads: ${name}`,async()=>{
+for(const [name,scenario,expected] of cases)test(`all thirteen library downloads: ${name}`,async()=>{
  const courses=[slug,'ai-agent-master-2026'].map((s,i)=>({id:String(i),slug:s,title:s,status:'open',lms_status:'published',course_modules:[]}));
  const client={from:table=>{const q={select:()=>q,order:()=>q,then:resolve=>resolve({data:table==='courses'?courses:[],error:null})};return q;},rpc:async()=>({data:{enrollments:scenario.enrollments??[],progress:[]},error:null})};
  const lms=load('services/lmsService.ts',{'@/lib/admin/read-all-rows':{},'@/lib/security/validation':{},'@/lib/crm-v2/normalize':{normalizeEmail:v=>(v??'').trim().toLowerCase()},'@/lib/supabase/admin':{createSupabaseAdminClient:()=>client},'@/lib/youtube':{},'@/services/activityLogService':{},'@/lib/admin/command-center-source':{},'@/services/studentProvisioningOperationService':{}});
@@ -42,6 +42,6 @@ for(const [name,scenario,expected] of cases)test(`all twelve library downloads: 
  const files=load('lib/agent-library-files.ts',{'@/data/agent-library-packages.json':catalog,'@/data/agent-library-resources.json':resources,'@/lib/supabase/admin':{createSupabaseAdminClient:()=>({storage:{getBucket:async()=>({data:{public:false}}),from:bucket=>({createSignedUrl:async(path,ttl,options)=>{signed.push({bucket,path,ttl,options});return {data:{signedUrl:'https://storage.example.invalid/'+path}};}})}})}});
  const route=load('app/api/agent-library/[agent]/download/route.ts',{'@/lib/agent-library-access':access,'@/lib/agent-library-files':files});
  for(const e of [...catalog.agents,...resources.resources]){const id=e.slug.replace(/-agent$/,'');const response=await route.GET(new Request('https://www.theanhmarketing.com/api/agent-library/'+id+'/download?format=json'),{params:Promise.resolve({agent:id})});assert.equal(response.status,expected,`${name}: ${id}`);if(expected===200){assert.equal((await response.json()).url,`https://storage.example.invalid/${e.version}/${e.filename}`);const s=signed.at(-1);assert.equal(s.bucket,'agent-library-private');assert.equal(s.ttl,120);assert.equal(s.options.download,e.filename);}assert.match(response.headers.get('cache-control'),/no-store/);}
- assert.equal(signed.length,expected===200?12:0);
+ assert.equal(signed.length,expected===200?13:0);
 });
 test('deposit excludes only Agent Kit in a mixed order',()=>{const result=legacy.getCourseAccessSlugs({email,orders:[order('paid','agent-kit-preorder-deposit-399',{orderItems:[{slug},{slug:'ebook-facebook-ads-2026'}]})]});assert.deepEqual(Array.from(result),['ebook-facebook-ads-2026']);});

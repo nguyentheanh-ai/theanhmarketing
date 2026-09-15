@@ -6,7 +6,7 @@ export const DOWNLOAD_SLUGS: readonly string[] = [...AGENT_SLUGS, ...resources.r
 export async function getAgentDownloadUrl(slug: string) {
   if (!DOWNLOAD_SLUGS.includes(slug)) return null;
   const entry = resources.resources.find(resource => resource.slug === slug) ?? catalog.agents.find(agent => agent.slug === `${slug}-agent`);
-  const filenamePattern = slug === "setup-prompt" ? /^[a-zA-Z0-9._-]+\.txt$/ : /^[a-zA-Z0-9._-]+\.zip$/;
+  const filenamePattern = slug === "lesson-14-image-prompts" ? /^[a-zA-Z0-9._-]+\.md$/ : slug === "setup-prompt" ? /^[a-zA-Z0-9._-]+\.txt$/ : /^[a-zA-Z0-9._-]+\.zip$/;
   if (!entry || !filenamePattern.test(entry.filename) || !/^[a-zA-Z0-9._-]+$/.test(entry.version)) throw new Error("Package unavailable");
   const client = createSupabaseAdminClient();
   if (!client) throw new Error("Storage unavailable");

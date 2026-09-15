@@ -17,6 +17,15 @@
       "size_bytes": 17471,
       "sha256": "44aae657f322c05be5bdf951c44e4688afd963227fd29c06026a547c09527dd1",
       "content_type": "text/plain"
+    },
+    {
+      "slug": "lesson-14-image-prompts",
+      "name": "Bộ lệnh tạo hình ảnh AI — Bài 14",
+      "version": "tutorials-20260916",
+      "filename": "bo-lenh-tao-hinh-anh-ai.md",
+      "size_bytes": 9375,
+      "sha256": "28a7899a260f04179069cd6bc17f90ff3ce1b7692aa4641f6591418186b243a9",
+      "content_type": "text/plain"
     }
   ]
 }

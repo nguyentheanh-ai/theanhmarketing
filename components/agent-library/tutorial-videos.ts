@@ -66,5 +66,34 @@ export const tutorialVideos: TutorialVideo[] = [
     "title": "Hướng dẫn sử dụng nhân viên quảng cáo",
     "materials": [],
     "youtubeId": "PedB4fDH02Y"
+  },
+  {
+    "number": "11",
+    "title": "Hướng dẫn dùng bộ kit cho sản phẩm cụ thể",
+    "youtubeId": "nAn4RmH-brY",
+    "materials": []
+  },
+  {
+    "number": "12",
+    "title": "Tính năng lên lịch - tự động hóa",
+    "youtubeId": "SzWttTSpkoQ",
+    "materials": []
+  },
+  {
+    "number": "13",
+    "title": "Tính năng điều khiển Codex từ xa",
+    "youtubeId": "l1XeRnEZnEs",
+    "materials": []
+  },
+  {
+    "number": "14",
+    "title": "Hướng dẫn tạo hình ảnh",
+    "youtubeId": "32t7AU8kmLI",
+    "materials": [
+      {
+        "title": "Tải bộ lệnh tạo hình ảnh AI (.md)",
+        "href": "/api/agent-library/lesson-14-image-prompts/download"
+      }
+    ]
   }
 ];

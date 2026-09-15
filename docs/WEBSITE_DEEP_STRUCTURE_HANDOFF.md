@@ -1859,3 +1859,8 @@ Runtimef804cd5 production READY.104tests/TypeScript/lint/build PASS,13HTTP giữ
 Owner selected the live Premium route. Live HTML and both source mirrors were byte-identical before editing (SHA-256 f272b6fb4d8734b472ac22e17064d90b0d3fe81d1fc61b6a8a75689cee0f2248). Updated hero and situation copy for the campaign; moved the existing sample section after situations, exposed the previously hidden 20-page Chapter 6 slider, retained free trial chapters 1/5, added part-1 through part-10 anchors for ad destinations, and clarified version/price copy. Form markup and all script content from sampleTrack onward, including checkout and tracking, remain byte-identical. The section-target array reflects the reordered sample block.
 
 Local Chrome checks at 1440/390/320: no horizontal overflow or broken images after deliberate QA loading; slider advances 01→02; optional 699K course toggles total 399K→1,098K→399K. No external POST or real order/email. Two HTML mirrors remain identical. Workbook contains 16 image orders and landing changes. These source changes are NOT deployed; production release and live readback remain separate.
+
+
+## 16/09/2026 — Bài 11–14 và tài liệu bài 14
+Thêm 4 video theo catalog, tổng 15 video kể cả bài 5.1; số video trên card tự cập nhật. Bài 14 có tài liệu Markdown qua API download kiểm tra quyền hiện có, lưu trong kho riêng; không đưa nội dung tài liệu vào Git/public. File lưu trữ đã đọc lại và khớp 9.375 bytes cùng SHA-256 catalog. Hàm nạp tạm đã khóa sau khi kiểm tra.
+110 tests, TypeScript, lint và build 108 routes PASS. Chưa kiểm tra phát video hay tải file trong phiên học viên thật. Production release/readback được ghi riêng sau phát hành.
