@@ -1852,3 +1852,10 @@ Anh yêu cầu nâng cấp hình ảnh và giải thích Astra là phong cách v
 
 ### Giao diện ảnh bìa đã phát hành — 15/09/2026
 Runtimef804cd5 production READY.104tests/TypeScript/lint/build PASS,13HTTP giữ trạng thái và5static landing giữ hash. Hai ảnh vũ trụ original live đúng checksum;11thumbnail hợp lệ. Premium.css chỉ áp dụng thư viện, quyền học viên/download giữ nguyên. Chưa visual browser và phát video trong phiên học viên thật.
+
+
+## 16/09/2026 — Ebook Premium marketing alignment, local source only
+
+Owner selected the live Premium route. Live HTML and both source mirrors were byte-identical before editing (SHA-256 f272b6fb4d8734b472ac22e17064d90b0d3fe81d1fc61b6a8a75689cee0f2248). Updated hero and situation copy for the campaign; moved the existing sample section after situations, exposed the previously hidden 20-page Chapter 6 slider, retained free trial chapters 1/5, added part-1 through part-10 anchors for ad destinations, and clarified version/price copy. Form markup and all script content from sampleTrack onward, including checkout and tracking, remain byte-identical. The section-target array reflects the reordered sample block.
+
+Local Chrome checks at 1440/390/320: no horizontal overflow or broken images after deliberate QA loading; slider advances 01→02; optional 699K course toggles total 399K→1,098K→399K. No external POST or real order/email. Two HTML mirrors remain identical. Workbook contains 16 image orders and landing changes. These source changes are NOT deployed; production release and live readback remain separate.

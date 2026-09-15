@@ -80,9 +80,9 @@ test("Premium Ebook conversion rewrite follows the approved P0 journey", () => {
   const pricing = html.match(/<section class="section dark" id="price"[\s\S]*?<\/section>/)?.[0] ?? "";
 
   assert.equal(published, html);
-  assert.match(hero, /THƯ VIỆN TRA CỨU FACEBOOK ADS 2026/);
-  assert.match(hero, /Khi quảng cáo gặp vấn đề,[\s\S]*?mở đúng phần[\s\S]*?để biết cần làm gì tiếp theo/);
-  assert.match(hero, /Không cần đọc hết 471 trang/);
+  assert.match(hero, /EBOOK DÀNH CHO NGƯỜI TỰ CHẠY FACEBOOK ADS/);
+  assert.match(hero, /Mở đúng phần[\s\S]*?Kiểm tra đúng việc/);
+  assert.match(hero, /10 phần, 471 trang/);
   assert.match(hero, /data-event="hero_cta_click"[^>]*>Nhận Ebook Facebook Ads 2026 – 399\.000đ<\/a>/);
   assert.match(hero, /data-event="hero_preview_click"[^>]*>Đọc thử miễn phí 2 chương<\/a>/);
   assert.ok(hero.indexOf("hero_cta_click") < hero.indexOf("hero_preview_click"));
@@ -90,10 +90,10 @@ test("Premium Ebook conversion rewrite follows the approved P0 journey", () => {
   const sectionOrder = [
     'id="preview"',
     'id="situations"',
+    'id="sample"',
     'id="mechanism"',
     'id="outcomes"',
     'id="use-cases"',
-    'id="sample"',
     'id="content"',
     'id="author"',
     'id="value-stack"',
@@ -189,7 +189,7 @@ test("Premium Ebook landing uses the approved header-free hero and section navig
     assert.ok(rail.includes(`aria-label="${label}"`));
   }
   assert.doesNotMatch(html, /id="inside"|href="#inside"|"inside"/);
-  assert.match(html, /const ebookSectionTargets = \["top", "situations", "outcomes", "sample", "price", "faq"\]/);
+  assert.match(html, /const ebookSectionTargets = \["top", "situations", "sample", "outcomes", "price", "faq"\]/);
   assert.match(html, /new IntersectionObserver\(updateEbookSectionProgress/);
   assert.match(html, /aria-current/);
   assert.match(html, /@media \(max-width:\s*339px\)[\s\S]*?\.section-progress-rail\s*\{[\s\S]*?display:\s*none;/);
@@ -212,8 +212,8 @@ test("Premium Ebook hero follows the compact no-header visual brief", () => {
   assert.match(hero, /<div class="hero-stats" aria-label="Thông tin Ebook">/);
   assert.match(hero, /<strong>471<\/strong><span>trang<\/span>/);
   assert.match(hero, /<strong>10<\/strong><span>phần<\/span>/);
-  assert.match(hero, /<strong>2026<\/strong><span>cập nhật<\/span>/);
-  assert.doesNotMatch(hero, /<dt>|>Quy mô<|>Nội dung<|>Phiên bản</i);
+  assert.match(hero, /<strong>2026<\/strong><span>phiên bản<\/span>/);
+  assert.doesNotMatch(hero, /<dt>|>Quy mô<|>Nội dung</i);
   assert.match(hero, /<div class="hero-proof-row" aria-label="Lợi ích nổi bật">/);
   assert.equal((hero.match(/class="hero-proof-item"/g) || []).length, 3);
 });

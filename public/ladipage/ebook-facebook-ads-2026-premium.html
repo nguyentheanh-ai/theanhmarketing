@@ -1624,6 +1624,10 @@
       *, *::before, *::after { animation: none !important; transition: none !important; }
       .reveal { opacity: 1; transform: none; }
     }
+
+    .module-card[id] { scroll-margin-top: 96px; }
+    .situation-card .btn { margin-top:16px; font-size:14px; }
+    @media (prefers-reduced-motion: reduce) { html {scroll-behavior:auto;} *, *::before, *::after {animation:none!important;transition:none!important;} }
   </style>
   <script src="../checkout-invoice.js" defer></script>
 </head>
@@ -1640,12 +1644,12 @@
   <header class="hero" id="top">
     <div class="wrap hero-grid">
       <div class="hero-copy reveal">
-        <span class="eyebrow">THƯ VIỆN TRA CỨU FACEBOOK ADS 2026</span>
-        <h1>Khi quảng cáo gặp vấn đề, <span>mở đúng phần</span> để biết cần làm gì tiếp theo.</h1>
+        <span class="eyebrow">EBOOK DÀNH CHO NGƯỜI TỰ CHẠY FACEBOOK ADS</span>
+        <h1>Mở đúng phần.<br><span>Kiểm tra đúng việc.</span></h1>
         <ul class="hero-benefits" aria-label="Điểm nổi bật của Ebook">
-          <li><strong>Tra cứu đúng vấn đề:</strong> Content, Target, tài nguyên, Pixel/CAPI.</li>
-          <li><strong>Kiểm tra theo từng bước:</strong> từ nền tảng đến đọc số, tối ưu và Scale.</li>
-          <li><strong>Không cần đọc hết 471 trang:</strong> đang vướng ở đâu, mở đúng phần đó để kiểm tra và triển khai.</li>
+          <li><strong>Tất tần tật về Facebook Ads 2026:</strong> 10 phần, 471 trang của Nguyễn Thế Anh.</li>
+          <li><strong>Tra cứu theo công việc:</strong> chuẩn bị nội dung, rà đo lường, đọc báo cáo và lên bài thử nghiệm.</li>
+          <li><strong>Xem trước khi mua:</strong> đọc miễn phí Phần 1 và Phần 5, hoặc xem 20 trang Pixel/CAPI ngay bên dưới.</li>
         </ul>
         <div class="hero-actions">
           <a class="btn btn-gold" href="#price" data-event="hero_cta_click">Nhận Ebook Facebook Ads 2026 – 399.000đ</a>
@@ -1669,7 +1673,7 @@
           <div class="hero-stats" aria-label="Thông tin Ebook">
             <div class="hero-stat"><strong>471</strong><span>trang</span></div>
             <div class="hero-stat"><strong>10</strong><span>phần</span></div>
-            <div class="hero-stat"><strong>2026</strong><span>cập nhật</span></div>
+            <div class="hero-stat"><strong>2026</strong><span>phiên bản</span></div>
           </div>
         </div>
       </div>
@@ -1688,8 +1692,8 @@
     <span class="section-menu-heading">Mục lục Ebook</span>
     <a href="#top" data-section-menu-link>Trang đầu</a>
     <a href="#situations" data-section-menu-link>3 tình huống cần Ebook</a>
-    <a href="#outcomes" data-section-menu-link>Ebook giúp bạn làm gì?</a>
     <a href="#sample" data-section-menu-link>Đọc thử miễn phí</a>
+    <a href="#outcomes" data-section-menu-link>Ebook giúp bạn làm gì?</a>
     <a href="#price" data-section-menu-link>Nhận Ebook 399.000đ</a>
     <a href="#faq" data-section-menu-link>Câu hỏi thường gặp</a>
   </nav>
@@ -1697,8 +1701,8 @@
   <nav class="section-progress-rail" data-section-progress aria-label="Tiến trình nội dung Ebook">
     <a class="section-progress-dot is-reached is-active" href="#top" data-section-progress-dot aria-label="Trang đầu" aria-current="true"></a>
     <a class="section-progress-dot" href="#situations" data-section-progress-dot aria-label="3 tình huống cần Ebook"></a>
-    <a class="section-progress-dot" href="#outcomes" data-section-progress-dot aria-label="Ebook giúp bạn làm gì?"></a>
     <a class="section-progress-dot" href="#sample" data-section-progress-dot aria-label="Đọc thử miễn phí"></a>
+    <a class="section-progress-dot" href="#outcomes" data-section-progress-dot aria-label="Ebook giúp bạn làm gì?"></a>
     <a class="section-progress-dot" href="#price" data-section-progress-dot aria-label="Nhận Ebook 399.000đ"></a>
     <a class="section-progress-dot" href="#faq" data-section-progress-dot aria-label="Câu hỏi thường gặp"></a>
   </nav>
@@ -1707,7 +1711,7 @@
     <div class="wrap">
       <div class="center-head narrow reveal">
         <span class="eyebrow">Preview sản phẩm thật</span>
-        <h2>Không chỉ để đọc. Đây là tài liệu có thể mở ra và làm theo.</h2>
+        <h2>Xem bìa và trang nội dung của Ebook.</h2>
         <p class="lead">Mỗi phần được trình bày bằng hình ảnh, ví dụ và từng bước thao tác để anh/chị dễ kiểm tra lại khi triển khai trên tài khoản thật.</p>
       </div>
       <div class="preview-strip">
@@ -1744,26 +1748,98 @@
       <div class="section-head">
         <div class="reveal">
           <span class="eyebrow">3 tình huống cần Ebook</span>
-          <h2>Bạn không thiếu thêm một mẹo. Bạn thiếu một nơi để tra cứu đúng lúc.</h2>
+          <h2>Đang vướng ở đâu, bắt đầu từ phần đó.</h2>
         </div>
         <p class="lead reveal">Khi Ads có vấn đề, điều tốn kém nhất là sửa theo cảm giác mà chưa biết điểm nghẽn nằm ở đâu.</p>
       </div>
       <div class="grid-3 situations-grid">
         <article class="card situation-card reveal">
           <div class="card-number">01</div>
-          <h3>Không biết lỗi Ads sai ở đâu</h3>
-          <p>Quảng cáo đột nhiên kém nhưng chưa biết cần kiểm tra Offer, Creative, Target, dữ liệu hay Landing Page trước.</p>
+          <h3>Cần đọc lại báo cáo quảng cáo</h3>
+          <p>Mở Phần 7 để tra các chỉ số và nội dung tối ưu. Mở Phần 9 khi chuẩn bị một bài thử nghiệm mới.</p><a class="btn btn-ghost" href="#part-7">Xem Phần 7 và mục lục</a>
         </article>
         <article class="card situation-card reveal">
           <div class="card-number">02</div>
-          <h3>Mất thời gian tìm lại hướng dẫn</h3>
-          <p>Nhớ mình từng xem ở đâu đó nhưng phải lục video, tin nhắn và nhiều nguồn rời rạc mới tìm lại được từng bước.</p>
+          <h3>Cần rà Pixel và CAPI</h3>
+          <p>Mở Phần 6 về tập dữ liệu, sự kiện và kết nối website. Có 20 trang để anh/chị xem cách trình bày trước khi mua.</p><a class="btn btn-ghost" href="#sample">Xem trang Pixel/CAPI đọc thử</a>
         </article>
         <article class="card situation-card reveal">
           <div class="card-number">03</div>
-          <h3>Có số liệu nhưng không biết quyết định tiếp theo</h3>
-          <p>CPM, CTR, CPC hay CPA đã có, nhưng chưa rõ nên giữ, sửa, tắt, test tiếp hay Scale.</p>
+          <h3>Mới bắt đầu chạy quảng cáo</h3>
+          <p>Đọc Phần 1 để nắm nền tảng, Phần 2 để tìm hiểu mục tiêu rồi chuyển sang Phần 5 thực hành tạo quảng cáo.</p><a class="btn btn-ghost" href="#sample">Đọc thử Phần 1 và Phần 5</a>
         </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section light" id="sample" data-event="sample_read_view">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="reveal">
+          <span class="eyebrow">Đọc thử miễn phí</span>
+          <h2>Xem cách Ebook trình bày trước khi quyết định.</h2>
+          <p class="lead">Bản đọc thử đang mở Phần 1 và Phần 5: từ nền tảng Facebook Ads đến thao tác tạo chiến dịch thực tế.</p>
+        </div>
+        <div class="reveal">
+          <div class="hero-actions sample-reader-actions">
+            <a class="btn btn-dark" href="/doc-thu/ebook-facebook-ads-2026" target="_blank" rel="noopener" data-event="sample_trial_reader_click">Đọc thử miễn phí 2 chương</a>
+          </div>
+        </div>
+      </div>
+      <div class="trial-grid">
+        <article class="trial-card reveal">
+          <img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026/showcase/part-1-cover.png" alt="Đọc thử Phần 1 Hiểu về Facebook Ads">
+          <div><span>PHẦN 1</span><h3>Hiểu về Facebook Ads</h3><p>Dành cho người mới cần nắm nền tảng, hệ sinh thái tài nguyên và cấu trúc Campaign – Ad Set – Ads.</p></div>
+        </article>
+        <article class="trial-card reveal">
+          <img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026/showcase/part-5-cover.png" alt="Đọc thử Phần 5 Thực hành tạo quảng cáo">
+          <div><span>PHẦN 5</span><h3>Thực hành tạo quảng cáo</h3><p>Dành cho người muốn xem cách Ebook hướng dẫn thao tác triển khai theo từng bước.</p></div>
+        </article>
+      </div>
+      <div class="hero-actions trial-actions reveal">
+        <a class="btn btn-dark" href="/doc-thu/ebook-facebook-ads-2026" target="_blank" rel="noopener" data-event="sample_trial_reader_click">Đọc thử miễn phí 2 chương</a>
+        <a class="btn btn-gold" href="#price" data-event="sample_cta_click">Nhận toàn bộ Ebook – 399.000đ</a>
+      </div>
+      <div class="chapter6-slider reveal" id="pixel-sample">
+        <div class="sample-slider-top">
+          <h3>Phần 6: Pixel và CAPI</h3>
+          <span class="sample-counter" id="sampleCounter">01 / 20</span>
+        </div>
+        <div class="sample-frame">
+          <div class="sample-track" id="sampleTrack" aria-label="20 trang đọc thử Chương 6 Pixel và CAPI">
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-01.jpg" alt="Đọc thử Phần 6 trang 1"><figcaption>Trang 01 - Mở đầu Phần 6: Pixel và CAPI</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-02.jpg" alt="Đọc thử Phần 6 trang 2"><figcaption>Trang 02 - Nội dung chính trong Phần 6</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-03.jpg" alt="Đọc thử Phần 6 trang 3"><figcaption>Trang 03 - Mục tiêu của phần Pixel và CAPI</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-04.jpg" alt="Đọc thử Phần 6 trang 4"><figcaption>Trang 04 - Pixel và CAPI</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-05.jpg" alt="Đọc thử Phần 6 trang 5"><figcaption>Trang 05 - Vai trò của dữ liệu trong quảng cáo</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-06.jpg" alt="Đọc thử Phần 6 trang 6"><figcaption>Trang 06 - Cách hệ thống ghi nhận tín hiệu</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-07.jpg" alt="Đọc thử Phần 6 trang 7"><figcaption>Trang 07 - Pixel, CAPI và đo lường</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-08.jpg" alt="Đọc thử Phần 6 trang 8"><figcaption>Trang 08 - Chuẩn bị trước khi thiết lập</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-09.jpg" alt="Đọc thử Phần 6 trang 9"><figcaption>Trang 09 - Tập dữ liệu và sự kiện</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-10.jpg" alt="Đọc thử Phần 6 trang 10"><figcaption>Trang 10 - Băm dữ liệu và thử nghiệm sự kiện</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-11.jpg" alt="Đọc thử Phần 6 trang 11"><figcaption>Trang 11 - Thiết lập tập dữ liệu</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-12.jpg" alt="Đọc thử Phần 6 trang 12"><figcaption>Trang 12 - Kiểm tra dữ liệu sau thiết lập</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-13.jpg" alt="Đọc thử Phần 6 trang 13"><figcaption>Trang 13 - Gắn tập dữ liệu lên website</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-14.jpg" alt="Đọc thử Phần 6 trang 14"><figcaption>Trang 14 - Theo dõi sự kiện trên website</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-15.jpg" alt="Đọc thử Phần 6 trang 15"><figcaption>Trang 15 - Gắn tập dữ liệu lên landing page</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-16.jpg" alt="Đọc thử Phần 6 trang 16"><figcaption>Trang 16 - Kiểm tra landing page và sự kiện</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-17.jpg" alt="Đọc thử Phần 6 trang 17"><figcaption>Trang 17 - Xác minh miền</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-18.jpg" alt="Đọc thử Phần 6 trang 18"><figcaption>Trang 18 - Các bước xác minh và kiểm tra</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-19.jpg" alt="Đọc thử Phần 6 trang 19"><figcaption>Trang 19 - Lỗi thường gặp khi đo lường</figcaption></figure>
+            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-20.jpg" alt="Đọc thử Phần 6 trang 20"><figcaption>Trang 20 - Tổng hợp thao tác cần nhớ</figcaption></figure>
+          </div>
+          <div class="sample-buttons">
+            <button class="sample-control" id="samplePrev" type="button" aria-label="Trang đọc thử trước">‹</button>
+            <button class="sample-control" id="sampleNext" type="button" aria-label="Trang đọc thử sau">›</button>
+          </div>
+        </div>
+        <div class="sample-controls">
+          <div class="sample-dots" id="sampleDots" aria-label="Chọn trang đọc thử"></div>
+        </div>
+        <div class="hero-actions" style="margin-top:18px;">
+          <a class="btn btn-dark" href="#content" data-event="sample_content_click">Xem đủ 10 phần</a>
+          <a class="btn btn-gold" href="#price" data-event="sample_cta_click">Mua ebook 399.000đ</a>
+        </div>
       </div>
     </div>
   </section>
@@ -1783,9 +1859,9 @@
   <section class="section dark" id="mechanism">
     <div class="wrap">
       <div class="center-head narrow reveal">
-        <span class="eyebrow">Big Idea: 4 lớp chẩn đoán</span>
+        <span class="eyebrow">Các nhóm nội dung trong Ebook</span>
         <h2>Offer → Creative → Data → Vận hành</h2>
-        <p class="lead">Bốn lớp giúp anh/chị xác định quảng cáo đang vướng ở đâu trước khi đổi nội dung, đổi tệp hoặc tăng ngân sách.</p>
+        <p class="lead">Dùng các nhóm dưới đây để định hướng tra cứu. Mục lục bên dưới liệt kê đầy đủ nội dung từng phần.</p>
       </div>
       <div class="mechanism">
         <article class="card reveal">
@@ -1870,132 +1946,62 @@
     </div>
   </section>
 
-  <section class="section light" id="sample" data-event="sample_read_view">
-    <div class="wrap">
-      <div class="section-head">
-        <div class="reveal">
-          <span class="eyebrow">Đọc thử miễn phí</span>
-          <h2>Xem cách Ebook trình bày trước khi quyết định.</h2>
-          <p class="lead">Bản đọc thử đang mở Phần 1 và Phần 5: từ nền tảng Facebook Ads đến thao tác tạo chiến dịch thực tế.</p>
-        </div>
-        <div class="reveal">
-          <div class="hero-actions sample-reader-actions">
-            <a class="btn btn-dark" href="/doc-thu/ebook-facebook-ads-2026" target="_blank" rel="noopener" data-event="sample_trial_reader_click">Đọc thử miễn phí 2 chương</a>
-          </div>
-        </div>
-      </div>
-      <div class="trial-grid">
-        <article class="trial-card reveal">
-          <img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026/showcase/part-1-cover.png" alt="Đọc thử Phần 1 Hiểu về Facebook Ads">
-          <div><span>PHẦN 1</span><h3>Hiểu về Facebook Ads</h3><p>Dành cho người mới cần nắm nền tảng, hệ sinh thái tài nguyên và cấu trúc Campaign – Ad Set – Ads.</p></div>
-        </article>
-        <article class="trial-card reveal">
-          <img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026/showcase/part-5-cover.png" alt="Đọc thử Phần 5 Thực hành tạo quảng cáo">
-          <div><span>PHẦN 5</span><h3>Thực hành tạo quảng cáo</h3><p>Dành cho người muốn xem cách Ebook hướng dẫn thao tác triển khai theo từng bước.</p></div>
-        </article>
-      </div>
-      <div class="hero-actions trial-actions reveal">
-        <a class="btn btn-dark" href="/doc-thu/ebook-facebook-ads-2026" target="_blank" rel="noopener" data-event="sample_trial_reader_click">Đọc thử miễn phí 2 chương</a>
-        <a class="btn btn-gold" href="#price" data-event="sample_cta_click">Nhận toàn bộ Ebook – 399.000đ</a>
-      </div>
-      <div class="chapter6-slider reveal" hidden aria-hidden="true">
-        <div class="sample-slider-top">
-          <h3>Phần 6: Pixel và CAPI</h3>
-          <span class="sample-counter" id="sampleCounter">01 / 20</span>
-        </div>
-        <div class="sample-frame">
-          <div class="sample-track" id="sampleTrack" aria-label="20 trang đọc thử Chương 6 Pixel và CAPI">
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-01.jpg" alt="Đọc thử Phần 6 trang 1"><figcaption>Trang 01 - Mở đầu Phần 6: Pixel và CAPI</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-02.jpg" alt="Đọc thử Phần 6 trang 2"><figcaption>Trang 02 - Nội dung chính trong Phần 6</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-03.jpg" alt="Đọc thử Phần 6 trang 3"><figcaption>Trang 03 - Mục tiêu của phần Pixel và CAPI</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-04.jpg" alt="Đọc thử Phần 6 trang 4"><figcaption>Trang 04 - Pixel và CAPI</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-05.jpg" alt="Đọc thử Phần 6 trang 5"><figcaption>Trang 05 - Vai trò của dữ liệu trong quảng cáo</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-06.jpg" alt="Đọc thử Phần 6 trang 6"><figcaption>Trang 06 - Cách hệ thống ghi nhận tín hiệu</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-07.jpg" alt="Đọc thử Phần 6 trang 7"><figcaption>Trang 07 - Pixel, CAPI và đo lường</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-08.jpg" alt="Đọc thử Phần 6 trang 8"><figcaption>Trang 08 - Chuẩn bị trước khi thiết lập</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-09.jpg" alt="Đọc thử Phần 6 trang 9"><figcaption>Trang 09 - Tập dữ liệu và sự kiện</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-10.jpg" alt="Đọc thử Phần 6 trang 10"><figcaption>Trang 10 - Băm dữ liệu và thử nghiệm sự kiện</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-11.jpg" alt="Đọc thử Phần 6 trang 11"><figcaption>Trang 11 - Thiết lập tập dữ liệu</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-12.jpg" alt="Đọc thử Phần 6 trang 12"><figcaption>Trang 12 - Kiểm tra dữ liệu sau thiết lập</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-13.jpg" alt="Đọc thử Phần 6 trang 13"><figcaption>Trang 13 - Gắn tập dữ liệu lên website</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-14.jpg" alt="Đọc thử Phần 6 trang 14"><figcaption>Trang 14 - Theo dõi sự kiện trên website</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-15.jpg" alt="Đọc thử Phần 6 trang 15"><figcaption>Trang 15 - Gắn tập dữ liệu lên landing page</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-16.jpg" alt="Đọc thử Phần 6 trang 16"><figcaption>Trang 16 - Kiểm tra landing page và sự kiện</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-17.jpg" alt="Đọc thử Phần 6 trang 17"><figcaption>Trang 17 - Xác minh miền</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-18.jpg" alt="Đọc thử Phần 6 trang 18"><figcaption>Trang 18 - Các bước xác minh và kiểm tra</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-19.jpg" alt="Đọc thử Phần 6 trang 19"><figcaption>Trang 19 - Lỗi thường gặp khi đo lường</figcaption></figure>
-            <figure class="sample-slide"><img loading="lazy" decoding="async" src="../ebook-facebook-ads-2026-premium/optimized/part-06-page-20.jpg" alt="Đọc thử Phần 6 trang 20"><figcaption>Trang 20 - Tổng hợp thao tác cần nhớ</figcaption></figure>
-          </div>
-          <div class="sample-buttons">
-            <button class="sample-control" id="samplePrev" type="button" aria-label="Trang đọc thử trước">‹</button>
-            <button class="sample-control" id="sampleNext" type="button" aria-label="Trang đọc thử sau">›</button>
-          </div>
-        </div>
-        <div class="sample-controls">
-          <div class="sample-dots" id="sampleDots" aria-label="Chọn trang đọc thử"></div>
-        </div>
-        <div class="hero-actions" style="margin-top:18px;">
-          <a class="btn btn-dark" href="#content" data-event="sample_content_click">Xem đủ 10 phần</a>
-          <a class="btn btn-gold" href="#price" data-event="sample_cta_click">Mua ebook 399.000đ</a>
-        </div>
-      </div>
-    </div>
-  </section>
+
 
   <section class="section light" id="content">
     <div class="wrap">
       <div class="center-head narrow reveal">
         <span class="eyebrow">Toàn bộ hành trình Facebook Ads</span>
         <h2>10 phần để tra cứu từ nền tảng đến tối ưu và Scale.</h2>
-        <p class="lead">471 trang chứng minh độ sâu; mỗi phần dưới đây cho biết nhanh vấn đề mình có thể mở ra kiểm tra.</p>
+        <p class="lead">Xem tên phần, chủ đề và số trang để chọn nội dung phù hợp với công việc hiện tại.</p>
       </div>
       <div class="module-list">
-        <article class="module-card reveal" data-event="module_view">
+        <article class="module-card reveal" id="part-1" data-event="module_view">
           <span class="num">1</span>
           <div><h3>Hiểu về Facebook Ads</h3><p>Facebook Ads là gì, cách Facebook tính tiền, hệ thống đấu giá, hệ sinh thái Meta Ads, Fanpage, Instagram, Messenger, Business Suite, tài khoản quảng cáo cá nhân/doanh nghiệp, cấu trúc Campaign - Ad Set - Ad và các hiểu lầm phổ biến.</p></div>
           <span class="pages">37 trang</span>
         </article>
-        <article class="module-card reveal" data-event="module_view">
+        <article class="module-card reveal" id="part-2" data-event="module_view">
           <span class="num">2</span>
           <div><h3>Mục tiêu và hình thức quảng cáo</h3><p>Các mục tiêu quảng cáo, khi nào chọn tiếp cận, tương tác, tin nhắn, lead hoặc doanh số; các hình thức ảnh, video, carousel, reels, story, tin nhắn, lead và doanh số.</p></div>
           <span class="pages">44 trang</span>
         </article>
-        <article class="module-card reveal" data-event="module_view">
+        <article class="module-card reveal" id="part-3" data-event="module_view">
           <span class="num">3</span>
           <div><h3>Target và tệp khách hàng</h3><p>Tư duy target, đối tượng đã lưu, đối tượng tùy chỉnh, đối tượng tương tự, loại trừ tệp rác và chiến lược target dựa trên tệp khách hàng.</p></div>
           <span class="pages">35 trang</span>
         </article>
-        <article class="module-card reveal" data-event="module_view">
+        <article class="module-card reveal" id="part-4" data-event="module_view">
           <span class="num">4</span>
           <div><h3>Content và media quảng cáo</h3><p>Vì sao content quyết định chất lượng khách hàng, mô hình content, ma trận nội dung, chiến lược theo mức độ nhận thức, công thức viết quảng cáo, creative testing, creative fatigue và thư viện media.</p></div>
           <span class="pages">37 trang</span>
         </article>
-        <article class="module-card reveal" data-event="module_view">
+        <article class="module-card reveal" id="part-5" data-event="module_view">
           <span class="num">5</span>
           <div><h3>Thực hành tạo quảng cáo</h3><p>Chuẩn bị trước khi tạo chiến dịch, hướng dẫn chạy tiếp cận, tương tác, tăng lượt theo dõi, tin nhắn, khách hàng tiềm năng, doanh số và tạo nhiều mẫu quảng cáo để test.</p></div>
           <span class="pages">53 trang</span>
         </article>
-        <article class="module-card reveal" data-event="module_view">
+        <article class="module-card reveal" id="part-6" data-event="module_view">
           <span class="num">6</span>
           <div><h3>Pixel và CAPI</h3><p>Pixel và CAPI, tạo và băm dữ liệu, thử nghiệm sự kiện, thiết lập tập dữ liệu, gắn tập dữ liệu lên website, landing page và xác minh miền.</p></div>
           <span class="pages">63 trang</span>
         </article>
-        <article class="module-card reveal" data-event="module_view">
+        <article class="module-card reveal" id="part-7" data-event="module_view">
           <span class="num">7</span>
           <div><h3>Đọc chỉ số và tối ưu quảng cáo</h3><p>Cách đọc báo cáo Ads Manager, các chỉ số quan trọng khi chạy tiếp cận, tương tác, tin nhắn, Lead Form, chuyển đổi và cách xử lý khi quảng cáo không hiệu quả.</p></div>
           <span class="pages">24 trang</span>
         </article>
-        <article class="module-card reveal" data-event="module_view">
+        <article class="module-card reveal" id="part-8" data-event="module_view">
           <span class="num">8</span>
           <div><h3>Remarketing chuyên sâu</h3><p>Remarketing từ Fanpage, Instagram, người xem video, người đã nhắn tin, Lead Form, website, người xem sản phẩm, thêm giỏ hàng, loại trừ khách đã mua và cấu trúc theo ngân sách.</p></div>
           <span class="pages">59 trang</span>
         </article>
-        <article class="module-card reveal" data-event="module_view">
+        <article class="module-card reveal" id="part-9" data-event="module_view">
           <span class="num">9</span>
           <div><h3>Testing, Optimize và Scale Up</h3><p>Testing trong Facebook Ads, test target, content angle, creative, offer, mục tiêu quảng cáo, tối ưu sau 24 giờ, 72 giờ, 7 ngày, khi nào tăng ngân sách, nhân nhóm thắng và khi nào không nên scale.</p></div>
           <span class="pages">67 trang</span>
         </article>
-        <article class="module-card reveal" data-event="module_view">
+        <article class="module-card reveal" id="part-10" data-event="module_view">
           <span class="num">10</span>
           <div><h3>Chính sách Meta, xử lý lỗi và công cụ hỗ trợ</h3><p>Tổng quan chính sách Meta, cơ chế kiểm duyệt, nội dung cấm/hạn chế, ngành nhạy cảm, Special Ad Categories, trang đích, Account Quality, Andromeda, fairness, mã số thuế và các công cụ hỗ trợ.</p></div>
           <span class="pages">52 trang</span>
@@ -2021,9 +2027,9 @@
       <div class="section-head">
         <div class="reveal">
           <span class="eyebrow">Bộ quyền lợi nhận được</span>
-          <h2>Bạn nhận một bộ tài liệu tra cứu, không chỉ một file để đọc một lần.</h2>
+          <h2>399.000đ gồm những gì?</h2>
         </div>
-        <p class="lead reveal">Bạn không trả tiền để đọc thêm 471 trang. Bạn trả tiền để có một nơi tra cứu khi cần ra quyết định.</p>
+        <p class="lead reveal">Quyền đọc online và tải PDF đầy đủ thuộc gói Ebook. Phần đọc thử mở miễn phí trước khi mua.</p>
       </div>
       <div class="value-grid">
         <article class="value-card reveal"><strong>471 trang</strong><span>Ebook Facebook Ads 2026 chia theo 10 phần.</span></article>
@@ -2049,7 +2055,7 @@
           <li>Tải bản PDF đầy đủ sau khi đồng ý điều khoản sử dụng.</li>
           <li>Nhận hướng dẫn truy cập qua email sau khi thanh toán được xác nhận.</li>
         </ul>
-        <p class="offer-note">Một lần chọn sai mục tiêu, giữ sai quảng cáo hoặc Scale quá sớm có thể tốn nhiều hơn giá Ebook. Tài liệu giúp anh/chị kiểm tra đúng lớp trước khi quyết định.</p>
+        <p class="offer-note">Giá Ebook là 399.000đ. Khóa học video bên cạnh là tùy chọn mua thêm và không được chọn sẵn.</p>
       </div>
       <aside class="order-card reveal">
         <h3>Nhận Ebook – 399.000đ</h3>
@@ -2152,9 +2158,9 @@
 
   <section class="final-cta" id="final-cta">
     <div class="wrap reveal">
-      <span class="eyebrow">Chốt lại</span>
+      <span class="eyebrow">Ebook Facebook Ads 2026</span>
       <h2>Khi quảng cáo gặp vấn đề, anh/chị không cần bắt đầu tìm lại từ đầu.</h2>
-      <p class="lead narrow">Mở đúng phần, kiểm tra đúng lớp và đưa ra quyết định rõ ràng hơn cho chiến dịch đang chạy.</p>
+      <p class="lead narrow">Mở đúng phần, kiểm tra đúng việc. Đọc thử nội dung trước khi chọn mua toàn bộ Ebook.</p>
       <a class="btn btn-gold" href="#price" data-event="final_cta_click">Nhận Ebook Facebook Ads 2026 – 399.000đ</a>
       <p>471 trang · 10 phần · Đọc online và tải PDF</p>
     </div>
@@ -2170,7 +2176,7 @@
     }, { threshold: 0.14 });
     document.querySelectorAll(".reveal").forEach((item) => revealObserver.observe(item));
 
-    const ebookSectionTargets = ["top", "situations", "outcomes", "sample", "price", "faq"];
+    const ebookSectionTargets = ["top", "situations", "sample", "outcomes", "price", "faq"];
     const ebookSections = ebookSectionTargets.map((id) => document.getElementById(id)).filter(Boolean);
     const ebookProgressRail = document.querySelector("[data-section-progress]");
     const ebookProgressDots = Array.from(document.querySelectorAll("[data-section-progress-dot]"));
