@@ -421,3 +421,7 @@ Runtime0f45b7d production READY.104tests/TypeScript/lint/build PASS;13HTTP giữ
 
 ## 15/09/2026 — Giao diện vũ trụ AI có ảnh bìa
 Anh yêu cầu nâng cấp hình ảnh và giải thích Astra là phong cách vũ trụ AI. Tạo hai ảnh original bằng imagegen: hành tinh/quỹ đạo và khối AI kết nối; tối ưu JPEG1280px tổng444KB tại public/agent-library-art. Thẻ chọn dùng ảnh bìa, sidebar ink navy, nội dung nền sáng, thẻ Agent có artwork/icon và bài học có thumbnail YouTube đúng ID. Giữ hai khu vực tách biệt, video/navigation/materials/download/access. Không dùng logo/ảnh thương hiệu chưa xác minh. Premium.css chỉ scoped thư viện; không landing/commerce/Auth change.65library tests, TypeScript/lint PASS; đang dựng/phát hành. Preview điều phối cập nhật, chưa browser screenshot QA do policy.
+
+
+### Giao diện ảnh bìa đã phát hành — 15/09/2026
+Runtimef804cd5 production READY.104tests/TypeScript/lint/build PASS,13HTTP giữ trạng thái và5static landing giữ hash. Hai ảnh vũ trụ original live đúng checksum;11thumbnail hợp lệ. Premium.css chỉ áp dụng thư viện, quyền học viên/download giữ nguyên. Chưa visual browser và phát video trong phiên học viên thật.
