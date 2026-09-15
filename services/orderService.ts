@@ -439,6 +439,22 @@ const coursePaymentPlans: Record<string, Record<string, CoursePaymentPlan>> = {
         },
       ],
     },
+    "zoom-kit-ebook-20": {
+      title: "Combo hệ thống Facebook Ads + Ebook - Ưu đãi combo giảm 20%",
+      amount: 878400,
+      orderItems: [
+        {
+          slug: "facebook-ads-2026",
+          title: "Quảng cáo Facebook Master 2026 - Combo giảm 20%",
+          price: 639200,
+        },
+        {
+          slug: "ebook-facebook-ads-2026",
+          title: "Ebook Facebook Ads 2026 - Combo giảm 20%",
+          price: 239200,
+        },
+      ],
+    },
     "advanced-zoom": {
       title: "Gói AI Agent 799K + 1 buổi Zoom chuyên sâu",
       amount: 1299000,

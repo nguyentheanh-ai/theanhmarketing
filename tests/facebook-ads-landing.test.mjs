@@ -232,8 +232,10 @@ test("Facebook Ads form applies the Vietnam-Thailand 20% offer to the combo only
   assert.match(html, /"zoom-kit-ebook-299":\s*\{[\s\S]*?amount:\s*1098000/);
   assert.match(html, /promotionPlanId/);
   assert.match(html, /amount:\s*878400/);
-  assert.match(html, /Ưu đãi Việt Nam Thắng Thái Lan/);
-  assert.match(html, /ebookAddon\.checked[\s\S]*plans\[promotionPlanId\][\s\S]*plans\["zoom-kit-ebook-299"\]/);
+  assert.match(html, /Giảm ngay 20%/);
+  assert.doesNotMatch(html, /promotionEndDate|31\/08\/2026/);
+  assert.match(html, /ebookAddon\.checked[\s\S]*return plans\[promotionPlanId\]/);
+  assert.match(orderService, /"zoom-kit-ebook-20":\s*\{[\s\S]*?amount:\s*878400/);
   assert.match(html, /ebookAddon\.addEventListener\("change", syncCheckoutState\)/);
 
   assert.match(orderService, /"zoom-kit-ebook-299":\s*\{[\s\S]*?amount:\s*1098000/);
