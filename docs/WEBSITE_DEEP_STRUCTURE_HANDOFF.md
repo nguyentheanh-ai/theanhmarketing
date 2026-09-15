@@ -1836,3 +1836,7 @@ Nguồn: components/agent-library/video-tutorials.tsx và tutorial-videos.ts; t�
 
 ### Video hướng dẫn đã phát hành — 15/09/2026
 Runtime0e0c465 đã phát hành production READY;103kiểm thử, TypeScript/lint/build và HTTP kiểm tra sau phát hành đạt. Quyền thư viện và tải xuống giữ nguyên;5landing tĩnh giữ hash. Chưa kiểm tra phát video bằng phiên học viên thật. Tài liệu từng bài đang trống theo xác nhận chủ dự án.
+
+
+## 15/09/2026 — Tách Video và Agent bằng hai thẻ chọn
+Theo ảnh/góp ý mới, đầu trang có hai thẻ Video hướng dẫn và Thư viện Agent. Mỗi lần chỉ hiện một khu vực; prompt/tải toàn bộ/tìm kiếm thuộc Agent; rời Video gỡ player để dừng phát. Mặc định mở Agent; danh mục bên trái mở đúng Agent khi đang xem Video. Giữ video/tài liệu và API/quyền cũ. Test chuyển thẻ/dừng mount video và17resource tests PASS, TypeScript/lint PASS; preview điều phối đã cập nhật. Đang chuẩn bị phát hành bản sửa tiếp theo phạm vi đã duyệt.
