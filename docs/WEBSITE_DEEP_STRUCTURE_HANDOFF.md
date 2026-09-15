@@ -1832,3 +1832,7 @@ Thư viện đã cập nhật gói Video và toàn bộ bộ kit. Bản mẫu gi
 Thư viện Agent bổ sung 11 video hướng dẫn theo thứ tự bài1–10 và bài5.1. Danh sách dọc cạnh player, cùng một khu vực; màn hình hẹp xếp dưới player. Có Bài trước/Bài tiếp theo và mục tài liệu theo bài ở phía dưới. Tài liệu hiện chưa được cung cấp. YouTube iframe chỉ tải sau thao tác, không có liên kết mở YouTube riêng. Giữ access guard, download và tất cả10Agent hiện hành.
 
 Nguồn: components/agent-library/video-tutorials.tsx và tutorial-videos.ts; tích hợp trong agent-library.tsx và CSS cùng thư mục. Kiểm thử điều hướng/giới hạn đầu cuối, chọn đúng video và tài liệu được bổ sung. Chủ dự án đã duyệt bố cục và phát hành; đang hoàn tất release. Chưa xác minh phát video trong phiên học viên thật.
+
+
+### Video hướng dẫn đã phát hành — 15/09/2026
+Runtime0e0c465 đã phát hành production READY;103kiểm thử, TypeScript/lint/build và HTTP kiểm tra sau phát hành đạt. Quyền thư viện và tải xuống giữ nguyên;5landing tĩnh giữ hash. Chưa kiểm tra phát video bằng phiên học viên thật. Tài liệu từng bài đang trống theo xác nhận chủ dự án.
