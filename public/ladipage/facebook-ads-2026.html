@@ -5044,6 +5044,32 @@
         .hero-combo-price { justify-content: center; }
         .course-hero-actions-mobile .btn { padding-inline: 14px; }
       }
+
+      /* Reference-style sticky registration: course pricing and a short CTA. */
+      .sticky-cta { background: #090a0b; border-top-color: #614c0a; padding: 12px 20px; }
+      .sticky-cta-inner { grid-template-columns: minmax(0, 1fr) 220px 44px; width: min(1160px, 100%); padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; gap: 16px; }
+      .sticky-course-summary { display: flex; align-items: center; gap: 14px; min-width: 0; }
+      .sticky-course-icon { display: grid; place-items: center; flex: 0 0 48px; height: 48px; border: 1px solid #80630b; border-radius: 50%; background: #302608; color: #ffd12b; font-size: 34px; line-height: 1; }
+      .sticky-course-info { min-width: 0; }
+      .sticky-course-title { color: #f7f7f7; font-size: 17px; line-height: 1.35; }
+      .sticky-course-prices { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 3px; font-size: 14px; line-height: 1.4; }
+      .sticky-course-prices del { color: #a6a6ad; }
+      .sticky-course-prices > strong { color: #ffd12b; font-size: 17px; }
+      .sticky-discount { border-radius: 5px; padding: 2px 7px; background: #362b06; color: #ffd12b; font-weight: 800; font-size: 13px; }
+      .sticky-cta-button { min-height: 52px; border: 1px solid #caa200; border-radius: 16px; background: #f5c400; color: #141106; box-shadow: 0 5px 18px #e5b50020; font-size: 18px; text-transform: none; letter-spacing: 0; padding: 12px 20px; line-height: 1.3; }
+      .sticky-menu-toggle { width: 44px; height: 44px; min-height: 44px; background: #191a1c; border-color: #444; }
+      @media (max-width: 680px) {
+        .sticky-cta { padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); }
+        .sticky-cta-inner { grid-template-columns: minmax(0, 1fr) 44px; gap: 8px; }
+        .sticky-course-summary { grid-column: 1 / -1; justify-content: center; gap: 10px; }
+        .sticky-course-icon { flex-basis: 38px; height: 38px; font-size: 28px; }
+        .sticky-course-title { font-size: 14px; }
+        .sticky-course-prices { gap: 7px; font-size: 12px; }
+        .sticky-course-prices > strong { font-size: 15px; }
+        .sticky-discount { font-size: 12px; }
+        .sticky-cta-button { min-height: 44px; padding: 10px 14px; font-size: 16px; }
+        .sticky-cta-label-mobile strong { font-size: 16px; line-height: 1.3; letter-spacing: 0; }
+      }
     </style>
     <script src="../checkout-invoice.js" defer></script>
     <script src="../landing-assets/facebook-ads-event-contract.js" defer></script>
@@ -5374,11 +5400,14 @@
         </nav>
         <div class="sticky-cta-inner">
           <div class="sticky-course-summary">
-            <strong class="sticky-course-title">Facebook Ads Master 2026</strong>
+            <span class="sticky-course-icon" aria-hidden="true">ϟ</span>
+            <div class="sticky-course-info"><strong class="sticky-course-title">Facebook Ads Master 2026</strong>
+              <div class="sticky-course-prices"><del>2.590.000đ</del><strong>799.000đ</strong><span class="sticky-discount">−69%</span></div>
+            </div>
           </div>
-          <a class="btn sticky-cta-button" href="#hoc-phi" data-meta-cta data-cta-id="sticky-primary" data-cta-text="Nhận toàn bộ hệ thống – 799.000đ" data-cta>
-            <span class="sticky-cta-label sticky-cta-label-desktop">Nhận toàn bộ hệ thống – 799.000đ</span>
-            <span class="sticky-cta-label sticky-cta-label-mobile"><strong>NHẬN TOÀN BỘ HỆ THỐNG</strong></span>
+          <a class="btn sticky-cta-button" href="#hoc-phi" data-meta-cta data-cta-id="sticky-primary" data-cta-text="Đăng ký ngay" data-cta>
+            <span class="sticky-cta-label sticky-cta-label-desktop">Đăng ký ngay</span>
+            <span class="sticky-cta-label sticky-cta-label-mobile"><strong>Đăng ký ngay</strong></span>
             <span aria-hidden="true">→</span>
           </a>
           <button class="sticky-menu-toggle" type="button" data-sticky-menu-toggle aria-expanded="false" aria-controls="sticky-section-menu" aria-label="Mở mục lục">
