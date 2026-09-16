@@ -26,7 +26,7 @@ try {
     await page.evaluate(async()=>{await document.fonts.ready;for(const img of document.images){img.loading='eager';await img.decode().catch(()=>{});}});
     const metrics=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,sections:document.querySelectorAll('.cx main>section').length,brokenImages:[...document.querySelectorAll('.cx img')].filter(x=>!x.complete||!x.naturalWidth).map(x=>x.src),badLinks:[...document.querySelectorAll('.cx a[href^="#"]')].filter(a=>!document.querySelector(a.getAttribute('href'))).map(a=>a.getAttribute('href'))}));
     assert.ok(metrics.scrollWidth<=width,`overflow ${width}: ${metrics.scrollWidth}`);
-    assert.equal(metrics.sections,17);assert.deepEqual(metrics.brokenImages,[]);assert.deepEqual(metrics.badLinks,[]);
+    assert.equal(metrics.sections,16);assert.deepEqual(metrics.brokenImages,[]);assert.deepEqual(metrics.badLinks,[]);
     report.viewports.push(metrics);
     await page.screenshot({path:`${output}${width}-full.png`,fullPage:true});
   }
@@ -55,7 +55,7 @@ try {
   await page.locator('.cx-sticky').waitFor({state:'visible'});
   assert.match(await page.locator('.cx-sticky').innerText(),/990.000đ/);
   await page.locator('.cx-sticky a[href="#dang-ky"]').click();
-  await page.locator('.cx-sticky').waitFor({state:'detached'});
+  await page.locator('.cx-sticky').waitFor({state:'hidden'});
   assert.equal(await page.locator('#dang-ky input[name=studentName]').evaluate(x=>x===document.activeElement),true);
   assert.match(await page.locator('.cx-price-comparison').innerText(),/Giá gốc/);
   assert.match(await page.locator('.cx-price-comparison').innerText(),/2.599.000đ/);
@@ -74,7 +74,8 @@ try {
     assert.ok(Math.abs((tocBounds.y+tocBounds.height/2)-(signupBounds.y+signupBounds.height/2))<2);
     assert.ok(tocBounds.x+tocBounds.width<=signupBounds.x);
     await toc.click();
-    await page.waitForFunction(()=>Math.abs(document.getElementById('muc-luc').getBoundingClientRect().top)<200);
+    await page.locator('#cx-toc-dialog').waitFor({state:'visible'});
+    await page.keyboard.press('Escape');
     await page.locator('#gioi-thieu').scrollIntoViewIfNeeded();
   }
   report.interactions.push('Sticky CTA shows correct price, focuses registration, hides at form, and fits 320/390/1440.');
@@ -91,7 +92,7 @@ try {
   assert.equal(await page.locator('.cx-offer-outcomes>div').count(),8);
   assert.equal(await page.locator('.cx-outcome-card .cx-icon-tile svg').count(),8);
   const sectionOrder=await page.locator('.cx main>section').evaluateAll(nodes=>nodes.map(x=>x.id));
-  assert.deepEqual(sectionOrder.slice(0,5),['gioi-thieu','muc-luc','cach-lam','van-de','ung-dung']);
+  assert.deepEqual(sectionOrder.slice(0,4),['gioi-thieu','cach-lam','van-de','ung-dung']);
   report.interactions.push('Eight buyer outcomes and matching offer benefits; result-first section order and icons.');
   await page.locator('.cx-work-detail>summary').click();
   await page.getByLabel('Chọn công việc minh họa').selectOption('1');
