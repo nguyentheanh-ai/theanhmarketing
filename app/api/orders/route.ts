@@ -59,6 +59,7 @@ export async function POST(request: Request) {
       courseSlug?: string;
       courseSlugs?: string[];
       paymentPlan?: string;
+      couponCode?: string;
       landingPage?: string;
       pageUrl?: string;
       referrer?: string;
@@ -85,6 +86,7 @@ export async function POST(request: Request) {
     const courseSlug = cleanSlug(body.courseSlug);
     const courseSlugs = cleanSlugList(body.courseSlugs);
     const paymentPlan = cleanText(body.paymentPlan, 40);
+    const couponCode = cleanText(body.couponCode, 40).toUpperCase();
     const invoiceResult = normalizeInvoiceInput(body.invoice);
     const forwardedFor = request.headers.get("x-forwarded-for") ?? "";
     const ipAddress =
@@ -138,6 +140,7 @@ export async function POST(request: Request) {
       courseSlug,
       courseSlugs,
       paymentPlan,
+      couponCode,
       leadId: databaseLeadId || null,
       ipAddress,
       userAgent,

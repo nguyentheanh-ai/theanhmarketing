@@ -1,3 +1,4 @@
+import { applyOrderCoupon } from "@/lib/orders/coupon";
 import { readAllAdminRows } from "@/lib/admin/read-all-rows";
 import { fallbackOrders } from "@/data/platform";
 import { emptyInvoiceDetails, type InvoiceDetails } from "@/lib/orders/invoice";
@@ -155,6 +156,7 @@ export type CreatePaymentOrderInput = {
   courseSlug?: string;
   courseSlugs?: string[];
   paymentPlan?: string;
+  couponCode?: string;
   leadId?: string | null;
   ipAddress?: string | null;
   userAgent?: string | null;
@@ -571,7 +573,7 @@ export async function createPaymentOrder(input: CreatePaymentOrderInput) {
     assertAgentKitPaymentPlanAvailable(input.paymentPlan);
   }
 
-  const orderPackage = fixedPackage ?? buildOrderPackage(selectedCourses, input.paymentPlan);
+  const orderPackage = applyOrderCoupon(fixedPackage ?? buildOrderPackage(selectedCourses, input.paymentPlan), input.paymentPlan, input.couponCode);
   const { amount, courseSlug, courseTitle, orderItems } = orderPackage;
 
   if (amount <= 0) {

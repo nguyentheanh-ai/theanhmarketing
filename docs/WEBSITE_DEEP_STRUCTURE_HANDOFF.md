@@ -2001,3 +2001,8 @@ Giá gốc2.599.000đ, giá chính thức990.000đ tại hero/offer/sticky; gói
 45Node tests trên canonical đạt; TypeScript/scoped ESLint/diff check, local build108/108 và remote preview/production builds đạt. Chrome production1440/768/390/320 không overflow/ảnh hỏng/anchor thiếu;17sections; video decode/play đạt; nút mục lục và đăng ký cùng hàng và điều hướng đúng; mock API xác minh giá/plan/slug/invoice/attribution, lỗi phục hồi, checkout/dedup đạt; không pageerror. Đã xem ảnh live320px sticky.16HTTP smoke giữ status/destination;5landing tĩnh giữSHA256. Runtime error/fatal scan15phút theo đúng deployment tại07:27:40UTC không có kết quả.
 
 Không tạo đơn thật, không gửi email, không mutation DB; các thử form đều bị chặn và giả lập trong browser. Không tuyên bố có giao dịch thanh toán thật sau phát hành. Full lint/full suite không chạy trong scope này. Rollback `dpl_8kEzWymZXoZntxFAk5BkVVGyLVvv`. Evidence `reports/codex-sync-20260916/` tại workspace điều phối: deployment.json,live-browser-audit.json,live-320-sticky.png,live-smoke-before/after.json,release-tests.log. Handoff nguồn `docs/CODEX_SYNC_20260916.md`. Không còn bước chờ phê duyệt hoặc phát hành; các trạng thái chờ ở trên là lịch sử.
+
+
+## 16/09/2026 — HOCVIEN20 (LOCAL_VERIFIED)
+
+Hai form Codex/Bộ Kit thêm coupon20%; server gói990000 ->792000, item/QR đồng nhất.100focused tests,TypeScript,scoped lint,Vite/Next build đạt; full gates còn lỗi ghi trong `docs/HOCVIEN20_20260916.md`. Chưa phát hành/chưa giao dịch thật; cần duyệt production.

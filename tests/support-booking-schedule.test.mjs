@@ -158,6 +158,7 @@ test("checkout persists the selected price in order, item and SePay QR", async (
     ...aliases,
     "@/data/platform": {},
     "@/lib/orders/invoice": { emptyInvoiceDetails: {} },
+    "@/lib/orders/coupon": load("lib/orders/coupon.ts"),
     "@/lib/meta/purchase-outbox": {},
     "@/services/courseService": {},
     "@/lib/consultation/constants": {},
