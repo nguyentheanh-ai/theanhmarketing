@@ -16,6 +16,7 @@ function mount(file, exportName, props={}) {
   '@/lib/tracking/events':{trackMarketingEvent:(...args)=>events.push(args)},
   '@/components/payment/invoice-request-fields':{InvoiceRequestFields:'invoice'},
   '@/lib/orders/invoice':{invoiceInputFromFormData:()=>({requested:false})},
+  './sticky-navigation':{StickyNavigation:'sticky'},
   './outcomes':{OfferIcon:'icon',outcomes:[]},
   '../checkout.js':{getClientAttribution:()=>({utmSource:'test'}),createLeadId:()=> 'test',markInitiateCheckoutDispatched:()=>{},trackOnce:()=>{},trackMarketingEvent:(...args)=>events.push(args),buildOrderPayload:({formData,paymentPlan})=>({studentName:formData.get('studentName'),paymentPlan})},
  };

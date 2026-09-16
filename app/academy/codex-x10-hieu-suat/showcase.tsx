@@ -1,31 +1,3 @@
-const sections = [
-  ["gioi-thieu", "Bớt việc lặp lại, thêm thời gian phát triển"],
-  ["cach-lam", "Giao 8 nhóm việc cho đội ngũ AI"],
-  ["van-de", "Thoát cảnh dùng AI mà vẫn ngập việc"],
-  ["ung-dung", "Tìm cách ứng dụng cho nghề của bạn"],
-  ["demo", "Chủ động làm trang bán hàng cho chiến dịch"],
-  ["hieu-suat", "Tính thời gian bạn có thể dành lại"],
-  ["san-pham", "Xem sản phẩm để hình dung việc mình sẽ làm"],
-  ["thanh-qua-video", "Từ kịch bản đến video có thể mở xem"],
-  ["noi-dung", "Học từng bước, có sản phẩm để dùng"],
-  ["tao-agent", "Tạo nhân viên AI hiểu cách bạn làm việc"],
-  ["bo-agent", "Có đội ngũ hỗ trợ từ ý tưởng đến triển khai"],
-  ["bat-dau", "Giải quyết một việc đang dở ngay buổi đầu"],
-  ["nguoi-huong-dan", "Học từ cách Thế Anh triển khai thực tế"],
-  ["hoc-phi", "Nhận khóa học và bộ Agent trong một lần"],
-  ["cau-hoi", "Gỡ băn khoăn trước khi bắt đầu"],
-  ["buoc-tiep-theo", "Bắt đầu xây cách làm việc mới của bạn"],
-];
-
-export function SectionGuide() {
-  return <section className="cx-section cx-guide" id="muc-luc" aria-labelledby="cx-guide-title"><div className="cx-wrap">
-    <p className="cx-label">CHỌN ĐIỀU BẠN MUỐN LÀM ĐƯỢC</p>
-    <h2 id="cx-guide-title">Công việc nào bạn muốn nhẹ đi trước?</h2>
-    <p>Đi thẳng đến phần bạn cần: xem thành quả, tìm cách áp dụng hoặc khám phá lộ trình học.</p>
-    <nav className="cx-guide-links" aria-label="Mục lục theo lợi ích">{sections.map(([id, title], index) => <a key={id} href={`#${id}`}><span>{String(index + 1).padStart(2, "0")}</span><b>{title}</b><span aria-hidden>↗</span></a>)}</nav>
-  </div></section>;
-}
-
 const videos = [
   { file: "editor-ai-jun-08-2026.mp4", title: "Video AI thực hành · 08/06/2026", poster: undefined },
   { file: "editor-ai-may-21-2026.mp4", title: "Video AI thực hành · 21/05/2026", poster: undefined },

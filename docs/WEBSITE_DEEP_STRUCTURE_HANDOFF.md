@@ -2006,3 +2006,18 @@ Không tạo đơn thật, không gửi email, không mutation DB; các thử fo
 ## 16/09/2026 — HOCVIEN20 (LOCAL_VERIFIED)
 
 Hai form Codex/Bộ Kit thêm coupon20%; server gói990000 ->792000, item/QR đồng nhất.100focused tests,TypeScript,scoped lint,Vite/Next build đạt; full gates còn lỗi ghi trong `docs/HOCVIEN20_20260916.md`. Chưa phát hành/chưa giao dịch thật; cần duyệt production.
+## 16/09/2026 — Sửa mục lục nổi và thanh đăng ký theo ảnh
+Owner yêu cầu bảng mục lục nổi như ảnh Bộ Kit và thanh ghim mọi vị trí, chỉ ẩn tại form. Phạm vi tiếp nối bản đã được duyệt phát hành; không cần xác nhận lại. Thay mục lục dạng section bằng native dialog16liên kết theo lợi ích; nút tròn cạnh CTA, nền tối/font Big Shoulders dùng lại tài nguyên Bộ Kit, active section, danh sách cuộn, CTA, X/Escape/focus trap. Thanh vẫn position fixed; chỉ dựa IntersectionObserver form, bỏ điều kiện formFocused gây ẩn kéo dài.
+
+Tái hiện live trước sửa: focus studentName rồi cuộn về #van-de, formTop21768px/viewport844px nhưng sticky absent. Không tìm thấy ancestor transform/contain ở các vị trí đo; cả default/reduced motion ban đầu đều fixed đúng. Nguyên nhân xác minh là focus giữ nguyên sau khi cuộn, không phải CSS transform.
+
+45Node tests, scoped ESLint, TypeScript/Next Webpack108/108 và diff check đạt. Browser1440/390/320 x default/reduced motion:30vị trí ghim đúng viewport, modal16links/scroll/active, bounds, X/Escape/focus trap/return, link tới video, CTA focus form/hide và focus-then-scroll restore đạt; không pageerror/overflow. Đã xem ảnh popup390/default và sticky320/default. Bản build, giá2.599.000/990.000, order plan, video, payment/tracking không đổi ngoài navigation. Không tạo đơn/email thật.
+
+Nguồn thêm navigation-items.ts,sticky-navigation.tsx; cập nhật page/sections/showcase/redesign và tests/codex-landing-browser.mjs; test mới tests/codex-sticky-navigation-browser.mjs. Đang tích hợp/phát hành. Rollback trước sửa dpl_43P1wwXLKwqhybb493YWDa7Rg5XX. Evidence candidate reports/codex-floating-navigation-20260916. Lesson docs/lessons/codex-floating-navigation-20260916.md.
+
+
+## 16/09 — Bổ sung nút Mục lục Bộ Kit và hợp nhất trước phát hành
+
+Anh yêu cầu đưa nút Mục lục cạnh Nhận bộ nhân viên AI rồi deploy. FloatingToc hiện được mount trong sticky-cta-actions bên trái CTA; root App bỏ nút nổi riêng. Selector CSS giới hạn đúng CTA trực tiếp để không áp kiểu nút mua lên link mục lục. Panel absolute neo phía trên toàn thanh; mobile width theo thanh, max-height theo viewport. Giữ link/Escape/focus/active/tracking. Source4file đã đồng bộ nguồn Vite gốc qua kiểm tra baseline + backup.
+
+Canonical có commit1c725e6 mục lục Codex song song; đã merge giữ navigation mới và coupon form; StickyNavigation nhận giá sau giảm từ form. Không promote bản cũ làm mất navigation. Bản cuối102focused tests đạt (100coupon/payment +2Kit placement), scoped lint/Next Webpack108/108 đạt. Bundle Kit cuối index-B6nOFIRm.js/CSS index-D92Fi75v.css; các entry đã đồng bộ. Chưa browser screenshot QA; không dùng static/hook tests làm bằng chứng trực quan.

@@ -40,7 +40,7 @@ export default function AgentKitLandingPage() {
     <>
       <link
         rel="stylesheet"
-        href={`${landingAssetRoot}/assets/index-BthB_yEr.css`}
+        href={`${landingAssetRoot}/assets/index-D92Fi75v.css`}
       />
       <link rel="icon" href={`${landingAssetRoot}/brand/ta-mark.svg`} />
       <AgentKitBundle />

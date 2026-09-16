@@ -4,7 +4,7 @@ import Link from "next/link";
 import { siteConfig } from "@/data/site";
 import { AudienceExamples, WorkDemo, EfficiencyCalculator, CodexOffer, HeroOffer } from "./sections";
 import { HeroResults, OutcomeSection, OfferIcon } from "./outcomes";
-import { SectionGuide, AgentVideoResults } from "./showcase";
+import { AgentVideoResults } from "./showcase";
 import "./codex.css";
 import "./redesign.css";
 
@@ -55,7 +55,6 @@ export default function CodexLanding() {
     <main>
       <section className="cx-hero cx-dark" id="gioi-thieu" aria-labelledby="cx-title"><div className="cx-wrap cx-hero-grid"><div><p className="cx-label">KHÓA HỌC CODEX · THE ANH MARKETING</p><h1 id="cx-title">Tự động hóa <em>80% công việc.</em><span>X10 hiệu suất cá nhân.</span></h1><HeroOffer /><p className="cx-hero-copy">Tự làm video, website, quảng cáo, kế hoạch, email, bài đăng Facebook và báo cáo tài chính với đội ngũ AI. Học Codex để chủ động công việc, nhận thêm dự án và bán hàng.</p><div className="cx-actions"><a className="cx-btn" href="#cach-lam">Xem 8 việc AI làm cho bạn <span aria-hidden>↗</span></a><a className="cx-text-link" href="#noi-dung">Xem nội dung học →</a></div><p className="cx-audiences">Marketer <span>·</span> Freelancer <span>·</span> Nhân viên văn phòng</p><p className="cx-note">Học cách Thế Anh dùng đội ngũ AI để làm nội dung, landing page, video và vận hành quảng cáo.</p></div><HeroResults /></div><div className="cx-wrap cx-hero-facts"><span><b>20+</b> video học sẵn</span><span><b>08</b> Agent đi kèm</span><span><b>08</b> nhóm việc tự động hóa</span></div></section>
 
-      <SectionGuide />
       <OutcomeSection />
 
       <section className="cx-section cx-soft" id="van-de"><div className="cx-wrap"><Intro label="CÔNG VIỆC HẰNG NGÀY" title="Bạn đã dùng AI. Vì sao cuối ngày vẫn chưa hết việc?"><p>Bạn nhờ AI viết bài, rồi sửa lại cho đúng giọng. Nhờ tổng hợp báo cáo, rồi mở từng file kiểm tra số liệu. Sang việc khác, bạn lại gửi tài liệu và giải thích từ đầu.</p><p>Phần chuẩn bị, nối các bước và kiểm tra kết quả vẫn chiếm một phần lớn ngày làm của bạn.</p></Intro><div className="cx-pain-grid">{[
