@@ -1959,3 +1959,7 @@ Dashboard đặt toàn bộ thẻ khóa đã mở quyền ở đầu, tiếp the
 91tests liên quan trên canonical đạt; TypeScript/scoped ESLint/local Webpack108 và remote preview/production build đạt. Full lint còn119errors trên file baseline không đổi như phần trên; không tuyên bố full lint đạt. 16HTTP readbacks giữ nguyên trạng thái/đích: dashboard/account/FBA/library về đăng nhập khi guest, download401/unknown404;7landing200,5static SHA-256 giữ nguyên. HTML động Agentkit/Codex thay đổi theo bản dựng, source các route không đổi. Runtime error/fatal query15phút đúng deployment tại06:34:34UTC không trả dòng lỗi. Chưa visual hoặc authenticated student browser E2E; không tạo khách/đơn/email thử.
 
 Evidence: `/Users/theanh/CodexProjects/Kinh doanh/reports/student-course-entry-20260916/` gồm deployment.json, live-aliases.json, live-smoke-before/after.json, runtime-errors.json, release-tests.log. Rollback `dpl_6eVQv8woSw3tcJowaHApxFCJsMcw`. Không còn bước phát hành chờ xử lý; giới hạn QA đăng nhập thật được ghi rõ.
+
+
+### 16/09/2026 — Email Agent Kit production verified
+Owner approved. Runtime bc72feb; production dpl_8kEzWymZXoZntxFAk5BkVVGyLVvv READY, www/apex aliases verified.43focused tests, local and remote builds PASS;16live status/destination checks,5static hashes unchanged;error log scan empty. No real payment/email sent for QA. Rollback dpl_DRuXSPXoNKovEijL6EHNuD4tukWf. Earlier pending deployment notes for this email task are superseded.
