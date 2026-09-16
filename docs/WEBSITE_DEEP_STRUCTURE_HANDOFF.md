@@ -2086,3 +2086,14 @@ Bỏ regex định dạng MST ở shared invoice helper, vẫn bắt buộc MST 
 16route status/destination giữ nguyên;4landing tĩnh ngoài scope giữSHA256;5source landing bảo vệ không đổi. Query error/fatal đúng production15phút đến08:41:19UTC không có kết quả. Chưa browser visual QA/Safari vật lý; thứ tựform được kiểm qua React harness, bundle live đúng; full-suite/full-lint ngoài scope không chạy lại các lỗi đã biết. Evidence reports/invoice-checkout-20260916 gồm tests/payment-regression/typecheck/lint/build,source-verification,live-verification,live-smoke-before/after,deployment,promote,production-ready. Context đã đọc: registry/rules/policy, ACTIVE_TASKS/protocol/context/state/features/payment/email, repoAGENTS/CURRENT_STATE/FEATURE_MAP/handoff/design/SePay; code đúng main-site. Các trạng thái chờ ở phía trên đã được thay thế.
 
 Auto-review lần đầu từ chối lệnh gộp merge/push vì chưa chứng minh đích remote tin cậy. Sau readback origin=expected_remote registry, allowed branch/upstream và Vercel live sử dụng đúng repo, push đúng1commit đã được chấp thuận. Không bypass, không force push hoặc đổi đích.
+
+
+## 16/09/2026 — Làm rõ thao tác bấm hai banner Agent Library
+
+Main-site, route `/learn/bo-agent-kit-x10-hieu-suat-cong-viec/agents`. Candidate `worktrees/agent-banner-clarity-20260916`, branch `feat/agent-banner-clarity-20260916`, base33b2eb0. Sửa components/agent-library/agent-library.tsx và premium.css: dòng hướng dẫn bấm, CTA nền trắng cao tối thiểu48px “Xem video hướng dẫn”/“Mở bộ kit Agent”, nhãn “✓ Đang xem”, nhãn truy cập rõ; mobile <=700px xếp một cột. Cả banner vẫn là native button, giữ setSection/aria-pressed/aria-controls, video unmount khi đổi mục. Giữ thay đổi tên Nhân viên AI đang có ở canonical; không sửa API, download, quyền, payment, email, tracking hoặc landing.
+
+Doctor đã chạy, báo release root dirty đúng một file agent-library.tsx (thay ba nhãn Nhân viên AI từ task trước). Không xóa/stash/ghi đè; dùng worktree riêng. Context đã đọc: registry/rules/policy/ACTIVE_TASKS, AI_CONTEXT_INDEX/protocol/checklist, state/features liên quan, repo AGENTS/CURRENT_STATE/FEATURE_MAP/handoff/DESIGN_RULES, Next use-client. Serena không có tool callable.
+
+71 Agent Library tests và39 prebuild/regression tests đạt; scoped ESLint và TypeScript đạt. Chưa deploy; chưa visual browser QA/phiên học viên thật theo policy hiện hữu. Bước tiếp theo: duyệt production, đối chiếu thay đổi rename hiện có, tích hợp đúng release root, chạy guarded preflight và live readback. Không coi test nguồn là bằng chứng khách đã nhìn thấy UI mới.
+
+Build cuối cùng sau nhãn truy cập đạt108/108routes. Evidence reports/agent-banner-clarity-20260916/{build,tests}.log. Trạng thái READY_FOR_REVIEW, chưa production.
