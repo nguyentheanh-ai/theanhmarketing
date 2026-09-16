@@ -305,3 +305,54 @@ test("skips failed payment email without a Resend API key without throwing", asy
     }
   }
 });
+
+const agentKitSlug = "bo-agent-kit-x10-hieu-suat-cong-viec";
+for (const plan of ["agent-kit-offer-990", "agent-kit-standard-999", "agent-kit-preorder-remaining-400"]) {
+  test(`Agent Kit ${plan} opens its library with login and download instructions`, () => {
+    for (const account of [undefined, { email: paidOrder.email, temporaryPassword: "test-only-credential" }]) {
+      const payload = buildPaymentSuccessEmailPayload({ ...paidOrder, courseSlug: agentKitSlug,
+        courseTitle: "Đội ngũ nhân sự AI", paymentPlan: plan }, { siteUrl: "https://www.theanhmarketing.com", account });
+      const target = `https://www.theanhmarketing.com/learn/${agentKitSlug}/agents`;
+      const links = [...payload.html.matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
+      assert.equal(new URL(links[0]).searchParams.get("to"), target);
+      assert.ok(payload.html.includes(target));
+      assert.ok(payload.text.includes(target));
+      assert.match(payload.html, /Mở thư viện Agent Kit/);
+      assert.match(payload.html, /Video hướng dẫn/);
+      assert.doesNotMatch(payload.html + payload.text, /Facebook Ads Master|Checklist chạy ads/);
+      assert.match(payload.text, /tải toàn bộ bộ kit/);
+      assert.doesNotMatch(payload.html + payload.text, /vao-khoa-hoc|Vào dashboard/);
+      assert.match(payload.html, account ? /mật khẩu tạm/ : /mật khẩu hiện tại/);
+    }
+  });
+}
+test("Agent Kit item uses exact slug, not an AI Agent bonus in another product title", () => {
+  const itemPayload = buildPaymentSuccessEmailPayload({ ...paidOrder, courseSlug: "", orderItems: [{slug: agentKitSlug, title: "Đội ngũ nhân sự AI", price: 990000}] });
+  assert.match(itemPayload.text, /Mở thư viện Agent Kit/);
+  const bonusPayload = buildPaymentSuccessEmailPayload({ ...paidOrder, courseTitle: "Facebook Ads - tặng Agent Kit" });
+  assert.doesNotMatch(bonusPayload.text, /Mở thư viện Agent Kit/);
+  assert.match(bonusPayload.text, /vao-khoa-hoc/);
+});
+
+test("deposit confirmation still sends reservation details without a library access link", async () => {
+  const previousKey = process.env.RESEND_API_KEY;
+  const previousFetch = globalThis.fetch;
+  let sent;
+  process.env.RESEND_API_KEY = "test-only-key";
+  globalThis.fetch = async (_url, init) => {
+    sent = JSON.parse(init.body);
+    return { ok: true, json: async () => ({ id: "test-only-message" }) };
+  };
+  try {
+    const result = await sendPaymentSuccessEmail({ ...paidOrder, courseSlug: agentKitSlug,
+      courseTitle: "Đội ngũ nhân sự AI", amount: 399000, amountLabel: "399.000đ",
+      paymentPlan: "agent-kit-preorder-deposit-399" });
+    assert.equal(result.ok, true);
+    assert.match(sent.text, /cọc/i);
+    assert.doesNotMatch(sent.html + sent.text, /Mở thư viện Agent Kit|\/agents/);
+  } finally {
+    globalThis.fetch = previousFetch;
+    if (previousKey === undefined) delete process.env.RESEND_API_KEY;
+    else process.env.RESEND_API_KEY = previousKey;
+  }
+});

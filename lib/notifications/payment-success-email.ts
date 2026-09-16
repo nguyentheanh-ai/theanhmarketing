@@ -1,6 +1,7 @@
 import type { PaymentOrder } from "@/services/orderService";
 import { buildEmailLink } from "@/lib/notifications/email-link-bridge";
 import {
+  AGENT_KIT_SLUG,
   AGENT_KIT_PREORDER_DEPOSIT_VND,
   AGENT_KIT_PREORDER_PRICE_VND,
   AGENT_KIT_PREORDER_REMAINING_VND,
@@ -332,7 +333,13 @@ export function buildPaymentSuccessEmailPayload(
   options: PaymentEmailOptions = {},
 ): ResendEmailPayload {
   const siteUrl = normalizeSiteUrl(options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL);
-  const accessUrl = `${siteUrl}/vao-khoa-hoc`;
+  const isAgentKit = !isAgentKitPreorderDepositOrder(order) && (
+    order.courseSlug.split(",").some((slug) => slug.trim() === AGENT_KIT_SLUG)
+    || order.orderItems.some((item) => item.slug === AGENT_KIT_SLUG)
+  );
+  const accessUrl = isAgentKit
+    ? `${siteUrl}/learn/${AGENT_KIT_SLUG}/agents`
+    : `${siteUrl}/vao-khoa-hoc`;
   const dashboardUrl = `${siteUrl}/dashboard`;
   const isFacebookEbookBundle = isFacebookAdsEbookBundle(order);
   const isFacebookEbook = isFacebookEbookOrder(order) && !isFacebookEbookBundle;
@@ -345,8 +352,10 @@ export function buildPaymentSuccessEmailPayload(
   const zaloEmailUrl = buildEmailLink(zaloGroupUrl, siteUrl);
   const courseList = getCourseList(order);
   const productTitle = getProductTitle(order);
-  const benefitItems = getBenefitItems(order);
-  const showAgentGuide = shouldShowAgentGuide(benefitItems);
+  const benefitItems = isAgentKit
+    ? ["Quyền truy cập thư viện Agent Kit", "Tải toàn bộ bộ kit hoặc từng Agent theo nhu cầu", "Video hướng dẫn cài đặt và sử dụng", "Prompt thiết lập Codex trong thư viện"]
+    : getBenefitItems(order);
+  const showAgentGuide = !isAgentKit && shouldShowAgentGuide(benefitItems);
   const showAdsSupportAgent = isFacebookAdsSupportPlan(order);
   const safeName = escapeHtml(order.studentName || (isFacebookEbook ? "anh/chị" : "bạn"));
   const safeEmail = escapeHtml(order.email);
@@ -374,6 +383,8 @@ export function buildPaymentSuccessEmailPayload(
   const accountIntro = options.account?.temporaryPassword
     ? `Hệ thống đã ghi nhận thanh toán và tạo tài khoản học cho bạn bằng email
                     <strong style="color:#ffffff">${safeEmail}</strong>.`
+    : isAgentKit
+      ? `Hệ thống đã ghi nhận thanh toán Bộ Agent Kit. Bạn dùng email <strong style="color:#ffffff">${safeEmail}</strong> và mật khẩu hiện tại để mở thư viện bên dưới.`
     : `Hệ thống đã ghi nhận thanh toán của bạn. Vui lòng dùng đúng email
                     <strong style="color:#ffffff">${safeEmail}</strong> để đăng nhập hoặc tạo tài khoản học.`;
 
@@ -383,7 +394,14 @@ export function buildPaymentSuccessEmailPayload(
     : `Hệ thống đã ghi nhận thanh toán của anh/chị. Vui lòng dùng đúng email
                     <strong style="color:#ffffff">${safeEmail}</strong> để đăng nhập và đọc ebook.`;
 
-  const deliveryInstructionsHtml = isFacebookEbook
+  const agentKitLoginInstruction = options.account?.temporaryPassword
+    ? "Nếu được yêu cầu đăng nhập, dùng tài khoản và mật khẩu tạm trong email này; sau đó đổi mật khẩu theo hướng dẫn."
+    : `Nếu được yêu cầu đăng nhập, dùng email ${order.email} và mật khẩu hiện tại.`;
+  const deliveryInstructionsHtml = isAgentKit
+    ? `<p style="color:#e9e3d5;font-size:14px;line-height:1.7"><strong>Bước 1:</strong> Bấm “Mở thư viện Agent Kit” bên dưới.</p>
+       <p style="color:#e9e3d5;font-size:14px;line-height:1.7"><strong>Bước 2:</strong> ${escapeHtml(agentKitLoginInstruction)} Sau khi đăng nhập, mở lại link thư viện bên dưới nếu cần.</p>
+       <p style="color:#e9e3d5;font-size:14px;line-height:1.7"><strong>Bước 3:</strong> Chọn “Thư viện Agent” để tải toàn bộ bộ kit hoặc từng Agent; chọn “Video hướng dẫn” để xem cách cài đặt và sử dụng.</p>`
+    : isFacebookEbook
     ? `
                         <p style="margin:0 0 12px;color:#e9e3d5;font-size:14px;line-height:1.7">
                           <strong style="color:#d8b653">Bước 1:</strong> Đăng nhập bằng tài khoản học trong email này.
@@ -422,7 +440,11 @@ export function buildPaymentSuccessEmailPayload(
                     </a>
       `
     : "";
-  const primaryActionsHtml = isFacebookEbook
+  const primaryActionsHtml = isAgentKit
+    ? `<a href="${escapeHtml(accessEmailUrl)}" style="display:block;background:#d8b653;color:#111111;text-decoration:none;border-radius:10px;padding:17px 20px;font-size:15px;font-weight:900">Mở thư viện Agent Kit</a>
+       <p style="margin:20px 0;color:#bdb7a9;font-size:13px;line-height:1.7">Link truy cập trực tiếp: <a href="${escapeHtml(accessEmailUrl)}" style="color:#d8b653;word-break:break-all">${escapeHtml(accessUrl)}</a><br />Nếu nút không mở được, sao chép đường dẫn trên và mở bằng Chrome.</p>
+       <a href="${escapeHtml(zaloEmailUrl)}" style="display:block;color:#d8b653;font-size:14px">Tham gia nhóm Zalo để nhận hỗ trợ</a>`
+    : isFacebookEbook
     ? `
                     <a href="${escapeHtml(facebookEbookReaderEmailUrl)}" style="display:block;background:#d8b653;color:#111111;text-decoration:none;border-radius:10px;padding:17px 20px;font-size:15px;font-weight:900;letter-spacing:0.02em;text-transform:uppercase">
                       Đọc ebook online
@@ -622,35 +644,13 @@ export function buildPaymentSuccessEmailPayload(
                         <p style="margin:0 0 18px;color:#d8b653;font-size:15px;font-weight:900">
                           📝 Cách nhận sản phẩm:
                         </p>
-                        <p style="margin:0 0 12px;color:#e9e3d5;font-size:14px;line-height:1.7">
-                          <strong style="color:#d8b653">Bước 1:</strong> Bấm nút bên dưới để vào nhóm Zalo nhận hướng dẫn.
-                        </p>
-                        <p style="margin:0 0 12px;color:#e9e3d5;font-size:14px;line-height:1.7">
-                          <strong style="color:#d8b653">Bước 2:</strong> Đăng nhập hoặc tạo tài khoản bằng đúng email đã thanh toán.
-                        </p>
-                        <p style="margin:0;color:#e9e3d5;font-size:14px;line-height:1.7">
-                          <strong style="color:#d8b653">Bước 3:</strong> Vào dashboard để mở khóa học, tài liệu và nhận hỗ trợ khi cần.
-                        </p>
-                        <p style="margin:14px 0 0;color:#f6f1e7;font-size:14px;line-height:1.7;background:#2a2417;border:1px solid #514528;border-radius:10px;padding:12px">
-                          <strong style="color:#d8b653">Lưu ý:</strong> Nếu chưa thấy email hướng dẫn sau vài phút, bạn kiểm tra thêm mục Spam, Quảng cáo/Promotions hoặc Khuyến mãi trong hộp thư.
-                        </p>
+                        ${deliveryInstructionsHtml}
                       </td>
                     </tr>
                   </table>
 
                   <div style="padding-top:30px;text-align:center">
-                    <a href="${escapeHtml(zaloEmailUrl)}" style="display:block;background:#d8b653;color:#111111;text-decoration:none;border-radius:10px;padding:17px 20px;font-size:15px;font-weight:900;letter-spacing:0.02em;text-transform:uppercase">
-                      Tham gia Zalo nhận hướng dẫn
-                    </a>
-                    <a href="${escapeHtml(accessEmailUrl)}" style="display:block;margin-top:14px;background:#f66628;color:#111111;text-decoration:none;border-radius:10px;padding:15px 20px;font-size:15px;font-weight:900">
-                      Truy cập khu vực học viên
-                    </a>
-                    ${agentGuideButton}
-                    ${adsSupportAgentButton}
-                    ${bundleEbookActionsHtml}
-                    <p style="margin:20px 0 0;color:#8f887c;font-size:13px;line-height:1.7">
-                      Link dashboard: <a href="${escapeHtml(dashboardEmailUrl)}" style="color:#d8b653">${escapeHtml(dashboardUrl)}</a>
-                    </p>
+                    ${primaryActionsHtml}
                   </div>
                 </td>
               </tr>
@@ -696,14 +696,15 @@ export function buildPaymentSuccessEmailPayload(
     options.account?.temporaryPassword
       ? `Tài khoản học: ${options.account.email}\nMật khẩu tạm: ${options.account.temporaryPassword}\nSau khi đăng nhập lần đầu, hệ thống sẽ yêu cầu bạn đổi mật khẩu.`
       : "",
-    `Vui lòng dùng đúng email ${order.email} để đăng nhập/tạo tài khoản và mở khóa học.`,
+    isAgentKit ? agentKitLoginInstruction : `Vui lòng dùng đúng email ${order.email} để đăng nhập/tạo tài khoản và mở khóa học.`,
     `Nhóm Zalo: ${zaloGroupUrl}`,
-    `Link truy cập khu vực học viên: ${accessUrl}`,
+    `${isAgentKit ? "Mở thư viện Agent Kit" : "Link truy cập khu vực học viên"}: ${accessUrl}`,
+    isAgentKit ? "Chọn Thư viện Agent để tải toàn bộ bộ kit hoặc từng Agent; chọn Video hướng dẫn để xem cách cài đặt và sử dụng. Nếu nút không mở được, sao chép link thư viện và mở bằng Chrome." : "",
     showAgentGuide ? `Hướng dẫn sử dụng AI Agent: ${agentGuideUrl}` : "",
     showAdsSupportAgent ? `${adsSupportAgentName}: ${adsSupportAgentUrl}` : "",
     isFacebookEbookBundle ? `Đọc Ebook online: ${facebookEbookReaderUrl}` : "",
     isFacebookEbookBundle ? `Tải Ebook PDF: ${facebookEbookPdfUrl}` : "",
-    `Dashboard: ${dashboardUrl}`,
+    isAgentKit ? "" : `Dashboard: ${dashboardUrl}`,
     "Nếu chưa thấy email hướng dẫn sau vài phút, vui lòng kiểm tra mục Spam, Quảng cáo/Promotions hoặc Khuyến mãi.",
   ].join("\n");
 

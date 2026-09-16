@@ -1935,3 +1935,16 @@ Nguồn sửa: `components/app/student-dashboard.tsx`, `app/tai-khoan/page.tsx`,
 Thay thế cách hiển thị danh sách chọn nhanh của lượt trước: toàn bộ phần thẻ `Khóa học của tôi` chuyển lên ngay dưới lời chào, trước thẻ học tiếp/hỗ trợ. Nhóm Đã mở quyền hiển thị trước nhóm Khóa học khác. Thẻ chưa sở hữu hoặc status không phải open dùng grayscale + opacity75; nhãn Chưa mua/Chưa mở bán/Đã đóng đăng ký theo trạng thái. Giữ link học với quyền đã cấp, kể cả khóa đã đóng đăng ký; màu xám không thu hồi quyền. Giữ đủ FBA và Agentkit cùng danh sách, bấm vào đúng nơi học như bản trước.
 
 15 kiểm tra dashboard/account/hành vi đạt, gồm thứ tự thực tế của cây giao diện và trạng thái màu xám; TypeScript/scoped lint/diff check và bản dựng Next Webpack108/108 đạt sau thay đổi. Các kiểm tra quyền/landing90tests ở lượt trước vẫn là bằng chứng cho phần mã không đổi; không gọi đó là90tests được chạy lại ở lượt này. Full lint119errors baseline theo biên bản trước. Chưa phát hành, chưa browser/phiên học viên thật; chờ xác nhận production đã hỏi trước đó. Build log: `.codex-local/student-course-entry-owned-first-build-20260916.log` tại workspace điều phối.
+
+
+## 16/09/2026 — Email Agent Kit: được duyệt phát hành
+
+
+- Nguồn theanh-main, branch fix/agent-kit-payment-email-20260916 tại worktrees/agent-kit-payment-email-20260916, base73e3228. Doctor exact root/remote PASS.
+- payment-success-email.ts xác định đúng slug Agent Kit và loại trừ cọc; CTA chính mở /learn/bo-agent-kit-x10-hieu-suat-cong-viec/agents qua /go. HTML/text có URL đầy đủ, hướng dẫn đăng nhập, tải kit và xem video. Quyền lợi Agent Kit thay nội dung Facebook Ads bị dùng nhầm.
+- Giữ email cọc, FBA/Ebook, tài khoản, SePay, entitlement, tracking và idempotency; không giao dịch hoặc gửi email thật để kiểm tra.
+- 43 tests email/access/preorder PASS,39 prebuild tests PASS; TypeScript, ESLint hai file, diff check và Next webpack build108 PASS (bản cuối).
+- File sửa: lib/notifications/payment-success-email.ts, tests/payment-success-email.test.mjs; repo handoff đã cập nhật. Preview reports/agent-kit-payment-email-20260916/preview.html.
+- Chưa commit/push/deploy. Bước tiếp theo: owner xác nhận production theo AGENTS.md, tích hợp riêng diff sau khi kiểm canonical, exact-root preflight và phát hành.
+
+Owner đã duyệt “được”; đang tích hợp và phát hành, thay thế trạng thái chờ duyệt trên.
