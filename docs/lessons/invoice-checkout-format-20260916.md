@@ -7,3 +7,5 @@ Quyết định owner: bỏ kiểm tra định dạng MST, vẫn cần nhập th
 Sửa: MST văn bản không rỗng sau cleanText; CTA sau toàn bộ hóa đơn; lỗi role=alert trước CTA.
 Xác minh: kiểm tra mã10/12/chi nhánh/tự do, giữ số0đầu, không rỗng, các ô còn lại, thứ tựform và coupon/countdown;100tests đạt.
 Giới hạn: không xác thực MST với cơ quan thuế, không tạo đơn hoặc email thử. Bản sửa12số trong ghi nhớ cũ chưa deploy không đại diện mã đang chạy.
+
+Production verification:81459c5/dpl_Bnt7rGWoY4wQAxoBffiVD64nbSsp READY. Mã12chữ số/văn bản qua invoice validation, MST trống bị chặn; tất cả request dừng trước tạo đơn do cố ý thiếu khóa học. Bundle live byte-match,16route/4static hashes giữ nguyên.
