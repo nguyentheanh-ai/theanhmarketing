@@ -517,3 +517,16 @@ Evidence: `/Users/theanh/CodexProjects/Kinh doanh/reports/student-course-entry-2
 ## 16/09/2026 — HOCVIEN20 (LOCAL_VERIFIED)
 
 Hai form Codex/Bộ Kit thêm coupon20%; server gói990000 ->792000, item/QR đồng nhất.100focused tests,TypeScript,scoped lint,Vite/Next build đạt; full gates còn lỗi ghi trong `docs/HOCVIEN20_20260916.md`. Chưa phát hành/chưa giao dịch thật; cần duyệt production.
+
+
+## 16/09/2026 — HOCVIEN20 và Mục lục Bộ Kit ĐÃ LIVE
+
+DONE theo phê duyệt “làm đi” và yêu cầu đặt Mục lục cạnh Nhận bộ nhân viên AI rồi deploy. Runtime `f89ea5f7f95e5b7017ca974046259eb8d962ceae` gồm coupon305567e, merge/navigation65e6d04 và giữ navigationCodex1c725e6. Preview `dpl_HosxJ68d8nwzpiij9U1meFUBzqoy` READY; exact-root preflight/remote PASS; production `dpl_Fz8HSBU9NMsUN9XZvEufJAT645UL` READY trên www/apex. Rollback `dpl_EtRePg9QjuCz8UmKqUZEztpmyX4P`. Không còn chờ duyệt/deploy.
+
+Hai form Codex/Bộ Kit có mã HOCVIEN20, giảm20% trên990.000đ còn792.000đ; server kiểm đúng product/gói, item/QR cùng giá. Mục lục Bộ Kit nằm cùng sticky-cta-actions bên trái CTA; bỏ vị trí nổi riêng; panel neo phía trên thanh. Bản nguồn Vite5file (RegistrationForm/App/StickyCta/FloatingToc/styles) đã đồng bộ sau baseline/hash check, có backup tại reports. Navigation Codex giữ bản mới, nhận giá sau giảm.
+
+102focused tests,TypeScript,scoped lint,Vite và Next108/108 đạt. Live Codex có input couponCode; Kit loader và JS index-B6nOFIRm.js/CSS index-D92Fi75v.css byte-match source.16route giữ status/destination;4landing tĩnh ngoài scope giữSHA256. Query error/fatal đúng production15phút tại07:50:25UTC không có log. Không tạo đơn, thanh toán, gửi email hoặc replay Purchase thật. Chưa kiểm screenshot/browser của thay đổi mới; các kiểm tra hook/static không thay thế visual QA. Full suite/lint còn giới hạn đã ghi ở phần trước.
+
+Trong khi tích hợp, tác vụ khác commit tài liệu f89ea5f trên HEAD65e6d04 và push cùng lúc; push của task này bị ref-lock race. Đã kiểm ancestry/remote/diff: chỉ2docs khác65e6d04, toàn bộ runtime đã ở remote; không force push hoặc bỏ guard. Canonical sạch trước promote.
+
+Bằng chứng `reports/hocvien20-20260916/`: tests-final.log,build-final.log,vite-navigation-build.log,promote.log,deployment.json,live-verification.json,live-smoke-before/after.json. Handoff canonical `docs/HOCVIEN20_20260916.md`. Source/docs cập nhật đúng main-site; không đổi app học viên/Adplan hoặc dữ liệu khách.

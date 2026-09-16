@@ -2031,3 +2031,16 @@ Nút tròn cạnh Đăng ký mở mục lục nền tối như mẫu,16liên k�
 Local/canonical45Node tests, scoped ESLint/TypeScript/diff check và local108/108 + remote builds đạt. Live Chrome1440/390/320 x default/reduced motion:6cấu hình,30vị trí ghim; modal scroll/16links/active/focus trap/X/Escape/return; section navigation và CTA tới form; form hide + focus-then-scroll restore đều đạt, không overflow/pageerror. Đã xem ảnh popup live390px.16HTTP status/destination và5static SHA256 giữ nguyên. Runtime error/fatal scan15phút đúng deployment tại07:44:52UTC không có kết quả. Không API ghi/giao dịch/email thật trong kiểm tra.
 
 Evidence `reports/codex-floating-navigation-20260916/` tại workspace điều phối: deployment.json,live-audit.json,live-390-no-preference-open.png,live-320-no-preference-sticky.png,smoke-before/after,release-tests.log. Rollback `dpl_43P1wwXLKwqhybb493YWDa7Rg5XX`. Handoff docs/CODEX_SYNC_20260916.md; lesson docs/lessons/codex-floating-navigation-20260916.md. Không còn chờ duyệt/phát hành. Full lint/full suite và thiết bị Safari vật lý chưa kiểm tra; browser coverage là Chrome headless.
+
+
+## 16/09/2026 — HOCVIEN20 và Mục lục Bộ Kit ĐÃ LIVE
+
+DONE theo phê duyệt “làm đi” và yêu cầu đặt Mục lục cạnh Nhận bộ nhân viên AI rồi deploy. Runtime `f89ea5f7f95e5b7017ca974046259eb8d962ceae` gồm coupon305567e, merge/navigation65e6d04 và giữ navigationCodex1c725e6. Preview `dpl_HosxJ68d8nwzpiij9U1meFUBzqoy` READY; exact-root preflight/remote PASS; production `dpl_Fz8HSBU9NMsUN9XZvEufJAT645UL` READY trên www/apex. Rollback `dpl_EtRePg9QjuCz8UmKqUZEztpmyX4P`. Không còn chờ duyệt/deploy.
+
+Hai form Codex/Bộ Kit có mã HOCVIEN20, giảm20% trên990.000đ còn792.000đ; server kiểm đúng product/gói, item/QR cùng giá. Mục lục Bộ Kit nằm cùng sticky-cta-actions bên trái CTA; bỏ vị trí nổi riêng; panel neo phía trên thanh. Bản nguồn Vite5file (RegistrationForm/App/StickyCta/FloatingToc/styles) đã đồng bộ sau baseline/hash check, có backup tại reports. Navigation Codex giữ bản mới, nhận giá sau giảm.
+
+102focused tests,TypeScript,scoped lint,Vite và Next108/108 đạt. Live Codex có input couponCode; Kit loader và JS index-B6nOFIRm.js/CSS index-D92Fi75v.css byte-match source.16route giữ status/destination;4landing tĩnh ngoài scope giữSHA256. Query error/fatal đúng production15phút tại07:50:25UTC không có log. Không tạo đơn, thanh toán, gửi email hoặc replay Purchase thật. Chưa kiểm screenshot/browser của thay đổi mới; các kiểm tra hook/static không thay thế visual QA. Full suite/lint còn giới hạn đã ghi ở phần trước.
+
+Trong khi tích hợp, tác vụ khác commit tài liệu f89ea5f trên HEAD65e6d04 và push cùng lúc; push của task này bị ref-lock race. Đã kiểm ancestry/remote/diff: chỉ2docs khác65e6d04, toàn bộ runtime đã ở remote; không force push hoặc bỏ guard. Canonical sạch trước promote.
+
+Bằng chứng `reports/hocvien20-20260916/`: tests-final.log,build-final.log,vite-navigation-build.log,promote.log,deployment.json,live-verification.json,live-smoke-before/after.json. Handoff canonical `docs/HOCVIEN20_20260916.md`. Source/docs cập nhật đúng main-site; không đổi app học viên/Adplan hoặc dữ liệu khách.
