@@ -537,3 +537,16 @@ Bằng chứng `reports/hocvien20-20260916/`: tests-final.log,build-final.log,vi
 Anh yêu cầu kiểm tra và thêm đếm ngược cho hai landing hiện có. Trước sửa cả hai chuyển thẳng sau API. Sau sửa: overlay3→2→1, mỗi bước1giây, tạo đơn chạy song song. Redirect chỉ khi countdown hoàn tất và có orderCode hợp lệ. API chậm giữ màn chờ; lỗi hủy timer/ẩn overlay/mở khóa form; khóa ref chống gửi trùng; unmount hủy chuyển tiếp. Overlay portal vào body tránh ancestor transform và khôi phục overflow khi đóng. Giữ coupon/giá/attribution/invoice/QR/SePay/email/quyền, không đổi backend.
 
 Source shared components/payment/checkout-countdown.js và checkout-transition.jsx; Vite có bản byte-identical để bundler độc lập. Codex sections và Kit RegistrationForm nối cùng logic. Kit bundle mới index-Oy35VaNk.js, CSS unchanged index-D92Fi75v.css.108focused tests đạt, gồm10form tests thực thi handler/timer giả lập kiểm fast/slow API, đúng3-2-1, chặn double-submit, lỗi+retry và coupon. Kiểm tra không tạo đơn thật, không email/Purchase replay. Chưa visual browser QA theo policy hiện hữu.
+
+
+## 16/09/2026 — Đếm ngược hai landing ĐÃ LIVE
+
+DONE theo yêu cầu bổ sung của anh. Runtime4c866d6, preview dpl_RxMmUAckkzdidmqnfecZyV1pQBsk và production dpl_G6ALtFK2i3SKenzCaUKHqV9pfmwv READY, www/apex xác minh đúng commit. Exact-root preflight/remote đạt; rollback dpl_Fz8HSBU9NMsUN9XZvEufJAT645UL. Không còn chờ duyệt/phát hành.
+
+Hai form Codex/Bộ Kit:3→2→1 trong3giây, request tạo đơn chạy song song, chỉ redirect khi cả hai điều kiện hoàn tất. API lỗi hủy timer/khôi phục form; khóa ref chống trùng; unmount hủy chuyển tiếp; slow API giữ màn chờ. Overlay portal body, khôi phục scroll khi đóng. Không đổi backend/payment/QR/SePay/email/entitlement. HOCVIEN20 và vị trí Mục lục giữ nguyên.
+
+108focused tests,TypeScript,scoped ESLint,diff check,Vite/Next108 đạt. Source Kit đã đồng bộ form+2helpers sau baseline guard, bản helper/overlay trùng byte Next. Live loader Kit trỏ index-Oy35VaNk.js/SHA256106750b8e856e6b074c3796134357897a81f6dca8cfb85612b18bb34fa85ee71; Codex chunk có countdown/overlay; overlay không xuất hiện trước submit.16route status/destination giữ nguyên;4landing tĩnh ngoài scope giữSHA256. Query error/fatal15phút đúng production tại08:02:03UTC không có log.
+
+Không tạo giao dịch/email/Purchase thật; chưa visual browser QA của overlay theo policy hiện hữu. Kiểm countdown là handler/timer/React harness với API giả lập, live xác minh mã/asset và deployment; không coi đó là bằng chứng giao dịch thật. Không lặp full suite/lint ngoài scope đã biết lỗi từ task trước.
+
+File code: app/academy/codex-x10-hieu-suat/sections.tsx; components/payment/checkout-countdown.js và checkout-transition.jsx; Kit RegistrationForm source,loader,static entry,bundle; tests/hocvien20-forms.test.mjs. Đã cập nhật canonical CURRENT_STATE/FEATURE_MAP/WEBSITE_DEEP_STRUCTURE_HANDOFF/HOCVIEN20 và workspace SESSION_STATE/FEATURE_REGISTRY/TASK_LOG/CHANGELOG/ACTIVE_TASKS/PAYMENT-FLOW. Context/contract dùng lại từ task coupon và đọc mẫu transition Facebook Ads hiện tại. Evidence reports/checkout-countdown-20260916 với tests.log,build.log,vite-build.log,promote.log,live-verification.json,deployment.json,live-smoke-before/after.json.
