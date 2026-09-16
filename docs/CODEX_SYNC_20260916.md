@@ -47,3 +47,13 @@ Tái hiện live trước sửa: focus studentName rồi cuộn về #van-de, fo
 45Node tests, scoped ESLint, TypeScript/Next Webpack108/108 và diff check đạt. Browser1440/390/320 x default/reduced motion:30vị trí ghim đúng viewport, modal16links/scroll/active, bounds, X/Escape/focus trap/return, link tới video, CTA focus form/hide và focus-then-scroll restore đạt; không pageerror/overflow. Đã xem ảnh popup390/default và sticky320/default. Bản build, giá2.599.000/990.000, order plan, video, payment/tracking không đổi ngoài navigation. Không tạo đơn/email thật.
 
 Nguồn thêm navigation-items.ts,sticky-navigation.tsx; cập nhật page/sections/showcase/redesign và tests/codex-landing-browser.mjs; test mới tests/codex-sticky-navigation-browser.mjs. Đang tích hợp/phát hành. Rollback trước sửa dpl_43P1wwXLKwqhybb493YWDa7Rg5XX. Evidence candidate reports/codex-floating-navigation-20260916. Lesson docs/lessons/codex-floating-navigation-20260916.md.
+
+
+## 16/09/2026 — Mục lục nổi và sửa thanh ghim Codex ĐÃ LIVE
+DONE. Thay thế bản mục lục dẫn tới section theo phản hồi ảnh của anh. Runtime `1c725e6b34394fee82b97ff58e38d184f199ac4d` đã canonical/push/preflight đạt; preview `dpl_2BRDzwQr79W86xGgDvJGLnrXYWkx` và production `dpl_EtRePg9QjuCz8UmKqUZEztpmyX4P` READY. www/apex được xác minh cùng deployment/SHA.
+
+Nút tròn cạnh Đăng ký mở mục lục nền tối như mẫu,16liên kết theo lợi ích, active section, danh sách cuộn, đóngX/Escape và CTA. Bỏ section mục lục dài trên trang. Thanh đăng ký fixed mọi vị trí; chỉ ẩn khi form xuất hiện, hiện lại khi cuộn khỏi form dù input còn focus. Nguyên nhân cũ đã tái hiện và sửa: điều kiện formFocused giữ ẩn khi form đã ở ngoài viewport. Giữ giá/order/tracking/video và các flow khác.
+
+Local/canonical45Node tests, scoped ESLint/TypeScript/diff check và local108/108 + remote builds đạt. Live Chrome1440/390/320 x default/reduced motion:6cấu hình,30vị trí ghim; modal scroll/16links/active/focus trap/X/Escape/return; section navigation và CTA tới form; form hide + focus-then-scroll restore đều đạt, không overflow/pageerror. Đã xem ảnh popup live390px.16HTTP status/destination và5static SHA256 giữ nguyên. Runtime error/fatal scan15phút đúng deployment tại07:44:52UTC không có kết quả. Không API ghi/giao dịch/email thật trong kiểm tra.
+
+Evidence `reports/codex-floating-navigation-20260916/` tại workspace điều phối: deployment.json,live-audit.json,live-390-no-preference-open.png,live-320-no-preference-sticky.png,smoke-before/after,release-tests.log. Rollback `dpl_43P1wwXLKwqhybb493YWDa7Rg5XX`. Handoff docs/CODEX_SYNC_20260916.md; lesson docs/lessons/codex-floating-navigation-20260916.md. Không còn chờ duyệt/phát hành. Full lint/full suite và thiết bị Safari vật lý chưa kiểm tra; browser coverage là Chrome headless.
