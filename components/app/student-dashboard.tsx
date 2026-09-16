@@ -17,6 +17,7 @@ import {
   getSuggestedCoursesForDashboard,
 } from "@/lib/student-dashboard-courses";
 import { toYouTubeThumbnailUrl } from "@/lib/youtube";
+import { getStudentCourseHref } from "@/lib/student-course-navigation";
 import type { ResourceItem } from "@/services/resourceService";
 
 type StudentDashboardProps = {
@@ -39,18 +40,6 @@ function getCourseImage(course: Course) {
 
 function isFacebookEbookCourse(course: Course) {
   return course.slug === FACEBOOK_EBOOK_COURSE_SLUG;
-}
-
-function getFirstLessonHref(course: Course) {
-  if (isFacebookEbookCourse(course)) {
-    return FACEBOOK_EBOOK_READER_HREF;
-  }
-
-  const firstLesson = course.modules
-    .flatMap((module) => module.lessons)
-    .sort((a, b) => a.order - b.order)[0];
-
-  return firstLesson ? `/learn/${course.slug}/${firstLesson.id}` : `/khoa-hoc/${course.slug}`;
 }
 
 function getStudentOfferPrice(course: Course) {
@@ -79,20 +68,22 @@ function CourseTile({
   const imageUrl = getCourseImage(course);
   const lessonCount = getCourseLessonCount(course);
   const moduleCount = getCourseModuleCount(course);
+  const isMuted = !isOwned || course.status !== "open";
+  const courseHref = isOwned ? getStudentCourseHref(course) : `/khoa-hoc/${course.slug}`;
 
   return (
     <article
-      className={`overflow-hidden rounded-[18px] ring-1 transition-colors ${
-        isOwned
+      className={`overflow-hidden rounded-[18px] ring-1 transition-colors ${isMuted ? "grayscale opacity-75" : ""} ${
+        !isMuted
           ? isDark
             ? "bg-[#26252c] ring-white/10"
             : "bg-white ring-black/8 shadow-[0_18px_55px_rgba(29,24,16,0.08)]"
           : isDark
-            ? "bg-[#17171c] opacity-78 ring-white/8"
-            : "bg-[#f1eee8] opacity-88 ring-black/8"
+            ? "bg-[#1e1e22] ring-white/8"
+            : "bg-[#ededed] ring-black/8"
       }`}
     >
-      <div className="relative aspect-video overflow-hidden bg-[#101116]">
+      <Link href={courseHref} aria-label={isOwned ? `Vào học: ${course.title}` : course.title} className="relative block aspect-video overflow-hidden bg-[#101116]">
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -111,15 +102,20 @@ function CourseTile({
               isOwned ? "bg-[#49b77a] text-white" : "bg-[#e6c672] text-[#30250c]"
             }`}
           >
-            {isOwned ? "Đã sở hữu" : "Chưa mở quyền"}
+            {isOwned ? "Đã sở hữu" : "Chưa mua"}
           </span>
-          {!isOwned && studentOfferPrice ? (
+          {course.status !== "open" ? (
+            <span className="rounded-full bg-neutral-700 px-3 py-1 text-[11px] font-black text-white">
+              {course.status === "coming-soon" ? "Chưa mở bán" : "Đã đóng đăng ký"}
+            </span>
+          ) : null}
+          {!isOwned && course.status === "open" && studentOfferPrice ? (
             <span className="rounded-full bg-white/92 px-3 py-1 text-[11px] font-black text-[#1f5e41]">
               Ưu đãi Growth Hub -5%
             </span>
           ) : null}
         </div>
-      </div>
+      </Link>
 
       <div className="p-5">
         <div className="flex items-center justify-between gap-3 text-xs font-bold">
@@ -133,7 +129,7 @@ function CourseTile({
           ) : null}
         </div>
 
-        <Link href={`/khoa-hoc/${course.slug}`} className="mt-3 block">
+        <Link href={courseHref} className="mt-3 block">
           <h3 className={`text-xl font-black leading-tight ${isDark ? "text-white" : "text-black"}`}>
             {course.title}
           </h3>
@@ -180,10 +176,10 @@ function CourseTile({
               </div>
             ) : (
               <Link
-                href={getFirstLessonHref(course)}
+                href={courseHref}
                 className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#49b77a] px-5 text-sm font-black text-white transition-colors hover:bg-[#3aa86c]"
               >
-                Vào workflow
+                Vào học
               </Link>
             )
           ) : course.status === "open" ? (
@@ -222,7 +218,7 @@ export function StudentDashboard({
   const ownedCourses = getOwnedCoursesInAccessOrder(courses, ownedSlugs);
   const suggestedCourses = getSuggestedCoursesForDashboard(courses, ownedSlugs);
   const activeCourse = getPrimaryDashboardCourse(courses, ownedSlugs);
-  const nextLessonHref = activeCourse ? getFirstLessonHref(activeCourse) : "/khoa-hoc";
+  const nextLessonHref = activeCourse ? getStudentCourseHref(activeCourse) : "/khoa-hoc";
   const activeCourseIsFacebookEbook = activeCourse ? isFacebookEbookCourse(activeCourse) : false;
   const completion = activeCourse ? Math.max(0, Math.min(100, Math.round(progressBySlug[activeCourse.slug] ?? 0))) : 0;
 
@@ -304,10 +300,48 @@ export function StudentDashboard({
               href={nextLessonHref}
               className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#49b77a] px-5 text-sm font-black text-white transition-colors hover:bg-[#3aa86c]"
             >
-              Học tiếp
+              {activeCourse ? "Học tiếp" : "Xem khóa học"}
             </Link>
           </div>
         </header>
+
+        <section id="khoa-hoc" className="mb-6">
+          <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className={`text-xs font-black uppercase tracking-[0.16em] ${isDark ? "text-[#b79cff]" : "text-[#7a4ad8]"}`}>
+                Chương trình
+              </p>
+              <h2 className="mt-2 text-3xl font-black tracking-[-0.04em]">Khóa học của tôi</h2>
+            </div>
+            <p className={`max-w-xl text-sm leading-6 ${mutedText}`}>
+              Các khóa đã mua hoặc được mở quyền hiển thị trước. Chọn khóa để vào học ngay.
+            </p>
+          </div>
+
+          {ownedCourses.length > 0 ? (
+            <>
+              <h3 className={`mt-6 text-sm font-black uppercase tracking-[0.14em] ${isDark ? "text-white/58" : "text-black/48"}`}>
+                Đã mở quyền ({ownedCourses.length})
+              </h3>
+              <div className="mt-3 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                {ownedCourses.map((course) => (
+                  <CourseTile key={course.slug} course={course} isOwned isDark={isDark} progress={Math.round(progressBySlug[course.slug] ?? 0)} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className={`mt-4 text-sm ${mutedText}`}>Tài khoản chưa có khóa học được mở quyền.</p>
+          )}
+
+          <h3 className={`mt-7 text-sm font-black uppercase tracking-[0.14em] ${isDark ? "text-white/58" : "text-black/48"}`}>
+            Khóa học khác
+          </h3>
+          <div className="mt-3 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {suggestedCourses.map((course) => (
+              <CourseTile key={course.slug} course={course} isOwned={false} isDark={isDark} progress={0} />
+            ))}
+          </div>
+        </section>
 
         <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
           <div className={`overflow-hidden rounded-[18px] ring-1 ${panelClass}`}>
@@ -346,7 +380,7 @@ export function StudentDashboard({
                   href={nextLessonHref}
                   className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 text-sm font-black text-black ring-1 ring-black/8"
                 >
-                  {activeCourseIsFacebookEbook ? "Đọc online" : "Vào phòng học"}
+                  {activeCourseIsFacebookEbook ? "Đọc online" : activeCourse ? "Vào phòng học" : "Xem khóa học"}
                 </Link>
                 {activeCourseIsFacebookEbook ? (
                   <Link
@@ -374,42 +408,6 @@ export function StudentDashboard({
               </Link>
             </section>
 
-          </div>
-        </section>
-
-        <section id="khoa-hoc" className="mt-6">
-          <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className={`text-xs font-black uppercase tracking-[0.16em] ${isDark ? "text-[#b79cff]" : "text-[#7a4ad8]"}`}>
-                Chương trình
-              </p>
-              <h2 className="mt-2 text-3xl font-black tracking-[-0.04em]">Engine đã sở hữu và chương trình có thể nâng cấp</h2>
-            </div>
-            <p className={`max-w-xl text-sm leading-6 ${mutedText}`}>
-              Chương trình chưa mở quyền được làm tối hơn và áp dụng ưu đãi riêng 5% cho học viên đang có tài khoản.
-            </p>
-          </div>
-
-          {ownedCourses.length > 0 ? (
-            <>
-              <h3 className={`mt-6 text-sm font-black uppercase tracking-[0.14em] ${isDark ? "text-white/58" : "text-black/48"}`}>
-                Đã sở hữu
-              </h3>
-              <div className="mt-3 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {ownedCourses.map((course) => (
-                  <CourseTile key={course.slug} course={course} isOwned isDark={isDark} progress={Math.round(progressBySlug[course.slug] ?? 0)} />
-                ))}
-              </div>
-            </>
-          ) : null}
-
-          <h3 className={`mt-7 text-sm font-black uppercase tracking-[0.14em] ${isDark ? "text-white/58" : "text-black/48"}`}>
-            Có thể nâng cấp
-          </h3>
-          <div className="mt-3 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {suggestedCourses.map((course) => (
-              <CourseTile key={course.slug} course={course} isOwned={false} isDark={isDark} progress={0} />
-            ))}
           </div>
         </section>
 

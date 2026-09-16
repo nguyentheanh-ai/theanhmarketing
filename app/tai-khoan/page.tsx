@@ -5,6 +5,7 @@ import { AccountProfileForm } from "@/components/account/account-profile-form";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { PageShell } from "@/components/site/page-shell";
 import { requireStudentAuth } from "@/lib/auth/session";
+import { getStudentCourseHref } from "@/lib/student-course-navigation";
 import { getStudentPortalSnapshot } from "@/services/studentPortalService";
 
 export const metadata: Metadata = { title: "Tài khoản", robots: { index: false, follow: false } };
@@ -52,7 +53,7 @@ export default async function AccountPage() {
               <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-2xl bg-[#eaf7ff] text-[#087dc6]"><GraduationCap className="size-5" /></span><div><h2 className="text-lg font-black text-[#12335b]">Khóa học đã đăng ký</h2><p className="text-xs font-bold text-[#6486a2]">{ownedCourses.length} khóa trong tài khoản</p></div></div>
               <div className="mt-5 grid gap-3">
                 {ownedCourses.length ? ownedCourses.map((course) => (
-                  <Link className="rounded-2xl border border-[#d8edf9] bg-[#f4fbff] p-4 text-sm font-black leading-5 text-[#12335b] transition hover:border-[#9bd8fb] hover:bg-[#eaf7ff]" href="/dashboard" key={course.slug}>{course.title}</Link>
+                  <Link className="rounded-2xl border border-[#d8edf9] bg-[#f4fbff] p-4 text-sm font-black leading-5 text-[#12335b] transition hover:border-[#9bd8fb] hover:bg-[#eaf7ff]" href={getStudentCourseHref(course)} key={course.slug}>{course.title}</Link>
                 )) : <p className="rounded-2xl bg-[#f4fbff] p-4 text-sm font-semibold text-[#6486a2]">Tài khoản chưa có khóa học.</p>}
               </div>
             </section>

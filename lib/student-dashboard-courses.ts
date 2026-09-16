@@ -47,5 +47,5 @@ export function getSuggestedCoursesForDashboard(courses: Course[], ownedSlugs: s
 }
 
 export function getPrimaryDashboardCourse(courses: Course[], ownedSlugs: string[]) {
-  return getOwnedCoursesInAccessOrder(courses, ownedSlugs)[0] ?? sortCoursesForStudentDashboard(courses)[0] ?? null;
+  return getOwnedCoursesInAccessOrder(courses, ownedSlugs)[0] ?? null;
 }
