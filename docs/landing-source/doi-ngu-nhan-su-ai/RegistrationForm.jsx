@@ -1,7 +1,13 @@
-import { useEffect, useState } from "react";
+import { startCheckoutCountdown } from "./checkout-countdown.js";
+import { CheckoutTransition } from "./checkout-transition.jsx";
+import { useEffect, useRef, useState } from "react";
 import { buildOrderPayload, createLeadId, getClientAttribution, markInitiateCheckoutDispatched, trackMarketingEvent, trackOnce } from "../checkout.js";
 
 export default function RegistrationForm({ product }) {
+  const [countdown, setCountdown] = useState(null);
+  const locked = useRef(false);
+  const transitionRef = useRef(null);
+  useEffect(() => () => transitionRef.current?.cancel(), []);
   const [couponCode, setCouponCode] = useState("");
   const normalizedCoupon = couponCode.trim().toUpperCase();
   const couponApplied = normalizedCoupon === "HOCVIEN20";
@@ -20,13 +26,17 @@ export default function RegistrationForm({ product }) {
 
   const submit = async (event) => {
     event.preventDefault();
-    if (isSubmitting) return;
+    if (locked.current) return;
     if (normalizedCoupon && !couponApplied) { setMessage("Mã giảm giá không hợp lệ. Vui lòng kiểm tra hoặc xóa mã để tiếp tục."); return; }
     setMessage("");
+    locked.current = true;
     setIsSubmitting(true);
+    const transition = startCheckoutCountdown(setCountdown);
+    transitionRef.current = transition;
 
     const formData = new FormData(event.currentTarget);
-    const attribution = getClientAttribution();
+    let attribution = {};
+    try { attribution = getClientAttribution(); } catch { /* Optional attribution cannot block checkout. */ }
     const leadId = createLeadId();
     const payload = buildOrderPayload({ formData, attribution, needsInvoice, leadId, paymentPlan: product.paymentPlan });
 
@@ -40,6 +50,7 @@ export default function RegistrationForm({ product }) {
       if (!response.ok || !result.ok || !result.order?.orderCode) {
         throw new Error(result.message || "Chưa tạo được đơn thanh toán.");
       }
+      try {
       trackMarketingEvent("Lead", {
         event_id: result.order.orderCode,
         content_name: "Doi Ngu Nhan Su AI",
@@ -58,15 +69,22 @@ export default function RegistrationForm({ product }) {
         ...attribution,
       });
       markInitiateCheckoutDispatched(result.order.orderCode);
+      } catch { /* Optional analytics cannot block checkout. */ }
+      if (!(await transition.done) || transition.cancelled) return;
       window.location.assign(`/thanh-toan/${encodeURIComponent(result.order.orderCode)}`);
     } catch (error) {
-      trackMarketingEvent("form_error", { event_id: leadId, content_name: "Doi Ngu Nhan Su AI" });
+      transition.cancel();
+      setCountdown(null);
+      locked.current = false;
+      try { trackMarketingEvent("form_error", { event_id: leadId, content_name: "Doi Ngu Nhan Su AI" }); } catch { /* Restore form even when analytics fail. */ }
       setMessage(error instanceof Error ? error.message : "Chưa tạo được đơn thanh toán.");
       setIsSubmitting(false);
     }
   };
 
   return (
+    <>
+    <CheckoutTransition seconds={countdown} />
     <form id="purchase-form" className="registration-form" onSubmit={submit} aria-labelledby="registration-title" data-reveal>
       <header><img src="/doi-ngu-nhan-su-ai/brand/ta-mark.svg" alt="Logo The Anh Marketing" /><div><span>The Anh Marketing</span><strong>{product.name}</strong></div></header>
       <h2 id="registration-title">Thông tin nhận bộ AI</h2>
@@ -99,5 +117,6 @@ export default function RegistrationForm({ product }) {
 
       {message && <p className="form-message" role="status">{message}</p>}
     </form>
+    </>
   );
 }
