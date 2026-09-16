@@ -1990,3 +1990,14 @@ Anh đã yêu cầu “Thêm cái mục lục nữa - bên cạnh nút đăng k�
 
 ### Bản cuối trước tích hợp
 Browser audit bản có nút Mục lục đạt:1440/768/390/320 không overflow; nút Mục lục và Đăng ký cùng hàng tại1440/390/320, bấm đến #muc-luc đúng; form mock error/success/giá/invoice/attribution đạt; toàn bộ video phát được; không pageerror. Đã xem screenshot desktop1440 và mobile320 sticky. Build cuối108/108 và TypeScript/scoped ESLint PASS. Tiến hành tích hợp và phát hành theo phê duyệt của anh.
+
+
+## 16/09/2026 — Codex: giá, mục lục và video ĐÃ LIVE
+
+DONE. Anh duyệt “Đẩy lên đi em” và yêu cầu nút Mục lục cạnh Đăng ký ngay ở chân trang. Commit `d2f048010718bd2e44e1a83a82ea6cdf10dfa4f7` đã fast-forward vào canonical/push; preflight exact-root/remote đạt. Preview `dpl_7St9sRc7uTRNX6hB87Y5pY8GiyNt` READY; promote tạo production `dpl_43P1wwXLKwqhybb493YWDa7Rg5XX` READY. API xác minh cả www/apex đúng commit và deployment.
+
+Giá gốc2.599.000đ, giá chính thức990.000đ tại hero/offer/sticky; gói thanh toán hiện có agent-kit-offer-990. Mục lục16phần viết theo lợi ích; Thành quả Agent Video7video dùng nguồn Bộ Kit; nút Mục lục cạnh Đăng ký trong thanh cuối màn hình, dẫn #muc-luc; mobile hai nút cùng hàng dưới giá. Không đổi backend/payment/SePay/email/quyền hoặc Pixel routing.
+
+45Node tests trên canonical đạt; TypeScript/scoped ESLint/diff check, local build108/108 và remote preview/production builds đạt. Chrome production1440/768/390/320 không overflow/ảnh hỏng/anchor thiếu;17sections; video decode/play đạt; nút mục lục và đăng ký cùng hàng và điều hướng đúng; mock API xác minh giá/plan/slug/invoice/attribution, lỗi phục hồi, checkout/dedup đạt; không pageerror. Đã xem ảnh live320px sticky.16HTTP smoke giữ status/destination;5landing tĩnh giữSHA256. Runtime error/fatal scan15phút theo đúng deployment tại07:27:40UTC không có kết quả.
+
+Không tạo đơn thật, không gửi email, không mutation DB; các thử form đều bị chặn và giả lập trong browser. Không tuyên bố có giao dịch thanh toán thật sau phát hành. Full lint/full suite không chạy trong scope này. Rollback `dpl_8kEzWymZXoZntxFAk5BkVVGyLVvv`. Evidence `reports/codex-sync-20260916/` tại workspace điều phối: deployment.json,live-browser-audit.json,live-320-sticky.png,live-smoke-before/after.json,release-tests.log. Handoff nguồn `docs/CODEX_SYNC_20260916.md`. Không còn bước chờ phê duyệt hoặc phát hành; các trạng thái chờ ở trên là lịch sử.
