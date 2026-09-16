@@ -714,3 +714,14 @@ Bỏ regex định dạng MST ở shared invoice helper, vẫn bắt buộc MST 
 16route status/destination giữ nguyên;4landing tĩnh ngoài scope giữSHA256;5source landing bảo vệ không đổi. Query error/fatal đúng production15phút đến08:41:19UTC không có kết quả. Chưa browser visual QA/Safari vật lý; thứ tựform được kiểm qua React harness, bundle live đúng; full-suite/full-lint ngoài scope không chạy lại các lỗi đã biết. Evidence reports/invoice-checkout-20260916 gồm tests/payment-regression/typecheck/lint/build,source-verification,live-verification,live-smoke-before/after,deployment,promote,production-ready. Context đã đọc: registry/rules/policy, ACTIVE_TASKS/protocol/context/state/features/payment/email, repoAGENTS/CURRENT_STATE/FEATURE_MAP/handoff/design/SePay; code đúng main-site. Các trạng thái chờ ở phía trên đã được thay thế.
 
 Auto-review lần đầu từ chối lệnh gộp merge/push vì chưa chứng minh đích remote tin cậy. Sau readback origin=expected_remote registry, allowed branch/upstream và Vercel live sử dụng đúng repo, push đúng1commit đã được chấp thuận. Không bypass, không force push hoặc đổi đích.
+
+
+## 16/09/2026 — Hai banner Video/Nhân viên AI ĐÃ LIVE
+
+DONE theo xác nhận “ok” của anh. Runtime03d1c5c721c3f4523a48c617d899beef9ad79b95, preview dpl_2tRPzNSWamAQ6GbVVUFcsuBNzDzL và production dpl_HN34eo9A6ennvsuaqLwzgbYngS2J READY; www/apex gán đúng production. Preflight exact release-root và remote đạt. Rollback dpl_Bnt7rGWoY4wQAxoBffiVD64nbSsp.
+
+Hai banner có CTA nền trắng “Xem video hướng dẫn” và “Mở bộ kit Agent”, hướng dẫn bấm, nhãn Đang xem; mobile xếp một cột. Giữ rename Nhân viên AI từ thay đổi đang dở. Chỉ2file runtime agent-library.tsx/premium.css; không sửa landing/payment/email/download/access/tracking. Canonical byte-identical candidate đã kiểm110tests, TypeScript, scoped ESLint, local108routes; remote preview/production build đạt.
+
+16route giữ status và destination;4landing tĩnh ngoài scope giữSHA256. Log error/fatal đúng deployment15phút kết thúc09:37:55UTC không có kết quả. Chưa visual browser/authenticated student QA. Deployment đúngSHA đã xác minh; chưa xác minh riêng nội dung chunk JS/CSS qua public URL, không coi metadata là bằng chứng thao tác học viên.
+
+Evidence reports/agent-banner-clarity-20260916/{deployment,alias-before,smoke-comparison,live-smoke-before,live-smoke-after}.json; build/tests.log. Không còn chờ duyệt/deploy. Đã cập nhật workspace SESSION_STATE/FEATURE_REGISTRY/TASK_LOG/CHANGELOG/ACTIVE_TASKS và repo handoff. Các dòng READY_FOR_REVIEW/chưa production phía trên là lịch sử, được mục này thay thế.

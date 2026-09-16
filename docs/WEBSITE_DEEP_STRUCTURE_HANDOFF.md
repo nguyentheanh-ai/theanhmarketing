@@ -2097,3 +2097,14 @@ Doctor đã chạy, báo release root dirty đúng một file agent-library.tsx 
 71 Agent Library tests và39 prebuild/regression tests đạt; scoped ESLint và TypeScript đạt. Chưa deploy; chưa visual browser QA/phiên học viên thật theo policy hiện hữu. Bước tiếp theo: duyệt production, đối chiếu thay đổi rename hiện có, tích hợp đúng release root, chạy guarded preflight và live readback. Không coi test nguồn là bằng chứng khách đã nhìn thấy UI mới.
 
 Build cuối cùng sau nhãn truy cập đạt108/108routes. Evidence reports/agent-banner-clarity-20260916/{build,tests}.log. Trạng thái READY_FOR_REVIEW, chưa production.
+
+
+## 16/09/2026 — Hai banner Video/Nhân viên AI ĐÃ LIVE
+
+DONE theo xác nhận “ok” của anh. Runtime03d1c5c721c3f4523a48c617d899beef9ad79b95, preview dpl_2tRPzNSWamAQ6GbVVUFcsuBNzDzL và production dpl_HN34eo9A6ennvsuaqLwzgbYngS2J READY; www/apex gán đúng production. Preflight exact release-root và remote đạt. Rollback dpl_Bnt7rGWoY4wQAxoBffiVD64nbSsp.
+
+Hai banner có CTA nền trắng “Xem video hướng dẫn” và “Mở bộ kit Agent”, hướng dẫn bấm, nhãn Đang xem; mobile xếp một cột. Giữ rename Nhân viên AI từ thay đổi đang dở. Chỉ2file runtime agent-library.tsx/premium.css; không sửa landing/payment/email/download/access/tracking. Canonical byte-identical candidate đã kiểm110tests, TypeScript, scoped ESLint, local108routes; remote preview/production build đạt.
+
+16route giữ status và destination;4landing tĩnh ngoài scope giữSHA256. Log error/fatal đúng deployment15phút kết thúc09:37:55UTC không có kết quả. Chưa visual browser/authenticated student QA. Deployment đúngSHA đã xác minh; chưa xác minh riêng nội dung chunk JS/CSS qua public URL, không coi metadata là bằng chứng thao tác học viên.
+
+Evidence reports/agent-banner-clarity-20260916/{deployment,alias-before,smoke-comparison,live-smoke-before,live-smoke-after}.json; build/tests.log. Không còn chờ duyệt/deploy. Đã cập nhật workspace SESSION_STATE/FEATURE_REGISTRY/TASK_LOG/CHANGELOG/ACTIVE_TASKS và repo handoff. Các dòng READY_FOR_REVIEW/chưa production phía trên là lịch sử, được mục này thay thế.
