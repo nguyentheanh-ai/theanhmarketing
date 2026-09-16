@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { getAgentKitSalePhase, getAgentKitPaymentPlan, AGENT_KIT_SLUG, AGENT_KIT_PREORDER_PRICE_VND, AGENT_KIT_PREORDER_DEPOSIT_VND, AGENT_KIT_PREORDER_REMAINING_VND, AGENT_KIT_OFFICIAL_PRICE_VND, type AgentKitSalePhase } from "@/lib/agent-kit-preorder";
+import { AGENT_KIT_SLUG } from "@/lib/agent-kit-preorder";
+import { CODEX_AGENT_KIT_OFFER } from "./offer";
 import { getClientAttribution } from "@/lib/tracking/client-attribution";
 import { trackMarketingEvent } from "@/lib/tracking/events";
 import { InvoiceRequestFields } from "@/components/payment/invoice-request-fields";
@@ -10,24 +11,11 @@ import { invoiceInputFromFormData } from "@/lib/orders/invoice";
 import { OfferIcon, outcomes } from "./outcomes";
 
 const money = (value: number) => new Intl.NumberFormat("vi-VN").format(value) + "đ";
-export function HeroPreorder() {
-  const [phase, setPhase] = useState<AgentKitSalePhase | null>(null);
-  useEffect(() => {
-    const refresh = () => setPhase(getAgentKitSalePhase());
-    refresh();
-    const timer = window.setInterval(refresh, 15000);
-    window.addEventListener("focus", refresh);
-    return () => { clearInterval(timer); window.removeEventListener("focus", refresh); };
-  }, []);
+export function HeroOffer() {
   return <div className="cx-hero-preorder" aria-label="Thông tin học phí">
-    {!phase ? <p role="status">Đang cập nhật học phí…</p> : phase === "preorder" ? <>
-      <p className="cx-hero-list-price">Giá chính thức <s>{money(AGENT_KIT_OFFICIAL_PRICE_VND)}</s></p>
-      <p className="cx-hero-preorder-title"><strong>Preorder {money(AGENT_KIT_PREORDER_PRICE_VND)}</strong> <span>đến hết 15/09/2026</span></p>
-      <p className="cx-hero-preorder-terms">Cọc {money(AGENT_KIT_PREORDER_DEPOSIT_VND)} không hoàn lại · thanh toán {money(AGENT_KIT_PREORDER_REMAINING_VND)} còn lại ngày 16/09/2026 · đã bao gồm VAT</p>
-    </> : <>
-      <p className="cx-hero-preorder-title"><strong>Giá chính thức {money(AGENT_KIT_OFFICIAL_PRICE_VND)}</strong></p>
-      <p className="cx-hero-preorder-terms">Thanh toán một lần · đã bao gồm VAT</p>
-    </>}
+    <p className="cx-hero-list-price">Giá gốc <s>{money(CODEX_AGENT_KIT_OFFER.originalPrice)}</s></p>
+    <p className="cx-hero-preorder-title"><strong>Giá chính thức {money(CODEX_AGENT_KIT_OFFER.price)}</strong></p>
+    <p className="cx-hero-preorder-terms">Thanh toán một lần · đã bao gồm VAT · cùng quyền học và bộ Agent doanh nghiệp</p>
   </div>;
 }
 
@@ -65,7 +53,6 @@ export function EfficiencyCalculator() {
 }
 
 export function CodexOffer() {
-  const [phase, setPhase] = useState<AgentKitSalePhase | null>(null);
   const [busy, setBusy] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
   const [formFocused, setFormFocused] = useState(false);
@@ -73,19 +60,12 @@ export function CodexOffer() {
   const locked = useRef(false);
   const viewed = useRef(false);
   useEffect(()=>{
-    const refresh=()=>setPhase(getAgentKitSalePhase());
-    refresh();
-    const timer=window.setInterval(refresh, 15000);
-    window.addEventListener("focus", refresh);
-    return ()=>{clearInterval(timer);window.removeEventListener("focus",refresh);};
-  },[]);
-  useEffect(()=>{
-    if(!phase || viewed.current) return;
+    if(viewed.current) return;
     viewed.current=true;
     try {
-      trackMarketingEvent("ViewContent", {content_name:"Doi Ngu Nhan Su AI",content_ids:[AGENT_KIT_SLUG],content_type:"product",value:phase==="preorder"?AGENT_KIT_PREORDER_DEPOSIT_VND:AGENT_KIT_OFFICIAL_PRICE_VND,currency:"VND"});
+      trackMarketingEvent("ViewContent", {content_name:"Doi Ngu Nhan Su AI",content_ids:[AGENT_KIT_SLUG],content_type:"product",value:CODEX_AGENT_KIT_OFFER.price,currency:"VND"});
     } catch { /* Optional analytics must not crash the registration form. */ }
-  },[phase]);
+  },[]);
   useEffect(()=>{
     const form=document.getElementById("dang-ky");
     if(!form) return;
@@ -93,18 +73,17 @@ export function CodexOffer() {
     observer.observe(form);
     return ()=>observer.disconnect();
   },[]);
-  const preorder = phase === "preorder";
-  const payNow = preorder ? AGENT_KIT_PREORDER_DEPOSIT_VND : AGENT_KIT_OFFICIAL_PRICE_VND;
+  const payNow = CODEX_AGENT_KIT_OFFER.price;
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (locked.current || !phase) return;
-    if(getAgentKitSalePhase()!==phase){setPhase(getAgentKitSalePhase());setMessage("Giá bán vừa chuyển sang giai đoạn mới. Bạn xem lại số tiền rồi tiếp tục đăng ký.");return;}
+    if (locked.current) return;
+
     locked.current=true;setBusy(true);setMessage("");
     const form = new FormData(event.currentTarget);
     let attribution: ReturnType<typeof getClientAttribution> = {};
     try { attribution=getClientAttribution(); } catch { /* A malformed tracking cookie must not block an order. */ }
     try {
-      const response=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({studentName:String(form.get("studentName")||"").trim(),email:String(form.get("email")||"").trim(),phone:String(form.get("phone")||"").trim(),courseSlug:AGENT_KIT_SLUG,paymentPlan:getAgentKitPaymentPlan(),...attribution,landingPage:"academy/codex-x10-hieu-suat",pageUrl:window.location.href,referrer:document.referrer,leadId:`lead-${crypto.randomUUID()}`,invoice:invoiceInputFromFormData(form)})});
+      const response=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({studentName:String(form.get("studentName")||"").trim(),email:String(form.get("email")||"").trim(),phone:String(form.get("phone")||"").trim(),courseSlug:AGENT_KIT_SLUG,paymentPlan:CODEX_AGENT_KIT_OFFER.paymentPlan,...attribution,landingPage:"academy/codex-x10-hieu-suat",pageUrl:window.location.href,referrer:document.referrer,leadId:`lead-${crypto.randomUUID()}`,invoice:invoiceInputFromFormData(form)})});
       const result=await response.json();
       if(!response.ok || !result.ok || !result.order?.orderCode) throw new Error(result.message || "Chưa tạo được mã thanh toán. Bạn thử lại giúp mình.");
       const code=result.order.orderCode as string;
@@ -116,5 +95,5 @@ export function CodexOffer() {
       window.location.assign(`/thanh-toan/${encodeURIComponent(code)}`);
     } catch(error) {setMessage(error instanceof Error ? error.message : "Kết nối chưa thành công. Bạn thử lại giúp mình.");locked.current=false;setBusy(false);}
   }
-  return <><section className="cx-section cx-dark" id="hoc-phi"><div className="cx-wrap cx-offer"><div><p className="cx-label">KHÓA HỌC CODEX & BỘ AGENT</p><h2>Một khóa học.<br />Cả đội ngũ AI để làm việc cùng bạn.</h2><p className="cx-offer-lead">Học cách tự động hóa 8 nhóm công việc và có bộ Agent để bắt tay thực hành.</p><div className="cx-offer-outcomes">{outcomes.map(x=><div key={x.icon}><OfferIcon name={x.icon}/><span>{x.title}</span></div>)}</div><ul className="cx-benefits"><li><b>Hơn 20 video học sẵn</b><span>Xem theo lịch của bạn, dừng để thực hành và mở lại khi cần.</span></li><li><b>Bộ 8 nhân viên AI</b><span>Từ nghiên cứu, nội dung đến video, quảng cáo và website.</span></li><li><b>Hướng dẫn tạo Agent riêng</b><span>Làm theo giọng thương hiệu, sản phẩm và mẫu báo cáo của bạn.</span></li><li><b>Mẫu tài liệu & hướng dẫn ứng dụng</b><span>Có cách làm để dùng lại cho công việc và dự án tiếp theo.</span></li></ul><div className="cx-same-product"><b>Đã mua Đội ngũ nhân sự AI?</b><p>Đây là cùng sản phẩm và quyền học. Bạn không cần mua lại.</p></div><p className="cx-note">Học phí không bao gồm phí tài khoản công cụ hoặc dịch vụ kết nối.</p></div><form id="dang-ky" className="cx-order" onFocusCapture={()=>setFormFocused(true)} onBlurCapture={e=>{if(!e.currentTarget.contains(e.relatedTarget as Node|null))setFormFocused(false);}} onSubmit={submit} aria-labelledby="cx-order-title"><p className="cx-label">{phase ? preorder?"ƯU ĐÃI RIÊNG CHO NGƯỜI ĐẶT TRƯỚC":"ĐĂNG KÝ KHÓA HỌC":"HỌC PHÍ & ĐĂNG KÝ"}</p><h3 id="cx-order-title">{preorder?"Đặt trước, tiết kiệm 200.000đ.":"Bắt đầu học Codex."}</h3>{phase ? <><div className="cx-price-comparison">{preorder && <div className="cx-official-price"><span>Giá chính thức từ 16/09/2026</span><s>{money(AGENT_KIT_OFFICIAL_PRICE_VND)}</s></div>}<div><span className="cx-price-caption">{preorder?"Giá ưu đãi dành riêng cho người đặt trước":"Giá chính thức"}</span><div className="cx-price">{money(preorder?AGENT_KIT_PREORDER_PRICE_VND:AGENT_KIT_OFFICIAL_PRICE_VND)}</div>{preorder && <p className="cx-saving">Tiết kiệm {money(AGENT_KIT_OFFICIAL_PRICE_VND-AGENT_KIT_PREORDER_PRICE_VND)} · Đặt cọc đến hết 15/09/2026</p>}</div></div><p className="cx-vat">Giá đã bao gồm VAT</p>{preorder ? <p className="cx-payment-note">Cọc <b>{money(AGENT_KIT_PREORDER_DEPOSIT_VND)}</b> hôm nay. Thanh toán <b>{money(AGENT_KIT_PREORDER_REMAINING_VND)}</b> còn lại từ 16/09/2026 để nhận đầy đủ bộ Agent và quyền học. Khoản cọc không hoàn lại.</p>:<p className="cx-payment-note">Thanh toán một lần. Sau khi thanh toán thành công, bạn nhận hướng dẫn truy cập sản phẩm qua email.</p>}</>:<p role="status">Đang cập nhật học phí…</p>}<div className="cx-fields"><label>Họ và tên<input name="studentName" autoComplete="name" maxLength={120} required /></label><label>Email nhận thông tin học<input name="email" type="email" autoComplete="email" maxLength={160} required /></label><label>Số điện thoại / Zalo<input name="phone" type="tel" autoComplete="tel" maxLength={30} required /></label></div><InvoiceRequestFields variant="light" /><p className="cx-consent">Tiếp tục đăng ký nghĩa là bạn đồng ý với <a href="/dieu-khoan-mua-hang">điều khoản mua hàng</a>, <a href="/chinh-sach-bao-mat">chính sách bảo mật</a> và <a href="/chinh-sach-giao-nhan-san-pham-so">chính sách giao nhận</a>.</p><button className="cx-btn" type="submit" disabled={busy||!phase}>{busy?"Đang tạo mã thanh toán…":!phase?"Đang cập nhật học phí…":preorder?`Đặt cọc ${money(payNow)} →`:`Đăng ký · ${money(payNow)} →`}</button><p className="cx-note">Bạn sẽ chuyển đến trang thanh toán sau bước này.</p>{message && <p role="alert" className="cx-error">{message}</p>}</form></div></section>{phase && !formVisible && !formFocused && <aside className="cx-sticky" aria-label="Đăng ký khóa Codex"><div className="cx-sticky-inner"><div className="cx-sticky-brand">CODEX <span>X10 HIỆU SUẤT CÁ NHÂN</span></div><div className="cx-sticky-price"><span>{preorder?"Ưu đãi đặt trước":"Giá chính thức"}</span><strong>{money(preorder?AGENT_KIT_PREORDER_PRICE_VND:AGENT_KIT_OFFICIAL_PRICE_VND)}</strong>{preorder && <s>{money(AGENT_KIT_OFFICIAL_PRICE_VND)}</s>}</div><a className="cx-btn" href="#dang-ky" onClick={e=>{e.preventDefault();const input=document.querySelector<HTMLInputElement>("#dang-ky input[name=studentName]");input?.focus({preventScroll:true});document.getElementById("dang-ky")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth",block:"start"});}}>{preorder?`Giữ ưu đãi · Cọc ${money(payNow)}`:`Đăng ký ngay · ${money(payNow)}`} <span aria-hidden>↗</span></a></div></aside>}</>;
+  return <><section className="cx-section cx-dark" id="hoc-phi"><div className="cx-wrap cx-offer"><div><p className="cx-label">KHÓA HỌC CODEX & BỘ AGENT</p><h2>Một khóa học.<br />Cả đội ngũ AI để làm việc cùng bạn.</h2><p className="cx-offer-lead">Học cách tự động hóa 8 nhóm công việc và có bộ Agent để bắt tay thực hành.</p><div className="cx-offer-outcomes">{outcomes.map(x=><div key={x.icon}><OfferIcon name={x.icon}/><span>{x.title}</span></div>)}</div><ul className="cx-benefits"><li><b>Hơn 20 video học sẵn</b><span>Xem theo lịch của bạn, dừng để thực hành và mở lại khi cần.</span></li><li><b>Bộ 8 nhân viên AI</b><span>Từ nghiên cứu, nội dung đến video, quảng cáo và website.</span></li><li><b>Hướng dẫn tạo Agent riêng</b><span>Làm theo giọng thương hiệu, sản phẩm và mẫu báo cáo của bạn.</span></li><li><b>Mẫu tài liệu & hướng dẫn ứng dụng</b><span>Có cách làm để dùng lại cho công việc và dự án tiếp theo.</span></li></ul><div className="cx-same-product"><b>Đã mua Đội ngũ nhân sự AI?</b><p>Đây là cùng sản phẩm và quyền học. Bạn không cần mua lại.</p></div><p className="cx-note">Học phí không bao gồm phí tài khoản công cụ hoặc dịch vụ kết nối.</p></div><form id="dang-ky" className="cx-order" onFocusCapture={()=>setFormFocused(true)} onBlurCapture={e=>{if(!e.currentTarget.contains(e.relatedTarget as Node|null))setFormFocused(false);}} onSubmit={submit} aria-labelledby="cx-order-title"><p className="cx-label">KHÓA HỌC & BỘ AGENT DOANH NGHIỆP</p><h3 id="cx-order-title">Bắt đầu học Codex.</h3><div className="cx-price-comparison"><div className="cx-official-price"><span>Giá gốc</span><s>{money(CODEX_AGENT_KIT_OFFER.originalPrice)}</s></div><div><span className="cx-price-caption">Giá chính thức</span><div className="cx-price">{money(payNow)}</div></div></div><p className="cx-vat">Giá đã bao gồm VAT</p><p className="cx-payment-note">Thanh toán một lần. Sau khi thanh toán thành công, bạn nhận hướng dẫn truy cập sản phẩm qua email.</p><div className="cx-fields"><label>Họ và tên<input name="studentName" autoComplete="name" maxLength={120} required /></label><label>Email nhận thông tin học<input name="email" type="email" autoComplete="email" maxLength={160} required /></label><label>Số điện thoại / Zalo<input name="phone" type="tel" autoComplete="tel" maxLength={30} required /></label></div><InvoiceRequestFields variant="light" /><p className="cx-consent">Tiếp tục đăng ký nghĩa là bạn đồng ý với <a href="/dieu-khoan-mua-hang">điều khoản mua hàng</a>, <a href="/chinh-sach-bao-mat">chính sách bảo mật</a> và <a href="/chinh-sach-giao-nhan-san-pham-so">chính sách giao nhận</a>.</p><button className="cx-btn" type="submit" disabled={busy}>{busy?"Đang tạo mã thanh toán…":`Đăng ký · ${money(payNow)} →`}</button><p className="cx-note">Bạn sẽ chuyển đến trang thanh toán sau bước này.</p>{message && <p role="alert" className="cx-error">{message}</p>}</form></div></section>{!formVisible && !formFocused && <aside className="cx-sticky" aria-label="Đăng ký khóa Codex"><div className="cx-sticky-inner"><div className="cx-sticky-brand">CODEX <span>X10 HIỆU SUẤT CÁ NHÂN</span></div><div className="cx-sticky-price"><span>Giá chính thức</span><strong>{money(payNow)}</strong><s aria-label="Giá gốc">{money(CODEX_AGENT_KIT_OFFER.originalPrice)}</s></div><div className="cx-sticky-actions"><a className="cx-sticky-toc" href="#muc-luc">Mục lục <span aria-hidden>↑</span></a><a className="cx-btn" href="#dang-ky" onClick={e=>{e.preventDefault();const input=document.querySelector<HTMLInputElement>("#dang-ky input[name=studentName]");input?.focus({preventScroll:true});document.getElementById("dang-ky")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth",block:"start"});}}>{`Đăng ký ngay · ${money(payNow)}`} <span aria-hidden>↗</span></a></div></div></aside>}</>;
 }

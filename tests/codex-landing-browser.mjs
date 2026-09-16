@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
-const output = fileURLToPath(new URL('../reports/codex-landing-20260908/', import.meta.url));
+const output = fileURLToPath(new URL('../reports/codex-sync-20260916/', import.meta.url));
 await mkdir(output,{recursive:true});
 const browser=await chromium.launch({channel:'chrome',headless:true});
 const report={viewports:[],interactions:[],sections:[],errors:[]};
@@ -12,12 +12,13 @@ try {
   await context.route('**/*',async route=>{
     const u=new URL(route.request().url());
     if(u.hostname!=='127.0.0.1') return route.abort();
+    if(u.pathname === '/api/orders') { const data = route.request().postDataJSON(); assert.equal(data.paymentPlan, 'agent-kit-offer-990'); assert.equal(data.courseSlug, 'bo-agent-kit-x10-hieu-suat-cong-viec'); assert.equal(data.landingPage, 'academy/codex-x10-hieu-suat'); }
     if(u.pathname.startsWith('/api/')) return route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({ok:false,message:'Chưa tạo được mã thanh toán. Bạn thử lại giúp mình.'})});
     return route.continue();
   });
   const page=await context.newPage();
   page.on('pageerror',e=>report.errors.push(e.message));
-  await page.clock.install({time:new Date('2026-09-08T06:00:00Z')});
+  await page.clock.install({time:new Date('2026-09-16T06:00:00Z')});
   await page.goto('http://127.0.0.1:3108/academy/codex-x10-hieu-suat?utm_source=qa&utm_campaign=codex',{waitUntil:'networkidle'});
   await page.locator('.cx-order button[type=submit]').waitFor();
   for(const width of [1440,768,390,320]) {
@@ -25,7 +26,7 @@ try {
     await page.evaluate(async()=>{await document.fonts.ready;for(const img of document.images){img.loading='eager';await img.decode().catch(()=>{});}});
     const metrics=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,sections:document.querySelectorAll('.cx main>section').length,brokenImages:[...document.querySelectorAll('.cx img')].filter(x=>!x.complete||!x.naturalWidth).map(x=>x.src),badLinks:[...document.querySelectorAll('.cx a[href^="#"]')].filter(a=>!document.querySelector(a.getAttribute('href'))).map(a=>a.getAttribute('href'))}));
     assert.ok(metrics.scrollWidth<=width,`overflow ${width}: ${metrics.scrollWidth}`);
-    assert.equal(metrics.sections,15);assert.deepEqual(metrics.brokenImages,[]);assert.deepEqual(metrics.badLinks,[]);
+    assert.equal(metrics.sections,17);assert.deepEqual(metrics.brokenImages,[]);assert.deepEqual(metrics.badLinks,[]);
     report.viewports.push(metrics);
     await page.screenshot({path:`${output}${width}-full.png`,fullPage:true});
   }
@@ -52,12 +53,12 @@ try {
   await page.evaluate(()=>document.querySelectorAll('.cx details').forEach(x=>x.open=false));
   await page.locator('#gioi-thieu').scrollIntoViewIfNeeded();
   await page.locator('.cx-sticky').waitFor({state:'visible'});
-  assert.match(await page.locator('.cx-sticky').innerText(),/799.000đ/);
-  await page.locator('.cx-sticky a').click();
+  assert.match(await page.locator('.cx-sticky').innerText(),/990.000đ/);
+  await page.locator('.cx-sticky a[href="#dang-ky"]').click();
   await page.locator('.cx-sticky').waitFor({state:'detached'});
   assert.equal(await page.locator('#dang-ky input[name=studentName]').evaluate(x=>x===document.activeElement),true);
-  assert.match(await page.locator('.cx-price-comparison').innerText(),/Giá chính thức từ 16\/09\/2026/);
-  assert.match(await page.locator('.cx-price-comparison').innerText(),/Tiết kiệm 200.000đ/);
+  assert.match(await page.locator('.cx-price-comparison').innerText(),/Giá gốc/);
+  assert.match(await page.locator('.cx-price-comparison').innerText(),/2.599.000đ/);
   await page.locator('#dang-ky input[name=studentName]').blur();
   await page.locator('#gioi-thieu').scrollIntoViewIfNeeded();
   await page.locator('.cx-sticky').waitFor({state:'visible'});
@@ -66,6 +67,15 @@ try {
     await page.screenshot({path:`${output}${width}-sticky.png`});
     const bounds=await page.locator('.cx-sticky').boundingBox();
     assert.ok(bounds.x>=0 && bounds.x+bounds.width<=width);
+    const toc = page.locator('.cx-sticky-toc');
+    const signup = page.locator('.cx-sticky-actions .cx-btn');
+    const tocBounds = await toc.boundingBox();
+    const signupBounds = await signup.boundingBox();
+    assert.ok(Math.abs((tocBounds.y+tocBounds.height/2)-(signupBounds.y+signupBounds.height/2))<2);
+    assert.ok(tocBounds.x+tocBounds.width<=signupBounds.x);
+    await toc.click();
+    await page.waitForFunction(()=>Math.abs(document.getElementById('muc-luc').getBoundingClientRect().top)<200);
+    await page.locator('#gioi-thieu').scrollIntoViewIfNeeded();
   }
   report.interactions.push('Sticky CTA shows correct price, focuses registration, hides at form, and fits 320/390/1440.');
   const visibleCopy=await page.locator('.cx').innerText();
@@ -81,7 +91,7 @@ try {
   assert.equal(await page.locator('.cx-offer-outcomes>div').count(),8);
   assert.equal(await page.locator('.cx-outcome-card .cx-icon-tile svg').count(),8);
   const sectionOrder=await page.locator('.cx main>section').evaluateAll(nodes=>nodes.map(x=>x.id));
-  assert.deepEqual(sectionOrder.slice(0,4),['gioi-thieu','cach-lam','van-de','ung-dung']);
+  assert.deepEqual(sectionOrder.slice(0,5),['gioi-thieu','muc-luc','cach-lam','van-de','ung-dung']);
   report.interactions.push('Eight buyer outcomes and matching offer benefits; result-first section order and icons.');
   await page.locator('.cx-work-detail>summary').click();
   await page.getByLabel('Chọn công việc minh họa').selectOption('1');
@@ -110,25 +120,21 @@ try {
   await form.locator('[name=invoiceEmail]').fill('invoice@example.invalid');
   let payload;let calls=0;
   await page.route('**/api/orders',async route=>{calls++;payload=route.request().postDataJSON();await route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({ok:false,message:'Chưa tạo được mã thanh toán. Bạn thử lại giúp mình.'})});});
-  await form.getByRole('button',{name:/Đặt cọc/}).click();
+  await form.getByRole('button',{name:/Đăng ký · 990/}).click();
   await page.getByRole('alert').waitFor();
   assert.equal(payload.courseSlug,'bo-agent-kit-x10-hieu-suat-cong-viec');
-  assert.equal(payload.paymentPlan,'agent-kit-preorder-deposit-399');
+  assert.equal(payload.paymentPlan,'agent-kit-offer-990');
   assert.equal(payload.landingPage,'academy/codex-x10-hieu-suat');
   assert.equal(payload.utmSource,'qa');assert.equal(payload.invoice.requested,true);
-  assert.equal(await form.getByRole('button',{name:/Đặt cọc/}).isEnabled(),true);
+  assert.equal(await form.getByRole('button',{name:/Đăng ký · 990/}).isEnabled(),true);
   report.interactions.push('Mocked failure recovers; product/plan/attribution/invoice payload correct.');
-  await page.clock.setSystemTime(new Date('2026-09-16T06:00:00Z'));
-  await form.getByRole('button',{name:/Đặt cọc/}).click();
   assert.equal(calls,1);
-  await form.getByRole('button',{name:/Đăng ký · 999/}).waitFor();
-  report.interactions.push('Launch boundary refreshes price and requires review before a new submission.');
   await page.route('**/thanh-toan/MOCKCODEX',route=>route.fulfill({contentType:'text/html',body:'<p>Mock checkout</p>'}));
   await page.unroute('**/api/orders');
   await page.route('**/api/orders',async route=>{payload=route.request().postDataJSON();await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,order:{orderCode:'MOCKCODEX'}})});});
-  await form.getByRole('button',{name:/Đăng ký · 999/}).click();
+  await form.getByRole('button',{name:/Đăng ký · 990/}).click();
   await page.waitForURL('**/thanh-toan/MOCKCODEX');
-  assert.equal(payload.paymentPlan,'agent-kit-standard-999');
+  assert.equal(payload.paymentPlan,'agent-kit-offer-990');
   assert.equal(await page.evaluate(()=>sessionStorage.getItem('tam:initiate-checkout:MOCKCODEX')),'1');
   report.interactions.push('Mocked success redirects to existing checkout; checkout event dedup marker set.');
   assert.deepEqual(report.errors,[]);
