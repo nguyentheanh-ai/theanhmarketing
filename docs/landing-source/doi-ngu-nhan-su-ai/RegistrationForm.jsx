@@ -99,8 +99,6 @@ export default function RegistrationForm({ product }) {
       <p id="kit-coupon-status" role="status">{couponApplied ? "Đã áp dụng mã giảm 20% · Tiết kiệm 198.000đ · Còn 792.000đ" : normalizedCoupon ? "Mã giảm giá không hợp lệ." : "Nhập mã ưu đãi của anh/chị."}</p>
       <p className="form-consent">Bằng việc tiếp tục, anh/chị xác nhận đã đọc và đồng ý với <a href="/dieu-khoan-mua-hang">Điều khoản mua hàng</a>, <a href="/chinh-sach-bao-mat">Chính sách bảo mật</a> và <a href="/chinh-sach-giao-nhan-san-pham-so">chính sách giao nhận sản phẩm số</a>.</p>
 
-      <button className="button button-dark" type="submit" disabled={isSubmitting}>{isSubmitting ? "Đang tạo mã thanh toán..." : couponApplied ? "Tiếp tục thanh toán · 792.000đ" : product.purchaseCta}</button>
-
       <label className="invoice-toggle">
         <input name="needsInvoice" type="checkbox" checked={needsInvoice} onChange={(event) => setNeedsInvoice(event.target.checked)} />
         <span>Mình cần xuất hóa đơn</span>
@@ -115,7 +113,8 @@ export default function RegistrationForm({ product }) {
         </div>
       )}
 
-      {message && <p className="form-message" role="status">{message}</p>}
+      {message && <p className="form-message" role="alert">{message}</p>}
+      <button className="button button-dark" type="submit" disabled={isSubmitting}>{isSubmitting ? "Đang tạo mã thanh toán..." : couponApplied ? "Tiếp tục thanh toán · 792.000đ" : product.purchaseCta}</button>
     </form>
     </>
   );

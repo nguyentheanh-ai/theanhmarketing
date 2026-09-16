@@ -2064,3 +2064,12 @@ Hai form Codex/Bộ Kit:3→2→1 trong3giây, request tạo đơn chạy song s
 Không tạo giao dịch/email/Purchase thật; chưa visual browser QA của overlay theo policy hiện hữu. Kiểm countdown là handler/timer/React harness với API giả lập, live xác minh mã/asset và deployment; không coi đó là bằng chứng giao dịch thật. Không lặp full suite/lint ngoài scope đã biết lỗi từ task trước.
 
 File code: app/academy/codex-x10-hieu-suat/sections.tsx; components/payment/checkout-countdown.js và checkout-transition.jsx; Kit RegistrationForm source,loader,static entry,bundle; tests/hocvien20-forms.test.mjs. Đã cập nhật canonical CURRENT_STATE/FEATURE_MAP/WEBSITE_DEEP_STRUCTURE_HANDOFF/HOCVIEN20 và workspace SESSION_STATE/FEATURE_REGISTRY/TASK_LOG/CHANGELOG/ACTIVE_TASKS/PAYMENT-FLOW. Context/contract dùng lại từ task coupon và đọc mẫu transition Facebook Ads hiện tại. Evidence reports/checkout-countdown-20260916 với tests.log,build.log,vite-build.log,promote.log,live-verification.json,deployment.json,live-smoke-before/after.json.
+
+
+## 16/09/2026 — Sửa thông tin hóa đơn: đã kiểm tra, chuẩn bị deploy
+
+Anh yêu cầu bỏ kiểm tra định dạng mã số thuế vì hộ kinh doanh/doanh nghiệp khác nhau và đã cho phép deploy. Shared `lib/orders/invoice.ts` bỏ regex 10 chữ số/chi nhánh; vẫn bắt buộc MST không rỗng sau làm sạch, giữ số 0 đầu và chuỗi văn bản (giới hạn kỹ thuật 200 ký tự). Tên/địa chỉ/email hóa đơn vẫn kiểm như cũ. Hai API dùng chung helper; không đổi DB/SePay/email/access/giá/coupon/tracking.
+
+Form Bộ Kit đặt một nút thanh toán cuối form, sau hóa đơn và thông báo lỗi role=alert. Giữ countdown3-2-1, chống gửi trùng, HOCVIEN20=792.000đ. Vite bundle index-CmdFTkr4.js, CSS byte-identical. Candidate worktrees/invoice-checkout-20260916 từ canonical d6263ae; bản nguồn Vite được đối chiếu baseline trước đồng bộ.
+
+100/100 kiểm tra liên quan đạt (66invoice/coupon/form/landing/payment +34payment/email); TypeScript, scoped ESLint(0lỗi/1cảnh báo img sẵn có), Vite build, Next Webpack108routes và diff check đạt. Không tạo đơn/email/giao dịch thật. Không chạy lại full-suite/full-lint ngoài phạm vi đã có lỗi được ghi trong HOCVIEN20; chưa browser visual QA/Safari vật lý. Chỉ báo live sau khi xác minh production READY và asset đúng. Rollback hiện tại dpl_G6ALtFK2i3SKenzCaUKHqV9pfmwv.

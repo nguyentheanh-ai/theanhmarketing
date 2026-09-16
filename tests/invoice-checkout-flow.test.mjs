@@ -39,11 +39,11 @@ test("invoice details stay empty when the customer does not request an invoice",
   );
 });
 
-test("invoice request requires all four valid business fields", () => {
+test("invoice request requires a nonempty tax code", () => {
   assert.equal(normalizeInvoiceInput({ requested: true }).ok, false);
   assert.equal(normalizeInvoiceInput({
     requested: true,
-    taxCode: "123",
+    taxCode: "   ",
     companyName: "Công ty TNHH Ví dụ",
     companyAddress: "Hà Nội",
     email: "ketoan@example.com",
@@ -157,4 +157,18 @@ test("Facebook Ads checkout owns its approved product-specific copy", () => {
   assert.match(source, /Nhận toàn bộ hệ thống Facebook Ads – 799\.000đ/);
   assert.match(source, /Gói 799\.000đ gồm khóa video, AI Agent và bộ công cụ triển khai/);
   assert.doesNotMatch(source, /Đăng ký và tạo QR thanh toán/);
+});
+
+const invoiceFixture = { requested: true, companyName: "Hộ kinh doanh ví dụ", companyAddress: "Hà Nội", email: "billing@example.com" };
+test("tax identifiers are preserved without format validation", () => {
+  for (const taxCode of ["001234567890", "0101234567", "0101234567-001", "123", "HKD-1234567890123456"]) {
+    const result = normalizeInvoiceInput({ ...invoiceFixture, taxCode: ` ${taxCode} ` });
+    assert.equal(result.ok, true, taxCode);
+    assert.equal(result.value.taxCode, taxCode);
+  }
+});
+test("removing tax format validation keeps the other invoice requirements", () => {
+  for (const patch of [{companyName: " "}, {companyAddress: " "}, {email: ""}, {email: "invalid"}]) {
+    assert.equal(normalizeInvoiceInput({ ...invoiceFixture, taxCode: "001234567890", ...patch }).ok, false);
+  }
 });

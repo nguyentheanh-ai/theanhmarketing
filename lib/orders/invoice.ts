@@ -26,8 +26,6 @@ export function invoiceInputFromFormData(formData: Pick<FormData, "get">) {
   };
 }
 
-const taxCodePattern = /^\d{10}(?:-\d{3})?$/;
-
 export function normalizeInvoiceInput(input: unknown):
   | { ok: true; value: InvoiceDetails }
   | { ok: false; message: string } {
@@ -36,13 +34,13 @@ export function normalizeInvoiceInput(input: unknown):
   }
 
   const source = input as Record<string, unknown>;
-  const taxCode = cleanText(source.taxCode, 14);
+  const taxCode = cleanText(source.taxCode, 200);
   const companyName = cleanText(source.companyName, 200);
   const companyAddress = cleanText(source.companyAddress, 500);
   const email = cleanEmail(source.email);
 
-  if (!taxCodePattern.test(taxCode)) {
-    return { ok: false, message: "Mã số thuế chưa hợp lệ." };
+  if (!taxCode) {
+    return { ok: false, message: "Vui lòng nhập mã số thuế." };
   }
 
   if (!companyName) {

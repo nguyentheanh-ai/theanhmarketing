@@ -85,3 +85,21 @@ for(const [name,file,exportName,props] of [
   assert.equal(nodes(app.render(),node=>node.type==='button'&&node.props.type==='submit')[0].props.disabled,false);
  });
 }
+
+test('Bộ Kit: invoice fields precede the sole payment button and errors are announced', async () => {
+ const app=mount('docs/landing-source/doi-ngu-nhan-su-ai/RegistrationForm.jsx','default',{product:{name:'Agent Kit',payNowVnd:990000,paymentPlan:'agent-kit-offer-990',purchaseCta:'Tiếp tục thanh toán'}});
+ nodes(app.render(),node=>node.props?.name==='needsInvoice')[0].props.onChange({target:{checked:true}});
+ let elements=nodes(app.render(),()=>true);
+ const submit=elements.findIndex(node=>node.type==='button'&&node.props.type==='submit');
+ assert.equal(elements.filter(node=>node.type==='button'&&node.props.type==='submit').length,1);
+ for(const name of ['taxCode','companyName','companyAddress','invoiceEmail']) {
+  const index=elements.findIndex(node=>node.props?.name===name);
+  assert.ok(index>=0 && index<submit,name);
+  assert.equal(elements[index].props.required,true);
+ }
+ app.setResponse({ok:false,message:'Vui lòng nhập mã số thuế.'});
+ await nodes(app.render(),node=>node.type==='form')[0].props.onSubmit({preventDefault(){},currentTarget:{}});
+ elements=nodes(app.render(),()=>true);
+ const alert=elements.findIndex(node=>node.props?.role==='alert');
+ assert.ok(alert>=0 && alert<elements.findIndex(node=>node.type==='button'&&node.props.type==='submit'));
+});
