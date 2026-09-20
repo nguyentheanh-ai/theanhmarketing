@@ -91,3 +91,12 @@
 @media(prefers-reduced-motion:reduce){.premium-library .library-section-card{transition:none;transform:none}}
 
 @media(max-width:700px){.premium-library .library-sections{grid-template-columns:1fr}.premium-library .cover-cta{font-size:14px}.premium-library .library-section-card>.cover-actions{display:flex}}
+
+/* Embedded in the shared student area. */
+.agent-library.premium-library{padding:0;background:transparent;min-width:0}
+.agent-library.premium-library .shell{display:block;min-height:0;border:0;border-radius:0;box-shadow:none;background:transparent;max-width:none}
+.agent-library.premium-library .main{padding:0;background:transparent}
+.premium-library .category-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+.premium-library .category-tabs .category{width:auto;margin:0;background:white;border:1px solid #dce3ee;color:#52627a;min-height:44px;padding:10px 14px}
+.premium-library .category-tabs .category.active{background:#2558da;color:white;border-color:#2558da}
+@media(max-width:639px){.premium-library .library-section-card{min-height:230px}.premium-library .category-tabs{gap:6px}.premium-library .category-tabs .category{font-size:11px;padding:8px 10px}}

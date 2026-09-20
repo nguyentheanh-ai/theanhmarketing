@@ -1,3 +1,10 @@
+## 20/09/2026 — Nhân viên AI trong khu vực học viên và nội dung trang chủ
+
+- Canonical mới `/dashboard/agents`, gọi nguyên `requireAgentLibraryAccess`; đường `/learn/bo-agent-kit-x10-hieu-suat-cong-viec/agents` redirect307 để giữ link email/bookmark cũ. Download API/bucket/quyền không đổi. `getStudentCourseHref` và `AGENT_LIBRARY_HREF` dùng route mới.
+- `StudentAreaShell` dùng chung dashboard và Agent: menu học viên, topbar, mobile navigation. Bộ lọc Agent chuyển vào phần nội dung, giữ video, tabs, tìm kiếm và download. Dashboard vẫn là server component; không thêm đọc CRM để dựng shell.
+- `HomeCourseHighlights` lấy khóa đang mở và landing hợp lệ từ catalog đang tải; copy từ data/courses.ts, lesson/reference library đã xác minh và catalog/tutorial Agent. Nêu rõ Facebook Ads: chuẩn bị, thiết lập/đọc số, Dataset; tài liệu prompt/Sheet mẫu; Agent, thư viện Ads và AI Master. Không thay offer/giá, không công khai file trả phí.
+- 129 focused tests (bao gồm access/download/redirect/landing/payment), TypeScript, scoped ESLint và diff check đạt. Homepage xem cục bộ mobile419 và desktop1440; catalog local fallback, không phải production data. Chờ Vercel build/live QA. Không sửa public landing, payment, database hoặc Auth.
+
 ## 20/09/2026 — Thông báo khóa mở bán nội bộ
 
 Theo yêu cầu sau phát hành của anh: `/learn/[course]` khi khóa có trong catalog, không có landingPageUrl và chưa có bài công khai sẽ hiện “Khóa học đang được mở bán nội bộ” / “Hãy liên hệ với Thế Anh để được học sớm”, thay404. Khóa có bài công khai vẫn redirect bài đầu; slug không tồn tại vẫn404. TypeScript, scoped ESLint và10 focused tests đạt.

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, BookOpen, FileText, Headphones } from "lucide-react";
+import { HomeCourseHighlights } from "@/components/content/home-course-highlights";
 import { CourseCard } from "@/components/content/course-card";
 import { PageShell } from "@/components/site/page-shell";
 import { getCourses } from "@/services/courseService";
@@ -30,6 +31,7 @@ export default async function Home() {
         <div className={styles.panelBottom}><span>Một nơi để học và thực hành.</span><span>↗</span></div>
       </div>
     </section>
+    <HomeCourseHighlights courses={availableCourses} />
     <section id="chuong-trinh" className={styles.programs}>
       <div className={styles.heading}><div><p className={styles.eyebrow}>CHƯƠNG TRÌNH ĐANG MỞ</p><h2>Chọn điều anh/chị muốn làm tốt hơn.</h2></div><Link href="/khoa-hoc">Tất cả chương trình <ArrowRight size={16} /></Link></div>
       {availableCourses.length ? <div className={styles.courseGrid}>{availableCourses.map((course) => <CourseCard course={course} key={course.slug} />)}</div> : <p className={styles.empty}>Các chương trình đang được cập nhật. <Link href="/khoa-hoc">Xem danh sách khóa học →</Link></p>}

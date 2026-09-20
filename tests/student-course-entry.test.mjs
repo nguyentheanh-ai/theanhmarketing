@@ -10,7 +10,7 @@ const jsx = (type, props) => ({ type, props });
 const kit = "bo-agent-kit-x10-hieu-suat-cong-viec";
 const fba = "facebook-ads-2026";
 const ebook = "ebook-facebook-ads-2026";
-const expectedHref = (slug) => slug === kit ? `/learn/${kit}/agents` : slug === ebook ? "/thu-vien/facebook-ads" : `/learn/${slug}`;
+const expectedHref = (slug) => slug === kit ? "/dashboard/agents" : slug === ebook ? "/thu-vien/facebook-ads" : `/learn/${slug}`;
 
 function load(file, overrides = {}) {
   if (file.endsWith(".css")) return new Proxy({}, { get: (_, key) => key });
@@ -168,3 +168,24 @@ test("unreleased courses are gray even with an existing grant, without removing 
   assert.ok(text(ownedKit).includes("Chưa mở bán"));
   assert.equal(nodes(ownedKit).find((node) => node.type === "a" && text(node) === "Vào học")?.props.href, expectedHref(kit));
 });
+
+test("legacy Agent links redirect into the student area", () => {
+  const { default: Page } = load("app/learn/bo-agent-kit-x10-hieu-suat-cong-viec/agents/page.tsx", {
+    "next/navigation": { redirect: href => { throw new Error(`redirect:${href}`); } },
+  });
+  assert.throws(() => Page(), /redirect:\/dashboard\/agents/);
+});
+for (const [status, allowed] of [[401, false], [403, false], [200, true]]) {
+  test(`student Agent page preserves access boundary: ${status}`, async () => {
+    const { default: Page } = load("app/dashboard/agents/page.tsx", {
+      ...uiDeps,
+      "next/navigation": { redirect: href => { throw new Error(`redirect:${href}`); } },
+      "@/lib/agent-library-access": { AGENT_LIBRARY_HREF: "/dashboard/agents", requireAgentLibraryAccess: async () => allowed ? {ok:true} : {ok:false,status} },
+      "@/components/agent-library/agent-library": { AgentLibrary: () => jsx("section", {"data-private-library":true}) },
+      "@/components/app/student-area-shell": { StudentAreaShell: ({children}) => children },
+    });
+    if (status === 401) return assert.rejects(Page(), /next=%2Fdashboard%2Fagents/);
+    const rendered = nodes(await Page());
+    assert.equal(rendered.some(node => node.props?.["data-private-library"]), allowed);
+  });
+}

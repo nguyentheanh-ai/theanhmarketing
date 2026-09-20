@@ -1,9 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, BookOpen, Check, ChevronRight, FileText, Headphones, Home, LayoutDashboard, Settings } from "lucide-react";
+import { ArrowRight, BookOpen, Check, FileText, Headphones } from "lucide-react";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
-import { SignOutButton } from "@/components/auth/sign-out-button";
-import { BrandMark } from "@/components/site/brand-mark";
+import { StudentAreaShell } from "./student-area-shell";
 import type { Course } from "@/data/courses";
 import { getCourseLessonCount } from "@/data/courses";
 import { FACEBOOK_EBOOK_COURSE_SLUG, FACEBOOK_EBOOK_PDF_HREF, FACEBOOK_EBOOK_READER_HREF } from "@/lib/ebook/facebook-ebook";
@@ -50,26 +49,7 @@ export function StudentDashboard({ courses, ownedSlugs, progressBySlug, resource
   const activeCourse = getPrimaryDashboardCourse(courses, ownedSlugs);
   const nextLessonHref = activeCourse ? getStudentCourseHref(activeCourse) : "/khoa-hoc";
   const availableResources = resources.filter((item) => item.fileUrl && item.access === "Miễn phí").slice(0, 4);
-  return <main className={styles.shell}>
-    <aside className={styles.sidebar}>
-      <Link href="/" className={styles.brand}><BrandMark className={styles.brandMark} /><span>The Anh<span className={styles.brandSub}>KHÔNG GIAN HỌC TẬP</span></span></Link>
-      <p className={styles.navLabel}>HỌC TẬP</p>
-      <nav aria-label="Điều hướng học viên" className={styles.nav}>
-        <Link href="/dashboard" aria-current="page"><LayoutDashboard size={19} />Tổng quan</Link>
-        <Link href="#khoa-hoc"><BookOpen size={19} />Khóa học của tôi<span>{ownedCourses.length}</span></Link>
-        <Link href="#tai-lieu"><FileText size={19} />Tài liệu</Link>
-        <Link href="#ho-tro"><Headphones size={19} />Hỗ trợ</Link>
-        <Link href="/tai-khoan"><Settings size={19} />Tài khoản</Link>
-      </nav>
-      <div className={styles.sidebarBottom}>
-        <Link href="/" className={styles.backHome}><Home size={17} /> Về trang chủ</Link>
-        <div className={styles.identity}><span className={styles.avatar}>{(studentName || "HV").slice(0, 1).toUpperCase()}</span><div><strong>{studentName || "Học viên"}</strong><span>{studentEmail}</span></div></div>
-        <SignOutButton className={styles.signOut} />
-      </div>
-    </aside>
-    <div className={styles.main}>
-      <header className={styles.topbar}><span>Khu vực học viên <ChevronRight size={14} /> <strong>Tổng quan</strong></span><Link href="/tai-khoan" className={styles.account}>Tài khoản <Settings size={17} /></Link></header>
-      <div className={styles.content}>
+  return <StudentAreaShell ownedCount={ownedCourses.length} studentName={studentName} studentEmail={studentEmail}>
         <section className={styles.welcome}>
           <div><p className={styles.eyebrow}>HỌC. THỰC HÀNH. TIẾN BỘ.</p><h1>Chào {studentName || "anh/chị"}<span className={styles.greetingDot}>.</span></h1><p>Tiếp tục từ điều anh/chị đang học, áp dụng vào công việc hôm nay.</p></div>
           <Link href={nextLessonHref} className={styles.primary}>{activeCourse ? "Tiếp tục học" : "Khám phá khóa học"}<ArrowRight size={18} /></Link>
@@ -89,9 +69,5 @@ export function StudentDashboard({ courses, ownedSlugs, progressBySlug, resource
           const price = parsePrice(course.price); const studentPrice = price ? formatCurrency(Math.round(price * 0.95)) : course.price;
           return <article key={course.slug} className={styles.suggestion}><p className={styles.meta}>Chưa mua · Ưu đãi học viên -5%</p><Link href={`/khoa-hoc/${course.slug}`}><h3>{course.title}</h3></Link><p>{course.shortDescription || course.description}</p><div><strong>{studentPrice}</strong><AddToCartButton slug={course.slug} title={course.title} price={studentPrice} label="Thêm vào giỏ" className={styles.secondary} /></div></article>;
         })}</div></section> : null}
-        <footer className={styles.footer}>The Anh Marketing <span>Học kiến thức. Xây năng lực.</span></footer>
-      </div>
-    </div>
-    <nav className={styles.mobileNav} aria-label="Điều hướng học viên trên điện thoại"><Link href="#khoa-hoc"><BookOpen size={20} />Khóa học</Link><Link href="#tai-lieu"><FileText size={20} />Tài liệu</Link><Link href="#ho-tro"><Headphones size={20} />Hỗ trợ</Link><Link href="/tai-khoan"><Settings size={20} />Tài khoản</Link></nav>
-  </main>;
+  </StudentAreaShell>;
 }

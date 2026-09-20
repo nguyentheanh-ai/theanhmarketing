@@ -5,7 +5,7 @@ import { getStudentLmsAccess } from "@/services/lmsService";
 import { getPaymentOrders } from "@/services/orderService";
 import { getLeads } from "@/services/leadService";
 
-export const AGENT_LIBRARY_HREF = `/learn/${AGENT_KIT_SLUG}/agents`;
+export const AGENT_LIBRARY_HREF = "/dashboard/agents";
 export async function requireAgentLibraryAccess(): Promise<{ok: true} | {ok: false; status: 401 | 403}> {
   const {user, adminRole} = await getCurrentAuth();
   // Downloads always require authentication, including local environments.
