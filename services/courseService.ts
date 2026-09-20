@@ -483,7 +483,7 @@ function mergeOfficialCourseMetadata(course: Course) {
   };
 }
 
-async function fetchCourses() {
+async function fetchCourses(summaryOnly = false) {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
@@ -496,7 +496,9 @@ async function fetchCourses() {
   const { data, error } = await supabase
     .from("courses")
     .select(
-      "*, course_modules(*, lessons(*))",
+      summaryOnly
+        ? "*, course_modules(id,title,description,sort_order,status,lessons(id,title,duration,sort_order,status))"
+        : "*, course_modules(*, lessons(*))",
     )
     .order("created_at", { ascending: false });
 
@@ -516,7 +518,7 @@ async function fetchCourses() {
     course.modules.flatMap((module) => module.lessons.map((lesson) => lesson.id)),
   );
 
-  if (lessonIds.length > 0) {
+  if (!summaryOnly && lessonIds.length > 0) {
     const resourceClient = createSupabaseAdminClient() ?? supabase;
     const [{ data: resources }, { data: managedResources }] = await Promise.all([
       supabase
@@ -560,8 +562,8 @@ async function fetchCourses() {
   return [...dbCourses, ...missingFallbackCourses];
 }
 
-export async function getCourses() {
-  return fetchCourses();
+export async function getCourses(options: { summaryOnly?: boolean } = {}) {
+  return fetchCourses(options.summaryOnly);
 }
 
 export type CourseSummary = {

@@ -32,26 +32,10 @@ export async function SiteFooter() {
           <p className="mt-5 max-w-lg text-sm font-medium leading-7 text-[var(--tam-muted)]">
             Đào tạo Marketing và AI cho cá nhân, chuyên gia và doanh nghiệp theo hình thức Online hoặc Offline.
           </p>
-          <div className="mt-10">
-            <p className="text-lg font-black text-[var(--tam-ink)]">Nhận AI Growth Toolkit</p>
-            <form
-              className="mt-4 flex max-w-full items-center gap-2 rounded-full border border-[var(--tam-line)] bg-white p-1.5 shadow-sm sm:max-w-sm"
-              action={emailHref}
-            >
-              <input
-                className="min-h-10 min-w-0 flex-1 bg-transparent px-4 text-sm text-[var(--tam-ink)] outline-none placeholder:text-slate-400"
-                name="subject"
-                placeholder="Nhập email để nhận toolkit"
-                type="email"
-              />
-              <button
-                className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--tam-accent)] text-lg font-black text-white transition-colors hover:bg-[var(--tam-accent-strong)]"
-                type="submit"
-                aria-label="Nhận AI Growth Toolkit"
-              >
-                -&gt;
-              </button>
-            </form>
+          <div className="mt-8">
+            <Link href="/tai-lieu" className="inline-flex min-h-12 items-center gap-3 rounded-full border border-[var(--tam-line)] bg-white px-5 text-sm font-semibold text-[var(--tam-ink)]">
+              Khám phá tài liệu thực hành <span aria-hidden="true">→</span>
+            </Link>
           </div>
         </div>
 

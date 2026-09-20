@@ -1,459 +1,97 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { ArrowRight, BookOpen, Check, ChevronRight, FileText, Headphones, Home, LayoutDashboard, Settings } from "lucide-react";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BrandMark } from "@/components/site/brand-mark";
 import type { Course } from "@/data/courses";
-import { getCourseLessonCount, getCourseModuleCount } from "@/data/courses";
-import { siteConfig } from "@/data/site";
+import { getCourseLessonCount } from "@/data/courses";
 import { FACEBOOK_EBOOK_COURSE_SLUG, FACEBOOK_EBOOK_PDF_HREF, FACEBOOK_EBOOK_READER_HREF } from "@/lib/ebook/facebook-ebook";
-import { formatCurrency, getDiscountPercent, parsePrice } from "@/lib/price";
-import {
-  getOwnedCoursesInAccessOrder,
-  getPrimaryDashboardCourse,
-  getSuggestedCoursesForDashboard,
-} from "@/lib/student-dashboard-courses";
-import { toYouTubeThumbnailUrl } from "@/lib/youtube";
+import { formatCurrency, parsePrice } from "@/lib/price";
+import { getOwnedCoursesInAccessOrder, getPrimaryDashboardCourse, getSuggestedCoursesForDashboard } from "@/lib/student-dashboard-courses";
 import { getStudentCourseHref } from "@/lib/student-course-navigation";
+import { toYouTubeThumbnailUrl } from "@/lib/youtube";
 import type { ResourceItem } from "@/services/resourceService";
+import styles from "./student-dashboard.module.css";
 
 type StudentDashboardProps = {
-  courses: Course[];
-  ownedSlugs: string[];
-  progressBySlug: Record<string, number>;
-  resources: ResourceItem[];
-  studentName: string;
-  studentEmail: string;
+  courses: Course[]; ownedSlugs: string[]; progressBySlug: Record<string, number>;
+  resources: ResourceItem[]; studentName: string; studentEmail: string;
 };
+const courseImage = (course: Course) => course.thumbnailImageUrl || course.bannerImageUrl || toYouTubeThumbnailUrl(course.videoPreviewUrl) || "";
+const boundedProgress = (value: number) => Number.isFinite(value) ? Math.max(0, Math.min(100, Math.round(value))) : 0;
 
-function getCourseImage(course: Course) {
-  return (
-    course.thumbnailImageUrl ||
-    course.bannerImageUrl ||
-    toYouTubeThumbnailUrl(course.videoPreviewUrl) ||
-    ""
-  );
-}
-
-function isFacebookEbookCourse(course: Course) {
-  return course.slug === FACEBOOK_EBOOK_COURSE_SLUG;
-}
-
-function getStudentOfferPrice(course: Course) {
-  const price = parsePrice(course.price);
-
-  if (!price) {
-    return "";
-  }
-
-  return formatCurrency(Math.round(price * 0.95));
-}
-
-function CourseTile({
-  course,
-  isOwned,
-  isDark,
-  progress,
-}: {
-  course: Course;
-  isOwned: boolean;
-  isDark: boolean;
-  progress: number;
-}) {
-  const discountPercent = getDiscountPercent(course.price, course.originalPrice);
-  const studentOfferPrice = getStudentOfferPrice(course);
-  const imageUrl = getCourseImage(course);
-  const lessonCount = getCourseLessonCount(course);
-  const moduleCount = getCourseModuleCount(course);
-  const isMuted = !isOwned || course.status !== "open";
-  const courseHref = isOwned ? getStudentCourseHref(course) : `/khoa-hoc/${course.slug}`;
-
-  return (
-    <article
-      className={`overflow-hidden rounded-[18px] ring-1 transition-colors ${isMuted ? "grayscale opacity-75" : ""} ${
-        !isMuted
-          ? isDark
-            ? "bg-[#26252c] ring-white/10"
-            : "bg-white ring-black/8 shadow-[0_18px_55px_rgba(29,24,16,0.08)]"
-          : isDark
-            ? "bg-[#1e1e22] ring-white/8"
-            : "bg-[#ededed] ring-black/8"
-      }`}
-    >
-      <Link href={courseHref} aria-label={isOwned ? `Vào học: ${course.title}` : course.title} className="relative block aspect-video overflow-hidden bg-[#101116]">
-        {imageUrl ? (
-          <Image
-            src={imageUrl}
-            alt={course.title}
-            fill
-            sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-            unoptimized
-            className={`h-full w-full object-contain ${isOwned ? "" : "brightness-[0.74] saturate-[0.82]"}`}
-          />
-        ) : (
-          <div className={`h-full w-full ${isOwned ? "bg-[#2f8f62]" : "bg-[#222126]"}`} />
-        )}
-        <div className="absolute left-3 top-3 flex flex-wrap gap-2">
-          <span
-            className={`rounded-full px-3 py-1 text-[11px] font-black ${
-              isOwned ? "bg-[#49b77a] text-white" : "bg-[#e6c672] text-[#30250c]"
-            }`}
-          >
-            {isOwned ? "Đã sở hữu" : "Chưa mua"}
-          </span>
-          {course.status !== "open" ? (
-            <span className="rounded-full bg-neutral-700 px-3 py-1 text-[11px] font-black text-white">
-              {course.status === "coming-soon" ? "Chưa mở bán" : "Đã đóng đăng ký"}
-            </span>
-          ) : null}
-          {!isOwned && course.status === "open" && studentOfferPrice ? (
-            <span className="rounded-full bg-white/92 px-3 py-1 text-[11px] font-black text-[#1f5e41]">
-              Ưu đãi Growth Hub -5%
-            </span>
-          ) : null}
-        </div>
-      </Link>
-
-      <div className="p-5">
-        <div className="flex items-center justify-between gap-3 text-xs font-bold">
-          <span className={isDark ? "text-white/54" : "text-black/48"}>
-            {moduleCount} module - {lessonCount} bài học
-          </span>
-          {discountPercent > 0 ? (
-            <span className="rounded-full bg-[#e8f7ec] px-2.5 py-1 text-[#208253]">
-              -{discountPercent}%
-            </span>
-          ) : null}
-        </div>
-
-        <Link href={courseHref} className="mt-3 block">
-          <h3 className={`text-xl font-black leading-tight ${isDark ? "text-white" : "text-black"}`}>
-            {course.title}
-          </h3>
-          <p className={`mt-2 line-clamp-2 text-sm leading-6 ${isDark ? "text-white/62" : "text-black/58"}`}>
-            {course.shortDescription || course.description}
-          </p>
-        </Link>
-
-        <div className="mt-4 flex items-end justify-between gap-3">
-          <div>
-            <p className={`text-xs font-bold uppercase ${isDark ? "text-white/45" : "text-black/42"}`}>
-              {isOwned ? "Quyền học" : "Giá Growth Hub"}
-            </p>
-            <p className={`mt-1 text-lg font-black ${isDark ? "text-white" : "text-black"}`}>
-              {isOwned ? "Đã mở" : studentOfferPrice || course.price}
-            </p>
-            {!isOwned && course.price && studentOfferPrice ? (
-              <p className={`text-xs line-through ${isDark ? "text-white/36" : "text-black/36"}`}>
-                {course.price}
-              </p>
-            ) : null}
-            {isOwned ? (
-              <p className={`mt-1 text-xs font-bold ${isDark ? "text-white/58" : "text-black/48"}`}>Tiến độ: {progress}%</p>
-            ) : null}
-          </div>
-
-          {isOwned ? (
-            isFacebookEbookCourse(course) ? (
-              <div className="grid gap-2">
-                <Link
-                  href={FACEBOOK_EBOOK_READER_HREF}
-                  className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#49b77a] px-5 text-sm font-black text-white transition-colors hover:bg-[#3aa86c]"
-                >
-                  Đọc online
-                </Link>
-                <Link
-                  href={FACEBOOK_EBOOK_PDF_HREF}
-                  className={`inline-flex min-h-11 items-center justify-center rounded-full px-5 text-sm font-black ring-1 ${
-                    isDark ? "bg-white/8 text-white ring-white/10 hover:bg-white/12" : "bg-white text-black ring-black/10 hover:bg-black/5"
-                  }`}
-                >
-                  Tải PDF
-                </Link>
-              </div>
-            ) : (
-              <Link
-                href={courseHref}
-                className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#49b77a] px-5 text-sm font-black text-white transition-colors hover:bg-[#3aa86c]"
-              >
-                Vào học
-              </Link>
-            )
-          ) : course.status === "open" ? (
-            <AddToCartButton
-              slug={course.slug}
-              title={course.title}
-              price={studentOfferPrice || course.price}
-              label="Nâng cấp"
-              className="min-h-11 bg-white px-5 text-sm text-black"
-            />
-          ) : (
-            <Link
-              href={`/khoa-hoc/${course.slug}`}
-              className={`inline-flex min-h-11 items-center justify-center rounded-full px-5 text-sm font-black ${
-                isDark ? "bg-white/10 text-white" : "bg-white text-black"
-              }`}
-            >
-              Xem chương trình
-            </Link>
-          )}
-        </div>
+function CourseTile({ course, progress }: { course: Course; progress: number }) {
+  const href = getStudentCourseHref(course);
+  const ebook = course.slug === FACEBOOK_EBOOK_COURSE_SLUG;
+  const image = courseImage(course);
+  return <article className={`${styles.course} ${course.status !== "open" ? "grayscale" : ""}`}>
+    <Link href={href} className={styles.cover} aria-label={`Vào học: ${course.title}`}>
+      {image ? <Image src={image} alt={course.title} fill sizes="(min-width: 1280px) 30vw, (min-width: 768px) 45vw, 100vw" unoptimized className="object-contain" /> : <BookOpen size={48} aria-hidden="true" />}
+      <span className={styles.owned}><Check size={12} aria-hidden="true" /> Đã sở hữu</span>
+    </Link>
+    <div className={styles.courseBody}>
+      <p className={styles.meta}>{course.status !== "open" ? "Chưa mở bán · " : ""}{ebook ? "Thư viện tra cứu" : `${getCourseLessonCount(course)} bài học`}</p>
+      <Link href={href}><h3>{course.title}</h3></Link>
+      <p className={styles.description}>{course.shortDescription || course.description}</p>
+      <div className={styles.progressLabel}><span>Tiến độ học tập</span><strong>{progress}%</strong></div>
+      <div className={styles.progress} role="progressbar" aria-label={`Tiến độ ${course.title}`} aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}><span style={{ width: `${progress}%` }} /></div>
+      <div className={styles.courseActions}>
+        <Link href={ebook ? FACEBOOK_EBOOK_READER_HREF : href} className={styles.primary}>{ebook ? "Đọc online" : "Vào học"}<ArrowRight size={16} aria-hidden="true" /></Link>
+        {ebook ? <Link href={FACEBOOK_EBOOK_PDF_HREF} className={styles.secondary}>Tải PDF</Link> : null}
       </div>
-    </article>
-  );
+    </div>
+  </article>;
 }
 
-export function StudentDashboard({
-  courses,
-  ownedSlugs,
-  progressBySlug,
-  resources,
-  studentName,
-  studentEmail,
-}: StudentDashboardProps) {
-  const [isDark, setIsDark] = useState(true);
+export function StudentDashboard({ courses, ownedSlugs, progressBySlug, resources, studentName, studentEmail }: StudentDashboardProps) {
   const ownedCourses = getOwnedCoursesInAccessOrder(courses, ownedSlugs);
-  const suggestedCourses = getSuggestedCoursesForDashboard(courses, ownedSlugs);
+  const suggestedCourses = getSuggestedCoursesForDashboard(courses, ownedSlugs).filter((course) => course.status === "open");
   const activeCourse = getPrimaryDashboardCourse(courses, ownedSlugs);
   const nextLessonHref = activeCourse ? getStudentCourseHref(activeCourse) : "/khoa-hoc";
-  const activeCourseIsFacebookEbook = activeCourse ? isFacebookEbookCourse(activeCourse) : false;
-  const completion = activeCourse ? Math.max(0, Math.min(100, Math.round(progressBySlug[activeCourse.slug] ?? 0))) : 0;
-
-  const shellClass = isDark
-    ? "bg-[#202026] text-white"
-    : "bg-[#f7f4ee] text-[#111114]";
-  const panelClass = isDark
-    ? "bg-[#26252c] text-white ring-white/8"
-    : "bg-white text-[#111114] ring-black/8 shadow-[0_16px_55px_rgba(38,28,16,0.06)]";
-  const mutedText = isDark ? "text-white/62" : "text-black/58";
-
-  return (
-    <main className={`min-h-screen ${shellClass}`}>
-      <aside className={`fixed inset-y-0 left-0 z-20 hidden w-[268px] border-r p-5 lg:block ${isDark ? "border-white/8 bg-[#242329]" : "border-black/8 bg-white"}`}>
-        <Link href="/" className="flex items-center gap-3 rounded-lg bg-white p-3 text-[#111114]">
-          <BrandMark className="grid size-10 place-items-center overflow-hidden rounded-md bg-white p-1 ring-1 ring-black/8" />
-          <span>
-            <span className="block text-sm font-black leading-tight">{siteConfig.shortName}</span>
-            <span className="block text-[11px] font-bold text-black/48">Growth Hub</span>
-          </span>
-        </Link>
-
-        <nav className="mt-8 grid gap-1 text-sm font-bold">
-          {[
-            ["Tổng quan", "/dashboard"],
-            ["Chương trình", "#khoa-hoc"],
-            ["Toolkit", "#tai-lieu"],
-            ["Hỗ trợ", "#ho-tro"],
-          ].map(([label, href]) => (
-            <Link
-              key={href}
-              href={href}
-              className={`rounded-lg px-4 py-3 transition-colors ${
-                isDark ? "text-white/72 hover:bg-white/8 hover:text-white" : "text-black/62 hover:bg-black/5 hover:text-black"
-              }`}
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="absolute bottom-5 left-5 right-5 grid gap-3">
-          <button
-            type="button"
-            onClick={() => setIsDark((value) => !value)}
-            className={`flex min-h-11 items-center justify-between rounded-full px-4 text-sm font-black ${
-              isDark ? "bg-[#7c3aed] text-white" : "bg-[#111114] text-white"
-            }`}
-          >
-            <span>Giao diện tối</span>
-            <span className="grid size-6 place-items-center rounded-full bg-white text-xs text-black">
-              {isDark ? "Bật" : "Tắt"}
-            </span>
-          </button>
-          <SignOutButton className={`rounded-full px-4 py-3 text-left text-sm font-bold transition-colors ${isDark ? "bg-white/8 text-white/72 hover:bg-white/12 hover:text-white" : "bg-black/5 text-black/62 hover:bg-black/10 hover:text-black"}`} />
-        </div>
-      </aside>
-
-      <section className="min-h-screen px-4 py-5 lg:ml-[268px] lg:px-8">
-        <header className={`mb-5 flex flex-col gap-3 rounded-[18px] p-4 ring-1 md:flex-row md:items-center md:justify-between ${panelClass}`}>
-          <div>
-            <p className={`text-xs font-black uppercase tracking-[0.16em] ${isDark ? "text-[#b79cff]" : "text-[#7a4ad8]"}`}>
-              AI Operator Dashboard
-            </p>
-            <h1 className="mt-1 text-2xl font-black tracking-[-0.03em]">
-              Chào {studentName || "học viên"}
-            </h1>
-            <p className={`mt-1 text-sm ${mutedText}`}>{studentEmail || "Theo dõi chương trình, toolkit và hỗ trợ tại đây."}</p>
-          </div>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setIsDark((value) => !value)}
-              className={`min-h-11 rounded-full px-4 text-sm font-black lg:hidden ${isDark ? "bg-white text-black" : "bg-black text-white"}`}
-            >
-              {isDark ? "Sáng" : "Tối"}
-            </button>
-            <Link
-              href={nextLessonHref}
-              className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#49b77a] px-5 text-sm font-black text-white transition-colors hover:bg-[#3aa86c]"
-            >
-              {activeCourse ? "Học tiếp" : "Xem khóa học"}
-            </Link>
-          </div>
-        </header>
-
-        <section id="khoa-hoc" className="mb-6">
-          <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className={`text-xs font-black uppercase tracking-[0.16em] ${isDark ? "text-[#b79cff]" : "text-[#7a4ad8]"}`}>
-                Chương trình
-              </p>
-              <h2 className="mt-2 text-3xl font-black tracking-[-0.04em]">Khóa học của tôi</h2>
-            </div>
-            <p className={`max-w-xl text-sm leading-6 ${mutedText}`}>
-              Các khóa đã mua hoặc được mở quyền hiển thị trước. Chọn khóa để vào học ngay.
-            </p>
-          </div>
-
-          {ownedCourses.length > 0 ? (
-            <>
-              <h3 className={`mt-6 text-sm font-black uppercase tracking-[0.14em] ${isDark ? "text-white/58" : "text-black/48"}`}>
-                Đã mở quyền ({ownedCourses.length})
-              </h3>
-              <div className="mt-3 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {ownedCourses.map((course) => (
-                  <CourseTile key={course.slug} course={course} isOwned isDark={isDark} progress={Math.round(progressBySlug[course.slug] ?? 0)} />
-                ))}
-              </div>
-            </>
-          ) : (
-            <p className={`mt-4 text-sm ${mutedText}`}>Tài khoản chưa có khóa học được mở quyền.</p>
-          )}
-
-          <h3 className={`mt-7 text-sm font-black uppercase tracking-[0.14em] ${isDark ? "text-white/58" : "text-black/48"}`}>
-            Khóa học khác
-          </h3>
-          <div className="mt-3 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {suggestedCourses.map((course) => (
-              <CourseTile key={course.slug} course={course} isOwned={false} isDark={isDark} progress={0} />
-            ))}
-          </div>
-        </section>
-
-        <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
-          <div className={`overflow-hidden rounded-[18px] ring-1 ${panelClass}`}>
-            <div className="relative aspect-video bg-[#101116]">
-              {activeCourse && getCourseImage(activeCourse) ? (
-                <Image
-                  src={getCourseImage(activeCourse)}
-                  alt={activeCourse.title}
-                  fill
-                  sizes="(min-width: 1280px) calc(100vw - 660px), 100vw"
-                  unoptimized
-                  className="h-full w-full object-contain"
-                />
-              ) : (
-                <div className="h-full w-full bg-[#26252c]" />
-              )}
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/88 to-transparent p-5 text-white">
-                <p className="text-xs font-black uppercase tracking-[0.14em] text-white/68">Engine đang học</p>
-                <h2 className="mt-2 text-2xl font-black tracking-[-0.03em]">{activeCourse?.title ?? "Chưa có chương trình"}</h2>
-                <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/20">
-                  <div className="h-full rounded-full bg-[#49b77a]" style={{ width: `${completion}%` }} />
-                </div>
-              </div>
-            </div>
-            <div className="grid gap-4 p-5 md:grid-cols-[1fr_auto] md:items-center">
-              <div>
-                <p className={`text-sm leading-6 ${mutedText}`}>
-                  {activeCourse?.shortDescription || activeCourse?.description || "Khi sở hữu chương trình, bài học và workflow sẽ xuất hiện tại đây."}
-                </p>
-                <p className={`mt-2 text-sm font-bold ${isDark ? "text-white/78" : "text-black/68"}`}>
-                  Tiến độ hiện tại: {completion}%
-                </p>
-              </div>
-              <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-1">
-                <Link
-                  href={nextLessonHref}
-                  className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 text-sm font-black text-black ring-1 ring-black/8"
-                >
-                  {activeCourseIsFacebookEbook ? "Đọc online" : activeCourse ? "Vào phòng học" : "Xem khóa học"}
-                </Link>
-                {activeCourseIsFacebookEbook ? (
-                  <Link
-                    href={FACEBOOK_EBOOK_PDF_HREF}
-                    className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#d8b653] px-6 text-sm font-black text-black ring-1 ring-black/8"
-                  >
-                    Tải PDF
-                  </Link>
-                ) : null}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid gap-5">
-            <section id="ho-tro" className={`rounded-[18px] p-5 ring-1 ${panelClass}`}>
-              <p className={`text-xs font-black uppercase tracking-[0.14em] ${isDark ? "text-[#b79cff]" : "text-[#7a4ad8]"}`}>
-                Hỗ trợ
-              </p>
-              <h2 className="mt-2 text-xl font-black">Cần hỗ trợ khi triển khai?</h2>
-              <p className={`mt-2 text-sm leading-6 ${mutedText}`}>
-                Đặt buổi làm việc riêng 30 phút để kiểm tra quảng cáo, lên quảng cáo mẫu hoặc tư vấn xây dựng hệ thống.
-              </p>
-              <Link href="/dat-lich-ho-tro" className="mt-4 block rounded-full bg-[#49b77a] px-4 py-3 text-center text-sm font-black text-white">
-                Đặt lịch hỗ trợ
-              </Link>
-            </section>
-
-          </div>
-        </section>
-
-        <section id="tai-lieu" className="mt-6 grid gap-5 lg:grid-cols-2">
-          <div className={`rounded-[18px] p-5 ring-1 ${panelClass}`}>
-            <p className={`text-xs font-black uppercase tracking-[0.14em] ${isDark ? "text-[#b79cff]" : "text-[#7a4ad8]"}`}>
-              Toolkit
-            </p>
-            <h2 className="mt-2 text-2xl font-black">Toolkit học viên</h2>
-            <div className="mt-4 grid gap-3">
-              {resources.slice(0, 4).map((item) => (
-                <Link
-                  key={item.title}
-                  href="/tai-lieu"
-                  className={`rounded-xl p-4 ring-1 ${isDark ? "bg-white/5 ring-white/8 hover:bg-white/8" : "bg-[#f6f1e8] ring-black/6 hover:bg-[#f2eadf]"}`}
-                >
-                  <p className="font-black">{item.title}</p>
-                  <p className={`mt-1 text-sm ${mutedText}`}>{item.type}</p>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div className={`rounded-[18px] p-5 ring-1 ${panelClass}`}>
-            <p className={`text-xs font-black uppercase tracking-[0.14em] ${isDark ? "text-[#b79cff]" : "text-[#7a4ad8]"}`}>
-              Hồ sơ
-            </p>
-            <h2 className="mt-2 text-2xl font-black">Thông tin Growth Hub</h2>
-            <div className={`mt-4 grid gap-3 text-sm ${mutedText}`}>
-              <p>Họ tên: {studentName || "Học viên"}</p>
-              <p>Email: {studentEmail || "Chưa đăng nhập email"}</p>
-              <p>Chương trình đã mở quyền: {ownedCourses.length}</p>
-              <p>Chương trình có thể nâng cấp: {suggestedCourses.length}</p>
-            </div>
-          </div>
-        </section>
-      </section>
-
-      <nav
-        className={`student-mobile-action ${isDark ? "student-mobile-action--dark" : ""}`}
-        aria-label="Hành động học nhanh trên điện thoại"
-      >
-        <Link href={nextLessonHref}>Học tiếp</Link>
-        <Link href="#khoa-hoc">Khóa học</Link>
-        <Link href="#tai-lieu">Toolkit</Link>
+  const availableResources = resources.filter((item) => item.fileUrl && item.access === "Miễn phí").slice(0, 4);
+  return <main className={styles.shell}>
+    <aside className={styles.sidebar}>
+      <Link href="/" className={styles.brand}><BrandMark className={styles.brandMark} /><span>The Anh<span className={styles.brandSub}>KHÔNG GIAN HỌC TẬP</span></span></Link>
+      <p className={styles.navLabel}>HỌC TẬP</p>
+      <nav aria-label="Điều hướng học viên" className={styles.nav}>
+        <Link href="/dashboard" aria-current="page"><LayoutDashboard size={19} />Tổng quan</Link>
+        <Link href="#khoa-hoc"><BookOpen size={19} />Khóa học của tôi<span>{ownedCourses.length}</span></Link>
+        <Link href="#tai-lieu"><FileText size={19} />Tài liệu</Link>
+        <Link href="#ho-tro"><Headphones size={19} />Hỗ trợ</Link>
+        <Link href="/tai-khoan"><Settings size={19} />Tài khoản</Link>
       </nav>
-    </main>
-  );
+      <div className={styles.sidebarBottom}>
+        <Link href="/" className={styles.backHome}><Home size={17} /> Về trang chủ</Link>
+        <div className={styles.identity}><span className={styles.avatar}>{(studentName || "HV").slice(0, 1).toUpperCase()}</span><div><strong>{studentName || "Học viên"}</strong><span>{studentEmail}</span></div></div>
+        <SignOutButton className={styles.signOut} />
+      </div>
+    </aside>
+    <div className={styles.main}>
+      <header className={styles.topbar}><span>Khu vực học viên <ChevronRight size={14} /> <strong>Tổng quan</strong></span><Link href="/tai-khoan" className={styles.account}>Tài khoản <Settings size={17} /></Link></header>
+      <div className={styles.content}>
+        <section className={styles.welcome}>
+          <div><p className={styles.eyebrow}>HỌC. THỰC HÀNH. TIẾN BỘ.</p><h1>Chào {studentName || "anh/chị"}<span className={styles.greetingDot}>.</span></h1><p>Tiếp tục từ điều anh/chị đang học, áp dụng vào công việc hôm nay.</p></div>
+          <Link href={nextLessonHref} className={styles.primary}>{activeCourse ? "Tiếp tục học" : "Khám phá khóa học"}<ArrowRight size={18} /></Link>
+        </section>
+        {activeCourse ? <section className={styles.resume} aria-label="Học tiếp">
+          <span className={styles.resumeIcon}><BookOpen size={25} /></span><div><p>TIẾP TỤC HÀNH TRÌNH</p><h2>{activeCourse.title}</h2></div><Link href={nextLessonHref}>Mở khóa học <ArrowRight size={17} /></Link>
+        </section> : null}
+        <section id="khoa-hoc" className={styles.section}>
+          <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>THƯ VIỆN CỦA ANH/CHỊ</p><h2>Khóa học của tôi <span>{ownedCourses.length}</span></h2></div><Link href="/khoa-hoc">Xem tất cả chương trình <ArrowRight size={15} /></Link></div>
+          {ownedCourses.length ? <div className={styles.courseGrid}>{ownedCourses.map((course) => <CourseTile key={course.slug} course={course} progress={boundedProgress(progressBySlug[course.slug] ?? 0)} />)}</div> : <div className={styles.empty}><BookOpen size={32} /><h3>Chưa có khóa học được mở quyền</h3><p>Nếu anh/chị đã thanh toán, hãy kiểm tra tài khoản đang đăng nhập hoặc liên hệ hỗ trợ.</p><Link href="/tai-khoan" className={styles.secondary}>Kiểm tra tài khoản</Link></div>}
+        </section>
+        <div className={styles.bottomGrid}>
+          <section id="tai-lieu" className={styles.panel}><div className={styles.sectionHeading}><h2>Tài liệu thực hành</h2><FileText size={20} /></div><p className={styles.muted}>Checklist và tài nguyên để áp dụng vào công việc.</p><div className={styles.resourceList}>{availableResources.map((item) => <a key={item.slug} href={item.fileUrl} className={styles.resource}><span className={styles.fileIcon}><FileText size={20} /></span><span><strong>{item.title}</strong><small>{item.type} · Miễn phí</small></span><ArrowRight size={17} /></a>)}</div><Link href="/tai-lieu" className={styles.textLink}>Mở thư viện tài liệu <ArrowRight size={16} /></Link></section>
+          <section id="ho-tro" className={`${styles.panel} ${styles.support}`}><span className={styles.supportIcon}><Headphones size={24} /></span><p className={styles.eyebrow}>ĐỒNG HÀNH CÙNG ANH/CHỊ</p><h2>Cần hỗ trợ khi học?</h2><p>Trao đổi trực tiếp để giải quyết vướng mắc về bài học, quảng cáo và cách triển khai.</p><Link href="/dat-lich-ho-tro" className={styles.secondary}>Đặt lịch hỗ trợ <ArrowRight size={16} /></Link></section>
+        </div>
+        {suggestedCourses.length ? <section className={styles.section} aria-label="Chương trình khác"><div className={styles.sectionHeading}><div><p className={styles.eyebrow}>BƯỚC TIẾP THEO</p><h2>Khám phá thêm</h2></div></div><div className={styles.suggestionGrid}>{suggestedCourses.map((course) => {
+          const price = parsePrice(course.price); const studentPrice = price ? formatCurrency(Math.round(price * 0.95)) : course.price;
+          return <article key={course.slug} className={styles.suggestion}><p className={styles.meta}>Chưa mua · Ưu đãi học viên -5%</p><Link href={`/khoa-hoc/${course.slug}`}><h3>{course.title}</h3></Link><p>{course.shortDescription || course.description}</p><div><strong>{studentPrice}</strong><AddToCartButton slug={course.slug} title={course.title} price={studentPrice} label="Thêm vào giỏ" className={styles.secondary} /></div></article>;
+        })}</div></section> : null}
+        <footer className={styles.footer}>The Anh Marketing <span>Học kiến thức. Xây năng lực.</span></footer>
+      </div>
+    </div>
+    <nav className={styles.mobileNav} aria-label="Điều hướng học viên trên điện thoại"><Link href="#khoa-hoc"><BookOpen size={20} />Khóa học</Link><Link href="#tai-lieu"><FileText size={20} />Tài liệu</Link><Link href="#ho-tro"><Headphones size={20} />Hỗ trợ</Link><Link href="/tai-khoan"><Settings size={20} />Tài khoản</Link></nav>
+  </main>;
 }

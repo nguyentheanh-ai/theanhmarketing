@@ -1,134 +1,40 @@
-import { ArrowRight, BookOpenCheck, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, ArrowUpRight, BookOpen, FileText, Headphones } from "lucide-react";
 import { CourseCard } from "@/components/content/course-card";
-import { CtaPanel } from "@/components/marketing/cta-panel";
-import { FaqAccordion } from "@/components/marketing/faq-accordion";
-import { GrowthDashboardVisual } from "@/components/marketing/growth-dashboard-visual";
-import { GrowthEngineGrid } from "@/components/marketing/growth-engine-grid";
-import { HomeDemoPanel } from "@/components/marketing/home-demo-panel";
-import { ProblemSelector } from "@/components/marketing/problem-selector";
-import { ProofGrid } from "@/components/marketing/proof-grid";
-import { PublicSectionHeading } from "@/components/marketing/public-section-heading";
-import { Reveal } from "@/components/marketing/reveal";
-import { VerifiedStatStrip } from "@/components/marketing/verified-stat-strip";
-import { AgentKitWorkflow } from "@/components/site/agent-kit-workflow";
 import { PageShell } from "@/components/site/page-shell";
-import { ButtonLink } from "@/components/ui/button-link";
-import { homePage } from "@/data/home";
-import { faqs, platformStats } from "@/data/site";
 import { getCourses } from "@/services/courseService";
-import { getTestimonials } from "@/services/testimonialService";
+import styles from "./home.module.css";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [courses, testimonials] = await Promise.all([getCourses(), getTestimonials()]);
-  const featuredCourses = courses.slice(0, 4);
-
-  return (
-    <PageShell>
-      <section className="tam-grid-bg pb-16 pt-28 sm:pb-20 sm:pt-36" id="growth-hero">
-        <div className="tam-container text-center">
-          <Reveal>
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#159cfb]/15 bg-white/90 px-4 py-2 text-[11px] font-black uppercase tracking-[0.13em] text-[var(--tam-accent-strong)] shadow-sm">
-              <Sparkles size={14} aria-hidden="true" />
-              {homePage.hero.badge}
-            </span>
-          </Reveal>
-          <Reveal delay={70}>
-            <h1 className="mx-auto mt-6 max-w-4xl text-4xl font-black leading-[1.02] tracking-[-0.055em] text-[var(--tam-ink)] sm:text-6xl lg:text-7xl">
-              Xây hệ thống tăng trưởng bằng <span className="text-[var(--tam-accent)]">AI Marketing</span> có dữ liệu
-            </h1>
-          </Reveal>
-          <Reveal delay={140}>
-            <p className="mx-auto mt-6 max-w-2xl text-base font-medium leading-8 text-[var(--tam-muted)] sm:text-lg">
-              {homePage.hero.description}
-            </p>
-          </Reveal>
-          <Reveal className="mt-8 flex flex-col justify-center gap-3 sm:flex-row" delay={210}>
-            <ButtonLink href={homePage.hero.primaryCta.href}>
-              {homePage.hero.primaryCta.label} <ArrowRight size={17} aria-hidden="true" />
-            </ButtonLink>
-            <ButtonLink href={homePage.hero.secondaryCta.href} variant="secondary">
-              <BookOpenCheck size={17} aria-hidden="true" /> {homePage.hero.secondaryCta.label}
-            </ButtonLink>
-          </Reveal>
-          <Reveal delay={280}>
-            <GrowthDashboardVisual />
-          </Reveal>
+  const courses = await getCourses({ summaryOnly: true });
+  const availableCourses = courses.filter((course) => course.status === "open" && course.landingPageUrl);
+  return <PageShell><div className={styles.home}>
+    <section className={styles.hero}>
+      <div className={styles.heroCopy}>
+        <p className={styles.eyebrow}><span /> THE ANH MARKETING</p>
+        <h1>Học Marketing.<br />Làm chủ AI.<br /><span>Ứng dụng mỗi ngày.</span></h1>
+        <p className={styles.intro}>Khóa học, tài liệu và bộ Agent giúp anh/chị đưa kiến thức vào công việc — từ quảng cáo Facebook đến ứng dụng AI.</p>
+        <div className={styles.actions}><Link href="#chuong-trinh" className={styles.primary}>Khám phá chương trình <ArrowRight size={17} /></Link><Link href="/dashboard" className={styles.secondary}>Vào khu vực học viên <ArrowUpRight size={17} /></Link></div>
+        <p className={styles.heroNote}>Đã có tài khoản? Các khóa học của anh/chị nằm trong khu vực học viên.</p>
+      </div>
+      <div className={styles.heroPanel}>
+        <div className={styles.panelTop}><span>THE ANH / ACADEMY</span><BookOpen size={21} /></div>
+        <p className={styles.panelEyebrow}>BẮT ĐẦU TỪ ĐIỀU ANH/CHỊ CẦN</p><h2>Kiến thức thực hành.<br />Công cụ dùng được.</h2>
+        <div className={styles.paths}>
+          <Link href="/khoa-hoc"><span>01</span><div><strong>Học một kỹ năng mới</strong><small>Khám phá chương trình đang mở</small></div><ArrowUpRight size={20} /></Link>
+          <Link href="/tai-lieu"><span>02</span><div><strong>Tìm tài liệu thực hành</strong><small>Checklist và tài nguyên marketing</small></div><ArrowUpRight size={20} /></Link>
+          <Link href="/dashboard"><span>03</span><div><strong>Tiếp tục khóa học của mình</strong><small>Bài học, bộ kit và tài liệu đã sở hữu</small></div><ArrowUpRight size={20} /></Link>
         </div>
-      </section>
-
-      <section className="bg-white py-3" id="growth-stats">
-        <VerifiedStatStrip stats={platformStats} />
-      </section>
-
-      <section className="tam-container py-20 sm:py-28" id="growth-problems">
-        <PublicSectionHeading
-          eyebrow="Chọn đúng việc cần giải quyết"
-          title="Hệ thống bắt đầu từ vấn đề của bạn"
-          description="Mỗi lộ trình tập trung vào một nút thắt thật, sau đó mới chọn công cụ, khóa học và workflow phù hợp."
-        />
-        <ProblemSelector items={homePage.problem.journeys} />
-      </section>
-
-      <section className="border-y border-[var(--tam-line)] bg-[#f5f9fd] py-20 sm:py-28" id="growth-engines">
-        <div className="tam-container">
-          <PublicSectionHeading
-            eyebrow="AI Growth System"
-            title="Bốn lớp vận hành được kết nối"
-            description="Không học từng mảnh rời rạc. Mỗi lớp tạo đầu ra để lớp tiếp theo có thể thực thi và đo lường."
-          />
-          <GrowthEngineGrid engines={homePage.engines} />
-        </div>
-      </section>
-
-      <section className="tam-container py-20 sm:py-28" id="growth-demo">
-        <PublicSectionHeading
-          eyebrow="Workflow thực tế"
-          title="Nhìn thấy cách hệ thống đi từ ý tưởng đến hành động"
-          description="Một bản xem trước trung thực về cách các engine trao đổi dữ liệu và giúp founder biết việc tiếp theo cần làm."
-        />
-        <HomeDemoPanel />
-      </section>
-
-      <AgentKitWorkflow />
-
-      <section className="border-y border-[var(--tam-line)] bg-[#f7fafc] py-20 sm:py-28" id="growth-products">
-        <div className="tam-container">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-            <PublicSectionHeading
-              align="left"
-              eyebrow="Chương trình đang mở"
-              title="Chọn engine phù hợp để bắt đầu"
-              description="Danh sách lấy trực tiếp từ hệ thống khóa học của The Anh Marketing."
-            />
-            <ButtonLink className="self-start sm:self-auto" href="/khoa-hoc" variant="secondary">Xem tất cả</ButtonLink>
-          </div>
-          <div className="tam-stagger mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {featuredCourses.map((course) => <CourseCard course={course} key={course.slug} />)}
-          </div>
-        </div>
-      </section>
-
-      <section className="tam-container py-20 sm:py-28" id="growth-proof">
-        <PublicSectionHeading
-          eyebrow="Proof từ hệ thống"
-          title="Học để vận hành, không chỉ để xem"
-          description="Các phản hồi và case được lấy từ nguồn nội dung hiện có của The Anh Marketing."
-        />
-        <ProofGrid items={testimonials} />
-      </section>
-
-      <section className="border-y border-[var(--tam-line)] bg-[#f7fafc] py-20 sm:py-28" id="growth-faq">
-        <div className="tam-container">
-          <PublicSectionHeading eyebrow="Hỏi đáp" title="Câu hỏi thường gặp" />
-          <FaqAccordion faqs={faqs} />
-        </div>
-      </section>
-
-      <section className="py-16 sm:py-24" id="growth-cta">
-        <CtaPanel />
-      </section>
-    </PageShell>
-  );
+        <div className={styles.panelBottom}><span>Một nơi để học và thực hành.</span><span>↗</span></div>
+      </div>
+    </section>
+    <section id="chuong-trinh" className={styles.programs}>
+      <div className={styles.heading}><div><p className={styles.eyebrow}>CHƯƠNG TRÌNH ĐANG MỞ</p><h2>Chọn điều anh/chị muốn làm tốt hơn.</h2></div><Link href="/khoa-hoc">Tất cả chương trình <ArrowRight size={16} /></Link></div>
+      {availableCourses.length ? <div className={styles.courseGrid}>{availableCourses.map((course) => <CourseCard course={course} key={course.slug} />)}</div> : <p className={styles.empty}>Các chương trình đang được cập nhật. <Link href="/khoa-hoc">Xem danh sách khóa học →</Link></p>}
+    </section>
+    <section className={styles.student}><div><p className={styles.eyebrow}>DÀNH CHO HỌC VIÊN</p><h2>Mở đúng khóa học.<br />Bắt đầu việc tiếp theo.</h2><p>Tất cả khóa học đã sở hữu, tiến độ học tập và lối vào bộ Agent được tập trung trong tài khoản của anh/chị.</p><Link href="/dashboard" className={styles.primary}>Mở khóa học của tôi <ArrowRight size={17} /></Link></div><div className={styles.studentSteps}><div><BookOpen size={22} /><span><strong>Khóa học đã sở hữu</strong><small>Vào thẳng bài học và chương trình của mình.</small></span></div><div><FileText size={22} /><span><strong>Tài liệu luôn dễ tìm</strong><small>Mở thư viện hoặc tài liệu đi kèm khóa học.</small></span></div><div><Headphones size={22} /><span><strong>Hỗ trợ khi cần</strong><small>Đặt lịch trao đổi về vấn đề đang gặp.</small></span></div></div></section>
+    <section className={styles.help}><div><p className={styles.eyebrow}>CÙNG TÌM BƯỚC TIẾP THEO</p><h2>Đang vướng ở một bài toán cụ thể?</h2><p>Chọn lịch phù hợp để trao đổi về quảng cáo và cách triển khai vào công việc.</p></div><Link href="/dat-lich-ho-tro" className={styles.secondary}>Xem lịch hỗ trợ <ArrowUpRight size={17} /></Link></section>
+  </div></PageShell>;
 }

@@ -1147,7 +1147,19 @@ export async function getStudentLmsAccess(input: {
     return { ownedSlugs: [], progressBySlug: {}, completedLessonIds: [], enrollmentIdsBySlug: {} };
   }
 
-  const { courses, progressRows } = await loadAdminLmsData(client, false);
+  // Access needs publication state and lesson counts, not lesson bodies or resource files.
+  const [courseResult, enrollmentResult] = await Promise.all([
+    client.from("courses")
+      .select("id,slug,title,status,lms_status,visibility,course_modules(id,status,lessons(id,status))")
+      .order("sort_order", { ascending: true }).order("created_at", { ascending: false }),
+    fetchEnrollmentRows(client, false),
+  ]);
+  if (courseResult.error) throw new Error("Không đọc được danh sách quyền học.");
+  const courseRows = asArray(courseResult.data);
+  const courseIndex = buildEnrollmentCourseIndex(courseRows);
+  const progressRows = enrollmentResult.progressRows;
+  const enrollments = enrollmentResult.enrollmentRows.map((row) => mapEnrollment(row, courseIndex, progressRows));
+  const courses = courseRows.map((row) => mapCourse(row, [], new Map(), enrollments));
   const published = activePublishedCourses(courses);
 
   if (input.isAdmin) {

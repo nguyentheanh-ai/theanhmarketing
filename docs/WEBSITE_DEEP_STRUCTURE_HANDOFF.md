@@ -1,3 +1,7 @@
+
+## 20/09/2026 — Trang chủ và dashboard mới, LOCAL REVIEW
+
+Bản sửa trong `feat/student-experience-20260920`, chưa production. Homepage bỏ panel AI minh họa, dashboard Server Component/CSS Modules ưu tiên học tiếp và khóa sở hữu. Portal đọc orders/overrides đúng email, catalog `summaryOnly`, LMS summary, log qua `after`, auth giữ nguyên; thêm loading/error. Không đổi Ads landing/payment/access policy. 81 tests liên quan đạt; xem `docs/STUDENT_EXPERIENCE_20260920.md` để biết giới hạn visual fixture, build và bước phát hành.
 # The Anh Marketing Website - Deep Structure Handoff
 
 ## 2026-09-10 — Ebook image requests only after reader intent

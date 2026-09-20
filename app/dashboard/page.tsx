@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { StudentDashboard } from "@/components/app/student-dashboard";
 import { logStudentActivity } from "@/services/activityLogService";
 import { getStudentPortalSnapshot } from "@/services/studentPortalService";
@@ -6,7 +7,7 @@ export default async function DashboardPage() {
   const { user, courses, resources, ownedSlugs, progressBySlug, email, displayName } = await getStudentPortalSnapshot();
 
   if (user?.email) {
-    await logStudentActivity({
+    after(() => logStudentActivity({
       userId: user.id,
       studentEmail: user.email,
       eventType: "student_login_success",
@@ -18,7 +19,7 @@ export default async function DashboardPage() {
       actorEmail: user.email,
       metadata: { route: "/dashboard", ownedSlugs },
       dedupeWindowMinutes: 15,
-    });
+    }));
   }
 
   return (

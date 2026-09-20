@@ -2,9 +2,8 @@ import { getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
 import { getCourseAccessSlugs } from "@/lib/course-access";
 import { getDashboardCourseOrderSlugs } from "@/lib/student-dashboard-courses";
 import { getCourses } from "@/services/courseService";
-import { getLeads } from "@/services/leadService";
+import { getStudentPortalAccessRecords } from "@/services/studentPortalAccessService";
 import { getStudentLmsAccess } from "@/services/lmsService";
-import { getPaymentOrders } from "@/services/orderService";
 import { getResources } from "@/services/resourceService";
 
 function displayName(email: string, value: unknown) {
@@ -12,11 +11,19 @@ function displayName(email: string, value: unknown) {
 }
 
 export async function getStudentPortalSnapshot() {
-  const [{ adminRole, user }, courses, resources, orders, leads] = await Promise.all([
-    getCurrentAuth(), getCourses(), getResources(), getPaymentOrders(), getLeads({ includeFallback: false }),
+  const authPromise = getCurrentAuth();
+  const accessPromise = authPromise.then(async ({ adminRole, user }) => {
+    const email = user?.email ?? "";
+    return Promise.all([
+      adminRole ? { orders: [], leads: [] } : getStudentPortalAccessRecords(email),
+      getStudentLmsAccess({ email, userId: user?.id, isAdmin: Boolean(adminRole) }),
+    ]);
+  });
+  const [{ adminRole, user }, courses, resources, [records, lmsAccess]] = await Promise.all([
+    authPromise, getCourses({ summaryOnly: true }), getResources(), accessPromise,
   ]);
   const email = user?.email ?? "";
-  const lmsAccess = await getStudentLmsAccess({ email, userId: user?.id, isAdmin: Boolean(adminRole) });
+  const { orders, leads } = records;
   const paidSlugs = getCourseAccessSlugs({
     allCourseSlugs: getDashboardCourseOrderSlugs(courses), email, isAdmin: Boolean(adminRole), leads, orders,
   });

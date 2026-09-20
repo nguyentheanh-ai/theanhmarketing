@@ -13,6 +13,7 @@ const ebook = "ebook-facebook-ads-2026";
 const expectedHref = (slug) => slug === kit ? `/learn/${kit}/agents` : slug === ebook ? "/thu-vien/facebook-ads" : `/learn/${slug}`;
 
 function load(file, overrides = {}) {
+  if (file.endsWith(".css")) return new Proxy({}, { get: (_, key) => key });
   if (file.endsWith(".json")) return JSON.parse(fs.readFileSync(file, "utf8"));
   const compiled = ts.transpileModule(fs.readFileSync(file, "utf8"), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true },
@@ -69,12 +70,11 @@ test("FBA and Agent Kit both appear as owned and every owned card link opens its
   const rendered = dashboard([fba, kit, fba]);
   const courseSection = rendered.find((node) => node.props?.id === "khoa-hoc");
   const cards = nodes(courseSection).filter((node) => node.type === "article");
-  assert.equal(cards.length, 3);
+  assert.equal(cards.length, 2);
   assert.ok(text(cards[0]).includes(courses.find((course) => course.slug === fba).title));
   assert.ok(text(cards[1]).includes(courses.find((course) => course.slug === kit).title));
-  assert.ok(text(cards[2]).includes("Chưa mua"));
-  assert.match(cards[2].props.className, /grayscale/);
-  assert.ok(rendered.indexOf(courseSection) < rendered.findIndex((node) => node.type === "p" && text(node) === "Engine đang học"));
+  const suggestions = rendered.find((node) => node.props?.["aria-label"] === "Chương trình khác");
+  assert.ok(rendered.indexOf(courseSection) < rendered.indexOf(suggestions));
   const ownedCards = rendered.filter((node) => node.type === "article" && text(node).includes("Đã sở hữu"));
   assert.equal(ownedCards.length, 2);
   for (const slug of [fba, kit]) {
@@ -92,8 +92,7 @@ test("portal keeps both paid-order and LMS-granted courses in one deduplicated l
     "@/lib/admin/admin-emails": { getConfiguredOwnerEmails: () => [] },
     "@/services/courseService": { getCourses: async () => courses },
     "@/services/resourceService": { getResources: async () => [] },
-    "@/services/leadService": { getLeads: async () => [] },
-    "@/services/orderService": { getPaymentOrders: async () => [{ email: "student@example.invalid", status: "paid", courseSlug: fba, courseTitle: "Facebook Ads", orderItems: [] }] },
+    "@/services/studentPortalAccessService": { getStudentPortalAccessRecords: async () => ({ leads: [], orders: [{ email: "student@example.invalid", status: "paid", courseSlug: fba, courseTitle: "Facebook Ads", orderItems: [] }] }) },
     "@/services/lmsService": { getStudentLmsAccess: async () => ({ ownedSlugs: [kit, fba], progressBySlug: { [fba]: 20 } }) },
   });
   const snapshot = await getStudentPortalSnapshot();
@@ -119,7 +118,7 @@ test("FBA entry resolves the first published lesson in module order", async () =
 test("Agent Kit with no LMS lessons still opens its library from the card and featured actions", () => {
   const emptyKit = courses.map((course) => course.slug === kit ? { ...course, modules: [] } : course);
   const rendered = dashboard([kit], emptyKit);
-  for (const label of ["Học tiếp", "Vào phòng học"]) {
+  for (const label of ["Tiếp tục học", "Mở khóa học "]) {
     const link = rendered.find((node) => node.type === "a" && text(node) === label);
     assert.equal(link?.props.href, expectedHref(kit));
   }
