@@ -1,6 +1,6 @@
 # Trang chủ và dashboard học viên — 20/09/2026
 
-Trạng thái: anh đã duyệt phát hành bằng “Duyệt”; đang tích hợp và triển khai. Rollback trước phát hành: dpl_HN34eo9A6ennvsuaqLwzgbYngS2J.
+Trạng thái: LIVE, anh đã duyệt phát hành bằng “Duyệt”. Rollback trước phát hành: dpl_HN34eo9A6ennvsuaqLwzgbYngS2J.
 
 ## Phạm vi và nguồn
 
@@ -34,3 +34,12 @@ Anh yêu cầu dựng lại UI và sửa lag, đã cho phép kiểm tra giao di�
 ## Giới hạn và bước phát hành
 
 Chưa đo latency phiên học viên production trước/sau, chưa xác minh đăng nhập/quyền bằng phiên thật trên bản mới. Không tuyên bố hết mọi lag. Chrome local có CSP warnings từ extension/marketing; không đổi CSP để dẹp cảnh báo. Không chạy full-suite/full-lint ngoài scope đã có baseline failures. Cần anh duyệt bản giao diện và cho phép production tại thời điểm phát hành theo AGENTS.md; sau đó tích hợp đúng canonical, preflight, kiểm active landing routes/hashes, preview build và production readback. Không deploy trực tiếp từ worktree này.
+
+
+## Kết quả production
+
+Runtime `0fe0549537d368224fb1e32e7f89bb9bcaea8175`; preview `dpl_HSX9vc2AW1aNuXs2i2WcQjWCbvs7`; production `dpl_DevyBi2ruk67y8KcU3HHoKLxAHKE` READY, www/apex đã nhận bản mới. Doctor và preflight remote đạt.
+
+Live homepage mới200; guest dashboard/tài khoản307 đúng, GET orders405. Sáu landing200 và bốn static HTML SHA-256 không đổi; hai landing động không so đồng nhất HTML vì build/chunk thay đổi. Dashboard phiên Admin hiện có hiển thị10 khóa; CTA mở bài học Facebook Ads thành công. Đã xem screenshot live mobile và desktop1440, trạng thái loading hoạt động. Không thao tác hoàn thành bài học, đơn hàng, email hoặc quyền. Runtime error/fatal query scoped deployment không thấy lỗi tại thời điểm kiểm tra.
+
+Các trạng thái local/chờ duyệt phía trên là lịch sử và được thay thế bởi kết quả này. Giới hạn còn lại: chưa định lượng latency trước/sau, chưa E2E quyền tài khoản học viên thường (phiên live kiểm là Admin). Source và test đã kiểm logic học viên thường.
