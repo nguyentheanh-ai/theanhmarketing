@@ -1,3 +1,5 @@
+LIVE: runtime1dca5c2; production dpl_BySFkJAEHf8xMvPFpjwSHVSdfBZu READY. Live Admin confirmed legacy redirect to /dashboard/agents, advertising filter (2 Agents), tutorial panel (15 videos), desktop1440/mobile320 with no overflow. Guest download401; six landing200/four static hashes unchanged; new homepage copy present. Runtime error/fatal query empty. No ordinary-student E2E or full playback/download in this release. Rollback dpl_9B4eUhWcJFKtwTigYX1H2ezWo3K6.
+
 ## 20/09/2026 — Nhân viên AI trong khu vực học viên và nội dung trang chủ
 
 - Canonical mới `/dashboard/agents`, gọi nguyên `requireAgentLibraryAccess`; đường `/learn/bo-agent-kit-x10-hieu-suat-cong-viec/agents` redirect307 để giữ link email/bookmark cũ. Download API/bucket/quyền không đổi. `getStudentCourseHref` và `AGENT_LIBRARY_HREF` dùng route mới.
