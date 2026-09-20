@@ -2129,3 +2129,12 @@ Hai banner có CTA nền trắng “Xem video hướng dẫn” và “Mở bộ
 16route giữ status và destination;4landing tĩnh ngoài scope giữSHA256. Log error/fatal đúng deployment15phút kết thúc09:37:55UTC không có kết quả. Chưa visual browser/authenticated student QA. Deployment đúngSHA đã xác minh; chưa xác minh riêng nội dung chunk JS/CSS qua public URL, không coi metadata là bằng chứng thao tác học viên.
 
 Evidence reports/agent-banner-clarity-20260916/{deployment,alias-before,smoke-comparison,live-smoke-before,live-smoke-after}.json; build/tests.log. Không còn chờ duyệt/deploy. Đã cập nhật workspace SESSION_STATE/FEATURE_REGISTRY/TASK_LOG/CHANGELOG/ACTIVE_TASKS và repo handoff. Các dòng READY_FOR_REVIEW/chưa production phía trên là lịch sử, được mục này thay thế.
+
+
+## 20/09/2026 — Trang chủ theo tham chiếu SkillsBridge và ảnh anh chọn — LOCAL READY
+
+Main-site canonical, base 367d8b4. Đã đọc context/registry/policy, repo AGENTS, hướng dẫn landing/design và nguồn khóa học trong phiên; doctor theanh-main đã đạt trước sửa. Sửa app/page.tsx, app/home.module.css, components/content/home-course-highlights.tsx và thêm components/home/home-motion.tsx. Trang chủ nền kem/cam đất, hero ảnh thật đã có trong website, tiêu đề xuất hiện theo dòng, marquee hai chiều, hiệu ứng nút và phần nội dung khi cuộn. Motion CSS + IntersectionObserver, có tạm dừng và prefers-reduced-motion. Không sửa landing, quyền, thanh toán, email hoặc dashboard.
+
+Ảnh khớp người dùng chọn: public/doi-ngu-nhan-su-ai/images/generated/hero-operator.webp (1586x992); role-ops/role-report/role-marketing/role-design/role-ads.webp (1400x1050). Đây là ảnh nguồn sạch đang dùng trên website, chưa xác nhận file máy ảnh trước chuyển WebP. Đã chỉnh mobile để CTA không đè mặt.
+
+TypeScript, scoped ESLint, git diff --check, 39 landing/payment tests và Next production build đạt. Browser QA local desktop1440, mobile390/320 không tràn ngang, ảnh không lỗi; anchor chọn khóa đúng; production local xác minh pause giữ nguyên transform của3marquee và resume đổi trạng thái. Bản xem thử http://localhost:4323/ (next start). Chưa deploy bản này. Bước tiếp theo: duyệt phát hành bản thiết kế mới, commit/push đúng phạm vi và guarded preflight/promotion, kiểm tra live. Lưu ý localhost:4322 hydrate được; 127.0.0.1:4322 từng không hydrate và dev báo blocked cross-origin, nguyên nhân chính xác chưa kết luận.
