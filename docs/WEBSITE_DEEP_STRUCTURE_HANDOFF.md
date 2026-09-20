@@ -1,3 +1,7 @@
+## 20/09/2026 — Thông báo khóa mở bán nội bộ
+
+Theo yêu cầu sau phát hành của anh: `/learn/[course]` khi khóa có trong catalog, không có landingPageUrl và chưa có bài công khai sẽ hiện “Khóa học đang được mở bán nội bộ” / “Hãy liên hệ với Thế Anh để được học sớm”, thay404. Khóa có bài công khai vẫn redirect bài đầu; slug không tồn tại vẫn404. TypeScript, scoped ESLint và10 focused tests đạt.
+
 # 20/09/2026 — Homepage/dashboard LIVE
 
 Runtime0fe0549; production dpl_DevyBi2ruk67y8KcU3HHoKLxAHKE READY. Chi tiết: STUDENT_EXPERIENCE_20260920.md. Live Admin dashboard/bài học, guest guards và landing smoke đạt.
