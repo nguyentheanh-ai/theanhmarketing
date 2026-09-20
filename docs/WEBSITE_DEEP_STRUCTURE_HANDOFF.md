@@ -2138,3 +2138,10 @@ Main-site canonical, base 367d8b4. Đã đọc context/registry/policy, repo AGE
 Ảnh khớp người dùng chọn: public/doi-ngu-nhan-su-ai/images/generated/hero-operator.webp (1586x992); role-ops/role-report/role-marketing/role-design/role-ads.webp (1400x1050). Đây là ảnh nguồn sạch đang dùng trên website, chưa xác nhận file máy ảnh trước chuyển WebP. Đã chỉnh mobile để CTA không đè mặt.
 
 TypeScript, scoped ESLint, git diff --check, 39 landing/payment tests và Next production build đạt. Browser QA local desktop1440, mobile390/320 không tràn ngang, ảnh không lỗi; anchor chọn khóa đúng; production local xác minh pause giữ nguyên transform của3marquee và resume đổi trạng thái. Bản xem thử http://localhost:4323/ (next start). Chưa deploy bản này. Bước tiếp theo: duyệt phát hành bản thiết kế mới, commit/push đúng phạm vi và guarded preflight/promotion, kiểm tra live. Lưu ý localhost:4322 hydrate được; 127.0.0.1:4322 từng không hydrate và dev báo blocked cross-origin, nguyên nhân chính xác chưa kết luận.
+
+
+## 20/09/2026 — Trang chủ ảnh chân dung và hiệu ứng ĐÃ LIVE
+
+Anh duyệt “đưa lên”. Runtime17c620b5590dfd2f5f42d3482a4b118f679df614; preview dpl_7JJMVoN8LuJa9VuAcDzgMJcyAxtD READY, preflight exact canonical/remote đạt, production dpl_8ffJ5HrJQsVcnEymv1K3n9BPB7Jp READY trên www/apex. Rollback dpl_BySFkJAEHf8xMvPFpjwSHVSdfBZu. Không còn chờ phát hành.
+
+Website thật đã xác minh tiêu đề mới, ảnh hero đúng, pause/resume đổi trạng thái, ảnh không lỗi và không tràn ngang ở viewport hiện tại. Kế thừa QA desktop1440/mobile390/320, 39tests, TypeScript, scoped lint và local build đạt của chính bản này; hai Vercel builds đạt. Sáu landing200, bốn landing tĩnh SHA256 giữ nguyên; dashboard/tài khoản giữ redirect đăng nhập, learn giữ redirect bài học, GET api/orders405. www/apex200 và có nội dung trang chủ mới. Log error/fatal đúng deployment trong5phút đến03:29:57UTC không có kết quả. Evidence: worktrees/student-experience-20260920/reports/student-experience-20260920/homepage-motion-live-after.json trong workspace Kinh doanh. Chưa đo điểm hiệu suất hoặc làm giao dịch thanh toán thật; đây là kiểm tra phát hành giao diện.
