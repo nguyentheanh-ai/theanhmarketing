@@ -725,3 +725,8 @@ Hai banner có CTA nền trắng “Xem video hướng dẫn” và “Mở bộ
 16route giữ status và destination;4landing tĩnh ngoài scope giữSHA256. Log error/fatal đúng deployment15phút kết thúc09:37:55UTC không có kết quả. Chưa visual browser/authenticated student QA. Deployment đúngSHA đã xác minh; chưa xác minh riêng nội dung chunk JS/CSS qua public URL, không coi metadata là bằng chứng thao tác học viên.
 
 Evidence reports/agent-banner-clarity-20260916/{deployment,alias-before,smoke-comparison,live-smoke-before,live-smoke-after}.json; build/tests.log. Không còn chờ duyệt/deploy. Đã cập nhật workspace SESSION_STATE/FEATURE_REGISTRY/TASK_LOG/CHANGELOG/ACTIVE_TASKS và repo handoff. Các dòng READY_FOR_REVIEW/chưa production phía trên là lịch sử, được mục này thay thế.
+
+
+## 21/09/2026 — Anh duyệt deploy, kiểm tra trước phát hành PASS
+
+Owner yêu cầu “Deloy luôn đi em”.39/39 tests, TypeScript, scoped ESLint test file, PostCSS parse, git diff --check và Next production build --webpack108/108 đạt. Build cần quyền mạng để tải Google Fonts; sandbox DNS fail đã được xử lý bằng quyền mạng được chấp thuận, không đổi code. Mọi phần ngoài style của HTML vẫn giống baseline6edb4dc; hai mirror byte-identical. Rollback production trước phát hành: dpl_8ffJ5HrJQsVcnEymv1K3n9BPB7Jp. Visual QA vẫn chưa thực hiện theo policy; anh đã duyệt bản xem thử và yêu cầu deploy. Evidence local reports/facebook-form-clean-20260921.

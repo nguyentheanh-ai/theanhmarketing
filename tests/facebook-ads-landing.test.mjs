@@ -378,7 +378,7 @@ test("Facebook Ads P1 rewrite updates navigation, FAQs and the primary CTA", () 
   assert.doesNotMatch(main, /Sau khóa này học tiếp gì\?/);
 });
 
-test("Facebook Ads landing shows the restored left rail that fills green through the active section", () => {
+test("Facebook Ads landing keeps section navigation with a compact amber progress indicator", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
   const rail = html.match(/<nav class="section-progress-rail"[\s\S]*?<\/nav>/)?.[0] ?? "";
 
@@ -386,13 +386,13 @@ test("Facebook Ads landing shows the restored left rail that fills green through
   assert.equal((rail.match(/data-section-progress-dot/g) || []).length, 12);
   assert.match(rail, /href="#dau-trang"[^>]+aria-label="Đầu trang"/);
   assert.match(rail, /href="#bat-dau"[^>]+aria-label="Bắt đầu"/);
-  assert.match(html, /\.section-progress-fill\s*\{[\s\S]*?background:\s*#22c55e/);
+  assert.match(html, /\.section-progress-fill\s*\{[\s\S]*?background:\s*#f7b51b/);
   assert.match(html, /\.section-progress-dot\.is-reached/);
   assert.match(html, /\.section-progress-dot\.is-active/);
   assert.match(html, /function updateSectionProgress\(activeIndex\)/);
   assert.match(html, /new IntersectionObserver\(handleSectionProgress/);
   assert.match(html, /window\.scrollY \+ window\.innerHeight >= document\.documentElement\.scrollHeight - 4/);
-  assert.match(html, /@media \(max-width:\s*339px\)[\s\S]*?\.section-progress-rail\s*\{[\s\S]*?display:\s*none/);
+  assert.match(html, /@media \(max-width:\s*1279px\), \(pointer:\s*coarse\)[\s\S]*?\.section-progress-dot\s*\{\s*display:\s*none/);
 });
 
 test("Facebook Ads form keeps a visible 3-2-1 transition before checkout navigation", () => {
