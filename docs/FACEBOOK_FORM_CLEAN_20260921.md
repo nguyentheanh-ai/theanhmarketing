@@ -28,3 +28,14 @@ Phát hiện source: rule @media(max-width:1020px) dùng .course-outcomes trong 
 ## 21/09/2026 — Anh duyệt deploy, kiểm tra trước phát hành PASS
 
 Owner yêu cầu “Deloy luôn đi em”.39/39 tests, TypeScript, scoped ESLint test file, PostCSS parse, git diff --check và Next production build --webpack108/108 đạt. Build cần quyền mạng để tải Google Fonts; sandbox DNS fail đã được xử lý bằng quyền mạng được chấp thuận, không đổi code. Mọi phần ngoài style của HTML vẫn giống baseline6edb4dc; hai mirror byte-identical. Rollback production trước phát hành: dpl_8ffJ5HrJQsVcnEymv1K3n9BPB7Jp. Visual QA vẫn chưa thực hiện theo policy; anh đã duyệt bản xem thử và yêu cầu deploy. Evidence local reports/facebook-form-clean-20260921.
+
+
+## 21/09/2026 — Facebook Ads: giao diện tối giản ĐÃ LIVE
+
+DONE theo yêu cầu “Deloy luôn đi em”. Runtime e2ac149e52ad010e7411cc7a5d9593a65c17cf2d; preview dpl_36Jgu6NSvVoytrBbazaHsmTKpvdb READY; preflight exact canonical root/remote PASS; production dpl_6C8V1PQk8FUANdDXUHLJJ8kMAntJ READY trên www/apex, API xác minh đúng commit. Rollback dpl_8ffJ5HrJQsVcnEymv1K3n9BPB7Jp. Không còn chờ duyệt/deploy.
+
+Form nền tối/nút vàng, ảnh giảng viên từ hông trở lên, section navigation vàng, mobile đồng bộ/gọn và sửa selector ẩn12outcome. Thay đổi runtime chỉ CSS hai HTML mirror; toàn bộ HTML ngoài style, JS, nội dung, giá, assets nguồn, tracking và payment giữ nguyên so với6edb4dc. Source/test:39/39 tests, TypeScript, scoped ESLint, PostCSS parse, diff check; local Next build108/108 và preview/production Vercel build đạt.
+
+Live: Facebook Ads www/apex, /ladipage/facebook-ads-2026.html và /academy/facebook-ads-master-2026.html HTTP200, byte-identical với source; SHA256 9739343cd020da264304662d32af8844fb903ba2d97a138b9b201d26710dfa9c.10route status/destination giữ nguyên,3landing tĩnh ngoài phạm vi giữhash. Logs error/fatal đúng deployment 07:31:38–07:36:38UTC không có kết quả.
+
+Giới hạn: chưa browser visual QA/điện thoại thật hoặc giao dịch thật; không coi HTTP/hash là kiểm chứng hiển thị. Không đổi backend/data/email/access. Evidence: worktrees/facebook-form-clean-20260921/reports/facebook-form-clean-20260921 trong workspace Kinh doanh; handoff canonical docs/FACEBOOK_FORM_CLEAN_20260921.md. Bước tiếp theo chỉ khi có góp ý giao diện hoặc yêu cầu kiểm tra thiết bị.
