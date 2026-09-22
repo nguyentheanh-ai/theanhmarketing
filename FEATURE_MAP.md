@@ -780,3 +780,14 @@ Source riêng: `/Users/theanh/CodexProjects/Kinh doanh/worktrees/ebook-ui-202609
 ## 23/09/2026 — Anh duyệt phát hành Ebook
 
 Anh yêu cầu “deloy đi em” sau khi xem bản local. Đã tích hợp đúng hai HTML + test và tài liệu liên quan vào canonical;64/64 Ebook/reader/Facebook/payment tests PASS, scoped ESLint/diff PASS, Next production build --webpack và TypeScript PASS. Rollback hiện tại dpl_GQkUtpXmxaQscBJhq4nBZXyZb72F (30ac018), www/apex đã xác minh. Bản trước của các landing đã lưu trong reports/ebook-ui-20260923/live-before.json ở feature. Chưa tuyên bố LIVE ở mốc này; tiếp tục commit/preflight/push, đợi preview và promote.
+
+
+## 23/09/2026 — Ebook UI đã phát hành (LIVE)
+
+Anh đã duyệt triển khai bằng yêu cầu “deloy đi em”. Runtime commit `2f0531822e055a08769bc63012c74986ba083258`; production `dpl_AtMykk6RPVFztnbgFAEfvV31Xm4B` READY, gắn cả www/apex. URL: https://www.theanhmarketing.com/academy/ebook-facebook-ads-2026-premium . Rollback: `dpl_GQkUtpXmxaQscBJhq4nBZXyZb72F`.
+
+Doctor và preflight canonical PASS sau commit/push; 64/64 kiểm tra phạm vi PASS, ESLint/diff PASS, build webpack + TypeScript và 108/108 trang PASS. Vercel preview READY nhưng bị bảo vệ đăng nhập; không tính redirect đăng nhập là bằng chứng nội dung. Promote tạo một production build riêng, đã chờ READY.
+
+Bốn URL Ebook (www/apex/academy.html/ladipage.html) HTTP200, byte-identical với source, SHA256 `a3918dba76640248fda8285969335a0cdd8aa7bf0f948255886b3e5141428ebe`. Mười route HTTP200 và destination giữ nguyên; bốn landing tĩnh ngoài phạm vi giữ nguyên hash. Codex IAB trên live: desktop1440 và mobile390 không tràn ngang; hero dễ đọc, CTA tới khu giá/form; mua kèm399K→1.098M→399K; menu/thanh dưới ẩn khi form hiển thị; dialog ảnh mở/đóng đúng. Đã để tab production cho anh xem. Runtime error/fatal của deployment trong cửa sổ kiểm tra không có bản ghi.
+
+Không tạo đơn, thanh toán hay email thật; chưa kiểm tra thiết bị vật lý hoặc xác nhận event tại Meta. Nội dung/form/script nghiệp vụ gốc được giữ. Bằng chứng: feature `reports/ebook-ui-20260923/live-after.json`, `live-source-match.json`, `release.json`. Trạng thái LIVE này thay thế ghi chú LOCAL_REVIEW/chưa deploy ở trên; không còn chờ duyệt deploy.
