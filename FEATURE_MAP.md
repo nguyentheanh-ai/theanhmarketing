@@ -768,3 +768,15 @@ Hoàn tất yêu cầu “deloy đi, nút đọc thử phải dài bằng nút �
 Source chỉ CSS hai file public/ladipage/ebook-facebook-ads-2026-premium.html và public/academy/ebook-facebook-ads-2026-premium.html. HTML ngoài style, JS, giá, order/payment/invoice, tracking và quyền truy cập giữ nguyên. 64/64 tests, TypeScript, scoped ESLint, PostCSS, diff check và Next production build đạt. Live bốn URL premium HTTP200 khớp nguồn SHA256 eaf5d5fd7b7c9e8e35770bfe89b8a396fbe1c6250265cf3fd91c4d09d3d7ce50; 10 route giữ status/destination; hash ba landing Facebook Ads, Ebook cũ, AI Master giữ nguyên. Không có log error/fatal khớp bộ lọc deployment trong 08:44:44–08:49:44 UTC.
 
 Context: registry/control/AGENTS, catalog/routes, design/payment/email và handoff; skill landing-page-builder và deployment/verification. Evidence: worktrees/ads-library-clean-20260921/reports/ads-library-clean-20260921 tại workspace Kinh doanh. Giới hạn: chưa kiểm tra hiển thị trên trình duyệt/điện thoại do managed-off policy; không giao dịch thật. Không coi HTTP/hash là bằng chứng giao diện hay thanh toán thực tế. Không còn chờ deploy; bước tiếp theo chỉ khi có góp ý giao diện.
+
+
+## 23/09/2026 — Ebook: thiết kế lại toàn bộ UI (LOCAL_REVIEW)
+
+Source riêng: `/Users/theanh/CodexProjects/Kinh doanh/worktrees/ebook-ui-20260923`, base af2c4ae. Preview Next dev http://127.0.0.1:4332/academy/ebook-facebook-ads-2026-premium. Đã audit hero+14section; thay CSS nhiều lớp bằng nền sáng/xanh đậm, tên Ebook trong H1, ảnh đúng tỷ lệ, CTA bằng nhau, mục lục 2cột/1cột, form trắng và phóng28ảnh mẫu. Thanh dưới ẩn khi form xuất hiện; CTA cũng ẩn khi hero còn trong màn hình. Form/script nghiệp vụ gốc nguyên văn; giá399K và gói1.098M/Pixel/checkout/quyền học giữ nguyên. Hai HTML mirror giống nhau.
+
+36tests Ebook/reader/payment PASS; CSS parse/inline JS syntax/scoped ESLint/diff PASS. Browser dùng Codex IAB theo correction của anh, desktop1440/mobile390,320 không tràn ngang; menu, ảnh lớn, slider, mua kèm, hóa đơn và FAQ đã thử; reader thật localHTTP200. Chưa production build/deploy/giao dịch thật/Meta receipt. Context/chi tiết/giới hạn trong feature `docs/EBOOK_UI_AUDIT_20260923.md`; source đổi2HTML và1test; docs/lesson đã cập nhật. Bước tiếp: anh xem preview, chỉ phát hành khi có yêu cầu và qua canonical preflight.
+
+
+## 23/09/2026 — Anh duyệt phát hành Ebook
+
+Anh yêu cầu “deloy đi em” sau khi xem bản local. Đã tích hợp đúng hai HTML + test và tài liệu liên quan vào canonical;64/64 Ebook/reader/Facebook/payment tests PASS, scoped ESLint/diff PASS, Next production build --webpack và TypeScript PASS. Rollback hiện tại dpl_GQkUtpXmxaQscBJhq4nBZXyZb72F (30ac018), www/apex đã xác minh. Bản trước của các landing đã lưu trong reports/ebook-ui-20260923/live-before.json ở feature. Chưa tuyên bố LIVE ở mốc này; tiếp tục commit/preflight/push, đợi preview và promote.
