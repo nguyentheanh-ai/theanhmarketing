@@ -86,6 +86,7 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
+      { source: "/academy/quang-cao-chuyen-gia", destination: "/industry-ads/chuyen-gia.html" },
       {
         source: "/academy/facebook-ads-master-2026",
         destination: "/academy/facebook-ads-master-2026.html",

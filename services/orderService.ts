@@ -401,6 +401,15 @@ function getFixedPaymentPackage(input: CreatePaymentOrderInput) {
 
 const coursePaymentPlans: Record<string, Record<string, CoursePaymentPlan>> = {
   "facebook-ads-2026": {
+    "industry-expert-1290": {
+      title: "Khóa học quảng cáo chuyển đổi dành cho chuyên gia",
+      amount: 1290000,
+      orderItems: [{
+        slug: "facebook-ads-2026",
+        title: "Khóa học quảng cáo chuyển đổi dành cho chuyên gia",
+        price: 1290000,
+      }],
+    },
     video: {
       title: "Gói Cơ Bản 399K",
       amount: 399000,

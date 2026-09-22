@@ -1,0 +1,27 @@
+{
+  "source": "/industry-ads/proof/ads-2026-08-results-desc.png",
+  "capturedAt": "2026-09-22",
+  "period": "01–31/08/2026",
+  "timezone": "America/Los_Angeles",
+  "scope": "Three selected website-purchase campaign rows; not full account",
+  "rows": [
+    {
+      "label": "Chiến dịch 01",
+      "campaign": "Chiến dịch 01",
+      "purchases": 35,
+      "spend": 12309666
+    },
+    {
+      "label": "Chiến dịch 02",
+      "campaign": "Chiến dịch 02",
+      "purchases": 20,
+      "spend": 11022928
+    },
+    {
+      "label": "Chiến dịch 03",
+      "campaign": "Chiến dịch 03",
+      "purchases": 9,
+      "spend": 5181304
+    }
+  ]
+}

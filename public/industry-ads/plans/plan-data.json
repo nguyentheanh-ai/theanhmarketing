@@ -1,0 +1,305 @@
+[
+  {
+    "id": "research",
+    "sheet": "Nghiên cứu",
+    "title": "Nghiên cứu người mua khóa quảng cáo",
+    "subtitle": "Khóa dành cho chuyên gia · 1.290.000đ · Tổng hợp đầu vào ngày 22/09/2026",
+    "intro": "Tách điều đã biết khỏi điều cần hỏi thêm. Bản này tổng hợp brief và phản hồi đã có; chưa phải khảo sát đại diện thị trường.",
+    "headers": [
+      "Căn cứ",
+      "Điều đã biết",
+      "Hàm ý cho tuyển sinh",
+      "Việc xác minh tiếp theo"
+    ],
+    "rows": [
+      [
+        "Brief của Thế Anh",
+        "Người mua có chuyên môn, có khóa học nhưng chưa có học viên.",
+        "Mở đầu bằng vấn đề tuyển sinh; không bắt đầu bằng thuật ngữ quảng cáo.",
+        "Hỏi khóa đang bán, giá, nhóm học viên và lần gần nhất có đơn."
+      ],
+      [
+        "Brief của Thế Anh",
+        "Đã thử nhiều cách quảng cáo nhưng chưa hiệu quả.",
+        "Cho xem cách tìm điểm mất khách trong cả quảng cáo, trang và chăm sóc.",
+        "Xin số lượt vào trang, đăng ký và đơn đã trả tiền trong cùng kỳ."
+      ],
+      [
+        "Phản hồi Zalo được cung cấp",
+        "Người học nhắc đến việc sàng lọc khách spam và làm theo hướng dẫn.",
+        "Nội dung cần giải thích chất lượng người hỏi, không chỉ số tin nhắn.",
+        "Hỏi tiêu chí khách phù hợp và bước nào đã thay đổi; chưa suy ra doanh thu."
+      ],
+      [
+        "Trao đổi Zalo được cung cấp",
+        "Người học có kế hoạch nhưng hỏi xem số liệu ở đâu để làm báo cáo.",
+        "Cho xem bảng đọc kết quả và chỉ rõ nguồn của mỗi chỉ số.",
+        "Hỏi hiện đang xem báo cáo nào, sự kiện nào và có đối chiếu đơn chưa."
+      ],
+      [
+        "Giả thuyết cần kiểm chứng",
+        "Người từng học quảng cáo có thể ngại mua thêm một khóa chỉ dạy thao tác.",
+        "Cho xem bài thực hành và tài liệu cụ thể trước phần đăng ký.",
+        "Phỏng vấn 5 người phù hợp: phần nào của khóa cũ chưa áp dụng được?"
+      ],
+      [
+        "Giả thuyết cần kiểm chứng",
+        "Khách có thể chưa hiểu khóa học liên quan thế nào tới tình huống của mình.",
+        "Viết ví dụ từ chuyên môn sẵn có đến thông điệp bán khóa.",
+        "Đưa hai cách giới thiệu cho người phù hợp đọc; hỏi họ hiểu học để làm gì."
+      ]
+    ]
+  },
+  {
+    "id": "marketing",
+    "sheet": "Marketing 14 ngày",
+    "title": "Kế hoạch tuyển sinh trong 14 ngày",
+    "subtitle": "Triển khai cho khóa Quảng cáo chuyển đổi dành cho chuyên gia",
+    "intro": "Ngày 1 tính từ khi bắt đầu triển khai. Đây là kế hoạch đã soạn để thực hiện, chưa phải chiến dịch đã chạy. Phụ trách đề xuất: Thế Anh duyệt chuyên môn; người triển khai thực hiện và ghi dữ liệu.",
+    "headers": [
+      "Giai đoạn",
+      "Mục tiêu",
+      "Việc cần làm",
+      "Đầu ra và điều kiện chuyển bước"
+    ],
+    "rows": [
+      [
+        "Ngày 1–2 · Hiểu người mua",
+        "Xác định nhóm học viên ưu tiên.",
+        "Đọc brief và tin nhắn; trao đổi với 5 người đã có khóa nhưng ít học viên; ghi nguyên lời họ dùng.",
+        "Bản nghiên cứu có nguồn; chọn một vấn đề nổi bật, ghi riêng giả thuyết."
+      ],
+      [
+        "Ngày 3–4 · Hoàn thiện trang",
+        "Giải thích rõ học gì và cách đăng ký.",
+        "Viết thông điệp; bổ sung nội dung học, ví dụ kế hoạch, phản hồi; kiểm tra giá và quyền học.",
+        "Landing và form dùng được trên điện thoại; các thông tin bán hàng được xác nhận."
+      ],
+      [
+        "Ngày 5–6 · Chuẩn bị đo lường",
+        "Biết số liệu đến từ đâu.",
+        "Gắn UTM theo mẫu nội dung; kiểm tra form, mã đơn, Pixel và luồng server bằng môi trường kiểm thử.",
+        "Có bảng định nghĩa sự kiện; không tính tạo đơn hay mở QR là đã mua."
+      ],
+      [
+        "Ngày 7–9 · Thử nội dung",
+        "Tìm thông điệp đưa đúng người vào trang.",
+        "Xuất bản nội dung C07–C09; triển khai thử nghiệm A/B theo tab Ads khi ngân sách được duyệt.",
+        "Nhật ký mẫu quảng cáo, thời gian và thay đổi; đọc lượt vào trang cùng đăng ký."
+      ],
+      [
+        "Ngày 10–12 · Giải đáp",
+        "Giúp người còn cân nhắc hiểu độ phù hợp.",
+        "Đăng bài về giáo trình, học phí, cách áp dụng; dùng chuỗi email với người đồng ý nhận tin.",
+        "Lưu câu hỏi thực tế; người đã mua chuyển sang thông tin học, dừng thư bán khóa."
+      ],
+      [
+        "Ngày 13–14 · Tổng kết",
+        "Chọn việc cần sửa ở vòng tiếp theo.",
+        "Đối chiếu chi phí Meta, đăng ký hợp lệ và đơn trả tiền; đọc lý do chưa mua; tổng hợp một trang.",
+        "Giữ hoặc sửa một giả thuyết cụ thể; chỉ tăng ngân sách sau khi đánh giá đủ dữ liệu và khả năng chi."
+      ]
+    ]
+  },
+  {
+    "id": "content",
+    "sheet": "Content 14 ngày",
+    "title": "Lịch nội dung tuyển sinh 14 ngày",
+    "subtitle": "14 chủ đề đã viết cho chuyên gia có khóa học nhưng ít học viên",
+    "intro": "Mỗi nội dung có nhiệm vụ riêng trong hành trình đăng ký. Các bài và video chưa được xuất bản; tên mã dùng để đối chiếu với kế hoạch Ads và email.",
+    "headers": [
+      "Mã / ngày",
+      "Định dạng",
+      "Tiêu đề hoặc câu mở đầu",
+      "Nội dung triển khai / lời mời"
+    ],
+    "rows": [
+      [
+        "C01 · Ngày 1",
+        "Bài Facebook",
+        "Khóa học đã quay xong. Vì sao vẫn chưa có người đăng ký?",
+        "Kể ba điểm có thể vướng: chưa đúng người, chưa rõ giá trị, chưa đủ tin. Mời tự kiểm tra khóa đang bán."
+      ],
+      [
+        "C02 · Ngày 2",
+        "Video 60–90 giây",
+        "Khách khen bài hay rồi im lặng: bạn cần xem lại điều gì?",
+        "Phân biệt nội dung chia sẻ với nội dung giúp người học chọn khóa. Mời xem ví dụ trên landing."
+      ],
+      [
+        "C03 · Ngày 3",
+        "Bài hướng dẫn",
+        "5 câu hỏi nên hỏi trước khi viết thêm một mẫu quảng cáo",
+        "Hỏi hoàn cảnh, việc đã thử, khó khăn còn lại, tiêu chí chọn khóa và điều lo ngại. Mời đọc bản research."
+      ],
+      [
+        "C04 · Ngày 4",
+        "Video màn hình",
+        "Từ một câu hỏi của học viên đến một thông điệp quảng cáo",
+        "Dùng câu hỏi đọc báo cáo trong ảnh Zalo; giải thích cách chọn chủ đề. Không gán kết quả kinh doanh cho ảnh."
+      ],
+      [
+        "C05 · Ngày 5",
+        "Bài kèm hình",
+        "Trang bán khóa học cần trả lời gì trước phần học phí?",
+        "Cho xem phần đối tượng, nội dung, bài thực hành, phản hồi và đăng ký. Mời xem landing."
+      ],
+      [
+        "C06 · Ngày 6",
+        "Video màn hình",
+        "Bấm đăng ký rồi, vì sao vẫn chưa phải một lượt mua?",
+        "Giải thích form, tạo đơn, xác nhận thanh toán; minh họa đúng sự kiện. Mời xem phần đo lường."
+      ],
+      [
+        "C07 · Ngày 7",
+        "Video quảng cáo A",
+        "Có khóa học nhưng chưa có học viên? Bắt đầu kiểm tra từ đây.",
+        "Mở bằng tình huống; trình bày ba bước quảng cáo, landing, dữ liệu. Mời xem nội dung khóa 1.290.000đ."
+      ],
+      [
+        "C08 · Ngày 8",
+        "Ảnh + bài quảng cáo B",
+        "Trước khi tăng ngân sách, xem khách đang dừng ở đâu",
+        "Cho xem bản kế hoạch và cách đọc phễu. Giữ cùng giá, trang và lời mời như C07 để so thông điệp."
+      ],
+      [
+        "C09 · Ngày 9",
+        "Video phân tích",
+        "Hai chiến dịch có giá một lượt mua khác nhau. Nên xem gì tiếp?",
+        "Dùng ảnh Meta cùng kỳ; nói rõ loại kết quả, chi phí và giới hạn quy kết. Mời xem phân tích."
+      ],
+      [
+        "C10 · Ngày 10",
+        "Bài giải đáp",
+        "Tôi đã học quảng cáo rồi. Khóa này phù hợp khi nào?",
+        "Nêu trường hợp cần nối quảng cáo với landing và dữ liệu; nói rõ dùng chương trình Facebook Ads hiện có."
+      ],
+      [
+        "C11 · Ngày 11",
+        "Bài phản hồi",
+        "Sau phần kế hoạch, học viên thường hỏi tiếp điều gì?",
+        "Dùng ảnh hỏi đọc số liệu và câu trả lời; mời người xem đối chiếu với việc mình đang vướng."
+      ],
+      [
+        "C12 · Ngày 12",
+        "Video màn hình",
+        "Một landing hoàn chỉnh được sắp xếp ra sao?",
+        "Đi qua trang đã làm: đầu trang, nội dung, bằng chứng, form. Mời xem đầy đủ ví dụ."
+      ],
+      [
+        "C13 · Ngày 13",
+        "Bài học phí",
+        "1.290.000đ gồm nội dung gì, chưa gồm khoản nào?",
+        "Nêu học video, tài khoản và chương trình hiện có; ngân sách Ads tách riêng. Mời xem form đăng ký."
+      ],
+      [
+        "C14 · Ngày 14",
+        "Bài tổng hợp",
+        "Nếu làm lại quảng cáo cho khóa học, hãy bắt đầu từ 5 việc này",
+        "Tóm tắt research, lời giới thiệu, landing, đo lường, thử nghiệm. Mời đăng ký nếu đúng nhu cầu."
+      ]
+    ]
+  },
+  {
+    "id": "ads",
+    "sheet": "Kế hoạch Ads",
+    "title": "Kế hoạch thử quảng cáo qua landing",
+    "subtitle": "Hai thông điệp · một khóa học · một trang đích",
+    "intro": "Bản triển khai đề xuất, chưa bật quảng cáo. Ngân sách thực chi cần Thế Anh xác nhận; không gán dự báo doanh thu hoặc CPL khi chưa có dữ liệu cho khóa này.",
+    "headers": [
+      "Hạng mục",
+      "Quyết định triển khai",
+      "Cách thực hiện",
+      "Căn cứ đánh giá"
+    ],
+    "rows": [
+      [
+        "Mục tiêu",
+        "Tìm người phù hợp đăng ký khóa chuyên gia.",
+        "Dùng website làm nơi chuyển đổi; chọn mục tiêu và sự kiện theo hành vi thật cần tối ưu.",
+        "Kiểm tra sự kiện được nhận đúng trước khi xuất bản."
+      ],
+      [
+        "Thông điệp A · C07",
+        "Đã có khóa học nhưng chưa có học viên.",
+        "Video nêu tình huống và ba khâu cần kiểm tra; dẫn tới landing chuyên gia.",
+        "Lượt vào trang, đăng ký hợp lệ, đơn trả tiền và câu hỏi về độ phù hợp."
+      ],
+      [
+        "Thông điệp B · C08",
+        "Đã chạy Ads nhưng không biết phải sửa ở đâu.",
+        "Ảnh bản kế hoạch kèm giải thích đọc phễu; cùng giá và cùng trang với A.",
+        "So sánh cùng khoảng thời gian; kiểm tra chênh lệch phân phối trước khi kết luận."
+      ],
+      [
+        "Thiết kế thử nghiệm",
+        "Tập trung so thông điệp.",
+        "Giữ trang, lời mời và cách đo giống nhau; dùng phương án thử A/B của tài khoản nếu đủ điều kiện.",
+        "Không đổi đồng thời nhiều biến; ghi rõ thời điểm mọi thay đổi."
+      ],
+      [
+        "UTM",
+        "Nhận diện nguồn theo mẫu nội dung.",
+        "utm_source=facebook; utm_medium=paid_social; utm_campaign=expert_course; utm_content=C07 hoặc C08.",
+        "Đối chiếu UTM với đơn; UTM không thay thế báo cáo attribution của Meta."
+      ],
+      [
+        "Ngân sách",
+        "Chưa đặt mức chi thay chủ tài khoản.",
+        "Điền ngân sách được duyệt trước khi chạy; xác định giới hạn chi và lịch xem lại.",
+        "Không tăng chi chỉ vì có tương tác; xem chất lượng và kết quả theo cửa sổ đo thống nhất."
+      ],
+      [
+        "Quy tắc xử lý",
+        "Sửa theo điểm mất khách.",
+        "Lỗi trang/form: dừng kiểm tra; ít vào trang: xem mẫu; có đăng ký chưa mua: xem mức phù hợp và chăm sóc.",
+        "Quyết định ghi kèm dữ liệu; không dùng một ngưỡng CPL chung cho mọi khóa."
+      ]
+    ]
+  },
+  {
+    "id": "email",
+    "sheet": "Email chăm sóc",
+    "title": "Chuỗi 5 email cho người đang cân nhắc",
+    "subtitle": "Bản nháp có thể biên tập để sử dụng · chưa gửi",
+    "intro": "Chỉ dành cho người đồng ý nhận email. Dừng chuỗi bán khóa khi đã mua hoặc hủy đăng ký. Lịch tính từ lúc đăng ký nhận thông tin; cần nối đúng điều kiện trước khi vận hành.",
+    "headers": [
+      "Thời điểm",
+      "Tiêu đề",
+      "Nội dung email",
+      "Lời mời"
+    ],
+    "rows": [
+      [
+        "E01 · Ngay sau đăng ký",
+        "Thông tin khóa quảng cáo dành cho chuyên gia",
+        "Chào bạn, cảm ơn bạn đã quan tâm. Nếu bạn đã có khóa học nhưng chưa tuyển được học viên như mong muốn, hãy bắt đầu bằng việc xem khách đang dừng ở đâu: quảng cáo, trang giới thiệu hay bước thanh toán. Chương trình sử dụng nội dung Facebook Ads hiện có của The Anh Marketing, học qua video trên website. Học phí 1.290.000đ, chưa gồm ngân sách quảng cáo.",
+        "Xem nội dung và hình thức học trên landing."
+      ],
+      [
+        "E02 · Sau 1 ngày",
+        "Trước khi tăng ngân sách, hãy kiểm tra ba việc",
+        "Chào bạn, có người nhấp vào quảng cáo chưa có nghĩa là họ hiểu khóa học của bạn. Hãy xem lại ba việc: câu đầu trên landing có khớp quảng cáo không; người đọc có biết mình học để làm gì không; form có gửi được trên điện thoại không. Kiểm tra những việc này giúp bạn tránh tiếp tục đưa khách vào một bước đang gặp lỗi.",
+        "Xem quy trình quảng cáo qua landing."
+      ],
+      [
+        "E03 · Sau 3 ngày",
+        "Một bản kế hoạch tuyển sinh cần có những gì?",
+        "Chào bạn, kế hoạch hữu ích cần ghi được việc sẽ làm, nội dung nào dùng, khi nào thực hiện và dựa vào đâu để xem lại. Trong ví dụ trên trang, research dẫn tới chủ đề content; content và quảng cáo dẫn về cùng một landing; dữ liệu giúp chọn việc cần sửa. Bạn có thể mở bản kế hoạch 14 ngày để xem cách các phần liên quan với nhau.",
+        "Đọc bản kế hoạch và đối chiếu với khóa của bạn."
+      ],
+      [
+        "E04 · Sau 5 ngày",
+        "Đã học quảng cáo rồi, có nên học tiếp?",
+        "Chào bạn, nếu bạn đã thành thạo thiết lập, landing và đo lường, hãy đọc kỹ nội dung trước khi quyết định. Khóa hiện dùng chương trình Facebook Ads có sẵn, không phải một giáo trình mới quay riêng cho chuyên gia. Nếu bạn vẫn đang chạy từng mẫu mà chưa biết khách dừng ở bước nào, phần nền tảng và ví dụ ứng dụng có thể giúp bạn sắp xếp lại cách làm. Kết quả cần được kiểm chứng trên sản phẩm và dữ liệu của bạn.",
+        "Xem nội dung học và các câu hỏi thường gặp."
+      ],
+      [
+        "E05 · Sau 7 ngày",
+        "Bạn có thể bắt đầu từ chính khóa học đang bán",
+        "Chào bạn, khi thực hành, hãy chọn một khóa học và một nhóm người học cụ thể. Viết lại lời giới thiệu, hoàn thiện trang đăng ký, kiểm tra cách đo rồi mới thử thông điệp quảng cáo. Nếu cách học này phù hợp, bạn có thể đăng ký với học phí 1.290.000đ. Sau khi thanh toán được xác nhận, hệ thống gửi thông tin truy cập tới email đăng ký.",
+        "Đăng ký học trên landing; không tạo hạn chót giả."
+      ]
+    ]
+  }
+]
