@@ -1,0 +1,165 @@
+{
+  "mode": "after",
+  "samples": [
+    {
+      "path": "/learn/facebook-ads-2026/828c23b3-449b-4a54-bece-aeb4daf476ba",
+      "status": 307,
+      "ms": 2683,
+      "region": "hkg1::iad1::6dp6v-1790360028442-ab53089cb486",
+      "bytes": 31374
+    },
+    {
+      "path": "/api/student/progress",
+      "status": 403,
+      "ms": 1592,
+      "region": "hkg1::iad1::psdpx-1790360031120-ce824b083e93",
+      "bytes": 74
+    },
+    {
+      "path": "/learn/facebook-ads-2026/828c23b3-449b-4a54-bece-aeb4daf476ba",
+      "status": 200,
+      "ms": 2826,
+      "region": "hkg1::iad1::fwthn-1790360033934-ee55aa96780f",
+      "bytes": 81968
+    },
+    {
+      "path": "/learn/facebook-ads-2026/ca3a1eb9-6aec-42f1-b69f-df56fe22aca0",
+      "status": 200,
+      "ms": 2257,
+      "region": "hkg1::iad1::xjdf5-1790360036673-875746a05309",
+      "bytes": 81986
+    },
+    {
+      "path": "/learn/facebook-ads-2026/9776462a-28c1-4e08-bbca-99d5f8c5d8e5",
+      "status": 200,
+      "ms": 3401,
+      "region": "hkg1::iad1::6dp6v-1790360038930-21cd152b4402",
+      "bytes": 81775
+    },
+    {
+      "path": "/learn/facebook-ads-2026/828c23b3-449b-4a54-bece-aeb4daf476ba",
+      "status": 200,
+      "ms": 2298,
+      "region": "hkg1::iad1::wj4jx-1790360042331-c2792dc12e99",
+      "bytes": 81968
+    },
+    {
+      "path": "/learn/facebook-ads-2026/ca3a1eb9-6aec-42f1-b69f-df56fe22aca0",
+      "status": 200,
+      "ms": 1897,
+      "region": "hkg1::iad1::psdpx-1790360044629-36efe2b6894a",
+      "bytes": 81910
+    },
+    {
+      "path": "/learn/facebook-ads-2026/9776462a-28c1-4e08-bbca-99d5f8c5d8e5",
+      "status": 200,
+      "ms": 1984,
+      "region": "hkg1::iad1::bkvqn-1790360046526-1f7015bd739a",
+      "bytes": 81775
+    },
+    {
+      "path": "/api/student/progress",
+      "status": 200,
+      "ms": 2880,
+      "region": "hkg1::iad1::bkvqn-1790360048512-a6e768f5e7a0",
+      "bytes": 93
+    },
+    {
+      "path": "/dashboard",
+      "status": 200,
+      "ms": 3249,
+      "region": "hkg1::iad1::bkvqn-1790360051389-3e73a57ebdb9",
+      "bytes": 78544
+    },
+    {
+      "path": "/learn/facebook-ads-2026/828c23b3-449b-4a54-bece-aeb4daf476ba",
+      "status": 200,
+      "ms": 2157,
+      "region": "hkg1::iad1::rt78q-1790360054639-3ccbfa09449b",
+      "bytes": 82044
+    },
+    {
+      "path": "/admin/crm-v2/customers",
+      "status": 307,
+      "ms": 776,
+      "region": "hkg1::iad1::psdpx-1790360056797-5f153ad3635e",
+      "bytes": 39505
+    }
+  ],
+  "checks": [
+    {
+      "name": "identity",
+      "pass": true
+    },
+    {
+      "name": "session_link",
+      "pass": true
+    },
+    {
+      "name": "test_session",
+      "pass": true
+    },
+    {
+      "name": "set_test_first_password_flag",
+      "pass": true
+    },
+    {
+      "name": "direct_lesson_password_guard",
+      "pass": true
+    },
+    {
+      "name": "password_guard_progress",
+      "pass": true
+    },
+    {
+      "name": "change_password",
+      "pass": true
+    },
+    {
+      "name": "password_login",
+      "pass": true
+    },
+    {
+      "name": "lesson_0_828c23b3-449b-4a54-bece-aeb4daf476ba",
+      "pass": true
+    },
+    {
+      "name": "lesson_0_ca3a1eb9-6aec-42f1-b69f-df56fe22aca0",
+      "pass": true
+    },
+    {
+      "name": "lesson_0_9776462a-28c1-4e08-bbca-99d5f8c5d8e5",
+      "pass": true
+    },
+    {
+      "name": "lesson_1_828c23b3-449b-4a54-bece-aeb4daf476ba",
+      "pass": true
+    },
+    {
+      "name": "lesson_1_ca3a1eb9-6aec-42f1-b69f-df56fe22aca0",
+      "pass": true
+    },
+    {
+      "name": "lesson_1_9776462a-28c1-4e08-bbca-99d5f8c5d8e5",
+      "pass": true
+    },
+    {
+      "name": "progress",
+      "pass": true
+    },
+    {
+      "name": "dashboard",
+      "pass": true
+    },
+    {
+      "name": "saved_on_reload",
+      "pass": true
+    },
+    {
+      "name": "admin_denied",
+      "pass": true
+    }
+  ],
+  "progress": 4,
+  "count23": true
+}

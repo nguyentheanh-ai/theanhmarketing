@@ -696,3 +696,12 @@ Live baseline confirms function iad1 (x-vercel-id) while Supabase ap-southeast-2
 ### Điều chỉnh vùng xử lý sau đo production
 
 453061a đã live và18/18checks Auth/học/lưu tiến độ đạt; lesson payload ~105KB→82KB, save4576→2880ms. Tuy nhiên x-vercel-id vẫn iad1: builder @vercel/next bỏ regions từ functions-config-manifest của Node routes. Vì vậy preferredRegion không phải bằng chứng đã chuyển vùng. Bổ sung functions.regions trong vercel.json cho đúng4 nhóm trang/API học viên;8cron và vùng mặc định không đổi. Schema chính thức hỗ trợ và4patterns khớp source; chờ deploy/đo live để xác nhận syd1. Nguồn: https://vercel.com/docs/functions/configuring-functions/region#per-function-configuration .
+
+
+## 26/09/2026 — Khu học viên v2 đã LIVE và đo kiểm
+
+DONE theo yêu cầu xử lý trong phiên. Runtime9167035, productiondpl_4DWcFdmr5t4pUf4carLoku6pwHjs READY/www/apex; preflight PASS. Migration20260925180425 đã áp dụng.209tests/TS/lint/build108/SQL đạt;18/18auth checks và13/13post-region livechecks đạt.
+Đã scope truy vấn identity/course, giảm props, ghi log sau response; sửa first-password guard/login/reset-next/count23/cache progress; prefetch và animation140–220ms/reduced-motion. functions.regions đưa riêng học viên sangsyd1: headerlive xác nhận, adminiad1,8cron nguyên.
+Cùng6HTTP bài:median2435,5→778ms(-68,1%),save4576→1057ms,dashboard7574→627ms (save/dashboard1mẫu). PCclick→heading92/1008/63/128ms gồm cache/prefetch. Browser học viên thường lưu bài3→bài2→bài3 giữ hoàn thành/9%;mobile320/390/768 đủ23bài/không overflow/chọn bài/video390phát. Ba landingSHA nguyên; không error/fatal cửa sổ18:13–18:23UTC.
+Không còn chờ người dùng test mật khẩu: Auth API đổi/đăng nhập lại đã kiểm. Giới hạn: chưa inbox/open proof, chưa submit form mật khẩu bằng browser, chưa điện thoại vật lý; mẫu đo nhỏ.
+Báo cáo: worktrees/learning-smooth-20260926/docs/LEARNING_PERFORMANCE_V2_20260926.md. Evidence: reports/learning-smooth-20260926/final-v2.json. Thay thế trạng thái chưa deploy/audit findings còn mở ở trên.

@@ -1,0 +1,30 @@
+{
+  "runtime": "453061a",
+  "accountRole": "student test",
+  "dashboard": {
+    "ownedCourses": 1,
+    "playableLessons": 23,
+    "progressAfterAPI": 4
+  },
+  "mobile": {
+    "widths": [
+      320,
+      390,
+      768
+    ],
+    "lessonCount": 23,
+    "horizontalOverflow": false,
+    "selectLesson": true,
+    "youtubePlayback": "visible advancing Vietnamese subtitles"
+  },
+  "progress": {
+    "completedLesson3": true,
+    "displayPercent": 9,
+    "returnViaPreviousAndNextPreservesCompletion": true
+  },
+  "password": "API verified; recovery confirmation page verified; browser password submission not performed",
+  "limits": [
+    "emulated viewports, not physical phones",
+    "initial rapid-navigation sample exceeded tool selector deadline; did complete"
+  ]
+}

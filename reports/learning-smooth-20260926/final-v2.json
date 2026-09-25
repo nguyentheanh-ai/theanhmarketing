@@ -1,0 +1,31 @@
+{
+  "beforeMs": [
+    6118,
+    3569,
+    2125,
+    2688,
+    1704,
+    2183
+  ],
+  "afterMs": [
+    1055,
+    782,
+    715,
+    774,
+    928,
+    690
+  ],
+  "beforeMedian": 2435.5,
+  "afterMedian": 778.0,
+  "reductionPercent": 68.1,
+  "pcClickToHeadingMs": [
+    92,
+    1008,
+    63,
+    128
+  ],
+  "staticLandingHashesUnchanged": 3,
+  "studentRegionsConfirmed": "syd1",
+  "production": "dpl_4DWcFdmr5t4pUf4carLoku6pwHjs",
+  "runtimeCommit": "9167035ec3db52f9e6b34b180e6283ae840a15c2"
+}

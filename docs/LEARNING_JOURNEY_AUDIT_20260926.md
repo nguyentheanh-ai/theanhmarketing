@@ -33,3 +33,12 @@ Dashboard200, ba bài premium200 có embed; admin CRM307 từ chối. POST /api/
 HTTP toàn bộ response (SDK cookie jar, không trình duyệt/RSC):3 bài premium4646/4784/6019ms, trung vị4784ms; lưu tiến độ4324ms. Không so trực tiếp với click-to-heading của admin. Bằng chứng học viên thường còn chậm, cần tiếp tục tối ưu enrollment và markLessonCompleted tải global LMS. Không kết luận website đã mượt hoàn toàn.
 
 15/16 checks PASS;1FAIL có chủ đích là guard first-password trên đường bài trực tiếp. Evidence reports/learning-smooth-20260926/test-journey-result.json. Email delivered không chứng minh inbox/mở thư. API kiểm tra login/change/access/progress không thay thế UI thao tác form mật khẩu. UI PC/mobile/playback đã kiểm trên phiên admin trước đó. Audit có kết quả rõ ràng; các lỗi nêu trên chưa được sửa trong commit production hiện tại.
+
+
+## 26/09/2026 — Khu học viên v2 đã LIVE và đo kiểm
+
+DONE theo yêu cầu xử lý trong phiên. Runtime9167035, productiondpl_4DWcFdmr5t4pUf4carLoku6pwHjs READY/www/apex; preflight PASS. Migration20260925180425 đã áp dụng.209tests/TS/lint/build108/SQL đạt;18/18auth checks và13/13post-region livechecks đạt.
+Đã scope truy vấn identity/course, giảm props, ghi log sau response; sửa first-password guard/login/reset-next/count23/cache progress; prefetch và animation140–220ms/reduced-motion. functions.regions đưa riêng học viên sangsyd1: headerlive xác nhận, adminiad1,8cron nguyên.
+Cùng6HTTP bài:median2435,5→778ms(-68,1%),save4576→1057ms,dashboard7574→627ms (save/dashboard1mẫu). PCclick→heading92/1008/63/128ms gồm cache/prefetch. Browser học viên thường lưu bài3→bài2→bài3 giữ hoàn thành/9%;mobile320/390/768 đủ23bài/không overflow/chọn bài/video390phát. Ba landingSHA nguyên; không error/fatal cửa sổ18:13–18:23UTC.
+Không còn chờ người dùng test mật khẩu: Auth API đổi/đăng nhập lại đã kiểm. Giới hạn: chưa inbox/open proof, chưa submit form mật khẩu bằng browser, chưa điện thoại vật lý; mẫu đo nhỏ.
+Báo cáo: worktrees/learning-smooth-20260926/docs/LEARNING_PERFORMANCE_V2_20260926.md. Evidence: reports/learning-smooth-20260926/final-v2.json. Thay thế trạng thái chưa deploy/audit findings còn mở ở trên.

@@ -1,0 +1,131 @@
+{
+  "mode": "before",
+  "samples": [
+    {
+      "path": "/learn/facebook-ads-2026/828c23b3-449b-4a54-bece-aeb4daf476ba",
+      "status": 200,
+      "ms": 6118,
+      "region": "hkg1::iad1::7m7g8-1790359353096-93a5ce975634",
+      "bytes": 104813
+    },
+    {
+      "path": "/learn/facebook-ads-2026/ca3a1eb9-6aec-42f1-b69f-df56fe22aca0",
+      "status": 200,
+      "ms": 3569,
+      "region": "hkg1::iad1::tn5hk-1790359358787-6ccb600cdef6",
+      "bytes": 104889
+    },
+    {
+      "path": "/learn/facebook-ads-2026/9776462a-28c1-4e08-bbca-99d5f8c5d8e5",
+      "status": 200,
+      "ms": 2125,
+      "region": "hkg1::iad1::tfqqp-1790359362356-b49c6ef2b5ac",
+      "bytes": 104717
+    },
+    {
+      "path": "/learn/facebook-ads-2026/828c23b3-449b-4a54-bece-aeb4daf476ba",
+      "status": 200,
+      "ms": 2688,
+      "region": "hkg1::iad1::tfqqp-1790359364481-d89be0a88137",
+      "bytes": 104813
+    },
+    {
+      "path": "/learn/facebook-ads-2026/ca3a1eb9-6aec-42f1-b69f-df56fe22aca0",
+      "status": 200,
+      "ms": 1704,
+      "region": "hkg1::iad1::tfqqp-1790359367170-1bbc4c499d9d",
+      "bytes": 104813
+    },
+    {
+      "path": "/learn/facebook-ads-2026/9776462a-28c1-4e08-bbca-99d5f8c5d8e5",
+      "status": 200,
+      "ms": 2183,
+      "region": "hkg1::iad1::tfqqp-1790359368874-4e52efdffa4c",
+      "bytes": 104717
+    },
+    {
+      "path": "/api/student/progress",
+      "status": 200,
+      "ms": 4576,
+      "region": "hkg1::iad1::6tplx-1790359371060-1b1cea94fa70",
+      "bytes": 93
+    },
+    {
+      "path": "/dashboard",
+      "status": 200,
+      "ms": 7574,
+      "region": "hkg1::iad1::6tplx-1790359375635-e17c416a6a48",
+      "bytes": 78468
+    },
+    {
+      "path": "/learn/facebook-ads-2026/828c23b3-449b-4a54-bece-aeb4daf476ba",
+      "status": 200,
+      "ms": 2582,
+      "region": "hkg1::iad1::9kfgp-1790359383210-7fb57291a3fc",
+      "bytes": 104813
+    },
+    {
+      "path": "/admin/crm-v2/customers",
+      "status": 307,
+      "ms": 1199,
+      "region": "hkg1::iad1::4m6df-1790359385790-8af7e067f087",
+      "bytes": 39505
+    }
+  ],
+  "checks": [
+    {
+      "name": "identity",
+      "pass": true
+    },
+    {
+      "name": "session_link",
+      "pass": true
+    },
+    {
+      "name": "test_session",
+      "pass": true
+    },
+    {
+      "name": "lesson_0_828c23b3-449b-4a54-bece-aeb4daf476ba",
+      "pass": true
+    },
+    {
+      "name": "lesson_0_ca3a1eb9-6aec-42f1-b69f-df56fe22aca0",
+      "pass": true
+    },
+    {
+      "name": "lesson_0_9776462a-28c1-4e08-bbca-99d5f8c5d8e5",
+      "pass": true
+    },
+    {
+      "name": "lesson_1_828c23b3-449b-4a54-bece-aeb4daf476ba",
+      "pass": true
+    },
+    {
+      "name": "lesson_1_ca3a1eb9-6aec-42f1-b69f-df56fe22aca0",
+      "pass": true
+    },
+    {
+      "name": "lesson_1_9776462a-28c1-4e08-bbca-99d5f8c5d8e5",
+      "pass": true
+    },
+    {
+      "name": "progress",
+      "pass": true
+    },
+    {
+      "name": "dashboard",
+      "pass": true
+    },
+    {
+      "name": "saved_on_reload",
+      "pass": true
+    },
+    {
+      "name": "admin_denied",
+      "pass": true
+    }
+  ],
+  "progress": 4,
+  "count23": false
+}

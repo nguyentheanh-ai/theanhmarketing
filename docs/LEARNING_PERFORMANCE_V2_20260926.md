@@ -1,17 +1,41 @@
-# Tối ưu học viên v2 — 26/09/2026
+# Khu học viên — kết quả tối ưu và audit 26/09/2026
 
+Đã LIVE trên https://www.theanhmarketing.com . Runtime9167035ec3db52f9e6b34b180e6283ae840a15c2; productiondpl_4DWcFdmr5t4pUf4carLoku6pwHjs READY, www/apex cùng bản. Exact-root/remote preflight đạt. Migration20260925180425 đã áp dụng.
 
-## 26/09/2026 — Learning performance v2 (READY, migration applied)
+## Nguyên nhân và xử lý
 
-Base0efb3f0 retains live morning reminder release. Scope student portal only: new service-only SECURITY INVOKER student_lms_enrollments_scoped filters exact Auth identity, course, active/completed and expiry; returns only matching progress and playable lesson counts. Applied migration20260925180425; grants readback anon/authenticated false,service true. Local PostgreSQL isolation/expiry/legacy/grants PASS;209 scoped tests PASS; build108/108, TS and scoped lint PASS. Reviewer found stale prefetched progress; fixed router.refresh after success.
+- Truy vấn enrollment/progress quá rộng, lưu tiến độ tải toàn bộ LMS. Đã lọc đúng Auth identity/khóa; chỉ lấy dữ liệu cần thiết, ghi nhật ký sau response. RPC SECURITY INVOKER chỉ service_role gọi, giữ kiểm tra quyền/hạn học.
+- Node functions ở Mỹ, database ở Sydney. preferredRegion trong source bị builder Node bỏ qua. Dùng functions.regions riêng khu học viên trong vercel.json; header live xác nhận syd1, admin vẫn iad1,8cron nguyên. [Tài liệu Vercel](https://vercel.com/docs/functions/configuring-functions/region#per-function-configuration).
+- Bỏ props course/lesson trùng: HTML bài khoảng105KB xuống82KB, không gồm video YouTube.
+- Tải trước bài liền kề/khi trỏ chuột; pending/spinner, phản hồi nhấn140ms, xuất hiện nội dung180ms, thành công220ms, reduced-motion. Sau lưu làm mới cache để không hiện tiến độ cũ.
+- Mobile hiện23bài dưới video, thanh Bài học/Bài trước/Bài tiếp; tài liệu mount khi mở.
 
-getStudentLmsAccess now scopes courses by slug on lesson request. markLessonCompleted reads only matching course/modules/lessons, defers activity via after. Client props remove duplicate full-course/all-lesson bodies. Adjacent full prefetch + hover/focus intent, pending spinner, press/success motion,reduced-motion; log prefetch skipped, actual onNavigate logs nonblocking. Password-first guard on direct lesson and progress403; reset preserves next/errors, change-password log nonblocking with retryable failure state; login distinguishes credentials/provider failure. Dashboard count uses23 playable lessons vs26 raw rows.
+## Số đo production
 
-Live baseline confirms function iad1 (x-vercel-id) while Supabase ap-southeast-2 Sydney. Student routes choose preferredRegion syd1; confirm actual region after release. No global deployment/checkout/cron config changes. Baseline6 full-page authenticated lesson requests6118/3569/2125/2688/1704/2183ms;save4576ms. Same test account, metadata-only evidence; no secret stored. Runtime release pending, no completion claim until post-deploy checks.
+Cùng tài khoản thử, cùng3bài,2lượt mỗi bài. HTTP là toàn bộ response, chưa gồm YouTube tải video. Mẫu nhỏ cùng phiên, không phải cam kết cho mọi mạng.
 
-Evidence: reports/learning-smooth-20260926/student-before-v2.json; scripts/verify-student-scoped-lms.mjs, tests/student-progress-performance.test.mjs, tests/student-auth-navigation.test.mjs. API test account was explicitly authorized by owner. No changes to real student credentials/entitlements.
+| Chỉ số | Trước | Sau |
+|---|---:|---:|
+| Trung vị tải bài,6mẫu |2435,5ms|778ms, giảm68,1%|
+| Khoảng thời gian6mẫu |1704–6118ms|690–1055ms|
+| Lưu tiến độ,1mẫu |4576ms|1057ms|
+| Dashboard,1mẫu |7574ms|627ms|
 
+PC1440x900: click→heading92/1008/63/128ms, gồm bài đã tải trước/cache và lượt cần dữ liệu. Không so trực tiếp với HTTP hoặc phép đo admin v1. Trình phát bài4 hiển thị đúng, console không error trong kiểm tra.
 
-### Điều chỉnh vùng xử lý sau đo production
+## Audit hành trình học
 
-453061a đã live và18/18checks Auth/học/lưu tiến độ đạt; lesson payload ~105KB→82KB, save4576→2880ms. Tuy nhiên x-vercel-id vẫn iad1: builder @vercel/next bỏ regions từ functions-config-manifest của Node routes. Vì vậy preferredRegion không phải bằng chứng đã chuyển vùng. Bổ sung functions.regions trong vercel.json cho đúng4 nhóm trang/API học viên;8cron và vùng mặc định không đổi. Schema chính thức hỗ trợ và4patterns khớp source; chờ deploy/đo live để xác nhận syd1. Nguồn: https://vercel.com/docs/functions/configuring-functions/region#per-function-configuration .
+- Email cấp quyền được provider báo delivered; chưa xác minh inbox/mở thư.
+- Mật khẩu tạm→Auth API đổi mật khẩu→đăng nhập lại đạt. Không lưu/in credentials.18/18checks trên453061a đạt, first-password lesson307 và progress403 đúng.
+- Browser recovery confirm mở đúng trang Đặt lại mật khẩu và phiên test; không nhập/gửi mật khẩu mới bằng browser.
+- Dashboard đúng1khóa/23bài; premium vào được, admin từ chối.
+- Browser lưu bài3, tiến độ9%; chuyển bài trước/quay lại vẫn Đã hoàn thành. Reload/API giữ đúng.
+- Mobile giả lập320/390/768 đủ23bài, không tràn ngang, chọn bài được; video390px phát với phụ đề tiến triển. Chưa điện thoại vật lý.
+
+## Xác minh
+
+209tests phạm vi,TS,scoped ESLint,local build108routes,SQL isolation/expiry/legacy/grants đạt. Cấu hình cuối4patterns match/8cron unchanged; preview/production builds READY.13/13post-region livechecks đạt, count23 đúng, headersyd1. Không error/fatal trong cửa sổ18:13–18:23UTC. Ba landingSHA nguyên;9routes smoke đúng. Giữ checkout/giá/quyền khách thật/email nhắc08:30.
+
+Evidence: reports/learning-smooth-20260926/{student-before-v2,student-after-code-v2,student-after-region-v2,final-v2,browser-v2,live-before-v2,live-after-region}.json.
+Báo cáo này thay thế trạng thái chờ audit/chưa deploy trước đó.
+Rollback trước toàn bộv2:dpl_6tW11JwXvH7u5pcqdji7Gn5eGcuX; không tự rollback migration.

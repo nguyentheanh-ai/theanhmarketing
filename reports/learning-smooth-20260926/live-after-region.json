@@ -1,0 +1,74 @@
+[
+  {
+    "path": "/academy/facebook-ads-master-2026",
+    "status": 200,
+    "location": null,
+    "ms": 1143,
+    "bytes": 203739,
+    "sha256": "9739343cd020da264304662d32af8844fb903ba2d97a138b9b201d26710dfa9c"
+  },
+  {
+    "path": "/academy/ebook-facebook-ads-2026-premium",
+    "status": 200,
+    "location": null,
+    "ms": 592,
+    "bytes": 79050,
+    "sha256": "a3918dba76640248fda8285969335a0cdd8aa7bf0f948255886b3e5141428ebe"
+  },
+  {
+    "path": "/academy/quang-cao-chuyen-gia",
+    "status": 200,
+    "location": null,
+    "ms": 395,
+    "bytes": 56673,
+    "sha256": "7cdd82fa9e24493617ce0fc77b2150bec0628d9116fe7ac546cabe85bde7e597"
+  },
+  {
+    "path": "/thu-vien/facebook-ads",
+    "status": 307,
+    "location": "/dang-nhap?next=%2Fthu-vien%2Ffacebook-ads",
+    "ms": 1046,
+    "bytes": 31073,
+    "sha256": "26767b7c9eeabbd721e455c7f0e7638e2f76f98e9bdb6b17a64b64f3d97f7e7a"
+  },
+  {
+    "path": "/academy/bo-kit-agent-doanh-nghiep",
+    "status": 200,
+    "location": null,
+    "ms": 917,
+    "bytes": 35605,
+    "sha256": "f4a93985ad8986f0abfa047639251601edcddc84845155753de23ab3298ba8a0"
+  },
+  {
+    "path": "/dang-nhap",
+    "status": 200,
+    "location": null,
+    "ms": 667,
+    "bytes": 54578,
+    "sha256": "ea7a837e1be5b2df04f3bd1e76960ffe545eb0c4c719d2241ae5b9bfba1f3046"
+  },
+  {
+    "path": "/doi-mat-khau",
+    "status": 307,
+    "location": "/dang-nhap?next=%2Fdoi-mat-khau%3Fnext%3D%252Fdashboard",
+    "ms": 1836,
+    "bytes": 31033,
+    "sha256": "aa9223a58ba9f6f46caf3359c9f37515b0b20e6e6872dc0e775de25702bea52d"
+  },
+  {
+    "path": "/dashboard",
+    "status": 307,
+    "location": "/dang-nhap?next=%2Fdashboard",
+    "ms": 827,
+    "bytes": 51256,
+    "sha256": "d74c1b1012880c9e6a3671af41afbb28a1e810cadd047573da25bc3c1775db50"
+  },
+  {
+    "path": "/learn/facebook-ads-2026/lesson-1",
+    "status": 307,
+    "location": "/dang-nhap?next=%2Flearn%2Ffacebook-ads-2026%2Flesson-1",
+    "ms": 785,
+    "bytes": 31287,
+    "sha256": "f933cb5449b528fd410c29e56662d22702bee100ca92c6fd8f42d8ee77bfa39c"
+  }
+]
