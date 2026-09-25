@@ -28,7 +28,7 @@ await db.exec(`
 // Fixed clock is the only substitution in the real migration's functions.
 const clock = async (value) => db.query("select set_config('test.now', $1, false)", [value]);
 await clock("2026-09-26T00:30:00+07:00");
-const migration = fs.readFileSync("supabase/migrations/20260925173127_payment_reminders_nearest_morning.sql", "utf8");
+const migration = fs.readFileSync("supabase/migrations/20260925173835_payment_reminders_nearest_morning.sql", "utf8");
 await db.exec(migration.replaceAll("clock_timestamp()", "current_setting('test.now')::timestamptz"));
 let assertions = 0;
 const history = (await db.query("select status,due_at from payment_remarketing_runs order by sequence_index")).rows;
