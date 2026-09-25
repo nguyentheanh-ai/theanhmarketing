@@ -1,7 +1,9 @@
+import { headers } from "next/headers";
 import { after } from "next/server";
 import { notFound, redirect } from "next/navigation";
 import { LearningRoom } from "@/components/course/learning-room";
 import { getCourseReferencePacks } from "@/data/course-reference-packs";
+import { shouldRequirePasswordChange } from "@/lib/auth/student-account";
 import { getCurrentAuth } from "@/lib/auth/session";
 import { getCourseAccessSlugs } from "@/lib/course-access";
 import { getOrderedCourseLessons } from "@/lib/course-learning";
@@ -43,12 +45,15 @@ export default async function LessonPage({ params }: LessonPageProps) {
     notFound();
   }
 
+  if (user && shouldRequirePasswordChange(user)) {
+    redirect(`/doi-mat-khau?next=${encodeURIComponent(`/learn/${courseSlug}/${lessonId}`)}`);
+  }
   const requiresAccess = course.visibility !== "public" || currentLesson.access === "paid";
   if (requiresAccess && !user?.email) {
     redirect(`/dang-nhap?next=${encodeURIComponent(`/learn/${courseSlug}/${lessonId}`)}`);
   }
   const [lmsAccess, records] = await Promise.all([
-    getStudentLmsAccess({ email: user?.email, userId: user?.id, isAdmin: Boolean(adminRole) }),
+    getStudentLmsAccess({ email: user?.email, userId: user?.id, isAdmin: Boolean(adminRole), courseSlug }),
     requiresAccess && !adminRole && user?.email
       ? getStudentPortalAccessRecords(user.email)
       : Promise.resolve({ orders: [], leads: [] }),
@@ -74,7 +79,9 @@ export default async function LessonPage({ params }: LessonPageProps) {
       }
     }
 
-    if (user?.email) {
+    const requestHeaders = await headers();
+    const isPrefetch = requestHeaders.has("next-router-prefetch") || requestHeaders.get("purpose") === "prefetch";
+    if (user?.email && !isPrefetch) {
       after(() => logStudentActivity({
         userId: user.id,
         studentEmail: user.email,
@@ -94,10 +101,10 @@ export default async function LessonPage({ params }: LessonPageProps) {
   return (
     <LearningRoom
       key={`${course.slug}:${currentLesson.id}`}
-      course={course}
+      course={{ slug: course.slug, title: course.title }}
       currentLesson={currentLesson}
       currentLessonCompleted={lmsAccess.completedLessonIds.includes(currentLesson.id)}
-      lessons={lessons}
+      lessons={lessons.map(({ id, title, access, youtubeUrl }) => ({ id, title, access, youtubeUrl }))}
       nextLesson={lessons[currentIndex + 1]}
       previousLesson={lessons[currentIndex - 1]}
       referencePacks={referencePacks}

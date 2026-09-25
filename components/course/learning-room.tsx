@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { LessonLink } from "./lesson-link";
 import styles from "./learning-room.module.css";
 import { useEffect, useRef, useState } from "react";
@@ -19,12 +20,12 @@ export type LearningLesson = CourseLesson & {
 };
 
 type LearningRoomProps = {
-  course: Course;
+  course: Pick<Course, "slug" | "title">;
   currentLesson: LearningLesson;
   currentLessonCompleted?: boolean;
-  lessons: LearningLesson[];
-  previousLesson?: LearningLesson;
-  nextLesson?: LearningLesson;
+  lessons: Pick<LearningLesson, "id" | "title" | "access" | "youtubeUrl">[];
+  previousLesson?: Pick<LearningLesson, "id">;
+  nextLesson?: Pick<LearningLesson, "id">;
   referencePacks?: CourseReferencePack[];
 };
 
@@ -45,6 +46,7 @@ export function LearningRoom({
   previousLesson,
   referencePacks = [],
 }: LearningRoomProps) {
+  const router = useRouter();
   const lessonListRef = useRef<HTMLElement>(null);
   useEffect(() => {
     const list = lessonListRef.current;
@@ -65,11 +67,13 @@ export function LearningRoom({
   const subtlePanel = "border border-white/10 bg-white/8 text-white/72";
 
   async function updateProgress() {
+    if (isSavingProgress || isCompleted) return;
     setIsSavingProgress(true);
     setProgressMessage("");
     try {
       const response = await fetch("/api/student/progress", {
         method: "POST",
+        signal: AbortSignal.timeout(15000),
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           courseSlug: course.slug,
@@ -80,6 +84,7 @@ export function LearningRoom({
       const result = (await response.json().catch(() => null)) as { ok?: boolean; message?: string; progressPercent?: number } | null;
       if (!response.ok || !result?.ok) throw new Error(result?.message ?? "Không cập nhật được tiến độ.");
       setIsCompleted(true);
+      router.refresh(); // Drop prefetched progress snapshots after a successful save.
       setProgressMessage(`Đã lưu tiến độ ${result.progressPercent ?? 0}%.`);
     } catch (error) {
       setProgressMessage(error instanceof Error ? error.message : "Không cập nhật được tiến độ.");
@@ -220,17 +225,19 @@ export function LearningRoom({
                 </h1>
                 <div className="mt-4 flex flex-col gap-2 sm:flex-row">
                   <button
-                    className={`rounded-xl px-5 py-3 text-center text-sm font-bold ${isCompleted ? "bg-emerald-400/80 text-white" : "bg-white text-black"}`}
+                    aria-busy={isSavingProgress}
+                    className={`${styles.actionButton} ${isCompleted ? styles.completed : ""} rounded-xl px-5 py-3 text-center text-sm font-bold ${isCompleted ? "bg-emerald-400/80 text-white" : "bg-white text-black"}`}
                     disabled={isSavingProgress || isCompleted}
                     onClick={updateProgress}
                     type="button"
                   >
-                    {isCompleted ? "Đã hoàn thành" : isSavingProgress ? "Đang lưu..." : "Hoàn thành bài học"}
+                    {isSavingProgress ? <span className={styles.spinner} aria-hidden="true" /> : null}
+                    {isCompleted ? "✓ Đã hoàn thành" : isSavingProgress ? "Đang lưu..." : "Hoàn thành bài học"}
                   </button>
                   {previousLesson ? (
                     <LessonLink
                       className={`rounded-xl px-5 py-3 text-center text-sm font-bold ${subtlePanel}`}
-                      prefetch={false} href={getLessonHref(course.slug, previousLesson.id)}
+                      prefetch={true} href={getLessonHref(course.slug, previousLesson.id)}
                     >
                       Bài trước
                     </LessonLink>
@@ -238,7 +245,7 @@ export function LearningRoom({
                   {nextLesson ? (
                     <LessonLink
                       className="rounded-xl bg-[#159cfb] px-5 py-3 text-center text-sm font-bold text-white"
-                      prefetch={false} href={getLessonHref(course.slug, nextLesson.id)}
+                      prefetch={true} href={getLessonHref(course.slug, nextLesson.id)}
                     >
                       Bài tiếp theo
                     </LessonLink>
@@ -251,7 +258,7 @@ export function LearningRoom({
                     </Link>
                   )}
                 </div>
-                {progressMessage ? <p className="mt-3 text-sm font-bold text-white/72">{progressMessage}</p> : null}
+                {progressMessage ? <p role="status" className="mt-3 text-sm font-bold text-white/72">{progressMessage}</p> : null}
               </section>
               {currentLesson.description || currentLesson.content ? (
                 <section className={`rounded-2xl p-4 ring-1 ${panelClass}`}>
@@ -329,10 +336,10 @@ export function LearningRoom({
       <nav className={styles.mobileActions} aria-label="Hành động học nhanh trên điện thoại">
         <a href="#lesson-list">Bài học</a>
         {previousLesson ? (
-          <LessonLink prefetch={false} href={getLessonHref(course.slug, previousLesson.id)}>Bài trước</LessonLink>
+          <LessonLink prefetch={true} href={getLessonHref(course.slug, previousLesson.id)}>Bài trước</LessonLink>
         ) : null}
         {nextLesson ? (
-          <LessonLink prefetch={false} href={getLessonHref(course.slug, nextLesson.id)}>Bài tiếp</LessonLink>
+          <LessonLink prefetch={true} href={getLessonHref(course.slug, nextLesson.id)}>Bài tiếp</LessonLink>
         ) : (
           <Link href="/dashboard">Hoàn thành</Link>
         )}

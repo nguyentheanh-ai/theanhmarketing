@@ -1,6 +1,6 @@
 # Khu vực học viên — PC chuyển bài và danh sách trên điện thoại
 
-Trạng thái: LOCAL_REVIEW, chưa phát hành. App `theanh-main`, base `e3fe718`, nhánh `fix/learning-smooth-20260926`.
+Trạng thái hiện tại: LIVE_PARTIAL_AUDIT, production READY commit2a3eb94. Các mục local bên dưới là lịch sử trước phát hành; xem cập nhật cuối và LEARNING_JOURNEY_AUDIT_20260926.md. App `theanh-main`, base `e3fe718`, nhánh `fix/learning-smooth-20260926`.
 
 ## Yêu cầu đã xác nhận
 
@@ -35,3 +35,12 @@ PC lag khi chuyển bài; điện thoại không hiển thị/tìm thấy danh s
 Next.js production build `next build --webpack` PASS; TypeScript PASS; 108/108 trang sinh thành công. Mã cuối không có route loading boundary mới. 84/84 tests và scoped ESLint/diff PASS. Log nằm `reports/learning-smooth-20260926/`. Chưa deploy hay xác minh phiên học viên thật.
 
 HTTP smoke local: `/learn/facebook-ads-2026/lesson-1` trả 307 tới login với next đúng. Không env/tài khoản production trong local, kiểm tra này chỉ xác minh guest guard. Máy chủ local 127.0.0.1:4336; không phải bản có thể học bằng tài khoản thật.
+
+## Cập nhật production 26/09
+
+Đã phát hành2a3eb94, production dpl_E1ucTHFtVLdaR1T3VKF2bmSaNLDE READY. Anh đã cho phép ngoại lệ Browser cho audit này; không sửa policy. Đã tạo tài khoản test miễn phí theo phê duyệt và xác minh Resend delivered. PC3 mẫu trung vị2474→2202ms; mobile320/390/768 có danh sách, không tràn ngang; phát video390px được. Chưa xong E2E tài khoản thường: chờ handoff bước mật khẩu. Chi tiết và giới hạn tại LEARNING_JOURNEY_AUDIT_20260926.md.
+
+
+### Cập nhật cùng ngày — đã tự kiểm thử API, không còn chờ handoff
+
+Theo yêu cầu anh tự làm toàn bộ test:15/16checks PASS,1FAIL xác nhận live đường bài premium bỏ qua must_change_password (dashboard guard đúng). Mật khẩu tạm login→Auth API đổi→logout→mật khẩu mới login PASS, không in/lưu credentials. Test có1khóa, bài premium200, admin307, lưu bài2 hoàn thành200 và4%, reload nhận Đã hoàn thành. HTTP đầy đủ3bài học viên thường4.646/4.784/6.019giây, lưu4.324giây: còn chậm; không so trực tiếp phép đo click-to-heading admin. Đã hoàn tất audit API, chưa UI form-password/inbox thật. Lỗi guard và tối ưu query/LMS progress còn mở, chưa deploy sửa audit findings. Báo cáo/evidence tại worktrees/learning-smooth-20260926/docs/LEARNING_JOURNEY_AUDIT_20260926.md và reports/learning-smooth-20260926/test-journey-result.json.

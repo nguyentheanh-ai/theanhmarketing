@@ -10,6 +10,7 @@ async function recordPasswordChangedActivity(mode: string | null) {
   try {
     await fetch("/api/student/activity", {
       method: "POST",
+      keepalive: true,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         eventType: mode === "reset" ? "password_reset_completed" : "password_changed",
@@ -26,7 +27,8 @@ export function ChangePasswordForm() {
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode");
   const nextPath = getSafeNextPath(searchParams.get("next"), mode === "account" ? "/tai-khoan" : "/dashboard");
-  const [message, setMessage] = useState("");
+  const resetError = searchParams.get("error");
+  const [message, setMessage] = useState(resetError ? "Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn. Vui lòng yêu cầu link mới." : "");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -58,6 +60,7 @@ export function ChangePasswordForm() {
       return;
     }
 
+    try {
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -82,30 +85,39 @@ export function ChangePasswordForm() {
       return;
     }
 
-    await recordPasswordChangedActivity(mode);
+    void recordPasswordChangedActivity(mode);
     router.push(nextPath);
     router.refresh();
+    } catch {
+      setMessage("Chưa kết nối được hệ thống. Vui lòng thử lại.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-4">
       <div className="grid gap-2">
-        <label className="text-sm font-bold text-slate-900">Mật khẩu mới</label>
+        <label htmlFor="new-password" className="text-sm font-bold text-slate-900">Mật khẩu mới</label>
         <input
           className="auth-readable-input min-h-12 rounded-xl border border-slate-300 bg-white px-4 text-slate-950 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:ring-4 focus:ring-sky-400/20"
           minLength={8}
           name="password"
+          id="new-password"
+          autoComplete="new-password"
           placeholder="Tối thiểu 8 ký tự"
           required
           type="password"
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-sm font-bold text-slate-900">Nhập lại mật khẩu mới</label>
+        <label htmlFor="confirm-password" className="text-sm font-bold text-slate-900">Nhập lại mật khẩu mới</label>
         <input
           className="auth-readable-input min-h-12 rounded-xl border border-slate-300 bg-white px-4 text-slate-950 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:ring-4 focus:ring-sky-400/20"
           minLength={8}
           name="confirmPassword"
+          id="confirm-password"
+          autoComplete="new-password"
           placeholder="Nhập lại để xác nhận"
           required
           type="password"
@@ -117,7 +129,7 @@ export function ChangePasswordForm() {
         </p>
       ) : null}
       <Button isLoading={isSubmitting} loadingLabel="Đang cập nhật..." type="submit">
-        Đổi mật khẩu và vào dashboard
+        Lưu mật khẩu và tiếp tục
       </Button>
     </form>
   );

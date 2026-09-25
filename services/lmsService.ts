@@ -1137,10 +1137,20 @@ function activePublishedCourses(courses: LmsCourse[]) {
   return courses.filter((course) => course.status === "published");
 }
 
+async function fetchStudentEnrollmentRows(client: SupabaseClient, input: { userId?: string | null; email?: string | null; courseSlug?: string }) {
+  const { data, error } = await client.rpc("student_lms_enrollments_scoped", {
+    p_user_id: input.userId || null, p_email: normalizeEmail(input.email), p_course_slug: input.courseSlug || null,
+  });
+  if (error) throw new Error("Không đọc được quyền học và tiến độ. Vui lòng thử lại.");
+  const payload = asRecord(data);
+  return { enrollmentRows: asArray(payload.enrollments), progressRows: asArray(payload.progress), lessonCounts: asRecord(payload.lesson_counts) };
+}
+
 export async function getStudentLmsAccess(input: {
   email?: string | null;
   userId?: string | null;
   isAdmin?: boolean;
+  courseSlug?: string;
 }): Promise<StudentLmsAccess> {
   // Anonymous previews have no enrollment or progress to load.
   if (!input.isAdmin && !input.userId && !normalizeEmail(input.email)) {
@@ -1152,15 +1162,22 @@ export async function getStudentLmsAccess(input: {
   }
 
   // Access needs publication state and lesson counts, not lesson bodies or resource files.
+  let courseQuery = client.from("courses")
+    .select("id,slug,title,status,lms_status,visibility,course_modules(id,status,lessons(id,status))")
+    .order("sort_order", { ascending: true }).order("created_at", { ascending: false });
+  if (input.courseSlug) courseQuery = courseQuery.eq("slug", input.courseSlug);
   const [courseResult, enrollmentResult] = await Promise.all([
-    client.from("courses")
-      .select("id,slug,title,status,lms_status,visibility,course_modules(id,status,lessons(id,status))")
-      .order("sort_order", { ascending: true }).order("created_at", { ascending: false }),
-    input.isAdmin ? Promise.resolve({ enrollmentRows: [], progressRows: [] }) : fetchEnrollmentRows(client, false),
+    courseQuery,
+    fetchStudentEnrollmentRows(client, input.isAdmin ? { courseSlug: input.courseSlug } : input),
   ]);
   if (courseResult.error) throw new Error("Không đọc được danh sách quyền học.");
   const courseRows = asArray(courseResult.data);
   const courseIndex = buildEnrollmentCourseIndex(courseRows);
+  const lessonCountsBySlug = Object.fromEntries(Object.entries(enrollmentResult.lessonCounts).map(([slug, count]) => [slug, numberValue(count, 0)]));
+  for (const [slug, count] of Object.entries(lessonCountsBySlug)) {
+    const indexed = courseIndex.bySlug.get(slug);
+    if (indexed) indexed.publishedLessonCount = count;
+  }
   const progressRows = enrollmentResult.progressRows;
   const enrollments = enrollmentResult.enrollmentRows.map((row) => mapEnrollment(row, courseIndex, progressRows));
   const courses = courseRows.map((row) => mapCourse(row, [], new Map(), enrollments));
@@ -1168,6 +1185,7 @@ export async function getStudentLmsAccess(input: {
 
   if (input.isAdmin) {
     return {
+      lessonCountsBySlug,
       ownedSlugs: published.map((course) => course.slug),
       progressBySlug: Object.fromEntries(published.map((course) => [course.slug, 0])),
       completedLessonIds: [],
@@ -1186,6 +1204,7 @@ export async function getStudentLmsAccess(input: {
   );
 
   return {
+    lessonCountsBySlug,
     ownedSlugs: allowedCourses.map((course) => course.slug),
     progressBySlug: Object.fromEntries(
       allowedCourses.map((course) => {
@@ -1211,14 +1230,17 @@ export async function markLessonCompleted(input: {
 }) {
   const client = getClientOrThrow();
   if (!normalizeEmail(input.email) || !isUuid(input.userId)) throw new Error("Phiên học viên không hợp lệ.");
-  const { courses } = await loadAdminLmsData(client);
-  const course = activePublishedCourses(courses).find((item) => item.slug === input.courseSlug);
+  const { data: courseRow, error: courseError } = await client.from("courses")
+    .select("id,slug,title,status,lms_status,course_modules(id,status,lessons(id,slug,title,status,youtube_url,embed_url,content))")
+    .eq("slug", input.courseSlug).maybeSingle();
+  if (courseError) throw new Error("Không đọc được khóa học. Vui lòng thử lại.");
+  const course = courseRow ? activePublishedCourses([mapCourse(asRecord(courseRow), [], new Map(), [])])[0] : undefined;
   if (!course) throw new Error("Khóa học chưa xuất bản hoặc không tồn tại.");
   const lesson = publishedLessons(course).find((item) => item.id === input.lessonId || item.slug === input.lessonId);
   if (!lesson) throw new Error("Bài học chưa xuất bản hoặc không thuộc khóa này.");
   if (!isUuid(lesson.id)) throw new Error("Bài học chưa có ID hợp lệ để cập nhật tiến độ.");
 
-  const totalLessons = publishedLessons(course).length;
+  const totalLessons = publishedLessons(course).filter((item) => Boolean(item.youtubeUrl?.trim() || item.embedUrl?.trim() || item.content?.trim())).length;
   const completed = input.completed !== false;
   const { data, error } = await client.rpc("crm_v2_lms_mark_lesson_completed", {
     p_user_id: input.userId,
@@ -1235,21 +1257,20 @@ export async function markLessonCompleted(input: {
   const progressPercent = numberValue(result.progress_percent, 0);
   const completedLessonIds = Array.isArray(result.completed_lesson_ids) ? result.completed_lesson_ids.map((item) => text(item)).filter(Boolean) : [];
 
-  await logStudentActivity({
+  const activity: Parameters<typeof logStudentActivity>[0] = {
     userId: input.userId,
     studentEmail: input.email,
     eventType: completed ? "lesson_completed" : "student_entered_learning",
     eventTitle: completed ? "Học viên hoàn thành bài học" : "Học viên cập nhật tiến độ",
     eventDescription: `${course.title} - ${lesson.title}`,
-    status: "success",
-    actorType: "student",
+    status: "success" as const,
+    actorType: "student" as const,
     actorId: input.userId,
     actorEmail: input.email,
     metadata: { courseSlug: course.slug, lessonId: lesson.id, progressPercent },
     dedupeWindowMinutes: 5,
-  });
-
-  return { ok: true, progressPercent, completedLessonIds };
+  };
+  return { ok: true, progressPercent, completedLessonIds, activity };
 }
 export function validateEnrollmentIdentity(input: { email?: string; phone?: string }) {
   const email = cleanEmail(input.email);

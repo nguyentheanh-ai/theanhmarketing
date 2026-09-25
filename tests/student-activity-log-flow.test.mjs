@@ -54,7 +54,8 @@ test("real student auth and learning flows write activity only after success", (
   assert.match(loginForm, /student_login_success/);
   assert.doesNotMatch(loginForm, /await recordStudentLoginActivity\(\)/);
   assert.match(loginForm, /void recordStudentLoginActivity\(\)/);
-  assert.match(loginForm, /setMessage\("Email hoặc mật khẩu chưa đúng/);
+  assert.match(loginForm, /error.code === "invalid_credentials"/);
+  assert.match(loginForm, /Email hoặc mật khẩu chưa đúng/);
 
   assert.match(changePasswordForm, /updateUser/);
   assert.match(changePasswordForm, /\/api\/student\/activity/);

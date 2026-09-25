@@ -14,13 +14,14 @@ import type { ResourceItem } from "@/services/resourceService";
 import styles from "./student-dashboard.module.css";
 
 type StudentDashboardProps = {
+  lessonCountsBySlug?: Record<string, number>;
   courses: Course[]; ownedSlugs: string[]; progressBySlug: Record<string, number>;
   resources: ResourceItem[]; studentName: string; studentEmail: string;
 };
 const courseImage = (course: Course) => course.thumbnailImageUrl || course.bannerImageUrl || toYouTubeThumbnailUrl(course.videoPreviewUrl) || "";
 const boundedProgress = (value: number) => Number.isFinite(value) ? Math.max(0, Math.min(100, Math.round(value))) : 0;
 
-function CourseTile({ course, progress }: { course: Course; progress: number }) {
+function CourseTile({ course, progress, lessonCount }: { course: Course; progress: number; lessonCount?: number }) {
   const href = getStudentCourseHref(course);
   const ebook = course.slug === FACEBOOK_EBOOK_COURSE_SLUG;
   const image = courseImage(course);
@@ -30,7 +31,7 @@ function CourseTile({ course, progress }: { course: Course; progress: number }) 
       <span className={styles.owned}><Check size={12} aria-hidden="true" /> Đã sở hữu</span>
     </Link>
     <div className={styles.courseBody}>
-      <p className={styles.meta}>{course.status !== "open" ? "Chưa mở bán · " : ""}{ebook ? "Thư viện tra cứu" : `${getCourseLessonCount(course)} bài học`}</p>
+      <p className={styles.meta}>{course.status !== "open" ? "Chưa mở bán · " : ""}{ebook ? "Thư viện tra cứu" : `${lessonCount ?? getCourseLessonCount(course)} bài học`}</p>
       <Link href={href}><h3>{course.title}</h3></Link>
       <p className={styles.description}>{course.shortDescription || course.description}</p>
       <div className={styles.progressLabel}><span>Tiến độ học tập</span><strong>{progress}%</strong></div>
@@ -43,7 +44,7 @@ function CourseTile({ course, progress }: { course: Course; progress: number }) 
   </article>;
 }
 
-export function StudentDashboard({ courses, ownedSlugs, progressBySlug, resources, studentName, studentEmail }: StudentDashboardProps) {
+export function StudentDashboard({ lessonCountsBySlug = {}, courses, ownedSlugs, progressBySlug, resources, studentName, studentEmail }: StudentDashboardProps) {
   const ownedCourses = getOwnedCoursesInAccessOrder(courses, ownedSlugs);
   const suggestedCourses = getSuggestedCoursesForDashboard(courses, ownedSlugs).filter((course) => course.status === "open");
   const activeCourse = getPrimaryDashboardCourse(courses, ownedSlugs);
@@ -59,7 +60,7 @@ export function StudentDashboard({ courses, ownedSlugs, progressBySlug, resource
         </section> : null}
         <section id="khoa-hoc" className={styles.section}>
           <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>THƯ VIỆN CỦA ANH/CHỊ</p><h2>Khóa học của tôi <span>{ownedCourses.length}</span></h2></div><Link href="/khoa-hoc">Xem tất cả chương trình <ArrowRight size={15} /></Link></div>
-          {ownedCourses.length ? <div className={styles.courseGrid}>{ownedCourses.map((course) => <CourseTile key={course.slug} course={course} progress={boundedProgress(progressBySlug[course.slug] ?? 0)} />)}</div> : <div className={styles.empty}><BookOpen size={32} /><h3>Chưa có khóa học được mở quyền</h3><p>Nếu anh/chị đã thanh toán, hãy kiểm tra tài khoản đang đăng nhập hoặc liên hệ hỗ trợ.</p><Link href="/tai-khoan" className={styles.secondary}>Kiểm tra tài khoản</Link></div>}
+          {ownedCourses.length ? <div className={styles.courseGrid}>{ownedCourses.map((course) => <CourseTile lessonCount={lessonCountsBySlug[course.slug]} key={course.slug} course={course} progress={boundedProgress(progressBySlug[course.slug] ?? 0)} />)}</div> : <div className={styles.empty}><BookOpen size={32} /><h3>Chưa có khóa học được mở quyền</h3><p>Nếu anh/chị đã thanh toán, hãy kiểm tra tài khoản đang đăng nhập hoặc liên hệ hỗ trợ.</p><Link href="/tai-khoan" className={styles.secondary}>Kiểm tra tài khoản</Link></div>}
         </section>
         <div className={styles.bottomGrid}>
           <section id="tai-lieu" className={styles.panel}><div className={styles.sectionHeading}><h2>Tài liệu thực hành</h2><FileText size={20} /></div><p className={styles.muted}>Checklist và tài nguyên để áp dụng vào công việc.</p><div className={styles.resourceList}>{availableResources.map((item) => <a key={item.slug} href={item.fileUrl} className={styles.resource}><span className={styles.fileIcon}><FileText size={20} /></span><span><strong>{item.title}</strong><small>{item.type} · Miễn phí</small></span><ArrowRight size={17} /></a>)}</div><Link href="/tai-lieu" className={styles.textLink}>Mở thư viện tài liệu <ArrowRight size={16} /></Link></section>

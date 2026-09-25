@@ -11,7 +11,7 @@ function render(){
  const Link=({children,prefetch,...props})=>React.createElement('a',props,children);
  const styles=new Proxy({},{get:(_,key)=>key==='__esModule'?false:String(key)});
  const {LearningRoom}=read('components/course/learning-room.tsx',{
- 'next/link':Link,'./lesson-link':{LessonLink:Link},'./learning-room.module.css':styles,
+ 'next/navigation':{useRouter:()=>({refresh(){}})},'next/link':Link,'./lesson-link':{LessonLink:Link},'./learning-room.module.css':styles,
  '@/components/auth/sign-out-button':{SignOutButton:()=>null},'@/components/site/brand-mark':{BrandMark:()=>null},
  '@/components/course/course-reference-library':{CourseReferenceLibrary:()=>{throw new Error('Heavy reference library should not mount until opened')}},
  '@/data/site':{siteConfig:{name:'Academy'}},'@/lib/lesson-title':{cleanLessonTitle:x=>x},

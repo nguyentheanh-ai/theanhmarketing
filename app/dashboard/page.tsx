@@ -4,7 +4,7 @@ import { logStudentActivity } from "@/services/activityLogService";
 import { getStudentPortalSnapshot } from "@/services/studentPortalService";
 
 export default async function DashboardPage() {
-  const { user, courses, resources, ownedSlugs, progressBySlug, email, displayName } = await getStudentPortalSnapshot();
+  const { user, courses, resources, ownedSlugs, progressBySlug, lessonCountsBySlug, email, displayName } = await getStudentPortalSnapshot();
 
   if (user?.email) {
     after(() => logStudentActivity({
@@ -27,6 +27,7 @@ export default async function DashboardPage() {
       courses={courses}
       ownedSlugs={ownedSlugs}
       progressBySlug={progressBySlug}
+      lessonCountsBySlug={lessonCountsBySlug}
       resources={resources}
       studentEmail={email}
       studentName={displayName}

@@ -28,7 +28,8 @@ export default async function ChangePasswordPage({
   const { user } = await getCurrentAuth();
 
   if (!user && !isPasswordResetMode) {
-    redirect(`/dang-nhap?next=${encodeURIComponent("/doi-mat-khau")}`);
+    const returnPath = `/doi-mat-khau?next=${encodeURIComponent(nextPath)}${isAccountMode ? "&mode=account" : ""}`;
+    redirect(`/dang-nhap?next=${encodeURIComponent(returnPath)}`);
   }
 
   if (user && !isPasswordResetMode && !isAccountMode && !shouldRequirePasswordChange(user)) {
@@ -41,11 +42,10 @@ export default async function ChangePasswordPage({
         <div>
           <p className="ai-kicker">Bảo mật tài khoản</p>
           <h1 className="ai-glow-text mt-4 text-5xl font-black leading-[1.02] tracking-[-0.04em] sm:text-7xl">
-            {isAccountMode ? "Đổi mật khẩu." : "Đổi mật khẩu lần đầu."}
+            {isPasswordResetMode ? "Đặt lại mật khẩu." : isAccountMode ? "Đổi mật khẩu." : "Đổi mật khẩu lần đầu."}
           </h1>
           <p className="ai-muted mt-6 text-lg leading-9">
-            Tài khoản của bạn đã được tạo tự động sau thanh toán. Hãy đổi mật khẩu
-            riêng trước khi vào dashboard khóa học.
+            Chọn mật khẩu riêng để bảo vệ tài khoản. Sau khi lưu, bạn sẽ được đưa về trang đang muốn truy cập.
           </p>
         </div>
         <SoftCard>
@@ -57,3 +57,6 @@ export default async function ChangePasswordPage({
     </PageShell>
   );
 }
+
+// Keep student data round trips in the database region (Supabase ap-southeast-2).
+export const preferredRegion = "syd1";

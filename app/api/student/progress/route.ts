@@ -1,7 +1,9 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getCurrentAuth, isAuthGuardEnabled } from "@/lib/auth/session";
+import { logStudentActivity } from "@/services/activityLogService";
+import { shouldRequirePasswordChange } from "@/lib/auth/student-account";
 import { markLessonCompleted } from "@/services/lmsService";
 
 const progressSchema = z.object({
@@ -20,6 +22,10 @@ export async function POST(request: Request) {
     );
   }
 
+  if (shouldRequirePasswordChange(user)) {
+    return NextResponse.json({ ok: false, message: "Vui lòng đổi mật khẩu trước khi học." }, { status: 403 });
+  }
+
   try {
     const input = progressSchema.parse(await request.json().catch(() => null));
     const result = await markLessonCompleted({
@@ -30,7 +36,9 @@ export async function POST(request: Request) {
       completed: input.completed,
     });
 
-    return NextResponse.json(result);
+    const { activity, ...progress } = result;
+    after(() => logStudentActivity(activity));
+    return NextResponse.json(progress);
   } catch (error) {
     return NextResponse.json(
       { ok: false, message: error instanceof Error ? error.message : "Không cập nhật được tiến độ học." },
@@ -38,3 +46,6 @@ export async function POST(request: Request) {
     );
   }
 }
+
+// Keep student data round trips in the database region (Supabase ap-southeast-2).
+export const preferredRegion = "syd1";

@@ -19,3 +19,7 @@ Observed correction: bọc Auth guard bằng Suspense khiến guest `/dashboard`
 - React state hoàn thành khởi tạo từ props không tự reset khi Next tái sử dụng component. Key theo course/lesson tách state và request cũ khỏi bài mới.
 - Có pending link và chuyển động ngắn có reduced-motion; không đặt route loading boundary bao quanh page Auth guard để tránh đổi redirect thành streamed HTTP200. Không dùng animation trên toàn bộ main chứa fixed controls vì transform tạo containing block.
 - 84 kiểm tra liên quan đạt, gồm query scope, quyền, deferred log, render 80 bài/lazy thumbnails. Chưa đo độ trễ với session học viên thật; RPC enrollment global cho học viên vẫn còn. Không khẳng định production đã hết lag từ các kiểm tra này.
+
+
+## 26/09/2026 — giới hạn phép đo admin (VERIFIED)
+Áp dụng theanh-main production2a3eb94: admin bỏ enrollment RPC nhưng học viên thường vẫn dùng global RPC. Click-to-heading admin3mẫu trung vị2.202s không chứng minh latency học viên thường: HTTP full-response student3mẫu trung vị4.784s. Hai phép đo khác nhau, không dùng để tính cải thiện chéo. Khi verify, dùng đúng vai trò và giữ cùng loại phép đo. Email provisioning có dispatch ledger riêng; email_logs rỗng không đồng nghĩa chưa gửi. Không áp dụng khi runtime/query path đã thay đổi; đo lại phiên thường.

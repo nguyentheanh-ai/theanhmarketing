@@ -12,9 +12,10 @@ function fixture({user={id:'student',email:'student@example.invalid'},adminRole=
  const lesson={id:'lesson-id',title:'Lesson',access,moduleOrder:1,moduleTitle:'Module'};
  const course={slug:'course',title:'Course',visibility};
  const page=load('app/learn/[course]/[lesson]/page.tsx',{
- 'react/jsx-runtime':{jsx,jsxs:jsx},'next/server':{after:fn=>scheduled.push(fn)},
+ 'next/headers':{headers:async()=>new Headers()},'react/jsx-runtime':{jsx,jsxs:jsx},'next/server':{after:fn=>scheduled.push(fn)},
  'next/navigation':{redirect:url=>{throw new Error(`redirect:${url}`)},notFound:()=>{throw new Error('notFound')}},
  '@/components/course/learning-room':{LearningRoom:'room'},'@/data/course-reference-packs':{getCourseReferencePacks:()=>[]},
+ '@/lib/auth/student-account':{shouldRequirePasswordChange:user=>user?.user_metadata?.must_change_password===true},
  '@/lib/auth/session':{getCurrentAuth:async()=>({user,adminRole})},
  '@/lib/course-access':{getCourseAccessSlugs:({email,orders,leads})=>{calls.push(['resolve',email,orders,leads]);return orders.map(x=>x.courseSlug)}},
  '@/lib/course-learning':{getOrderedCourseLessons:()=>[lesson,{...lesson,id:'next'}]},
@@ -34,3 +35,5 @@ test('unowned student cannot render or log entry to paid lesson',async()=>{const
 test('payment access remains valid without an LMS enrollment',async()=>{const f=fixture({owned:[],records:{orders:[{courseSlug:'course'}],leads:[]}});assert.equal((await f.run()).type,'room')});
 test('admin bypasses CRM access reads and free public lesson stays available',async()=>{const a=fixture({adminRole:'admin',owned:[]});assert.equal((await a.run()).type,'room');assert.ok(!a.calls.some(x=>x[0]==='records'));const f=fixture({user:null,visibility:'public',access:'free',owned:[]});assert.equal((await f.run()).type,'room');assert.ok(!f.calls.some(x=>x[0]==='records'))});
 test('legacy lesson links resolve and changed lesson gets independent progress state',async()=>{const f=fixture();assert.equal((await f.run('lesson-2')).key,'course:next');assert.equal((await f.run('lesson-2')).props.currentLessonCompleted,false)});
+
+test('direct paid lesson enforces first password change before access reads',async()=>{const f=fixture({user:{id:'student',email:'student@example.invalid',user_metadata:{must_change_password:true}}});await assert.rejects(f.run(),/redirect:\/doi-mat-khau\?next=/);assert.equal(f.calls.length,0);});

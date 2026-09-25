@@ -16,3 +16,6 @@ export default async function LearnLayout({
 }>) {
   return children;
 }
+
+// Keep student data round trips in the database region (Supabase ap-southeast-2).
+export const preferredRegion = "syd1";

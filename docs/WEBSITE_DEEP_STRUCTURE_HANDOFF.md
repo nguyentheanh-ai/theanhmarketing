@@ -2343,3 +2343,12 @@ Kiểm tra: 89 tests phạm vi và 22 SQL assertions cô lập đạt; TypeScrip
 Đọc lại Vercel production: worker `30-59/5 1 * * *`, expiry `30 1 * * *`; 6 cron khác giữ nguyên. Bảy landing trả HTTP 200, năm landing tĩnh giữ nguyên SHA; hai trang động có hash HTML theo build, mã nguồn landing không đổi. Hai cron route không xác thực trả 401. Không tìm thấy error/fatal trong cửa sổ 17:38:40–17:43:40 UTC.
 
 Chưa quan sát lượt gửi tự nhiên lúc 08:30; cấu hình đúng chưa phải bằng chứng khách nhận thư. Không thay giá, SePay, Auth, quyền học, tracking hay landing. Bằng chứng: `worktrees/payment-reminder-morning-20260926/reports/payment-reminder-morning-20260926/`. Rollback ứng dụng: `dpl_E1ucTHFtVLdaR1T3VKF2bmSaNLDE`; rollback ứng dụng không tự rollback migration. Trạng thái LIVE này thay thế các mục chưa triển khai phía trên.
+
+
+## 26/09/2026 — Learning performance v2 (READY, migration applied)
+
+Base0efb3f0 retains live morning reminder release. Scope student portal only: new service-only SECURITY INVOKER student_lms_enrollments_scoped filters exact Auth identity, course, active/completed and expiry; returns only matching progress and playable lesson counts. Applied migration20260925180425; grants readback anon/authenticated false,service true. Local PostgreSQL isolation/expiry/legacy/grants PASS;209 scoped tests PASS; build108/108, TS and scoped lint PASS. Reviewer found stale prefetched progress; fixed router.refresh after success.
+
+getStudentLmsAccess now scopes courses by slug on lesson request. markLessonCompleted reads only matching course/modules/lessons, defers activity via after. Client props remove duplicate full-course/all-lesson bodies. Adjacent full prefetch + hover/focus intent, pending spinner, press/success motion,reduced-motion; log prefetch skipped, actual onNavigate logs nonblocking. Password-first guard on direct lesson and progress403; reset preserves next/errors, change-password log nonblocking with retryable failure state; login distinguishes credentials/provider failure. Dashboard count uses23 playable lessons vs26 raw rows.
+
+Live baseline confirms function iad1 (x-vercel-id) while Supabase ap-southeast-2 Sydney. Student routes choose preferredRegion syd1; confirm actual region after release. No global deployment/checkout/cron config changes. Baseline6 full-page authenticated lesson requests6118/3569/2125/2688/1704/2183ms;save4576ms. Same test account, metadata-only evidence; no secret stored. Runtime release pending, no completion claim until post-deploy checks.

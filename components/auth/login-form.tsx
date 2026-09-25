@@ -52,13 +52,16 @@ export function LoginForm() {
       return;
     }
 
+    try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
-      setMessage("Email hoặc mật khẩu chưa đúng. Anh/chị kiểm tra lại thông tin đăng nhập.");
+      setMessage(error.code === "invalid_credentials"
+        ? "Email hoặc mật khẩu chưa đúng. Anh/chị kiểm tra lại thông tin đăng nhập."
+        : "Hệ thống đăng nhập tạm thời chưa xử lý được. Vui lòng thử lại sau ít phút.");
       setIsSubmitting(false);
       return;
     }
@@ -66,6 +69,11 @@ export function LoginForm() {
     void recordStudentLoginActivity();
     router.push(getPostLoginRedirect(data.user, nextPath));
     router.refresh();
+    } catch {
+      setMessage("Chưa kết nối được hệ thống đăng nhập. Vui lòng kiểm tra mạng và thử lại.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (

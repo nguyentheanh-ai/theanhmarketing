@@ -39,6 +39,7 @@ export async function getStudentPortalSnapshot() {
     resources,
     ownedSlugs,
     ownedCourses: courses.filter((course) => ownedSlugs.includes(course.slug)),
+    lessonCountsBySlug: lmsAccess.lessonCountsBySlug ?? {},
     progressBySlug,
   };
 }

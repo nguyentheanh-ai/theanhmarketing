@@ -4,7 +4,7 @@ import { checkRateLimit, rateLimitKey, rateLimitResponse } from "@/lib/security/
 import { cleanText } from "@/lib/security/validation";
 import { logStudentActivity, type ActivityEventType } from "@/services/activityLogService";
 
-const allowedStudentEvents = new Set<ActivityEventType>(["student_login_success", "password_changed", "password_reset_completed"]);
+const allowedStudentEvents = new Set<ActivityEventType>(["student_login_success", "password_changed", "password_reset_completed", "student_entered_learning"]);
 
 function getRequestIp(request: Request) {
   return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || null;
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
       metadata: body.metadata ?? {},
       ipAddress: getRequestIp(request),
       userAgent: request.headers.get("user-agent"),
-      dedupeWindowMinutes: eventType === "student_login_success" ? 15 : 0,
+      dedupeWindowMinutes: eventType === "student_login_success" || eventType === "student_entered_learning" ? 15 : 0,
     });
 
     return NextResponse.json({ ok: result.ok, skipped: result.skipped ?? false });
@@ -57,3 +57,6 @@ export async function POST(request: Request) {
     );
   }
 }
+
+// Keep student data round trips in the database region (Supabase ap-southeast-2).
+export const preferredRegion = "syd1";

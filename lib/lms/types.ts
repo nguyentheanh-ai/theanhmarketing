@@ -119,6 +119,7 @@ export type AdminLmsSnapshot = {
 };
 
 export type StudentLmsAccess = {
+  lessonCountsBySlug?: Record<string, number>;
   ownedSlugs: string[];
   progressBySlug: Record<string, number>;
   completedLessonIds: string[];

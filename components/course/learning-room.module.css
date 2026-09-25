@@ -12,7 +12,7 @@
 .lessonList { min-width: 0; scroll-margin-top: 88px; background: #101a29; }
 .lessonLink { position: relative; transition: background-color 150ms ease, box-shadow 150ms ease; touch-action: manipulation; }
 .lessonLink:focus-visible { outline: 2px solid #8bdcff; outline-offset: 3px; }
-.pending { position: absolute; inset: 0; display: grid; place-items: center; border-radius: inherit; background: #142a45f5; color: white; font-size: 13px; animation: appear 160ms ease-out; }
+.pending { opacity: 0; pointer-events: none; position: absolute; inset: 0; display: grid; place-items: center; border-radius: inherit; background: #142a45f5; color: white; font-size: 13px; gap: 8px; grid-auto-flow: column; justify-content: center; transition: opacity 120ms ease; }
 .mobileActions { position: fixed; z-index: 25; bottom: 0; left: 0; right: 0; display: flex; gap: 8px; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: #0b1220; border-top: 1px solid #ffffff18; }
 .mobileActions a { display: grid; place-items: center; flex: 1; min-height: 44px; border-radius: 10px; color: white; background: #ffffff12; text-align: center; font-size: 13px; font-weight: 700; }
 .mobileActions a:last-child { background: #159cfb; }
@@ -34,4 +34,19 @@
   .lessonList { order: 3; max-height: 42dvh; overflow-y: auto; scrollbar-width: thin; }
   .lessonContent { order: 4; min-width: 0; }
   .references { order: 5; min-width: 0; }
+}
+
+.pending[data-pending] { opacity: 1; }
+.room button:not(:disabled), .lessonLink { transition: transform 140ms ease, background-color 140ms ease, box-shadow 140ms ease; }
+.room button:not(:disabled):active, .lessonLink:active { transform: scale(.98); }
+.actionButton { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; }
+.actionButton:disabled { cursor: default; }
+.completed { animation: confirm 220ms ease-out; }
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 650ms linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes confirm { 50% { transform: scale(1.025); } }
+@media (hover: hover) { .lessonLink:hover { box-shadow: 0 0 0 1px #8bdcff55; } }
+@media (prefers-reduced-motion: reduce) {
+  .room *, .room *::before, .room *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .room button:active, .lessonLink:active { transform: none; }
 }
