@@ -1,4 +1,10 @@
 {
+  "functions": {
+    "app/learn/**/page.tsx": { "regions": ["syd1"] },
+    "app/dashboard/page.tsx": { "regions": ["syd1"] },
+    "app/doi-mat-khau/page.tsx": { "regions": ["syd1"] },
+    "app/api/student/**/route.ts": { "regions": ["syd1"] }
+  },
   "crons": [
     {
       "path": "/api/orders/expire",

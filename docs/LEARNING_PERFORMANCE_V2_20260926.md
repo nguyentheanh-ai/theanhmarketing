@@ -10,3 +10,8 @@ getStudentLmsAccess now scopes courses by slug on lesson request. markLessonComp
 Live baseline confirms function iad1 (x-vercel-id) while Supabase ap-southeast-2 Sydney. Student routes choose preferredRegion syd1; confirm actual region after release. No global deployment/checkout/cron config changes. Baseline6 full-page authenticated lesson requests6118/3569/2125/2688/1704/2183ms;save4576ms. Same test account, metadata-only evidence; no secret stored. Runtime release pending, no completion claim until post-deploy checks.
 
 Evidence: reports/learning-smooth-20260926/student-before-v2.json; scripts/verify-student-scoped-lms.mjs, tests/student-progress-performance.test.mjs, tests/student-auth-navigation.test.mjs. API test account was explicitly authorized by owner. No changes to real student credentials/entitlements.
+
+
+### Điều chỉnh vùng xử lý sau đo production
+
+453061a đã live và18/18checks Auth/học/lưu tiến độ đạt; lesson payload ~105KB→82KB, save4576→2880ms. Tuy nhiên x-vercel-id vẫn iad1: builder @vercel/next bỏ regions từ functions-config-manifest của Node routes. Vì vậy preferredRegion không phải bằng chứng đã chuyển vùng. Bổ sung functions.regions trong vercel.json cho đúng4 nhóm trang/API học viên;8cron và vùng mặc định không đổi. Schema chính thức hỗ trợ và4patterns khớp source; chờ deploy/đo live để xác nhận syd1. Nguồn: https://vercel.com/docs/functions/configuring-functions/region#per-function-configuration .
