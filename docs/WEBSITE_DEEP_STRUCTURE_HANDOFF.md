@@ -2310,3 +2310,12 @@ Doctor và preflight canonical PASS sau commit/push; 64/64 kiểm tra phạm vi 
 Bốn URL Ebook (www/apex/academy.html/ladipage.html) HTTP200, byte-identical với source, SHA256 `a3918dba76640248fda8285969335a0cdd8aa7bf0f948255886b3e5141428ebe`. Mười route HTTP200 và destination giữ nguyên; bốn landing tĩnh ngoài phạm vi giữ nguyên hash. Codex IAB trên live: desktop1440 và mobile390 không tràn ngang; hero dễ đọc, CTA tới khu giá/form; mua kèm399K→1.098M→399K; menu/thanh dưới ẩn khi form hiển thị; dialog ảnh mở/đóng đúng. Đã để tab production cho anh xem. Runtime error/fatal của deployment trong cửa sổ kiểm tra không có bản ghi.
 
 Không tạo đơn, thanh toán hay email thật; chưa kiểm tra thiết bị vật lý hoặc xác nhận event tại Meta. Nội dung/form/script nghiệp vụ gốc được giữ. Bằng chứng: feature `reports/ebook-ui-20260923/live-after.json`, `live-source-match.json`, `release.json`. Trạng thái LIVE này thay thế ghi chú LOCAL_REVIEW/chưa deploy ở trên; không còn chờ duyệt deploy.
+
+
+## 26/09/2026 — PC chuyển bài chậm, mobile thiếu danh sách (LOCAL_REVIEW)
+
+App theanh-main. Feature `worktrees/learning-smooth-20260926`, base e3fe718, branch fix/learning-smooth-20260926. Đã xác nhận với anh: PC lag khi chuyển bài, điện thoại không show danh sách. Thay global CRM ở lesson page bằng records theo email; lọc slug trước tải course/resources; chạy đọc độc lập song song; activity dùng after; guest/admin bỏ enrollment reads không cần thiết. PC có pending và animation ngắn/reduced-motion, thumbnails lazy, tài liệu mount khi mở. Mobile đưa danh sách ngay dưới video, nút Bài học cố định/safe-area. Key từng bài reset progress state; giữ auth guard và không thêm route loading boundary bên ngoài.
+
+84 tests liên quan PASS, scoped lint/TypeScript/diff PASS; kết quả build cuối ở feature docs/LEARNING_SMOOTH_20260926.md. Chưa deploy, chưa authenticated browser PC/mobile hoặc đo timing/playback thật; workspace UI policy không được thay đổi. RPC enrollment global cho học viên vẫn còn, không schema/RLS/migration; không thay landing/checkout/email/quyền. Không gộp với student-resource-app. Bước tiếp: kiểm tra giao diện có đăng nhập và scoped guarded release khi được anh duyệt.
+
+Context đã đọc: registry/control/policy, ACTIVE_TASKS, AI_CONTEXT_INDEX, SESSION_STATE, FEATURE_REGISTRY, ROLE_AND_SESSION_PROTOCOL, SESSION_START_CHECKLIST, DATABASE-CONTRACT; repo AGENTS, CURRENT_STATE, FEATURE_MAP, handoff, DESIGN_RULES, SECURITY_HARDENING, DATABASE_ARCHITECTURE, lesson note và source/tests liên quan.

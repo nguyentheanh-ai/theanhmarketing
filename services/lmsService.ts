@@ -1142,6 +1142,10 @@ export async function getStudentLmsAccess(input: {
   userId?: string | null;
   isAdmin?: boolean;
 }): Promise<StudentLmsAccess> {
+  // Anonymous previews have no enrollment or progress to load.
+  if (!input.isAdmin && !input.userId && !normalizeEmail(input.email)) {
+    return { ownedSlugs: [], progressBySlug: {}, completedLessonIds: [], enrollmentIdsBySlug: {} };
+  }
   const client = createSupabaseAdminClient();
   if (!client) {
     return { ownedSlugs: [], progressBySlug: {}, completedLessonIds: [], enrollmentIdsBySlug: {} };
@@ -1152,7 +1156,7 @@ export async function getStudentLmsAccess(input: {
     client.from("courses")
       .select("id,slug,title,status,lms_status,visibility,course_modules(id,status,lessons(id,status))")
       .order("sort_order", { ascending: true }).order("created_at", { ascending: false }),
-    fetchEnrollmentRows(client, false),
+    input.isAdmin ? Promise.resolve({ enrollmentRows: [], progressRows: [] }) : fetchEnrollmentRows(client, false),
   ]);
   if (courseResult.error) throw new Error("Không đọc được danh sách quyền học.");
   const courseRows = asArray(courseResult.data);

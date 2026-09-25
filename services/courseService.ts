@@ -483,7 +483,7 @@ function mergeOfficialCourseMetadata(course: Course) {
   };
 }
 
-async function fetchCourses(summaryOnly = false) {
+async function fetchCourses(summaryOnly = false, slug?: string) {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
@@ -493,14 +493,15 @@ async function fetchCourses(summaryOnly = false) {
     return getFallbackCourses();
   }
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("courses")
     .select(
       summaryOnly
         ? "*, course_modules(id,title,description,sort_order,status,lessons(id,title,duration,sort_order,status))"
         : "*, course_modules(*, lessons(*))",
-    )
-    .order("created_at", { ascending: false });
+    );
+  if (slug) query = query.eq("slug", slug);
+  const { data, error } = await query.order("created_at", { ascending: false });
 
   if (error || !data || data.length === 0) {
     console.warn("[courseService] Supabase courses query fell back.", {
@@ -600,7 +601,7 @@ export async function getCourseSummariesStrict(): Promise<CourseSummary[]> {
 }
 
 export async function getCourseBySlug(slug: string) {
-  const courses = await getCourses();
+  const courses = await fetchCourses(false, slug);
   const course = courses.find((course) => course.slug === slug);
   const fallbackCourse = fallbackCourses.find((item) => item.slug === slug);
   const normalizedFallbackCourse = fallbackCourse

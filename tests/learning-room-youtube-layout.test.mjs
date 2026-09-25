@@ -34,7 +34,7 @@ test("lesson list is one flat sequence with continuous numbering", () => {
 test("Facebook Ads reference library sits below the video and above lesson controls", () => {
   const videoIndex = source.indexOf('className="aspect-video w-full bg-black"');
   const referenceLibraryIndex = source.indexOf("<CourseReferenceLibrary");
-  const lessonControlsIndex = source.indexOf('<div className="mt-4 grid gap-4">');
+  const lessonControlsIndex = source.indexOf("styles.lessonContent");
 
   assert.ok(videoIndex !== -1, "video player must remain in the learning room");
   assert.ok(referenceLibraryIndex > videoIndex, "reference library must render after the video player");

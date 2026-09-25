@@ -52,3 +52,17 @@ test('catalog summary keeps card data and lesson counts while skipping resource 
  const courses=await service.getCourses({summaryOnly:true});
  const course=courses.find(c=>c.slug==='facebook-ads-2026');assert.equal(course.modules[0].lessons.length,1);assert.ok(course.landingPageUrl);assert.deepEqual(calls,['courses']);
 });
+
+test('single-course lookup filters before downloading lessons and only fetches that course resources',async()=>{
+ const calls=[];
+ const client={from(table){const ops=[];calls.push({table,ops});const q={select(s){ops.push(['select',s]);return q},eq(k,v){ops.push(['eq',k,v]);return q},order:async()=>({data:[{id:'c1',slug:'facebook-ads-2026',title:'Facebook Ads',status:'open',course_modules:[{id:'m1',title:'Module',lessons:[{id:'l1',title:'Lesson',status:'published',youtube_url:'https://www.youtube.com/watch?v=video'}]}]}],error:null}),in:async(k,v)=>{ops.push(['in',k,v]);return {data:[],error:null}}};return q;}};
+ const service=load('services/courseService.ts',{'@/lib/supabase/server':{createSupabaseServerClient:()=>client},'@/lib/supabase/admin':{createSupabaseAdminClient:()=>client},'@/lib/admin/command-center-source':{}});
+ const course=await service.getPublishedCourseForStudent('facebook-ads-2026');assert.equal(course.slug,'facebook-ads-2026');
+ assert.ok(calls[0].ops.some(x=>x[0]==='eq'&&x[1]==='slug'&&x[2]==='facebook-ads-2026'));
+ for(const call of calls.slice(1))assert.deepEqual(call.ops.find(x=>x[0]==='in'),['in','lesson_id',['l1']]);
+});
+
+test('anonymous preview does not read LMS data at all',async()=>{
+ const service=load('services/lmsService.ts',{'@/lib/supabase/admin':{createSupabaseAdminClient:()=>{throw new Error('should not query')}},'@/lib/security/validation':{},'@/services/activityLogService':{},'@/services/studentProvisioningOperationService':{},'@/lib/admin/command-center-source':{}});
+ assert.deepEqual(await service.getStudentLmsAccess({}),{ownedSlugs:[],progressBySlug:{},completedLessonIds:[],enrollmentIdsBySlug:{}});
+});

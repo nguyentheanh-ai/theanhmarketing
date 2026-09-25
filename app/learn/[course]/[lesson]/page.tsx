@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { notFound, redirect } from "next/navigation";
 import { LearningRoom } from "@/components/course/learning-room";
 import { getCourseReferencePacks } from "@/data/course-reference-packs";
@@ -6,9 +7,8 @@ import { getCourseAccessSlugs } from "@/lib/course-access";
 import { getOrderedCourseLessons } from "@/lib/course-learning";
 import { logStudentActivity } from "@/services/activityLogService";
 import { getPublishedCourseForStudent } from "@/services/courseService";
-import { getLeads } from "@/services/leadService";
+import { getStudentPortalAccessRecords } from "@/services/studentPortalAccessService";
 import { getStudentLmsAccess } from "@/services/lmsService";
-import { getPaymentOrders } from "@/services/orderService";
 
 type LessonPageProps = {
   params: Promise<{
@@ -19,7 +19,9 @@ type LessonPageProps = {
 
 export default async function LessonPage({ params }: LessonPageProps) {
   const { course: courseSlug, lesson: lessonId } = await params;
-  const course = await getPublishedCourseForStudent(courseSlug);
+  const [course, { adminRole, user }] = await Promise.all([
+    getPublishedCourseForStudent(courseSlug), getCurrentAuth(),
+  ]);
 
   if (!course) {
     notFound();
@@ -41,12 +43,16 @@ export default async function LessonPage({ params }: LessonPageProps) {
     notFound();
   }
 
-  const { adminRole, user } = await getCurrentAuth();
-  const lmsAccess = await getStudentLmsAccess({
-    email: user?.email,
-    userId: user?.id,
-    isAdmin: Boolean(adminRole),
-  });
+  const requiresAccess = course.visibility !== "public" || currentLesson.access === "paid";
+  if (requiresAccess && !user?.email) {
+    redirect(`/dang-nhap?next=${encodeURIComponent(`/learn/${courseSlug}/${lessonId}`)}`);
+  }
+  const [lmsAccess, records] = await Promise.all([
+    getStudentLmsAccess({ email: user?.email, userId: user?.id, isAdmin: Boolean(adminRole) }),
+    requiresAccess && !adminRole && user?.email
+      ? getStudentPortalAccessRecords(user.email)
+      : Promise.resolve({ orders: [], leads: [] }),
+  ]);
 
   if (course.visibility !== "public" || currentLesson.access === "paid") {
 
@@ -55,10 +61,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
     }
 
     if (!adminRole && user?.email) {
-      const [orders, leads] = await Promise.all([
-        getPaymentOrders({ includeFallback: false }),
-        getLeads({ includeFallback: false }),
-      ]);
+      const { orders, leads } = records;
       const ownedSlugs = getCourseAccessSlugs({
         email: user.email,
         leads,
@@ -72,7 +75,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
     }
 
     if (user?.email) {
-      await logStudentActivity({
+      after(() => logStudentActivity({
         userId: user.id,
         studentEmail: user.email,
         eventType: "student_entered_learning",
@@ -84,12 +87,13 @@ export default async function LessonPage({ params }: LessonPageProps) {
         actorEmail: user.email,
         metadata: { route: `/learn/${courseSlug}/${lessonId}`, courseSlug, lessonId },
         dedupeWindowMinutes: 15,
-      });
+      }));
     }
   }
 
   return (
     <LearningRoom
+      key={`${course.slug}:${currentLesson.id}`}
       course={course}
       currentLesson={currentLesson}
       currentLessonCompleted={lmsAccess.completedLessonIds.includes(currentLesson.id)}

@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { LessonLink } from "./lesson-link";
+import styles from "./learning-room.module.css";
+import { useEffect, useRef, useState } from "react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { CourseReferenceLibrary } from "@/components/course/course-reference-library";
 import { BrandMark } from "@/components/site/brand-mark";
@@ -43,10 +45,18 @@ export function LearningRoom({
   previousLesson,
   referencePacks = [],
 }: LearningRoomProps) {
+  const lessonListRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const list = lessonListRef.current;
+    const active = list?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (list && active) list.scrollTop += active.getBoundingClientRect().top - list.getBoundingClientRect().top - 64;
+  }, [currentLesson.id]);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [isCompleted, setIsCompleted] = useState(currentLessonCompleted);
   const [progressMessage, setProgressMessage] = useState("");
   const [isSavingProgress, setIsSavingProgress] = useState(false);
+  const [isReferenceOpen, setIsReferenceOpen] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
   const canWatchVideo = Boolean(currentLesson.embedUrl);
   const thumbnailUrl = toYouTubeThumbnailUrl(currentLesson.youtubeUrl);
   const shellClass = "ai-os-bg ai-grid text-white";
@@ -79,8 +89,9 @@ export function LearningRoom({
   }
 
   return (
-    <main className={`min-h-screen ${shellClass}`}>
+    <main className={`${styles.room} min-h-screen ${shellClass}`}>
       <aside
+        inert={!isSidebarVisible}
         className={`fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r p-5 transition-transform ${
           isSidebarVisible ? "translate-x-0" : "-translate-x-full"
         } border-[#77d7ff]/15 bg-[#05080d]/88 backdrop-blur-2xl`}
@@ -144,33 +155,33 @@ export function LearningRoom({
       </button>
 
       <section className="transition-[margin]">
-        <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between border-b border-[#77d7ff]/15 bg-[#05080d]/78 px-5 pl-20 backdrop-blur-xl lg:px-6 lg:pl-20">
+        <header className={`${styles.header} sticky top-0 z-20 flex min-h-16 items-center justify-between border-b border-[#77d7ff]/15 bg-[#05080d]/78 px-5 pl-20 backdrop-blur-xl lg:px-6 lg:pl-20`}>
           <div>
             <p className={`text-xs font-black uppercase tracking-[0.14em] ${mutedText}`}>Đang học</p>
-            <p className="font-bold">{course.title}</p>
+            <p className={styles.courseTitle}>{course.title}</p>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="rounded-full bg-[#159cfb] px-4 py-2 text-sm font-black text-white lg:hidden">
-              OS
-            </span>
+          <div className="flex shrink-0 items-center gap-3">
             <Link
               className="rounded-full bg-white px-4 py-2 text-sm font-black text-black"
               href="/dashboard"
             >
-              Dashboard
+              Khóa học
             </Link>
           </div>
         </header>
 
-        <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_390px] lg:p-6">
-          <div className="min-w-0">
-            <div className="overflow-hidden rounded-xl border border-[#77d7ff]/15 shadow-[0_24px_90px_rgba(0,0,0,0.35)]">
+        <div className={`${styles.layout} grid gap-4 p-3 lg:grid-cols-[minmax(0,1fr)_350px] lg:p-6`}>
+          <div className={styles.mainColumn}>
+            <div id="lesson-player" className={styles.player}>
+              {canWatchVideo && isVideoLoading ? <span className={styles.videoLoading} role="status">Đang tải video…</span> : null}
               {canWatchVideo ? (
                 <iframe
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
                   className="aspect-video w-full bg-black"
-                  src={currentLesson.embedUrl}
+                  onLoad={() => setIsVideoLoading(false)}
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  src={currentLesson.embedUrl.includes("youtube.com/embed/") ? `${currentLesson.embedUrl}${currentLesson.embedUrl.includes("?") ? "&" : "?"}playsinline=1` : currentLesson.embedUrl}
                   title={cleanLessonTitle(currentLesson.title)}
                 />
               ) : (
@@ -193,9 +204,13 @@ export function LearningRoom({
               )}
             </div>
 
-            <CourseReferenceLibrary packs={referencePacks} />
+            <a className={styles.jumpToLessons} href="#lesson-list">Danh sách bài học · {lessons.length} bài ↓</a>
+            {referencePacks.length ? <details className={styles.references} onToggle={(event) => setIsReferenceOpen(event.currentTarget.open)}>
+              <summary>Tài liệu tham khảo và tải xuống</summary>
+              {isReferenceOpen ? <CourseReferenceLibrary packs={referencePacks} /> : null}
+            </details> : null}
 
-            <div className="mt-4 grid gap-4">
+            <div className={`${styles.lessonContent} ${styles.enter} mt-4 grid gap-4`}>
               <section className={`rounded-2xl p-4 ring-1 ${panelClass}`}>
                 <p className={`text-xs font-black uppercase tracking-[0.14em] ${mutedText}`}>
                   Module {currentLesson.moduleOrder}: {currentLesson.moduleTitle}
@@ -213,20 +228,20 @@ export function LearningRoom({
                     {isCompleted ? "Đã hoàn thành" : isSavingProgress ? "Đang lưu..." : "Hoàn thành bài học"}
                   </button>
                   {previousLesson ? (
-                    <Link
+                    <LessonLink
                       className={`rounded-xl px-5 py-3 text-center text-sm font-bold ${subtlePanel}`}
                       prefetch={false} href={getLessonHref(course.slug, previousLesson.id)}
                     >
                       Bài trước
-                    </Link>
+                    </LessonLink>
                   ) : null}
                   {nextLesson ? (
-                    <Link
+                    <LessonLink
                       className="rounded-xl bg-[#159cfb] px-5 py-3 text-center text-sm font-bold text-white"
                       prefetch={false} href={getLessonHref(course.slug, nextLesson.id)}
                     >
                       Bài tiếp theo
-                    </Link>
+                    </LessonLink>
                   ) : (
                     <Link
                       className="rounded-xl bg-emerald-400/80 px-5 py-3 text-center text-sm font-bold text-white"
@@ -265,7 +280,7 @@ export function LearningRoom({
             </div>
           </div>
 
-          <aside className={`max-h-[calc(100vh-96px)] overflow-y-auto rounded-2xl p-4 ring-1 ${panelClass}`}>
+          <aside ref={lessonListRef} id="lesson-list" tabIndex={-1} className={`${styles.lessonList} rounded-2xl p-3 ring-1 ${panelClass}`}>
             <p className="ai-kicker">Danh sách bài học</p>
             <div className="mt-4 grid gap-3">
               {lessons.map((lesson, index) => {
@@ -273,9 +288,10 @@ export function LearningRoom({
                 const itemThumbnail = toYouTubeThumbnailUrl(lesson.youtubeUrl);
 
                 return (
-                  <Link
+                  <LessonLink
                     key={lesson.id}
-                    className={`grid grid-cols-[92px_1fr] gap-3 rounded-xl p-2 text-sm ${
+                    aria-current={isActive ? "page" : undefined}
+                    className={`grid grid-cols-[76px_minmax(0,1fr)] gap-3 rounded-xl p-2 text-sm ${
                       isActive
                         ? "bg-[#159cfb] text-white"
                         : "bg-white/5 text-white/78 hover:bg-white/10"
@@ -284,12 +300,9 @@ export function LearningRoom({
                   >
                     <span className="relative overflow-hidden rounded-lg bg-black">
                       {itemThumbnail ? (
-                        <span
-                          aria-label={cleanLessonTitle(lesson.title)}
-                          className="block aspect-video bg-cover bg-center"
-                          role="img"
-                          style={{ backgroundImage: `url(${itemThumbnail})` }}
-                        />
+                        // Native lazy images avoid downloading every thumbnail before the video.
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img alt="" src={itemThumbnail} width={160} height={90} loading="lazy" decoding="async" className="block aspect-video w-full object-cover" />
                       ) : (
                         <span className="block aspect-video bg-black/20" />
                       )}
@@ -305,7 +318,7 @@ export function LearningRoom({
                         {getAccessLabel(lesson.access)}
                       </span>
                     </span>
-                  </Link>
+                  </LessonLink>
                 );
               })}
             </div>
@@ -313,13 +326,13 @@ export function LearningRoom({
         </div>
       </section>
 
-      <nav className="learning-mobile-action" aria-label="Hành động học nhanh trên điện thoại">
-        <Link href="/dashboard">Dashboard</Link>
+      <nav className={styles.mobileActions} aria-label="Hành động học nhanh trên điện thoại">
+        <a href="#lesson-list">Bài học</a>
         {previousLesson ? (
-          <Link prefetch={false} href={getLessonHref(course.slug, previousLesson.id)}>Bài trước</Link>
+          <LessonLink prefetch={false} href={getLessonHref(course.slug, previousLesson.id)}>Bài trước</LessonLink>
         ) : null}
         {nextLesson ? (
-          <Link prefetch={false} href={getLessonHref(course.slug, nextLesson.id)}>Bài tiếp</Link>
+          <LessonLink prefetch={false} href={getLessonHref(course.slug, nextLesson.id)}>Bài tiếp</LessonLink>
         ) : (
           <Link href="/dashboard">Hoàn thành</Link>
         )}
