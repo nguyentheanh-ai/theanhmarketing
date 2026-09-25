@@ -136,3 +136,8 @@ Before production, replace the anon demo policy with server-only writes and admi
 - Missing recipient/provider config or a provider failure is recorded in `accounting_email_last_error` and never changes the paid result or customer fulfillment.
 - Run `scripts/backfill-accounting-payment-emails.ts` without flags first. Live mode is `--send`; ambiguous rows require an explicit reviewed `--approve-ambiguous=<orderCodes>` list.
 - If protected production credentials cannot be downloaded, use authenticated `POST /api/payment/accounting-retry` with at most 50 reviewed order codes; the route returns aggregate counts and no customer payload.
+
+
+## 26/09/2026 — Thay thế hành vi email hết hạn cũ
+
+Cron và lookup vẫn đánh dấu đơn quá hạn, nhưng không tự gửi email hết hạn. Queue nhắc thanh toán sở hữu email tự động lúc 08:30 sáng gần nhất; xem PAYMENT_REMINDER_MORNING_20260926.md. Thanh toán đến muộn vẫn được SePay xử lý như cũ.

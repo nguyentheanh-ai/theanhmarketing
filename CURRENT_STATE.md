@@ -658,3 +658,12 @@ App theanh-main. Feature `worktrees/learning-smooth-20260926`, base e3fe718, bra
 84 tests liên quan PASS, scoped lint/TypeScript/diff PASS; kết quả build cuối ở feature docs/LEARNING_SMOOTH_20260926.md. Chưa deploy, chưa authenticated browser PC/mobile hoặc đo timing/playback thật; workspace UI policy không được thay đổi. RPC enrollment global cho học viên vẫn còn, không schema/RLS/migration; không thay landing/checkout/email/quyền. Không gộp với student-resource-app. Bước tiếp: kiểm tra giao diện có đăng nhập và scoped guarded release khi được anh duyệt.
 
 Context đã đọc: registry/control/policy, ACTIVE_TASKS, AI_CONTEXT_INDEX, SESSION_STATE, FEATURE_REGISTRY, ROLE_AND_SESSION_PROTOCOL, SESSION_START_CHECKLIST, DATABASE-CONTRACT; repo AGENTS, CURRENT_STATE, FEATURE_MAP, handoff, DESIGN_RULES, SECURITY_HARDENING, DATABASE_ARCHITECTURE, lesson note và source/tests liên quan.
+
+## 26/09/2026 — Email chưa thanh toán: 08:30 sáng gần nhất
+
+- Owner yêu cầu bỏ email lúc nửa đêm và xác nhận 08:30 sáng gần nhất, giờ Asia/Ho_Chi_Minh. Trước sửa: expiry cron 17:00 UTC = 00:00 Việt Nam; reminder 1 sau 10 phút không có time gate; GET lookup cũng gửi expiry email trực tiếp.
+- Candidate giữ vòng đời hết hạn nhưng bỏ gửi email trực tiếp ở cron expiry và lookup. Queue hai lần hiện có sở hữu email tự động; pending/expired chưa trả tiền đủ điều kiện, paid/failed hoặc payment_status=paid bị hủy. Không đổi email xác nhận đăng ký ban đầu, thanh toán thành công, SePay, access, giá, landing hoặc nội dung template.
+- Migration `20260925173127_payment_reminders_nearest_morning.sql`: lần 1 là 08:30 kế tiếp sau created_at; lần 2/retry là 08:30 kế tiếp sau lần gửi/thử. Time gate SQL và worker 08:30 <= giờ Việt Nam < 09:00; cron bắt đầu 08:30, chạy mỗi 5 phút đến 08:55 để thoát backlog/lỗi worker. Không gửi lại rows sent/cancelled. Không phục hồi backlog cũ.
+- Giữ lease/idempotency; worker kiểm tra lại cả status và payment_status ngay trước gửi, xử lý nhiều lô nhỏ trong thời lượng route. Expiry cron đổi 01:30 UTC và chỉ đổi trạng thái.
+- Local: 22 kiểm tra PostgreSQL cô lập đạt (giờ đêm, 08:29/08:30, qua ngày/năm, expired, paid, lease/dedupe, retry, backfill có giới hạn, service-only grants); tests phạm vi email/payment/landing đạt; TypeScript, scoped ESLint, Webpack build108 đạt. Full suite829/858 đạt,27 lỗi giống baseline và2 skipped; không có lỗi mới. Không gửi email thật để QA.
+- Trạng thái: source/local verified, chưa áp dụng migration hoặc deploy tại thời điểm ghi mục này. Live status được cập nhật sau khi phát hành.

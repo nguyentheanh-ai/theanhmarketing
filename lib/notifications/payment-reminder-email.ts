@@ -1,3 +1,4 @@
+import { isPaymentReminderMorning, isUnpaidReminderOrder } from "@/lib/notifications/payment-reminder-schedule";
 import { buildPendingPaymentEmailPayload } from "@/lib/notifications/pending-payment-email";
 import { normalizeAttribution } from "@/lib/tracking/attribution";
 import { emptyInvoiceDetails } from "@/lib/orders/invoice";
@@ -25,6 +26,7 @@ type OrderRow = {
   amount: number | string | null;
   currency: string | null;
   status: string | null;
+  payment_status: string | null;
   payment_method: string | null;
   payment_qr_url: string | null;
   paid_at: string | null;
@@ -46,7 +48,7 @@ type DispatchSummary = {
 };
 
 const orderFields =
-  "id,lead_id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items" as const;
+  "id,lead_id,order_code,student_name,email,phone,course_slug,course_title,amount,currency,status,payment_status,payment_method,payment_qr_url,paid_at,expires_at,created_at,sepay_reference_code,order_items" as const;
 
 const reminderSubjects = {
   1: (orderCode: string) => `Anh/chị còn một bước để hoàn tất đăng ký - ${orderCode}`,
@@ -163,87 +165,102 @@ export async function dispatchDuePaymentReminderRuns(): Promise<DispatchSummary>
     retried: 0,
     lostLease: 0,
   };
+  if (!isPaymentReminderMorning()) return summary;
+
   const client = createSupabaseAdminClient({ timeoutMs: 8_000 });
 
   if (!client) return { ...summary, ok: false, error: "Missing Supabase admin client" };
 
-  const claimed = await client.rpc("claim_due_payment_remarketing_runs", { p_limit: 3 });
-  if (claimed.error) return {
-    ...summary,
-    ok: false,
-    error: "Could not claim payment reminder runs",
-    errorCode: /^[A-Z0-9_]{1,32}$/i.test(claimed.error.code ?? "") ? claimed.error.code : "UPSTREAM_ERROR",
-  };
+  const startedAt = Date.now();
+  for (let batch = 0; batch < 20 && Date.now() - startedAt < 70_000 && isPaymentReminderMorning(); batch += 1) {
+    const claimed = await client.rpc("claim_due_payment_remarketing_runs", { p_limit: 3 });
+    if (claimed.error) return {
+      ...summary,
+      ok: false,
+      error: "Could not claim payment reminder runs",
+      errorCode: /^[A-Z0-9_]{1,32}$/i.test(claimed.error.code ?? "") ? claimed.error.code : "UPSTREAM_ERROR",
+    };
 
-  const runs = parseRuns(claimed.data);
-  summary.claimed = runs.length;
+    const runs = parseRuns(claimed.data);
+    summary.claimed += runs.length;
+    if (runs.length === 0) break;
 
-  for (const run of runs) {
-    const orderResult = await client.from("orders").select(orderFields).eq("id", run.order_id).maybeSingle();
-    const order = orderResult.data ? toPaymentOrder(orderResult.data as OrderRow) : null;
+    for (const run of runs) {
+      const orderResult = await client.from("orders").select(orderFields).eq("id", run.order_id).maybeSingle();
+      const order = orderResult.data ? toPaymentOrder(orderResult.data as OrderRow) : null;
 
-    if (orderResult.error) {
+      if (orderResult.error) {
+        const finished = await client.rpc("finish_payment_remarketing_run", {
+          p_run_id: run.run_id,
+          p_lease_token: run.lease_token,
+          p_succeeded: false,
+          p_resend_email_id: null,
+          p_error: "Could not recheck order",
+        });
+        if (finished.error) summary.lostLease += 1;
+        else summary.retried += 1;
+        continue;
+      }
+
+      if (!order || !isUnpaidReminderOrder(order) || orderResult.data?.payment_status === "paid" || !order.email) {
+        const cancelled = await client.rpc("cancel_payment_remarketing_run", {
+          p_run_id: run.run_id,
+          p_lease_token: run.lease_token,
+          p_reason: "Order is no longer unpaid",
+        });
+        const finishState = String((cancelled.data as { finish_state?: string } | null)?.finish_state ?? "");
+        if (cancelled.error || finishState === "lost_lease") summary.lostLease += 1;
+        else summary.cancelled += 1;
+        continue;
+      }
+
+      if (!isPaymentReminderMorning()) {
+        await client.rpc("finish_payment_remarketing_run", {
+          p_run_id: run.run_id, p_lease_token: run.lease_token, p_succeeded: false,
+          p_error: "Deferred to the next morning",
+        });
+        summary.retried += 1;
+        continue;
+      }
+
+      let result: Awaited<ReturnType<typeof sendWithResend>>;
+      try {
+        result = await sendWithResend(run, order);
+      } catch {
+        result = { ok: false, resendEmailId: null, error: "Resend request failed" };
+      }
+
+      if (result.ok && result.resendEmailId) {
+        const payload = buildPaymentReminderEmailPayload(order, run.sequence_index);
+        await recordEmailLog({
+          leadId: order.leadId,
+          email: order.email,
+          subject: payload.subject,
+          templateKey: `payment_reminder_${run.sequence_index}`,
+          resendEmailId: result.resendEmailId,
+          status: "sent",
+          metadata: {
+            kind: "payment_reminder",
+            payment_remarketing_run_id: run.run_id,
+            orderCode: order.orderCode,
+            sequenceIndex: run.sequence_index,
+          },
+        });
+      }
+
       const finished = await client.rpc("finish_payment_remarketing_run", {
         p_run_id: run.run_id,
         p_lease_token: run.lease_token,
-        p_succeeded: false,
-        p_resend_email_id: null,
-        p_error: "Could not recheck order",
+        p_succeeded: result.ok,
+        p_resend_email_id: result.resendEmailId,
+        p_error: result.error,
       });
-      if (finished.error) summary.lostLease += 1;
+      const finishState = String((finished.data as { finish_state?: string } | null)?.finish_state ?? "");
+
+      if (finished.error || finishState === "lost_lease") summary.lostLease += 1;
+      else if (result.ok) summary.sent += 1;
       else summary.retried += 1;
-      continue;
     }
-
-    if (!order || order.status !== "pending" || !order.email) {
-      const cancelled = await client.rpc("cancel_payment_remarketing_run", {
-        p_run_id: run.run_id,
-        p_lease_token: run.lease_token,
-        p_reason: "Order is no longer pending",
-      });
-      const finishState = String((cancelled.data as { finish_state?: string } | null)?.finish_state ?? "");
-      if (cancelled.error || finishState === "lost_lease") summary.lostLease += 1;
-      else summary.cancelled += 1;
-      continue;
-    }
-
-    let result: Awaited<ReturnType<typeof sendWithResend>>;
-    try {
-      result = await sendWithResend(run, order);
-    } catch {
-      result = { ok: false, resendEmailId: null, error: "Resend request failed" };
-    }
-
-    if (result.ok && result.resendEmailId) {
-      const payload = buildPaymentReminderEmailPayload(order, run.sequence_index);
-      await recordEmailLog({
-        leadId: order.leadId,
-        email: order.email,
-        subject: payload.subject,
-        templateKey: `payment_reminder_${run.sequence_index}`,
-        resendEmailId: result.resendEmailId,
-        status: "sent",
-        metadata: {
-          kind: "payment_reminder",
-          payment_remarketing_run_id: run.run_id,
-          orderCode: order.orderCode,
-          sequenceIndex: run.sequence_index,
-        },
-      });
-    }
-
-    const finished = await client.rpc("finish_payment_remarketing_run", {
-      p_run_id: run.run_id,
-      p_lease_token: run.lease_token,
-      p_succeeded: result.ok,
-      p_resend_email_id: result.resendEmailId,
-      p_error: result.error,
-    });
-    const finishState = String((finished.data as { finish_state?: string } | null)?.finish_state ?? "");
-
-    if (finished.error || finishState === "lost_lease") summary.lostLease += 1;
-    else if (result.ok) summary.sent += 1;
-    else summary.retried += 1;
   }
 
   return summary;

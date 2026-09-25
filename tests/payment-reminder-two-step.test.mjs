@@ -15,15 +15,15 @@ test("payment reminder worker is cron-protected and dispatches the two-step serv
   assert.doesNotMatch(source, /PAYMENT_REMARKETING_DISABLED|status:\s*410/);
 });
 
-test("Vercel invokes the reminder worker every five minutes", () => {
+test("Vercel starts reminders at 08:30 Vietnam and drains only in the morning", () => {
   const config = JSON.parse(read("vercel.json"));
   assert.deepEqual(
     config.crons.find((cron) => cron.path === "/api/email/worker/send-due"),
-    { path: "/api/email/worker/send-due", schedule: "*/5 * * * *" },
+    { path: "/api/email/worker/send-due", schedule: "30-59/5 1 * * *" },
   );
 });
 
-test("migration seeds only new pending orders and never restores the legacy backlog", () => {
+test("historical migration seeded only new pending orders and never restores the legacy backlog", () => {
   const sql = read("supabase/migrations/20260828113000_enable_two_step_payment_reminders.sql");
 
   assert.match(sql, /interval\s+'10 minutes'/i);
@@ -34,7 +34,7 @@ test("migration seeds only new pending orders and never restores the legacy back
   assert.doesNotMatch(sql, /select\s+public\.seed_payment_remarketing_runs\(id\)\s+from\s+public\.orders/i);
 });
 
-test("second reminder waits four hours after the first successful send and only claims from 09:00 to 21:00 Vietnam time", () => {
+test("historical migration: second reminder waited four hours after the first successful send and only claims from 09:00 to 21:00 Vietnam time", () => {
   const sql = read("supabase/migrations/20260828113000_enable_two_step_payment_reminders.sql");
 
   assert.match(sql, /sequence_index[^;]+2/is);
@@ -47,20 +47,20 @@ test("second reminder waits four hours after the first successful send and only 
   assert.doesNotMatch(sql, /previous_run\.opened_at\s+is\s+not\s+null/i);
 });
 
-test("paid or expired orders cancel unsent reminders and the worker rechecks status before Resend", () => {
+test("paid orders cancel unsent reminders; expired unpaid orders remain eligible and the worker rechecks status before Resend", () => {
   const sql = read("supabase/migrations/20260828113000_enable_two_step_payment_reminders.sql");
   const service = read("lib/notifications/payment-reminder-email.ts");
 
   assert.match(sql, /after update of status on public\.orders/i);
   assert.match(sql, /status\s*=\s*'cancelled'/i);
   assert.match(service, /\.from\("orders"\)/);
-  assert.match(service, /order\.status\s*!==\s*"pending"/);
+  assert.match(service, /isUnpaidReminderOrder\(order\)/);
   assert.match(service, /cancel_payment_remarketing_run/);
   assert.match(service, /Idempotency-Key/);
   assert.match(service, /payment_reminder_\$\{run\.sequence_index\}/);
 });
 
-test("the new migration retires the obsolete database cron to prevent duplicate worker calls", () => {
+test("historical migration retired the obsolete database cron to prevent duplicate worker calls", () => {
   const sql = read("supabase/migrations/20260828113000_enable_two_step_payment_reminders.sql");
   assert.match(sql, /cron\.unschedule/i);
   assert.match(sql, /payment-remarketing-send-due/i);

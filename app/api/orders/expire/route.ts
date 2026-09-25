@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 
-import { sendPaymentFailedEmail } from "@/lib/notifications/payment-success-email";
 import { logSecurityEvent } from "@/lib/security/audit-log";
 import { invalidateAdminModules } from "@/services/adminDataService";
-import { expirePendingPaymentOrders, markPaymentEmailError } from "@/services/orderService";
+import { expirePendingPaymentOrders } from "@/services/orderService";
 
 export const runtime = "nodejs";
 
@@ -28,30 +27,11 @@ export async function GET(request: Request) {
       invalidateAdminModules(["orders"]);
     }
 
-    const emails = await Promise.all(
-      expiredOrders.map(async (order) => {
-        const result = await sendPaymentFailedEmail(order);
-
-        if (!result.ok) {
-          await markPaymentEmailError(
-            order.orderCode,
-            result.reason ?? "Could not send expired payment email.",
-          );
-        }
-
-        return {
-          orderCode: order.orderCode,
-          ok: result.ok,
-          skipped: result.skipped,
-          reason: result.reason,
-        };
-      }),
-    );
-
     return NextResponse.json({
       ok: true,
       expired: expiredOrders.length,
-      emails,
+      // Customer reminders are sent only by the morning queue.
+      emails: [],
     });
   } catch (error) {
     logSecurityEvent({

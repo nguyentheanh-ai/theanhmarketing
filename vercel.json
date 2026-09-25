@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/orders/expire",
-      "schedule": "0 17 * * *"
+      "schedule": "30 1 * * *"
     },
     {
       "path": "/api/orders/sync-google-sheet",
@@ -30,7 +30,7 @@
     },
     {
       "path": "/api/email/worker/send-due",
-      "schedule": "*/5 * * * *"
+      "schedule": "30-59/5 1 * * *"
     }
   ]
 }

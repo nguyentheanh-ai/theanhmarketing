@@ -12,13 +12,13 @@ test("expired payment cron is configured and protected by CRON_SECRET", () => {
   const expireCron = vercelConfig.crons.find((cron) => cron.path === "/api/orders/expire");
   const expireRoute = read("app/api/orders/expire/route.ts");
 
-  assert.equal(expireCron.schedule, "0 17 * * *");
+  assert.equal(expireCron.schedule, "30 1 * * *");
   assert.match(expireRoute, /process\.env\.CRON_SECRET/);
   assert.match(expireRoute, /Bearer \$\{process\.env\.CRON_SECRET\}/);
   assert.match(expireRoute, /status: 401/);
 });
 
-test("expired payment route marks stale pending orders and sends failed-payment emails", () => {
+test("expired payment route marks stale pending orders without sending duplicate unscheduled emails", () => {
   const expireRoute = read("app/api/orders/expire/route.ts");
   const orderService = read("services/orderService.ts");
 
@@ -27,7 +27,7 @@ test("expired payment route marks stale pending orders and sends failed-payment 
   assert.match(orderService, /\.lt\("expires_at"/);
   assert.match(orderService, /status: "expired"/);
   assert.match(expireRoute, /expirePendingPaymentOrders/);
-  assert.match(expireRoute, /sendPaymentFailedEmail/);
+  assert.doesNotMatch(expireRoute, /sendPaymentFailedEmail/);
   assert.doesNotMatch(expireRoute, /markPaymentEmailSent/);
 });
 
@@ -39,6 +39,6 @@ test("payment lookup opportunistically expires overdue pending orders", () => {
   assert.match(orderService, /\.eq\("order_code", orderCode\.toUpperCase\(\)\)/);
   assert.match(orderService, /\.eq\("status", "pending"\)/);
   assert.match(lookupRoute, /expirePaymentOrderIfOverdue/);
-  assert.match(lookupRoute, /sendPaymentFailedEmail/);
+  assert.doesNotMatch(lookupRoute, /sendPaymentFailedEmail/);
   assert.doesNotMatch(lookupRoute, /markPaymentEmailSent/);
 });
