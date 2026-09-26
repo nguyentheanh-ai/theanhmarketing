@@ -33,7 +33,7 @@ test("course-only price and invalid product-plan validation are preserved", () =
 });
 
 
-test("landing checkbox selects the evergreen combo without a date gate", () => {
+test("landing checkbox selects the approved 1098000 combo and agrees with the server", () => {
   const html = readFileSync(new URL("../public/ladipage/facebook-ads-2026.html", import.meta.url), "utf8");
   const plansSource = html.slice(html.indexOf("        var plans ="), html.indexOf("        var cartKey ="));
   const resolverSource = html.slice(html.indexOf("        function resolveSelectedPlan()"), html.indexOf("        function addCourseToCart()"));
@@ -41,6 +41,12 @@ test("landing checkbox selects the evergreen combo without a date gate", () => {
   vm.runInContext(plansSource + resolverSource, browser);
   assert.equal(browser.resolveSelectedPlan().amount, 799000);
   browser.ebookAddon.checked = true;
-  assert.equal(browser.resolveSelectedPlan().id, "zoom-kit-ebook-20");
-  assert.equal(browser.resolveSelectedPlan().amount, 878400);
+  assert.equal(browser.resolveSelectedPlan().id, "zoom-kit-ebook-299");
+  assert.equal(browser.resolveSelectedPlan().amount, 1098000);
+  const server = context.buildOrderPackage(course, browser.resolveSelectedPlan().id);
+  assert.equal(server.amount, browser.resolveSelectedPlan().amount);
+  assert.equal(server.orderItems.reduce((sum, item) => sum + item.price, 0), 1098000);
+  assert.equal(server.courseSlug, "facebook-ads-2026,ebook-facebook-ads-2026");
+  browser.ebookAddon.checked = false;
+  assert.equal(browser.resolveSelectedPlan().amount, 799000);
 });

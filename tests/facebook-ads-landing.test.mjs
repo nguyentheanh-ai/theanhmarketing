@@ -94,7 +94,7 @@ test("Facebook Ads P0 rewrite places the value stack immediately before checkout
   assert.doesNotMatch(pricing, /Học phí &amp; đăng ký/);
   assert.doesNotMatch(pricing, /<h2>Hôm nay bạn sở hữu toàn bộ với 799\.000đ<\/h2>/);
   assert.match(pricing, /<form id="payment-form" class="form" data-invoice-checkout>/);
-  assert.doesNotMatch(html, /giá gốc/i);
+  assert.doesNotMatch(valueStack, /giá gốc/i);
 });
 
 test("Facebook Ads direct-file checkout loads and submits the shared invoice fields", () => {
@@ -221,17 +221,17 @@ test("Facebook Ads pricing keeps 799K featured and the registration button direc
   assert.doesNotMatch(html, /\.zoom-addon/);
 });
 
-test("Facebook Ads form applies the Vietnam-Thailand 20% offer to the combo only", () => {
+test("Facebook Ads form displays the approved combo offer and preserves historical server plans", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
   const orderService = read("services/orderService.ts");
 
   assert.match(html, /<input id="ebook-addon" name="ebookAddon" type="checkbox" \/>/);
   assert.match(html, /Combo Ebook \+ Khóa học Facebook Ads/);
-  assert.match(html, /878\.400đ/);
-  assert.match(html, /<del>1\.098\.000đ<\/del>/);
+  assert.match(html, /1\.098\.000đ/);
+  assert.match(html, /<del>1\.400\.000đ<\/del>/);
   assert.match(html, /"zoom-kit-ebook-299":\s*\{[\s\S]*?amount:\s*1098000/);
   assert.match(html, /promotionPlanId/);
-  assert.match(html, /amount:\s*878400/);
+  assert.doesNotMatch(html, /878400|878\.400đ/);
   assert.match(html, /Giảm ngay 20%/);
   assert.doesNotMatch(html, /promotionEndDate|31\/08\/2026/);
   assert.match(html, /ebookAddon\.checked[\s\S]*return plans\[promotionPlanId\]/);

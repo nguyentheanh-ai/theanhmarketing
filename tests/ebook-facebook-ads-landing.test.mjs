@@ -203,7 +203,8 @@ test("Premium Ebook checkout offers the Facebook Ads course for 699K in one serv
   const orderService = read("services/orderService.ts");
 
   assert.match(html, /<input id="course-addon" name="courseAddon" type="checkbox" \/>/);
-  assert.match(html, /Tùy chọn: mua kèm khóa Facebook Ads Master 2026/);
+  assert.match(html, /Giảm 20% khi mua combo khóa học \+ Ebook/);
+  assert.match(html, /<del>1\.400\.000đ<\/del>/);
   assert.doesNotMatch(html, /<input id="course-addon"[^>]*checked/);
   assert.match(html, /699\.000đ/);
   assert.match(html, /Tổng thanh toán 1\.098\.000đ/);

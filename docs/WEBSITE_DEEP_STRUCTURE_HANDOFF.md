@@ -2366,3 +2366,12 @@ DONE theo yêu cầu xử lý trong phiên. Runtime9167035, productiondpl_4DWcFd
 Cùng6HTTP bài:median2435,5→778ms(-68,1%),save4576→1057ms,dashboard7574→627ms (save/dashboard1mẫu). PCclick→heading92/1008/63/128ms gồm cache/prefetch. Browser học viên thường lưu bài3→bài2→bài3 giữ hoàn thành/9%;mobile320/390/768 đủ23bài/không overflow/chọn bài/video390phát. Ba landingSHA nguyên; không error/fatal cửa sổ18:13–18:23UTC.
 Không còn chờ người dùng test mật khẩu: Auth API đổi/đăng nhập lại đã kiểm. Giới hạn: chưa inbox/open proof, chưa submit form mật khẩu bằng browser, chưa điện thoại vật lý; mẫu đo nhỏ.
 Báo cáo: worktrees/learning-smooth-20260926/docs/LEARNING_PERFORMANCE_V2_20260926.md. Evidence: reports/learning-smooth-20260926/final-v2.json. Thay thế trạng thái chưa deploy/audit findings còn mở ở trên.
+
+
+## 26/09/2026 — Combo khóa học + Ebook 1.098.000đ (LOCAL VERIFIED)
+
+Anh duyệt cả hai landing: giá gốc hiển thị 1.400.000đ, giá combo 1.098.000đ, thông điệp giảm 20% làm tròn theo chỉ định (không phải công thức tính tiền). Worktree `worktrees/combo-price-20260926`, branch `fix/combo-price-20260926`, base954e7a4. Hai cặp HTML ladipage/academy Facebook Ads Master và Ebook Premium đã đồng bộ. Trang khóa học chuyển lựa chọn combo từ zoom-kit-ebook-20 sang gói có sẵn zoom-kit-ebook-299 (1.098.000đ); Ebook giữ full-access-399-course-699. Không đổi backend, giá mua lẻ, dữ liệu/đơn cũ, email, quyền học hay tracking.
+
+64/64 tests landing/combo/payment đạt; ESLint3file test, diff check, cú pháp inline JS và equality hai cặp đạt. VM kiểm tra checkbox khóa799K↔1.098M, Ebook399K↔1.098M; server package khóa xác nhận tổng và đủ2sản phẩm. Không tạo đơn/email/thanh toán thật. Chưa full build, browser visual QA hoặc deploy. Bước tiếp: phát hành qua canonical guard khi anh yêu cầu.
+
+Context: registry/control/policy/ACTIVE_TASKS; AI_CONTEXT_INDEX/SESSION_STATE/FEATURE_REGISTRY/ROLE_AND_SESSION_PROTOCOL/SESSION_START_CHECKLIST/PAYMENT-FLOW; repo AGENTS/CURRENT_STATE/FEATURE_MAP/WEBSITE_DEEP_STRUCTURE_HANDOFF/DESIGN_RULES/SEPAY_SETUP; service và tests hiện tại. Chi tiết `worktrees/combo-price-20260926/docs/COMBO_PRICE_20260926.md`.
