@@ -2375,3 +2375,8 @@ Anh duyệt cả hai landing: giá gốc hiển thị 1.400.000đ, giá combo 1.
 64/64 tests landing/combo/payment đạt; ESLint3file test, diff check, cú pháp inline JS và equality hai cặp đạt. VM kiểm tra checkbox khóa799K↔1.098M, Ebook399K↔1.098M; server package khóa xác nhận tổng và đủ2sản phẩm. Không tạo đơn/email/thanh toán thật. Chưa full build, browser visual QA hoặc deploy. Bước tiếp: phát hành qua canonical guard khi anh yêu cầu.
 
 Context: registry/control/policy/ACTIVE_TASKS; AI_CONTEXT_INDEX/SESSION_STATE/FEATURE_REGISTRY/ROLE_AND_SESSION_PROTOCOL/SESSION_START_CHECKLIST/PAYMENT-FLOW; repo AGENTS/CURRENT_STATE/FEATURE_MAP/WEBSITE_DEEP_STRUCTURE_HANDOFF/DESIGN_RULES/SEPAY_SETUP; service và tests hiện tại. Chi tiết `worktrees/combo-price-20260926/docs/COMBO_PRICE_20260926.md`.
+
+
+## 28/09/2026 — Support 500K và popup: LOCAL_VERIFIED
+
+Xem `docs/SUPPORT_500K_POPUP_20260928.md`. Migration/app chỉ ở feature; chưa production.123tests +TS/lint/build108 đạt. Giữ lịch/đơn cũ và giới hạn xếp lịch.

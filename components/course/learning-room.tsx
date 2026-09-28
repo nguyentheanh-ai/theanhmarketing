@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LessonLink } from "./lesson-link";
+import { SupportBookingPrompt } from "./support-booking-prompt";
 import styles from "./learning-room.module.css";
 import { useEffect, useRef, useState } from "react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
@@ -95,6 +96,7 @@ export function LearningRoom({
 
   return (
     <main className={`${styles.room} min-h-screen ${shellClass}`}>
+      <SupportBookingPrompt />
       <aside
         inert={!isSidebarVisible}
         className={`fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r p-5 transition-transform ${

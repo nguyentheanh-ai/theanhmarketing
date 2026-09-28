@@ -84,10 +84,10 @@ test("support slots follow the approved morning and afternoon schedule", () => {
 
 test("student and consultation duration prices are server-known and reject unsupported lengths", () => {
   const { getSupportBookingQuote } = loadSupportDomain();
-  for (const [minutes, amount] of [[30,1000000],[60,1500000],[90,2000000],[120,2500000]]) {
+  for (const [minutes, amount] of [[30,500000],[60,500000],[90,500000],[120,500000]]) {
     assert.equal(getSupportBookingQuote("student", minutes).amount, amount);
   }
-  for (const [minutes, amount] of [[60,2000000],[90,2700000],[120,3400000]]) {
+  for (const [minutes, amount] of [[60,500000],[90,500000],[120,500000]]) {
     assert.equal(getSupportBookingQuote("consultation", minutes).amount, amount);
   }
   for (const value of [0, 45, 150, "60", NaN]) {
@@ -111,7 +111,7 @@ test("booking validation uses trusted customer type and ignores browser pricing 
   const { validateSupportBookingInput } = loadSupportDomain();
   const input = {customerName:"Khách kiểm tra",email:"test@example.com",phone:"0900000000",topic:"kiem-tra-quang-cao",note:"Kiểm tra lịch tư vấn",appointmentDate:"2026-08-01",appointmentTime:"09:00",durationMinutes:90,amount:1,bookingType:"student"};
   const result = validateSupportBookingInput(input,now,"consultation");
-  assert.equal(result.amount,2700000);
+  assert.equal(result.amount,500000);
   assert.equal(result.bookingType,"consultation");
   assert.equal(result.endsAt,"2026-08-01T03:30:00.000Z");
   assert.throws(() => validateSupportBookingInput({...input,appointmentTime:"11:30"},now,"consultation"),/khung giờ/i);

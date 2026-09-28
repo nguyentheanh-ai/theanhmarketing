@@ -138,11 +138,11 @@ test("booking API admits guests but never trusts their claimed student identity 
   for(const user of [null,{email:"unpaid@example.com",user_metadata:{isStudent:true}}]) {
     const response=await makeRoute(user,false).POST(request());
     assert.equal(response.status,201);
-    const data=await response.json();assert.equal(data.appointment.amount,2700000);assert.equal(data.appointment.bookingType,"consultation");
+    const data=await response.json();assert.equal(data.appointment.amount,500000);assert.equal(data.appointment.bookingType,"consultation");
   }
   const response=await makeRoute({email:"student@example.com"},true).POST(request());
   assert.equal(response.status,201);
-  const data=await response.json();assert.equal(data.appointment.amount,2000000);assert.equal(data.appointment.customerName,"Verified student");
+  const data=await response.json();assert.equal(data.appointment.amount,500000);assert.equal(data.appointment.customerName,"Verified student");
   const missingPhone=await makeRoute({email:"student@example.com"},true,"").POST(request());
   const completed=await missingPhone.json();
   assert.equal(missingPhone.status,201);
@@ -183,7 +183,7 @@ test("checkout persists the selected price in order, item and SePay QR", async (
       },
     }) },
   });
-  for (const [bookingType,durationMinutes,amount] of [["student",30,1000000],["student",60,1500000],["student",90,2000000],["student",120,2500000],["consultation",60,2000000],["consultation",90,2700000],["consultation",120,3400000]]) {
+  for (const [bookingType,durationMinutes,amount] of [["student",30,500000],["student",60,500000],["student",90,500000],["student",120,500000],["consultation",60,500000],["consultation",90,500000],["consultation",120,500000]]) {
     const result = await service.createSupportPaymentOrder({bookingType,durationMinutes,studentName:"Test",email:"test@example.com",phone:"0900000000",expiresAt:"2026-09-05T03:00:00Z"});
     const row = inserted.at(-1);
     assert.equal(row.amount,amount);
@@ -269,7 +269,7 @@ test("verified admin without a paid order gets the three-step page and trusted i
     assert.equal(response.status, 201);
     const { appointment } = await response.json();
     assert.equal(appointment.bookingType, isAdmin ? "student" : "consultation");
-    assert.equal(appointment.amount, isAdmin ? 1500000 : 2000000);
+    assert.equal(appointment.amount, isAdmin ? 500000 : 500000);
     assert.equal(appointment.email, isAdmin ? admin.email : body.email);
     assert.equal(appointment.customerName, isAdmin ? "Admin test" : body.customerName);
     assert.equal(appointment.phone, isAdmin ? admin.user_metadata.phone : body.phone);

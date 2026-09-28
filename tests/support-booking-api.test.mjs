@@ -12,7 +12,7 @@ test("support booking service reserves a slot and creates the server-priced dura
   const orders = read("services/orderService.ts");
 
   assert.match(service, /validateSupportBookingInput\(input, now, bookingType\)/);
-  assert.match(service, /\.rpc\("reserve_support_booking_v2"/);
+  assert.match(service, /\.rpc\("reserve_support_booking_v3"/);
   assert.match(service, /createSupportPaymentOrder/);
   assert.match(service, /status: "cancelled"/);
   assert.match(service, /SUPPORTDEMO/);
@@ -21,8 +21,8 @@ test("support booking service reserves a slot and creates the server-priced dura
   assert.match(orders, /getSupportBookingQuote\(input.bookingType, input.durationMinutes\)/);
   assert.match(orders, /amount: quote.amount/);
   assert.match(orders, /expires_at: input\.expiresAt/);
-  assert.match(constants, /SUPPORT_PRICE_VND = 1_000_000/);
-  assert.match(constants, /SUPPORT_PRICE_LABEL = "1\.000\.000đ"/);
+  assert.match(constants, /SUPPORT_PRICE_VND = 500_000/);
+  assert.match(constants, /SUPPORT_PRICE_LABEL = "500\.000đ"/);
 });
 
 test("support booking price migration preserves old rows and prices new bookings at 1.000.000đ", () => {

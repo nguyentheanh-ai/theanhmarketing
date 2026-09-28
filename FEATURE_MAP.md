@@ -847,3 +847,8 @@ DONE theo yêu cầu xử lý trong phiên. Runtime9167035, productiondpl_4DWcFd
 Cùng6HTTP bài:median2435,5→778ms(-68,1%),save4576→1057ms,dashboard7574→627ms (save/dashboard1mẫu). PCclick→heading92/1008/63/128ms gồm cache/prefetch. Browser học viên thường lưu bài3→bài2→bài3 giữ hoàn thành/9%;mobile320/390/768 đủ23bài/không overflow/chọn bài/video390phát. Ba landingSHA nguyên; không error/fatal cửa sổ18:13–18:23UTC.
 Không còn chờ người dùng test mật khẩu: Auth API đổi/đăng nhập lại đã kiểm. Giới hạn: chưa inbox/open proof, chưa submit form mật khẩu bằng browser, chưa điện thoại vật lý; mẫu đo nhỏ.
 Báo cáo: worktrees/learning-smooth-20260926/docs/LEARNING_PERFORMANCE_V2_20260926.md. Evidence: reports/learning-smooth-20260926/final-v2.json. Thay thế trạng thái chưa deploy/audit findings còn mở ở trên.
+
+
+## 28/09/2026 — Support 500K và popup: LOCAL_VERIFIED
+
+Xem `docs/SUPPORT_500K_POPUP_20260928.md`. Migration/app chỉ ở feature; chưa production.123tests +TS/lint/build108 đạt. Giữ lịch/đơn cũ và giới hạn xếp lịch.

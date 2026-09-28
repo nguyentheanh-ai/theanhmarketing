@@ -221,7 +221,7 @@ export async function reserveSupportBooking(input: unknown, now = new Date(), bo
   if (!supabase) throw new Error("Chưa cấu hình dữ liệu lịch hỗ trợ.");
   const holdExpiresAt = new Date(now.getTime() + SUPPORT_HOLD_MINUTES * 60_000).toISOString();
 
-  const reservation = await supabase.rpc("reserve_support_booking_v2", {
+  const reservation = await supabase.rpc("reserve_support_booking_v3", {
     p_customer_name: bookingInput.customerName,
     p_email: bookingInput.email,
     p_phone: bookingInput.phone,

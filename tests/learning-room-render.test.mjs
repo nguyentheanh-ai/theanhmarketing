@@ -10,7 +10,9 @@ function read(file,mocks){const code=ts.transpileModule(readFileSync(file,'utf8'
 function render(){
  const Link=({children,prefetch,...props})=>React.createElement('a',props,children);
  const styles=new Proxy({},{get:(_,key)=>key==='__esModule'?false:String(key)});
+ const {SupportBookingPrompt}=read('components/course/support-booking-prompt.tsx',{'next/link':Link,'./support-booking-prompt.module.css':styles,'@/lib/support-booking/constants':{SUPPORT_PRICE_LABEL:'500.000đ'}});
  const {LearningRoom}=read('components/course/learning-room.tsx',{
+ './support-booking-prompt':{SupportBookingPrompt},
  'next/navigation':{useRouter:()=>({refresh(){}})},'next/link':Link,'./lesson-link':{LessonLink:Link},'./learning-room.module.css':styles,
  '@/components/auth/sign-out-button':{SignOutButton:()=>null},'@/components/site/brand-mark':{BrandMark:()=>null},
  '@/components/course/course-reference-library':{CourseReferenceLibrary:()=>{throw new Error('Heavy reference library should not mount until opened')}},

@@ -1,12 +1,12 @@
 export const SUPPORT_PRODUCT_SLUG = "support-session-30m";
 export const SUPPORT_PRODUCT_TITLE = "Buổi hỗ trợ 1:1 cùng The Anh - 30 phút";
-export const SUPPORT_PRICE_VND = 1_000_000;
-export const SUPPORT_PRICE_LABEL = "1.000.000đ";
+export const SUPPORT_PRICE_VND = 500_000;
+export const SUPPORT_PRICE_LABEL = "500.000đ";
 export const SUPPORT_DURATION_MINUTES = 30;
 export const SUPPORT_MAX_DURATION_MINUTES = 120;
 export const SUPPORT_BOOKING_PLANS = {
-  student: { title: "Hỗ trợ học viên", baseMinutes: 30, basePrice: SUPPORT_PRICE_VND, extraHalfHourPrice: 500_000 },
-  consultation: { title: "Tư vấn 1:1", baseMinutes: 60, basePrice: 2_000_000, extraHalfHourPrice: 700_000 },
+  student: { title: "Hỗ trợ học viên", baseMinutes: 30, basePrice: SUPPORT_PRICE_VND, extraHalfHourPrice: 0 },
+  consultation: { title: "Tư vấn 1:1", baseMinutes: 60, basePrice: SUPPORT_PRICE_VND, extraHalfHourPrice: 0 },
 } as const;
 export type SupportBookingType = keyof typeof SUPPORT_BOOKING_PLANS;
 export const SUPPORT_HOLD_MINUTES = 20;

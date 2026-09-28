@@ -189,7 +189,7 @@ export function SupportBookingForm({ today, bookableDays, customer, isAuthentica
                   <span className="block text-sm font-bold">{minutes} phút</span><span className="mt-1 block text-xs font-semibold text-blue-700">{amountLabel(getSupportBookingQuote(bookingType, minutes).amount)}</span>
                 </label>)}
               </div>
-              <p className="mt-2 text-xs leading-5 text-slate-500">{plan.baseMinutes} phút đầu {amountLabel(plan.basePrice)} · Thêm 30 phút: {amountLabel(plan.extraHalfHourPrice)}</p>
+              <p className="mt-2 text-xs leading-5 text-slate-500">Đồng giá {amountLabel(plan.basePrice)}/buổi cho mọi thời lượng.</p>
             </fieldset>}
             <div className="grid gap-6 border-t border-slate-100 pt-5 sm:grid-cols-[1.1fr_1fr]">
               <section aria-label="Chọn ngày">

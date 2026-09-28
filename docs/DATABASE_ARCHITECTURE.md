@@ -449,3 +449,8 @@ Anh xác nhận “ổn, deloy đi em”. Migration optional note đã áp dụn
 
 ## 12/09/2026 — Supabase health repair
 Database hardening đã áp dụng và đọc lại; Auth refresh/timeout/Ebook evidence scope đã kiểm thử và build, chờ phát hành source. Chi tiết: docs/SUPABASE_HEALTH_20260912.md. Giữ commerce, entitlement và tracking.
+
+
+## 28/09/2026 — Support 500K và popup: LOCAL_VERIFIED
+
+Xem `docs/SUPPORT_500K_POPUP_20260928.md`. Migration/app chỉ ở feature; chưa production.123tests +TS/lint/build108 đạt. Giữ lịch/đơn cũ và giới hạn xếp lịch.

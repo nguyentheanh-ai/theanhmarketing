@@ -25,11 +25,18 @@ test("duration migration executes on PostgreSQL with preserved history, overlap 
       await assert.rejects(db.query("update public.support_bookings set note=null where id=$1", [historical.id]), /null value/);
       await db.query("update public.support_bookings set note=$1 where id=$2", [historical.note, historical.id]);
     });
+    await db.exec(`insert into public.support_bookings(customer_name,email,phone,topic,note,appointment_date,appointment_time,starts_at,ends_at,hold_expires_at,status,amount,duration_minutes,booking_type)
+      values ('Test','test@example.com','0900000000','test','','2020-01-02','09:00','2020-01-02T02:00Z','2020-01-02T02:30Z','2020-01-02T01:00Z','cancelled',1000000,30,'student'),
+      ('Test','test@example.com','0900000000','test','','2020-01-03','09:00','2020-01-03T02:00Z','2020-01-03T03:30Z','2020-01-03T01:00Z','cancelled',2700000,90,'consultation');`);
+    const historyBefore = (await db.query("select id,amount,status from public.support_bookings order by id")).rows;
+    await db.exec(fs.readFileSync("supabase/migrations/20260928085946_support_booking_flat_500k.sql", "utf8"));
+    assert.deepEqual((await db.query("select id,amount,status from public.support_bookings order by id")).rows, historyBefore);
+    await assert.rejects(db.exec("update public.support_bookings set amount=1 where appointment_date='2020-01-03'"), /support_bookings_amount_check/);
     const { rows } = await db.query("select ((now() at time zone 'Asia/Ho_Chi_Minh')::date + 3)::text as day");
     let date = new Date(rows[0].day + "T00:00:00Z");
     if (date.getUTCDay() === 0) date.setUTCDate(date.getUTCDate() + 1);
     const day = date.toISOString().slice(0,10);
-    const reserve = async (minutes, type, time = "09:00", date = day) => (await db.query(`select * from public.reserve_support_booking_v2(
+    const reserve = async (minutes, type, time = "09:00", date = day) => (await db.query(`select * from public.reserve_support_booking_v3(
       'Test','test@example.com','0900000000','test','Testing a support booking', $1::date,$2::time,
       ($1::date+$2::time) at time zone 'Asia/Ho_Chi_Minh',
       (($1::date+$2::time) at time zone 'Asia/Ho_Chi_Minh') + $3::integer * interval '1 minute',
@@ -39,11 +46,11 @@ test("duration migration executes on PostgreSQL with preserved history, overlap 
     await t.test("historical amounts and private RPC grants remain intact", async () => {
       const row=(await db.query("select amount,duration_minutes,booking_type from public.support_bookings where appointment_date='2020-01-01'")).rows[0];
       assert.equal(Number(row.amount),500000);assert.equal(row.duration_minutes,30);assert.equal(row.booking_type,"student");
-      const grants=(await db.query("select has_function_privilege('anon','public.reserve_support_booking_v2(text,text,text,text,text,date,time,timestamptz,timestamptz,timestamptz,integer,text)','execute') as anon, has_function_privilege('authenticated','public.reserve_support_booking_v2(text,text,text,text,text,date,time,timestamptz,timestamptz,timestamptz,integer,text)','execute') as authenticated, has_function_privilege('service_role','public.reserve_support_booking_v2(text,text,text,text,text,date,time,timestamptz,timestamptz,timestamptz,integer,text)','execute') as service")).rows[0];
+      const grants=(await db.query("select has_function_privilege('anon','public.reserve_support_booking_v3(text,text,text,text,text,date,time,timestamptz,timestamptz,timestamptz,integer,text)','execute') as anon, has_function_privilege('authenticated','public.reserve_support_booking_v3(text,text,text,text,text,date,time,timestamptz,timestamptz,timestamptz,integer,text)','execute') as authenticated, has_function_privilege('service_role','public.reserve_support_booking_v3(text,text,text,text,text,date,time,timestamptz,timestamptz,timestamptz,integer,text)','execute') as service")).rows[0];
       assert.deepEqual(grants,{anon:false,authenticated:false,service:true});
     });
     await t.test("database calculates every price and stores the entire duration", async () => {
-      for (const [type,minutes,amount] of [["student",30,1000000],["student",60,1500000],["student",90,2000000],["student",120,2500000],["consultation",60,2000000],["consultation",90,2700000],["consultation",120,3400000]]) {
+      for (const [type,minutes,amount] of [["student",30,500000],["student",60,500000],["student",90,500000],["student",120,500000],["consultation",60,500000],["consultation",90,500000],["consultation",120,500000]]) {
         const row=await reserve(minutes,type);
         assert.equal(Number(row.amount),amount);assert.equal(row.duration_minutes,minutes);
         assert.equal(new Date(row.ends_at)-new Date(row.starts_at),minutes*60000);

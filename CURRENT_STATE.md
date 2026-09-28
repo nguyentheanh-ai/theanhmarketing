@@ -705,3 +705,17 @@ DONE theo yêu cầu xử lý trong phiên. Runtime9167035, productiondpl_4DWcFd
 Cùng6HTTP bài:median2435,5→778ms(-68,1%),save4576→1057ms,dashboard7574→627ms (save/dashboard1mẫu). PCclick→heading92/1008/63/128ms gồm cache/prefetch. Browser học viên thường lưu bài3→bài2→bài3 giữ hoàn thành/9%;mobile320/390/768 đủ23bài/không overflow/chọn bài/video390phát. Ba landingSHA nguyên; không error/fatal cửa sổ18:13–18:23UTC.
 Không còn chờ người dùng test mật khẩu: Auth API đổi/đăng nhập lại đã kiểm. Giới hạn: chưa inbox/open proof, chưa submit form mật khẩu bằng browser, chưa điện thoại vật lý; mẫu đo nhỏ.
 Báo cáo: worktrees/learning-smooth-20260926/docs/LEARNING_PERFORMANCE_V2_20260926.md. Evidence: reports/learning-smooth-20260926/final-v2.json. Thay thế trạng thái chưa deploy/audit findings còn mở ở trên.
+
+
+## 28/09/2026 — Đặt lịch đồng giá 500K và popup khi học (LOCAL_VERIFIED)
+
+App: theanh-main. Worktree `worktrees/support-500k-popup-20260928`, branch `feat/support-500k-popup-20260928`, base `d6db01a`. Theo yêu cầu “toàn bộ là 500K”, mọi loại lịch học viên/khách ngoài và thời lượng hợp lệ đều 500.000đ/buổi, không phụ thu; giữ thời lượng/điều kiện xếp lịch. Đồng bộ constants, wizard, server quote/order/QR và migration `20260928085946_support_booking_flat_500k.sql`. Migration chưa áp dụng production; giữ nguyên lịch và đơn cũ, grants/RLS/khóa chống trùng.
+
+Popup trong LearningRoom: “Bạn gặp vấn đề chưa thể giải quyết?” + “Đặt lịch hỗ trợ 1 kèm 1 ngay”, giá500K. Sau khoảng3phút tab học hiển thị, giữ bộ đếm khi đổi bài, tối đa1lần/24giờ theo trình duyệt, trì hoãn fullscreen, đóng/Escape/tự ẩn45giây, mở đặt lịch tab mới. Có reduced-motion, không tự focus hoặc dừng video. Nếu browser chặn storage, bộ nhớ giữ giới hạn trong lần tải ứng dụng hiện tại; reload không bảo đảm giới hạn.
+
+Kiểm tra:50support/SQL/popup/wizard +34learning/calendar/performance +39revenue-critical =123tests PASS,0skip; TypeScript/scoped ESLint/diff PASS; webpack build108/108 PASS. Đã đọc hàm reserve v2 production chỉ đọc và đối chiếu source. SQL thực thi trong PGlite cô lập xác minh7lựa chọn giá, lịch cũ500K/1M/2.7M, quyền RPC, chống trùng và lịch Chủ nhật. Không tạo đơn/email/lịch thật. Chưa visual QA trong browser, chưa production migration/deploy. Managed UI policy không đổi.
+
+Bằng chứng: `reports/support-500k/{tests.log,learning-tests.log,prebuild.log,typecheck.log,lint.log,build.log}` trong worktree. Bước tiếp: anh duyệt phát hành; tích hợp canonical, chạy doctor/preflight và phối hợp migration+app để tránh cửa sổ giá cũ/mới lệch; đọc lại production amount/grants và smoke landing. Không tự phát hành từ feature root.
+
+
+28/09: Anh đã duyệt phát hành và đổi mốc popup thành khoảng3phút. Giữ một lần/24giờ; đang chuẩn bị release.

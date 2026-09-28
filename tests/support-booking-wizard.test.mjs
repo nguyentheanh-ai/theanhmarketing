@@ -83,14 +83,14 @@ test("booking wizard preserves data, skips verified student contacts and submits
       await chooseDate(); await click('09:00');
       assert.equal(requests.length, 0);
       await submit(); assert.match(heading(), /Kiểm tra và thanh toán/);
-      assert.match(content(), /2.000.000đ/);
+      assert.match(content(), /500.000đ/);
       await submit();
       assert.equal(requests.length, 1);
       assert.deepEqual(requests[0], { url: "/api/support-bookings", body: { topic: "ai-agent", note: "", appointmentDate: "2026-09-09", appointmentTime: "09:00", durationMinutes: 60, phone: "0900000000", customerName: "Guest test", email: "test@example.com" } });
       assert.equal(globalThis.window.location.href, "/thanh-toan/UNITTEST");
       await act(() => view.unmount());
     });
-    await t.test("students pay one million without duration choices; calendar spans months and excludes Sundays", async () => {
+    await t.test("students pay 500K without duration choices; calendar spans months and excludes Sundays", async () => {
       await start({ customerName: "Student test", email: "student@example.com", phone: "0900000000" });
       assert.match(heading(), /Bạn cần hướng dẫn/);
       assert.equal(view.root.findByType("nav").findAllByType("li").length, 3);
@@ -103,10 +103,10 @@ test("booking wizard preserves data, skips verified student contacts and submits
       assert.ok(sundays.length > 0 && sundays.every((node) => node.props.disabled));
       await chooseDate("2026-09-10"); await click("09:00");
       assert.equal(field("durationMinutes"), undefined);
-      assert.doesNotMatch(content(), /Thời lượng|30 phút|60 phút|90 phút|120 phút|500.000đ/);
-      assert.match(content(), /1.000.000đ/);
+      assert.doesNotMatch(content(), /Thời lượng|30 phút|60 phút|90 phút|120 phút|Thêm 30 phút/);
+      assert.match(content(), /500.000đ/);
       await submit();
-      assert.match(content(), /1.000.000đ/);
+      assert.match(content(), /500.000đ/);
       assert.doesNotMatch(content(), /30 phút/);
       await click("Sửa lịch");
       await act(() => view.root.findAllByType("button").find((node) => node.props["aria-label"] === "Tháng sau").props.onClick());
