@@ -454,3 +454,16 @@ Database hardening đã áp dụng và đọc lại; Auth refresh/timeout/Ebook 
 ## 28/09/2026 — Support 500K và popup: LOCAL_VERIFIED
 
 Xem `docs/SUPPORT_500K_POPUP_20260928.md`. Migration/app chỉ ở feature; chưa production.123tests +TS/lint/build108 đạt. Giữ lịch/đơn cũ và giới hạn xếp lịch.
+
+
+## 28/09/2026 — Hỗ trợ500K / popup3phút đã LIVE
+
+Anh đã duyệt phát hành và đổi mốc từ10phút xuống3phút. Runtime commit4a5baea431828d60274fb7c1ff3fb2cf32541b7b; preview dpl_HQ4GYWU5rqrhsGQxB1srgS3dtkPp READY; production dpl_5r8VWfyXCja2v7JHoP98oLvXMigG READY và gắn www/apex. Canonical doctor/preflight/remote đạt. Rollback ứng dụng: dpl_AffLpHSB6Lken1KYppVymtQrSh2B.
+
+Mọi loại lịch và thời lượng hợp lệ giá500.000đ/buổi. Migration20260928091433 áp dụng thành công, đồng bộ tên file với lịch sử production. Bổ sung reserve_support_booking_v3 security invoker/service_role-only; giữ v2 nguyên để chuyển bản/rollback không lệch hợp đồng. Bảy lựa chọn được thực thi trên production trong giao dịch rollback: đều500K, không để lại lịch thử; checksum số tiền lịch cũ và định nghĩa v2 không đổi. Không tạo đơn/thanh toán/email thật.
+
+Popup: sau khoảng3phút học trên tab hiển thị, giữ bộ đếm đổi bài, một lần/24giờ theo trình duyệt, có đóng/Escape, tựẩn45giây, trì hoãn fullscreen, mở lịch ở tab mới.123tests phạm vi đạt,0skip; SQL final9/9, TypeScript/scoped lint/build108 và diff đạt.18URL live HTTP200,14URL landing tĩnh giữ SHA. Client bundle trang đặt lịch live xác nhận cả hai basePrice500K và extraHalfHourPrice0. Không error/fatal ở production trong truy vấn09:08–09:18UTC.
+
+Giới hạn: chưa authenticated visualQA popup hoặc thanh toán thật. Popup xác minh bằng tests+đúng commit production; bundle webpack local không cùng tên với remote, truy vấn local-path trả404 và Vercel deployment files trả404 nên không coi là bằng chứng mã popup live trực tiếp. Không đổi policy trình duyệt. Các thông báo advisor hiện tại ngoài hàm v3 không được sửa trong phạm vi này; grants v3 đã đọc lại.
+
+Handoff: docs/SUPPORT_500K_POPUP_20260928.md; evidence trong worktree reports/support-500k/{release-tests.log,canonical-build.log,sql-final.log,db-verification.json,live-after.json,live-chunks.json,production-inspect.log,release.json}. Trạng thái LIVE thay thế LOCAL_VERIFIED/chưa phát hành/10phút ở trên. Không còn bước deploy chờ duyệt.
