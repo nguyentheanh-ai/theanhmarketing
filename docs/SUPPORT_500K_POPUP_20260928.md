@@ -4,7 +4,7 @@ Trạng thái: LOCAL_VERIFIED, chưa phát hành.
 
 ## Phạm vi và quyết định
 
-theanh-main. Worktree `worktrees/support-500k-popup-20260928`, branch `feat/support-500k-popup-20260928`, base `d6db01a`. Theo yêu cầu “toàn bộ là 500K”, mọi loại lịch học viên/khách ngoài và thời lượng hợp lệ đều 500.000đ/buổi, không phụ thu; giữ thời lượng/điều kiện xếp lịch. Đồng bộ constants, wizard, server quote/order/QR và migration `20260928085946_support_booking_flat_500k.sql`. Migration chưa áp dụng production; giữ nguyên lịch và đơn cũ, grants/RLS/khóa chống trùng.
+theanh-main. Worktree `worktrees/support-500k-popup-20260928`, branch `feat/support-500k-popup-20260928`, base `d6db01a`. Theo yêu cầu “toàn bộ là 500K”, mọi loại lịch học viên/khách ngoài và thời lượng hợp lệ đều 500.000đ/buổi, không phụ thu; giữ thời lượng/điều kiện xếp lịch. Đồng bộ constants, wizard, server quote/order/QR và migration `20260928091433_support_booking_flat_500k.sql`. Migration chưa áp dụng production; giữ nguyên lịch và đơn cũ, grants/RLS/khóa chống trùng.
 
 Popup trong LearningRoom: “Bạn gặp vấn đề chưa thể giải quyết?” + “Đặt lịch hỗ trợ 1 kèm 1 ngay”, giá500K. Sau khoảng3phút tab học hiển thị, giữ bộ đếm khi đổi bài, tối đa1lần/24giờ theo trình duyệt, trì hoãn fullscreen, đóng/Escape/tự ẩn45giây, mở đặt lịch tab mới. Có reduced-motion, không tự focus hoặc dừng video. Nếu browser chặn storage, bộ nhớ giữ giới hạn trong lần tải ứng dụng hiện tại; reload không bảo đảm giới hạn.
 
@@ -21,7 +21,7 @@ Workspace registry, WORKSPACE_RULES, PROJECT_REGISTRY, computer-use-policy, ACTI
 
 - lib/support-booking/constants.ts; components/support-booking/support-booking-form.tsx.
 - components/course/learning-room.tsx; support-booking-prompt.tsx và CSS module.
-- supabase/migrations/20260928085946_support_booking_flat_500k.sql.
+- supabase/migrations/20260928091433_support_booking_flat_500k.sql.
 - tests/support-booking*.test.mjs và learning-room-render.test.mjs.
 
 ## Phát hành và giới hạn

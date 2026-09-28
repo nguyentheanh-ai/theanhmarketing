@@ -29,7 +29,7 @@ test("duration migration executes on PostgreSQL with preserved history, overlap 
       values ('Test','test@example.com','0900000000','test','','2020-01-02','09:00','2020-01-02T02:00Z','2020-01-02T02:30Z','2020-01-02T01:00Z','cancelled',1000000,30,'student'),
       ('Test','test@example.com','0900000000','test','','2020-01-03','09:00','2020-01-03T02:00Z','2020-01-03T03:30Z','2020-01-03T01:00Z','cancelled',2700000,90,'consultation');`);
     const historyBefore = (await db.query("select id,amount,status from public.support_bookings order by id")).rows;
-    await db.exec(fs.readFileSync("supabase/migrations/20260928085946_support_booking_flat_500k.sql", "utf8"));
+    await db.exec(fs.readFileSync("supabase/migrations/20260928091433_support_booking_flat_500k.sql", "utf8"));
     assert.deepEqual((await db.query("select id,amount,status from public.support_bookings order by id")).rows, historyBefore);
     await assert.rejects(db.exec("update public.support_bookings set amount=1 where appointment_date='2020-01-03'"), /support_bookings_amount_check/);
     const { rows } = await db.query("select ((now() at time zone 'Asia/Ho_Chi_Minh')::date + 3)::text as day");
