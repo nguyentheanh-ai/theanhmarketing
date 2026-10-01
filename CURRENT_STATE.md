@@ -732,3 +732,19 @@ Popup: sau khoảng3phút học trên tab hiển thị, giữ bộ đếm đổi
 Giới hạn: chưa authenticated visualQA popup hoặc thanh toán thật. Popup xác minh bằng tests+đúng commit production; bundle webpack local không cùng tên với remote, truy vấn local-path trả404 và Vercel deployment files trả404 nên không coi là bằng chứng mã popup live trực tiếp. Không đổi policy trình duyệt. Các thông báo advisor hiện tại ngoài hàm v3 không được sửa trong phạm vi này; grants v3 đã đọc lại.
 
 Handoff: docs/SUPPORT_500K_POPUP_20260928.md; evidence trong worktree reports/support-500k/{release-tests.log,canonical-build.log,sql-final.log,db-verification.json,live-after.json,live-chunks.json,production-inspect.log,release.json}. Trạng thái LIVE thay thế LOCAL_VERIFIED/chưa phát hành/10phút ở trên. Không còn bước deploy chờ duyệt.
+
+
+## 01/10/2026 — Dashboard Sale (LOCAL_VERIFIED)
+
+Project theanh-main. Feature `worktrees/sales-dashboard-20261001`, branch `feat/sales-dashboard-20261001`, base c40ecc1. Thêm `/admin/crm-v2/sales` và menu riêng: lọc ngày Việt Nam/ngày ghi nhận hoặc cập nhật; tìm tên-email-SĐT-mã đơn, sản phẩm/nguồn/trạng thái/liên hệ; KPI theo lọc; copy liên hệ từng dòng/hàng loạt không trùng; chọn khách, CSV, phân trang, thẻ mobile và hồ sơ chi tiết. Dùng service strict và quyền owner/editor hiện có; không sửa dữ liệu, commerce, Auth/access, landing hay schema. Không có role sale mới.
+
+72/72 tests, TypeScript/scoped lint/build108/diff đạt; HTTP local guest307 về đúng admin login, private/no-store. Full lint119 lỗi nằm ở8file cũ ngoài phạm vi. Chưa authenticated visual QA/live data/deploy; managed UI policy giữ nguyên. Preview HTML tĩnh dùng dữ liệu minh họa, không phải sản phẩm live. Chi tiết nguồn/file/context/kiểm thử/handoff: `docs/SALES_DASHBOARD_20261001.md` trong feature. Bước tiếp: owner duyệt production rồi tích hợp canonical và preflight, không deploy từ feature.
+
+
+### 01/10/2026 — Dashboard Sale bản sửa 2 (LOCAL_VERIFIED, chưa deploy)
+
+Theo phản hồi mới nhất: gom lọc vào thanh chung đầu danh sách, bỏ KPI/card lọc riêng. Chính xác6cột Ngày–Tên–SĐT–Tình trạng–Sản phẩm–Email; sản phẩm viết tắt. Mỗi khách chỉ Paid xanh nếu có đơn đã trả, còn lại Unpaid đỏ (gồm khách chưa đặt đơn); khách có cả đơn paid và chưa trả vẫn chỉ Paid. CSV/bộ lọc đồng bộ quy tắc; source/auth/schema không đổi.34tests sale/CRM/role/UI + scoped lint + TypeScript/build108/diff đạt. Preview tĩnh cùng file đã cập nhật; chưa visualQA có đăng nhập/live/deploy. Thay thế mô tả2trạng thái đồng thời, KPI và bộ lọc tách riêng trong bản đầu. Anh chưa duyệt phát hành. Handoff: worktrees/sales-dashboard-20261001/docs/SALES_DASHBOARD_20261001.md.
+
+
+### 01/10/2026 — Đã duyệt phát hành, mặc định Hôm nay
+Anh xác nhận “bộ lọc mặc định là hôm nay, oke rồi đưa lên web đi”. Default from/to cùng ngày hiện tại Asia/Ho_Chi_Minh; vẫn giữ lựa chọn Toàn bộ/khoảng tùy chọn. Đang kiểm tra và tích hợp canonical; trạng thái chưa deploy bên trên là lịch sử trước yêu cầu này.

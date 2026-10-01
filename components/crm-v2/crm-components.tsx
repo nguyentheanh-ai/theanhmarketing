@@ -39,6 +39,7 @@ import type { CrmEvent, CrmListQuery, CrmTableColumn, KpiMetric } from "@/lib/cr
 
 const primaryNavItems = [
   { href: "/admin/crm-v2", label: "Tổng quan", icon: Gauge, exact: true },
+  { href: "/admin/crm-v2/sales", label: "Dashboard Sale", icon: Users },
   { href: "/admin/crm-v2/customers", label: "Khách hàng & học viên", icon: Users },
   { href: "/admin/crm-v2/courses", label: "Khóa học", icon: BookOpen },
   { href: "/admin/crm-v2/support-bookings", label: "Lịch hỗ trợ", icon: CalendarDays },
@@ -62,7 +63,7 @@ const advancedNavItems = [
   { href: "/admin/database", label: "Vận hành dữ liệu", icon: Settings2 },
 ] as const;
 
-const editorPaths = new Set(["/admin/crm-v2/customers", "/admin/crm-v2/settings", "/admin/crm-v2/students", "/admin/crm-v2/courses", "/admin/cms", "/admin/bai-viet", "/admin/tai-lieu", "/admin/feedback"]);
+const editorPaths = new Set(["/admin/crm-v2/sales", "/admin/crm-v2/customers", "/admin/crm-v2/settings", "/admin/crm-v2/students", "/admin/crm-v2/courses", "/admin/cms", "/admin/bai-viet", "/admin/tai-lieu", "/admin/feedback"]);
 function visibleNav(items: readonly CrmNavItem[], role: AdminRole) {
   return items.filter((item) => role === "owner" || editorPaths.has(item.href));
 }
