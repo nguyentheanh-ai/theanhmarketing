@@ -2409,3 +2409,14 @@ Theo phản hồi mới nhất: gom lọc vào thanh chung đầu danh sách, b�
 
 ### 01/10/2026 — Đã duyệt phát hành, mặc định Hôm nay
 Anh xác nhận “bộ lọc mặc định là hôm nay, oke rồi đưa lên web đi”. Default from/to cùng ngày hiện tại Asia/Ho_Chi_Minh; vẫn giữ lựa chọn Toàn bộ/khoảng tùy chọn. Đang kiểm tra và tích hợp canonical; trạng thái chưa deploy bên trên là lịch sử trước yêu cầu này.
+
+
+## 01/10/2026 — Dashboard Sale đã LIVE, mặc định Hôm nay
+
+Anh đã duyệt đưa lên website. Runtime `fbd273fe958c5d09e7fa6389beadf67c8f005074`; preview `dpl_5s9d6bXJhmwoYsctbi2NK6R28wrz` READY; production `dpl_BXUTVvxDWgebP3NXj8VMRzVdALUj` READY, www/apex đúng alias. URL: https://www.theanhmarketing.com/admin/crm-v2/sales . Rollback: `dpl_5r8VWfyXCja2v7JHoP98oLvXMigG`.
+
+Bộ lọc mặc định Hôm nay theo Asia/Ho_Chi_Minh; thanh lọc chung đầu bảng;6cột Ngày–Tên–SĐT–Tình trạng–Sản phẩm viết tắt–Email. Chỉ Paid xanh/Unpaid đỏ theo có/không có đơn đã trả. Giữ quyền owner/editor; không thêm role/tài khoản sale, không sửa dữ liệu khách/payment/email/access/landing/schema.
+
+Canonical doctor/remote/preflight đạt;74tests, scoped lint, TypeScript và build108 đạt. Full lint119 lỗi cũ đã ghi ở local, không phải scoped lint.28URL kiểm tra sau phát hành:7HTML landing www giữ SHA;14apex redirect307 sang www giữ nguyên cả trước/sau; Sale www từ404 thành307 về admin login với next đúng. Đường quản lý khách/học viên giữ guard. Không có bản ghi error/fatal trong truy vấn deployment production10phút sau release. Đã xác minh commit production có default today; chưa authenticated visualQA/đối soát dữ liệu thật, không coi guest redirect là nghiệm thu UI. Không tạo đơn/email/giao dịch thật.
+
+Evidence tại `worktrees/sales-dashboard-20261001/reports/sales-dashboard-20261001/`: release.json, release-tests.log, canonical-build.log, production-inspect.log, live-before.json, live-after.json, vercel-evidence.json. Trạng thái LIVE này thay thế các mục local/chưa deploy/chờ duyệt trước đó. Không còn bước triển khai chờ anh duyệt.
