@@ -1,0 +1,571 @@
+[
+  {
+    "schema": "crm_v2",
+    "table": "audit_logs",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "contact_tags",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "contacts",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "coupons",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "course_progress",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "crm_daily_metrics",
+    "primary_key": [
+      "metric_date"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "crm_email_metrics",
+    "primary_key": [
+      "metric_date",
+      "campaign_id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "crm_events",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "crm_pipeline_metrics",
+    "primary_key": [
+      "metric_date",
+      "stage"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "email_campaigns",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "email_events",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "email_sends",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "email_suppression_list",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "email_templates",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "enrollments",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "integration_accounts",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "lead_score_events",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "leads",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "legacy_id_map",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "migration_runs",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "notes",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "orders",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "payments",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "refunds",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "segment_memberships",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "segment_rules",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "segments",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "student_notes",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "support_tickets",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "tags",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "tasks",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "webhook_events",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "workflow_edges",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "workflow_nodes",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "workflow_runs",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "workflow_step_runs",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "workflow_versions",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "crm_v2",
+    "table": "workflows",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "accounting_daily_report_runs",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "activity_logs",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "admin_ad_costs",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "admin_deleted_students",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "admin_student_provisioning_operations",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "admin_users",
+    "primary_key": [
+      "email"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "app_settings",
+    "primary_key": [
+      "key"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "automation_flows",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "automation_runs",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "blog_posts",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "checkout_abuse_blocks",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "checkout_abuse_events",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "click_events",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "coupons",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "course_modules",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "course_resources",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "courses",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "email_campaign_recipients",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "email_campaigns",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "email_contacts",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "email_events",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "email_logs",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "email_templates",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "landing_pages",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "lead_activities",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "lead_email_logs",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "lead_notes",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "leads",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "lesson_comments",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "lesson_resources",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "lesson_tasks",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "lessons",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "orders",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "payment_remarketing_runs",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "resources",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "site_settings",
+    "primary_key": [
+      "key"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "spam_logs",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "student_lesson_task_progress",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "support_bookings",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "support_busy_dates",
+    "primary_key": [
+      "busy_date"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "telegram_business_report_runs",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "telegram_meta_campaign_hourly_snapshots",
+    "primary_key": [
+      "id"
+    ]
+  },
+  {
+    "schema": "public",
+    "table": "testimonials",
+    "primary_key": [
+      "id"
+    ]
+  }
+]
