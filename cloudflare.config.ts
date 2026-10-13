@@ -9,6 +9,7 @@ export default defineConfig({
     assets: { notFoundHandling: "none" },
     env: {
       ASSETS: bindings.assets(),
+      AUTH_GUARD_ENABLED: bindings.text("true"),
     },
   }),
 });
