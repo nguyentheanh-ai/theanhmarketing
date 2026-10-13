@@ -82,14 +82,50 @@ function rangeForHeader(header: string | null, size: number) {
   return { offset: start, length: Math.min(end, size - 1) - start + 1 };
 }
 
-function privateHeaders(meta?: PrivateR2Object) {
+function objectHeaders(meta?: PrivateR2Object, cacheControl = "private, no-store") {
   const headers = new Headers();
   meta?.writeHttpMetadata(headers);
-  headers.set("Cache-Control", "private, no-store");
+  headers.set("Cache-Control", cacheControl);
   headers.set("X-Content-Type-Options", "nosniff");
   headers.set("Accept-Ranges", "bytes");
   if (meta) headers.set("ETag", meta.httpEtag);
   return headers;
+}
+
+/** Only call for a fixed, allowlisted public key or after caller authorization. */
+export async function serveR2Object(
+  request: Request,
+  bucket: PrivateR2Bucket,
+  key: string,
+  cacheControl = "private, no-store",
+): Promise<Response> {
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    return new Response(null, { status: 405, headers: { Allow: "GET, HEAD" } });
+  }
+  if (!validKey(key)) return new Response(null, { status: 404, headers: objectHeaders(undefined, cacheControl) });
+  const meta = await bucket.head(key);
+  if (!meta) return new Response(null, { status: 404, headers: objectHeaders(undefined, cacheControl) });
+  const headers = objectHeaders(meta, cacheControl);
+  if (request.method === "HEAD") {
+    headers.set("Content-Length", String(meta.size));
+    return new Response(null, { status: 200, headers });
+  }
+  const ifRange = request.headers.get("If-Range");
+  const rangeHeader = ifRange && ifRange !== meta.httpEtag ? null : request.headers.get("Range");
+  const range = rangeForHeader(rangeHeader, meta.size);
+  if (range === false) {
+    headers.set("Content-Range", `bytes */${meta.size}`);
+    return new Response(null, { status: 416, headers });
+  }
+  const object = await bucket.get(key, range ? { range } : undefined);
+  if (!object) return new Response(null, { status: 404, headers: objectHeaders(undefined, cacheControl) });
+  if (range) {
+    headers.set("Content-Range", `bytes ${range.offset}-${range.offset + range.length - 1}/${meta.size}`);
+    headers.set("Content-Length", String(range.length));
+  } else {
+    headers.set("Content-Length", String(meta.size));
+  }
+  return new Response(object.body, { status: range ? 206 : 200, headers });
 }
 
 export async function servePrivateR2(
@@ -113,30 +149,7 @@ export async function servePrivateR2(
       !validKey(key) || !secret || !/^\d+$/.test(expiresText) ||
       !Number.isSafeInteger(expires) || expires <= now || expires > now + MAX_TTL_SECONDS ||
       !equalSignature(signatures[0], await hmac(secret, canonical(key, expires)))) {
-    return new Response(null, { status: 403, headers: privateHeaders() });
+    return new Response(null, { status: 403, headers: objectHeaders() });
   }
-
-  const meta = await bucket.head(key);
-  if (!meta) return new Response(null, { status: 404, headers: privateHeaders() });
-  const headers = privateHeaders(meta);
-  if (request.method === "HEAD") {
-    headers.set("Content-Length", String(meta.size));
-    return new Response(null, { status: 200, headers });
-  }
-  const ifRange = request.headers.get("If-Range");
-  const rangeHeader = ifRange && ifRange !== meta.httpEtag ? null : request.headers.get("Range");
-  const range = rangeForHeader(rangeHeader, meta.size);
-  if (range === false) {
-    headers.set("Content-Range", `bytes */${meta.size}`);
-    return new Response(null, { status: 416, headers });
-  }
-  const object = await bucket.get(key, range ? { range } : undefined);
-  if (!object) return new Response(null, { status: 404, headers: privateHeaders() });
-  if (range) {
-    headers.set("Content-Range", `bytes ${range.offset}-${range.offset + range.length - 1}/${meta.size}`);
-    headers.set("Content-Length", String(range.length));
-  } else {
-    headers.set("Content-Length", String(meta.size));
-  }
-  return new Response(object.body, { status: range ? 206 : 200, headers });
+  return serveR2Object(request, bucket, key);
 }

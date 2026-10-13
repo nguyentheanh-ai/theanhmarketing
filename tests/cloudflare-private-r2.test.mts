@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { signPrivateR2Url, servePrivateR2, type PrivateR2Bucket } from "../lib/cloudflare/private-r2";
+import { signPrivateR2Url, servePrivateR2, serveR2Object, type PrivateR2Bucket } from "../lib/cloudflare/private-r2";
 
 const secret = "synthetic-test-signing-secret";
 const now = Date.parse("2026-10-13T13:00:00Z");
@@ -53,4 +53,14 @@ test("rejects expired, changed, duplicate and unsafe signatures before R2 access
   duplicated.searchParams.append("key", key);
   assert.equal((await servePrivateR2(new Request(duplicated), bucket, secret, now)).status, 403);
   await assert.rejects(signPrivateR2Url("https://staging.example.invalid/private", "../secret", secret, 30, now));
+});
+
+test("fixed public R2 object supports streaming ranges without exposing other keys", async () => {
+  const request = new Request("https://staging.example.invalid/public.mp4", { headers: { Range: "bytes=5-9" } });
+  const response = await serveR2Object(request, bucket, key, "public, max-age=3600");
+  assert.equal(response.status, 206);
+  assert.equal(response.headers.get("Content-Range"), "bytes 5-9/16");
+  assert.equal(response.headers.get("Cache-Control"), "public, max-age=3600");
+  assert.equal(await response.text(), "56789");
+  assert.equal((await serveR2Object(request, bucket, "../private", "public, max-age=3600")).status, 404);
 });
