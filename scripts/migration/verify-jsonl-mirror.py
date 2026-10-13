@@ -18,6 +18,15 @@ def canonical(value):
                       allow_nan=False).encode("utf-8")
 
 
+def unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON field")
+        result[key] = value
+    return result
+
+
 def digest_table(path: Path, key_columns: list[str]):
     if not path.is_file() or path.is_symlink():
         raise ValueError(f"missing or unsafe input file: {path.name}")
@@ -28,7 +37,8 @@ def digest_table(path: Path, key_columns: list[str]):
         for line_number, line in enumerate(source, 1):
             if not line.strip():
                 raise ValueError(f"blank row in {path.name} at line {line_number}")
-            row = json.loads(line, parse_constant=lambda _: (_ for _ in ()).throw(ValueError("non-finite number")))
+            row = json.loads(line, object_pairs_hook=unique_object,
+                             parse_constant=lambda _: (_ for _ in ()).throw(ValueError("non-finite number")))
             if not isinstance(row, dict) or any(column not in row or row[column] is None for column in key_columns):
                 raise ValueError(f"invalid primary key in {path.name} at line {line_number}")
             key = canonical([row[column] for column in key_columns])
@@ -43,12 +53,14 @@ def digest_table(path: Path, key_columns: list[str]):
 
 
 def verify(source: Path, target: Path, manifest: Path):
-    spec = json.loads(manifest.read_text(encoding="utf-8"))
+    spec = json.loads(manifest.read_text(encoding="utf-8"), object_pairs_hook=unique_object)
     if not isinstance(spec, list) or not spec:
         raise ValueError("manifest must contain a nonempty list")
     seen = set()
     mismatches = 0
     for item in spec:
+        if not isinstance(item, dict) or not isinstance(item.get("primary_key"), list):
+            raise ValueError("invalid table manifest")
         schema, table, columns = item["schema"], item["table"], item["primary_key"]
         if not all(isinstance(name, str) and name.isidentifier() for name in [schema, table, *columns]) or not columns:
             raise ValueError("unsafe manifest identifier")

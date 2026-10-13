@@ -30,6 +30,13 @@ class VerifyMirrorTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "duplicate key"):
                 module.digest_table(path, ["id"])
 
+    def test_rejects_duplicate_json_field(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "public.lessons.jsonl"
+            path.write_text('{"id":"a","id":"b"}\n')
+            with self.assertRaisesRegex(ValueError, "duplicate JSON field"):
+                module.digest_table(path, ["id"])
+
 
 if __name__ == "__main__":
     unittest.main()
