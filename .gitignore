@@ -56,3 +56,7 @@ next-env.d.ts
 
 # Paid Agent packages are deployed privately, never committed.
 /private/agent-library/*.zip
+/dist/
+.vinext/
+.cloudflare/
+.wrangler/

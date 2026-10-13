@@ -16,7 +16,12 @@
     "verify:site-quality": "node scripts/verify-site-quality.mjs",
     "verify:courses": "node scripts/verify-course-funnel.mjs",
     "verify:revenue-critical-ui": "node --test tests/facebook-ads-landing.test.mjs tests/payment-page-reference-ui.test.mjs",
-    "verify:blog-assets": "node scripts/verify-blog-assets.mjs"
+    "verify:blog-assets": "node scripts/verify-blog-assets.mjs",
+    "dev:vinext": "vite dev --port 3001",
+    "build:vinext": "vite build && node scripts/cloudflare-prune-staging-assets.mjs",
+    "typecheck:cloudflare": "tsc --project tsconfig.cloudflare.json --noEmit --incremental false",
+    "start:vinext": "vite preview",
+    "deploy:vinext": "vinext-cloudflare deploy"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
@@ -28,16 +33,20 @@
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.18.0",
     "next": "16.2.6",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-hook-form": "^7.79.0",
     "recharts": "^3.8.1",
     "sanitize-html": "^2.17.4",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "vinext": "1.1.0",
+    "react-server-dom-webpack": "19.3.0",
+    "@vinext/cloudflare": "1.1.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.0",
     "@tailwindcss/postcss": "^4",
+    "@tailwindcss/vite": "4.3.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -46,9 +55,17 @@
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
     "tsx": "^4.22.4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite": "8.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "@vitejs/plugin-rsc": "0.5.36",
+    "@cloudflare/vite-plugin": "1.63.2",
+    "cf": "1.0.0-beta.15",
+    "vite-css-modules": "1.16.0",
+    "postcss": "8.5.14"
   },
   "overrides": {
     "postcss": "8.5.14"
-  }
+  },
+  "type": "module"
 }
