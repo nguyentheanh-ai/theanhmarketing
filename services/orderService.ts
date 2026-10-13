@@ -1453,8 +1453,9 @@ export async function confirmOrderFromSepay(payload: SepayWebhookPayload): Promi
       updated_at: new Date().toISOString(),
     })
     .eq("order_code", orderCode)
+    .neq("status", "paid")
     .select(orderSelectFields)
-    .single();
+    .maybeSingle();
   let data: unknown = primary.data;
   let error = primary.error;
 
@@ -1471,14 +1472,23 @@ export async function confirmOrderFromSepay(payload: SepayWebhookPayload): Promi
         updated_at: new Date().toISOString(),
       })
       .eq("order_code", orderCode)
+      .neq("status", "paid")
       .select(orderBaseSelectFields)
-      .single();
+      .maybeSingle();
     data = fallback.data;
     error = fallback.error;
   }
 
-  if (error || !data) {
-    throw new Error(error?.message ?? "Không cập nhật được đơn hàng.");
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!data) {
+    const latestOrder = await getPaymentOrder(orderCode);
+    if (latestOrder?.status === "paid") {
+      return { order: latestOrder, wasAlreadyPaid: true };
+    }
+    throw new Error("Đơn hàng không còn ở trạng thái có thể xác nhận thanh toán.");
   }
 
   return { order: mapDbOrder(data as DbOrder), wasAlreadyPaid: false };

@@ -10,6 +10,8 @@ export default defineConfig({
     env: {
       ASSETS: bindings.assets(),
       AUTH_GUARD_ENABLED: bindings.text("true"),
+      PRIVATE_ASSETS: bindings.r2({ name: "theanh-main-assets-staging" }),
+      R2_PRIVATE_URL_SECRET: bindings.secret(),
     },
   }),
 });
