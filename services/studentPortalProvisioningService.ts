@@ -1,3 +1,5 @@
+import { getStudentAppStagingAccessHeaders } from "@/lib/cloudflare/student-app-access";
+
 type StudentPortalOrderInput = {
   orderCode: string;
   studentName: string;
@@ -63,6 +65,7 @@ export async function notifyStudentPortalProvisioning({
     headers: {
       "content-type": "application/json",
       "x-student-portal-secret": secret,
+      ...getStudentAppStagingAccessHeaders(endpoint),
     },
     body: JSON.stringify(payload),
   });

@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { hasSupabaseEnv } from "@/lib/supabase/client";
 import { createSupabaseAuthServerClient } from "@/lib/auth/session";
 import { getSafeNextPath } from "@/lib/navigation";
+import { getStudentAppStagingAccessHeaders } from "@/lib/cloudflare/student-app-access";
 
 function getDefaultAppOrigin() {
   const fallback = process.env.NEXT_PUBLIC_APP_URL ?? "https://app.theanhmarketing.com";
@@ -73,11 +74,13 @@ async function requestAppLoginLink(payload: { email: string; fullName: string; s
     throw new Error("Missing app provisioning secret.");
   }
 
-  const response = await fetch(`${appUrl}/api/auth/website-login`, {
+  const endpoint = `${appUrl}/api/auth/website-login`;
+  const response = await fetch(endpoint, {
     method: "POST",
     headers: {
       "content-type": "application/json",
       "x-student-portal-secret": secret,
+      ...getStudentAppStagingAccessHeaders(endpoint),
     },
     body: JSON.stringify(payload),
     cache: "no-store",

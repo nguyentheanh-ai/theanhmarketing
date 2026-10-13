@@ -15,8 +15,11 @@ function loadTsModule(relativePath) {
     },
   }).outputText;
   const cjsModule = { exports: {} };
-  const runner = new Function("exports", "module", compiled);
-  runner(cjsModule.exports, cjsModule);
+  const runner = new Function("exports", "module", "require", compiled);
+  runner(cjsModule.exports, cjsModule, (id) => {
+    if (id === "@/lib/cloudflare/student-app-access") return { getStudentAppStagingAccessHeaders: () => ({}) };
+    throw new Error(`Unexpected test import: ${id}`);
+  });
   return cjsModule.exports;
 }
 
