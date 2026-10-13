@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Read-only SSR smoke using a dedicated QA account. Never print credentials or tokens.
+// Read-only by default. Optional progress write uses only the dedicated QA account.
 import { readFileSync } from "node:fs";
 import { createServerClient } from "@supabase/ssr";
 
@@ -33,9 +33,12 @@ const client = createServerClient(supabaseUrl, anonKey, {
 
 const lesson = "/learn/facebook-ads-2026/47da65a2-c6c6-4a21-a109-c1feb1d64c8f";
 const accessHeaders = {};
-if (process.env.CF_ACCESS_CLIENT_ID && process.env.CF_ACCESS_CLIENT_SECRET) {
-  accessHeaders["CF-Access-Client-Id"] = process.env.CF_ACCESS_CLIENT_ID;
-  accessHeaders["CF-Access-Client-Secret"] = process.env.CF_ACCESS_CLIENT_SECRET;
+const accessToken = process.env.QA_ACCESS_TOKEN_FILE
+  ? JSON.parse(readFileSync(process.env.QA_ACCESS_TOKEN_FILE, "utf8"))
+  : { client_id: process.env.CF_ACCESS_CLIENT_ID, client_secret: process.env.CF_ACCESS_CLIENT_SECRET };
+if (accessToken.client_id && accessToken.client_secret) {
+  accessHeaders["CF-Access-Client-Id"] = accessToken.client_id;
+  accessHeaders["CF-Access-Client-Secret"] = accessToken.client_secret;
 }
 
 async function check(path, cookie, expectedStatus, expectedRedirectPrefix) {
@@ -45,10 +48,54 @@ async function check(path, cookie, expectedStatus, expectedRedirectPrefix) {
   });
   const location = response.headers.get("location") ?? "";
   const redirectPath = location ? new URL(location, baseUrl).pathname : "";
-  const passed = response.status === expectedStatus &&
+  const html = response.status === 200 ? await response.text() : "";
+  const idMatches = html.includes("47da65a2-c6c6-4a21-a109-c1feb1d64c8f");
+  const playerMatches = html.includes('id="lesson-player"');
+  const lessonListMatches = html.includes("Danh sách bài học");
+  const errorBoundary = html.includes("Chưa tải được bài học");
+  const lessonContentMatches = path !== lesson || !cookie || response.status !== 200 ||
+    (idMatches && playerMatches && lessonListMatches && !errorBoundary);
+  const passed = response.status === expectedStatus && lessonContentMatches &&
     (!expectedRedirectPrefix || redirectPath.startsWith(expectedRedirectPrefix));
-  console.log(`${passed ? "PASS" : "FAIL"} ${path}: HTTP ${response.status}${redirectPath ? ` -> ${redirectPath}` : ""}`);
+  console.log(`${passed ? "PASS" : "FAIL"} ${path}: HTTP ${response.status}${redirectPath ? ` -> ${redirectPath}` : ""}${path === lesson && cookie && response.status === 200 ? `, lesson content ${lessonContentMatches ? "matched" : "missing"}, error boundary ${errorBoundary}` : ""}`);
   return passed;
+}
+
+async function verifyQaProgress(cookie) {
+  if (process.env.QA_PROGRESS_WRITE !== "dedicated-qa-account") return true;
+  const before = await fetch(new URL(lesson, baseUrl), { headers: { ...accessHeaders, cookie } });
+  const beforeHtml = await before.text();
+  if (before.status !== 200 || beforeHtml.includes("Chưa tải được bài học")) {
+    console.log("FAIL QA progress: lesson unavailable before write");
+    return false;
+  }
+  const wasCompleted = beforeHtml.includes("✓ Đã hoàn thành");
+  const postProgress = async (completed) => {
+    const response = await fetch(new URL("/api/student/progress", baseUrl), {
+      method: "POST",
+      headers: { ...accessHeaders, cookie, "Content-Type": "application/json" },
+      body: JSON.stringify({ courseSlug: "facebook-ads-2026", lessonId: "47da65a2-c6c6-4a21-a109-c1feb1d64c8f", completed }),
+    });
+    const result = await response.json().catch(() => null);
+    return response.status === 200 && result?.ok === true &&
+      Array.isArray(result.completedLessonIds) &&
+      result.completedLessonIds.includes("47da65a2-c6c6-4a21-a109-c1feb1d64c8f") === completed;
+  };
+  let completed = false;
+  let refreshed = false;
+  let restored = wasCompleted;
+  try {
+    completed = await postProgress(true);
+    if (completed) {
+      const after = await fetch(new URL(lesson, baseUrl), { headers: { ...accessHeaders, cookie } });
+      const afterHtml = await after.text();
+      refreshed = after.status === 200 && afterHtml.includes("✓ Đã hoàn thành");
+    }
+  } finally {
+    if (!wasCompleted) restored = await postProgress(false).catch(() => false);
+  }
+  console.log(`${completed && refreshed && restored ? "PASS" : "FAIL"} QA progress: write, refresh, restore previous state`);
+  return completed && refreshed && restored;
 }
 
 try {
@@ -66,6 +113,7 @@ try {
   results.push(await check("/dashboard", cookie, 200));
   results.push(await check(lesson, cookie, 200));
   results.push(await check(lesson, cookie, 200)); // repeat request at the HTTP/SSR boundary
+  results.push(await verifyQaProgress(cookie));
   if (results.some((passed) => !passed)) process.exitCode = 1;
 } catch (error) {
   console.error(error instanceof Error ? error.message : "QA smoke failed.");
