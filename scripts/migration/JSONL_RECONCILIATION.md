@@ -1,0 +1,5 @@
+# Đối soát hàng dữ liệu sau khi có backup và bản phục hồi
+
+`verify-jsonl-mirror.py` chỉ nhận file JSONL đã xuất từ hai phía, mỗi dòng là một object với cùng tên cột, kiểu giá trị và chuẩn hóa thời gian/JSON. Từng file đặt tên `<schema>.<table>.jsonl`, ví dụ `public.lessons.jsonl`. Hai exporter phải sắp hàng theo thứ tự byte của JSON mảng khóa chính chuẩn hóa, tăng nghiêm ngặt; khóa số phải biểu diễn nhất quán ở cả hai phía. Manifest JSON là danh sách `{ "schema": "public", "table": "lessons", "primary_key": ["id"] }`; tạo từ inventory đã xác minh, không nhập dữ liệu khách vào manifest.
+
+Chạy: `python3 verify-jsonl-mirror.py --source <thu-muc-ban-sao> --target <thu-muc-D1> --manifest <manifest.json>`. Mã thoát 0 khi tất cả bảng khớp, 1 khi khác số hàng/nội dung, 2 khi dữ liệu đầu vào không an toàn hoặc thiếu. Chỉ in tên bảng và số hàng; không in row, hash, ID hay đường dẫn file. File xuất chứa dữ liệu khách, phải giữ trong thư mục bảo vệ ngoài Git, mã hóa khi lưu và xóa theo quy trình được duyệt. So sánh này không kiểm foreign key, trigger, quyền, file Storage, Auth session hoặc tính nhất quán của luồng thay đổi; các cổng đó cần kiểm riêng.
