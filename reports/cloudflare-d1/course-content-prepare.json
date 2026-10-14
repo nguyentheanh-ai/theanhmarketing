@@ -1,5 +1,5 @@
 {
-  "status": "TESTED_PREPARE_ONLY",
+  "status": "IMPORTED_VERIFIED_ONE_COURSE",
   "courses": 1,
   "sourceModules": 3,
   "sourceLessons": 26,
@@ -11,5 +11,8 @@
   "requiredLessonPresent": true,
   "ambiguousSourceOrder": true,
   "ambiguousPublishedOrder": false,
-  "limits": "No remote D1 import, authorization, rendering or streaming claim"
+  "limits": "One-course staging projection only; Worker disabled, no Auth/access/SSR/progress/streaming or full migration claim",
+  "appliedToD1": true,
+  "marker": "verified",
+  "sourceSnapshotAt": "2026-10-14T19:53:01.849Z"
 }

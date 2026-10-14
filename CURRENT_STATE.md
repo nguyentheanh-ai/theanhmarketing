@@ -975,3 +975,14 @@ Chuẩn bị source qua SELECT read_only project A trong bộ nhớ: khóa Faceb
 39/39 tests liên quan đạt (4test D1 dùng SQLite thật + regression course/LMS/student entry/refs/performance), TypeScript/scoped lint/diff đạt; ViteCloudflarebuild đạt, không deploy. Fixture null embed_url dùng fallback YouTube; chuỗi rỗng phải giữ nguyên như mapper cũ, không coi assertion sai là lỗi production.
 
 IN PROGRESS: chưa tạo schema/import content remote, verified scope/QA quyền/progress và SSR/nativeAuth nối /learn. DatasetAuthQA còn pending, Worker native disabled như sau kiểm thử hosted. B là app riêng, không khu vực học; không đụng Adplan/production nguồn ghi/DNS/billing. Tổng chưa READY FOR CUTOVER. Bằng chứng main/reports/cloudflare-d1/course-content-{prepare,build}.json và testcloudflare-d1-course-content.
+
+
+## 15/10/2026 — Nội dung A đã nhập/đối soát D1 staging: TESTED phạm vi
+
+D1 A thêm2bảng read-model course content/sync, trước import0document/0marker. prepare-course-content.py --apply-staging chỉ exactWorker disabled/binding đúng/đích rỗng, source SELECT read_only và cutoff mới<=5phút. Prepared document/params/OAuth chỉ pipe/bộ nhớ, report không payload/URL riêng tư. INSERT không overwrite. Đọc actualrow, đối soát full canonical document/digest/project/ID/slug/snapshot, rồi CAS marker pending→verified với toàn capturedrow/count/clock thực ở SQL; edit giữa read vàUPDATE hoặc snapshot hết hạn không được promote.
+
+Import một khóa Facebook Ads thành công:1document/1marker verified, cutoff2026-10-14T19:53:01.849Z,3module/26lesson giữ đủ,23published/student-ready,20.224byte. read-course-content-staging.mjs đã chạy module readD1PublishedCourse qua D1API thật:1query,3module/23bài, requiredlesson có mặt/playable theo dữ liệu và actualdocument hash đạt. Không suy ra trình duyệt phát video, HTTPRange/privatefile hoặc quyền học từ kiểm này. Reader vẫn gatefreshness5phút; verified là kết quả snapshot tại cutoff, không heartbeat giả hoặc native primary authority.
+
+Metadata remote cho thấy SQLite TEXT PRIMARY KEY cũ có notnull=0. Freshschema đã thêmNOTNULL; giữ table/data đã nhập và bổ sung4trigger chặnNULL insert/update để nâng cấp additive. Remote readback4trigger/1document/1marker,6/6 SQLite tests đạt gồm legacyPKNULLguard và CAS/race/expiry,TypeScript/scopedlint/diff đạt. Không DROP/rebuild/xóa course. Worker vẫndisabled/cohortrỗng,0QA session chưarevoke. Secret cũ không đụng.
+
+IN PROGRESS: contentreadmodel một khóa, chưa fullCMS/allcourses/admin/delta hay refresh tooling. QA quyền/LMSidentity/tiến độ chưa nhập/nốinativecookie; /learn SSR vẫnSupabase. Cần import/đối soát projection quyềnQA và content→session boundary trướcUI/progress. B vẫnapp riêng; khôngAdplan/productiondata/DNS/sourcewriter/decommission. TổngchưaREADY_FOR_CUTOVER. Báo cáo main/reports/cloudflare-d1/course-content-{prepare,remote-read,staging-readback}.json.

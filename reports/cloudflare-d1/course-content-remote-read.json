@@ -1,0 +1,10 @@
+{
+  "status": "TESTED_REMOTE_D1_READER",
+  "remoteQueries": 1,
+  "publishedModules": 3,
+  "publishedLessons": 23,
+  "requiredLessonPresent": true,
+  "requiredLessonPlayable": true,
+  "documentDigestVerified": true,
+  "limits": "Backend D1 API read only; not Worker binding/UI/session rights/progress/media delivery"
+}

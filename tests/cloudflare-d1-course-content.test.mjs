@@ -27,3 +27,21 @@ test('document tampering cannot retain a valid stored digest; JSON key ordering 
 test('cross-course, duplicate lesson IDs, cross-lesson resources and oversized input denied before import',async()=>{
  for(const mutate of [s=>s.course_modules[0].course_id=id(8),s=>s.course_modules[0].lessons[0].module_id=id(3),s=>s.course_modules[0].lessons[0].lesson_resources[0].lesson_id=id(4),s=>s.course_modules[1].lessons[0].id=id(5),s=>s.description='x'.repeat(512*1024)]){const s=structuredClone(source);mutate(s);await assert.rejects(h.prepareD1CourseContent(s,snapshot));}
 });
+test('initial marker compares actual document again and cannot promote edited or expired source',async()=>{
+ const fresh=new Date().toISOString(),f=join(mkdtempSync(join(tmpdir(),'course-marker-')),'fixture.sqlite');
+ const setup=spawnSync('python3',['-c','import sqlite3,sys;sqlite3.connect(sys.argv[1]).executescript(sys.stdin.read())',f],{input:schema,encoding:'utf8'});assert.equal(setup.status,0,setup.stderr);
+ const plan=await h.prepareD1CourseContent(source,fresh);sqlite(f,plan.sql,plan.params);sqlite(f,'INSERT INTO d1_course_content_sync VALUES(?,?,?,?,?)',[project,fresh,fresh,'pending',1]);
+ const target=sqlite(f,'SELECT * FROM d1_course_content')[0];
+ await assert.rejects(h.verifyD1CourseContent(source,{...target,source_snapshot_at:snapshot},fresh));
+ await assert.rejects(h.prepareVerifiedD1CourseMarker(source,target,fresh,Date.parse(fresh)+300001));
+ const marker=await h.prepareVerifiedD1CourseMarker(source,target,fresh);
+ sqlite(f,"UPDATE d1_course_content SET source_document=json_set(source_document,'$.title','Changed')");assert.deepEqual(sqlite(f,marker.sql,marker.params),[]);assert.equal(sqlite(f,'SELECT status FROM d1_course_content_sync')[0].status,'pending');
+ sqlite(f,'UPDATE d1_course_content SET source_document=?',[target.source_document]);assert.deepEqual(sqlite(f,marker.sql,marker.params),[{status:'verified'}]);
+ assert.deepEqual(sqlite(f,marker.sql,marker.params),[]);
+});
+test('additive identity guards also reject NULL on the earlier SQLite primary-key schema',()=>{
+ const legacy=schema.replaceAll('PRIMARY KEY NOT NULL','PRIMARY KEY');
+ const code="import sqlite3,json,sys\np=json.load(sys.stdin);c=sqlite3.connect(':memory:');c.executescript(p['schema']);errors=[]\nfor sql in p['queries']:\n try:c.execute(sql)\n except sqlite3.IntegrityError as e:errors.append(str(e))\nprint(json.dumps(errors))";
+ const queries=["INSERT INTO d1_course_content VALUES(NULL,'nullable','vsxxgdzwtscuxcmjfckt','{\"id\":null,\"slug\":\"nullable\"}','"+'0'.repeat(64)+"','2026-10-15T00:00:00Z')","INSERT INTO d1_course_content_sync VALUES(NULL,'2026-10-15T00:00:00Z','2026-10-15T00:00:00Z','pending',0)"];
+ const result=spawnSync('python3',['-c',code],{input:JSON.stringify({schema:legacy,queries}),encoding:'utf8'});assert.equal(result.status,0,result.stderr);assert.deepEqual(JSON.parse(result.stdout),['course_identity_required','course_project_required']);
+});

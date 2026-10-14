@@ -36,13 +36,22 @@ export async function prepareD1CourseContent(source:unknown,sourceSnapshotAt:str
  if(new TextEncoder().encode(document).length>512*1024)throw new Error('Course document requires partitioned import');
  return {sql:'INSERT INTO d1_course_content(course_id,slug,source_project_id,source_document,source_digest,source_snapshot_at) VALUES(?1,?2,?3,?4,?5,?6)',params:[source.id,source.slug,project,document,await digest(document),new Date(sourceSnapshotAt).toISOString()]};
 }
-export async function verifyD1CourseContent(source:unknown,target:Record<string,unknown>){
+export async function verifyD1CourseContent(source:unknown,target:Record<string,unknown>,expectedSnapshotAt?:string){
  validate(source);
  const document=canonical(source);
  if(target.course_id!==source.id||target.slug!==source.slug||target.source_project_id!==project||typeof target.source_document!=='string'||target.source_digest!==await digest(document))throw new Error('Course content verification failed');
  let actual:unknown;try{actual=JSON.parse(target.source_document);}catch{throw new Error('Course content verification failed');}
  if(canonical(actual)!==document)throw new Error('Course content verification failed');
+ if(expectedSnapshotAt!==undefined&&(!Number.isFinite(Date.parse(expectedSnapshotAt))||target.source_snapshot_at!==new Date(expectedSnapshotAt).toISOString()))throw new Error('Course snapshot verification failed');
  return {matched:true as const};
+}
+// Initial one-course staging projection only. Compare every captured field
+// again in SQL so an intervening edit cannot promote the old readback.
+export async function prepareVerifiedD1CourseMarker(source:unknown,target:Record<string,unknown>,sourceSnapshotAt:string,now=Date.now()){
+ await verifyD1CourseContent(source,target,sourceSnapshotAt);
+ const cutoff=Date.parse(sourceSnapshotAt);
+ if(!Number.isFinite(now)||now<cutoff||now-cutoff>300000)throw new Error('Course source snapshot expired');
+ return {sql:`UPDATE d1_course_content_sync SET status='verified',last_verified_at=?3 WHERE source_project_id=?1 AND status='pending' AND source_snapshot_at=?2 AND julianday(?2) BETWEEN julianday('now')-300000/86400000.0 AND julianday('now') AND julianday(?3) BETWEEN julianday(?2) AND julianday('now') AND course_count=1 AND (SELECT count(*) FROM d1_course_content WHERE source_project_id=?1)=1 AND EXISTS(SELECT 1 FROM d1_course_content WHERE course_id=?4 AND slug=?5 AND source_project_id=?1 AND source_document=?6 AND source_digest=?7 AND source_snapshot_at=?2) RETURNING status`,params:[project,target.source_snapshot_at as string,new Date(now).toISOString(),target.course_id as string,target.slug as string,target.source_document as string,target.source_digest as string]};
 }
 // Internal backend reader. Authorization must precede serialization to a
 // student. Missing/unverified content fails closed and never uses demo lessons.

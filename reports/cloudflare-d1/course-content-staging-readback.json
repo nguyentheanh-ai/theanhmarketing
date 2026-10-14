@@ -1,0 +1,13 @@
+{
+  "status": "TESTED_STAGING_CONTENT_METADATA",
+  "nativeMode": "disabled",
+  "cohortCount": 0,
+  "documents": 1,
+  "markers": 1,
+  "marker": "verified",
+  "unrevokedQaSessions": 0,
+  "identityGuards": 4,
+  "legacyTextPrimaryKeyNotnullMetadata": false,
+  "additiveNullGuardsInstalled": true,
+  "limits": "One historical verified course snapshot; reader freshness gate still applies. No production or learner writes."
+}
