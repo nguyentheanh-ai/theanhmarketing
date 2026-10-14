@@ -1,0 +1,8 @@
+{
+  "status": "DEPLOYED_STAGING",
+  "exitCode": 0,
+  "version": "858126f6-9378-4486-b6f6-edeb75e1e641",
+  "worker": "theanh-main-cf-staging",
+  "nativeMode": "disabled",
+  "limits": "Deployment only; no authenticated runtime or native account QA claim"
+}

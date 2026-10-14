@@ -3,7 +3,7 @@ import {readD1SessionCookie,readBoundedAuthJson} from '@/lib/cloudflare/d1-auth-
 import {readD1StudentSessionAccess} from '@/lib/cloudflare/d1-student-session-access';
 import {markD1SessionLessonCompleted} from '@/lib/cloudflare/d1-lesson-progress';
 type Options={db:AuthDatabase;origin:string;sessionTtlMs:number;now?:number;qaWriteUserIds?:readonly string[];
- resolveLesson:(courseSlug:string,lessonId:string)=>Promise<{id:string;title:string}|null>};
+ resolveLesson?:(courseSlug:string,lessonId:string)=>Promise<{id:string;title:string}|null>};
 function reply(status:number,body:unknown){return Response.json(body,{status,headers:{'Cache-Control':'private, no-store','Vary':'Cookie','X-Content-Type-Options':'nosniff'}});}
 const bad={ok:false,message:'Không thể xử lý yêu cầu học tập.'};
 // Candidate transport for A only. Not mounted on application routes yet.
@@ -26,7 +26,7 @@ export async function handleD1StudentHttp(request:Request,options:Options){
    return reply(200,{ok:true,userId:result.user.id,ownedSlugs:result.access.ownedSlugs,
     completedLessonIds:result.access.completedLessonIds,enrollmentIdsBySlug:result.access.enrollmentIdsBySlug});
   }
-  if(!options.qaWriteUserIds?.length)return reply(503,{ok:false,code:'WRITE_DISABLED'});
+  if(!options.qaWriteUserIds?.length||!options.resolveLesson)return reply(503,{ok:false,code:'WRITE_DISABLED'});
   let body:Record<string,unknown>;try{body=await readBoundedAuthJson(request);}catch{return reply(400,bad);}
   if(Object.keys(body).some(key=>!['courseSlug','lessonId','operationId','completed'].includes(key))
    ||typeof body.courseSlug!=='string'||typeof body.lessonId!=='string'||typeof body.operationId!=='string'

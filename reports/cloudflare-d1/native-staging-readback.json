@@ -1,0 +1,30 @@
+{
+  "status": "TESTED_SCOPED",
+  "version": "858126f6-9378-4486-b6f6-edeb75e1e641",
+  "nativeMode": "disabled",
+  "nativeDatabaseId": "694139c9-6cda-4b8c-9228-c973dbcbb719",
+  "cryptoSecretNames": [
+    "NATIVE_AUTH_CREDENTIAL_KEY",
+    "NATIVE_AUTH_LIMITER_KEY"
+  ],
+  "preservedSecretNames": [
+    "R2_PRIVATE_URL_SECRET",
+    "STUDENT_PORTAL_PROVISION_SECRET",
+    "SUPABASE_SERVICE_ROLE_KEY"
+  ],
+  "accessCleanup": {
+    "policyDeleted": true,
+    "tokenDeleted": true,
+    "temporaryPolicyAbsent": true,
+    "temporaryTokenAbsent": true,
+    "remainingPolicies": [
+      {
+        "id": "37b8eed3-52a3-4e7e-9df7-5d4560f154c7",
+        "name": "Owner only staging",
+        "decision": "allow"
+      }
+    ]
+  },
+  "limits": "Metadata + five hosted disabled/guest checks only. No native QA account, password/key roundtrip, progress, browser or full migration verification.",
+  "temporaryLocalArtifactCleanup": "Control-plane cleanup blocked; RSA wrapping key and encrypted revoked-token envelope remain restricted in temporary directory. No active Access token/policy remains."
+}

@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-14T18:28:23.769Z",
+  "scope": "Hosted A staging native-disabled + anonymous old routes behind temporary Access token",
+  "checks": [
+    {
+      "path": "/api/cloudflare-auth/session",
+      "status": 503,
+      "disabled": true
+    },
+    {
+      "path": "/api/cloudflare-student/access",
+      "status": 503,
+      "disabled": true
+    },
+    {
+      "path": "/api/cloudflare-student/progress",
+      "status": 503,
+      "disabled": true
+    },
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/learn/facebook-ads-2026/47da65a2-c6c6-4a21-a109-c1feb1d64c8f",
+      "status": 307,
+      "originalLessonUrlPreserved": true
+    }
+  ],
+  "limits": "No native QA login, customer import, progress write, browser/Safari or production readiness claim"
+}

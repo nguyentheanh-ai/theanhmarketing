@@ -1,0 +1,30 @@
+import type {InferEnv,UnwrapConfig} from 'cf/config';
+import type config from '@/cloudflare.config';
+import {createD1AuthDatabase} from '@/lib/cloudflare/d1-auth-database';
+import {handleD1AuthHttp} from '@/lib/cloudflare/d1-auth-http';
+import {handleD1StudentHttp} from '@/lib/cloudflare/d1-student-http';
+import {consumeD1AuthAttempt} from '@/lib/cloudflare/d1-auth-rate-limit';
+type WorkerConfig=UnwrapConfig<UnwrapConfig<typeof config>['worker']>;
+export type NativeStageEnv=Pick<InferEnv<WorkerConfig>,'CF_NATIVE_AUTH_MODE'|'CF_NATIVE_AUTH_ORIGIN'|'CF_NATIVE_QA_USERS'|'NATIVE_AUTH_DB'|'NATIVE_AUTH_CREDENTIAL_KEY'|'NATIVE_AUTH_LIMITER_KEY'>;
+const origin='https://theanh-main-cf-staging.12c1thdtheanh.workers.dev';
+function unavailable(code='NATIVE_D1_DISABLED'){return Response.json({ok:false,code},{status:503,headers:{'Cache-Control':'private, no-store','Vary':'Cookie','X-Content-Type-Options':'nosniff'}});}
+// Staging A only. Existing app routes and Supabase sessions are unaffected.
+// Google broker stays unmounted until provider callback/logging gates pass.
+export async function handleNativeStageRequest(request:Request,env:NativeStageEnv):Promise<Response|null>{
+ const url=new URL(request.url),auth=url.pathname.startsWith('/api/cloudflare-auth/'),student=url.pathname.startsWith('/api/cloudflare-student/');
+ if(!auth&&!student)return null;
+ const mode:string=env.CF_NATIVE_AUTH_MODE;
+ if(mode!=='qa')return unavailable();
+ if(env.CF_NATIVE_AUTH_ORIGIN!==origin||url.origin!==origin)return unavailable('STAGING_ORIGIN_REQUIRED');
+ try{
+  const cohort:unknown=JSON.parse(env.CF_NATIVE_QA_USERS);
+  if(!Array.isArray(cohort)||!cohort.length||cohort.length>100||cohort.some(id=>typeof id!=='string'||!/^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i.test(id))||new Set(cohort).size!==cohort.length)return unavailable('QA_CONFIG_REQUIRED');
+  if(!/^[A-Za-z0-9_-]{43}$/.test(env.NATIVE_AUTH_CREDENTIAL_KEY??'')||!/^[A-Za-z0-9_-]{43}$/.test(env.NATIVE_AUTH_LIMITER_KEY??''))return unavailable('NATIVE_SECRET_REQUIRED');
+  const db=createD1AuthDatabase(env.NATIVE_AUTH_DB),sessionTtlMs=3600000;
+  if(auth)return handleD1AuthHttp(request,{db,origin,projectId:'vsxxgdzwtscuxcmjfckt',credentialKey:env.NATIVE_AUTH_CREDENTIAL_KEY,sessionTtlMs,
+   allowAttempt:async(req,email)=>{const ip=req.headers.get('CF-Connecting-IP');if(!ip)throw new Error('Trusted edge required');return consumeD1AuthAttempt(db,{projectId:'vsxxgdzwtscuxcmjfckt',ip,email},{secret:env.NATIVE_AUTH_LIMITER_KEY,ip:{limit:10,windowMs:60000},email:{limit:5,windowMs:60000}})}});
+  // Read API only: no write cohort/content resolver is passed until native
+  // lesson content has been imported and verified. HTTP returns WRITE_DISABLED.
+  return handleD1StudentHttp(request,{db,origin,sessionTtlMs});
+ }catch{return unavailable('NATIVE_CONFIG_UNAVAILABLE');}
+}
