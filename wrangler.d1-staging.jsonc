@@ -1,0 +1,13 @@
+{
+  // Management configuration only. Do not deploy a Worker with this file.
+  "name": "theanh-main-d1-management-staging",
+  "account_id": "8035ac71ae1041614760882f4b8862b2",
+  "compatibility_date": "2026-10-13",
+  "d1_databases": [
+    {
+      "binding": "NATIVE_AUTH_DB",
+      "database_name": "theanh-main-db-staging",
+      "database_id": "694139c9-6cda-4b8c-9228-c973dbcbb719"
+    }
+  ]
+}

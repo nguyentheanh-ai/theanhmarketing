@@ -1027,3 +1027,12 @@ Ghi mặc định WRITE_DISABLED. Backend qaWriteUserIds phải hợp lệ, duy 
 TESTED:48/48 quyền/session/progress/HTTP,11/11 workerd+D1, TypeScript/lint/diff đạt. Bao gồm cohort thiếu/sai/outside, WRITE_DISABLED không ghi/không clear cookie, không trả proof, strict authority injection/body/Origin/method, native cookie→progress50/replay/next100/undo50→logout deny. Không deploy/import hoặc dùng tiến độ học viên thật.
 
 IN PROGRESS: chưa mount route vào app Worker hoặc SSR /learn; staging hiện vẫn dùng Supabase. Chưa shared limiter cho progress, native-write authority/fencing/full delta/rollback ngược, nội dung đầy đủ/UI/streaming/admin/bridge/signup/recovery/provider thực/payment. Chưa READY_FOR_CUTOVER; không DNS/production writer mutation.
+
+
+## 15/10/2026 — Schema Auth trên D1 staging A: TESTED phạm vi
+
+Wrangler đọc D1 A đúng account/database trước thay đổi:15 bảng prototype,0identity. Áp dụng13 lệnh CREATE TABLE/INDEX IF NOT EXISTS từ ba schema Auth/provider/OAuth hiện có, không INSERT/UPDATE/DELETE dữ liệu. Sau áp dụng có23 bảng prototype tổng, trong đó8 bảng Auth/OAuth mới và5 index mới. D1 trả thành công ở APAC/KIX; catalog nội bộ có thay đổi, không tính rows_written của catalog thành dữ liệu khách.
+
+Công cụ scripts/verify-d1-auth-staging-schema.mjs --remote --expect-empty có guard exact account/D1/name, chỉ đọc metadata/count/FK; so cấu trúc với SQLite tạo từ cùng source. Đã chạy PASS:0schema mismatch,0FK violation,0identity/account/session/provider identity/OAuth flow/counter/sync marker/source version/delta operation. Báo cáo reports/cloudflare-d1/auth-schema-readback.json chứa tổng hợp, không secret/danh tính/hash. Config wrangler.d1-staging.jsonc chỉ quản lý D1, không được dùng deploy Worker.
+
+IN PROGRESS: chưa thêm binding/secrets native vào Worker, chưa import QA hoặc khách, chưa marker verified hay bật Auth; Worker/Vercel/Supabase production giữ nguyên. B chưa triển khai Auth schema; provider Facebook còn thiếu. Không coi schema rỗng là migration dữ liệu hoặc đăng nhập thành công. Mục tiêu toàn bộ vẫn chưa READY_FOR_CUTOVER.

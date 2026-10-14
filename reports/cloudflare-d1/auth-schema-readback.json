@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-14T18:08:34.251Z",
+  "scope": "D1 A staging additive Auth schema only",
+  "databaseId": "694139c9-6cda-4b8c-9228-c973dbcbb719",
+  "tables": 8,
+  "indexes": 5,
+  "schemaMismatches": 0,
+  "counts": {
+    "identities": 0,
+    "accounts": 0,
+    "sessions": 0,
+    "provider_identities": 0,
+    "oauth_transactions": 0,
+    "attempt_buckets": 0,
+    "sync_markers": 0,
+    "source_versions": 0,
+    "delta_operations": 0
+  },
+  "expectEmpty": true,
+  "foreignKeyViolations": 0,
+  "limits": "Schema/count readback is not account import, verified data, Worker binding, login or app cutover"
+}
