@@ -113,6 +113,26 @@ try {
   results.push(await check("/dashboard", cookie, 200));
   results.push(await check(lesson, cookie, 200));
   results.push(await check(lesson, cookie, 200)); // repeat request at the HTTP/SSR boundary
+  const videoPath = "/doi-ngu-nhan-su-ai/media/proof/editor-ai-jun-08-2026.mp4";
+  const video = await fetch(new URL(videoPath, baseUrl), {
+    headers: { ...accessHeaders, Range: "bytes=0-15" }, redirect: "manual",
+  });
+  const videoBytes = new Uint8Array(await video.arrayBuffer());
+  const videoOk = video.status === 206 && videoBytes.length === 16 &&
+    video.headers.get("content-range")?.startsWith("bytes 0-15/") &&
+    new TextDecoder().decode(videoBytes.slice(4, 8)) === "ftyp";
+  console.log(`${videoOk ? "PASS" : "FAIL"} public R2 video: HTTP ${video.status}, 16-byte MP4 range ${videoOk ? "matched" : "missing"}`);
+  results.push(videoOk);
+  const ebookPdfPath = "/api/ebook/facebook-ads/pdf?accepted=1&format=json";
+  const ebookPagePath = "/api/ebook/facebook-ads/page?part=1&page=1";
+  const guestPdf = await fetch(new URL(ebookPdfPath, baseUrl), { headers: accessHeaders, redirect: "manual" });
+  const guestPage = await fetch(new URL(ebookPagePath, baseUrl), { headers: accessHeaders, redirect: "manual" });
+  const deniedPdf = await fetch(new URL(ebookPdfPath, baseUrl), { headers: { ...accessHeaders, cookie }, redirect: "manual" });
+  const deniedPage = await fetch(new URL(ebookPagePath, baseUrl), { headers: { ...accessHeaders, cookie }, redirect: "manual" });
+  const ebookDenied = guestPdf.status === 401 && guestPage.status === 401 &&
+    deniedPdf.status === 403 && deniedPage.status === 403;
+  console.log(`${ebookDenied ? "PASS" : "FAIL"} Ebook authorization: guest ${guestPdf.status}/${guestPage.status}, QA without Ebook ${deniedPdf.status}/${deniedPage.status}`);
+  results.push(ebookDenied);
   results.push(await verifyQaProgress(cookie));
   if (results.some((passed) => !passed)) process.exitCode = 1;
 } catch (error) {
