@@ -1,6 +1,7 @@
+Error.stackTraceLimit=0;
 import test from 'node:test';import assert from 'node:assert/strict';import {build} from 'esbuild';import {DatabaseSync} from 'node:sqlite';import {readFileSync} from 'node:fs';
-const bundled=await build({entryPoints:['lib/cloudflare/d1-qa-learning-import.ts'],bundle:true,platform:'node',format:'esm',write:false});const {prepareD1QaLearningImport,verifyD1QaLearningRows}=await import('data:text/javascript;base64,'+Buffer.from(bundled.outputFiles[0].text).toString('base64'));
-const id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`,stamp='2026-10-15T00:00:00.123456+00:00',qa={userId:id(1),email:'qa@example.invalid'};
+const bundled=await build({entryPoints:['lib/cloudflare/d1-qa-learning-import.ts'],bundle:true,platform:'node',format:'esm',write:false});const {prepareD1QaLearningImport,verifyD1QaLearningRows,prepareD1QaLearningVerification}=await import('data:text/javascript;base64,'+Buffer.from(bundled.outputFiles[0].text).toString('base64'));
+const id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`,stamp='2026-10-14T00:00:00.123456+00:00',qa={userId:id(1),email:'qa@example.invalid'};
 const payload={qaAccounts:1,snapshotAt:stamp,course:{id:id(2),slug:'fixture-course',title:'Fixture',status:'open',lms_status:'published',visibility:'enrolled',course_modules:[{id:id(3),course_id:id(2),title:'Module',status:'published',sort_order:1,lessons:[{id:id(4),course_id:id(2),module_id:id(3),title:'Lesson',status:'published',content:'Source lesson',youtube_url:'',embed_url:'',access_type:'enrolled_only',lesson_resources:[]}]}]},contacts:[{id:id(5),email:' QA@example.invalid ',marketing_consent:false,custom_fields:{retain:'all'}}],enrollments:[{id:id(6),user_id:id(1),contact_id:id(5),course_id:id(2),course_slug:'fixture-course',status:'active',metadata:{keep:'source'},updated_at:stamp,last_seen_at:stamp,expires_at:null,activated_at:stamp}],progress:[{id:id(7),enrollment_id:id(6),lesson_id:id(4),course_id:id(2),contact_id:id(5),status:'completed',progress_percent:100,completed_at:stamp,updated_at:stamp,metadata:{keep:'progress'},progress_seconds:217,created_at:stamp}],orders:[],overrides:[{id:id(8),email:'qa@example.invalid',source:'admin-access-grant:fixture-course',created_at:stamp,deleted_at:null,provisioning_operation_id:id(9)}]};
 function database(t){const db=new DatabaseSync(':memory:');t.after(()=>db.close());db.exec('PRAGMA foreign_keys=ON');for(const file of ['d1-lms-compatibility-prototype.sql','d1-course-access-source-prototype.sql','d1-qa-learning-source.sql'])db.exec(readFileSync('scripts/'+file,'utf8'));db.prepare('INSERT INTO d1_access_users VALUES(?,?,NULL)').run(qa.userId,qa.email);return db;}
 test('prepared initial import preserves UUIDs, completion and full original fields while keeping gates closed',async t=>{
@@ -21,4 +22,29 @@ test('initial readback compares every target field and includes empty source tab
  const db=database(t),plan=await prepareD1QaLearningImport(payload,qa);for(const s of plan.statements)db.prepare(s.sql).run(...s.params);
  const actual=Object.fromEntries(Object.keys(plan.expectedRows).map(table=>[table,db.prepare('SELECT * FROM '+table).all()]));assert.equal(verifyD1QaLearningRows(plan.expectedRows,actual).matched,true);assert.deepEqual(actual.d1_access_orders,[]);
  for(const mutate of [x=>x.d1_lms_progress[0].status='not_started',x=>x.d1_lms_progress[0].progress_percent=0,x=>x.d1_lms_enrollments[0].user_id=id(99),x=>x.d1_qa_learning_source[0].source_document='{}',x=>x.d1_access_sync_state[0].status='verified',x=>x.d1_access_orders.push({id:id(99)}),x=>delete x.d1_lms_contacts,x=>x.d1_lms_lessons[0].extra='unverified']){const changed=structuredClone(actual);mutate(changed);assert.throws(()=>verifyD1QaLearningRows(plan.expectedRows,changed));}
+});
+test('fresh source verification promotes only unchanged QA rows without overwriting progress',async t=>{
+ const db=database(t),plan=await prepareD1QaLearningImport(payload,qa);for(const s of plan.statements)db.prepare(s.sql).run(...s.params);
+ const actual=Object.fromEntries(Object.keys(plan.expectedRows).map(table=>[table,db.prepare('SELECT * FROM '+table).all()])),fresh={...payload,snapshotAt:new Date().toISOString()};
+ const verified=await prepareD1QaLearningVerification(fresh,qa,actual);
+ for(const s of verified.statements)assert.deepEqual(db.prepare(s.sql).all(...s.params).map(r=>r.status),['verified']);
+ assert.equal(db.prepare('SELECT status FROM d1_access_sync_state').get().status,'verified');assert.equal(db.prepare('SELECT progress_percent FROM d1_lms_progress').get().progress_percent,100);
+});
+test('between-read edits cannot promote an obsolete snapshot; partial archive update keeps access closed',async t=>{
+ const db=database(t),plan=await prepareD1QaLearningImport(payload,qa);for(const s of plan.statements)db.prepare(s.sql).run(...s.params);
+ const actual=Object.fromEntries(Object.keys(plan.expectedRows).map(table=>[table,db.prepare('SELECT * FROM '+table).all()])),fresh={...payload,snapshotAt:new Date().toISOString()};const verified=await prepareD1QaLearningVerification(fresh,qa,actual);
+ db.exec("UPDATE d1_lms_progress SET progress_percent=0");assert.deepEqual(db.prepare(verified.statements[0].sql).all(...verified.statements[0].params),[]);assert.equal(db.prepare('SELECT status FROM d1_access_sync_state').get().status,'importing');
+ db.exec('UPDATE d1_lms_progress SET progress_percent=100');assert.equal(db.prepare(verified.statements[0].sql).all(...verified.statements[0].params).length,1);db.exec("UPDATE d1_access_overrides SET source='admin-access-revoke:fixture-course'");assert.deepEqual(db.prepare(verified.statements[1].sql).all(...verified.statements[1].params),[]);assert.equal(db.prepare('SELECT status FROM d1_access_sync_state').get().status,'importing');
+});
+test('source changes, future and expired source clocks fail without writing verification state',async t=>{
+ const db=database(t),plan=await prepareD1QaLearningImport(payload,qa);for(const s of plan.statements)db.prepare(s.sql).run(...s.params);const actual=Object.fromEntries(Object.keys(plan.expectedRows).map(table=>[table,db.prepare('SELECT * FROM '+table).all()]));
+ const changed=structuredClone(payload);changed.snapshotAt=new Date().toISOString();changed.progress[0].progress_percent=0;await assert.rejects(prepareD1QaLearningVerification(changed,qa,actual));
+ for(const offset of [-300001,1000])await assert.rejects(prepareD1QaLearningVerification({...payload,snapshotAt:new Date(Date.now()+offset).toISOString()},qa,actual));assert.equal(db.prepare('SELECT status FROM d1_access_sync_state').get().status,'importing');
+});
+test('verified QA refresh still requires a genuine new source read and full field equality',async t=>{
+ const db=database(t),plan=await prepareD1QaLearningImport(payload,qa);for(const s of plan.statements)db.prepare(s.sql).run(...s.params);
+ const read=()=>Object.fromEntries(Object.keys(plan.expectedRows).map(table=>[table,db.prepare('SELECT * FROM '+table).all()]));
+ const first=await prepareD1QaLearningVerification({...payload,snapshotAt:new Date(Date.now()-1000).toISOString()},qa,read());for(const s of first.statements)db.prepare(s.sql).all(...s.params);
+ const second=await prepareD1QaLearningVerification({...payload,snapshotAt:new Date().toISOString()},qa,read());for(const s of second.statements)assert.equal(db.prepare(s.sql).all(...s.params).length,1);
+ const changed=structuredClone(payload);changed.snapshotAt=new Date().toISOString();changed.enrollments[0].status='revoked';await assert.rejects(prepareD1QaLearningVerification(changed,qa,read()));
 });

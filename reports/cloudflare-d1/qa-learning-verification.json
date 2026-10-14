@@ -1,0 +1,36 @@
+{
+  "status": "TESTED_QA_CURRENT_SOURCE_VERIFICATION",
+  "summary": {
+    "courses": 1,
+    "modules": 3,
+    "lessons": 26,
+    "contacts": 1,
+    "enrollments": 1,
+    "progress": 1,
+    "orders": 0,
+    "overrides": 1
+  },
+  "statements": 36,
+  "sourceSnapshotAt": "2026-10-14T20:48:27.374Z",
+  "localSqliteExecution": true,
+  "foreignKeyViolations": 0,
+  "fullSourceArchiveRoundtrip": true,
+  "readback": {
+    "matched": true,
+    "tables": 10,
+    "rows": 36
+  },
+  "marker": "verified",
+  "limits": "One QA dataset current-source verification only; Worker disabled, no native Auth/content refresh, serving or primary-writer/cutover claim",
+  "currentSourceReadback": {
+    "matched": true,
+    "tables": 10
+  },
+  "markerStates": [
+    "verified",
+    "verified"
+  ],
+  "appliedToD1": true,
+  "semanticParity": true,
+  "localVerificationMarker": "importing"
+}

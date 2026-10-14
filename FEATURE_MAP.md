@@ -1163,3 +1163,16 @@ Live QA parity đạt:1enrollment/1progress/1owned course/0completed lessons, ta
 Tests scoped chặn same-count nhưng khác ID/status/completion/grant/admin role; phép tính parity đạt vẫn không cho runtime dùng importing snapshot. Regression session/lesson/import giữ gate/revoke/ownership/privacy; TypeScript/scoped lint/Python syntax/diff đạt. Source runtime thay đổi chỉ tách hàm, chưa deploy; Worker staging vẫn disabled/cohort rỗng. Chưa session/native lesson HTTP QA hoặc /learn browser.
 
 IN PROGRESS: cần full current-field verification và guarded marker refresh/promotion cho QA, không heartbeat giả; giữ session history và xử lý Auth/content freshness, rồi nối SSR/login/sign-out/progress UI. Không native customer primary writer, all-data/RLS/admin/payment/Storage/Safari/rollback hoặc READY FOR CUTOVER. B là app riêng, Adplan/production không thay đổi.
+
+
+## 15/10/2026 — QA current-source verification và marker gates: TESTED phạm vi
+
+prepareD1QaLearningVerification so lại toàn bộ 10 bảng với source QA mới; cutoff cũ chỉ dùng để đối chiếu trường lịch sử, không dùng làm clock mới. SQL CAS dùng một JSON parameter chứa expected rows, kiểm count và từng field của mọi row, tránh vượt giới hạn bind khi có26lessons. Kiểm đồng hồ database: source mới không tương lai/không quá5phút. Archive cập nhật trước, access sau và mỗi bước guard toàn dataset; nếu dữ liệu đổi sau readback hoặc giữa hai bước, access vẫn importing. Refresh verified cũng bắt buộc source read mới/full equality, không heartbeat giả; không overwrite progress.
+
+CLI verify-staging/mark-qa-verified chạy lại actual source RPC semantic parity, source full-row read, kiểm content body hiện tại vẫn khớp, exact disabled Worker/D1/QA/no active session. Remote đã đối soát và promote archive/access verified, cutoff2026-10-14T20:48:27.374Z. Đây là1QA projection, không full Auth/customer dataset hay primary writer. Báo cáo main/reports/cloudflare-d1/qa-learning-verification.json; localVerificationMarker importing khác trạng thái remote verified được ghi riêng.
+
+Auth verify thêm tùy chọn allow-revoked-qa-history chỉ cho verification mode. Giữ một account/version1, full source hash/identity/status/metadata/cursor equality; không active/foreign-user/foreign-project session. Không xóa lịch sử để thỏa verifier0session. SQL CAS vẫn strict0session mặc định; tùy chọn mới chỉ cho lịch sử đúng QA đã revoke, có database-clock freshness. Remote Auth verification đạt với source mới20:51:11 UTC, marker verified và giữ1revoked session. Không đổi password/hash/ciphertext/native session hay source account.
+
+Remote metadata cuối:Worker disabled/cohort rỗng, access/archive/Auth verified theo các cutoff riêng,1session history/0unrevoked. Source content snapshot chưa refresh cutoff, nên chưa mở native learning.15scoped tests/TypeScript/lint/Python syntax/diff đạt. Các test đầu phát hiện helper archive dùng id thay user_id và fixture UTC cutoff nằm tương lai so với now; sửa đúng key và fixture quá khứ, giữ nguyên guard không cho tương lai.
+
+IN PROGRESS: cần refresh/reverify content và Auth khi hết freshness, giữ đồng bộ cutoff QA trước hosted API/SSR/login/signout/progress/browser. Chưa native UI/customer authority/full delta/data/RLS/admin/payment/Storage/Safari/rollback hoặc READY FOR CUTOVER. Vercel/Supabase production và appB/Adplan không bị thay đổi.

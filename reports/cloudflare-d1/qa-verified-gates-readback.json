@@ -1,0 +1,11 @@
+{
+  "status": "TESTED_QA_VERIFIED_GATES",
+  "workerMode": "disabled",
+  "cohortCount": 0,
+  "access": "verified",
+  "archive": "verified",
+  "auth": "verified",
+  "sessionHistory": 1,
+  "unrevokedSessions": 0,
+  "limits": "Individual historical QA cutoffs only; content freshness not refreshed, no native serving or primary writer"
+}

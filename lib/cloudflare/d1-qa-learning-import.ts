@@ -66,3 +66,40 @@ export function verifyD1QaLearningRows(expected:Record<string,Row[]>,actual:unkn
  }
  return {matched:true as const,tables:Object.keys(expected).length,rows:Object.values(expected).reduce((n,rows)=>n+rows.length,0)};
 }
+
+// Reverify unchanged initial QA data against a NEW genuine source read. The
+// historical imported cutoff is used only to compare the old target fields;
+// it is never presented as a fresh source clock. Two guarded updates fail
+// closed: archive first, then access. A partial outcome keeps access importing.
+export async function prepareD1QaLearningVerification(payload:unknown,qa:{userId:string;email:string},actual:unknown,now=Date.now()){
+ const source=obj(payload),target=obj(actual);
+ if(!Array.isArray(target.d1_qa_learning_source))throw Error('Initial QA archive required');
+ const archives=target.d1_qa_learning_source.map(obj);
+ if(archives.length!==1||archives[0].user_id!==qa.userId||!['pending','verified'].includes(String(archives[0].status)))throw Error('Initial QA archive required');
+ const oldSnapshot=stamp(archives[0].source_snapshot_at),freshSnapshot=stamp(source.snapshotAt);
+ if(!oldSnapshot||!freshSnapshot||!Number.isFinite(now)||Date.parse(oldSnapshot)>Date.parse(freshSnapshot)||now<Date.parse(freshSnapshot)||now-Date.parse(freshSnapshot)>300000)throw Error('Genuine fresh QA snapshot required');
+ const plan=await prepareD1QaLearningImport({...source,snapshotAt:oldSnapshot},qa);
+ if(!Array.isArray(target.d1_access_sync_state)||target.d1_access_sync_state.length!==1)throw Error('One QA access marker required');
+ const sync=obj(target.d1_access_sync_state[0]);
+ if(!['importing','verified'].includes(String(sync.status))||!stamp(sync.source_snapshot_at)||Date.parse(String(sync.source_snapshot_at))>Date.parse(freshSnapshot))throw Error('Invalid historical QA marker');
+ if(sync.status==='importing'&&sync.last_verified_at!==null)throw Error('Invalid initial QA marker');
+ if(sync.status==='verified'&&(!stamp(sync.last_verified_at)||Date.parse(String(sync.last_verified_at))<Date.parse(String(sync.source_snapshot_at))||Date.parse(String(sync.last_verified_at))>now))throw Error('Invalid verified QA marker');
+ plan.expectedRows.d1_qa_learning_source[0].status=archives[0].status;
+ plan.expectedRows.d1_access_sync_state[0].status=sync.status;
+ plan.expectedRows.d1_access_sync_state[0].source_snapshot_at=sync.source_snapshot_at;
+ plan.expectedRows.d1_access_sync_state[0].last_verified_at=sync.last_verified_at;
+ verifyD1QaLearningRows(plan.expectedRows,target);
+ const guard=(expected:Record<string,Row[]>)=>Object.entries(expected).map(([table,records])=>{
+  if(!/^d1_[a-z_]+$/.test(table))throw Error('Invalid QA verification table');
+  const columns=records.length?Object.keys(records[0]):[];
+  if(columns.some(column=>!/^\w+$/.test(column)))throw Error('Invalid QA verification column');
+  const predicates=columns.map(column=>`actual.${column} IS json_extract(wanted.value,'$.${column}')`).join(' AND ');
+  return `(SELECT count(*) FROM ${table})=json_array_length(?1,'$.${table}') AND NOT EXISTS(SELECT 1 FROM json_each(?1,'$.${table}') wanted WHERE NOT EXISTS(SELECT 1 FROM ${table} actual WHERE ${predicates||'1=1'}))`;
+ }).join(' AND ');
+ const clock="julianday(?2) BETWEEN julianday('now')-300000/86400000.0 AND julianday('now') AND julianday(?3) BETWEEN julianday(?2) AND julianday('now')";
+ const verifiedAt=new Date(now).toISOString(),expected=plan.expectedRows;
+ const archive:Statement={sql:`UPDATE d1_qa_learning_source SET status='verified',source_snapshot_at=?2 WHERE user_id=?4 AND source_project_id=?5 AND ${clock} AND ${guard(expected)} RETURNING status`,params:[canonical(expected),freshSnapshot,verifiedAt,qa.userId,project]};
+ const next=structuredClone(expected);next.d1_qa_learning_source[0].status='verified';next.d1_qa_learning_source[0].source_snapshot_at=freshSnapshot;
+ const access:Statement={sql:`UPDATE d1_access_sync_state SET status='verified',source_snapshot_at=?2,last_verified_at=?3 WHERE source_project_id=?5 AND EXISTS(SELECT 1 FROM d1_qa_learning_source WHERE user_id=?4 AND status='verified' AND source_snapshot_at=?2) AND ${clock} AND ${guard(next)} RETURNING status`,params:[canonical(next),freshSnapshot,verifiedAt,qa.userId,project]};
+ return {statements:[archive,access],readback:{matched:true as const,tables:Object.keys(expected).length},sourceSnapshotAt:freshSnapshot,limits:'One QA source revalidation only; no native primary-write authority'};
+}

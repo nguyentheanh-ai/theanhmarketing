@@ -6,11 +6,12 @@ import {isDeepStrictEqual} from 'node:util';
 try{
  let input='';for await(const chunk of process.stdin){input+=chunk;if(Buffer.byteLength(input)>2*1024*1024)throw Error('Input too large');}
  const {payload,qa,mode='prepare',targetCourse,targetRows}=JSON.parse(input);
- if(!['prepare','plan','verify'].includes(mode))throw Error('Invalid preparation mode');
+ if(!['prepare','plan','verify','reverify'].includes(mode))throw Error('Invalid preparation mode');
  const bundled=await build({stdin:{contents:'export * from "./lib/cloudflare/d1-qa-learning-import";export * from "./lib/cloudflare/d1-course-content";',resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',write:false});
  const h=await import('data:text/javascript;base64,'+Buffer.from(bundled.outputFiles[0].text).toString('base64'));
  const plan=await h.prepareD1QaLearningImport(payload,qa);
  if(mode==='plan'){await h.verifyD1CourseContent(payload.course,targetCourse);console.log(JSON.stringify({status:'PREPARED_INTERNAL',plan}));process.exit(0);}
+ if(mode==='reverify'){await h.verifyD1CourseContent(payload.course,targetCourse);const verified=await h.prepareD1QaLearningVerification(payload,qa,targetRows);console.log(JSON.stringify({status:'PREPARED_QA_VERIFICATION_INTERNAL',...verified}));process.exit(0);}
  if(mode==='verify'){const readback=h.verifyD1QaLearningRows(plan.expectedRows,targetRows);console.log(JSON.stringify({status:'VERIFIED_REMOTE_ROWS',readback}));process.exit(0);}
  const db=new DatabaseSync(':memory:');
  try{

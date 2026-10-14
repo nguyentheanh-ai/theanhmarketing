@@ -11,8 +11,13 @@ import urllib.error
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--apply-staging", action="store_true")
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--apply-staging", action="store_true")
+    modes.add_argument("--verify-staging", action="store_true")
+    parser.add_argument("--mark-qa-verified", action="store_true")
     args = parser.parse_args()
+    if args.mark_qa_verified and not args.verify_staging:
+        raise RuntimeError("Marker promotion requires source revalidation")
     root = Path(__file__).resolve().parents[1]
     spec = importlib.util.spec_from_file_location("qa_learning_keychain", root.parent / "scripts/backup-secrets.py")
     helper = importlib.util.module_from_spec(spec)
@@ -49,11 +54,19 @@ def main():
             raise RuntimeError("Disabled Worker with empty cohort required")
         if not any(b.get("name") == "NATIVE_AUTH_DB" and b.get("id") == "694139c9-6cda-4b8c-9228-c973dbcbb719" for b in bindings):
             raise RuntimeError("Exact D1 staging required")
-    if args.apply_staging:
+    if args.apply_staging or args.verify_staging:
         check_worker()
         identity = d1([{"sql": "SELECT (SELECT count(*) FROM d1_access_users) AS users,(SELECT count(*) FROM d1_auth_accounts) AS accounts,(SELECT count(*) FROM d1_auth_sessions WHERE revoked_at IS NULL) AS sessions,(SELECT count(*) FROM d1_access_users WHERE id=?1 AND normalized_email=?2 AND admin_role IS NULL) AS qa", "params": [uid, email.strip().lower()]}])[0]["results"][0]
         if identity != {"users": 1, "accounts": 1, "sessions": 0, "qa": 1}:
             raise RuntimeError("Exact QA identity and no active sessions required")
+    if args.verify_staging:
+        # Existing reviewed source RPC oracle is rerun, not an old report reused.
+        node = "/Users/theanh/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node"
+        parity = subprocess.run(["python3", "scripts/verify-qa-access-parity.py"], cwd=root,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=70)
+        oracle = json.loads(parity.stdout)
+        if parity.returncode or oracle.get("status") != "TESTED_REMOTE_QA_ACCESS_PARITY" or oracle.get("matched") is not True:
+            raise RuntimeError("Actual source/D1 semantic parity required")
     course_sql = (root / "scripts/course-content-source.sql").read_text().strip().rstrip(";")
     literal = email.replace("'", "''")
     query = """WITH course_doc AS (%s),
@@ -89,6 +102,32 @@ def main():
     report = prepare()
     if report.get("status") != "TESTED_QA_LEARNING_PREPARE":
         raise RuntimeError("Unexpected QA preparation state")
+    if args.verify_staging:
+        tables = ["d1_lms_courses", "d1_lms_modules", "d1_lms_lessons", "d1_lms_contacts", "d1_lms_enrollments", "d1_lms_progress", "d1_access_orders", "d1_access_overrides", "d1_qa_learning_source", "d1_access_sync_state"]
+        results = d1([{"sql": "SELECT * FROM " + table, "params": []} for table in tables])
+        target = {table: result["results"] for table, result in zip(tables, results)}
+        content = d1([{"sql": "SELECT * FROM d1_course_content WHERE slug=?1", "params": ["facebook-ads-2026"]}])[0]["results"]
+        if len(content) != 1:
+            raise RuntimeError("Exactly one source-compatible content document required")
+        verified = prepare("reverify", targetRows=target, targetCourse=content[0])
+        if verified.get("status") != "PREPARED_QA_VERIFICATION_INTERNAL":
+            raise RuntimeError("QA current source/target revalidation failed")
+        states = ["importing"]
+        if args.mark_qa_verified:
+            check_worker()
+            updates = d1(verified["statements"])
+            if any(update["results"] != [{"status": "verified"}] for update in updates):
+                raise RuntimeError("QA rows changed after verification; access gate not promoted")
+            state = d1([{"sql": "SELECT (SELECT status FROM d1_access_sync_state WHERE source_project_id=?1) AS access,(SELECT status FROM d1_qa_learning_source WHERE user_id=?2) AS archive", "params": ["vsxxgdzwtscuxcmjfckt", uid]}])[0]["results"][0]
+            if state != {"access": "verified", "archive": "verified"}:
+                raise RuntimeError("QA promoted state readback mismatch")
+            states = [state["access"], state["archive"]]
+        report.update(status="TESTED_QA_CURRENT_SOURCE_VERIFICATION", currentSourceReadback=verified["readback"],
+            sourceSnapshotAt=verified["sourceSnapshotAt"], markerStates=states, marker=states[0], localVerificationMarker="importing", appliedToD1=args.mark_qa_verified,
+            semanticParity=True, limits="One QA dataset current-source verification only; Worker disabled, no native Auth/content refresh, serving or primary-writer/cutover claim")
+        (root / "reports/cloudflare-d1/qa-learning-verification.json").write_text(json.dumps(report, indent=2) + "\n")
+        print(json.dumps(report))
+        return
     if args.apply_staging:
         target_course = d1([{"sql": "SELECT * FROM d1_course_content WHERE slug=?1", "params": ["facebook-ads-2026"]}])[0]["results"]
         if len(target_course) != 1:
