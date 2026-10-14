@@ -1,0 +1,15 @@
+{
+  "status": "TESTED_PREPARE_ONLY",
+  "courses": 1,
+  "sourceModules": 3,
+  "sourceLessons": 26,
+  "publishedModules": 3,
+  "publishedLessons": 23,
+  "resources": 0,
+  "documentBytes": 20224,
+  "roundtrip": true,
+  "requiredLessonPresent": true,
+  "ambiguousSourceOrder": true,
+  "ambiguousPublishedOrder": false,
+  "limits": "No remote D1 import, authorization, rendering or streaming claim"
+}

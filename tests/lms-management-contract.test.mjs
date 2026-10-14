@@ -124,7 +124,7 @@ test("student-facing LMS reads published enrollment data from the shared LMS sou
   const dashboardClient = read("components/app/student-dashboard.tsx");
   const lessonPage = read("app/learn/[course]/[lesson]/page.tsx");
   const learningRoom = read("components/course/learning-room.tsx");
-  const courseService = read("services/courseService.ts");
+  const courseService = read("services/courseService.ts") + read("lib/courses/course-projection.ts");
 
   assert.match(dashboardPage, /getStudentPortalSnapshot/, "dashboard must use the shared student portal snapshot");
   assert.match(studentPortalService, /getStudentLmsAccess/, "student portal snapshot must read active enrollments from LMS service");
