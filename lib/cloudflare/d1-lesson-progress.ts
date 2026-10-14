@@ -160,13 +160,19 @@ function parseProgressResponse(results: { results?: Record<string, unknown>[] }[
 // This candidate is not wired to app routes or a production writer yet.
 export async function markD1SessionLessonCompleted(db:AuthDatabase,token:string,
  input:{courseSlug:string;lessonId:string;operationId:string;completed?:boolean},
- policy:{sessionTtlMs:number;now?:number;resolveLesson:(courseSlug:string,lessonId:string)=>Promise<{id:string;title:string}|null>}){
+ policy:{sessionTtlMs:number;now?:number;qaUserIds?:readonly string[];resolveLesson:(courseSlug:string,lessonId:string)=>Promise<{id:string;title:string}|null>}){
+ // Hosting migration keeps Supabase as the only customer writer. This candidate
+ // only permits an explicit backend QA cohort; native cutover authority remains
+ // unimplemented and must not be simulated by a general enable switch.
+ const cohort=policy.qaUserIds;
+ if(!cohort?.length||cohort.length>100||cohort.some(id=>!uuid(id))||new Set(cohort).size!==cohort.length)throw new Error('Progress write authority unavailable');
  if(!input||typeof input.courseSlug!=='string'||!input.courseSlug||input.courseSlug.length>200
   ||typeof input.lessonId!=='string'||!uuid(input.lessonId)||typeof input.operationId!=='string'||!uuid(input.operationId)
   ||(input.completed!==undefined&&typeof input.completed!=='boolean'))throw new Error('Invalid student progress intent');
  const now=policy.now??Date.now(),projectId='vsxxgdzwtscuxcmjfckt';
  const session=await getD1AuthSession(db,token,{projectId,now,sessionTtlMs:policy.sessionTtlMs});
  if(!session||session.user.mustChangePassword||session.user.adminRole)throw new Error('Verified student session required');
+ if(!cohort.includes(session.user.id))throw new Error('Student progress request is not authorized');
  const lesson=await policy.resolveLesson(input.courseSlug,input.lessonId);
  if(!lesson||lesson.id!==input.lessonId||typeof lesson.title!=='string')throw new Error('Published lesson required');
  await assertD1AuthMirrorReady(db,{projectId,now});
@@ -193,13 +199,14 @@ export async function markD1SessionLessonCompleted(db:AuthDatabase,token:string,
  AND account.email_confirmed_at IS NOT NULL AND julianday(account.email_confirmed_at)<=julianday(?5)
  AND account.deleted_at IS NULL AND account.is_anonymous=0 AND account.must_change_password=0
  AND (account.banned_until IS NULL OR julianday(account.banned_until)<=julianday(?5))${liveClock})
- AND ${authMirrorReadySql(10,16,5)}${liveMirror}`;
+ AND ${authMirrorReadySql(10,16,5)}${liveMirror}
+ AND EXISTS(SELECT 1 FROM json_each(?17) qa WHERE qa.value=?1)`;
  // Provision, progress, operation ledger, enrollment and replay response all
  // carry the guard. The single D1 batch cannot interleave another Auth writer.
  const guarded=statements.map(statement=>{
   if(!statement.sql.includes('/* AUTH_SESSION_GUARD */'))throw new Error('Progress Auth guard unavailable');
   const params=[...statement.params];params[4]=window.stamp;params[5]=window.floor;
-  return {sql:statement.sql.replaceAll('/* AUTH_SESSION_GUARD */',guard),params:[...params,hash,window.floor]};
+  return {sql:statement.sql.replaceAll('/* AUTH_SESSION_GUARD */',guard),params:[...params,hash,window.floor,JSON.stringify(cohort)]};
  });
  return parseProgressResponse(await db.batch(guarded));
 }

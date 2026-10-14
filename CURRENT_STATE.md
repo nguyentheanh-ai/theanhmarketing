@@ -889,3 +889,14 @@ Refresh timestamp/floor trước batch; khi không có clock fixture, SQL kiểm
 TESTED:45/45 quyền/session/progress;10/10 HTTP workerd/D1. Chuỗi login cookie→quyền→complete50/replay/next100/undo50→logout chặn write/replay đạt; đúng chủ phiên/title backend. Revoke/version/expiry/ban/password-change/mirror races không ghi; lỗi sau progress rollback toàn bộ; queue qua expiry và ý định completed sai kiểu bị chặn. Lượt race fixture đầu SAVEPOINT ngoài BEGIN gây nested transaction; đã sửa mỗi tình huống dùng DB riêng và chạy đạt. TypeScript/lint/diff đạt. Dữ liệu fixture, không học viên thật.
 
 IN PROGRESS: chưa route/SSR/UI/video hoặc native deployment/import. Chưa primary-write authority/full delta/rollback ngược; không bật writer khách khi Supabase còn nguồn ghi chính. Source-session bridge/signup/recovery/Google-Facebook thật/admin/payment/Storage delivery còn thiếu; chưa READY_FOR_CUTOVER.
+
+
+## 15/10/2026 — HTTP quyền học/tiến độ và khóa ghi QA: scoped TESTED
+
+Thêm d1-student-http.ts: GET /api/cloudflare-student/access và POST /api/cloudflare-student/progress. Dùng cookie/parser body giới hạn8KiB hiện có, HTTPS/exact Origin và CSRF, body strict chỉ courseSlug/lessonId/operationId/completed. Không nhận UUID/email/proof/title/quyền QA client. Response private/no-store, không serialize legacyAccessProof; guest401, đổi mật khẩu409, lỗi backend503 giữ cookie và không log payload/SQL.
+
+Ghi mặc định WRITE_DISABLED. Backend qaWriteUserIds phải hợp lệ, duy nhất, tối đa100 UUID; service kiểm chủ phiên trong cohort và mỗi statement SQL kiểm cohort JSON cùng Auth guard. Chỉ phục vụ QA có phê duyệt; không có general native-write switch và không được dùng danh sách này thay cơ chế cutover authority của khách. HTTP worker harness đã bỏ handler fixture tự dựng, gọi module HTTP thật; resolver nội dung vẫn dùng bài/tiêu đề giả trong test.
+
+TESTED:48/48 quyền/session/progress/HTTP,11/11 workerd+D1, TypeScript/lint/diff đạt. Bao gồm cohort thiếu/sai/outside, WRITE_DISABLED không ghi/không clear cookie, không trả proof, strict authority injection/body/Origin/method, native cookie→progress50/replay/next100/undo50→logout deny. Không deploy/import hoặc dùng tiến độ học viên thật.
+
+IN PROGRESS: chưa mount route vào app Worker hoặc SSR /learn; staging hiện vẫn dùng Supabase. Chưa shared limiter cho progress, native-write authority/fencing/full delta/rollback ngược, nội dung đầy đủ/UI/streaming/admin/bridge/signup/recovery/provider thực/payment. Chưa READY_FOR_CUTOVER; không DNS/production writer mutation.
