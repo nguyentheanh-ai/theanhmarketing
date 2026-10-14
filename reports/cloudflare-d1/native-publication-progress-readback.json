@@ -1,0 +1,14 @@
+{
+  "workerRead": true,
+  "authDisabled": true,
+  "progressDisabled": true,
+  "emptyCohort": true,
+  "correctDatabase": true,
+  "databaseRead": true,
+  "counts": {
+    "active_sessions": 0,
+    "progress_rows": 1,
+    "enrollment_rows": 1,
+    "progress_operations": 0
+  }
+}

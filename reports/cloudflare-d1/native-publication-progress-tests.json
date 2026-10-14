@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "sqliteTests": 50,
+  "localWorkerdChecks": 16,
+  "typescript": "PASS",
+  "scopedLint": "PASS",
+  "scope": "Publication-bound native QA progress writer and HTTP path",
+  "limits": "Synthetic local write tests only; no hosted QA progress write or customer writer"
+}

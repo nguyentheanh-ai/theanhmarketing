@@ -3,9 +3,10 @@ import { readD1StudentCourseAccess } from "@/lib/cloudflare/d1-course-access";
 import { d1LegacyAccessEvidenceSql, type LegacyAccessProof } from "@/lib/cloudflare/d1-legacy-access-evidence";
 import {getD1AuthSession,type AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
 import {assertD1AuthMirrorReady,authMirrorReadySql,authMirrorWindow} from '@/lib/cloudflare/d1-auth-authority';
+import {progressPublicationGuard,type D1ProgressPublicationProof} from '@/lib/cloudflare/d1-progress-publication';
 
-// Staging candidate, no route calls this module. The caller verifies Auth and
-// resolves lesson ID/title server-side. Execute ALL statements as one D1 batch
+// Native QA routing uses only the session-bound writer below. Other exported
+// helpers remain prototype primitives. Execute ALL statements as one D1 batch
 // transaction; never invoke them individually or mix with a Supabase writer.
 const LEGACY_AUTH = `?12=${d1LegacyAccessEvidenceSql()}
  AND EXISTS (SELECT 1 FROM json_each(?13) allowed WHERE allowed.value=?3)`;
@@ -157,10 +158,11 @@ function parseProgressResponse(results: { results?: Record<string, unknown>[] }[
 
 // App A native-session write boundary. No userId/email/proof/title from HTTP.
 // resolveLesson is a backend content reader, never a callback supplied by clients.
-// This candidate is not wired to app routes or a production writer yet.
+// Mounted only behind the separate QA progress switch on A staging; no
+// production writer or client-supplied publication receipt is permitted.
 export async function markD1SessionLessonCompleted(db:AuthDatabase,token:string,
  input:{courseSlug:string;lessonId:string;operationId:string;completed?:boolean},
- policy:{sessionTtlMs:number;now?:number;qaUserIds?:readonly string[];resolveLesson:(courseSlug:string,lessonId:string)=>Promise<{id:string;title:string}|null>}){
+ policy:{sessionTtlMs:number;now?:number;qaUserIds?:readonly string[];requirePublicationProof?:boolean;resolveLesson:(courseSlug:string,lessonId:string)=>Promise<{id:string;title:string;publicationProof?:D1ProgressPublicationProof}|null>}){
  // Hosting migration keeps Supabase as the only customer writer. This candidate
  // only permits an explicit backend QA cohort; native cutover authority remains
  // unimplemented and must not be simulated by a general enable switch.
@@ -175,6 +177,7 @@ export async function markD1SessionLessonCompleted(db:AuthDatabase,token:string,
  if(!cohort.includes(session.user.id))throw new Error('Student progress request is not authorized');
  const lesson=await policy.resolveLesson(input.courseSlug,input.lessonId);
  if(!lesson||lesson.id!==input.lessonId||typeof lesson.title!=='string')throw new Error('Published lesson required');
+ const publication=policy.requirePublicationProof?progressPublicationGuard(lesson.publicationProof,policy.now===undefined):null;
  await assertD1AuthMirrorReady(db,{projectId,now});
  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token));
  const hash=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
@@ -206,7 +209,7 @@ export async function markD1SessionLessonCompleted(db:AuthDatabase,token:string,
  const guarded=statements.map(statement=>{
   if(!statement.sql.includes('/* AUTH_SESSION_GUARD */'))throw new Error('Progress Auth guard unavailable');
   const params=[...statement.params];params[4]=window.stamp;params[5]=window.floor;
-  return {sql:statement.sql.replaceAll('/* AUTH_SESSION_GUARD */',guard),params:[...params,hash,window.floor,JSON.stringify(cohort)]};
+  return {sql:statement.sql.replaceAll('/* AUTH_SESSION_GUARD */',guard+(publication?.sql??'')),params:[...params,hash,window.floor,JSON.stringify(cohort),...(publication?.params??[])]};
  });
  return parseProgressResponse(await db.batch(guarded));
 }

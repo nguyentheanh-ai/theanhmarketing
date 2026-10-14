@@ -2,11 +2,12 @@ import type {AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
 import {readD1SessionCookie,readBoundedAuthJson} from '@/lib/cloudflare/d1-auth-http';
 import {readD1StudentSessionAccess,readD1StudentLesson} from '@/lib/cloudflare/d1-student-session-access';
 import {markD1SessionLessonCompleted} from '@/lib/cloudflare/d1-lesson-progress';
-type Options={db:AuthDatabase;origin:string;sessionTtlMs:number;now?:number;allowedUserIds?:readonly string[];qaWriteUserIds?:readonly string[];
- resolveLesson?:(courseSlug:string,lessonId:string)=>Promise<{id:string;title:string}|null>};
+import type {D1ProgressPublicationProof} from '@/lib/cloudflare/d1-progress-publication';
+type Options={db:AuthDatabase;origin:string;sessionTtlMs:number;now?:number;allowedUserIds?:readonly string[];qaWriteUserIds?:readonly string[];requirePublicationProof?:boolean;
+ resolveLesson?:(courseSlug:string,lessonId:string)=>Promise<{id:string;title:string;publicationProof?:D1ProgressPublicationProof}|null>};
 function reply(status:number,body:unknown){return Response.json(body,{status,headers:{'Cache-Control':'private, no-store','Vary':'Cookie','X-Content-Type-Options':'nosniff'}});}
 const bad={ok:false,message:'Không thể xử lý yêu cầu học tập.'};
-// Native staging transport for A only; existing /learn SSR is not switched.
+// Native staging transport for A only; no customer write authority.
 // Never configure the QA cohort from HTTP or enable customer writes in phase A.
 export async function handleD1StudentHttp(request:Request,options:Options){
  const origin=new URL(options.origin),url=new URL(request.url);
@@ -47,7 +48,7 @@ export async function handleD1StudentHttp(request:Request,options:Options){
    ||(body.completed!==undefined&&typeof body.completed!=='boolean'))return reply(400,bad);
   const result=await markD1SessionLessonCompleted(options.db,token,{
    courseSlug:body.courseSlug,lessonId:body.lessonId,operationId:body.operationId,completed:body.completed as boolean|undefined,
-  },{sessionTtlMs:options.sessionTtlMs,now:options.now,qaUserIds:writeUsers,resolveLesson:options.resolveLesson});
+  },{sessionTtlMs:options.sessionTtlMs,now:options.now,qaUserIds:writeUsers,resolveLesson:options.resolveLesson,requirePublicationProof:options.requirePublicationProof});
   return reply(200,result);
  }catch(error){
   const message=error instanceof Error?error.message:'';

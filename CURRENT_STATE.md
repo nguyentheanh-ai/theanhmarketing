@@ -1090,3 +1090,16 @@ Trạng thái toàn migration: IN PROGRESS. Chưa READY FOR CUTOVER. Cần bật
 Bằng chứng: main/reports/cloudflare-d1/native-qa-learning-ssr-http.json; native-learning-ui-{build,qa-deploy,restored,private-deploy,cleanup}.json.
 
 UI native bổ sung timeout 15 giây; logout chỉ điều hướng khi nhận JSON ok=true, không coi trang gateway HTTP200 là đăng xuất thành công. Ca HTTP200 HTML gateway đã được kiểm thử và giữ nguyên màn hình lỗi.
+
+
+## 15/10/2026 — Ghi tiến độ QA có kiểm tra nội dung: SOURCE và local Workers TESTED
+
+Thêm d1-progress-publication.ts: backend đọc nội dung D1 đã verified/fresh, xác minh hash thực, chọn lesson UUID gốc và cấp receipt chỉ bộ nhớ. Receipt từ JSON/client bị từ chối. Writer session-bound thêm receipt vào tất cả statement trong cùng D1 batch: body/hash/cutoff/course ID/count/marker, Auth/session/cohort/quyền và execution clock đều phải còn hợp lệ. Nội dung đổi sau resolution hoặc marker stale/pending chặn cả enrollment provision, progress và operation ledger. Không dựa vào kiểm quyền trên UI.
+
+Native router A có thêm CF_NATIVE_QA_PROGRESS_MODE, source mặc định disabled. Chỉ mode Auth QA, origin A staging và cohort UUID backend hiện có mới được bật ghi QA; resolver thật và requirePublicationProof=true bắt buộc. Không có đường cấp quyền từ request body. Source chỉ nhập một QA nên không phải nguồn ghi khách hàng hoặc cơ chế cutover. Các primitive legacy/prototype khác chưa mount production.
+
+31 SQLite tests legacy/session/publication và 19 tests progress/student-session đạt; scoped lint/typecheck/diff và Vite build đạt. Local workerd/D1 có16 checks đạt bằng fixture: password login/cookie→quyền→lesson→lưu/replay/next/undo→refresh→logout; publication pending chặn ghi trước ledger. Guard kiểm body mutation giữa resolve và batch, marker pending/expired, receipt giả không tạo enrollment/owner/progress/operation. Lần chạy sandbox bị EPERM mở loopback; chạy đúng chế độ cấp quyền local runtime thành công, không sửa logic hay quyền provider để vượt lỗi.
+
+Staging A deploy mã này với Auth disabled, progress disabled, cohort rỗng. Chưa thực hiện ghi tiến độ QA hosted trong lượt này. Cần chọn đúng row QA hiện có, chụp trạng thái trước test, bật tạm một QA, kiểm semantic dữ liệu/retry/refresh/CSRF trên hosted và hoàn trả row QA bằng CAS; giữ operation/session history, không tác động source Supabase hoặc học viên thật. Cần kiểm header private/no-store trên bản hosted mới cùng browser/video/mobile/Safari.
+
+Tổng IN PROGRESS, chưa READY FOR CUTOVER. Full dữ liệu/Auth/providers/RLS/admin/payment/automation/Storage/delta/rollback và ứng dụng B vẫn phải hoàn tất riêng. Native QA vẫn dựa vào freshness của snapshot source, chưa thể thay thế Supabase khi nguồn ngừng. Báo cáo main/reports/cloudflare-d1/native-publication-progress-{tests,build,deploy}.json.

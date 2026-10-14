@@ -4,7 +4,7 @@ import { DatabaseSync } from "node:sqlite";
 import { readFileSync } from "node:fs";
 import { build } from "esbuild";
 import {createHash} from "node:crypto";
-const bundle=await build({entryPoints:["lib/cloudflare/d1-lesson-progress.ts"],bundle:true,platform:"node",format:"esm",write:false,logLevel:"silent"});
+const bundle=await build({stdin:{contents:'export * from "./lib/cloudflare/d1-lesson-progress";export * from "./lib/cloudflare/d1-progress-publication";export * from "./lib/cloudflare/d1-course-content";',resolveDir:process.cwd()},bundle:true,platform:"node",format:"esm",write:false,logLevel:"silent"});
 const writer=await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString("base64")}`);
 const accessBundle=await build({entryPoints:["lib/cloudflare/d1-course-access.ts"],bundle:true,platform:"node",format:"esm",write:false,logLevel:"silent"});
 const {readD1StudentCourseAccess}=await import(`data:text/javascript;base64,${Buffer.from(accessBundle.outputFiles[0].text).toString("base64")}`);
@@ -192,3 +192,24 @@ test('student HTTP defaults to write-disabled, preserves cookie and never return
 test('student HTTP rejects QA authority injection, bad method/body/Origin and a cohort excluding the logged-in user',async t=>{const f=authFixture(t);f.paid();const h=transport(f),options={...h.options,qaWriteUserIds:[id(1)]},body={courseSlug:'qa-course',lessonId:id(5),operationId:id(10)};for(const patch of [{qaUserIds:[id(1)]},{userId:id(2)},{email:'other@example.invalid'},{legacyAccessProof:{}},{completed:'false'}])assert.equal((await handleD1StudentHttp(h.post({...body,...patch}),options)).status,400);assert.equal((await handleD1StudentHttp(h.post(body,{Origin:'https://attacker.invalid'}),options)).status,403);assert.equal((await handleD1StudentHttp(h.post(body,{'Sec-Fetch-Site':'cross-site'}),options)).status,403);assert.equal((await handleD1StudentHttp(h.post(body,{'Content-Type':'text/plain'}),options)).status,400);assert.equal((await handleD1StudentHttp(new Request(h.get(),{method:'POST',body:'{}'}),options)).status,405);assert.equal((await handleD1StudentHttp(h.post(body),{...options,qaWriteUserIds:[id(2)]})).status,403);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0})});
 
 test('HTTP write cohort cannot exceed its configured identity read cohort',async t=>{const f=authFixture(t);f.paid();const h=transport(f);const r=await handleD1StudentHttp(h.post({courseSlug:'qa-course',lessonId:id(5),operationId:id(10)}),{...h.options,allowedUserIds:[id(2)],qaWriteUserIds:[id(1)]});assert.equal(r.status,503);assert.equal((await r.json()).code,'WRITE_DISABLED');assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0})});
+
+
+async function publishedFixture(t){
+ const f=authFixture(t);f.paid();f.db.exec(readFileSync('scripts/d1-course-content-prototype.sql','utf8'));
+ const source={id:id(3),slug:'qa-course',title:'Khóa thử',status:'open',lms_status:'published',visibility:'enrolled',price:100,course_modules:[{id:id(4),course_id:id(3),title:'Module',sort_order:1,status:'published',lessons:[5,6].map(n=>({id:id(n),module_id:id(4),course_id:id(3),title:'Bài '+n,sort_order:n,status:'published',lesson_type:'video',youtube_url:'https://youtu.be/abcdef12345',embed_url:null,access_type:'enrolled_only',lesson_resources:[]}))}]};
+ const prepared=await writer.prepareD1CourseContent(source,stamp);f.db.prepare(prepared.sql).run(...prepared.params);f.db.prepare("INSERT INTO d1_course_content_sync VALUES(?,?,?,'verified',1)").run('vsxxgdzwtscuxcmjfckt',stamp,stamp);
+ const options={now,sessionTtlMs:3600000,qaUserIds:[id(1)],requirePublicationProof:true,resolveLesson:(slug,lesson)=>writer.resolveD1ProgressLesson(f.authDb,slug,lesson,now)};
+ return {...f,publishedWrite:()=>writer.markD1SessionLessonCompleted(f.authDb,f.token,f.input,options),options};
+}
+test('publication-bound native write completes and replays without duplicating progress or enrollment',async t=>{
+ const f=await publishedFixture(t);const response=await f.publishedWrite();assert.equal(response.progressPercent,50);assert.deepEqual(await f.publishedWrite(),response);assert.deepEqual(f.counts(),{enrollments:1,owners:1,progress:1,operations:1});
+});
+test('content mutation after backend resolution denies every write, including provision and operation ledger',async t=>{
+ const f=await publishedFixture(t);f.beforeBatch(()=>f.db.exec("UPDATE d1_course_content SET source_document=json_set(source_document,'$.title','Changed after resolution')"));await assert.rejects(f.publishedWrite(),/not authorized/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
+});
+test('unverified or expired publication marker at execution denies progress with no side effects',async t=>{
+ for(const sql of ["UPDATE d1_course_content_sync SET status='pending'","UPDATE d1_course_content_sync SET last_verified_at='2020-01-01T00:00:00Z'"]){const f=await publishedFixture(t);f.beforeBatch(()=>f.db.exec(sql));await assert.rejects(f.publishedWrite(),/not authorized/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0})}
+});
+test('serialized publication proof is rejected before any write even with matching fields',async t=>{
+ const f=await publishedFixture(t);const lesson=await writer.resolveD1ProgressLesson(f.authDb,'qa-course',id(5),now);const forged=JSON.parse(JSON.stringify(lesson));await assert.rejects(writer.markD1SessionLessonCompleted(f.authDb,f.token,f.input,{...f.options,resolveLesson:async()=>forged}),/Verified progress publication/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
+});
