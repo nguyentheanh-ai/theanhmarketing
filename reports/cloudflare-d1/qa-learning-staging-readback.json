@@ -1,0 +1,18 @@
+{
+  "status": "TESTED_PENDING_IMPORT_READBACK",
+  "workerMode": "disabled",
+  "cohortCount": 0,
+  "unrevokedQaSessions": 0,
+  "courses": 1,
+  "modules": 3,
+  "lessons": 26,
+  "contacts": 1,
+  "enrollments": 1,
+  "progress": 1,
+  "orders": 0,
+  "overrides": 1,
+  "accessState": "importing",
+  "archiveState": "pending",
+  "publishedLessonCount": 23,
+  "limits": "Counts and disabled gates only; full-field evidence is in qa-learning-prepare.json, semantic parity not claimed"
+}

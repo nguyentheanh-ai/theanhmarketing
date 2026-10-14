@@ -1,0 +1,6 @@
+{
+  "status": "TESTED_FUNCTION_DEFINITION",
+  "matchesReviewedReadOnlySql": true,
+  "sourceRpcReadOnlyRoleMayExecute": false,
+  "limits": "No privilege changes, RPC execution or entitlement parity verdict"
+}

@@ -1,0 +1,11 @@
+{
+  "status": "TESTED_SOURCE_QA_SCOPED_RPC",
+  "enrollments": 1,
+  "progress": 1,
+  "lessonCounts": {
+    "facebook-ads-2026": 23
+  },
+  "reviewedReadOnlyDefinitionMatched": true,
+  "privilegeChanges": false,
+  "limits": "Actual source RPC SELECT aggregate only; no full D1 identity/status parity or marker promotion"
+}

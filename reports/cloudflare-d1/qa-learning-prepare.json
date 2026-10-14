@@ -1,5 +1,5 @@
 {
-  "status": "TESTED_QA_LEARNING_PREPARE",
+  "status": "IMPORTED_QA_LEARNING_PENDING",
   "summary": {
     "courses": 1,
     "modules": 3,
@@ -11,7 +11,7 @@
     "overrides": 1
   },
   "statements": 36,
-  "sourceSnapshotAt": "2026-10-14T20:19:58.225Z",
+  "sourceSnapshotAt": "2026-10-14T20:25:57.724Z",
   "localSqliteExecution": true,
   "foreignKeyViolations": 0,
   "fullSourceArchiveRoundtrip": true,
@@ -21,5 +21,11 @@
     "rows": 36
   },
   "marker": "importing",
-  "limits": "QA initial plan only; no source mutation, overwrite, verified marker or customer migration"
+  "limits": "QA staging import/readback only; access importing and archive pending, Worker disabled; no source/customer/native authority mutation",
+  "remoteReadback": {
+    "matched": true,
+    "tables": 10,
+    "rows": 36
+  },
+  "appliedToD1": true
 }
