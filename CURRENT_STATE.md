@@ -1,3 +1,9 @@
+## 14/10/2026 — Auth HTTP và shared limiter candidate
+
+19/19 ca SQLite + Request/Response đạt, 5/5 luồng HTTP trên local workerd với binding D1 thật đạt: bcrypt login/cookie, refresh giữ UUID, foreign Origin bị chặn, logout thu hồi row phiên, bộ đếm chung trả 429. Typecheck/scoped lint đạt. HTTP dùng cookie __Host-tam-session Secure/HttpOnly/SameSite=Lax, JSON không chứa token, dữ liệu private/no-store, POST exact Origin, body giới hạn 8 KiB. Limiter HMAC riêng IP/email + atomic D1 batch; policy test không phải cấu hình production. Role chỉ owner/editor từ protected source, không tin user metadata hoặc client.
+
+Chưa có route/provider app A/B sử dụng candidate. Không triển khai rotate HTTP khi persistence/bridge chưa hoàn chỉnh. Cần retention limiter, import Auth mã hóa + delta, chính sách phiên hiện hành, OAuth/reset/bridge, hosted CPU và tài khoản QA xuyên suốt /learn. `withSession('first-primary')` đã thử trên D1 local adapter. Không DNS/source-write cutover hoặc thay credential production. **IN PROGRESS**.
+
 ## 14/10/2026 — Auth D1 độc lập: lõi candidate được kiểm cục bộ
 
 Thêm `legacy-password.ts`, `d1-auth-core.ts`, schema accounts/sessions và hai script kiểm fixture. bcryptjs 3.0.3 giữ xác minh bcrypt cũ (cost 6/10, UTF-8/giới hạn 72 byte); hash nhập được mã hóa AES-GCM và ràng buộc project/UUID. Token phiên opaque chỉ lưu SHA-256, kiểm trạng thái tài khoản/phiên/version ở backend; rotation nguyên tử một lần, thu hồi một hoặc toàn bộ phiên. Cấp phiên kiểm lại credential/version sau bcrypt và đọc role mới nhất; user_metadata không cấp admin. Caller bắt buộc có limiter trước bcrypt và cookie Secure/HttpOnly host-only. Chưa có route hoặc binding dùng candidate.

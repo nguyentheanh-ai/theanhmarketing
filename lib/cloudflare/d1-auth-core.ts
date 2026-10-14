@@ -22,7 +22,7 @@ function opaque(){return btoa(String.fromCharCode(...crypto.getRandomValues(new 
 async function digest(token:string){const value=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(token));return Array.from(new Uint8Array(value),b=>b.toString(16).padStart(2,"0")).join("");}
 function profile(row:Record<string,unknown>){
  if(typeof row.user_id!=="string"||typeof row.normalized_email!=="string")throw new Error("Auth identity unavailable");
- return {id:row.user_id,email:row.normalized_email,adminRole:row.admin_role===null?null:String(row.admin_role),mustChangePassword:row.must_change_password===1};
+ return {id:row.user_id,email:row.normalized_email,adminRole:row.admin_role==="owner"||row.admin_role==="editor"?row.admin_role:null,mustChangePassword:row.must_change_password===1};
 }
 // Public synthetic hash, solely for equal-cost verification of unknown/inactive
 // accounts. It never grants a session. Cost-10 can exceed Workers Free CPU.

@@ -25,3 +25,10 @@ CREATE TABLE IF NOT EXISTS d1_auth_sessions (
 );
 CREATE INDEX IF NOT EXISTS d1_auth_sessions_user_family ON d1_auth_sessions(user_id,family_id);
 CREATE INDEX IF NOT EXISTS d1_auth_sessions_expiry ON d1_auth_sessions(expires_at);
+-- Bounded keyed counters. Expired buckets need an explicit retention job before production.
+CREATE TABLE IF NOT EXISTS d1_auth_attempt_buckets (
+  bucket_key TEXT PRIMARY KEY CHECK(length(bucket_key)=64),
+  attempts INTEGER NOT NULL CHECK(attempts>0),
+  reset_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS d1_auth_attempt_buckets_expiry ON d1_auth_attempt_buckets(reset_at);
