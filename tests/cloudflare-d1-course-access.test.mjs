@@ -16,6 +16,7 @@ function fixture(t) {
   t.after(() => db.close());
   db.exec(readFileSync("scripts/d1-lms-compatibility-prototype.sql", "utf8"));
   db.exec(readFileSync("scripts/d1-course-access-source-prototype.sql", "utf8"));
+  db.exec(readFileSync("scripts/d1-lms-legacy-enrollment-owners-prototype.sql", "utf8"));
   db.prepare("INSERT INTO d1_access_users VALUES (?,?,?)").run(student.id, student.email, null);
   db.prepare("INSERT INTO d1_access_users VALUES (?,?,?)").run("qa-user-b", "qa-b@example.invalid", null);
   db.prepare("INSERT INTO d1_access_sync_state VALUES (?,?,?,?)").run("vsxxgdzwtscuxcmjfckt", stamp, stamp, "verified");

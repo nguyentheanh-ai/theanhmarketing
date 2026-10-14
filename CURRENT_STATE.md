@@ -1,5 +1,9 @@
 # Current State - theanh-main
 
+## 14/10/2026 — Vòng đời enrollment legacy trên Green candidate
+
+Legacy-aware progress batch provision mapping theo quyền hiện hành, so lại source evidence trong transaction; revoke/refund không để enrollment derived tự giữ quyền. 30 test SQLite/typecheck/lint đạt; remote fixture concurrent/revoke/regrant đạt và thu hồi sạch. Cohort offline provision 222 cặp có bài published, 0 predicate write gap, quyền/IDs/progress gốc giữ nguyên; 162 cặp không có lesson published không cần thao tác bài. Chưa nối route/Auth/D1 binding hoặc nhập khách remote. Cần importer/delta, HTTP E2E và adoption khi native enrollment xuất hiện sau này.
+
 ## 14/10/2026 — Ghi tiến độ D1 staging candidate
 
 Bộ ghi `lib/cloudflare/d1-lesson-progress.ts` dùng một atomic batch với operation ledger và upsert; 16 test đọc/ghi SQLite và typecheck/lint đạt. RPC nguồn được diễn tập trên user/course giả trong clone mã hóa rồi rollback. SQL batch D1 remote kiểm complete/undo/replay/fault/concurrent retry đạt; dữ liệu giả thu hồi sạch. Chưa nối route/binding/Auth mới. Snapshot còn 384 quyền/294 tài khoản thiếu enrollment cho predicate ghi nguồn; cần projection legacy quyền có grant/revoke lifecycle trước cutover.

@@ -1,26 +1,32 @@
 import { isAdminEmail } from "@/lib/course-access";
+import { readD1StudentCourseAccess } from "@/lib/cloudflare/d1-course-access";
+import { d1LegacyAccessEvidenceSql, type LegacyAccessProof } from "@/lib/cloudflare/d1-legacy-access-evidence";
 
 // Staging candidate, no route calls this module. The caller verifies Auth and
 // resolves lesson ID/title server-side. Execute ALL statements as one D1 batch
 // transaction; never invoke them individually or mix with a Supabase writer.
+const LEGACY_AUTH = `?12=${d1LegacyAccessEvidenceSql()}
+ AND EXISTS (SELECT 1 FROM json_each(?13) allowed WHERE allowed.value=?3)`;
 const ELIGIBLE = `WITH eligible_base AS (
  SELECT e.id,e.course_id,e.course_slug,l.id AS lesson_id,course.id AS resolved_course_id
  FROM d1_lms_enrollments e
  LEFT JOIN d1_lms_contacts contact ON contact.id=e.contact_id
+ LEFT JOIN d1_lms_legacy_enrollment_owners legacy ON legacy.enrollment_id=e.id
  JOIN d1_lms_courses course ON course.slug=e.course_slug AND course.slug=?3 AND course.lms_status='published'
  JOIN d1_lms_modules module ON module.course_id=course.id AND module.status='published'
  JOIN d1_lms_lessons l ON l.module_id=module.id AND l.course_id=course.id AND l.status='published' AND l.id=?4
  WHERE e.status IN ('active','completed') AND (e.expires_at IS NULL OR julianday(e.expires_at)>julianday(?5))
- AND (e.user_id=?1 OR contact.normalized_email=?2)
+ AND ((legacy.enrollment_id IS NULL AND (e.user_id=?1 OR contact.normalized_email=?2))
+   OR (legacy.user_id=?1 AND legacy.course_slug=?3 AND ${LEGACY_AUTH}))
  AND json_type(e.metadata)='object'
  AND NOT EXISTS (SELECT 1 FROM d1_lms_progress p WHERE p.enrollment_id=e.id AND p.lesson_id=l.id AND json_type(p.metadata)<>'object')
  AND EXISTS (SELECT 1 FROM d1_access_users u WHERE u.id=?1 AND u.normalized_email=?2 AND coalesce(u.admin_role,'') NOT IN ('owner','editor'))
  AND EXISTS (SELECT 1 FROM d1_access_sync_state s WHERE s.source_project_id=?10 AND s.status='verified'
    AND julianday(s.source_snapshot_at) BETWEEN julianday(?6) AND julianday(?5)
-   AND julianday(s.last_verified_at) BETWEEN julianday(?6) AND julianday(?5))
+   AND julianday(s.last_verified_at) BETWEEN julianday(?6) AND julianday(?5)) AND ?14 IS NOT NULL
 )`;
 const OP_MATCH = `op.id=?7 AND op.user_id=?1 AND op.normalized_email=?2 AND op.course_slug=?3
- AND op.lesson_id=?4 AND op.completed=?8 AND op.lesson_title=?9 AND ?11 IS NOT NULL
+ AND op.lesson_id=?4 AND op.completed=?8 AND ?11 IS NOT NULL
  AND EXISTS (SELECT 1 FROM eligible_base e WHERE e.id=op.enrollment_id)`;
 const PENDING = `${ELIGIBLE}, pending AS (
  SELECT op.* FROM d1_lms_progress_operations op WHERE ${OP_MATCH} AND op.status='pending'
@@ -59,6 +65,33 @@ const SQL = [
   `${ELIGIBLE} SELECT op.response_json FROM d1_lms_progress_operations op WHERE ${OP_MATCH} AND op.status='applied'`,
 ];
 
+const PROVISION_GUARD = `EXISTS (SELECT 1 FROM d1_access_users u WHERE u.id=?1 AND u.normalized_email=?2
+ AND coalesce(u.admin_role,'') NOT IN ('owner','editor'))
+ AND EXISTS (SELECT 1 FROM d1_access_sync_state s WHERE s.source_project_id=?10 AND s.status='verified'
+   AND julianday(s.source_snapshot_at) BETWEEN julianday(?6) AND julianday(?5)
+   AND julianday(s.last_verified_at) BETWEEN julianday(?6) AND julianday(?5))
+ AND ${LEGACY_AUTH} AND ?11 IS NOT NULL
+ AND NOT EXISTS (SELECT 1 FROM d1_lms_progress_operations previous WHERE previous.id=?7 AND
+   (previous.user_id<>?1 OR previous.normalized_email<>?2 OR previous.course_slug<>?3
+    OR previous.lesson_id<>?4 OR previous.completed<>?8))`;
+const PROVISION_SQL = [
+ `INSERT INTO d1_lms_enrollments
+  (id,contact_id,user_id,course_id,course_slug,status,expires_at,updated_at,metadata)
+  SELECT ?14,NULL,NULL,course.id,course.slug,'active',NULL,?5,json_object('source','cloudflare-legacy-access')
+  FROM d1_lms_courses course WHERE course.slug=?3 AND course.lms_status='published' AND ${PROVISION_GUARD}
+  AND EXISTS (SELECT 1 FROM d1_lms_lessons l JOIN d1_lms_modules m ON m.id=l.module_id
+    WHERE l.id=?4 AND m.course_id=course.id AND l.course_id=course.id AND l.status='published' AND m.status='published')
+  AND NOT EXISTS (SELECT 1 FROM d1_lms_legacy_enrollment_owners legacy WHERE legacy.user_id=?1 AND legacy.course_slug=?3)
+  AND NOT EXISTS (SELECT 1 FROM d1_lms_enrollments e LEFT JOIN d1_lms_contacts c ON c.id=e.contact_id
+    LEFT JOIN d1_lms_legacy_enrollment_owners legacy ON legacy.enrollment_id=e.id
+    WHERE legacy.enrollment_id IS NULL AND e.course_slug=?3 AND e.status IN ('active','completed')
+    AND (e.expires_at IS NULL OR julianday(e.expires_at)>julianday(?5)) AND (e.user_id=?1 OR c.normalized_email=?2))`,
+ `INSERT INTO d1_lms_legacy_enrollment_owners(enrollment_id,user_id,course_slug)
+  SELECT e.id,?1,e.course_slug FROM d1_lms_enrollments e
+  WHERE e.id=?14 AND e.user_id IS NULL AND e.contact_id IS NULL AND e.course_slug=?3 AND ${PROVISION_GUARD}
+  ON CONFLICT(user_id,course_slug) DO NOTHING`,
+];
+
 type Statement = { sql: string; params: (string | number)[] };
 type AtomicBatch = (statements: readonly Statement[]) => Promise<{ results?: Record<string, unknown>[] }[]>;
 type ProgressInput = {
@@ -67,7 +100,7 @@ type ProgressInput = {
 };
 function uuid(value: string) { return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value); }
 
-export function buildD1LessonCompletionBatch(input: ProgressInput, options: { now?: number; maxSnapshotAgeMs?: number } = {}): Statement[] {
+function buildBatch(input: ProgressInput, options: { now?: number; maxSnapshotAgeMs?: number } = {}, proof?: LegacyAccessProof): Statement[] {
   const email = input.email.trim().toLowerCase();
   const now = options.now ?? Date.now(), maxAge = options.maxSnapshotAgeMs ?? 300000;
   if (!uuid(input.userId) || !uuid(input.lessonId) || !uuid(input.operationId) || !email || isAdminEmail(email)
@@ -75,12 +108,40 @@ export function buildD1LessonCompletionBatch(input: ProgressInput, options: { no
     || !Number.isFinite(now) || !Number.isFinite(maxAge) || maxAge<=0) throw new Error("Invalid verified progress request");
   const params = [input.userId,email,input.courseSlug,input.lessonId,new Date(now).toISOString(),
     new Date(now-maxAge).toISOString(),input.operationId,input.completed===false?0:1,input.lessonTitle,
-    "vsxxgdzwtscuxcmjfckt",crypto.randomUUID()];
+    "vsxxgdzwtscuxcmjfckt",crypto.randomUUID(),proof?.evidenceJson ?? "",JSON.stringify(proof?.allowedSlugs ?? []),crypto.randomUUID()];
   return SQL.map(sql=>({sql,params:[...params]}));
+}
+
+export function buildD1LessonCompletionBatch(input: ProgressInput, options: { now?: number; maxSnapshotAgeMs?: number } = {}): Statement[] {
+  return buildBatch(input,options);
+}
+
+export async function prepareD1LegacyAwareLessonCompletionBatch(
+  readSnapshot: (sql: string, parameters: readonly string[]) => Promise<unknown>,
+  input: ProgressInput, options: { now?: number; maxSnapshotAgeMs?: number } = {},
+): Promise<Statement[]> {
+  // Proof is derived here from the database and production permission helper,
+  // never from input, form fields, cookies or client metadata.
+  const access = await readD1StudentCourseAccess(readSnapshot,{id:input.userId,email:input.email},options);
+  if (access.legacyAccessProof.evidenceJson.length>1024*1024) throw new Error("Access evidence exceeds staging limit");
+  const writes=buildBatch(input,options,access.legacyAccessProof);
+  return [...PROVISION_SQL.map(sql=>({sql,params:[...writes[0].params]})),...writes];
 }
 
 export async function markD1LessonCompleted(executeAtomicBatch: AtomicBatch, input: ProgressInput, options: { now?: number; maxSnapshotAgeMs?: number } = {}) {
   const results = await executeAtomicBatch(buildD1LessonCompletionBatch(input,options));
+  return parseProgressResponse(results);
+}
+
+export async function markD1LegacyAwareLessonCompleted(
+  readSnapshot: (sql: string, parameters: readonly string[]) => Promise<unknown>,
+  executeAtomicBatch: AtomicBatch, input: ProgressInput, options: { now?: number; maxSnapshotAgeMs?: number } = {},
+) {
+  const statements=await prepareD1LegacyAwareLessonCompletionBatch(readSnapshot,input,options);
+  return parseProgressResponse(await executeAtomicBatch(statements));
+}
+
+function parseProgressResponse(results: { results?: Record<string, unknown>[] }[]) {
   const raw = results.at(-1)?.results?.[0]?.response_json;
   if (typeof raw!=="string") throw new Error("Student progress request is not authorized or operation conflicts");
   let value: unknown;

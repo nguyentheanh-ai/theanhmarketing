@@ -1,5 +1,7 @@
 # Feature Map - theanh-main
 
+- 14/10/2026 IN PROGRESS: reserved legacy enrollment owner mapping + permission evidence guard cho Green. Revoke/refund chặn ngay, regrant giữ progress; 30 test và remote lifecycle fixture đạt. Offline 222 cặp quyền có bài được provision, 0 write predicate gap, không ghi progress khách hoặc đổi IDs gốc. Chưa nối application/Auth/primary writer.
+
 - 14/10/2026 IN PROGRESS: candidate ghi tiến độ D1 + operation ledger, chưa có route. 7 test ghi/9 test đọc, source RPC fixture rollback và remote D1 complete/undo/replay/fault/concurrent retry đạt. last_seen_at/source status semantics được giữ; legacy paid-only thiếu enrollment chưa được tự tạo. Auth, delta/rollback và quyền lifecycle vẫn chặn cutover.
 
 - 14/10/2026 IN PROGRESS: bộ đọc quyền D1 hợp nguồn paid order/override/LMS, chưa nối route. 9 test SQLite và đối chiếu offline 433 học viên với RPC nguồn đạt, không có lệch quyền/enrollment/completed lesson. Giữ `contacts.email` nguồn rồi metadata, không ưu tiên normalized email. Cần Auth/D1 binding, import/delta, admin và viết tiến độ trước cutover.

@@ -10,7 +10,7 @@ const id=(n)=>`00000000-0000-4000-8000-${String(n).padStart(12,"0")}`;
 const now=Date.parse("2026-10-14T13:00:00Z"),stamp=new Date(now).toISOString();
 function fixture(t){
  const db=new DatabaseSync(":memory:");t.after(()=>db.close());db.exec("PRAGMA foreign_keys=ON");
- for(const file of ["d1-lms-compatibility-prototype.sql","d1-course-access-source-prototype.sql","d1-lms-progress-operations-prototype.sql"]) db.exec(readFileSync(`scripts/${file}`,"utf8"));
+ for(const file of ["d1-lms-compatibility-prototype.sql","d1-course-access-source-prototype.sql","d1-lms-progress-operations-prototype.sql","d1-lms-legacy-enrollment-owners-prototype.sql"]) db.exec(readFileSync(`scripts/${file}`,"utf8"));
  db.prepare("INSERT INTO d1_access_users VALUES (?,?,NULL)").run(id(1),"qa@example.invalid");
  db.prepare("INSERT INTO d1_access_users VALUES (?,?,NULL)").run(id(2),"other@example.invalid");
  db.prepare("INSERT INTO d1_access_sync_state VALUES (?,?,?,'verified')").run("vsxxgdzwtscuxcmjfckt",stamp,stamp);
