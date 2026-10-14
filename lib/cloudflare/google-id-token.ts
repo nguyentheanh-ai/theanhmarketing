@@ -2,7 +2,7 @@ import { createRemoteJWKSet,jwtVerify,type JWTVerifyGetKey } from 'jose';
 import {assertD1AuthMirrorReady,authMirrorReadySql} from '@/lib/cloudflare/d1-auth-authority';
 import type { AuthDatabase } from '@/lib/cloudflare/d1-auth-core';
 const proof=Symbol('verified-google-id-token');
-export type VerifiedGoogleSubject=Readonly<{provider:'google';subject:string;clientId:string;projectId:string;[proof]:true}>;
+export type VerifiedGoogleSubject=Readonly<{provider:'google';subject:string;clientId:string;projectId:string;nonce:string;[proof]:true}>;
 // Public signing keys only, fixed Google origin. No user-supplied URL or key.
 const googleKeys=createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'),{timeoutDuration:5000,cooldownDuration:30000,cacheMaxAge:600000});
 export function createGoogleIdTokenVerifier(config:{clientId:string;projectId:string},trustedKeys:JWTVerifyGetKey=googleKeys){
@@ -14,7 +14,7 @@ export function createGoogleIdTokenVerifier(config:{clientId:string;projectId:st
    const {payload}=await jwtVerify(token,trustedKeys,{algorithms:['RS256'],issuer:['https://accounts.google.com','accounts.google.com'],audience:config.clientId,
     requiredClaims:['iss','aud','sub','iat','exp','nonce'],currentDate:new Date(now),clockTolerance:0});
    if(typeof payload.sub!=='string'||!payload.sub||payload.sub.length>255||!/^[\x21-\x7e]+$/.test(payload.sub)||payload.nonce!==expectedNonce||typeof payload.iat!=='number'||payload.iat>now/1000||payload.exp===undefined||payload.exp<=payload.iat||(payload.azp!==undefined&&payload.azp!==config.clientId)||(Array.isArray(payload.aud)&&payload.aud.length>1&&payload.azp!==config.clientId))return null;
-   return Object.freeze({provider:'google',subject:payload.sub,clientId:config.clientId,projectId:config.projectId,[proof]:true as const});
+   return Object.freeze({provider:'google',subject:payload.sub,clientId:config.clientId,projectId:config.projectId,nonce:expectedNonce,[proof]:true as const});
   }catch{return null;}
  };
 }

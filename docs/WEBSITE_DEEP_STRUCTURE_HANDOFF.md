@@ -1,3 +1,15 @@
+## 15/10/2026 — Google OAuth transaction/issuance primitives: scoped TESTED
+
+Thêm transaction schema, begin/claim dùng state hash + browser-cookie hash, verifier/nonce/return path/persistence được JWE dir/A256GCM bằng khóa riêng, ràng buộc project/client/redirect/state/browser. Authorization URL Google cố định có S256/nonce/openid email; next path dùng helper an toàn hiện hành. Atomic claim pending→claimed với expiry, một callback thắng; dữ liệu JWE bị đổi, sai key/client/origin hoặc expiry đều chặn. Proof backend đóng băng; JSON client không dựng được claimed transaction.
+
+Google verified subject nay mang nonce đã xác minh. `finishD1GoogleSession` buộc nonce/client/project khớp transaction, lookup UUID gốc rồi batch INSERT session và hoàn tất flow; recheck identity/account version/status/expiry/mirror trong SQL. Hai lần completion đồng thời chỉ một session; completion fault rollback; account đổi sau lookup bị từ chối. Không tự gộp bằng email hoặc đăng ký user mới.
+
+`google-code-exchange.ts` chỉ POST endpoint TLS Google cố định, gửi PKCE/bound client+redirect, redirect:error/timeout10s, đọc body tối đa32KiB và chỉ trả ID token. Provider access/refresh token không persist/return; network/stream/body lỗi trả thông báo chung không payload/secret. Test fetcher là fixture, **chưa gọi Google token endpoint thật**.
+
+**TESTED:** 13/13 Node crypto/SQLite/transport-fixture checks; Google verifier regression 9/9 đạt; TypeScript/scoped lint đạt. Local workerd+D1+JWE+RSA flow begin→claim→verify→hai completion→một session→replay deny đạt, DB xác minh một session/one done flow. Token/key/subject đều giả, không OAuth Google thật. Chưa deploy, chưa cấp/sao chép credential Google, không callback/DNS production mutation.
+
+**IN PROGRESS:** HTTP start/callback/cookie parsing/limiter/origin, lỗi/cancel/retry/status failed/retention, callback allowlist + client credential staging, redirect cuối theo must-change, no-referrer/no-store và redaction query code ở observability, browser/Safari Google QA thật; new signup/identity linking/source-session bridge. Facebook Auth B riêng vẫn chưa xử lý. Không READY FOR CUTOVER.
+
 ## 14/10/2026 — Auth account delta có CAS/cursor: scoped TESTED
 
 Thêm `d1-auth-delta.ts`, fingerprint nội bộ và hai bảng source_versions/delta_operations. Initial import ghi baseline theo project, revision epoch microseconds (20 chữ số) và digest; dùng cursor riêng nên logout-all cập nhật account.updated_at không làm sai thứ tự nguồn. Metadata JSON được canonicalize theo thứ tự ký tự cố định, không phụ thuộc locale. Không log digest, hash hoặc dữ liệu đầu vào.
