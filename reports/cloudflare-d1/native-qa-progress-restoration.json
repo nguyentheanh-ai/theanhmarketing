@@ -1,0 +1,7 @@
+{
+  "status": "RESTORED_VERIFIED",
+  "restoredRows": 2,
+  "retainedOperations": 2,
+  "fullFieldMatch": true,
+  "limits": "QA staging only; no source database restoration"
+}

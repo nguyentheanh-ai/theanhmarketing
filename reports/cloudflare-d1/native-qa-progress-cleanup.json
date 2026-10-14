@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "access": {
+    "policyDeleted": true,
+    "tokenDeleted": true,
+    "policyAbsent": true,
+    "tokenAbsent": true,
+    "ownerPolicyPresent": true
+  },
+  "readback": {
+    "settingsRead": true,
+    "authDisabled": true,
+    "progressDisabled": true,
+    "emptyCohort": true,
+    "correctDatabase": true,
+    "databaseRead": true,
+    "counts": {
+      "active_sessions": 0,
+      "session_history": 4,
+      "progress_rows": 1,
+      "enrollment_rows": 1,
+      "operations": 2
+    }
+  },
+  "limits": "QA records only; retained encrypted Access envelope and private QA snapshot, no active service token"
+}

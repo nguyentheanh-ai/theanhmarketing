@@ -1241,3 +1241,18 @@ Writer native hiện buộc receipt cuối tồn tại; CASE nhánh không có r
 32 SQLite tests,17 local workerd checks,TS/scoped lint/diff đạt; Vite build và deploy staging A với Auth/progress disabled, cohort rỗng. Chưa mở ghi QA hosted trong lượt này do sửa lỗi atomicity trước. Không tạo hoặc sửa progress source Supabase, không học viên thật. Cần chụp row QA trước hosted test, giữ lịch sử operation/session và dùng CAS restore đầy đủ enrollment/progress sau test; không giả việc undo API đã hoàn trả metadata/timestamp nguồn.
 
 Tổng IN PROGRESS; chưa READY FOR CUTOVER. Các điều kiện toàn bộ A/B, dữ liệu/Auth/RLS/Storage/payment/delta và rollback production vẫn còn. B là app riêng. Bằng chứng main/reports/cloudflare-d1/native-progress-atomicity-{reproduction,tests,deploy,readback}.json.
+
+
+## 15/10/2026 — Ghi tiến độ D1 QA hosted và hoàn trả dữ liệu: TESTED theo phạm vi
+
+Đã chụp private0600 trước test đúng1enrollment/1progress chưa hoàn thành của QA, giữ UUID/metadata/timestamp gốc. Công cụ qa-progress-state.py chặn nếu Worker chưa Auth/progress disabled/cohort rỗng hoặc D1 có thêm identity/row/active/foreign session ngoài scope. Không gọi Supabase trong snapshot/restore. prepareQaProgressRestore kiểm immutable fields, lịch sử cũ, đúng2operation IDs dự định, payload/receipt và metadata thay đổi đúng bởi writer; transaction có assertion đầu/cuối so toàn row+ledger và lesson count. Concurrent mutation hoặc lỗi giữa2UPDATE rollback toàn bộ. Không DELETE/upsert hay thay credential.
+
+Hosted Worker A QA c53bdc5e-7dc6-4a07-85b8-be01eac8dee2 đạt11checks: native password/UUID/cookie; existing lesson chưa hoàn thành; body giả quyền400/Origin khác403; lưu completion với phần trăm đúng23published lessons; replay cùngreceipt; refresh API giữ completion; HTTPSSR hiện nút Đã hoàn thành; undo; late retry receipt cũ không ghi đè undo; refreshSSR hiện chưa hoàn thành; logout/cookie cũ bị từ chối. Cache-Control private/no-store, Vary Cookie và khôngCFcacheHIT được kiểm trên response API/SSR thực. Đây chưa là browser hydration/click/video/mobile/Safari.
+
+Đã xóa temporary Access token/policy và GET xác minh không còn, policy chủ hệ thống giữ nguyên. Restore Worker 887258c1-d1c2-484b-b5e2-7af596de2466 Auth/progress disabled, cohort rỗng. QA session cleanup đúng một identity và giữ history. CAS trên D1 thật hoàn trả2row, full-field readback khớp snapshot trước; giữ2operation đã applied trong lịch sử. Không coi undo API là khôi phục metadata/time. Remote cuối0active/4session history,1enrollment/1progress/2operations.
+
+Sau restore đã chạy mới source course revalidation, actual sourceRPC/legacy semantic rights parity + full-field learning verification và Auth/hash/status/cursor verification: đều đạt, không source writes. Chỉ cutoff markers verified được làm mới từ đọc nguồn thật; không customer/native primary authority. Source Supabase/Vercel production không thay đổi, B là app riêng.
+
+4SQLite restore tests,TS/scoped lint/Python syntax/diff đạt. Mã runtime hiện vẫn native disabled; các công cụ mới không thêm route/customer writer. Bằng chứng main/reports/cloudflare-d1/native-qa-progress-{deploy,http,restoration,worker-restored,cleanup}.json; private snapshot/credential envelope không commit.
+
+Tổng IN PROGRESS, chưa READY FOR CUTOVER. Cần browser desktop/mobile/Safari và phát video/private Ebook/R2 bằng native Auth; complete recovery/password/provider/session bridge, dữ liệu/RLS/all workflows/admin/payment/automation của A và B, delta/write fence/reverse rollback và usage/costs/observability. Full PostgreSQL restore/extensions vẫn cần nghiệm thu riêng; bộ QA này không thay thế full data restore hay production cutover.

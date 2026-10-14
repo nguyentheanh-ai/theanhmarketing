@@ -1,0 +1,63 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-14T21:47:19.642Z",
+  "scope": "Hosted D1 QA progress on one existing row, API and HTTP SSR",
+  "checks": [
+    {
+      "name": "native-password-login",
+      "status": 200,
+      "originalUuid": true
+    },
+    {
+      "name": "baseline-existing-lesson",
+      "status": 200,
+      "uncompleted": true
+    },
+    {
+      "name": "reject-client-authority",
+      "bodyStatus": 400,
+      "csrfStatus": 403
+    },
+    {
+      "name": "save-completion",
+      "status": 200,
+      "percentMatchesPublishedCount": true
+    },
+    {
+      "name": "retry-identical-intent",
+      "status": 200,
+      "sameReceipt": true
+    },
+    {
+      "name": "refresh-completed-api",
+      "status": 200,
+      "completionPersisted": true
+    },
+    {
+      "name": "refresh-completed-ssr",
+      "status": 200,
+      "visibleCompletion": true,
+      "privateNoStore": true
+    },
+    {
+      "name": "undo-qa-completion",
+      "status": 200
+    },
+    {
+      "name": "late-original-retry",
+      "status": 200,
+      "lateRetryDidNotOverwriteUndo": true
+    },
+    {
+      "name": "refresh-undone-ssr",
+      "status": 200,
+      "uncompletedVisible": true
+    },
+    {
+      "name": "logout",
+      "status": 200,
+      "oldCookieDenied": true
+    }
+  ],
+  "limits": "QA row requires separate full-field CAS restoration; no browser/video playback, customer write authority or production cutover claim"
+}
