@@ -1,0 +1,11 @@
+{
+  "status": "TESTED_REMOTE_QA_ACCESS_PARITY",
+  "matched": true,
+  "enrollments": 1,
+  "progress": 1,
+  "ownedCourses": 1,
+  "completedLessons": 0,
+  "limits": "Actual source RPC plus source legacy inputs compared to D1 snapshot calculation; no marker promotion, session/UI or customer authority claim",
+  "targetMirrorState": "importing",
+  "sourceReadAt": "2026-10-14T20:39:51.965067+00:00"
+}

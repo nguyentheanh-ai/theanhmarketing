@@ -1150,3 +1150,16 @@ Remote readback xác nhận Worker disabled/cohort rỗng,0QA session chưa revo
 RPC student_lms_enrollments_scoped trên Source qua read_only API bịHTTP400. Catalog xác minh role supabase_read_only_user không EXECUTE; function SQL STABLE/security-invoker. Đọc actual prosrc và so đúng body SELECT đã review trong migration:khớp. Dùng kết nối quản trị hiện hữu qua API default mode để chạy đúng SELECT QA (không SET ROLE/GRANT/đổi quyền). RPC đạt:1enrollment/1progress/lesson_counts FacebookAds23. Đây chỉ đối chiếu aggregate với D1, chưa chứng minh full ID/status/progress/legacy authorization parity hoặc cho phép marker verified. Báo cáo qa-learning-{rpc-definition,source-rpc}.json.
 
 5tests/lint/Python syntax/diff đạt; thay đổi công cụ không nằm trong runtime nên không deploy Worker thêm. Source stage hiện tại giữ nguyên. IN PROGRESS: cần comparator với RPC/legacy semantics và guarded marker promotion, refresh Auth/content từ source thực, giữ history session đã revoke; chưa native QA browser/SSR /learn/customer writer/payment/fullmigration. B là app riêng, không Adplan. Không READY FOR CUTOVER hoặc production change.
+
+
+## 15/10/2026 — QA entitlement/progress semantic parity: TESTED phạm vi
+
+Tách phép tính quyền thuần deriveD1StudentCourseAccess khỏi runtime reader; readD1StudentCourseAccess vẫn kiểm mirror verified/fresh trước khi gọi. Không thêm chế độ bỏ qua gate vào API. Phép tính thuần chỉ dùng để đối soát dataset đang importing, không cấp runtime authority hoặc sửa marker.
+
+verify-qa-access-parity.py kiểm actual stored RPC body/STABLE/security-invoker khớp SQL đã review, rồi dùng kết nối quản trị sẵn có với BEGIN READ ONLY→SELECT đúng QA→COMMIT. Một source snapshot gồm RPC enrollment/progress, course publication và paid orders/override hiện hành. Node đọc actual D1_STUDENT_ACCESS_SQL qua API, so enrollment ID/slug/legacy-derived flag, progress enrollment/lesson ID/status/completedAt, quyền LMS/legacy/merged và completed lesson IDs. Timestamp phục vụ so sánh được chuẩn hóa UTC millisecond; không coi đó là bảo toàn microsecond toàn migration, bản gốc vẫn trong archive.
+
+Live QA parity đạt:1enrollment/1progress/1owned course/0completed lessons, target mirror vẫn importing. Có1progress row không đồng nghĩa học xong1bài. Không gửi source payload/danh tính/cookie/token qua report; không ghi source/D1, không GRANT/SET ROLE hoặc marker promotion. Bằng chứng main/reports/cloudflare-d1/qa-access-parity.json và scripts verify-qa-access-parity.py/mjs.
+
+Tests scoped chặn same-count nhưng khác ID/status/completion/grant/admin role; phép tính parity đạt vẫn không cho runtime dùng importing snapshot. Regression session/lesson/import giữ gate/revoke/ownership/privacy; TypeScript/scoped lint/Python syntax/diff đạt. Source runtime thay đổi chỉ tách hàm, chưa deploy; Worker staging vẫn disabled/cohort rỗng. Chưa session/native lesson HTTP QA hoặc /learn browser.
+
+IN PROGRESS: cần full current-field verification và guarded marker refresh/promotion cho QA, không heartbeat giả; giữ session history và xử lý Auth/content freshness, rồi nối SSR/login/sign-out/progress UI. Không native customer primary writer, all-data/RLS/admin/payment/Storage/Safari/rollback hoặc READY FOR CUTOVER. B là app riêng, Adplan/production không thay đổi.

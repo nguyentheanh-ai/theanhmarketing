@@ -83,6 +83,14 @@ export async function readD1StudentCourseAccess(
       throw new Error("Access projection is not current and verified");
     }
   }
+  return deriveD1StudentCourseAccess(snapshot,subject);
+}
+
+// Pure calculation for controlled migration verification. This does not grant
+// source authority. Runtime callers use readD1StudentCourseAccess and its gate.
+export function deriveD1StudentCourseAccess(raw:unknown,subject:VerifiedSubject){
+  const snapshot=object(raw),email=subject.email.trim().toLowerCase();
+  if(!subject.id||!email)throw new Error("Verified student session required");
   // Admin behavior needs a separate reviewed migration; do not silently treat
   // an administrator as a student or grant privileges from caller metadata.
   if (snapshot.admin_role === "owner" || snapshot.admin_role === "editor" || isAdminEmail(email)) {
