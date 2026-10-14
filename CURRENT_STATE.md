@@ -1,5 +1,9 @@
 # Current State - theanh-main
 
+## 14/10/2026 — Ghi tiến độ D1 staging candidate
+
+Bộ ghi `lib/cloudflare/d1-lesson-progress.ts` dùng một atomic batch với operation ledger và upsert; 16 test đọc/ghi SQLite và typecheck/lint đạt. RPC nguồn được diễn tập trên user/course giả trong clone mã hóa rồi rollback. SQL batch D1 remote kiểm complete/undo/replay/fault/concurrent retry đạt; dữ liệu giả thu hồi sạch. Chưa nối route/binding/Auth mới. Snapshot còn 384 quyền/294 tài khoản thiếu enrollment cho predicate ghi nguồn; cần projection legacy quyền có grant/revoke lifecycle trước cutover.
+
 ## 14/10/2026 — Bộ đọc quyền D1 staging, kiểm offline
 
 `lib/cloudflare/d1-course-access.ts` đọc một snapshot SQL có tham số, dùng hàm `getCourseAccessSlugs` hiện hành và hợp với enrollment/progress được lọc theo RPC nguồn. Chưa nối route hoặc binding Worker. 9 test SQLite, TypeScript Cloudflare và ESLint đạt. Harness trong image mã hóa đã so từng tài khoản với RPC PostgreSQL local phục hồi: 433 học viên, 0 lệch quyền/ghi danh/bài hoàn thành. Admin vẫn chặn ở reader này; Auth mới, writes, delta và remote Worker còn chưa kiểm.

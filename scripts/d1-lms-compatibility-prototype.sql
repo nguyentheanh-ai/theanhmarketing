@@ -45,7 +45,8 @@ CREATE TABLE IF NOT EXISTS d1_lms_enrollments (
   status TEXT NOT NULL CHECK (status IN ('active','paused','completed','revoked')),
   expires_at TEXT,
   updated_at TEXT NOT NULL,
-  metadata TEXT NOT NULL DEFAULT '{}' CHECK (json_valid(metadata))
+  metadata TEXT NOT NULL DEFAULT '{}' CHECK (json_valid(metadata)),
+  last_seen_at TEXT
 );
 CREATE UNIQUE INDEX IF NOT EXISTS d1_lms_enrollment_user_course
   ON d1_lms_enrollments(user_id, course_slug)

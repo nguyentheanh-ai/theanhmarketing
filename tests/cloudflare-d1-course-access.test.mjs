@@ -27,7 +27,7 @@ function fixture(t) {
     db.prepare("INSERT INTO d1_access_overrides VALUES (?,?,?,?,?)").run(id, student.email, source, at, deleted);
   const enrollment = (id, slug, user = student.id, contact = null, status = "active", expiry = null, metadata = "{}") => {
     db.prepare("INSERT OR IGNORE INTO d1_lms_courses VALUES (?,?,?,?)").run(`course-${slug}`, slug, "published", "enrolled");
-    db.prepare("INSERT INTO d1_lms_enrollments VALUES (?,?,?,?,?,?,?,?,?)")
+    db.prepare("INSERT INTO d1_lms_enrollments (id,contact_id,user_id,course_id,course_slug,status,expires_at,updated_at,metadata) VALUES (?,?,?,?,?,?,?,?,?)")
       .run(id, contact, user, `course-${slug}`, slug, status, expiry, stamp, metadata);
   };
   return { db, read, resolve, order, override, enrollment };

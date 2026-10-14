@@ -1,3 +1,7 @@
+## 14/10/2026 — Migration Cloudflare: ghi tiến độ candidate
+
+Thêm `lib/cloudflare/d1-lesson-progress.ts` và operation schema; caller phải dùng D1 batch nguyên tử, session xác thực, lesson ID/title từ backend và operation ID giữ nguyên cho retry. Retry cũ không đảo ngược ý định mới; same ID khác payload bị từ chối. Source RPC dùng contacts.normalized_email cho ghi, khác contacts.email cho đọc; status completed không bị demote khi undo theo nguồn. 16 test SQLite/typecheck/lint, source clone fixture và remote D1 complete/undo/fault/concurrent retry đạt. Chưa nối route hoặc thay writer. Snapshot có 384 quyền/294 tài khoản không có enrollment phù hợp ghi RPC; cần Green projection quyền/grant-revoke lifecycle. Không backfill Blue hoặc cấp enrollment derived vĩnh viễn.
+
 ## 14/10/2026 — Migration Cloudflare: đọc quyền D1 chỉ kiểm offline
 
 Thêm `lib/cloudflare/d1-course-access.ts` với một SQL snapshot có tham số và scope UUID/email. Dùng nguyên `getCourseAccessSlugs` cho đơn/override, giữ fallback `contacts.email` rồi metadata theo RPC thật. Chưa nối route hoặc Worker binding. 9 test SQLite/typecheck/lint đạt; harness trong image mã hóa so 433 học viên với RPC phục hồi, 0 lệch quyền/enrollment/completed lesson, 509 cặp tổng và 505 cặp published. Admin, Auth thay thế, ghi tiến độ, remote D1/Worker, delta và thanh toán chưa đạt. Chỉ cập nhật nhánh migration; production vẫn Blue. Nguồn bằng chứng: `../CLOUDFLARE_TEST_RESULTS.md` và scripts parity ngoài Git app.

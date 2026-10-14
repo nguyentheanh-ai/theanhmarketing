@@ -50,7 +50,7 @@ def main():
     db.execute("INSERT INTO d1_lms_modules VALUES (?,?,?)", (module,course,"published"))
     db.execute("INSERT INTO d1_lms_lessons VALUES (?,?,?,?,?,?)", (lesson,course,module,"qa-lesson","published",1))
     db.execute("INSERT INTO d1_lms_contacts VALUES (?,?,?)", (contact,"qa@example.invalid","qa@example.invalid"))
-    db.execute("INSERT INTO d1_lms_enrollments VALUES (?,?,?,?,?,?,?, ?,?)",
+    db.execute("INSERT INTO d1_lms_enrollments (id,contact_id,user_id,course_id,course_slug,status,expires_at,updated_at,metadata) VALUES (?,?,?,?,?,?,?, ?,?)",
                (enrollment,contact,a,course,"qa-course","active",None,NOW,"{}"))
     assert scoped_enrollments(db,a,"qa@example.invalid","qa-course")==[(enrollment,)]
     assert scoped_enrollments(db,b,"other@example.invalid","qa-course")==[]
@@ -64,7 +64,7 @@ def main():
            (b,enrollment,lesson,"completed",100,NOW,NOW,"{}"))
     denied(db,"INSERT INTO d1_lms_progress VALUES (?,?,?,?,?,?,?,?)",
            (b,b,lesson,"completed",100,NOW,NOW,"{}"))
-    denied(db,"INSERT INTO d1_lms_enrollments VALUES (?,?,?,?,?,?,?,?,?)",
+    denied(db,"INSERT INTO d1_lms_enrollments (id,contact_id,user_id,course_id,course_slug,status,expires_at,updated_at,metadata) VALUES (?,?,?,?,?,?,?,?,?)",
            (b,None,a,course,"qa-course","active",None,NOW,"{}"))
     denied(db,"INSERT INTO d1_lms_lessons VALUES (?,?,?,?,?,?)",
            (b,b,module,"bad","published",1))
@@ -80,7 +80,7 @@ def main():
     denied(db,"INSERT INTO d1_lms_progress VALUES (?,?,?,?,?,?,?,?)",
            (b,enrollment,other_lesson,"completed",100,NOW,NOW,"{}"))
     denied(db,"UPDATE d1_lms_progress SET lesson_id=? WHERE id=?",(other_lesson,progress))
-    denied(db,"INSERT INTO d1_lms_enrollments VALUES (?,?,?,?,?,?,?,?,?)",
+    denied(db,"INSERT INTO d1_lms_enrollments (id,contact_id,user_id,course_id,course_slug,status,expires_at,updated_at,metadata) VALUES (?,?,?,?,?,?,?,?,?)",
            (b,None,b,course,"bad","invalid",None,NOW,"{}"))
     assert db.execute("SELECT COUNT(*) FROM d1_lms_progress").fetchone()[0]==1
     print("PASS: scoped entitlement, course/expiry guard, progress uniqueness, cross-course guard, FK, status checks (synthetic)")
