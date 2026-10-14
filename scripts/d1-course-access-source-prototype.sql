@@ -1,4 +1,6 @@
--- STAGING PROTOTYPE ONLY. Do not import customer rows or bind /learn to this schema.
+-- STAGING PROTOTYPE ONLY. Never import customers into remote D1 or bind /learn.
+-- Offline parity may create an ephemeral SQLite projection ONLY inside the
+-- encrypted backup volume, with no HTTP server, logs or production writes.
 -- This preserves the input fields used by existing getCourseAccessSlugs logic,
 -- not a replacement for Auth, Supabase RLS, LMS RPCs, or payment processing.
 -- All IDs remain original text UUIDs. The importer must normalize emails and

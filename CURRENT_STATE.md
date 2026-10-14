@@ -1,5 +1,9 @@
 # Current State - theanh-main
 
+## 14/10/2026 — Bộ đọc quyền D1 staging, kiểm offline
+
+`lib/cloudflare/d1-course-access.ts` đọc một snapshot SQL có tham số, dùng hàm `getCourseAccessSlugs` hiện hành và hợp với enrollment/progress được lọc theo RPC nguồn. Chưa nối route hoặc binding Worker. 9 test SQLite, TypeScript Cloudflare và ESLint đạt. Harness trong image mã hóa đã so từng tài khoản với RPC PostgreSQL local phục hồi: 433 học viên, 0 lệch quyền/ghi danh/bài hoàn thành. Admin vẫn chặn ở reader này; Auth mới, writes, delta và remote Worker còn chưa kiểm.
+
 ## 09/09 — Pixel Codex cho landing Bộ Kit đã LIVE
 
 Runtimebf7ad8a / production dpl_5Rb61wiJraXsjNj7fre9E9jKFkWt READY. Kit www/apex200 và chunk đúng Pixel/hai route; bundle Kit và4landing tĩnh khác giữ hash, guards405, runtime logs không error.78tests/TS/lint/build PASS. Chưa Meta browser receipt; không test đơn thật. Xem docs/CODEX_PIXEL_20260908.md.

@@ -1,3 +1,7 @@
+## 14/10/2026 — Migration Cloudflare: đọc quyền D1 chỉ kiểm offline
+
+Thêm `lib/cloudflare/d1-course-access.ts` với một SQL snapshot có tham số và scope UUID/email. Dùng nguyên `getCourseAccessSlugs` cho đơn/override, giữ fallback `contacts.email` rồi metadata theo RPC thật. Chưa nối route hoặc Worker binding. 9 test SQLite/typecheck/lint đạt; harness trong image mã hóa so 433 học viên với RPC phục hồi, 0 lệch quyền/enrollment/completed lesson, 509 cặp tổng và 505 cặp published. Admin, Auth thay thế, ghi tiến độ, remote D1/Worker, delta và thanh toán chưa đạt. Chỉ cập nhật nhánh migration; production vẫn Blue. Nguồn bằng chứng: `../CLOUDFLARE_TEST_RESULTS.md` và scripts parity ngoài Git app.
+
 LIVE: runtime1dca5c2; production dpl_BySFkJAEHf8xMvPFpjwSHVSdfBZu READY. Live Admin confirmed legacy redirect to /dashboard/agents, advertising filter (2 Agents), tutorial panel (15 videos), desktop1440/mobile320 with no overflow. Guest download401; six landing200/four static hashes unchanged; new homepage copy present. Runtime error/fatal query empty. No ordinary-student E2E or full playback/download in this release. Rollback dpl_9B4eUhWcJFKtwTigYX1H2ezWo3K6.
 
 ## 20/09/2026 — Nhân viên AI trong khu vực học viên và nội dung trang chủ

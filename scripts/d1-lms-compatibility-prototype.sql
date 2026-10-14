@@ -1,4 +1,6 @@
--- STAGING PROTOTYPE ONLY. Synthetic records; never import customer data with this schema.
+-- STAGING PROTOTYPE ONLY. No customer import into remote D1 or serving /learn.
+-- An ephemeral offline parity projection is permitted only inside the encrypted
+-- backup volume, without a network server or production writes.
 -- Source: Supabase A public.courses/modules/lessons and crm_v2.contacts/enrollments/course_progress,
 -- inspected 2026-10-13. This is a behavioral slice, not a full PostgreSQL migration.
 -- IDs and timestamps are supplied by the caller; timestamps must be normalized UTC ISO-8601.
@@ -30,7 +32,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS d1_lms_lesson_slug ON d1_lms_lessons(course_id
 
 CREATE TABLE IF NOT EXISTS d1_lms_contacts (
   id TEXT PRIMARY KEY,
-  normalized_email TEXT
+  normalized_email TEXT,
+  source_email TEXT
 );
 
 CREATE TABLE IF NOT EXISTS d1_lms_enrollments (

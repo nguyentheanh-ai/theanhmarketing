@@ -24,7 +24,7 @@ def scoped_enrollments(db, user_id, verified_email, slug):
            LEFT JOIN d1_lms_contacts c ON c.id=e.contact_id
            LEFT JOIN d1_lms_courses course ON course.id=e.course_id
            WHERE (e.user_id=? OR (length(trim(?))>0 AND
-                    lower(trim(coalesce(nullif(c.normalized_email,''),
+                    lower(trim(coalesce(nullif(c.source_email,''),
                     json_extract(e.metadata,'$.student_email'))))=lower(trim(?))))
              AND coalesce(nullif(e.course_slug,''),
                  nullif(json_extract(e.metadata,'$.course_slug'),''),course.slug)=?
@@ -49,7 +49,7 @@ def main():
     db.execute("INSERT INTO d1_lms_courses VALUES (?,?,?,?)", (course,"qa-course","published","enrolled"))
     db.execute("INSERT INTO d1_lms_modules VALUES (?,?,?)", (module,course,"published"))
     db.execute("INSERT INTO d1_lms_lessons VALUES (?,?,?,?,?,?)", (lesson,course,module,"qa-lesson","published",1))
-    db.execute("INSERT INTO d1_lms_contacts VALUES (?,?)", (contact,"qa@example.invalid"))
+    db.execute("INSERT INTO d1_lms_contacts VALUES (?,?,?)", (contact,"qa@example.invalid","qa@example.invalid"))
     db.execute("INSERT INTO d1_lms_enrollments VALUES (?,?,?,?,?,?,?, ?,?)",
                (enrollment,contact,a,course,"qa-course","active",None,NOW,"{}"))
     assert scoped_enrollments(db,a,"qa@example.invalid","qa-course")==[(enrollment,)]
