@@ -1,3 +1,15 @@
+## 14/10/2026 — Provider identity + Google verifier: scoped TESTED
+
+Audit Auth topology chỉ xuất số tổng hợp trong clone AES-256. Snapshot A: 410 identity email + 89 Google = **499 identity**, 63 user có nhiều identity, 0 orphan/0 user thiếu identity; B: **269 identity email**, 0 Google/multiple/orphan/missing. Cả hai snapshot không có MFA factor hoặc SSO provider. A có 1.025 session và 1.024 refresh token chưa đánh dấu revoked; B 29/29; tất cả session không có not_after. Đây không chứng minh token/phiên còn hiệu lực và không xác định được TTL từ cấu hình Auth. Flow_state còn 300/14 hàng; không nhập provider token, auth code hay refresh token ở cổng này.
+
+Thêm schema `d1_auth_provider_identities`, initial prepared importer giữ identity UUID, user UUID, provider ID, email, identity_data và các thời gian; không gộp/link qua email, không chuyển OAuth token. Đối soát lại A 436 account + 499 identity/B 269 account + 269 identity trong SQLite tạm: **0 lệch credential/identity/account/status/user metadata**; riêng Google metadata.sub khớp provider_id đủ 89/89. Bundle/projection dọn, PostgreSQL dừng, image unmounted. Không import khách vào D1 remote.
+
+`google-id-token.ts` dùng jose **6.2.12** pinned, JWKS URL Google cố định, RS256 và issuer/audience/expiry/iat/nonce/presenter được kiểm. Verified subject đóng băng và có proof symbol nội bộ; JSON client không tạo được proof. Lookup chỉ bằng project + Google subject vào UUID gốc, không dùng email/role token để cấp quyền; account banned/deleted/unconfirmed/anonymous bị từ chối. Đây là verifier/lookup, **chưa có callback hoặc cấp phiên Google**. Nguồn triển khai: [Google OIDC](https://developers.google.com/identity/openid-connect/openid-connect), [jose](https://github.com/panva/jose).
+
+**TESTED:** 8/8 ca mật mã/SQL giả, 3/3 kiểm jose RSA trên local workerd, TypeScript Cloudflare và scoped lint đạt, harness Python/Node syntax đạt. Key/token RSA trong test là giả, không có login Google thật. Package diff chỉ thêm jose/lock; không upgrade package khác.
+
+**IN PROGRESS:** OAuth state/PKCE/nonce single-use, credentials + callback staging đã cho phép, đăng nhập Google QA thật và cấp phiên có guard; rolling bridge/migration phiên cũ; delta credential/status/identity và cổng freshness Auth trước khi nối route. Cần giữ callback/provider cũ tới khi đã xử lý flow đang mở và kiểm chứng chuyển phiên. Không reset mật khẩu hàng loạt, không dùng 14 passwordless A để kết luận tất cả Google-only. Không READY FOR CUTOVER.
+
 ## 14/10/2026 — Auth initial import và đối soát snapshot A/B, OFFLINE TESTED
 
 Thêm `d1-auth-import.ts` (plan prepared INSERT ban đầu, không upsert/delta), importer/parity-entry và harness `restore-schema-slice.py --schema auth --inspect-existing --d1-auth-parity`. Kiểm toàn bộ identity/email trùng/format/timestamp/role trước khi tạo plan. Credential dùng AES-GCM gắn project/UUID; metadata người dùng và trạng thái gốc giữ nguyên, không giả password cho tài khoản passwordless. Không ghi phiên nguồn vào bảng phiên mới. 5/5 test importer giả và TypeScript/lint đạt; Python syntax/Node syntax đạt. Lint script ngoài base path bị ignored nên không tính script đó lint đạt.

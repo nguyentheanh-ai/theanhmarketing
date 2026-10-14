@@ -1,0 +1,30 @@
+import {build} from 'esbuild';
+import {generateKeyPair,exportJWK,SignJWT,createLocalJWKSet} from 'jose';
+import {DatabaseSync} from 'node:sqlite';
+import {readFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+const bundle=await build({stdin:{contents:'export * from "./lib/cloudflare/google-id-token"; export * from "./lib/cloudflare/d1-auth-identities";',resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',write:false,tsconfig:'tsconfig.json'});
+const core=await import('data:text/javascript;base64,'+Buffer.from(bundle.outputFiles[0].text).toString('base64'));
+const {publicKey,privateKey}=await generateKeyPair('RS256'),jwk={...await exportJWK(publicKey),kid:'fixture',alg:'RS256',use:'sig'};
+const clientId='fixture.apps.googleusercontent.com',projectId='vsxxgdzwtscuxcmjfckt',now=Date.parse('2026-10-14T00:00:00Z'),sec=now/1000;
+const nonce='A'.repeat(43),sub='100000000000000000000001',uid='00000000-0000-4000-8000-000000000001',iid='00000000-0000-4000-8000-000000000002';
+const verify=core.createGoogleIdTokenVerifier({clientId,projectId},createLocalJWKSet({keys:[jwk]}));
+const payload={iss:'https://accounts.google.com',aud:clientId,sub,iat:sec,exp:sec+300,nonce,email:'changed@example.invalid',role:'owner'};
+const sign=(delta={})=>new SignJWT({...payload,...delta}).setProtectedHeader({alg:'RS256',kid:'fixture'}).sign(privateKey);
+let count=0,verified;const check=async(name,fn)=>{await fn();count++;console.log('PASS '+name)};
+await check('signed Google claims verified with expected audience and nonce',async()=>{verified=await verify(await sign(),nonce,now);assert.equal(verified.subject,sub);assert.equal(verified.projectId,projectId);assert(Object.isFrozen(verified));assert.equal(verified.email,undefined)});
+await check('wrong issuer/audience/expiry/nonce/iat/presenter denied',async()=>{for(const delta of [{iss:'https://attacker.invalid'},{aud:'wrong.apps.googleusercontent.com'},{exp:sec},{nonce:'B'.repeat(43)},{iat:sec+1},{azp:'wrong.apps.googleusercontent.com'},{sub:''},{sub:'x'.repeat(256)}])assert.equal(await verify(await sign(delta),nonce,now),null)});
+await check('multi-audience requires matching authorized presenter',async()=>{assert.equal(await verify(await sign({aud:[clientId,'other']}),nonce,now),null);assert(await verify(await sign({aud:[clientId,'other'],azp:clientId}),nonce,now))});
+await check('algorithm/signature confusion and malformed tokens denied',async()=>{const hmac=await new SignJWT(payload).setProtectedHeader({alg:'HS256'}).sign(crypto.getRandomValues(new Uint8Array(32)));assert.equal(await verify(hmac,nonce,now),null);const other=await generateKeyPair('RS256');const bad=await new SignJWT(payload).setProtectedHeader({alg:'RS256',kid:'fixture'}).sign(other.privateKey);assert.equal(await verify(bad,nonce,now),null);assert.equal(await verify('bad',nonce,now),null)});
+const source={id:iid,userId:uid,provider:'google',providerId:sub,email:'source@example.invalid',identityData:{sub,email:'source@example.invalid'},lastSignInAt:null,createdAt:'2026-10-13T00:00:00Z',updatedAt:'2026-10-13T00:00:00Z'};
+const sql=new DatabaseSync(':memory:');sql.exec(readFileSync('scripts/d1-course-access-source-prototype.sql','utf8'));sql.exec(readFileSync('scripts/d1-auth-core-prototype.sql','utf8'));sql.exec(readFileSync('scripts/d1-auth-provider-identities-prototype.sql','utf8'));
+const db={first:async(q,p)=>sql.prepare(q).get(...p)??null,batch:async()=>[]};
+try{
+ sql.prepare('INSERT INTO d1_access_users VALUES(?,?,NULL)').run(uid,'original@example.invalid');sql.prepare('INSERT INTO d1_auth_accounts(user_id,email_confirmed_at,created_at,updated_at) VALUES(?,?,?,?)').run(uid,'2026-10-13T00:00:00Z','2026-10-13T00:00:00Z','2026-10-13T00:00:00Z');
+ for(const s of core.prepareD1ProviderIdentityImport([source],{projectId,userIds:[uid]}))sql.prepare(s.sql).run(...s.params);
+ await check('verified provider sub maps to original UUID; email/role claims ignored',async()=>{const mapped=await core.lookupD1VerifiedGoogleSubject(db,verified,now);assert.equal(mapped.id,uid);assert.equal(mapped.email,'original@example.invalid');assert.equal(mapped.adminRole,null);assert.equal(mapped.identityId,iid)});
+ await check('unverified client proof and cross-project/unknown sub cannot map',async()=>{await assert.rejects(core.lookupD1VerifiedGoogleSubject(db,{provider:'google',subject:sub,projectId,clientId},now));const otherVerify=core.createGoogleIdTokenVerifier({clientId,projectId:'pppiqhkectojxbmhqcnx'},createLocalJWKSet({keys:[jwk]}));assert.equal(await core.lookupD1VerifiedGoogleSubject(db,await otherVerify(await sign(),nonce,now),now),null);assert.equal(await core.lookupD1VerifiedGoogleSubject(db,await verify(await sign({sub:'unknown'}),nonce,now),now),null)});
+ await check('deleted/banned/unconfirmed imported account denied',async()=>{for(const [field,value] of [['deleted_at','2026-10-13T00:00:00Z'],['banned_until','2026-10-15T00:00:00Z'],['email_confirmed_at',null]]){const old=sql.prepare(`SELECT ${field} value FROM d1_auth_accounts`).get().value;sql.prepare(`UPDATE d1_auth_accounts SET ${field}=?`).run(value);assert.equal(await core.lookupD1VerifiedGoogleSubject(db,verified,now),null);sql.prepare(`UPDATE d1_auth_accounts SET ${field}=?`).run(old)}});
+ await check('identity import rejects duplicate subjects, unsupported provider and orphan UUID',async()=>{for(const rows of [[source,source],[{...source,provider:'github'}],[{...source,userId:'00000000-0000-4000-8000-000000000003'}]])assert.throws(()=>core.prepareD1ProviderIdentityImport(rows,{projectId,userIds:[uid]}))});
+}finally{sql.close()}
+console.log(`Google identity candidate: ${count}/${count} synthetic cryptographic/SQL checks passed; no provider OAuth login/callback claim.`);
