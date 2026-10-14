@@ -987,3 +987,12 @@ Evidence tại `worktrees/sales-dashboard-20261001/reports/sales-dashboard-20261
 GET Auth config chính xác hai project bằng credential Keychain đã trả200: A có client ID/secret Google, B có client ID/secret Facebook; chỉ xuất cờ có cấu hình, không in/lưu giá trị. Cả hai jwt_exp=3600, sessions_timebox=0, sessions_inactivity_timeout=0. **3600 là thời hạn access JWT, không đủ căn cứ đặt native session hết hạn sau một giờ.** Cần giữ hành vi refresh/session bằng bridge + chính sách native có nghiệm thu; TTL trong test chỉ fixture. Chưa sao chép credential sang Cloudflare, chưa thêm callback ở Google/Meta hay đổi cấu hình production.
 
 **IN PROGRESS / chưa READY FOR CUTOVER:** cần route/binding/secrets runtime, redaction URL callback, provider callback allowlist, native authority/delta đầy đủ, session bridge/signup/recovery, ứng dụng dùng D1, thanh toán/Storage và rollback dữ liệu end-to-end. Supabase vẫn phục vụ dữ liệu/Auth cho hai staging hiện có. Canonical doctor báo release root dirty; không sửa root đó, chỉ candidate migration sạch trước thay đổi. Không thay DNS/nguồn ghi/webhook/dịch vụ cũ.
+
+
+## 15/10/2026 — Adapter binding D1 Auth thực: scoped TESTED
+
+`lib/cloudflare/d1-auth-database.ts` tạo session D1 theo từng request với first-primary, prepared parameters và một platform batch nguyên tử. Không dùng REST hoặc bộ nhớ isolate. Kiểu binding lấy từ SDK Miniflare đã cài, chỉ import type, không vào bundle. Kết quả batch kiểm success/order/rows; null được giữ đúng. Mọi lỗi binding/SQL được chuyển thành Auth database unavailable, không attach raw cause/query/params có thể lọt invocation logs. Không log row, credential hoặc dữ liệu người dùng.
+
+Ba harness password HTTP, Google HTTP và Google transaction đã thay adapter inline bằng module thật này. Workerd/D1 kiểm chứng password6/6; Google callback một phiên/replay deny và shared limiter đạt; hai completion cạnh tranh chỉ một phiên đạt. Test adapter riêng chứng minh statement thứ hai lỗi unique rollback cả lần ghi, null read, read-after-write/ordered batch và lỗi SQL chỉ trả thông báo chung. TypeScript Cloudflare/scoped lint/diff-check đạt. Tất cả dùng fixture giả; không gọi provider/network production và không deploy harness.
+
+**IN PROGRESS:** chưa gắn DB/native Auth vào route ứng dụng hoặc thay phiên Supabase; schema Auth remote/import/delta/authority/bridge và native /learn/payment còn cần làm. Lớp adapter không chứng minh app đã bỏ Supabase, không có cutover. Supabase/Vercel production giữ nguyên.

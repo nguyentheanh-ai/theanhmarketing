@@ -12,8 +12,9 @@ const password='Local-D1-HTTP-fixture-only',email='http-fixture@example.invalid'
 const envelope=await core.sealLegacyBcryptHash(await bcrypt.hash(password,10),key,{projectId,userId});
 const origin='https://auth-fixture.invalid';
 const source=`import {handleD1AuthHttp} from './lib/cloudflare/d1-auth-http';
+import {createD1AuthDatabase} from './lib/cloudflare/d1-auth-database';
 import {consumeD1AuthAttempt} from './lib/cloudflare/d1-auth-rate-limit';
-export default {async fetch(request,env){const session=env.DB.withSession('first-primary');const db={first:(sql,params)=>session.prepare(sql).bind(...params).first(),batch:statements=>session.batch(statements.map(s=>session.prepare(s.sql).bind(...s.params)))};
+export default {async fetch(request,env){const db=createD1AuthDatabase(env.DB);
 return handleD1AuthHttp(request,{db,projectId:${JSON.stringify(projectId)},origin:${JSON.stringify(origin)},credentialKey:${JSON.stringify(key)},sessionTtlMs:3600000,allowAttempt:async(request,email)=>{const ip=request.headers.get('CF-Connecting-IP');if(!ip)return {allowed:false,retryAfter:60};return consumeD1AuthAttempt(db,{projectId:${JSON.stringify(projectId)},ip,email},{secret:${JSON.stringify(limiterKey)},ip:{limit:10,windowMs:60000},email:{limit:5,windowMs:60000}})}})}};`;
 const bundle=await build({stdin:{contents:source,resolveDir:process.cwd()},bundle:true,format:'esm',platform:'browser',write:false,tsconfig:'tsconfig.json'});
 const mf=new Miniflare({workers:[{config:{name:'auth-http-fixture',compatibilityDate:'2026-10-13',compatibilityFlags:['nodejs_compat'],manifest:{mainModule:'fixture.mjs',modules:{'fixture.mjs':{type:'esm',contents:bundle.outputFiles[0].text}}},env:{DB:{type:'d1',name:'local-auth-fixture',id:'local-auth-fixture'}}}}]});
