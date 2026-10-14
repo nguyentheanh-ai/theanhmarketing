@@ -1,0 +1,51 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-14T20:59:06.971Z",
+  "scope": "Hosted native D1 QA session/course rights/lesson read only",
+  "checks": [
+    {
+      "name": "password-login",
+      "status": 200,
+      "originalUuid": true,
+      "secureCookie": true
+    },
+    {
+      "name": "refresh",
+      "reads": 2,
+      "status": 200
+    },
+    {
+      "name": "course-rights",
+      "status": 200,
+      "ownedCourse": true
+    },
+    {
+      "name": "required-lesson",
+      "status": 200,
+      "originalLessonId": true,
+      "sourceProgressRetained": true
+    },
+    {
+      "name": "lesson-refresh",
+      "status": 200
+    },
+    {
+      "name": "wrong-password",
+      "status": 401
+    },
+    {
+      "name": "progress-disabled",
+      "status": 503
+    },
+    {
+      "name": "logout",
+      "status": 200,
+      "revokedCookieIsGuest": true
+    },
+    {
+      "name": "logged-out-lesson",
+      "status": 401
+    }
+  ],
+  "limits": "No /learn UI/SSR, video playback, progress writes, provider login, source bridge or customer migration claim"
+}

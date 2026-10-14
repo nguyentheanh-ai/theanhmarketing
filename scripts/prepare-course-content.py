@@ -11,7 +11,9 @@ import urllib.error
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--apply-staging", action="store_true")
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--apply-staging", action="store_true")
+    modes.add_argument("--revalidate-staging", action="store_true")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     def cloud(path, method="GET", body=None):
@@ -35,15 +37,17 @@ def main():
         if len(result) != len(statements) or any(row.get("success") is not True for row in result):
             raise RuntimeError("D1 staging batch incomplete")
         return result
-    if args.apply_staging:
+    if args.apply_staging or args.revalidate_staging:
         bindings = cloud("/workers/scripts/theanh-main-cf-staging/settings").get("bindings", [])
         if not any(b.get("name") == "CF_NATIVE_AUTH_MODE" and b.get("text") == "disabled" for b in bindings):
             raise RuntimeError("Native staging must remain disabled")
         if not any(b.get("name") == "NATIVE_AUTH_DB" and b.get("id") == "694139c9-6cda-4b8c-9228-c973dbcbb719" for b in bindings):
             raise RuntimeError("Exact D1 staging binding required")
         counts = d1([{"sql": "SELECT (SELECT count(*) FROM d1_course_content) AS documents,(SELECT count(*) FROM d1_course_content_sync) AS markers", "params": []}])[0]["results"][0]
-        if counts != {"documents": 0, "markers": 0}:
+        if args.apply_staging and counts != {"documents": 0, "markers": 0}:
             raise RuntimeError("Initial course import requires empty content and marker tables; no overwrite")
+        if args.revalidate_staging and counts != {"documents": 1, "markers": 1}:
+            raise RuntimeError("One existing QA course projection required")
     spec = importlib.util.spec_from_file_location("course_backup_keychain", root.parent / "scripts/backup-secrets.py")
     helper = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(helper)
@@ -62,9 +66,9 @@ def main():
         raise RuntimeError("Expected exactly one course source")
     payload = rows[0]["payload"]
     node = "/Users/theanh/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node"
-    def prepare(mode="prepare", target=None):
+    def prepare(mode="prepare", target=None, marker=None):
         result = subprocess.run([node, "scripts/prepare-course-content.mjs"], cwd=root,
-            input=json.dumps({"source": payload["source"], "snapshotAt": payload["snapshotAt"], "mode": mode, "target": target}),
+            input=json.dumps({"source": payload["source"], "snapshotAt": payload["snapshotAt"], "mode": mode, "target": target, "marker": marker}),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=30)
         output = json.loads(result.stdout)
         if result.returncode or output.get("status") == "FAILED":
@@ -73,6 +77,22 @@ def main():
     report = prepare()
     if report.get("status") != "TESTED_PREPARE_ONLY":
         raise RuntimeError("Unexpected course preparation state")
+    if args.revalidate_staging:
+        result = d1([{"sql": "SELECT * FROM d1_course_content WHERE slug=?1", "params": ["facebook-ads-2026"]}, {"sql": "SELECT * FROM d1_course_content_sync WHERE source_project_id=?1", "params": ["vsxxgdzwtscuxcmjfckt"]}])
+        if any(len(row["results"]) != 1 for row in result):
+            raise RuntimeError("Course target readback incomplete")
+        target, marker = result[0]["results"][0], result[1]["results"][0]
+        verified = prepare("revalidate", target, marker)
+        if verified.get("status") != "PREPARED_REVALIDATION_INTERNAL":
+            raise RuntimeError("Course current-source revalidation failed")
+        updates = d1(verified["statements"])
+        if updates[0]["results"] != [{"course_id": target["course_id"]}] or updates[1]["results"] != [{"status": "verified"}]:
+            raise RuntimeError("Course/marker changed after readback; no serving claim")
+        report.update(status="TESTED_COURSE_CURRENT_SOURCE_REVALIDATION", marker="verified", appliedToD1=True,
+            sourceSnapshotAt=verified["sourceSnapshotAt"], limits="One unchanged staging course; verified real source read only, no Auth/rights/SSR/primary-writer claim")
+        (root / "reports/cloudflare-d1/course-content-revalidation.json").write_text(json.dumps(report, indent=2) + "\n")
+        print(json.dumps(report))
+        return
     if args.apply_staging:
         if report["ambiguousPublishedOrder"] or not report["requiredLessonPresent"]:
             raise RuntimeError("Required course lesson/order evidence incomplete")

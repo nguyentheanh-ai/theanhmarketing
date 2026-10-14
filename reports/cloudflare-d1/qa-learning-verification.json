@@ -11,7 +11,7 @@
     "overrides": 1
   },
   "statements": 36,
-  "sourceSnapshotAt": "2026-10-14T20:48:27.374Z",
+  "sourceSnapshotAt": "2026-10-14T20:57:10.387Z",
   "localSqliteExecution": true,
   "foreignKeyViolations": 0,
   "fullSourceArchiveRoundtrip": true,
@@ -30,7 +30,7 @@
     "verified",
     "verified"
   ],
+  "localVerificationMarker": "importing",
   "appliedToD1": true,
-  "semanticParity": true,
-  "localVerificationMarker": "importing"
+  "semanticParity": true
 }

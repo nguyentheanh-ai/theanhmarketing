@@ -1,0 +1,12 @@
+{
+  "status": "TESTED_RESTORED_AFTER_HOSTED_QA_LESSON",
+  "nativeMode": "disabled",
+  "cohortCount": 0,
+  "sessionHistory": 2,
+  "unrevokedSessions": 0,
+  "progressRows": 1,
+  "temporaryAccessTokenAbsent": true,
+  "temporaryAccessPolicyAbsent": true,
+  "ownerPolicyPresent": true,
+  "limits": "Hosted API read-only QA checks, not /learn UI/SSR or full migration"
+}

@@ -45,3 +45,13 @@ test('additive identity guards also reject NULL on the earlier SQLite primary-ke
  const queries=["INSERT INTO d1_course_content VALUES(NULL,'nullable','vsxxgdzwtscuxcmjfckt','{\"id\":null,\"slug\":\"nullable\"}','"+'0'.repeat(64)+"','2026-10-15T00:00:00Z')","INSERT INTO d1_course_content_sync VALUES(NULL,'2026-10-15T00:00:00Z','2026-10-15T00:00:00Z','pending',0)"];
  const result=spawnSync('python3',['-c',code],{input:JSON.stringify({schema:legacy,queries}),encoding:'utf8'});assert.equal(result.status,0,result.stderr);assert.deepEqual(JSON.parse(result.stdout),['course_identity_required','course_project_required']);
 });
+test('course refresh compares content and old marker in SQL; intervening edits fail closed',async()=>{
+ const target=sqlite(file,'SELECT * FROM d1_course_content')[0],marker=sqlite(file,'SELECT * FROM d1_course_content_sync')[0];
+ // Local initial fixture cutoff must be historic relative to real SQL now.
+ const old=new Date(Date.now()-60000).toISOString();sqlite(file,'UPDATE d1_course_content SET source_snapshot_at=?',[old]);sqlite(file,'UPDATE d1_course_content_sync SET source_snapshot_at=?,last_verified_at=?',[old,old]);
+ target.source_snapshot_at=old;marker.source_snapshot_at=old;marker.last_verified_at=old;
+ const fresh=new Date().toISOString(),plan=await h.prepareD1CourseRevalidation(source,target,marker,fresh);
+ sqlite(file,"UPDATE d1_course_content SET source_document=json_set(source_document,'$.title','Changed')");assert.deepEqual(sqlite(file,plan.statements[0].sql,plan.statements[0].params),[]);
+ sqlite(file,'UPDATE d1_course_content SET source_document=?',[target.source_document]);assert.equal(sqlite(file,plan.statements[0].sql,plan.statements[0].params).length,1);assert.deepEqual(sqlite(file,plan.statements[1].sql,plan.statements[1].params),[{status:'verified'}]);
+ const changed=structuredClone(source);changed.title='Changed';await assert.rejects(h.prepareD1CourseRevalidation(changed,target,marker,fresh));await assert.rejects(h.prepareD1CourseRevalidation(source,target,marker,new Date(Date.now()+1000).toISOString()));
+});

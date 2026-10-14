@@ -59,6 +59,19 @@ export function d1CourseContentRowSql(slugPosition:number,projectPosition:number
  if([slugPosition,projectPosition,timePosition,agePosition].some(n=>!Number.isInteger(n)||n<1))throw new Error('Invalid course SQL positions');
  return `SELECT json_object('course_id',c.course_id,'slug',c.slug,'source_project_id',c.source_project_id,'source_document',c.source_document,'source_digest',c.source_digest,'source_snapshot_at',c.source_snapshot_at) FROM d1_course_content c JOIN d1_course_content_sync s ON s.source_project_id=c.source_project_id WHERE c.slug=?${slugPosition} AND c.source_project_id=?${projectPosition} AND s.status='verified' AND (SELECT count(*) FROM d1_course_content all_courses WHERE all_courses.source_project_id=s.source_project_id)=s.course_count AND c.source_snapshot_at=s.source_snapshot_at AND julianday(s.source_snapshot_at) BETWEEN julianday(?${timePosition})-?${agePosition}/86400000.0 AND julianday(?${timePosition}) AND julianday(s.last_verified_at) BETWEEN julianday(s.source_snapshot_at) AND julianday(?${timePosition})`;
 }
+// Revalidate the unchanged one-course QA projection from a genuine new source
+// read. Update cutoffs only after matching the complete original document.
+export async function prepareD1CourseRevalidation(source:unknown,target:Record<string,unknown>,marker:Record<string,unknown>,sourceSnapshotAt:string,now=Date.now()){
+ await verifyD1CourseContent(source,target);
+ const fresh=Date.parse(sourceSnapshotAt),old=Date.parse(String(target.source_snapshot_at));
+ if(!Number.isFinite(fresh)||!Number.isFinite(old)||!Number.isFinite(now)||old>fresh||fresh>now||now-fresh>300000||marker.source_project_id!==project||marker.status!=='verified'||marker.course_count!==1||marker.source_snapshot_at!==target.source_snapshot_at||!Number.isFinite(Date.parse(String(marker.last_verified_at)))||Date.parse(String(marker.last_verified_at))<old||Date.parse(String(marker.last_verified_at))>now)throw Error('Invalid course revalidation state');
+ const params=[project,new Date(fresh).toISOString(),new Date(now).toISOString(),target.course_id as string,target.slug as string,target.source_document as string,target.source_digest as string,target.source_snapshot_at as string,marker.last_verified_at as string];
+ const clock="julianday(?2) BETWEEN julianday('now')-300000/86400000.0 AND julianday('now') AND julianday(?3) BETWEEN julianday(?2) AND julianday('now')";
+ const counts="(SELECT count(*) FROM d1_course_content)=1 AND (SELECT count(*) FROM d1_course_content_sync)=1";
+ const update={sql:`UPDATE d1_course_content SET source_snapshot_at=?2 WHERE source_project_id=?1 AND course_id=?4 AND slug=?5 AND source_document=?6 AND source_digest=?7 AND source_snapshot_at=?8 AND ${clock} AND ${counts} AND EXISTS(SELECT 1 FROM d1_course_content_sync WHERE source_project_id=?1 AND status='verified' AND course_count=1 AND source_snapshot_at=?8 AND last_verified_at=?9) RETURNING course_id`,params};
+ const sync={sql:`UPDATE d1_course_content_sync SET source_snapshot_at=?2,last_verified_at=?3 WHERE source_project_id=?1 AND status='verified' AND course_count=1 AND source_snapshot_at=?8 AND last_verified_at=?9 AND ${clock} AND ${counts} AND EXISTS(SELECT 1 FROM d1_course_content WHERE course_id=?4 AND slug=?5 AND source_project_id=?1 AND source_document=?6 AND source_digest=?7 AND source_snapshot_at=?2) RETURNING status`,params};
+ return {statements:[update,sync],sourceSnapshotAt:params[1],limits:'One unchanged QA course only; no content overwrite or primary-write authority'};
+}
 // Only consume a row captured by the guarded backend SQL. Never expose the raw
 // document or accept a browser-supplied content row as verification evidence.
 export async function decodeD1PublishedCourseRow(value:unknown){

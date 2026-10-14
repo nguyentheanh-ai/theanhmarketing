@@ -2727,3 +2727,16 @@ Auth verify thêm tùy chọn allow-revoked-qa-history chỉ cho verification mo
 Remote metadata cuối:Worker disabled/cohort rỗng, access/archive/Auth verified theo các cutoff riêng,1session history/0unrevoked. Source content snapshot chưa refresh cutoff, nên chưa mở native learning.15scoped tests/TypeScript/lint/Python syntax/diff đạt. Các test đầu phát hiện helper archive dùng id thay user_id và fixture UTC cutoff nằm tương lai so với now; sửa đúng key và fixture quá khứ, giữ nguyên guard không cho tương lai.
 
 IN PROGRESS: cần refresh/reverify content và Auth khi hết freshness, giữ đồng bộ cutoff QA trước hosted API/SSR/login/signout/progress/browser. Chưa native UI/customer authority/full delta/data/RLS/admin/payment/Storage/Safari/rollback hoặc READY FOR CUTOVER. Vercel/Supabase production và appB/Adplan không bị thay đổi.
+
+
+## 15/10/2026 — Hosted D1 QA session→quyền→bài học: TESTED phạm vi
+
+Thêm course revalidation: source document mới phải khớp toàn bộ ID/slug/project/content/digest; CAS old row và sync status/count/cutoff/verifiedAt với clock database mới dưới5phút. Chỉ cập nhật cutoff, không overwrite nội dung. Nếu row đổi hoặc marker đổi, không promote; cutoff row/sync lệch làm reader fail closed. prepare-course-content.py revalidate-staging đã chạy remote đạt,23published/26source lessons và lesson bắt buộc giữ nguyên. Auth verifier với tùy chọn QA revoked-history cho phép revalidate pending hoặc verified, CAS cả trạng thái/cutoff cũ để không giả heartbeat; full credential/identity/status/cursor phải vẫn khớp source mới.
+
+Đã refresh source thật cho content/Auth/access, deploy đúng1QA cohort tạm trên Worker A version3bb80e64-7a8f-4857-adc4-7b416d41c298, progress WRITE_DISABLED. Hosted native-qa-lesson-smoke.mjs qua Access đạt9checks: password đúng/UUID gốc/Secure-HttpOnly cookie; refresh session; owned course; đúng lesson UUID bắt buộc/private-no-store/trạng thái chưa hoàn thành giữ từ source; refresh lesson; wrong password401; progress503WRITE_DISABLED; logout cookie guest; logged-out lesson401. So hành vi/data, không chỉ HTTP200. Không gọi progress writer hoặc payment/email.
+
+Đã thu hồi service token/policy Access45phút và GET readback không còn, owner policy giữ nguyên. Worker khôi phục disabled/cohort rỗng version136d6568-5068-452e-aa38-83e7827687b1; remote0unrevoked QA session/2history giữ nguyên/1progress row. Các nguồn Supabase không ghi; native writes chỉ session QA đã revoke và cutoff markers có kiểm chứng. Artifact RSA/envelope restricted được giữ theo giới hạn cleanup control-plane cũ; không còn credential Access hoạt động.
+
+10tests liên quan/TypeScript/scoped lint/Python syntax/diff đạt. Báo cáo main/reports/cloudflare-d1/native-qa-lesson-{deploy,http,restored,cleanup}.json và course-content-revalidation.json. Auth/learning snapshots có cutoff thật riêng, không coi verified snapshot là native primary authority.
+
+IN PROGRESS: đây là API hosted native session/right/content, chưa trang /learn SSR/UI nhận cookie D1, login/signout UI, desktop/mobile/Safari/video playback/HTTPRange/private Ebook hoặc ghi progress hosted. B vẫn app riêng và source Supabase. Cần nối request context/SSR đúng staging cohort và UI/progress guard, tiếp tục full Auth/providers/bridge/all data/RLS/admin/payment/Storage/delta/rollback trước READY FOR CUTOVER. Không DNS/webhook/source writer/decommission production.

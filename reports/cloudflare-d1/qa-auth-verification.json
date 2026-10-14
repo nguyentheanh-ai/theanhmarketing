@@ -6,7 +6,7 @@
     "credentialRoundtrip": true,
     "identityStatusMetadataAndCursorMatched": true
   },
-  "sourceSnapshotAt": "2026-10-14T20:51:11.150941+00:00",
+  "sourceSnapshotAt": "2026-10-14T20:57:07.102519+00:00",
   "marker": "verified",
   "revokedQaHistoryPreserved": 1,
   "limits": "Explicit one-account QA projection only, not full Auth snapshot/customer native authority or hosted login"
