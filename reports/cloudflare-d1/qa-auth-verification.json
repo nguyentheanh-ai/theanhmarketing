@@ -1,0 +1,12 @@
+{
+  "status": "TESTED_QA_AUTH_READBACK",
+  "sourceAccounts": 1,
+  "verification": {
+    "matched": true,
+    "credentialRoundtrip": true,
+    "identityStatusMetadataAndCursorMatched": true
+  },
+  "sourceSnapshotAt": "2026-10-14T19:31:25.081193+00:00",
+  "marker": "pending",
+  "limits": "QA-only initial dataset; read-only source/target verification, no verified marker/native login/full Auth snapshot"
+}

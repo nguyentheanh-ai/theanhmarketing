@@ -1071,3 +1071,14 @@ prepare-qa-auth-import.py mặc định prepare-only; apply-staging chỉ khi Wo
 Lượt đầu thiếu UUID gây TypeError và dừng trước source query; sửa selector dùng alias đúng/password chứng minh rồi khôi phục UUID. Lượt apply đầu OAuth Cloudflare401 ở metadata trước D1 write; Wrangler whoami refresh đúng account/scope, lấy snapshot nguồn mới và apply thành công. JS syntax/lint/diff đạt; live source password/ciphertext roundtrip và D1 readback đạt. Báo cáo reports/cloudflare-d1/qa-auth-prepare.json không chứa credential/identity/hash.
 
 IN PROGRESS: marker chưa verified, chưa provider identity/course rights/content và chưa native login/key roundtrip trong Worker. Worker vẫn phiên bản native-disabled cũ; scope commit mới chưa deploy. Cần đối soát đủ QA projection/scope (không coi một QA account là full Auth snapshot) trước khi bật QA. Chưa full restore/import/delta/native authority/bridge/UI/payment/Safari, không READY_FOR_CUTOVER hoặc production change.
+
+
+## 15/10/2026 — Đối soát Auth QA đầy đủ với nguồn mới: TESTED phạm vi
+
+verifyD1InitialAuthRow so identity/role, toàn account status/flags/metadata/dates, source revision/digest/project và hash giải mã từ ciphertext với source. Metadata key order được canonicalize; không chỉ tin stored digest vì actual row bị sửa có thể giữ nguyên digest. Chỉ dùng cho initial account/session_version1, không tự áp dụng cho native session/delta đã thay đổi account. Hàm không trả hash/digest hoặc dữ liệu identity.
+
+prepare-qa-auth-import.py --verify-staging chỉ SELECT read_only source và target; yêu cầu exact Worker disabled/D1 binding, đúng1identity/1account/1version/0session/pending marker. Đã chạy live PASS với snapshot nguồn mới: hash roundtrip, identity/status/metadata/cursor khớp. Không UPDATE marker hoặc credential. Report reports/cloudflare-d1/qa-auth-verification.json chỉ flags/count/cutoff, không identity/password/hash.
+
+3/3 synthetic tests đạt: complete canonical row,16 dạng sửa identity/role/status/flags/metadata/dates/cursor/project/digest bị chặn, cipher/key mismatch bị chặn; TypeScript/lint/diff đạt. Thay đổi công cụ/verifier chưa deploy; Worker native vẫn disabled, source production nguyên vẹn.
+
+IN PROGRESS: chỉ QA projection một account, không full Auth snapshot; pending cần giữ tới khi rollout scope/QA manifest và freshness/verification strategy đủ. Chưa Worker decrypt/login/SSR/progress/provider/bridge/native customer authority hoặc READY_FOR_CUTOVER.

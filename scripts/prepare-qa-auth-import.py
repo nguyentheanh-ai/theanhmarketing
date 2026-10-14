@@ -11,7 +11,9 @@ import urllib.error
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--apply-staging", action="store_true")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--apply-staging", action="store_true")
+    mode.add_argument("--verify-staging", action="store_true")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     spec = importlib.util.spec_from_file_location("qa_keychain", root.parent / "scripts/backup-secrets.py")
@@ -59,7 +61,7 @@ def main():
         qa["auth_user_id"] = payload["source"]["id"]
         Path("/private/tmp/theanh-cf-qa-20261013.json").write_text(json.dumps(qa))
     applied = False
-    if args.apply_staging:
+    if args.apply_staging or args.verify_staging:
         auth = Path.home() / "Library/Preferences/.wrangler/config/default.toml"
         match = re.search(r'^oauth_token\s*=\s*"([^"\r\n]+)"', auth.read_text(), re.M)
         if not match:
@@ -88,6 +90,19 @@ def main():
             if len(results) != len(statements) or any(r.get("success") is not True for r in results):
                 raise RuntimeError("D1 staging batch incomplete")
             return results
+        if args.verify_staging:
+            results = d1([{"sql": "SELECT u.id,u.normalized_email,u.admin_role,a.*,v.source_revision,v.source_digest,v.source_project_id FROM d1_access_users u JOIN d1_auth_accounts a ON a.user_id=u.id JOIN d1_auth_source_versions v ON v.user_id=u.id WHERE u.id=?1", "params": [payload["source"]["id"]]}, {"sql": "SELECT (SELECT count(*) FROM d1_access_users) AS users,(SELECT count(*) FROM d1_auth_accounts) AS accounts,(SELECT count(*) FROM d1_auth_source_versions) AS versions,(SELECT count(*) FROM d1_auth_sessions) AS sessions,(SELECT status FROM d1_auth_sync_state WHERE source_project_id=?1) AS marker", "params": ["vsxxgdzwtscuxcmjfckt"]}])
+            if len(results[0]["results"]) != 1 or results[1]["results"][0] != {"users": 1, "accounts": 1, "versions": 1, "sessions": 0, "marker": "pending"}:
+                raise RuntimeError("QA verification requires exactly initial QA dataset and pending marker")
+            verified = subprocess.run([node, "scripts/prepare-qa-auth-import.mjs"], cwd=root,
+                input=json.dumps({"source": payload["source"], "credentialKey": key, "target": results[0]["results"][0]}), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=30)
+            result = json.loads(verified.stdout)
+            if verified.returncode or result.get("status") != "VERIFIED_QA_ONLY":
+                raise RuntimeError("QA full-field/source-hash verification mismatch; marker remains pending")
+            report = {"status": "TESTED_QA_AUTH_READBACK", "sourceAccounts": 1, "verification": result["verification"], "sourceSnapshotAt": payload["snapshotAt"], "marker": "pending", "limits": "QA-only initial dataset; read-only source/target verification, no verified marker/native login/full Auth snapshot"}
+            (root / "reports/cloudflare-d1/qa-auth-verification.json").write_text(json.dumps(report, indent=2) + "\n")
+            print(json.dumps(report))
+            return
         empty = d1([{"sql": "SELECT (SELECT count(*) FROM d1_access_users) AS users,(SELECT count(*) FROM d1_auth_accounts) AS accounts,(SELECT count(*) FROM d1_auth_sync_state) AS markers;", "params": []}])[0]["results"][0]
         if any(n != 0 for n in empty.values()):
             raise RuntimeError("Initial QA import requires empty identity/Auth/marker tables; no overwrite")

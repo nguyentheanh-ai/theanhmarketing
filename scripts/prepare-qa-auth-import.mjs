@@ -6,7 +6,7 @@ try{
  let text='';for await(const chunk of process.stdin){text+=chunk;if(text.length>131072)throw Error('Input too large')}
  const input=JSON.parse(text);
  const qa=JSON.parse(readFileSync('/private/tmp/theanh-cf-qa-20261013.json','utf8'));
- const bundled=await build({stdin:{contents:'export * from "./lib/cloudflare/d1-auth-import";export * from "./lib/cloudflare/legacy-password";export {isAdminEmail} from "./lib/course-access";',resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',write:false});
+ const bundled=await build({stdin:{contents:'export * from "./lib/cloudflare/d1-auth-import";export * from "./lib/cloudflare/d1-auth-import-verification";export * from "./lib/cloudflare/legacy-password";export {isAdminEmail} from "./lib/course-access";',resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',write:false});
  const helpers=await import('data:text/javascript;base64,'+Buffer.from(bundled.outputFiles[0].text).toString('base64'));
  const row=input.source;
  if(qa.auth_user_id&&row.id!==qa.auth_user_id||row.email.toLowerCase()!==qa.email.toLowerCase()||!row.emailConfirmedAt||row.deletedAt||row.isAnonymous||row.bannedUntil&&Date.parse(row.bannedUntil)>Date.now()||!row.encryptedPassword)throw Error('QA source mismatch');
@@ -15,6 +15,7 @@ try{
  const prepared=await helpers.prepareD1AuthInitialImport([row],{projectId:'vsxxgdzwtscuxcmjfckt',credentialKey:input.credentialKey,resolveRole:()=>null});
  const decrypted=await helpers.openLegacyBcryptHash(prepared.statements[1].params[1],input.credentialKey,{projectId:'vsxxgdzwtscuxcmjfckt',userId:row.id});
  if(decrypted!==row.encryptedPassword)throw Error('QA ciphertext mismatch');
+ if(input.target){const verification=await helpers.verifyD1InitialAuthRow(row,input.target,{projectId:'vsxxgdzwtscuxcmjfckt',credentialKey:input.credentialKey,resolveRole:()=>null});process.stdout.write(JSON.stringify({status:'VERIFIED_QA_ONLY',verification}));process.exit(0)}
  process.stdout.write(JSON.stringify({status:'PREPARED_ONLY',summary:prepared.summary,ciphertextRoundtrip:true,sourcePasswordMatches:true,statements:prepared.statements}));
 }catch{
  process.stdout.write(JSON.stringify({status:'FAILED',message:'QA Auth preparation failed; sensitive output withheld'}));process.exitCode=1;
