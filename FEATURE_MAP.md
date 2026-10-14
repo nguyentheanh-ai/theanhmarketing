@@ -1,3 +1,11 @@
+## 14/10/2026 — Auth D1 độc lập: lõi candidate được kiểm cục bộ
+
+Thêm `legacy-password.ts`, `d1-auth-core.ts`, schema accounts/sessions và hai script kiểm fixture. bcryptjs 3.0.3 giữ xác minh bcrypt cũ (cost 6/10, UTF-8/giới hạn 72 byte); hash nhập được mã hóa AES-GCM và ràng buộc project/UUID. Token phiên opaque chỉ lưu SHA-256, kiểm trạng thái tài khoản/phiên/version ở backend; rotation nguyên tử một lần, thu hồi một hoặc toàn bộ phiên. Cấp phiên kiểm lại credential/version sau bcrypt và đọc role mới nhất; user_metadata không cấp admin. Caller bắt buộc có limiter trước bcrypt và cookie Secure/HttpOnly host-only. Chưa có route hoặc binding dùng candidate.
+
+**TESTED:** 12/12 ca fixture SQLite (mật khẩu sai, status, giả admin, thay credential/version, expiry/sai project, rotation đồng thời, fault rollback, revoke). Typecheck Cloudflare và scoped ESLint đạt. Fixture bcrypt/AES trên local workerd đạt 3 check, 151 ms wall time cho hai compare + mã hóa; không phải CPU time, không chứng minh giới hạn hosted Workers. Miniflare beta hiện dùng `workers[].config.manifest`; binary hỗ trợ compatibility date tới 2026-10-13. Không dùng tài khoản thật, không reset mật khẩu/import hash khách, không tạo Auth schema remote.
+
+**IN PROGRESS:** HTTP/cookie/CSRF/limiter, import Auth mã hóa + delta, OAuth/reset/bridge A→B và chuyển phiên hiện có, runtime hosted/CPU, QA login → /learn → progress. API connector Cloudflare đọc account subscriptions trả lỗi 10000; Wrangler whoami qua mạng đã xác nhận đúng account/OAuth, nên không kết luận toàn bộ Cloudflare mất xác thực. Production và Supabase vẫn nguyên nguồn ghi; chưa READY FOR CUTOVER.
+
 # Feature Map - theanh-main
 
 - 14/10/2026 IN PROGRESS: reserved legacy enrollment owner mapping + permission evidence guard cho Green. Revoke/refund chặn ngay, regrant giữ progress; 30 test và remote lifecycle fixture đạt. Offline 222 cặp quyền có bài được provision, 0 write predicate gap, không ghi progress khách hoặc đổi IDs gốc. Chưa nối application/Auth/primary writer.
