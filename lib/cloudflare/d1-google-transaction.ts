@@ -51,3 +51,7 @@ export async function claimD1GoogleTransaction(db:AuthDatabase,input:{state:stri
 export function requireClaimedGoogleTransaction(transaction:ClaimedGoogleTransaction){
  if(!transaction||transaction[claimProof]!==true)throw new Error('Claimed Google transaction required');return transaction;
 }
+export async function failD1GoogleTransaction(db:AuthDatabase,transaction:ClaimedGoogleTransaction,now=Date.now()){
+ const tx=requireClaimedGoogleTransaction(transaction);
+ await db.batch([{sql:"UPDATE d1_oauth_transactions SET status='failed',completed_at=?3 WHERE state_hash=?1 AND source_project_id=?2 AND browser_hash=?4 AND status='claimed'",params:[tx.stateHash,tx.projectId,new Date(now).toISOString(),tx.browserHash]}]);
+}

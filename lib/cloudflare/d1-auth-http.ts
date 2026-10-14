@@ -65,3 +65,6 @@ export async function handleD1AuthHttp(request:Request,options:Options){
   return response(200,{ok:true,user:session.user},sessionCookie(session.token,options.sessionTtlMs,body.rememberLogin===true));
  }catch{return response(503,{ok:false,message:"Hệ thống đăng nhập tạm thời chưa xử lý được."});}
 }
+
+// Shared transport helpers; never serialize opaque tokens into response JSON.
+export {boundedJson as readBoundedAuthJson,sessionCookie as createD1SessionCookie};

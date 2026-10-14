@@ -1,3 +1,13 @@
+## 15/10/2026 — Google OAuth HTTP adapter: scoped TESTED
+
+Thêm `d1-google-http.ts` cho POST start/GET callback, exact HTTPS origin/CSRF ở start, callback state + cookie host-only, shared limiter hook bắt buộc. Body đọc giới hạn/strict fields; duplicate state/code/error và duplicate cookie bị từ chối. Thiếu clientSecret/session policy trả 503 trước redirect Google. Start trả303 và cookie flow Secure/HttpOnly/SameSite=Lax/Path=/.
+
+Callback claim→exchange→verify nonce→guarded issuance, clear riêng flow cookie + đặt session cookie; redirect theo helper cũ must_change_password, không auto-signup/link user. Query code không đi vào Location cuối, response private/no-store/no-referrer. Cancel/exchange/verify/DB lỗi mark claimed flow failed; không clear auth cookie đang học. Backend injection fetcher/verifier chỉ dùng fixture, không từ input client. Transport helpers reuse bounded JSON/session cookie từ Auth HTTP.
+
+**TESTED:** bộ crypto/SQL/HTTP tăng **18/18** đạt, TypeScript/scoped lint đạt. Workerd+D1 HTTP start→cookie-bound callback→one session→safe next→replay400 đạt với fake provider RSA. Ca harness đầu tự follow redirect cho200 thay303; sửa redirect:manual để quan sát response đầu. Lượt đầu dùng synthetic client, không có login/credential Google thật; không tính kết quả200 đó là nghiệm thu. Chưa deploy hoặc nối route website.
+
+**Chưa đạt:** shared limiter runtime thật, provider credential/callback allowlist, invocation-query log redaction trước deploy, real Google QA + browser/mobile/Safari, expired-flow cleanup/cancel UI, nonce retry/network outcome, signup/link/recovery/source bridge. Framework/UI/chức năng source giữ nguyên. Facebook Auth B riêng còn thiếu. Chung **IN PROGRESS**, chưa READY FOR CUTOVER.
+
 ## 15/10/2026 — Google OAuth transaction/issuance primitives: scoped TESTED
 
 Thêm transaction schema, begin/claim dùng state hash + browser-cookie hash, verifier/nonce/return path/persistence được JWE dir/A256GCM bằng khóa riêng, ràng buộc project/client/redirect/state/browser. Authorization URL Google cố định có S256/nonce/openid email; next path dùng helper an toàn hiện hành. Atomic claim pending→claimed với expiry, một callback thắng; dữ liệu JWE bị đổi, sai key/client/origin hoặc expiry đều chặn. Proof backend đóng băng; JSON client không dựng được claimed transaction.
