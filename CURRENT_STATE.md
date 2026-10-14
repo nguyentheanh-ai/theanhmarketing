@@ -922,3 +922,14 @@ TypeScript/lint,48/48 tests, router config tests và Vite build/dry-run đạt. 
 Đã kiểm trực tiếp sau Access bằng token QA45phút đã duyệt, credential được RSA-OAEP mã hóa trước khi trả về từ connector và giải mã chỉ trong tiến trình local.5/5 hosted checks đạt: native session/access/progress503 NATIVE_D1_DISABLED/private/no-store/không đổi cookie; homepage200; lesson URL bắt buộc307 tới dang-nhap giữ nguyên next. Đây là kiểm khóa/cổng/route khách, không native login hoặc học tập E2E. Token/policy QA đã DELETE và GET readback xác nhận không còn, staging chỉ Owner only. Cleanup control-plane chặn thư mục RSA/envelope tạm; không đổi policy để bypass. File còn restricted; token đã thu hồi nên không còn quyền Access hoạt động. Không chứa password/hash khách hay khóa native dài hạn trong thư mục đó.
 
 IN PROGRESS: chưa nhập QA/customer/Auth snapshot verified, chưa bật Auth D1, SSR học tập hoặc native customer writer; native Auth scope cohort/shared progress limiter/content, bridge/signup/recovery/admin/providers/payment/rollback dữ liệu và Safari còn phải hoàn tất. Supabase vẫn nguồn Auth/data chính; không DNS/webhook/production cutover/decommission. Báo cáo reports/cloudflare-d1/{native-staging-deploy,native-disabled-http,native-staging-readback}.json.
+
+
+## 15/10/2026 — Scope QA trong cấp/đọc/thu hồi phiên: SOURCE TESTED
+
+Auth core thêm allowedUserIds chỉ từ backend: undefined giữ core tổng quát, danh sách rỗng chặn mọi danh tính; danh sách sai/duplicate/quá100 UUID bị từ chối. SQL lookup password, INSERT session, get-session, rotation và revoke một/all đều có guard cohort cùng project/session/version/status/freshness. Native staging router truyền cohort từ cấu hình backend vào Auth HTTP và student reader; body không được tự khai báo cohort. Reader quyền gắn cohort trong statement quyền học; write cohort HTTP là giao với identity cohort, không mở rộng quyền từ một cấu hình ghi rộng hơn.
+
+Issuer cleanup cho token vừa sinh dùng capability nội bộ đúng token/project, để vẫn revoke khi cohort bị gỡ sau INSERT. Đây không là API bypass quyền; logout người dùng vẫn cohort-scoped. Test chứng minh token chưa trả về không còn active sau tình huống đó.
+
+TESTED:Auth27/27 (gồm issuance/read/rotate/revoke và HTTP ngoài cohort, body inject bị400, issuer cleanup race), quyền/session/progress/HTTP50/50, workerd/D1 HTTP11/11 với cohort backend thật, TypeScript/scoped lint/diff đạt. Fixture-only; không tài khoản học viên thật, không source mutation production.
+
+IN PROGRESS: chưa deploy commit scope này hoặc nhập QA; Worker hiện tại vẫn native disabled với D1 rỗng. Bước tiếp theo cần source QA xác định đúng, export/import mã hóa có đối soát và marker đúng phạm vi, rồi cập nhật staging/kiểm native login. Chưa OAuth Google cohort, signup/recovery/bridge, full snapshot/delta/native primary authority/customer writer/UI/payment/storage/Safari. Không READY_FOR_CUTOVER.

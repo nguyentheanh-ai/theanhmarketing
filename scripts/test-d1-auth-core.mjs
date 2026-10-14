@@ -94,5 +94,23 @@ try{
   for(const bad of [{...rate,now:-1},{...rate,ip:{limit:0,windowMs:60000}},{...rate,now:Number.MAX_SAFE_INTEGER},{...rate,secret:'invalid'}])await assert.rejects(core.consumeD1OAuthRequest(db,good,input,bad));
   assert.equal(JSON.stringify(sql.prepare('SELECT * FROM d1_auth_attempt_buckets ORDER BY bucket_key').all()),before);
  });
+ await check('backend cohort scopes issuance session rotation and revocation without granting HTTP authority',async()=>{
+  const included={...policy,allowedUserIds:[userId]},excluded={...policy,allowedUserIds:['00000000-0000-4000-8000-000000000099']};
+  const allowed=await core.authenticateD1Password(db,{email:'fixture@example.invalid',password},{...included,credentialKey:key,allowAttempt:async()=>true});assert(allowed);assert.equal((await core.getD1AuthSession(db,allowed.token,included)).user.id,userId);
+  const before=JSON.stringify(sql.prepare('SELECT * FROM d1_auth_sessions ORDER BY token_hash').all());
+  assert.equal(await core.authenticateD1Password(db,{email:'fixture@example.invalid',password},{...excluded,credentialKey:key,allowAttempt:async()=>true}),null);
+  assert.equal(await core.getD1AuthSession(db,allowed.token,excluded),null);assert.equal(await core.rotateD1AuthSession(db,allowed.token,excluded),null);assert.equal(await core.revokeD1AuthSession(db,allowed.token,excluded),false);assert.equal(await core.revokeAllD1AuthSessions(db,allowed.token,excluded),false);
+  const http={...excluded,db,origin,credentialKey:key,allowAttempt:async()=>({allowed:true,retryAfter:1})};
+  assert.equal((await core.handleD1AuthHttp(post('login',{email:'fixture@example.invalid',password}),http)).status,401);
+  assert.equal((await (await core.handleD1AuthHttp(new Request(origin+'/api/cloudflare-auth/session',{headers:{Cookie:core.D1_SESSION_COOKIE+'='+allowed.token}}),http)).json()).user,null);
+  assert.equal((await core.handleD1AuthHttp(post('login',{email:'fixture@example.invalid',password,allowedUserIds:[userId]}),http)).status,400);
+  assert.equal(JSON.stringify(sql.prepare('SELECT * FROM d1_auth_sessions ORDER BY token_hash').all()),before);
+  assert.equal(await core.getD1AuthSession(db,allowed.token,{...policy,allowedUserIds:[]}),null);
+  for(const ids of [['invalid'],[userId,userId]])await assert.rejects(core.getD1AuthSession(db,allowed.token,{...policy,allowedUserIds:ids}),/Invalid Auth cohort/);
+ });
+ await check('cohort removed after captured INSERT cannot return a token and still revokes the unreturned session',async()=>{
+  const ids=[userId],before=sql.prepare('SELECT count(*) n FROM d1_auth_sessions WHERE revoked_at IS NOT NULL').get().n;
+  beforeBatch=()=>{ids.length=0};const result=await core.authenticateD1Password(db,{email:'fixture@example.invalid',password},{...policy,allowedUserIds:ids,credentialKey:key,allowAttempt:async()=>true});assert.equal(result,null);assert.equal(sql.prepare('SELECT count(*) n FROM d1_auth_sessions WHERE revoked_at IS NOT NULL').get().n,before+1);
+ });
  sql.close();console.log(`Auth prototype: ${count}/${count} synthetic behavior checks passed. Synthetic Request/Response + SQLite only; hosted/app Auth migration not verified.`);
 }finally{rmSync(dir,{recursive:true,force:true})}

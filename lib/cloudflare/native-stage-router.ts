@@ -21,10 +21,10 @@ export async function handleNativeStageRequest(request:Request,env:NativeStageEn
   if(!Array.isArray(cohort)||!cohort.length||cohort.length>100||cohort.some(id=>typeof id!=='string'||!/^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i.test(id))||new Set(cohort).size!==cohort.length)return unavailable('QA_CONFIG_REQUIRED');
   if(!/^[A-Za-z0-9_-]{43}$/.test(env.NATIVE_AUTH_CREDENTIAL_KEY??'')||!/^[A-Za-z0-9_-]{43}$/.test(env.NATIVE_AUTH_LIMITER_KEY??''))return unavailable('NATIVE_SECRET_REQUIRED');
   const db=createD1AuthDatabase(env.NATIVE_AUTH_DB),sessionTtlMs=3600000;
-  if(auth)return handleD1AuthHttp(request,{db,origin,projectId:'vsxxgdzwtscuxcmjfckt',credentialKey:env.NATIVE_AUTH_CREDENTIAL_KEY,sessionTtlMs,
+  if(auth)return handleD1AuthHttp(request,{db,origin,projectId:'vsxxgdzwtscuxcmjfckt',credentialKey:env.NATIVE_AUTH_CREDENTIAL_KEY,sessionTtlMs,allowedUserIds:cohort,
    allowAttempt:async(req,email)=>{const ip=req.headers.get('CF-Connecting-IP');if(!ip)throw new Error('Trusted edge required');return consumeD1AuthAttempt(db,{projectId:'vsxxgdzwtscuxcmjfckt',ip,email},{secret:env.NATIVE_AUTH_LIMITER_KEY,ip:{limit:10,windowMs:60000},email:{limit:5,windowMs:60000}})}});
   // Read API only: no write cohort/content resolver is passed until native
   // lesson content has been imported and verified. HTTP returns WRITE_DISABLED.
-  return handleD1StudentHttp(request,{db,origin,sessionTtlMs});
+  return handleD1StudentHttp(request,{db,origin,sessionTtlMs,allowedUserIds:cohort});
  }catch{return unavailable('NATIVE_CONFIG_UNAVAILABLE');}
 }

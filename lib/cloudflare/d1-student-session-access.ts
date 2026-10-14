@@ -5,7 +5,7 @@ import {readD1StudentCourseAccess} from '@/lib/cloudflare/d1-course-access';
 const projectId='vsxxgdzwtscuxcmjfckt';
 // Student read boundary for app A only. Caller provides an opaque cookie token,
 // never a client-supplied subject/email/admin flag. No progress writes here.
-export async function readD1StudentSessionAccess(db:AuthDatabase,token:string,policy:{sessionTtlMs:number;now?:number}){
+export async function readD1StudentSessionAccess(db:AuthDatabase,token:string,policy:{sessionTtlMs:number;now?:number;allowedUserIds?:readonly string[]}){
  const now=policy.now??Date.now();
  const session=await getD1AuthSession(db,token,{...policy,projectId,now});
  if(!session)return {status:'guest' as const};
@@ -23,11 +23,11 @@ export async function readD1StudentSessionAccess(db:AuthDatabase,token:string,po
  AND a.email_confirmed_at IS NOT NULL AND julianday(a.email_confirmed_at)<=julianday(?3)
  AND a.deleted_at IS NULL AND a.is_anonymous=0 AND a.must_change_password=0
  AND (a.banned_until IS NULL OR julianday(a.banned_until)<=julianday(?3)))
- AND ${authMirrorReadySql(4,6,3)}`;
+ AND ${authMirrorReadySql(4,6,3)} AND (?7='null' OR EXISTS(SELECT 1 FROM json_each(?7) allowed WHERE allowed.value=u.id))`;
  let denied=false;
  try{
   const access=await readD1StudentCourseAccess(async(sql,args)=>{
-   const value=await db.first(sql+guard,[...args,tokenHash,mirror.floor]);
+   const value=await db.first(sql+guard,[...args,tokenHash,mirror.floor,policy.allowedUserIds===undefined?'null':JSON.stringify(policy.allowedUserIds)]);
    if(!value)denied=true;
    return value;
   },session.user,{now});

@@ -1,7 +1,7 @@
 import { authenticateD1Password, getD1AuthSession, revokeAllD1AuthSessions, revokeD1AuthSession, type AuthDatabase } from "@/lib/cloudflare/d1-auth-core";
 
 export const D1_SESSION_COOKIE="__Host-tam-session";
-type Options={db:AuthDatabase;projectId:string;origin:string;credentialKey:string;sessionTtlMs:number;now?:number;
+type Options={db:AuthDatabase;projectId:string;origin:string;credentialKey:string;sessionTtlMs:number;now?:number;allowedUserIds?:readonly string[];
  // Called after body validation; must use shared backend limiter. Return a
  // decision instead of throwing an error with identifying request values.
  allowAttempt:(request:Request,email:string)=>Promise<{allowed:boolean;retryAfter:number}>};
