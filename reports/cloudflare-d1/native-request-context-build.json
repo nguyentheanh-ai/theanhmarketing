@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "scope": "Request ALS container in Cloudflare Worker + Vinext source build",
+  "deployed": false,
+  "limits": "No actual SSR consumer or hosted context propagation test"
+}

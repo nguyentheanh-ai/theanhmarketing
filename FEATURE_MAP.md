@@ -1189,3 +1189,12 @@ Thêm course revalidation: source document mới phải khớp toàn bộ ID/slu
 10tests liên quan/TypeScript/scoped lint/Python syntax/diff đạt. Báo cáo main/reports/cloudflare-d1/native-qa-lesson-{deploy,http,restored,cleanup}.json và course-content-revalidation.json. Auth/learning snapshots có cutoff thật riêng, không coi verified snapshot là native primary authority.
 
 IN PROGRESS: đây là API hosted native session/right/content, chưa trang /learn SSR/UI nhận cookie D1, login/signout UI, desktop/mobile/Safari/video playback/HTTPRange/private Ebook hoặc ghi progress hosted. B vẫn app riêng và source Supabase. Cần nối request context/SSR đúng staging cohort và UI/progress guard, tiếp tục full Auth/providers/bridge/all data/RLS/admin/payment/Storage/delta/rollback trước READY FOR CUTOVER. Không DNS/webhook/source writer/decommission production.
+
+
+## 15/10/2026 — Request context cho native SSR: SOURCE TESTED
+
+Thêm native-request-context.ts dùng AsyncLocalStorage từ node:async_hooks. Singleton Symbol.for chỉ chia sẻ ALS container trong isolate để Worker/RSC module copies dùng cùng storage; không có global current user/request. Mỗi request chạy storage.run với object request/env riêng, scope lồng khôi phục parent và lỗi không để lại context. Bindings/cookie chỉ backend; tuyệt đối không serialize context vào client props.
+
+cloudflare-worker.ts bao app.fetch trong runNativeRequestContext; Native API/R2 handlers giữ flow trước đó. Chưa consumer trong LessonPage hoặc login/signout/progress UI; không tuyên bố /learn dùng D1. Node3tests đạt module-copy propagation, interleaved isolation/rejection và nested parent restoration. Local workerd nodejs_compat có12requests đồng thời giữa2module graphs, mỗi request giữ đúng cookie/binding fixture. TypeScript/scoped lint/diff và ViteCloudflarebuild đạt. Không dùng credentials/customer data trong tests.
+
+IN PROGRESS: chỉ source bridge, chưa deploy bản context wrapper hoặc kiểm Vinext RSC actual consumer/streaming ở hosted. Cần nối stage-only options và SSR consumer, kiểm không mất context khi render async/stream, rồi native login/logout/progress UI và browser. Worker đang giữ phiên bản disabled từ hosted API QA trước đó; các verified snapshots vẫn có cutoff/freshness guard. Không Source/DNS/production writes, B/Adplan giữ phạm vi riêng; chưa READY FOR CUTOVER. Báo cáo main/reports/cloudflare-d1/native-request-context-build.json.

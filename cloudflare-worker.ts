@@ -2,6 +2,7 @@ import app from "vinext/server/fetch-handler";
 import { servePrivateR2, serveR2Object, type PrivateR2Bucket } from "./lib/cloudflare/private-r2";
 import { isCurrentStorageKey } from "./lib/cloudflare/current-storage-index";
 import {handleNativeStageRequest,type NativeStageEnv} from './lib/cloudflare/native-stage-router';
+import {runNativeRequestContext} from './lib/cloudflare/native-request-context';
 
 // Exact public video path above the Workers asset limit; bytes live in R2 staging.
 const oversizedPublicVideo = "/doi-ngu-nhan-su-ai/media/proof/editor-ai-jun-08-2026.mp4";
@@ -25,7 +26,7 @@ const stagingWorker = {
       if (!bucket) return new Response(null, { status: 503, headers: { "Cache-Control": "no-store" } });
       return serveR2Object(request, bucket, oversizedPublicVideoKey, "public, max-age=3600");
     }
-    return app.fetch(request, env, context);
+    return runNativeRequestContext(request,env as NativeStageEnv,()=>app.fetch(request, env, context));
   },
 };
 
