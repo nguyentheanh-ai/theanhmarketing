@@ -11,6 +11,7 @@ import { logStudentActivity } from "@/services/activityLogService";
 import { getPublishedCourseForStudent } from "@/services/courseService";
 import { getStudentPortalAccessRecords } from "@/services/studentPortalAccessService";
 import { getStudentLmsAccess } from "@/services/lmsService";
+import { readNativeLearningPage } from "@/lib/cloudflare/native-learning-page";
 
 type LessonPageProps = {
   params: Promise<{
@@ -21,6 +22,22 @@ type LessonPageProps = {
 
 export default async function LessonPage({ params }: LessonPageProps) {
   const { course: courseSlug, lesson: lessonId } = await params;
+  const native = await readNativeLearningPage(courseSlug, lessonId);
+  if (native) {
+    const next = encodeURIComponent(`/learn/${courseSlug}/${lessonId}`);
+    if (native.status === "guest") redirect(`/dang-nhap?next=${next}`);
+    if (native.status === "password-change-required") redirect(`/doi-mat-khau?next=${next}`);
+    if (native.status === "forbidden") redirect("/dashboard?error=course-access");
+    if (native.status === "not-found") notFound();
+    if (native.status === "redirect") redirect(native.path);
+    if (native.status === "lesson") return <LearningRoom
+      key={`${native.course.slug}:${native.currentLesson.id}`}
+      course={native.course} currentLesson={native.currentLesson}
+      currentLessonCompleted={native.currentLessonCompleted} lessons={native.lessons}
+      previousLesson={native.previousLesson} nextLesson={native.nextLesson}
+      referencePacks={getCourseReferencePacks(native.course.slug)} authProvider="native-d1"
+    />;
+  }
   const [course, { adminRole, user }] = await Promise.all([
     getPublishedCourseForStudent(courseSlug), getCurrentAuth(),
   ]);

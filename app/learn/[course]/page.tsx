@@ -3,6 +3,7 @@ import { getOrderedCourseLessons } from "@/lib/course-learning";
 import { PageShell } from "@/components/site/page-shell";
 import { ButtonLink } from "@/components/ui/button-link";
 import { getCourseBySlug, getPublishedCourseForStudent } from "@/services/courseService";
+import { readNativeLearningPage } from "@/lib/cloudflare/native-learning-page";
 
 type CourseLearningPageProps = {
   params: Promise<{
@@ -12,6 +13,15 @@ type CourseLearningPageProps = {
 
 export default async function CourseLearningPage({ params }: CourseLearningPageProps) {
   const { course: courseSlug } = await params;
+  const native = await readNativeLearningPage(courseSlug, "lesson-1");
+  if (native) {
+    if (native.status === "guest") redirect(`/dang-nhap?next=${encodeURIComponent(`/learn/${courseSlug}`)}`);
+    if (native.status === "password-change-required") redirect(`/doi-mat-khau?next=${encodeURIComponent(`/learn/${courseSlug}`)}`);
+    if (native.status === "forbidden") redirect("/dashboard?error=course-access");
+    if (native.status === "redirect") redirect(native.path);
+    if (native.status === "not-found") notFound();
+    if (native.status === "lesson") redirect(`/learn/${courseSlug}/${native.currentLesson.id}`);
+  }
   const course = await getPublishedCourseForStudent(courseSlug);
 
   const firstPublishedLesson = course ? getOrderedCourseLessons(course)[0] : undefined;

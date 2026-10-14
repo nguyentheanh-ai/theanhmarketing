@@ -12,7 +12,7 @@ function fixture({user={id:'student',email:'student@example.invalid'},adminRole=
  const lesson={id:'lesson-id',title:'Lesson',access,moduleOrder:1,moduleTitle:'Module'};
  const course={slug:'course',title:'Course',visibility};
  const page=load('app/learn/[course]/[lesson]/page.tsx',{
- 'next/headers':{headers:async()=>new Headers()},'react/jsx-runtime':{jsx,jsxs:jsx},'next/server':{after:fn=>scheduled.push(fn)},
+ 'next/headers':{headers:async()=>new Headers()},'@/lib/cloudflare/native-learning-page':{readNativeLearningPage:async()=>null},'react/jsx-runtime':{jsx,jsxs:jsx},'next/server':{after:fn=>scheduled.push(fn)},
  'next/navigation':{redirect:url=>{throw new Error(`redirect:${url}`)},notFound:()=>{throw new Error('notFound')}},
  '@/components/course/learning-room':{LearningRoom:'room'},'@/data/course-reference-packs':{getCourseReferencePacks:()=>[]},
  '@/lib/auth/student-account':{shouldRequirePasswordChange:user=>user?.user_metadata?.must_change_password===true},

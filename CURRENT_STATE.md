@@ -1071,3 +1071,22 @@ Thêm native-request-context.ts dùng AsyncLocalStorage từ node:async_hooks. S
 cloudflare-worker.ts bao app.fetch trong runNativeRequestContext; Native API/R2 handlers giữ flow trước đó. Chưa consumer trong LessonPage hoặc login/signout/progress UI; không tuyên bố /learn dùng D1. Node3tests đạt module-copy propagation, interleaved isolation/rejection và nested parent restoration. Local workerd nodejs_compat có12requests đồng thời giữa2module graphs, mỗi request giữ đúng cookie/binding fixture. TypeScript/scoped lint/diff và ViteCloudflarebuild đạt. Không dùng credentials/customer data trong tests.
 
 IN PROGRESS: chỉ source bridge, chưa deploy bản context wrapper hoặc kiểm Vinext RSC actual consumer/streaming ở hosted. Cần nối stage-only options và SSR consumer, kiểm không mất context khi render async/stream, rồi native login/logout/progress UI và browser. Worker đang giữ phiên bản disabled từ hosted API QA trước đó; các verified snapshots vẫn có cutoff/freshness guard. Không Source/DNS/production writes, B/Adplan giữ phạm vi riêng; chưa READY FOR CUTOVER. Báo cáo main/reports/cloudflare-d1/native-request-context-build.json.
+
+
+## 15/10/2026 — Trang học native D1 A: SSR hosted đã kiểm thử theo phạm vi QA
+
+Website A vẫn sở hữu `/learn`; B là ứng dụng riêng. Nối request context vào trang đăng nhập, trang khóa học và trang bài học. Chỉ mode QA trên đúng origin Worker A, cohort UUID backend và bindings hợp lệ mới đi nhánh D1; khi disabled giữ đường Supabase hiện hành. Khi đã vào nhánh native, không fallback sang nguồn khác nếu snapshot hết hạn/lỗi. Dùng lại LearningRoom, giữ slug/lesson UUID, điều hướng và nội dung thật. Props không chứa cookie, bindings, proof hoặc user identity backend.
+
+Login/logout UI dùng API native trong nhánh QA, không gọi Supabase Auth hoặc activity writer. Lỗi đăng xuất không điều hướng giả thành công. Progress UI dùng operation UUID giữ nguyên qua timeout/retry; chỉ đánh dấu hoàn thành khi server xác nhận. Router hosted vẫn WRITE_DISABLED, chưa bật ghi tiến độ. Trang đăng nhập force-dynamic; response boundary native QA đặt private/no-store cho HTML/RSC/redirect và CDN, giữ stream, cookie và Vary hiện có.
+
+Kiểm thử local: 16 kiểm tra login/logout/SSR/SQLite/quyền/điều hướng/render/retry và 3 kiểm tra cache response đều đạt. TypeScript/scoped lint và Vite build đạt. Test legacy có lỗi harness do thiếu mock dependency mới; thêm boundary trả null cho các ca legacy, 7 ca điều hướng đạt lại. Không đổi logic nghiệp vụ để thỏa test.
+
+Hosted QA version df3c9be5-193a-4522-b711-151c9d5604ae đạt 12 checks: đúng password/UUID/cookie, session refresh, owned course, mandatory lesson API/progress nguồn giữ nguyên, login SSR native, `/learn/facebook-ads-2026/47da65a2-c6c6-4a21-a109-c1feb1d64c8f` SSR native với video nhúng thật, refresh SSR, wrong password, progress disabled, logout và logged-out API denied. Đây là HTTP SSR/API; chưa browser hydration, phát video thực, mobile/Safari hoặc ghi tiến độ hosted. Bảo vệ cache bổ sung sau lượt hosted này: local/build đạt, chưa kiểm native hosted trên phiên bản bổ sung.
+
+Token/policy Access QA đã xóa và đọc lại không còn; policy chủ hệ thống giữ nguyên. Restore Worker disabled/cohort rỗng đã đạt; D1 0 phiên active, 3 phiên history đã revoke, 1 progress row giữ nguyên. Bản private-boundary tiếp tục deploy với native disabled; xem báo cáo version mới. Không Source/DNS/webhook/primary writer hoặc dữ liệu học viên thật thay đổi.
+
+Trạng thái toàn migration: IN PROGRESS. Chưa READY FOR CUTOVER. Cần bật ghi QA có kiểm chứng, kiểm browser/video/private tài liệu, recovery/Google/session bridge/Auth toàn bộ, đủ dữ liệu/RLS/admin/thanh toán/automation của A và B, đồng bộ chênh lệch và rollback dữ liệu. Native QA dùng snapshot nguồn có freshness 5 phút; chưa là nguồn ghi chính tự vận hành khi Supabase ngừng. Không hứa bỏ Supabase trước hạn khi các điều kiện này chưa đạt.
+
+Bằng chứng: main/reports/cloudflare-d1/native-qa-learning-ssr-http.json; native-learning-ui-{build,qa-deploy,restored,private-deploy,cleanup}.json.
+
+UI native bổ sung timeout 15 giây; logout chỉ điều hướng khi nhận JSON ok=true, không coi trang gateway HTTP200 là đăng xuất thành công. Ca HTTP200 HTML gateway đã được kiểm thử và giữ nguyên màn hình lỗi.

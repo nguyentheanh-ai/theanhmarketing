@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { LoginForm } from "@/components/auth/login-form";
 import { PageShell } from "@/components/site/page-shell";
 import { SoftCard } from "@/components/ui/soft-card";
+import { nativeLearningProvider } from "@/lib/cloudflare/native-learning-page";
 
 export const metadata: Metadata = {
   title: "Đăng nhập",
@@ -11,8 +12,12 @@ export const metadata: Metadata = {
     follow: false,
   },
 };
+// Provider selection is request-scoped; never prerender one environment's
+// choice into a page later served by another runtime.
+export const dynamic = "force-dynamic";
 
 export default function LoginPage() {
+  const authProvider = nativeLearningProvider();
   return (
     <PageShell>
       <section className="ai-shell grid gap-8 pb-24 pt-32 sm:pt-40 lg:grid-cols-[0.9fr_1.1fr]">
@@ -28,7 +33,7 @@ export default function LoginPage() {
         </div>
         <SoftCard>
           <Suspense fallback={null}>
-            <LoginForm />
+            <LoginForm authProvider={authProvider} />
           </Suspense>
         </SoftCard>
       </section>

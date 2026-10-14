@@ -25,10 +25,10 @@ async function recordStudentLoginActivity() {
   }
 }
 
-export function LoginForm() {
+export function LoginForm({ authProvider = "supabase" }: { authProvider?: "supabase" | "native-d1" }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nextPath = getSafeNextPath(searchParams.get("next"), "/dashboard");
+  const nextPath = getSafeNextPath(searchParams.get("next"), authProvider === "native-d1" ? "/learn/facebook-ads-2026" : "/dashboard");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -42,6 +42,20 @@ export function LoginForm() {
     const email = String(formData.get("email") ?? "").trim().toLowerCase();
     const password = String(formData.get("password") ?? "");
     const rememberLogin = formData.get("rememberLogin") === "on";
+    if (authProvider === "native-d1") {
+      try {
+        const response = await fetch("/api/cloudflare-auth/login", { method: "POST", signal: AbortSignal.timeout(15000), headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password, rememberLogin }) });
+        const result = await response.json().catch(() => null);
+        if (!response.ok || !result?.ok || !result.user) {
+          setMessage(response.status === 401 ? "Email hoặc mật khẩu chưa đúng. Anh/chị kiểm tra lại thông tin đăng nhập." : "Hệ thống đăng nhập tạm thời chưa xử lý được. Vui lòng thử lại sau ít phút.");
+          return;
+        }
+        router.push(result.user.mustChangePassword ? `/doi-mat-khau?next=${encodeURIComponent(nextPath)}` : nextPath);
+        router.refresh();
+      } catch { setMessage("Chưa kết nối được hệ thống đăng nhập. Vui lòng kiểm tra mạng và thử lại."); }
+      finally { setIsSubmitting(false); }
+      return;
+    }
     const supabase = createSupabaseBrowserClient({
       persistence: rememberLogin ? "remember" : "session",
     });

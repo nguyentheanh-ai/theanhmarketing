@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "scope": "Native SSR QA cleanup",
+  "policyDeleted": true,
+  "tokenDeleted": true,
+  "policyAbsent": true,
+  "tokenAbsent": true,
+  "ownerPolicyPresent": true,
+  "readback": {
+    "workerRead": true,
+    "disabled": true,
+    "emptyCohort": true,
+    "correctDatabase": true,
+    "databaseRead": true,
+    "result": [
+      {
+        "active_sessions": 0,
+        "history_sessions": 3,
+        "progress_rows": 1
+      }
+    ]
+  },
+  "limits": "Credential envelopes remain restricted local artifacts; no active Access token"
+}

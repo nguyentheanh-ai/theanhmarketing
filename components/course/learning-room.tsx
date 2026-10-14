@@ -28,6 +28,7 @@ type LearningRoomProps = {
   previousLesson?: Pick<LearningLesson, "id">;
   nextLesson?: Pick<LearningLesson, "id">;
   referencePacks?: CourseReferencePack[];
+  authProvider?: "supabase" | "native-d1";
 };
 
 function getLessonHref(courseSlug: string, lessonId: string) {
@@ -45,10 +46,12 @@ export function LearningRoom({
   lessons,
   nextLesson,
   previousLesson,
+  authProvider = "supabase",
   referencePacks = [],
 }: LearningRoomProps) {
   const router = useRouter();
   const lessonListRef = useRef<HTMLElement>(null);
+  const nativeProgressIntent = useRef<{ lessonId: string; operationId: string } | null>(null);
   useEffect(() => {
     const list = lessonListRef.current;
     const active = list?.querySelector<HTMLElement>('[aria-current="page"]');
@@ -72,7 +75,10 @@ export function LearningRoom({
     setIsSavingProgress(true);
     setProgressMessage("");
     try {
-      const response = await fetch("/api/student/progress", {
+      if (authProvider === "native-d1" && nativeProgressIntent.current?.lessonId !== currentLesson.id) {
+        nativeProgressIntent.current = { lessonId: currentLesson.id, operationId: crypto.randomUUID() };
+      }
+      const response = await fetch(authProvider === "native-d1" ? "/api/cloudflare-student/progress" : "/api/student/progress", {
         method: "POST",
         signal: AbortSignal.timeout(15000),
         headers: { "Content-Type": "application/json" },
@@ -80,6 +86,7 @@ export function LearningRoom({
           courseSlug: course.slug,
           lessonId: currentLesson.id,
           completed: true,
+          ...(authProvider === "native-d1" ? { operationId: nativeProgressIntent.current?.operationId } : {}),
         }),
       });
       const result = (await response.json().catch(() => null)) as { ok?: boolean; message?: string; progressPercent?: number } | null;
@@ -138,6 +145,7 @@ export function LearningRoom({
             </span>
           </div>
           <SignOutButton
+            authProvider={authProvider}
             className="rounded-xl border border-white/10 px-4 py-3 text-left text-sm font-bold text-white/62 hover:bg-white/8 hover:text-white"
           />
         </div>

@@ -3,6 +3,7 @@ import { servePrivateR2, serveR2Object, type PrivateR2Bucket } from "./lib/cloud
 import { isCurrentStorageKey } from "./lib/cloudflare/current-storage-index";
 import {handleNativeStageRequest,type NativeStageEnv} from './lib/cloudflare/native-stage-router';
 import {runNativeRequestContext} from './lib/cloudflare/native-request-context';
+import {protectNativeLearningResponse} from './lib/cloudflare/native-learning-response';
 
 // Exact public video path above the Workers asset limit; bytes live in R2 staging.
 const oversizedPublicVideo = "/doi-ngu-nhan-su-ai/media/proof/editor-ai-jun-08-2026.mp4";
@@ -26,7 +27,10 @@ const stagingWorker = {
       if (!bucket) return new Response(null, { status: 503, headers: { "Cache-Control": "no-store" } });
       return serveR2Object(request, bucket, oversizedPublicVideoKey, "public, max-age=3600");
     }
-    return runNativeRequestContext(request,env as NativeStageEnv,()=>app.fetch(request, env, context));
+    return runNativeRequestContext(request,env as NativeStageEnv,async()=>{
+      const response=await app.fetch(request, env, context);
+      return protectNativeLearningResponse(request,env as NativeStageEnv,response);
+    });
   },
 };
 
