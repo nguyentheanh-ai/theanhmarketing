@@ -55,11 +55,16 @@ export async function prepareVerifiedD1CourseMarker(source:unknown,target:Record
 }
 // Internal backend reader. Authorization must precede serialization to a
 // student. Missing/unverified content fails closed and never uses demo lessons.
-export async function readD1PublishedCourse(db:AuthDatabase,slug:string,options:{now?:number;maxSnapshotAgeMs?:number}={}){
- const now=options.now??Date.now(),age=options.maxSnapshotAgeMs??300000;
- if(!Number.isFinite(now)||!Number.isInteger(age)||age<1000||age>300000||typeof slug!=='string'||!slug||slug.length>200)throw new Error('Invalid course read policy');
- const row=await db.first(`SELECT c.* FROM d1_course_content c JOIN d1_course_content_sync s ON s.source_project_id=c.source_project_id WHERE c.slug=?1 AND c.source_project_id=?2 AND s.status='verified' AND (SELECT count(*) FROM d1_course_content all_courses WHERE all_courses.source_project_id=s.source_project_id)=s.course_count AND c.source_snapshot_at=s.source_snapshot_at AND julianday(s.source_snapshot_at) BETWEEN julianday(?3)-?4/86400000.0 AND julianday(?3) AND julianday(s.last_verified_at) BETWEEN julianday(s.source_snapshot_at) AND julianday(?3)`,[slug,project,new Date(now).toISOString(),age]);
- if(!row)throw new Error('Verified course content required');
+export function d1CourseContentRowSql(slugPosition:number,projectPosition:number,timePosition:number,agePosition:number){
+ if([slugPosition,projectPosition,timePosition,agePosition].some(n=>!Number.isInteger(n)||n<1))throw new Error('Invalid course SQL positions');
+ return `SELECT json_object('course_id',c.course_id,'slug',c.slug,'source_project_id',c.source_project_id,'source_document',c.source_document,'source_digest',c.source_digest,'source_snapshot_at',c.source_snapshot_at) FROM d1_course_content c JOIN d1_course_content_sync s ON s.source_project_id=c.source_project_id WHERE c.slug=?${slugPosition} AND c.source_project_id=?${projectPosition} AND s.status='verified' AND (SELECT count(*) FROM d1_course_content all_courses WHERE all_courses.source_project_id=s.source_project_id)=s.course_count AND c.source_snapshot_at=s.source_snapshot_at AND julianday(s.source_snapshot_at) BETWEEN julianday(?${timePosition})-?${agePosition}/86400000.0 AND julianday(?${timePosition}) AND julianday(s.last_verified_at) BETWEEN julianday(s.source_snapshot_at) AND julianday(?${timePosition})`;
+}
+// Only consume a row captured by the guarded backend SQL. Never expose the raw
+// document or accept a browser-supplied content row as verification evidence.
+export async function decodeD1PublishedCourseRow(value:unknown){
+ if(typeof value!=='string'||new TextEncoder().encode(value).length>1024*1024)throw new Error('Verified course content required');
+ let row:Record<string,unknown>;try{row=JSON.parse(value);}catch{throw new Error('Course content verification failed');}
+ if(!object(row))throw new Error('Course content verification failed');
  let source:unknown;try{source=JSON.parse(String(row.source_document));}catch{throw new Error('Course content verification failed');}
  await verifyD1CourseContent(source,row);validate(source);
  let course=normalizeCourseText(normalizeCourseTiming(mapDbCourseToCourse(source)));
@@ -67,4 +72,11 @@ export async function readD1PublishedCourse(db:AuthDatabase,slug:string,options:
  course=mergeOfficialCourseMetadata(course);
  if(course.lmsStatus!=='published')return null;
  return publishedLessonsOnly(course);
+}
+export async function readD1PublishedCourse(db:AuthDatabase,slug:string,options:{now?:number;maxSnapshotAgeMs?:number}={}){
+ const now=options.now??Date.now(),age=options.maxSnapshotAgeMs??300000;
+ if(!Number.isFinite(now)||!Number.isInteger(age)||age<1000||age>300000||typeof slug!=='string'||!slug||slug.length>200)throw new Error('Invalid course read policy');
+ const row=await db.first(`SELECT (${d1CourseContentRowSql(1,2,3,4)}) AS content_json`,[slug,project,new Date(now).toISOString(),age]);
+ if(!row)throw new Error('Verified course content required');
+ return decodeD1PublishedCourseRow(row.content_json);
 }

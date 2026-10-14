@@ -1,0 +1,13 @@
+{
+  "status": "TESTED_DISABLED_DEPLOY_READBACK",
+  "mode": "disabled",
+  "cohortCount": 0,
+  "correctD1": true,
+  "unrevokedQaSessions": 0,
+  "contentDocuments": 1,
+  "enrollments": 0,
+  "accessMarkers": 0,
+  "localSqliteTests": 25,
+  "localWorkerdChecks": 15,
+  "limits": "QA access not imported; no hosted lesson/session flow or SSR /learn switch"
+}

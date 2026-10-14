@@ -1,7 +1,7 @@
 import { getCourseAccessSlugs, isAdminEmail, type CourseAccessLead, type CourseAccessOrder } from "@/lib/course-access";
 import { d1LegacyAccessEvidenceSql } from "@/lib/cloudflare/d1-legacy-access-evidence";
 
-// Read-only staging candidate. No application route uses this reader yet.
+// Native QA API reader. Production /learn pages still use Supabase.
 // The Worker caller must verify the session server-side before supplying subject,
 // and execute this single statement using DB.withSession("first-primary").
 export const D1_STUDENT_ACCESS_SQL = `
