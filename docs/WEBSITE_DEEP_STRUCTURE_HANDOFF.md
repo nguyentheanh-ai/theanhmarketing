@@ -2611,3 +2611,14 @@ Issuer cleanup cho token vừa sinh dùng capability nội bộ đúng token/pro
 TESTED:Auth27/27 (gồm issuance/read/rotate/revoke và HTTP ngoài cohort, body inject bị400, issuer cleanup race), quyền/session/progress/HTTP50/50, workerd/D1 HTTP11/11 với cohort backend thật, TypeScript/scoped lint/diff đạt. Fixture-only; không tài khoản học viên thật, không source mutation production.
 
 IN PROGRESS: chưa deploy commit scope này hoặc nhập QA; Worker hiện tại vẫn native disabled với D1 rỗng. Bước tiếp theo cần source QA xác định đúng, export/import mã hóa có đối soát và marker đúng phạm vi, rồi cập nhật staging/kiểm native login. Chưa OAuth Google cohort, signup/recovery/bridge, full snapshot/delta/native primary authority/customer writer/UI/payment/storage/Safari. Không READY_FOR_CUTOVER.
+
+
+## 15/10/2026 — Nhập một tài khoản Auth QA vào D1 staging A: TESTED phạm vi
+
+Đã tìm đúng file QA600 được tạo trong phiên trước; UUID còn null từ lúc signup chưa xác nhận. SELECT read_only theo đúng alias QA, kiểm đúng một account/confirmed/không deleted/banned/anonymous/không admin và kiểm mật khẩu chỉ trong bộ nhớ. Khôi phục UUID gốc vào file QA sau xác minh, không tạo account mới/reset password hay ghi nguồn. Mã hóa bcrypt bằng key staging từ Keychain và giải mã local kiểm byte khớp; không xuất password/hash/source identity ra report.
+
+prepare-qa-auth-import.py mặc định prepare-only; apply-staging chỉ khi Worker native disabled, binding đúng D1 A, identity/Auth/marker rỗng, source snapshot mới dưới5phút. Prepared params chỉ trong pipe giữa Python/Node và HTTP API; không lưu/log. Nhập3row(identity,Auth,source-version) cộng marker pending; plain INSERT không overwrite. Đọc lại UUID/email/ciphertext/session version/project và counts:1identity/1account/1source-version/0session, pending. Source read_only; chỉ dữ liệu QA được chủ hệ thống cho phép, không học viên thật.
+
+Lượt đầu thiếu UUID gây TypeError và dừng trước source query; sửa selector dùng alias đúng/password chứng minh rồi khôi phục UUID. Lượt apply đầu OAuth Cloudflare401 ở metadata trước D1 write; Wrangler whoami refresh đúng account/scope, lấy snapshot nguồn mới và apply thành công. JS syntax/lint/diff đạt; live source password/ciphertext roundtrip và D1 readback đạt. Báo cáo reports/cloudflare-d1/qa-auth-prepare.json không chứa credential/identity/hash.
+
+IN PROGRESS: marker chưa verified, chưa provider identity/course rights/content và chưa native login/key roundtrip trong Worker. Worker vẫn phiên bản native-disabled cũ; scope commit mới chưa deploy. Cần đối soát đủ QA projection/scope (không coi một QA account là full Auth snapshot) trước khi bật QA. Chưa full restore/import/delta/native authority/bridge/UI/payment/Safari, không READY_FOR_CUTOVER hoặc production change.
