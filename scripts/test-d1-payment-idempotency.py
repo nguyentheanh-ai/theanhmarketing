@@ -49,7 +49,7 @@ def accept_webhook(path, transaction_id, order_code, amount_vnd, fail_before_com
         )
         changed = db.execute(
             "UPDATE d1_payment_orders SET status = 'paid', sepay_transaction_id = ?, "
-            "paid_at = '2026-10-14T00:00:00Z' WHERE order_code = ? AND status = 'pending'",
+            "paid_at = '2026-10-14T00:00:00Z' WHERE order_code = ? AND status IN ('pending', 'expired')",
             (transaction_id, order_code),
         ).rowcount
         if changed != 1:
@@ -106,6 +106,13 @@ class PaymentIdempotencyPrototypeTest(unittest.TestCase):
         accept_webhook(self.path, "tx-fixture-1", "TAMTEST1", 100000)
         with self.assertRaisesRegex(ValueError, "already paid"):
             accept_webhook(self.path, "tx-fixture-2", "TAMTEST1", 100000)
+        self.assertEqual(self.counts(), (1, len(ACTIONS)))
+
+    def test_late_webhook_can_confirm_expired_order_once(self):
+        with connect(self.path) as db:
+            db.execute("UPDATE d1_payment_orders SET status = 'expired' WHERE order_code = 'TAMTEST1'")
+        self.assertEqual(accept_webhook(self.path, "tx-fixture-late", "TAMTEST1", 100000), "paid")
+        self.assertEqual(accept_webhook(self.path, "tx-fixture-late", "TAMTEST1", 100000), "replay")
         self.assertEqual(self.counts(), (1, len(ACTIONS)))
 
     def test_failure_and_underpayment_leave_no_partial_payment_or_outbox(self):

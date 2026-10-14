@@ -6,10 +6,10 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS d1_payment_orders (
   order_code TEXT PRIMARY KEY,
   amount_vnd INTEGER NOT NULL CHECK (amount_vnd > 0),
-  status TEXT NOT NULL CHECK (status IN ('pending', 'paid')),
+  status TEXT NOT NULL CHECK (status IN ('pending', 'expired', 'paid')),
   sepay_transaction_id TEXT UNIQUE,
   paid_at TEXT,
-  CHECK ((status = 'pending' AND paid_at IS NULL AND sepay_transaction_id IS NULL)
+  CHECK ((status IN ('pending', 'expired') AND paid_at IS NULL AND sepay_transaction_id IS NULL)
       OR (status = 'paid' AND paid_at IS NOT NULL AND sepay_transaction_id IS NOT NULL))
 );
 
