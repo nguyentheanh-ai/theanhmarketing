@@ -3,6 +3,7 @@ import test from "node:test";
 import { DatabaseSync } from "node:sqlite";
 import { readFileSync } from "node:fs";
 import { build } from "esbuild";
+import {createHash} from "node:crypto";
 const bundle=await build({entryPoints:["lib/cloudflare/d1-lesson-progress.ts"],bundle:true,platform:"node",format:"esm",write:false,logLevel:"silent"});
 const writer=await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString("base64")}`);
 const accessBundle=await build({entryPoints:["lib/cloudflare/d1-course-access.ts"],bundle:true,platform:"node",format:"esm",write:false,logLevel:"silent"});
@@ -132,3 +133,52 @@ test("renaming a lesson during deployment does not turn a retry into a new inten
  assert.deepEqual(await f.write({lessonTitle:"Tên bài học đã cập nhật"}),first);
  assert.deepEqual(f.counts(),{enrollments:1,owners:1,progress:1,operations:1});
 });
+
+
+function authFixture(t){
+ const f=fixture(t),project='vsxxgdzwtscuxcmjfckt',token='a'.repeat(43),otherToken='b'.repeat(43);
+ f.db.exec(readFileSync('scripts/d1-auth-core-prototype.sql','utf8'));
+ f.db.prepare("INSERT INTO d1_auth_sync_state VALUES(?,?,?,'verified')").run(project,stamp,stamp);
+ for(const [n,value] of [[1,token],[2,otherToken]]){
+  f.db.prepare('INSERT INTO d1_auth_accounts(user_id,email_confirmed_at,created_at,updated_at) VALUES(?,?,?,?)').run(id(n),stamp,stamp,stamp);
+  f.db.prepare('INSERT INTO d1_auth_sessions(token_hash,user_id,project_id,family_id,session_version,created_at,expires_at) VALUES(?,?,?,?,?,?,?)').run(createHash('sha256').update(value).digest('hex'),id(n),project,id(100+n),1,stamp,new Date(now+3600000).toISOString());
+ }
+ let hook,failAt=-1,batchStamp;
+ const db={first:f.read,batch:async statements=>{batchStamp=statements[0].params[4];if(hook){const run=hook;hook=null;await run()}return f.execute(statements,failAt)}};
+ const write=(patch={},value=token,live=false)=>writer.markD1SessionLessonCompleted(db,value,{courseSlug:'qa-course',lessonId:id(5),operationId:id(10),...patch},{...(live?{}:{now}),sessionTtlMs:3600000,resolveLesson:async(course,lesson)=>course==='qa-course'&&[id(5),id(6)].includes(lesson)?{id:lesson,title:'Backend lesson title'}:null});
+ return {...f,write,batchStamp:()=>batchStamp,token,otherToken,beforeBatch:fn=>{hook=fn},fail:n=>{failAt=n}};
+}
+
+test('native session writes own progress with backend title and ignores forged subject fields',async t=>{
+ const f=authFixture(t);f.paid();const result=await f.write({userId:id(2),email:'other@example.invalid',lessonTitle:'Forged'});
+ assert.equal(result.progressPercent,50);assert.equal(f.db.prepare('SELECT user_id,lesson_title FROM d1_lms_progress_operations').get().user_id,id(1));assert.equal(f.db.prepare('SELECT lesson_title FROM d1_lms_progress_operations').get().lesson_title,'Backend lesson title');
+ assert.deepEqual(await f.write(),result);assert.equal((await f.write({lessonId:id(6),operationId:id(11)})).progressPercent,100);
+});
+test('foreign session cannot mutate the paid owner enrollment or progress',async t=>{
+ const f=authFixture(t);f.paid();await assert.rejects(f.write({},f.otherToken),/not authorized/);await assert.rejects(f.write({},'invalid'),/Verified student/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
+});
+test('session revoked immediately before the atomic batch leaves no provision or progress',async t=>{
+ const f=authFixture(t);f.paid();f.beforeBatch(()=>f.db.prepare('UPDATE d1_auth_sessions SET revoked_at=? WHERE user_id=?').run(stamp,id(1)));await assert.rejects(f.write(),/not authorized/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
+});
+test('expiry, credential version, ban, password-change and Auth mirror races deny every write',async t=>{
+ for(const q of ["UPDATE d1_auth_sessions SET expires_at='2026-10-14T14:00:00Z' WHERE user_id='"+id(1)+"'","UPDATE d1_auth_accounts SET session_version=2 WHERE user_id='"+id(1)+"'","UPDATE d1_auth_accounts SET banned_until='2026-10-16T00:00:00Z' WHERE user_id='"+id(1)+"'","UPDATE d1_auth_accounts SET must_change_password=1 WHERE user_id='"+id(1)+"'","UPDATE d1_auth_sync_state SET status='pending'"]){const f=authFixture(t);f.paid();f.beforeBatch(()=>f.db.exec(q));await assert.rejects(f.write(),/not authorized/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0})}
+});
+test('previously applied operation cannot return a replay response after session revocation',async t=>{
+ const f=authFixture(t);f.paid();await f.write();const before=f.counts();f.beforeBatch(()=>f.db.prepare('UPDATE d1_auth_sessions SET revoked_at=?').run(stamp));await assert.rejects(f.write(),/not authorized/);assert.deepEqual(f.counts(),before);
+});
+test('native-session transaction failure rolls back enrollment owner progress and ledger together',async t=>{
+ const f=authFixture(t);f.paid();f.fail(4);await assert.rejects(f.write(),/injected fault/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});f.fail(-1);assert.equal((await f.write()).progressPercent,50);
+});
+test('missing backend lesson, admin and forced password change stop before mutation',async t=>{
+ const f=authFixture(t);f.paid();await assert.rejects(f.write({lessonId:id(999)}),/Published lesson/);f.db.prepare('UPDATE d1_access_users SET admin_role=? WHERE id=?').run('owner',id(1));await assert.rejects(f.write(),/Verified student/);f.db.exec('UPDATE d1_access_users SET admin_role=NULL');f.db.prepare('UPDATE d1_auth_accounts SET must_change_password=1 WHERE user_id=?').run(id(1));await assert.rejects(f.write(),/Verified student/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
+});
+
+test('queued real-clock D1 batch cannot use a planning timestamp from before session expiry',async t=>{
+ const f=authFixture(t);f.paid();const fresh=new Date().toISOString();
+ for(const table of ['d1_auth_sync_state','d1_access_sync_state'])f.db.prepare(`UPDATE ${table} SET source_snapshot_at=?,last_verified_at=?`).run(fresh,fresh);
+ const expiry=Date.now()+300;f.db.prepare('UPDATE d1_auth_sessions SET expires_at=?').run(new Date(expiry).toISOString());
+ f.beforeBatch(async()=>{assert(Date.parse(f.batchStamp())<expiry);await new Promise(resolve=>setTimeout(resolve,450))});
+ await assert.rejects(f.write({},f.token,true),/not authorized/);assert(Date.now()>expiry);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
+});
+
+test('malformed completion intent cannot coerce false text to completed progress',async t=>{const f=authFixture(t);f.paid();for(const patch of [{completed:'false'},{completed:null},{operationId:'invalid'},{lessonId:42},{courseSlug:[]}])await assert.rejects(f.write(patch),/Invalid student progress intent/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0})});

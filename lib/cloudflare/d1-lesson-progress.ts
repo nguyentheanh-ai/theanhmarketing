@@ -1,6 +1,8 @@
 import { isAdminEmail } from "@/lib/course-access";
 import { readD1StudentCourseAccess } from "@/lib/cloudflare/d1-course-access";
 import { d1LegacyAccessEvidenceSql, type LegacyAccessProof } from "@/lib/cloudflare/d1-legacy-access-evidence";
+import {getD1AuthSession,type AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
+import {assertD1AuthMirrorReady,authMirrorReadySql,authMirrorWindow} from '@/lib/cloudflare/d1-auth-authority';
 
 // Staging candidate, no route calls this module. The caller verifies Auth and
 // resolves lesson ID/title server-side. Execute ALL statements as one D1 batch
@@ -23,7 +25,7 @@ const ELIGIBLE = `WITH eligible_base AS (
  AND EXISTS (SELECT 1 FROM d1_access_users u WHERE u.id=?1 AND u.normalized_email=?2 AND coalesce(u.admin_role,'') NOT IN ('owner','editor'))
  AND EXISTS (SELECT 1 FROM d1_access_sync_state s WHERE s.source_project_id=?10 AND s.status='verified'
    AND julianday(s.source_snapshot_at) BETWEEN julianday(?6) AND julianday(?5)
-   AND julianday(s.last_verified_at) BETWEEN julianday(?6) AND julianday(?5)) AND ?14 IS NOT NULL
+   AND julianday(s.last_verified_at) BETWEEN julianday(?6) AND julianday(?5)) AND ?14 IS NOT NULL /* AUTH_SESSION_GUARD */
 )`;
 const OP_MATCH = `op.id=?7 AND op.user_id=?1 AND op.normalized_email=?2 AND op.course_slug=?3
  AND op.lesson_id=?4 AND op.completed=?8 AND ?11 IS NOT NULL
@@ -70,7 +72,7 @@ const PROVISION_GUARD = `EXISTS (SELECT 1 FROM d1_access_users u WHERE u.id=?1 A
  AND EXISTS (SELECT 1 FROM d1_access_sync_state s WHERE s.source_project_id=?10 AND s.status='verified'
    AND julianday(s.source_snapshot_at) BETWEEN julianday(?6) AND julianday(?5)
    AND julianday(s.last_verified_at) BETWEEN julianday(?6) AND julianday(?5))
- AND ${LEGACY_AUTH} AND ?11 IS NOT NULL
+ AND ${LEGACY_AUTH} AND ?11 IS NOT NULL /* AUTH_SESSION_GUARD */
  AND NOT EXISTS (SELECT 1 FROM d1_lms_progress_operations previous WHERE previous.id=?7 AND
    (previous.user_id<>?1 OR previous.normalized_email<>?2 OR previous.course_slug<>?3
     OR previous.lesson_id<>?4 OR previous.completed<>?8))`;
@@ -151,4 +153,53 @@ function parseProgressResponse(results: { results?: Record<string, unknown>[] }[
   if (result.ok!==true || typeof result.enrollmentId!=="string" || typeof result.progressPercent!=="number"
     || !Array.isArray(result.completedLessonIds) || !result.completedLessonIds.every(id=>typeof id==="string")) throw new Error("Invalid progress response");
   return {ok:true as const,enrollmentId:result.enrollmentId,progressPercent:result.progressPercent,completedLessonIds:result.completedLessonIds as string[]};
+}
+
+// App A native-session write boundary. No userId/email/proof/title from HTTP.
+// resolveLesson is a backend content reader, never a callback supplied by clients.
+// This candidate is not wired to app routes or a production writer yet.
+export async function markD1SessionLessonCompleted(db:AuthDatabase,token:string,
+ input:{courseSlug:string;lessonId:string;operationId:string;completed?:boolean},
+ policy:{sessionTtlMs:number;now?:number;resolveLesson:(courseSlug:string,lessonId:string)=>Promise<{id:string;title:string}|null>}){
+ if(!input||typeof input.courseSlug!=='string'||!input.courseSlug||input.courseSlug.length>200
+  ||typeof input.lessonId!=='string'||!uuid(input.lessonId)||typeof input.operationId!=='string'||!uuid(input.operationId)
+  ||(input.completed!==undefined&&typeof input.completed!=='boolean'))throw new Error('Invalid student progress intent');
+ const now=policy.now??Date.now(),projectId='vsxxgdzwtscuxcmjfckt';
+ const session=await getD1AuthSession(db,token,{projectId,now,sessionTtlMs:policy.sessionTtlMs});
+ if(!session||session.user.mustChangePassword||session.user.adminRole)throw new Error('Verified student session required');
+ const lesson=await policy.resolveLesson(input.courseSlug,input.lessonId);
+ if(!lesson||lesson.id!==input.lessonId||typeof lesson.title!=='string')throw new Error('Published lesson required');
+ await assertD1AuthMirrorReady(db,{projectId,now});
+ const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token));
+ const hash=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
+ const statements=await prepareD1LegacyAwareLessonCompletionBatch(db.first,{
+  userId:session.user.id,email:session.user.email,courseSlug:input.courseSlug,
+  lessonId:lesson.id,lessonTitle:lesson.title,operationId:input.operationId,completed:input.completed,
+ },{now});
+ const writeNow=policy.now??Date.now(),window=authMirrorWindow({projectId,now:writeNow});
+ // For real requests expiry/freshness also use the database execution clock:
+ // a queued batch must not authorize with a timestamp captured before expiry.
+ // Explicit `now` is a trusted backend fixture clock, never HTTP input.
+ const liveClock=policy.now===undefined?` AND julianday(session.expires_at)>julianday('now')
+ AND julianday(account.email_confirmed_at)<=julianday('now')
+ AND (account.banned_until IS NULL OR julianday(account.banned_until)<=julianday('now'))`:'';
+ const liveMirror=policy.now===undefined?` AND EXISTS(SELECT 1 FROM d1_auth_sync_state mirror
+ WHERE mirror.source_project_id=?10 AND mirror.status='verified'
+ AND julianday(mirror.source_snapshot_at) BETWEEN julianday('now','-5 minutes') AND julianday('now')
+ AND julianday(mirror.last_verified_at) BETWEEN julianday('now','-5 minutes') AND julianday('now'))`:'';
+ const guard=` AND EXISTS(SELECT 1 FROM d1_auth_sessions session JOIN d1_auth_accounts account ON account.user_id=session.user_id
+ WHERE session.token_hash=?15 AND session.project_id=?10 AND session.user_id=?1 AND session.revoked_at IS NULL
+ AND session.session_version=account.session_version AND julianday(session.expires_at)>julianday(?5)
+ AND account.email_confirmed_at IS NOT NULL AND julianday(account.email_confirmed_at)<=julianday(?5)
+ AND account.deleted_at IS NULL AND account.is_anonymous=0 AND account.must_change_password=0
+ AND (account.banned_until IS NULL OR julianday(account.banned_until)<=julianday(?5))${liveClock})
+ AND ${authMirrorReadySql(10,16,5)}${liveMirror}`;
+ // Provision, progress, operation ledger, enrollment and replay response all
+ // carry the guard. The single D1 batch cannot interleave another Auth writer.
+ const guarded=statements.map(statement=>{
+  if(!statement.sql.includes('/* AUTH_SESSION_GUARD */'))throw new Error('Progress Auth guard unavailable');
+  const params=[...statement.params];params[4]=window.stamp;params[5]=window.floor;
+  return {sql:statement.sql.replaceAll('/* AUTH_SESSION_GUARD */',guard),params:[...params,hash,window.floor]};
+ });
+ return parseProgressResponse(await db.batch(guarded));
 }

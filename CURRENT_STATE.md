@@ -878,3 +878,14 @@ Ba harness password HTTP, Google HTTP và Google transaction đã thay adapter i
 **TESTED:** sáu ca SQLite: đúng UUID/quyền của chủ phiên, token giả/cross-project/expired/revoked/version, bắt đổi mật khẩu/admin, revoke/status/version/mirror race; tất cả đạt. Workerd+D1 qua adapter thực: login→cookie→quyền khóa học, query email/UUID khác không đổi chủ phiên, cookie trùng guest, logout→quyền guest; bộ HTTP tăng8/8 đạt. Hồi quy quyền/legacy enrollment/progress30/30 và Auth25/25 đạt; TypeScript/scoped lint/diff đạt. Fixture schema loader ban đầu split dấu chấm phẩy làm vỡ trigger BEGIN/END; sửa dùng sqlite3.complete_statement giữ đầy đủ trigger rồi chạy đạt, không xóa trigger để né lỗi.
 
 **IN PROGRESS:** đây là boundary backend trong candidate, chưa sửa framework/session hoặc trang /learn production, chưa deploy/import khách. Chưa ràng buộc Auth vào giao dịch ghi tiến độ, chưa course content đầy đủ/SSR/UI/video/private assets/admin. Không coi quyền read hoặc GET200 là nghiệm thu học tập; native authority/full delta/bridge/payment/rollback vẫn phải hoàn tất trước READY_FOR_CUTOVER.
+
+
+## 15/10/2026 — Tiến độ học gắn native D1 session: scoped TESTED
+
+markD1SessionLessonCompleted lấy UUID/email từ opaque phiên, title từ resolver backend; không dùng subject/title/proof do client gửi. Chặn ý định sai kiểu, guest/admin/must-change và lesson không tìm thấy. Mọi statement provision/progress/enrollment/ledger/replay đều có Auth guard token/project/user/version/revocation/expiry/account/freshness. Batch nguyên tử, không dual-write.
+
+Refresh timestamp/floor trước batch; khi không có clock fixture, SQL kiểm thêm đồng hồ database julianday('now'), chặn yêu cầu xếp hàng qua lúc phiên hết hạn. Policy.now chỉ là clock backend test, không nhận từ HTTP.
+
+TESTED:45/45 quyền/session/progress;10/10 HTTP workerd/D1. Chuỗi login cookie→quyền→complete50/replay/next100/undo50→logout chặn write/replay đạt; đúng chủ phiên/title backend. Revoke/version/expiry/ban/password-change/mirror races không ghi; lỗi sau progress rollback toàn bộ; queue qua expiry và ý định completed sai kiểu bị chặn. Lượt race fixture đầu SAVEPOINT ngoài BEGIN gây nested transaction; đã sửa mỗi tình huống dùng DB riêng và chạy đạt. TypeScript/lint/diff đạt. Dữ liệu fixture, không học viên thật.
+
+IN PROGRESS: chưa route/SSR/UI/video hoặc native deployment/import. Chưa primary-write authority/full delta/rollback ngược; không bật writer khách khi Supabase còn nguồn ghi chính. Source-session bridge/signup/recovery/Google-Facebook thật/admin/payment/Storage delivery còn thiếu; chưa READY_FOR_CUTOVER.
