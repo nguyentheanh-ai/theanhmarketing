@@ -32,3 +32,9 @@ CREATE TABLE IF NOT EXISTS d1_auth_attempt_buckets (
   reset_at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS d1_auth_attempt_buckets_expiry ON d1_auth_attempt_buckets(reset_at);
+-- Read-only source mirror gate; never refresh timestamp without source export/delta verification.
+CREATE TABLE IF NOT EXISTS d1_auth_sync_state (
+ source_project_id TEXT PRIMARY KEY,
+ source_snapshot_at TEXT NOT NULL,last_verified_at TEXT NOT NULL,
+ status TEXT NOT NULL CHECK(status IN ('verified','pending','failed'))
+);

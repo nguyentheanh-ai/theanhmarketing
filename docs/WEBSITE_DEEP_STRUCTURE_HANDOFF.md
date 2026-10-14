@@ -1,3 +1,13 @@
+## 14/10/2026 — Auth source-mirror freshness gate: scoped TESTED
+
+Thêm `d1-auth-authority.ts` và `d1_auth_sync_state`; login/đọc phiên/rotation/revoke-all/Google lookup yêu cầu đúng project, status verified, source_snapshot_at và last_verified_at không tương lai và còn hạn (mặc định 5 phút). Guard còn nằm trong SQL đọc/INSERT/batch, nên marker đổi sau preflight cũng không cấp hoặc xoay phiên. Sau bcrypt dùng thời điểm cấp mới; các phép phiên dùng cùng thời điểm với cửa sổ mirror. Nếu mất authority sau INSERT, token chưa trả về được thu hồi. Không dùng heartbeat để cập nhật marker, không tự ghi marker verified từ backup cũ.
+
+HTTP mirror outage trả 503/private-no-store và giữ cookie; khi xác minh lại, token còn hợp lệ đọc được tiếp. Logout một token vẫn cho phép khi mirror stale; revoke-all cần authority hiện hành. Đây là **source-mirror stage only**, chưa phải cơ chế duyệt/chuyển nguồn Auth native. Nguồn Supabase vẫn duy nhất và chưa có route dùng candidate.
+
+**TESTED:** 23/23 SQLite/Request-Response checks, 9/9 Google crypto/SQL checks đạt; TypeScript/scoped lint đạt. Local workerd+D1 HTTP **6/6** đạt, thêm outage→503/no cookie clearing→khôi phục cùng UUID. Marker/time trong fixture là giả, không chứng minh freshness dữ liệu khách hoặc delta nguồn. Các trường hợp missing/pending/failed/stale/future, marker đổi trước INSERT/rotate hoặc giữa preflight/Google lookup đều chặn; marker mất sau INSERT thu hồi session chưa phát.
+
+**IN PROGRESS:** exporter/delta có snapshot thật, fencing/idempotency, password/status/identity changes + session version invalidation; snapshot manifest/full verification và native write authority được owner duyệt khi cutover. OAuth callback/state/PKCE, rolling bridge và HTTP retry/grace cho rotation vẫn còn cổng riêng. Không import khách/marker remote, không đổi production.
+
 ## 14/10/2026 — Provider identity + Google verifier: scoped TESTED
 
 Audit Auth topology chỉ xuất số tổng hợp trong clone AES-256. Snapshot A: 410 identity email + 89 Google = **499 identity**, 63 user có nhiều identity, 0 orphan/0 user thiếu identity; B: **269 identity email**, 0 Google/multiple/orphan/missing. Cả hai snapshot không có MFA factor hoặc SSO provider. A có 1.025 session và 1.024 refresh token chưa đánh dấu revoked; B 29/29; tất cả session không có not_after. Đây không chứng minh token/phiên còn hiệu lực và không xác định được TTL từ cấu hình Auth. Flow_state còn 300/14 hàng; không nhập provider token, auth code hay refresh token ở cổng này.

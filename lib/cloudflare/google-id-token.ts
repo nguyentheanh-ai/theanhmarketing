@@ -1,4 +1,5 @@
 import { createRemoteJWKSet,jwtVerify,type JWTVerifyGetKey } from 'jose';
+import {assertD1AuthMirrorReady,authMirrorReadySql} from '@/lib/cloudflare/d1-auth-authority';
 import type { AuthDatabase } from '@/lib/cloudflare/d1-auth-core';
 const proof=Symbol('verified-google-id-token');
 export type VerifiedGoogleSubject=Readonly<{provider:'google';subject:string;clientId:string;projectId:string;[proof]:true}>;
@@ -21,12 +22,13 @@ export function createGoogleIdTokenVerifier(config:{clientId:string;projectId:st
 // a guarded D1 session separately. This function never links/registers users.
 export async function lookupD1VerifiedGoogleSubject(db:AuthDatabase,subject:VerifiedGoogleSubject,now=Date.now()){
  if(!subject||subject[proof]!==true||!Number.isFinite(now))throw new Error('Verified Google token required');
+ const mirror=await assertD1AuthMirrorReady(db,{projectId:subject.projectId,now});
  const row=await db.first(`SELECT u.id,u.normalized_email,u.admin_role,a.session_version,a.must_change_password,i.id AS identity_id
   FROM d1_auth_provider_identities i JOIN d1_access_users u ON u.id=i.user_id JOIN d1_auth_accounts a ON a.user_id=u.id
   WHERE i.provider='google' AND i.provider_id=?1 AND i.source_project_id=?3
   AND a.email_confirmed_at IS NOT NULL AND julianday(a.email_confirmed_at)<=julianday(?2)
-  AND a.deleted_at IS NULL AND a.is_anonymous=0 AND (a.banned_until IS NULL OR julianday(a.banned_until)<=julianday(?2))`,[subject.subject,new Date(now).toISOString(),subject.projectId]);
- if(!row)return null;
+  AND a.deleted_at IS NULL AND a.is_anonymous=0 AND (a.banned_until IS NULL OR julianday(a.banned_until)<=julianday(?2)) AND ${authMirrorReadySql(3,4)}`,[subject.subject,new Date(now).toISOString(),subject.projectId,mirror.floor]);
+ if(!row){await assertD1AuthMirrorReady(db,{projectId:subject.projectId,now});return null;}
  if(typeof row.id!=='string'||typeof row.normalized_email!=='string'||typeof row.identity_id!=='string'||!Number.isInteger(row.session_version)||Number(row.session_version)<1)throw new Error('Google identity projection unavailable');
  return {id:row.id,email:row.normalized_email,identityId:row.identity_id,sessionVersion:Number(row.session_version),adminRole:row.admin_role==='owner'||row.admin_role==='editor'?row.admin_role:null,mustChangePassword:row.must_change_password===1};
 }
