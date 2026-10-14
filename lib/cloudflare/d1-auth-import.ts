@@ -1,3 +1,4 @@
+import {authSourceDigest,authSourceRevision} from "@/lib/cloudflare/auth-source-fingerprint";
 import { isSupportedLegacyBcryptHash, sealLegacyBcryptHash } from "@/lib/cloudflare/legacy-password";
 
 // Offline/admin migration input only. Never deserialize this from an HTTP user
@@ -46,6 +47,8 @@ export async function prepareD1AuthInitialImport(source:readonly AuthSourceRow[]
   statements.push({sql:`INSERT INTO d1_auth_accounts(user_id,credential_ciphertext,email_confirmed_at,banned_until,deleted_at,is_anonymous,
    session_version,must_change_password,user_metadata,created_at,updated_at) VALUES(?1,?2,?3,?4,?5,?6,1,?7,?8,?9,?10)`,
    params:[item.id,ciphertext,item.confirmedAt,item.bannedUntil,item.deletedAt,Number(item.row.isAnonymous),Number(item.userMetadata.must_change_password===true),JSON.stringify(item.userMetadata),item.createdAt,item.updatedAt]});
+  const user=statements[statements.length-2].params,account=statements[statements.length-1].params;
+  statements.push({sql:"INSERT INTO d1_auth_source_versions(user_id,source_revision,source_digest,source_project_id) VALUES(?1,?2,?3,?4)",params:[item.id,authSourceRevision(item.row.updatedAt),await authSourceDigest(user,account,item.row.encryptedPassword||null),options.projectId]});
  }
  return {statements,summary:{users:rows.length,passwordCredentials:rows.filter(r=>Boolean(r.row.encryptedPassword)).length,
   passwordlessUsers:rows.filter(r=>!r.row.encryptedPassword).length,confirmedUsers:rows.filter(r=>r.confirmedAt!==null).length,

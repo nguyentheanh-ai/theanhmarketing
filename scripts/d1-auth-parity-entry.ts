@@ -4,3 +4,5 @@ export {openLegacyBcryptHash,generateCredentialKey} from "@/lib/cloudflare/legac
 export {getConfiguredOwnerEmails} from "@/lib/admin/admin-emails";
 
 export {prepareD1ProviderIdentityImport} from "@/lib/cloudflare/d1-auth-identities";
+
+export {authSourceRevision} from "@/lib/cloudflare/auth-source-fingerprint";

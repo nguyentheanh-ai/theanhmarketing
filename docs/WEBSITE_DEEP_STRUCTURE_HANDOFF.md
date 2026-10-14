@@ -1,3 +1,15 @@
+## 14/10/2026 — Auth account delta có CAS/cursor: scoped TESTED
+
+Thêm `d1-auth-delta.ts`, fingerprint nội bộ và hai bảng source_versions/delta_operations. Initial import ghi baseline theo project, revision epoch microseconds (20 chữ số) và digest; dùng cursor riêng nên logout-all cập nhật account.updated_at không làm sai thứ tự nguồn. Metadata JSON được canonicalize theo thứ tự ký tự cố định, không phụ thuộc locale. Không log digest, hash hoặc dữ liệu đầu vào.
+
+Delta chỉ cập nhật **account đã có baseline**. Một atomic batch giữ fingerprint toàn trạng thái đọc (gồm session_version/cipher/cursor), project namespace, revision tăng và operation ID/digest. CAS thua không cập nhật; operation đã hoàn tất chỉ replay đúng payload. Cipher được giữ khi hash không đổi. Hash/email/role/confirmation/banned/deleted/anonymous/must-change đổi thì tăng session_version; metadata thường không làm mất phiên. Lỗi batch rollback cả account, cursor, ledger và mirror state. Delta đặt mirror pending, **không tự xác minh toàn snapshot**.
+
+**TESTED:** 8/8 delta tests, 5/5 importer và 23/23 Auth regression đạt; TypeScript/scoped lint đạt. Bao gồm revision chênh microsecond, timezone, metadata key order, no-op security, password mới/cũ, status/role, project mismatch, replay/conflict, cạnh tranh và lỗi sau account UPDATE. SQLite thật; chưa hosted D1/Worker delta.
+
+Đối soát clone A 436 account/499 identity và B 269/269 giữ 0 lệch; source revision được so với epoch microseconds do PostgreSQL tính độc lập, **0 mismatch A/B**. B đã kiểm thêm namespace baseline mới; A so microseconds trước bổ sung cột namespace, namespace A đã có fixture riêng. Image đọc lại unmounted. Không copy khách/marker mới lên remote.
+
+**Chưa đạt:** live exporter, snapshot manifest/fencing/job lease/final verification, new/deleted accounts, email swap, identity unlink/relink/removal, retry outcome qua network và dữ liệu rollback ngược. Caller phải đọc kết quả statement cuối/ledger để xác nhận đã áp dụng, không tính batch HTTP 200 là thành công. Nguồn có nội dung đổi nhưng updated_at không tăng phải dừng/đối soát, không bỏ qua. Full-wave controller phải pending trước khi planning và chỉ verified sau kiểm đủ tập dữ liệu. Không dùng delta này làm native-write authority/cutover. Chung **IN PROGRESS**.
+
 ## 14/10/2026 — Auth source-mirror freshness gate: scoped TESTED
 
 Thêm `d1-auth-authority.ts` và `d1_auth_sync_state`; login/đọc phiên/rotation/revoke-all/Google lookup yêu cầu đúng project, status verified, source_snapshot_at và last_verified_at không tương lai và còn hạn (mặc định 5 phút). Guard còn nằm trong SQL đọc/INSERT/batch, nên marker đổi sau preflight cũng không cấp hoặc xoay phiên. Sau bcrypt dùng thời điểm cấp mới; các phép phiên dùng cùng thời điểm với cửa sổ mirror. Nếu mất authority sau INSERT, token chưa trả về được thu hồi. Không dùng heartbeat để cập nhật marker, không tự ghi marker verified từ backup cũ.

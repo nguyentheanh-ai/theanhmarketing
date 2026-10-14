@@ -38,3 +38,14 @@ CREATE TABLE IF NOT EXISTS d1_auth_sync_state (
  source_snapshot_at TEXT NOT NULL,last_verified_at TEXT NOT NULL,
  status TEXT NOT NULL CHECK(status IN ('verified','pending','failed'))
 );
+CREATE TABLE IF NOT EXISTS d1_auth_source_versions (
+ user_id TEXT PRIMARY KEY REFERENCES d1_auth_accounts(user_id),
+ source_revision TEXT NOT NULL CHECK(length(source_revision)=20),
+ source_digest TEXT NOT NULL CHECK(length(source_digest)=64),
+ source_project_id TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS d1_auth_delta_operations (
+ id TEXT PRIMARY KEY,source_project_id TEXT NOT NULL,user_id TEXT NOT NULL,
+ source_revision TEXT NOT NULL,payload_digest TEXT NOT NULL,
+ status TEXT NOT NULL CHECK(status IN ('pending','done')),created_at TEXT NOT NULL
+);

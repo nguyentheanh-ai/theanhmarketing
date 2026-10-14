@@ -4,7 +4,7 @@ import { openLegacyBcryptHash, verifyLegacyBcryptPassword } from "@/lib/cloudfla
 // Backend core only. No HTTP route or application provider uses this yet.
 // Caller must implement IP/email rate limiting before expensive verification,
 // and set the returned opaque token only as a Secure/HttpOnly host-only cookie.
-type Statement={sql:string;params:(string|number)[]};
+type Statement={sql:string;params:(string|number|null)[]};
 export type AuthDatabase={
  first:(sql:string,params:readonly(string|number)[])=>Promise<Record<string,unknown>|null>;
  batch:(statements:readonly Statement[])=>Promise<{results?:Record<string,unknown>[]}[]>;
