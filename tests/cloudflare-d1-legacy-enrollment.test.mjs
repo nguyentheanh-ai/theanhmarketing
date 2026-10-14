@@ -155,19 +155,19 @@ test('native session writes own progress with backend title and ignores forged s
  assert.deepEqual(await f.write(),result);assert.equal((await f.write({lessonId:id(6),operationId:id(11)})).progressPercent,100);
 });
 test('foreign session cannot mutate the paid owner enrollment or progress',async t=>{
- const f=authFixture(t);f.paid();await assert.rejects(f.write({},f.otherToken),/not authorized/);await assert.rejects(f.write({},'invalid'),/Verified student/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
+ const f=authFixture(t);f.paid();await assert.rejects(f.write({},f.otherToken),/not authorized|transaction unavailable/);await assert.rejects(f.write({},'invalid'),/Verified student/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
 });
 test('session revoked immediately before the atomic batch leaves no provision or progress',async t=>{
- const f=authFixture(t);f.paid();f.beforeBatch(()=>f.db.prepare('UPDATE d1_auth_sessions SET revoked_at=? WHERE user_id=?').run(stamp,id(1)));await assert.rejects(f.write(),/not authorized/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
+ const f=authFixture(t);f.paid();f.beforeBatch(()=>f.db.prepare('UPDATE d1_auth_sessions SET revoked_at=? WHERE user_id=?').run(stamp,id(1)));await assert.rejects(f.write(),/not authorized|transaction unavailable/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
 });
 test('expiry, credential version, ban, password-change and Auth mirror races deny every write',async t=>{
- for(const q of ["UPDATE d1_auth_sessions SET expires_at='2026-10-14T14:00:00Z' WHERE user_id='"+id(1)+"'","UPDATE d1_auth_accounts SET session_version=2 WHERE user_id='"+id(1)+"'","UPDATE d1_auth_accounts SET banned_until='2026-10-16T00:00:00Z' WHERE user_id='"+id(1)+"'","UPDATE d1_auth_accounts SET must_change_password=1 WHERE user_id='"+id(1)+"'","UPDATE d1_auth_sync_state SET status='pending'"]){const f=authFixture(t);f.paid();f.beforeBatch(()=>f.db.exec(q));await assert.rejects(f.write(),/not authorized/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0})}
+ for(const q of ["UPDATE d1_auth_sessions SET expires_at='2026-10-14T14:00:00Z' WHERE user_id='"+id(1)+"'","UPDATE d1_auth_accounts SET session_version=2 WHERE user_id='"+id(1)+"'","UPDATE d1_auth_accounts SET banned_until='2026-10-16T00:00:00Z' WHERE user_id='"+id(1)+"'","UPDATE d1_auth_accounts SET must_change_password=1 WHERE user_id='"+id(1)+"'","UPDATE d1_auth_sync_state SET status='pending'"]){const f=authFixture(t);f.paid();f.beforeBatch(()=>f.db.exec(q));await assert.rejects(f.write(),/not authorized|transaction unavailable/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0})}
 });
 test('previously applied operation cannot return a replay response after session revocation',async t=>{
- const f=authFixture(t);f.paid();await f.write();const before=f.counts();f.beforeBatch(()=>f.db.prepare('UPDATE d1_auth_sessions SET revoked_at=?').run(stamp));await assert.rejects(f.write(),/not authorized/);assert.deepEqual(f.counts(),before);
+ const f=authFixture(t);f.paid();await f.write();const before=f.counts();f.beforeBatch(()=>f.db.prepare('UPDATE d1_auth_sessions SET revoked_at=?').run(stamp));await assert.rejects(f.write(),/not authorized|transaction unavailable/);assert.deepEqual(f.counts(),before);
 });
 test('native-session transaction failure rolls back enrollment owner progress and ledger together',async t=>{
- const f=authFixture(t);f.paid();f.fail(4);await assert.rejects(f.write(),/injected fault/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});f.fail(-1);assert.equal((await f.write()).progressPercent,50);
+ const f=authFixture(t);f.paid();f.fail(4);await assert.rejects(f.write(),/transaction unavailable/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});f.fail(-1);assert.equal((await f.write()).progressPercent,50);
 });
 test('missing backend lesson, admin and forced password change stop before mutation',async t=>{
  const f=authFixture(t);f.paid();await assert.rejects(f.write({lessonId:id(999)}),/Published lesson/);f.db.prepare('UPDATE d1_access_users SET admin_role=? WHERE id=?').run('owner',id(1));await assert.rejects(f.write(),/Verified student/);f.db.exec('UPDATE d1_access_users SET admin_role=NULL');f.db.prepare('UPDATE d1_auth_accounts SET must_change_password=1 WHERE user_id=?').run(id(1));await assert.rejects(f.write(),/Verified student/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
@@ -178,12 +178,12 @@ test('queued real-clock D1 batch cannot use a planning timestamp from before ses
  for(const table of ['d1_auth_sync_state','d1_access_sync_state'])f.db.prepare(`UPDATE ${table} SET source_snapshot_at=?,last_verified_at=?`).run(fresh,fresh);
  const expiry=Date.now()+300;f.db.prepare('UPDATE d1_auth_sessions SET expires_at=?').run(new Date(expiry).toISOString());
  f.beforeBatch(async()=>{assert(Date.parse(f.batchStamp())<expiry);await new Promise(resolve=>setTimeout(resolve,450))});
- await assert.rejects(f.write({},f.token,true),/not authorized/);assert(Date.now()>expiry);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
+ await assert.rejects(f.write({},f.token,true),/not authorized|transaction unavailable/);assert(Date.now()>expiry);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
 });
 
 test('malformed completion intent cannot coerce false text to completed progress',async t=>{const f=authFixture(t);f.paid();for(const patch of [{completed:'false'},{completed:null},{operationId:'invalid'},{lessonId:42},{courseSlug:[]}])await assert.rejects(f.write(patch),/Invalid student progress intent/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0})});
 
-test('native progress writer is disabled without a valid explicit backend QA cohort',async t=>{const f=authFixture(t);f.paid();const options={now,sessionTtlMs:3600000,resolveLesson:async()=>({id:id(5),title:'Backend'})};for(const cohort of [undefined,[],['invalid'],[id(1),id(1)]])await assert.rejects(writer.markD1SessionLessonCompleted(f.authDb,f.token,f.input,{...options,qaUserIds:cohort}),/authority unavailable/);await assert.rejects(writer.markD1SessionLessonCompleted(f.authDb,f.token,f.input,{...options,qaUserIds:[id(2)]}),/not authorized/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0})});
+test('native progress writer is disabled without a valid explicit backend QA cohort',async t=>{const f=authFixture(t);f.paid();const options={now,sessionTtlMs:3600000,resolveLesson:async()=>({id:id(5),title:'Backend'})};for(const cohort of [undefined,[],['invalid'],[id(1),id(1)]])await assert.rejects(writer.markD1SessionLessonCompleted(f.authDb,f.token,f.input,{...options,qaUserIds:cohort}),/authority unavailable/);await assert.rejects(writer.markD1SessionLessonCompleted(f.authDb,f.token,f.input,{...options,qaUserIds:[id(2)]}),/not authorized|transaction unavailable/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0})});
 
 const httpBundle=await build({entryPoints:['lib/cloudflare/d1-student-http.ts'],bundle:true,platform:'node',format:'esm',write:false});
 const {handleD1StudentHttp}=await import('data:text/javascript;base64,'+Buffer.from(httpBundle.outputFiles[0].text).toString('base64'));
@@ -205,11 +205,21 @@ test('publication-bound native write completes and replays without duplicating p
  const f=await publishedFixture(t);const response=await f.publishedWrite();assert.equal(response.progressPercent,50);assert.deepEqual(await f.publishedWrite(),response);assert.deepEqual(f.counts(),{enrollments:1,owners:1,progress:1,operations:1});
 });
 test('content mutation after backend resolution denies every write, including provision and operation ledger',async t=>{
- const f=await publishedFixture(t);f.beforeBatch(()=>f.db.exec("UPDATE d1_course_content SET source_document=json_set(source_document,'$.title','Changed after resolution')"));await assert.rejects(f.publishedWrite(),/not authorized/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
+ const f=await publishedFixture(t);f.beforeBatch(()=>f.db.exec("UPDATE d1_course_content SET source_document=json_set(source_document,'$.title','Changed after resolution')"));await assert.rejects(f.publishedWrite(),/not authorized|transaction unavailable/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
 });
 test('unverified or expired publication marker at execution denies progress with no side effects',async t=>{
- for(const sql of ["UPDATE d1_course_content_sync SET status='pending'","UPDATE d1_course_content_sync SET last_verified_at='2020-01-01T00:00:00Z'"]){const f=await publishedFixture(t);f.beforeBatch(()=>f.db.exec(sql));await assert.rejects(f.publishedWrite(),/not authorized/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0})}
+ for(const sql of ["UPDATE d1_course_content_sync SET status='pending'","UPDATE d1_course_content_sync SET last_verified_at='2020-01-01T00:00:00Z'"]){const f=await publishedFixture(t);f.beforeBatch(()=>f.db.exec(sql));await assert.rejects(f.publishedWrite(),/not authorized|transaction unavailable/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0})}
 });
 test('serialized publication proof is rejected before any write even with matching fields',async t=>{
  const f=await publishedFixture(t);const lesson=await writer.resolveD1ProgressLesson(f.authDb,'qa-course',id(5),now);const forged=JSON.parse(JSON.stringify(lesson));await assert.rejects(writer.markD1SessionLessonCompleted(f.authDb,f.token,f.input,{...f.options,resolveLesson:async()=>forged}),/Verified progress publication/);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
+});
+
+
+test('expiry after progress insertion aborts the entire native batch instead of committing a partial save',async t=>{
+ const f=authFixture(t);f.paid();const fresh=new Date().toISOString();
+ for(const table of ['d1_auth_sync_state','d1_access_sync_state'])f.db.prepare(`UPDATE ${table} SET source_snapshot_at=?,last_verified_at=?`).run(fresh,fresh);
+ f.db.prepare('UPDATE d1_auth_sessions SET expires_at=? WHERE user_id=?').run(new Date(Date.now()+250).toISOString(),id(1));
+ let insertionReached=false;f.db.function('fixture_wait',()=>{insertionReached=true;Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,350);return 1});
+ f.db.exec('CREATE TRIGGER fixture_expire_after_progress AFTER INSERT ON d1_lms_progress BEGIN SELECT fixture_wait(); END;');
+ await assert.rejects(f.write({},f.token,true),/transaction unavailable/);assert.equal(insertionReached,true);assert.deepEqual(f.counts(),{enrollments:0,owners:0,progress:0,operations:0});
 });

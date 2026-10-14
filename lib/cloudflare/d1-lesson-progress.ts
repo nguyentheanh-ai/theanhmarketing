@@ -211,5 +211,13 @@ export async function markD1SessionLessonCompleted(db:AuthDatabase,token:string,
   const params=[...statement.params];params[4]=window.stamp;params[5]=window.floor;
   return {sql:statement.sql.replaceAll('/* AUTH_SESSION_GUARD */',guard+(publication?.sql??'')),params:[...params,hash,window.floor,JSON.stringify(cohort),...(publication?.params??[])]};
  });
- return parseProgressResponse(await db.batch(guarded));
+ // A guard that turns false midway must ABORT the platform transaction, not
+ // merely return zero rows after earlier statements have changed progress.
+ // SQLite evaluates only the selected CASE branch; malformed JSON deliberately
+ // raises a database error when the final guarded receipt is absent.
+ const final=guarded.at(-1)!;
+ guarded[guarded.length-1]={...final,sql:`SELECT CASE WHEN receipt.response_json IS NULL THEN json('progress_transaction_denied') ELSE receipt.response_json END AS response_json FROM (SELECT (${final.sql}) AS response_json) receipt`};
+ let results;
+ try{results=await db.batch(guarded);}catch{throw new Error('Student progress transaction unavailable');}
+ return parseProgressResponse(results);
 }

@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "sqliteTests": 32,
+  "localWorkerdChecks": 17,
+  "typescript": "PASS",
+  "scopedLint": "PASS",
+  "scope": "Native progress final receipt assertion and rollback during session expiry/revocation",
+  "limits": "Local fixtures only; hosted progress remains disabled"
+}

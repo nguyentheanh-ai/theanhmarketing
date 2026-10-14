@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "scope": "A staging native progress atomic rollback assertion, Auth/progress disabled",
+  "build": "PASS",
+  "version": "6e2fac5e-2538-4f55-b6e0-146d9521cedc"
+}

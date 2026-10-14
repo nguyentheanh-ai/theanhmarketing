@@ -1,0 +1,13 @@
+{
+  "status": "REPRODUCED",
+  "baselineCommit": "74f5f70",
+  "baselineExitCode": 1,
+  "partialRows": {
+    "enrollments": 1,
+    "owners": 1,
+    "progress": 1,
+    "operations": 1
+  },
+  "scope": "Synthetic SQLite expiry after insertion; old batch commits partial rows",
+  "limits": "No remote/customer writes; no broad provider failure claim"
+}

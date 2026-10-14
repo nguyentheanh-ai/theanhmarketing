@@ -1103,3 +1103,14 @@ Native router A có thêm CF_NATIVE_QA_PROGRESS_MODE, source mặc định disab
 Staging A deploy mã này với Auth disabled, progress disabled, cohort rỗng. Chưa thực hiện ghi tiến độ QA hosted trong lượt này. Cần chọn đúng row QA hiện có, chụp trạng thái trước test, bật tạm một QA, kiểm semantic dữ liệu/retry/refresh/CSRF trên hosted và hoàn trả row QA bằng CAS; giữ operation/session history, không tác động source Supabase hoặc học viên thật. Cần kiểm header private/no-store trên bản hosted mới cùng browser/video/mobile/Safari.
 
 Tổng IN PROGRESS, chưa READY FOR CUTOVER. Full dữ liệu/Auth/providers/RLS/admin/payment/automation/Storage/delta/rollback và ứng dụng B vẫn phải hoàn tất riêng. Native QA vẫn dựa vào freshness của snapshot source, chưa thể thay thế Supabase khi nguồn ngừng. Báo cáo main/reports/cloudflare-d1/native-publication-progress-{tests,build,deploy}.json.
+
+
+## 15/10/2026 — Native progress: lỗi ghi từng phần đã tái hiện và sửa
+
+Baseline 74f5f70 có guard trên từng statement nhưng nếu phiên hết hạn sau INSERT progress, statement cuối trả0rows không gây lỗi SQL: batch commit1enrollment/1owner/1progress/1operation rồi response thất bại. Đã tái hiện bằng SQLite fixture, không dữ liệu khách thật hay remote writes. Lượt thử baseline đầu bị lỗi loader TypeScript; sau sửa harness loader đúng, assertion dữ liệu mới chứng minh lỗi. Báo cáo reproduction chỉ đánh dấu từ kết quả này.
+
+Writer native hiện buộc receipt cuối tồn tại; CASE nhánh không có receipt gây lỗi SQLite để platform batch rollback toàn bộ. Không đổi primitive legacy ngoài đường session-bound. SQL lỗi không ra logs/client; transport trả lỗi tạm thời, không báo lưu thành công. Test expiry trì hoãn ngay sau INSERT có kiểm insertionReached=true và kết quả0row ở cả4bảng. Local workerd/D1 dùng trigger fixture thu hồi session sau INSERT: HTTP503 và mọi mutation/trigger effect rollback; luồng ghi/replay/undo/refresh hợp lệ vẫn đạt.
+
+32 SQLite tests,17 local workerd checks,TS/scoped lint/diff đạt; Vite build và deploy staging A với Auth/progress disabled, cohort rỗng. Chưa mở ghi QA hosted trong lượt này do sửa lỗi atomicity trước. Không tạo hoặc sửa progress source Supabase, không học viên thật. Cần chụp row QA trước hosted test, giữ lịch sử operation/session và dùng CAS restore đầy đủ enrollment/progress sau test; không giả việc undo API đã hoàn trả metadata/timestamp nguồn.
+
+Tổng IN PROGRESS; chưa READY FOR CUTOVER. Các điều kiện toàn bộ A/B, dữ liệu/Auth/RLS/Storage/payment/delta và rollback production vẫn còn. B là app riêng. Bằng chứng main/reports/cloudflare-d1/native-progress-atomicity-{reproduction,tests,deploy,readback}.json.
