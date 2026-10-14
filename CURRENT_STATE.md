@@ -999,3 +999,16 @@ GET /api/cloudflare-student/lesson chỉ nhận đúng hai query key courseSlug/
 SELECT read_only riêng QA ở nguồn cho1contact/1enrollment/1progress/0paid order/1override. Chỉ counts/schema key trong report, không lưu payload/danh tính. Tiếp theo importer phải giữ progress gốc và full entitlement evidence, đối soát với RPC/source hiện hành; không coi grant override đơn lẻ là toàn bộ quyền. Auth QA có session history đã revoke, nên verifier initial0session không được dùng lại bằng cách xóa history. Content snapshot freshness5phút cần kiểm lại từ nguồn; không dùng heartbeat giả để mở cổng.
 
 Tổng IN PROGRESS: chưa hosted QA learning/SSR, native customer Auth/providers/bridge/full data delta, all RLS/admin/payment/storage/browser/Safari và rollback dữ liệu. B là app riêng; không Adplan/production DNS/webhook/source writer/billing/decommission. Không READY FOR CUTOVER.
+
+
+## 15/10/2026 — Kế hoạch nhập quyền/tiến độ QA: SOURCE TESTED
+
+Thêm d1-qa-learning-import.ts, schema d1_qa_learning_source và công cụ prepare-qa-learning.py/mjs. Chỉ chuẩn bị initial import cho đúng QA; giữ UUID, NULL linkage gốc khi contact/slug chứng minh ánh xạ, completion/status/metadata và source email. Chặn contact/user/course/lesson/enrollment khác tài khoản, duplicate ID, trạng thái/percent sai và override không hợp lệ. Dùng INSERT, không upsert/overwrite. Marker mặc định importing, archive pending; công cụ chưa có remote apply hoặc promote verified.
+
+Archive lưu toàn bộ các cột nguồn của contacts/enrollments/progress/orders/overrides, kể cả progress_seconds, created_at/activated_at, provisioning_operation_id và timestamp có microsecond chưa có trong normalized slice. Chuẩn hóa timestamp phục vụ truy vấn không được hiểu là bảo toàn precision trong schema primary tương lai; bản gốc còn nguyên trong archive và phải xử lý trước cutover. Expected rows gồm cả bảng rỗng; verifier so mọi trường của actual rows, không chỉ counts hoặc stored digest.
+
+Source read_only mới trong một query: 1 course, 3 modules, 26 lessons, 1 contact, 1 enrollment, 1 progress, 0 paid orders, 1 override. Đã thực thi cả 36 statement trên SQLite memory với source QA thật (không file DB): 0 FK violation, archive roundtrip đủ mọi trường và readback 10 bảng/36 row khớp. Không in/lưu payload, danh tính, source URL, token hoặc credential; report chỉ counts/flags/cutoff. Không ghi Supabase hoặc D1 remote trong bước này.
+
+5/5 tests scoped đạt: UUID/completion/full source archive, foreign/duplicate/malformed input, NULL contact/slug fallback, chống overwrite/reset và full-field readback corruption. TypeScript/scoped lint/Python syntax/diff đạt. Fixture negative trước đó dùng null metadata và mong reject là sai vì null được hỗ trợ: sửa fixture sang array sai kiểu, không đổi source behavior để làm test xanh.
+
+IN PROGRESS: cần remote importer với exact Worker/D1/QA guards, target rỗng, fresh source và full readback trước marker promotion; kiểm parity với source RPC/legacy grants, rồi refresh Auth/content từ nguồn thực và giữ session history. Chưa tạo archive schema remote/nhập QA rights, chưa mở native QA/SSR /learn hay browser QA. Worker vẫn phiên bản disabled trước đó; không production mutation. Tổng chưa READY FOR CUTOVER. Bằng chứng main/reports/cloudflare-d1/qa-learning-prepare.json.

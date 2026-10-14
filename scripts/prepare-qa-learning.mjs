@@ -1,0 +1,32 @@
+// Source identities/payloads are supplied through a captured stdin pipe only.
+import {build} from 'esbuild';
+import {DatabaseSync} from 'node:sqlite';
+import {readFileSync} from 'node:fs';
+import {isDeepStrictEqual} from 'node:util';
+try{
+ let input='';for await(const chunk of process.stdin){input+=chunk;if(Buffer.byteLength(input)>2*1024*1024)throw Error('Input too large');}
+ const {payload,qa}=JSON.parse(input);
+ const bundled=await build({entryPoints:['lib/cloudflare/d1-qa-learning-import.ts'],bundle:true,platform:'node',format:'esm',write:false});
+ const h=await import('data:text/javascript;base64,'+Buffer.from(bundled.outputFiles[0].text).toString('base64'));
+ const plan=await h.prepareD1QaLearningImport(payload,qa);
+ const db=new DatabaseSync(':memory:');
+ try{
+  db.exec('PRAGMA foreign_keys=ON');
+  for(const name of ['d1-lms-compatibility-prototype.sql','d1-course-access-source-prototype.sql','d1-qa-learning-source.sql'])db.exec(readFileSync('scripts/'+name,'utf8'));
+  db.prepare('INSERT INTO d1_access_users VALUES(?,?,NULL)').run(qa.userId,qa.email.trim().toLowerCase());
+  db.exec('BEGIN');for(const statement of plan.statements)db.prepare(statement.sql).run(...statement.params);db.exec('COMMIT');
+  if(db.prepare('PRAGMA foreign_key_check').all().length!==0)throw Error('Foreign key mismatch');
+  const targets=Object.fromEntries(Object.keys(plan.expectedRows).map(table=>[table,db.prepare('SELECT * FROM '+table).all()]));
+  const readback=h.verifyD1QaLearningRows(plan.expectedRows,targets);
+  const raw=db.prepare('SELECT source_document,status FROM d1_qa_learning_source WHERE user_id=?').get(qa.userId);
+  if(raw.status!=='pending'||db.prepare('SELECT status FROM d1_access_sync_state').get().status!=='importing')throw Error('Import gate mismatch');
+  const document=JSON.parse(raw.source_document);
+  // Compare full original records, including microsecond dates and columns not
+  // yet read by the normalized LMS slice. No private values leave this process.
+  for(const table of ['contacts','enrollments','progress','orders','overrides']){
+   const expected=payload[table],actual=document[table];
+   if(!isDeepStrictEqual(actual,expected))throw Error('Source archive roundtrip mismatch');
+  }
+  console.log(JSON.stringify({status:'TESTED_QA_LEARNING_PREPARE',summary:plan.summary,statements:plan.statements.length,sourceSnapshotAt:plan.snapshot,localSqliteExecution:true,foreignKeyViolations:0,fullSourceArchiveRoundtrip:true,readback,marker:'importing',limits:plan.limits}));
+ }finally{db.close();}
+}catch{console.log(JSON.stringify({status:'FAILED',reason:'QA learning source preparation failed; private source withheld'}));process.exitCode=1;}

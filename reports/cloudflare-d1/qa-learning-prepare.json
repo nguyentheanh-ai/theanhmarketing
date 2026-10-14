@@ -1,0 +1,25 @@
+{
+  "status": "TESTED_QA_LEARNING_PREPARE",
+  "summary": {
+    "courses": 1,
+    "modules": 3,
+    "lessons": 26,
+    "contacts": 1,
+    "enrollments": 1,
+    "progress": 1,
+    "orders": 0,
+    "overrides": 1
+  },
+  "statements": 36,
+  "sourceSnapshotAt": "2026-10-14T20:19:58.225Z",
+  "localSqliteExecution": true,
+  "foreignKeyViolations": 0,
+  "fullSourceArchiveRoundtrip": true,
+  "readback": {
+    "matched": true,
+    "tables": 10,
+    "rows": 36
+  },
+  "marker": "importing",
+  "limits": "QA initial plan only; no source mutation, overwrite, verified marker or customer migration"
+}
