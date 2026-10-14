@@ -5,8 +5,8 @@ import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BrandMark } from "@/components/site/brand-mark";
 import styles from "./student-dashboard.module.css";
 
-export function StudentAreaShell({ children, title = "Tổng quan", active = "overview", ownedCount, studentName = "", studentEmail = "" }: {
-  children: ReactNode; title?: string; active?: "overview" | "agents"; ownedCount?: number; studentName?: string; studentEmail?: string;
+export function StudentAreaShell({ children, title = "Tổng quan", active = "overview", ownedCount, studentName = "", studentEmail = "", authProvider="supabase" }: {
+  children: ReactNode; title?: string; active?: "overview" | "agents"; ownedCount?: number; studentName?: string; studentEmail?: string;authProvider?:"supabase"|"native-d1";
 }) {
   return <div className={styles.shell}>
     <aside className={styles.sidebar}>
@@ -23,7 +23,7 @@ export function StudentAreaShell({ children, title = "Tổng quan", active = "ov
       <div className={styles.sidebarBottom}>
         <Link href="/" className={styles.backHome}><Home size={17} /> Về trang chủ</Link>
         {studentName ? <div className={styles.identity}><span className={styles.avatar}>{(studentName || "HV").slice(0, 1).toUpperCase()}</span><div><strong>{studentName || "Học viên"}</strong><span>{studentEmail}</span></div></div> : null}
-        <SignOutButton className={styles.signOut} />
+        <SignOutButton className={styles.signOut} authProvider={authProvider} />
       </div>
     </aside>
     <div className={styles.main}>

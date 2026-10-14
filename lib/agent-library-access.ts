@@ -4,9 +4,12 @@ import { getCourseAccessSlugs } from "@/lib/course-access";
 import { getStudentLmsAccess } from "@/services/lmsService";
 import { getPaymentOrders } from "@/services/orderService";
 import { getLeads } from "@/services/leadService";
+import {readNativeResourcePageAccess} from '@/lib/cloudflare/native-resource-page';
 
 export const AGENT_LIBRARY_HREF = "/dashboard/agents";
-export async function requireAgentLibraryAccess(): Promise<{ok: true} | {ok: false; status: 401 | 403}> {
+export async function requireAgentLibraryAccess(): Promise<({ok: true} | {ok: false; status: 401 | 403}) & {authProvider?:'native-d1'}> {
+  const native=await readNativeResourcePageAccess('agents');
+  if(native)return {...native,authProvider:'native-d1'};
   const {user, adminRole} = await getCurrentAuth();
   // Downloads always require authentication, including local environments.
   if (!user) return {ok: false, status: 401};

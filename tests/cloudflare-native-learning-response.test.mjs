@@ -14,3 +14,4 @@ test('native login redirects remain private and do not duplicate Cookie variance
 test('disabled staging, production and unrelated routes preserve the original response',()=>{
  for(const [url,settings] of [[origin+'/learn/course/lesson',{...env,CF_NATIVE_AUTH_MODE:'disabled'}],['https://www.theanhmarketing.com/learn/course/lesson',env],[origin+'/landing',env]]){const response=new Response('Public');assert.equal(protectNativeLearningResponse(new Request(url),settings,response),response)}
 });
+test('native Ebook and Agent pages/RSC receive the same private response policy',()=>{for(const path of ['/thu-vien/facebook-ads','/thu-vien/facebook-ads/pdf','/dashboard/agents','/dashboard/agents/marketing']){const result=protectNativeLearningResponse(new Request(origin+path),env,new Response('Synthetic private resource',{headers:{Vary:'RSC'}}));assert.equal(result.headers.get('Cache-Control'),'private, no-store');assert.equal(result.headers.get('Vary'),'RSC, Cookie')}});

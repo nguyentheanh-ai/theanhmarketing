@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "tests": 72,
+  "nativeSqliteResourceTests": 9,
+  "typescript": "PASS",
+  "scopedLint": "PASS",
+  "scope": "Native resource authorization/signing/R2 range fixtures and legacy regressions",
+  "limits": "Positive native entitlement/R2 byte tests are local fixtures; no hosted paid downloads/browser/Safari claim"
+}

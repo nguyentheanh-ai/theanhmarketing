@@ -9,7 +9,7 @@ export default async function AgentLibraryPage() {
   const access = await requireAgentLibraryAccess();
   if (!access.ok) {
     if (access.status === 401) redirect(`/dang-nhap?next=${encodeURIComponent(AGENT_LIBRARY_HREF)}`);
-    return <StudentAreaShell title="Nhân viên AI" active="agents"><section className="mx-auto max-w-xl py-10"><h1 className="text-2xl font-bold">Nhân viên AI</h1><p className="my-5">Tài khoản của bạn chưa có quyền truy cập bộ Agent của khóa học này.</p><Link href="/dashboard">Về khóa học của tôi</Link></section></StudentAreaShell>;
+    return <StudentAreaShell title="Nhân viên AI" active="agents" authProvider={access.authProvider}><section className="mx-auto max-w-xl py-10"><h1 className="text-2xl font-bold">Nhân viên AI</h1><p className="my-5">Tài khoản của bạn chưa có quyền truy cập bộ Agent của khóa học này.</p><Link href="/dashboard">Về khóa học của tôi</Link></section></StudentAreaShell>;
   }
-  return <StudentAreaShell title="Nhân viên AI" active="agents"><AgentLibrary /></StudentAreaShell>;
+  return <StudentAreaShell title="Nhân viên AI" active="agents" authProvider={access.authProvider}><AgentLibrary /></StudentAreaShell>;
 }

@@ -7,7 +7,7 @@ const slug='bo-agent-kit-x10-hieu-suat-cong-viec';
 function load(file, deps){const exports={};vm.runInNewContext(ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText,{exports,require:n=>{if(n in deps)return deps[n];throw Error(n)},Response,URL});return exports;}
 function access({user={id:'u',email:'x@example.test'},adminRole=null,lms=[],legacy=[]}={}){
  const calls=[];
- const mod=load('lib/agent-library-access.ts',{
+ const mod=load('lib/agent-library-access.ts',{'@/lib/cloudflare/native-resource-page':{readNativeResourcePageAccess:async()=>null},
  '@/lib/auth/session':{getCurrentAuth:async()=>({user,adminRole})},
  '@/lib/agent-kit-preorder':{AGENT_KIT_SLUG:slug},
  '@/lib/course-access':{getCourseAccessSlugs:()=>legacy},

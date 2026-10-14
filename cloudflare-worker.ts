@@ -4,6 +4,7 @@ import { isCurrentStorageKey } from "./lib/cloudflare/current-storage-index";
 import {handleNativeStageRequest,type NativeStageEnv} from './lib/cloudflare/native-stage-router';
 import {runNativeRequestContext} from './lib/cloudflare/native-request-context';
 import {protectNativeLearningResponse} from './lib/cloudflare/native-learning-response';
+import {handleNativeResourceRequest} from './lib/cloudflare/native-resource-http';
 
 // Exact public video path above the Workers asset limit; bytes live in R2 staging.
 const oversizedPublicVideo = "/doi-ngu-nhan-su-ai/media/proof/editor-ai-jun-08-2026.mp4";
@@ -14,6 +15,8 @@ const stagingWorker = {
     const url = new URL(request.url);
     const native=await handleNativeStageRequest(request,env as NativeStageEnv);
     if(native)return native;
+    const resource=await handleNativeResourceRequest(request,env as NativeStageEnv);
+    if(resource)return resource;
     if (url.pathname === "/__cf/private-r2") {
       const bindings = env as { PRIVATE_ASSETS?: PrivateR2Bucket; R2_PRIVATE_URL_SECRET?: string };
       if (!bindings.PRIVATE_ASSETS || !bindings.R2_PRIVATE_URL_SECRET) {

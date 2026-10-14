@@ -1,0 +1,11 @@
+{
+  "managedRead": true,
+  "r2DevDisabled": true,
+  "customRead": true,
+  "enabledCustomDomains": 0,
+  "workerRead": true,
+  "authDisabled": true,
+  "emptyCohort": true,
+  "progressDisabled": true,
+  "correctR2Binding": true
+}
