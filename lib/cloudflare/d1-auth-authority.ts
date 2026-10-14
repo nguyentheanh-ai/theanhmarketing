@@ -5,13 +5,13 @@ export function authMirrorWindow(policy:AuthMirrorPolicy){
  if(!/^[a-z0-9]{20}$/.test(policy.projectId)||!Number.isFinite(now)||!Number.isFinite(age)||age<=0)throw new Error('Invalid Auth mirror policy');
  return {stamp:new Date(now).toISOString(),floor:new Date(now-age).toISOString()};
 }
-// SQL positions are backend code constants, never HTTP input. ?2 is the UTC
-// authorization check time in every core statement using this fragment.
-export function authMirrorReadySql(projectPosition:number,floorPosition:number){
- if(!Number.isInteger(projectPosition)||!Number.isInteger(floorPosition)||projectPosition<1||floorPosition<1)throw new Error('Invalid Auth SQL positions');
+// SQL positions are backend code constants, never HTTP input. Core statements
+// use ?2 for time; composed access statements explicitly supply their position.
+export function authMirrorReadySql(projectPosition:number,floorPosition:number,timePosition=2){
+ if([projectPosition,floorPosition,timePosition].some(position=>!Number.isInteger(position)||position<1))throw new Error('Invalid Auth SQL positions');
  return `EXISTS (SELECT 1 FROM d1_auth_sync_state mirror WHERE mirror.source_project_id=?${projectPosition} AND mirror.status='verified'
-  AND julianday(mirror.source_snapshot_at) BETWEEN julianday(?${floorPosition}) AND julianday(?2)
-  AND julianday(mirror.last_verified_at) BETWEEN julianday(?${floorPosition}) AND julianday(?2))`;
+  AND julianday(mirror.source_snapshot_at) BETWEEN julianday(?${floorPosition}) AND julianday(?${timePosition})
+  AND julianday(mirror.last_verified_at) BETWEEN julianday(?${floorPosition}) AND julianday(?${timePosition}))`;
 }
 // Mirror stage only. Import/delta must record genuine source snapshot time after
 // full verification. This is not a heartbeat or a native-write cutover flag.
