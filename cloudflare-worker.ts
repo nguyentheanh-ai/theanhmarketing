@@ -1,5 +1,6 @@
 import app from "vinext/server/fetch-handler";
 import { servePrivateR2, serveR2Object, type PrivateR2Bucket } from "./lib/cloudflare/private-r2";
+import { isCurrentStorageKey } from "./lib/cloudflare/current-storage-index";
 
 // Exact public video path above the Workers asset limit; bytes live in R2 staging.
 const oversizedPublicVideo = "/doi-ngu-nhan-su-ai/media/proof/editor-ai-jun-08-2026.mp4";
@@ -13,7 +14,8 @@ const stagingWorker = {
       if (!bindings.PRIVATE_ASSETS || !bindings.R2_PRIVATE_URL_SECRET) {
         return new Response(null, { status: 503, headers: { "Cache-Control": "no-store" } });
       }
-      return servePrivateR2(request, bindings.PRIVATE_ASSETS, bindings.R2_PRIVATE_URL_SECRET);
+      return servePrivateR2(request, bindings.PRIVATE_ASSETS, bindings.R2_PRIVATE_URL_SECRET,
+        Date.now(), (key) => isCurrentStorageKey(bindings.PRIVATE_ASSETS!, key));
     }
     if (url.pathname === oversizedPublicVideo) {
       const bucket = (env as { PRIVATE_ASSETS?: PrivateR2Bucket }).PRIVATE_ASSETS;

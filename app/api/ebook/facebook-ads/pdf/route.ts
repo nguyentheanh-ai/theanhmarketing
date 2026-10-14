@@ -6,6 +6,7 @@ import {
 } from "@/lib/ebook/facebook-ebook";
 import { requireFacebookEbookAccess } from "@/lib/ebook/facebook-ebook-access";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { signedStagingStorageUrl } from "@/lib/cloudflare/storage-r2-url";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -39,14 +40,26 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const bucket = process.env.FACEBOOK_EBOOK_PDF_STORAGE_BUCKET || FACEBOOK_EBOOK_PDF_DEFAULT_BUCKET;
+  const objectPath = process.env.FACEBOOK_EBOOK_PDF_OBJECT_PATH || FACEBOOK_EBOOK_PDF_OBJECT_PATH;
+  if (process.env.CF_R2_STAGE_PRIVATE_DELIVERY === "true") {
+    // The existing entitlement check above must succeed before creating any link.
+    if (!access.userId && !access.isAdmin) return jsonError("Cần đăng nhập để tải file PDF.", 401);
+    const secret = process.env.R2_PRIVATE_URL_SECRET;
+    if (!secret) return jsonError("Chưa cấu hình kho lưu trữ PDF ebook.", 503);
+    const url = await signedStagingStorageUrl(request.nextUrl.origin, bucket, objectPath, secret, FACEBOOK_EBOOK_PDF_FILE_NAME);
+    if (wantsJson(request)) {
+      return NextResponse.json({ ok: true, url }, { headers: { "Cache-Control": "private, no-store" } });
+    }
+    return NextResponse.redirect(url, { status: 302, headers: { "Cache-Control": "private, no-store" } });
+  }
+
   const supabase = createSupabaseAdminClient();
 
   if (!supabase) {
     return jsonError("Chưa cấu hình kho lưu trữ PDF ebook.", 503);
   }
 
-  const bucket = process.env.FACEBOOK_EBOOK_PDF_STORAGE_BUCKET || FACEBOOK_EBOOK_PDF_DEFAULT_BUCKET;
-  const objectPath = process.env.FACEBOOK_EBOOK_PDF_OBJECT_PATH || FACEBOOK_EBOOK_PDF_OBJECT_PATH;
   const { data, error } = await supabase.storage.from(bucket).createSignedUrl(objectPath, 600, {
     download: FACEBOOK_EBOOK_PDF_FILE_NAME,
   });

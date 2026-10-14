@@ -7,6 +7,7 @@ import {
 } from "@/lib/ebook/facebook-ebook";
 import { requireFacebookEbookAccess } from "@/lib/ebook/facebook-ebook-access";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { signedStagingStorageUrl } from "@/lib/cloudflare/storage-r2-url";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -62,6 +63,15 @@ export async function GET(request: NextRequest) {
 
   if (!access.ok) {
     return jsonError(access.status === 401 ? "Cần đăng nhập để đọc ebook." : "Tài khoản chưa mở quyền đọc ebook.", access.status);
+  }
+
+  if (process.env.CF_R2_STAGE_PRIVATE_DELIVERY === "true") {
+    if (!access.userId && !access.isAdmin) return jsonError("Cần đăng nhập để đọc ebook.", 401);
+    const secret = process.env.R2_PRIVATE_URL_SECRET;
+    if (!secret) return jsonError("Chưa cấu hình kho ảnh ebook.", 503);
+    const bucket = process.env.FACEBOOK_EBOOK_STORAGE_BUCKET || FACEBOOK_EBOOK_DEFAULT_BUCKET;
+    const url = await signedStagingStorageUrl(request.nextUrl.origin, bucket, page.storagePath, secret);
+    return new Response(null, { status: 302, headers: { Location: url, "Cache-Control": "private, no-store" } });
   }
 
   const localImage = await readLocalPageImage(partNumber, pageNumber);

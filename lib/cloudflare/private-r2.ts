@@ -41,8 +41,12 @@ function equalSignature(actual: string, expected: Uint8Array) {
   return difference === 0;
 }
 
-function canonical(key: string, expires: number) {
-  return `GET\n${key}\n${expires}`;
+function validDownloadName(name: string) {
+  return name.length > 0 && name.length <= 200 && !/[\\/\u0000-\u001f\u007f]/.test(name);
+}
+
+function canonical(key: string, expires: number, download?: string) {
+  return `GET\n${key}\n${expires}${download === undefined ? "" : `\n${download}`}`;
 }
 
 export async function signPrivateR2Url(
@@ -51,9 +55,11 @@ export async function signPrivateR2Url(
   secret: string,
   ttlSeconds = 300,
   nowMs = Date.now(),
+  download?: string,
 ) {
   if (!validKey(key) || !secret || !Number.isInteger(ttlSeconds) ||
-      ttlSeconds < 1 || ttlSeconds > MAX_TTL_SECONDS) {
+      ttlSeconds < 1 || ttlSeconds > MAX_TTL_SECONDS ||
+      (download !== undefined && !validDownloadName(download))) {
     throw new Error("Invalid private R2 signing input");
   }
   const url = new URL(endpoint);
@@ -62,7 +68,8 @@ export async function signPrivateR2Url(
   url.search = "";
   url.searchParams.set("key", key);
   url.searchParams.set("expires", String(expires));
-  url.searchParams.set("sig", base64url(await hmac(secret, canonical(key, expires))));
+  if (download !== undefined) url.searchParams.set("download", download);
+  url.searchParams.set("sig", base64url(await hmac(secret, canonical(key, expires, download))));
   return url.toString();
 }
 
@@ -133,6 +140,7 @@ export async function servePrivateR2(
   bucket: PrivateR2Bucket,
   secret: string,
   nowMs = Date.now(),
+  isCurrentKey?: (key: string) => Promise<boolean>,
 ): Promise<Response> {
   if (request.method !== "GET" && request.method !== "HEAD") {
     return new Response(null, { status: 405, headers: { Allow: "GET, HEAD" } });
@@ -141,15 +149,26 @@ export async function servePrivateR2(
   const keys = url.searchParams.getAll("key");
   const expiries = url.searchParams.getAll("expires");
   const signatures = url.searchParams.getAll("sig");
+  const downloads = url.searchParams.getAll("download");
+  const download = downloads[0];
   const key = keys[0] ?? "";
   const expiresText = expiries[0] ?? "";
   const now = Math.floor(nowMs / 1000);
   const expires = Number(expiresText);
-  if (keys.length !== 1 || expiries.length !== 1 || signatures.length !== 1 ||
+  if (keys.length !== 1 || expiries.length !== 1 || signatures.length !== 1 || downloads.length > 1 ||
       !validKey(key) || !secret || !/^\d+$/.test(expiresText) ||
       !Number.isSafeInteger(expires) || expires <= now || expires > now + MAX_TTL_SECONDS ||
-      !equalSignature(signatures[0], await hmac(secret, canonical(key, expires)))) {
+      (download !== undefined && !validDownloadName(download)) ||
+      !equalSignature(signatures[0], await hmac(secret, canonical(key, expires, download)))) {
     return new Response(null, { status: 403, headers: objectHeaders() });
   }
-  return serveR2Object(request, bucket, key);
+  // The archive retains old bytes for rollback; a valid old link cannot serve a removed object.
+  if (isCurrentKey && !(await isCurrentKey(key))) {
+    return new Response(null, { status: 403, headers: objectHeaders() });
+  }
+  const response = await serveR2Object(request, bucket, key);
+  if (download !== undefined && response.ok) {
+    response.headers.set("Content-Disposition", `attachment; filename*=UTF-8''${encodeURIComponent(download)}`);
+  }
+  return response;
 }

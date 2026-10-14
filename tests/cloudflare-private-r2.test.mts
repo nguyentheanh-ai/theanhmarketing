@@ -55,6 +55,40 @@ test("rejects expired, changed, duplicate and unsafe signatures before R2 access
   await assert.rejects(signPrivateR2Url("https://staging.example.invalid/private", "../secret", secret, 30, now));
 });
 
+test("a signed URL cannot serve an object removed from the current index", async () => {
+  const url = await signPrivateR2Url("https://staging.example.invalid/private", key, secret, 30, now);
+  let checked = false;
+  const denied = await servePrivateR2(new Request(url), bucket, secret, now, async () => {
+    checked = true;
+    return false;
+  });
+  assert.equal(checked, true);
+  assert.equal(denied.status, 403);
+  assert.equal(denied.headers.get("Cache-Control"), "private, no-store");
+  checked = false;
+  const invalid = new URL(url);
+  invalid.searchParams.set("sig", "invalid");
+  assert.equal((await servePrivateR2(new Request(invalid), bucket, secret, now, async () => {
+    checked = true;
+    return true;
+  })).status, 403);
+  assert.equal(checked, false);
+});
+
+test("download filename is signed and preserved for the PDF response", async () => {
+  const url = await signPrivateR2Url("https://staging.example.invalid/private", key, secret,
+    120, now, "Facebook Ads 2026 - Full Ebook.pdf");
+  const response = await servePrivateR2(new Request(url), bucket, secret, now);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("Content-Disposition"),
+    "attachment; filename*=UTF-8''Facebook%20Ads%202026%20-%20Full%20Ebook.pdf");
+  const tampered = new URL(url);
+  tampered.searchParams.set("download", "other.pdf");
+  assert.equal((await servePrivateR2(new Request(tampered), bucket, secret, now)).status, 403);
+  await assert.rejects(signPrivateR2Url("https://staging.example.invalid/private", key, secret,
+    120, now, "../private.pdf"));
+});
+
 test("fixed public R2 object supports streaming ranges without exposing other keys", async () => {
   const request = new Request("https://staging.example.invalid/public.mp4", { headers: { Range: "bytes=5-9" } });
   const response = await serveR2Object(request, bucket, key, "public, max-age=3600");
