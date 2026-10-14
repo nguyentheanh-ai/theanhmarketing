@@ -2633,3 +2633,10 @@ prepare-qa-auth-import.py --verify-staging chỉ SELECT read_only source và tar
 3/3 synthetic tests đạt: complete canonical row,16 dạng sửa identity/role/status/flags/metadata/dates/cursor/project/digest bị chặn, cipher/key mismatch bị chặn; TypeScript/lint/diff đạt. Thay đổi công cụ/verifier chưa deploy; Worker native vẫn disabled, source production nguyên vẹn.
 
 IN PROGRESS: chỉ QA projection một account, không full Auth snapshot; pending cần giữ tới khi rollout scope/QA manifest và freshness/verification strategy đủ. Chưa Worker decrypt/login/SSR/progress/provider/bridge/native customer authority hoặc READY_FOR_CUTOVER.
+## 15/10/2026 — Đăng nhập QA bằng D1 trên Worker thật: TESTED phạm vi
+
+Đã triển khai cohort backend đúng một tài khoản QA, đối soát đầy đủ source/target và dùng CAS để đánh dấu verified chỉ projection QA mới dưới 5 phút. Worker QA version f99f1f3b-b40e-41f9-8d79-b2c8a47569fd. Hosted probe đạt 5 kiểm tra: mật khẩu đúng trả 200/UUID gốc/cookie Secure-HttpOnly; hai lần đọc lại phiên đạt; mật khẩu sai 401 không cấp cookie; ghi tiến độ vẫn 503 WRITE_DISABLED; logout 200 và cookie cũ trở thành guest. Không ghi tiến độ hoặc dữ liệu học viên thật.
+
+Đã khôi phục Worker về disabled/cohort rỗng, version 1a05c7c9-eebe-4e75-9c6f-e0260bb98162; đọc lại exact D1 binding và hai Secret còn đúng. Marker trở lại pending, 1 account/1 session lịch sử/0 session chưa thu hồi; không xóa lịch sử để làm đẹp số liệu. Token/policy Access tạm đã xóa và GET readback xác nhận không còn, owner policy giữ nguyên. Credential chỉ nằm trong bộ nhớ hoặc envelope RSA restricted; không đưa vào report/Git. Cleanup artifact tạm vẫn theo giới hạn control-plane đã ghi trước đó.
+
+Bằng chứng: main/reports/cloudflare-d1/native-qa-{auth-http,deploy,restored,cleanup}.json. Đây là API đăng nhập QA native D1 thật; chưa UI/SSR /learn, nội dung/quyền/tiến độ native, Google/Facebook, bridge khách cũ, full data/delta, thanh toán, phục hồi đầy đủ và rollback dữ liệu. B là app riêng, không khu vực học. Tổng IN PROGRESS, chưa READY FOR CUTOVER; chưa đổi DNS, nguồn ghi hoặc hủy dịch vụ cũ.

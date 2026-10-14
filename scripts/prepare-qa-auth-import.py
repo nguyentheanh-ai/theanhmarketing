@@ -14,7 +14,10 @@ def main():
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--apply-staging", action="store_true")
     mode.add_argument("--verify-staging", action="store_true")
+    parser.add_argument("--mark-qa-verified", action="store_true")
     args = parser.parse_args()
+    if args.mark_qa_verified and not args.verify_staging:
+        raise RuntimeError("QA marker update requires complete source/target verification")
     root = Path(__file__).resolve().parents[1]
     spec = importlib.util.spec_from_file_location("qa_keychain", root.parent / "scripts/backup-secrets.py")
     keychain = importlib.util.module_from_spec(spec)
@@ -99,7 +102,21 @@ def main():
             result = json.loads(verified.stdout)
             if verified.returncode or result.get("status") != "VERIFIED_QA_ONLY":
                 raise RuntimeError("QA full-field/source-hash verification mismatch; marker remains pending")
-            report = {"status": "TESTED_QA_AUTH_READBACK", "sourceAccounts": 1, "verification": result["verification"], "sourceSnapshotAt": payload["snapshotAt"], "marker": "pending", "limits": "QA-only initial dataset; read-only source/target verification, no verified marker/native login/full Auth snapshot"}
+            marker = "pending"
+            if args.mark_qa_verified:
+                cutoff = datetime.datetime.fromisoformat(payload["snapshotAt"].replace("Z", "+00:00"))
+                if not 0 <= (datetime.datetime.now(datetime.timezone.utc) - cutoff).total_seconds() <= 300:
+                    raise RuntimeError("QA snapshot expired; marker remains pending")
+                target = results[0]["results"][0]
+                account_columns = ["credential_ciphertext", "email_confirmed_at", "banned_until", "deleted_at", "is_anonymous", "session_version", "must_change_password", "user_metadata", "created_at", "updated_at"]
+                conditions = " AND ".join("a." + column + " IS ?" + str(i + 5) for i, column in enumerate(account_columns))
+                params = ["vsxxgdzwtscuxcmjfckt", cutoff.isoformat(), datetime.datetime.now(datetime.timezone.utc).isoformat(), target["id"]] + [target[column] for column in account_columns] + [target["normalized_email"], target["admin_role"], target["source_revision"], target["source_digest"]]
+                guard = "UPDATE d1_auth_sync_state SET source_snapshot_at=?2,last_verified_at=?3,status='verified' WHERE source_project_id=?1 AND status='pending' AND (SELECT count(*) FROM d1_access_users)=1 AND (SELECT count(*) FROM d1_auth_accounts)=1 AND (SELECT count(*) FROM d1_auth_source_versions)=1 AND (SELECT count(*) FROM d1_auth_sessions)=0 AND EXISTS(SELECT 1 FROM d1_auth_accounts a JOIN d1_access_users u ON u.id=a.user_id JOIN d1_auth_source_versions v ON v.user_id=a.user_id WHERE a.user_id=?4 AND " + conditions + " AND u.normalized_email=?15 AND u.admin_role IS ?16 AND v.source_project_id=?1 AND v.source_revision=?17 AND v.source_digest=?18) RETURNING status;"
+                updated = d1([{"sql": guard, "params": params}])
+                if updated[0]["results"] != [{"status": "verified"}]:
+                    raise RuntimeError("QA target changed after verification; marker not updated")
+                marker = "verified"
+            report = {"status": "TESTED_QA_AUTH_READBACK", "sourceAccounts": 1, "verification": result["verification"], "sourceSnapshotAt": payload["snapshotAt"], "marker": marker, "limits": "Explicit one-account QA projection only, not full Auth snapshot/customer native authority or hosted login"}
             (root / "reports/cloudflare-d1/qa-auth-verification.json").write_text(json.dumps(report, indent=2) + "\n")
             print(json.dumps(report))
             return

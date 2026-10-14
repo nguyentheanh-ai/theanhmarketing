@@ -1,0 +1,7 @@
+{
+  "status": "DEPLOYED_QA_ONLY",
+  "version": "f99f1f3b-b40e-41f9-8d79-b2c8a47569fd",
+  "qaCohortCount": 1,
+  "progress": "WRITE_DISABLED",
+  "limits": "Temporary native QA Auth only, no customer or production switch"
+}

@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-14T19:39:15.330Z",
+  "scope": "Hosted native D1 QA password/session/logout only",
+  "checks": [
+    {
+      "name": "password-login",
+      "status": 200,
+      "originalUuid": true,
+      "secureCookie": true
+    },
+    {
+      "name": "refresh",
+      "reads": 2,
+      "status": 200
+    },
+    {
+      "name": "wrong-password",
+      "status": 401
+    },
+    {
+      "name": "progress-disabled",
+      "status": 503
+    },
+    {
+      "name": "logout",
+      "status": 200,
+      "revokedCookieIsGuest": true
+    }
+  ],
+  "limits": "No app UI/SSR, learning rights/content/progress, provider login, source bridge or customer migration claim"
+}

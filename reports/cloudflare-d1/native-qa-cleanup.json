@@ -1,0 +1,16 @@
+{
+  "status": "TESTED_RESTORED",
+  "mode": "disabled",
+  "qaCohortCount": 0,
+  "correctD1": true,
+  "credentialSecretPresent": true,
+  "limiterSecretPresent": true,
+  "accounts": 1,
+  "sessions": 1,
+  "unrevokedSessions": 0,
+  "marker": "pending",
+  "temporaryAccessPolicyAbsent": true,
+  "temporaryAccessTokenAbsent": true,
+  "ownerPolicyPresent": true,
+  "limits": "Staging QA only; no production cutover or full learning migration"
+}

@@ -6,7 +6,7 @@
     "credentialRoundtrip": true,
     "identityStatusMetadataAndCursorMatched": true
   },
-  "sourceSnapshotAt": "2026-10-14T19:31:25.081193+00:00",
-  "marker": "pending",
-  "limits": "QA-only initial dataset; read-only source/target verification, no verified marker/native login/full Auth snapshot"
+  "sourceSnapshotAt": "2026-10-14T19:37:01.967081+00:00",
+  "marker": "verified",
+  "limits": "Explicit one-account QA projection only, not full Auth snapshot/customer native authority or hosted login"
 }
