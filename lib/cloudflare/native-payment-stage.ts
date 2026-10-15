@@ -29,7 +29,7 @@ export function resolveNativeSideEffectConfig(env: NativePaymentStageEnv, mail: 
 const ORIGIN = 'https://theanh-main-cf-staging.12c1thdtheanh.workers.dev', SITE = 'https://www.theanhmarketing.com';
 // Order code needs first/all/batch on one primary-pinned session; raw D1 errors
 // can carry SQL or bound values, so callers only ever see an outage.
-function createOrderDatabase(binding: AuthD1Binding): NativeOrderDatabase {
+export function createOrderDatabase(binding: AuthD1Binding): NativeOrderDatabase {
   const session = binding.withSession('first-primary');
   const guard = async <T>(task: () => Promise<T>) => { try { return await task(); } catch { throw new Error('Order database unavailable'); } };
   return {

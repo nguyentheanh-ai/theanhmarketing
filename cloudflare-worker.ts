@@ -8,6 +8,7 @@ import {protectNativeLearningResponse} from './lib/cloudflare/native-learning-re
 import {handleNativeAppBridgeRequest} from './lib/cloudflare/native-app-login-bridge';
 import {handleNativeResourceRequest} from './lib/cloudflare/native-resource-http';
 import {handleNativePaymentStage,type NativePaymentStageEnv} from './lib/cloudflare/native-payment-stage';
+import {handleNativeEmailAuth,type NativeEmailAuthEnv} from './lib/cloudflare/native-email-auth-http';
 
 // Exact public video path above the Workers asset limit; bytes live in R2 staging.
 const oversizedPublicVideo = "/doi-ngu-nhan-su-ai/media/proof/editor-ai-jun-08-2026.mp4";
@@ -20,6 +21,9 @@ const stagingWorker = {
     // Default-disabled QA payment path; null keeps the existing webhook route.
     const payment=await handleNativePaymentStage(request,env as NativePaymentStageEnv,context&&'waitUntil' in context?task=>context.waitUntil(task):undefined);
     if(payment)return payment;
+    // Default-disabled native signup/recovery; null keeps the existing router.
+    const emailAuth=await handleNativeEmailAuth(request,env as NativeEmailAuthEnv);
+    if(emailAuth)return emailAuth;
     const native=await handleNativeStageRequest(request,env as NativeStageEnv);
     if(native)return native;
     const appBridge=await handleNativeAppBridgeRequest(request,env as NativeStageEnv);

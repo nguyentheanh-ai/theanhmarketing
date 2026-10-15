@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-15T14:33:58.402Z",
+  "status": "PASS",
+  "checks": 7,
+  "blockedOutbound": 0,
+  "resendCallsToLocalFake": 2,
+  "scope": "Local workerd + D1: mounted staging handler for native signup/confirm and forgot/reset password",
+  "limits": "Synthetic emails/keys/authority fixture; Resend local fake; not hosted; Next.js signup/forgot pages still call Supabase"
+}

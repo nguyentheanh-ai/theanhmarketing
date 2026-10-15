@@ -14,7 +14,6 @@ for (const f of ['d1-lms-legacy-enrollment-owners-prototype.sql', 'd1-lms-progre
 const now = Date.now(), stamp = new Date(now).toISOString();
 db.prepare('INSERT INTO d1_access_sync_state VALUES(?,?,?,?)').run('vsxxgdzwtscuxcmjfckt', stamp, stamp, 'verified');
 const ins = db.prepare('INSERT INTO d1_access_users VALUES(?,?,?)');for (const u of users) ins.run(u.id, u.normalized_email, u.admin_role);
-const canon = v => JSON.stringify([...new Set(v)].sort());
 const t = {students: 0, admins: 0, withAccess: 0, accessPairs: 0, orderLeadAccessMissingInD1: 0, studentsWithMissing: 0, extraFromEnrollments: 0, errors: 0};
 for (const u of users) {
   if (h.isAdminEmail(u.normalized_email) || ['owner', 'editor'].includes(u.admin_role)) { t.admins++; continue; }

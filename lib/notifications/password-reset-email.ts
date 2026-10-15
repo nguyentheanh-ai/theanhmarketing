@@ -37,7 +37,7 @@ function escapeHtml(value: string) {
     .replace(/'/g, "&#039;");
 }
 
-function buildPasswordResetEmail(input: PasswordResetEmailInput) {
+export function buildPasswordResetEmail(input: PasswordResetEmailInput) {
   const resetUrl = escapeHtml(input.resetUrl);
   const resetEmailUrl = escapeHtml(buildEmailLink(input.resetUrl));
 
