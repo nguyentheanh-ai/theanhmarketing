@@ -1,0 +1,48 @@
+{
+  "status": "TESTED_NATIVE_AB_HTTP_QA_CLEANUP_VERIFIED",
+  "hostedChecks": [
+    {
+      "name": "exact staging native modes, bindings and dedicated cohorts",
+      "status": "PASS"
+    },
+    {
+      "name": "B start and A guest redirect",
+      "status": "PASS"
+    },
+    {
+      "name": "A native password login retains original UUID",
+      "status": "PASS"
+    },
+    {
+      "name": "A D1 issuer returns exact B fragment, no query grant",
+      "status": "PASS"
+    },
+    {
+      "name": "isolated callback and browser-bound POST exchange",
+      "status": "PASS"
+    },
+    {
+      "name": "native B workspace profile and refresh",
+      "status": "PASS"
+    },
+    {
+      "name": "dedicated QA document save/read/refresh/delete",
+      "status": "PASS"
+    },
+    {
+      "name": "app logout revokes B opaque session, A logout revokes its own session",
+      "status": "PASS"
+    }
+  ],
+  "applicationCleanup": {
+    "theanh-main-cf-stagingGatesOff": true,
+    "theanh-student-cf-stagingGatesOff": true,
+    "nativeSessionsInactive": true,
+    "documentBaselineUnchanged": true,
+    "passwordWritesZero": true,
+    "qaSecretsRemoved": true
+  },
+  "accessCleanup": "VERIFIED_ACCESS_QA_REVOKED",
+  "productionChanged": false,
+  "remaining": "Browser/Safari/providers/full data/RLS/payment/jobs/Storage/delta/reverse rollback/monitoring costs not complete; not READY FOR CUTOVER"
+}
