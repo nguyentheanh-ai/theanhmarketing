@@ -21,18 +21,11 @@ export function resolveNativeStageOptions(request:Request,env:NativeStageEnv){
   const db=createD1AuthDatabase(env.NATIVE_AUTH_DB),sessionTtlMs=3600000;
   return {db,origin,sessionTtlMs,allowedUserIds:cohort as string[]};
 }
-// Staging A only. Disabled mode preserves the existing Supabase path.
-// Google broker stays unmounted until provider callback/logging gates pass.
-export async function handleNativeStageRequest(request:Request,env:NativeStageEnv):Promise<Response|null>{
- const url=new URL(request.url),auth=url.pathname.startsWith('/api/cloudflare-auth/'),student=url.pathname.startsWith('/api/cloudflare-student/');
- if(!auth&&!student)return null;
- const mode:string=env.CF_NATIVE_AUTH_MODE;
- if(mode!=='qa')return unavailable();
- if(env.CF_NATIVE_AUTH_ORIGIN!==origin||url.origin!==origin)return unavailable('STAGING_ORIGIN_REQUIRED');
- try{
-  const options=resolveNativeStageOptions(request,env);if(!options)return unavailable();
-  const {db,sessionTtlMs,allowedUserIds:cohort}=options;
-  const refreshMode:string=env.CF_NATIVE_QA_REFRESH_MODE??'disabled';
+export function resolveNativeRefreshOptions(request:Request,env:NativeStageEnv,stage?:ReturnType<typeof resolveNativeStageOptions>){
+ if((env.CF_NATIVE_AUTH_MODE as string)!=='qa'||(env.CF_NATIVE_QA_REFRESH_MODE??'disabled')==='disabled')return null;
+ const options=stage??resolveNativeStageOptions(request,env);if(!options)return null;
+ const {db,sessionTtlMs,allowedUserIds:cohort}=options;
+ const refreshMode:string=env.CF_NATIVE_QA_REFRESH_MODE??'disabled';
   if(refreshMode!=='disabled'&&refreshMode!=='qa')throw Error('Invalid refresh mode');
   const refreshPolicy:RefreshFamilyPolicy|undefined=refreshMode==='qa'?{
    projectId:'vsxxgdzwtscuxcmjfckt',sessionTtlMs,allowedUserIds:cohort,
@@ -44,7 +37,22 @@ export async function handleNativeStageRequest(request:Request,env:NativeStageEn
    const ip=req.headers.get('CF-Connecting-IP');if(!ip)throw Error('Trusted edge required');
    return consumeD1AuthAttempt(db,{projectId:'vsxxgdzwtscuxcmjfckt',ip,email:subject},{secret:env.NATIVE_AUTH_LIMITER_KEY,ip:{limit:60,windowMs:60000},email:{limit:30,windowMs:60000}});
   };
-  if(auth&&refreshPolicy&&['/api/cloudflare-auth/refresh-bootstrap','/api/cloudflare-auth/refresh','/api/cloudflare-auth/logout'].includes(url.pathname))return handleD1RefreshHttp(request,{db,origin,policy:refreshPolicy,writeEnabled:true,cookieMaxAgeSeconds:30*86400,allowAttempt:allowRefreshAttempt,allowVerifiedAttempt:allowRefreshAttempt});
+ if(!refreshPolicy)return null;
+ return {db,origin,policy:refreshPolicy,writeEnabled:true,cookieMaxAgeSeconds:30*86400,allowAttempt:allowRefreshAttempt,allowVerifiedAttempt:allowRefreshAttempt};
+}
+// Staging A only. Disabled mode preserves the existing Supabase path.
+// Google broker stays unmounted until provider callback/logging gates pass.
+export async function handleNativeStageRequest(request:Request,env:NativeStageEnv):Promise<Response|null>{
+ const url=new URL(request.url),auth=url.pathname.startsWith('/api/cloudflare-auth/'),student=url.pathname.startsWith('/api/cloudflare-student/');
+ if(!auth&&!student)return null;
+ const mode:string=env.CF_NATIVE_AUTH_MODE;
+ if(mode!=='qa')return unavailable();
+ if(env.CF_NATIVE_AUTH_ORIGIN!==origin||url.origin!==origin)return unavailable('STAGING_ORIGIN_REQUIRED');
+ try{
+  const options=resolveNativeStageOptions(request,env);if(!options)return unavailable();
+  const {db,sessionTtlMs,allowedUserIds:cohort}=options;
+  const refresh=resolveNativeRefreshOptions(request,env,options),refreshPolicy=refresh?.policy;
+  if(auth&&refreshPolicy&&['/api/cloudflare-auth/refresh-bootstrap','/api/cloudflare-auth/refresh','/api/cloudflare-auth/logout'].includes(url.pathname))return handleD1RefreshHttp(request,refresh!);
   if(auth&&url.pathname==='/api/cloudflare-auth/change-password')return handleD1PasswordChangeHttp(request,{db,origin,projectId:'vsxxgdzwtscuxcmjfckt',credentialKey:env.NATIVE_AUTH_CREDENTIAL_KEY,sessionTtlMs,allowedUserIds:cohort,writeEnabled:(env.CF_NATIVE_QA_CREDENTIAL_WRITES as string)==='qa',
    allowAttempt:async(req,subject)=>{const ip=req.headers.get('CF-Connecting-IP');if(!ip)throw Error('Trusted edge required');return consumeD1AuthAttempt(db,{projectId:'vsxxgdzwtscuxcmjfckt',ip,email:subject},{secret:env.NATIVE_AUTH_LIMITER_KEY,ip:{limit:10,windowMs:60000},email:{limit:5,windowMs:60000}})}});
   if(auth)return handleD1AuthHttp(request,{...(refreshPolicy?{refreshFamily:{policy:refreshPolicy,cookieMaxAgeSeconds:30*86400}}:{}),db,origin,projectId:'vsxxgdzwtscuxcmjfckt',credentialKey:env.NATIVE_AUTH_CREDENTIAL_KEY,sessionTtlMs,allowedUserIds:cohort,

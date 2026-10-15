@@ -1,3 +1,5 @@
+import {getNativeRequestContext} from '@/lib/cloudflare/native-request-context';
+import {isNativeRefreshRoute} from '@/lib/cloudflare/native-refresh-routes';
 import { createServerClient } from "@supabase/ssr";
 import type { NextRequest } from "next/server";
 import { createBoundedFetch } from "@/lib/supabase/bounded-fetch";
@@ -7,6 +9,8 @@ export async function refreshRequestSession(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const writes: { name: string; value: string; options: Parameters<import("next/server").NextResponse["cookies"]["set"]>[2] }[] = [];
+  const native=getNativeRequestContext();
+  if(native&&(native.env.CF_NATIVE_AUTH_MODE as string)==='qa'&&isNativeRefreshRoute(new URL(native.request.url).pathname))return writes;
   if (!url || !key) return writes;
   const cookieName = `sb-${new URL(url).hostname.split(".")[0]}-auth-token`;
   if (!request.cookies.getAll().some(({ name }) => name === cookieName || name.startsWith(`${cookieName}.`))) return writes;

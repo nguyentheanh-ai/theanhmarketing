@@ -78,7 +78,7 @@ async function pair(db:AuthDatabase,f:Family,p:RefreshFamilyPolicy){
  if(await hash(accessToken)!==f.current_access_hash||await hash(refreshToken)!==f.current_hash)throw unavailable();
  const current=await getD1AuthSession(db,accessToken,p);
  if(!current||current.user.id!==f.user_id||current.familyId!==f.family_id||current.expiresAt!==f.access_expires_at)throw unavailable();
- return {accessToken,refreshToken,expiresAt:String(f.access_expires_at),refreshExpiresAt:f.absolute_expires_at===null?null:String(f.absolute_expires_at),user:current.user,rememberLogin:f.remember_login===1};
+ return {familyId:String(f.family_id),accessToken,refreshToken,expiresAt:String(f.access_expires_at),refreshExpiresAt:f.absolute_expires_at===null?null:String(f.absolute_expires_at),user:current.user,rememberLogin:f.remember_login===1};
 }
 function proofSql(kind:'bootstrap'|'current'|'replay'){
  if(kind==='current')return 'f.current_hash=?9';

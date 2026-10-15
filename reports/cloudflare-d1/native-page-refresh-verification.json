@@ -1,0 +1,34 @@
+{
+  "status": "TESTED_LOCAL_BEFORE_RENDER_MOUNTED_DEFAULT_OFF",
+  "checkedAt": "2026-10-15T04:03:32.059857+00:00",
+  "unitRegression": {
+    "pass": 72,
+    "fail": 0,
+    "newBeforeRenderAndProxy": 11
+  },
+  "actualWorkerdD1Groups": 8,
+  "typecheck": "PASS",
+  "scopedEslint": "PASS",
+  "vinextBuild": "PASS",
+  "assetPrune": "PASS",
+  "remoteChanges": false,
+  "limits": [
+    "Simulated clock and synthetic Source mirror readiness only",
+    "No full vinext runtime browser/Safari evidence",
+    "No hosted deploy",
+    "Password-change refresh and cross-tab client coordination incomplete",
+    "No legacy Supabase session adoption/native primary authority/final delta/reverse rollback"
+  ],
+  "sha256": {
+    "cloudflare-worker.ts": "15ff22bdd9af6a7edec423900621fcc07e375b9676a3d1ac592bd4416e29e253",
+    "lib/cloudflare/native-stage-router.ts": "ff1d5cca5a50c11f5fa246775ac8df59ee02a62d8d78e3c5f2bb4ab2e8981e33",
+    "lib/cloudflare/native-page-refresh.ts": "78bd93d760a1033f064b70209149494e7f8c5838dec70305ed2e5a2fb7283f1a",
+    "lib/cloudflare/native-refresh-routes.ts": "e4852ca02e60f4f0870f9b4578d5fbb95514e2af426f77b4740c742cd41ea3fe",
+    "lib/cloudflare/d1-refresh-family.ts": "8e516fa6b620caae426705dbbc6a83a57e7ca1edf79567548c4cc5b362a00840",
+    "lib/supabase/refresh-session.ts": "eba21a1c1a200ee2e35bb8c297631af1c712318771922d317fbe2eb7d419066b",
+    "tests/cloudflare-native-page-refresh.test.mjs": "60389b9d75f2c8566f5b2be781043ab8409e420ff66abc9ce316b92eea734f33",
+    "tests/cloudflare-native-proxy-refresh.test.mjs": "c3d1ae473f2fa0504d8c2284b220d00ce5d164c16523780a07baf2843105a998",
+    "tests/helpers/native-refresh-fixture.mjs": "075f7d8b77bcc3a8a0aad7ecfaf996e4c9ab836b50dc9b3c7a086bfb7b31d71c",
+    "scripts/test-refresh-router-workers.mjs": "3194603c36720348ba168ef919530d18daedd254c82990a2af5cae01e89d92cd"
+  }
+}

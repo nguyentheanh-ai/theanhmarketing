@@ -1,3 +1,4 @@
+import {withNativePageRefresh} from "./lib/cloudflare/native-page-refresh";
 import app from "vinext/server/fetch-handler";
 import { servePrivateR2, serveR2Object, type PrivateR2Bucket } from "./lib/cloudflare/private-r2";
 import { isCurrentStorageKey } from "./lib/cloudflare/current-storage-index";
@@ -13,6 +14,7 @@ const oversizedPublicVideoKey = `public${oversizedPublicVideo}`;
 
 const stagingWorker = {
   async fetch(request: Request, env: unknown, context: Parameters<typeof app.fetch>[2]) {
+    return withNativePageRefresh(request,env as NativeStageEnv,async request=>{
     const url = new URL(request.url);
     const native=await handleNativeStageRequest(request,env as NativeStageEnv);
     if(native)return native;
@@ -36,6 +38,7 @@ const stagingWorker = {
     return runNativeRequestContext(request,env as NativeStageEnv,async()=>{
       const response=await app.fetch(request, env, context);
       return protectNativeLearningResponse(request,env as NativeStageEnv,response);
+    });
     });
   },
 };
