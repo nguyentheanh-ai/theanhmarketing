@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-15T13:06:25.309Z",
+  "checkedAt": "2026-10-15T13:18:19.261Z",
   "checks": [
     {
       "name": "router refuses Google/default-off, native-off, refresh-off and missing provider secret before outbound",

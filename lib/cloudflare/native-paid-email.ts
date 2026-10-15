@@ -1,5 +1,6 @@
 import type { PaymentOrder } from '@/services/orderService';
 import { emptyInvoiceDetails } from '@/lib/orders/invoice';
+import { normalizeAttribution } from '@/lib/tracking/attribution';
 import { buildPaymentSuccessEmailPayload } from '@/lib/notifications/payment-success-email';
 import { provisionNativePaidAccount } from './native-paid-account';
 import { NativePaymentUnavailable, type NativeOrderDatabase } from './native-order-settlement';
@@ -23,7 +24,7 @@ export function createResendSender(apiKey: string): NativeMailSender {
   };
 }
 
-function toPaymentOrder(source: Record<string, unknown>, email: string): PaymentOrder {
+export function toPaymentOrder(source: Record<string, unknown>, email: string): PaymentOrder {
   const text = (key: string) => typeof source[key] === 'string' ? source[key] as string : '';
   const amount = typeof source.amount === 'number' && Number.isSafeInteger(source.amount) ? source.amount : 0;
   return {
@@ -33,7 +34,7 @@ function toPaymentOrder(source: Record<string, unknown>, email: string): Payment
     expiresAt: null, createdAt: text('created_at'), sepayReferenceCode: null,
     orderItems: Array.isArray(source.order_items) ? source.order_items as PaymentOrder['orderItems'] : [],
     paymentEmailSentAt: null, paymentEmailLastError: null, accountingEmailSentAt: null, accountingEmailLastError: null,
-    purchaseEventSent: false, paymentPlan: text('payment_plan') || null, parentOrderCode: null, attribution: {} as PaymentOrder['attribution'], invoice: emptyInvoiceDetails,
+    purchaseEventSent: false, paymentPlan: text('payment_plan') || null, parentOrderCode: null, attribution: normalizeAttribution({ utmSource: text('utm_source'), utmMedium: text('utm_medium'), utmCampaign: text('utm_campaign'), utmContent: text('utm_content'), utmId: text('utm_id'), utmTerm: text('utm_term'), campaignId: text('campaign_id'), campaignName: text('campaign_name'), adsetId: text('adset_id'), adId: text('ad_id'), adName: text('ad_name'), fbclid: text('fbclid'), fbc: text('fbc'), fbp: text('fbp'), landingPage: text('landing_page') }), invoice: emptyInvoiceDetails,
   };
 }
 

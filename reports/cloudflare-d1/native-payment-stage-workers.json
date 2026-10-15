@@ -1,9 +1,10 @@
 {
-  "checkedAt": "2026-10-15T13:06:11.348Z",
+  "checkedAt": "2026-10-15T13:18:04.478Z",
   "status": "PASS",
-  "checks": 6,
+  "checks": 7,
   "blockedOutbound": 0,
-  "resendCallsToLocalFake": 4,
-  "scope": "Local workerd + D1: mounted staging SePay webhook gate → access → native account → handover email ledger",
-  "limits": "Synthetic orders, keys and native authority fixture; Resend is a local fake (no real email); not hosted, not production, real distributed limiter not exercised"
+  "resendCallsToLocalFake": 7,
+  "scope": "Local workerd + D1: mounted staging SePay webhook gate → accounting/Meta/Telegram/Sheets + access → native account → handover email ledgers",
+  "sideEffectCalls": 9,
+  "limits": "Synthetic orders, keys and native authority fixture; Resend/Meta/Telegram/Sheets are local fakes (no real email); not hosted, not production, real distributed limiter not exercised"
 }
