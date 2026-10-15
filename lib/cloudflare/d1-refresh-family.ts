@@ -171,23 +171,37 @@ export async function refreshD1Family(db:AuthDatabase,refreshToken:string,p:Refr
 // Revocation of one's own family is safe even when source-mirror reads fail.
 // No client user/family/role claim is accepted. Any issued access lease in that
 // family identifies the scope; expiry does not make self-revocation unsafe.
-export async function revokeD1RefreshFamily(db:AuthDatabase,accessToken:string,p:RefreshFamilyPolicy){
- if(!tokenValid(accessToken)||!Number.isFinite(policyTime(p))||!/^[a-z0-9]{20}$/.test(p.projectId))return false;
+export type FamilyRevocationOutcome='revoked'|'replayed'|'invalid';
+export async function revokeD1RefreshFamilyOutcome(db:AuthDatabase,accessToken:string,p:RefreshFamilyPolicy):Promise<FamilyRevocationOutcome>{
+ if(!tokenValid(accessToken)||!Number.isFinite(policyTime(p))||!/^[a-z0-9]{20}$/.test(p.projectId))return 'invalid';
  const ids=p.allowedUserIds;if(ids!==undefined&&(!Array.isArray(ids)||ids.some(id=>!UUID.test(id))||new Set(ids).size!==ids.length||ids.length>100))throw unavailable();
- const h=await hash(accessToken),row=await db.first(`SELECT f.* FROM d1_auth_refresh_families f JOIN d1_auth_sessions s ON s.family_id=f.family_id AND s.project_id=f.project_id AND s.user_id=f.user_id WHERE s.token_hash=?1 AND f.project_id=?2`,[h,p.projectId]);
- if(!row||(ids!==undefined&&!ids.includes(String(row.user_id))))return false;await allowFamily(p,String(row.family_id),String(row.user_id));return revokeFamilyRow(db,checkedFamily(row),new Date(policyTime(p)).toISOString(),ids===undefined?'null':JSON.stringify(ids));
+ const h=await hash(accessToken);let limited=false;
+ for(let attempt=0;attempt<3;attempt++){
+  const row=await db.first(`SELECT f.* FROM d1_auth_refresh_families f JOIN d1_auth_sessions s ON s.family_id=f.family_id AND s.project_id=f.project_id AND s.user_id=f.user_id WHERE s.token_hash=?1 AND f.project_id=?2`,[h,p.projectId]);
+  if(!row||(ids!==undefined&&!ids.includes(String(row.user_id))))return 'invalid';
+  const family=checkedFamily(row);
+  if(family.revoked_at!==null){
+   const live=await db.first('SELECT 1 AS live FROM d1_auth_sessions WHERE family_id=?1 AND project_id=?2 AND user_id=?3 AND revoked_at IS NULL LIMIT 1',[String(family.family_id),p.projectId,String(family.user_id)]);
+   if(live)throw unavailable();return 'replayed';
+  }
+  if(!limited){await allowFamily(p,String(family.family_id),String(family.user_id));limited=true;}
+  const won=await revokeFamilyRow(db,family,new Date(policyTime(p)).toISOString(),ids===undefined?'null':JSON.stringify(ids),JSON.stringify(columns.map(k=>family[k])));
+  if(won)return 'revoked';
+ }
+ throw unavailable();
 }
+export async function revokeD1RefreshFamily(db:AuthDatabase,accessToken:string,p:RefreshFamilyPolicy){return (await revokeD1RefreshFamilyOutcome(db,accessToken,p))!=='invalid';}
 
 // Global sign-out preserves the Source fields in the account. Its own ledger
 // records revocation time and fences late retries from killing a newer login.
-export async function revokeAllD1RefreshFamilies(db:AuthDatabase,accessToken:string,p:RefreshFamilyPolicy){
- if(!tokenValid(accessToken))return false;
+export async function revokeAllD1RefreshFamiliesOutcome(db:AuthDatabase,accessToken:string,p:RefreshFamilyPolicy):Promise<FamilyRevocationOutcome>{
+ if(!tokenValid(accessToken))return 'invalid';
  const c=await context(db,p),sourceHash=await hash(accessToken);
  const recover=async()=>{
   const done=await db.first(`SELECT user_id FROM d1_auth_session_security_operations WHERE project_id=?1 AND source_session_hash=?2 AND kind='global_logout' AND status='done' AND (?3='null' OR EXISTS(SELECT 1 FROM json_each(?3) allowed WHERE allowed.value=user_id))`,[p.projectId,sourceHash,c.cohort]);return Boolean(done);
  };
- if(await recover())return true;
- const session=await getD1AuthSession(db,accessToken,p);if(!session)return false;
+ if(await recover())return 'replayed';
+ const session=await getD1AuthSession(db,accessToken,p);if(!session)return 'invalid';
  await allowFamily(p,session.familyId,session.user.id);
  const account=await db.first('SELECT session_version FROM d1_auth_accounts WHERE user_id=?1',[session.user.id]);if(!account||!Number.isSafeInteger(account.session_version)||Number(account.session_version)>=Number.MAX_SAFE_INTEGER)throw unavailable();
  const params:(string|number|null)[]=[p.projectId,c.stamp,c.floor,c.cohort,session.user.id,sourceHash,crypto.randomUUID(),Number(account.session_version),Number(account.session_version)+1];
@@ -202,5 +216,7 @@ export async function revokeAllD1RefreshFamilies(db:AuthDatabase,accessToken:str
   stmt(`UPDATE d1_auth_sessions SET revoked_at=coalesce(revoked_at,?2) WHERE project_id=?1 AND user_id=?5 AND ${pending} AND ${updated}`,params),
   stmt(`UPDATE d1_auth_session_security_operations SET status='done' WHERE id=?7 AND ${pending} AND ${updated} AND ${none}`,params),
   stmt(`SELECT CASE WHEN EXISTS(SELECT 1 FROM d1_auth_session_security_operations WHERE id=?7 AND project_id=?1 AND user_id=?5 AND source_session_hash=?6 AND expected_version=?8 AND target_version=?9 AND status='done') AND ${updated} AND ${none} THEN 1 ELSE abs(-9223372036854775808) END AS valid`,params)];
- try{const result=await db.batch(ss);if(result.length!==ss.length||result.at(-1)?.results?.[0]?.valid!==1)throw unavailable();return true;}catch{if(await recover())return true;throw unavailable();}
+ try{const result=await db.batch(ss);if(result.length!==ss.length||result.at(-1)?.results?.[0]?.valid!==1)throw unavailable();return 'revoked';}catch{if(await recover())return 'replayed';throw unavailable();}
 }
+
+export async function revokeAllD1RefreshFamilies(db:AuthDatabase,accessToken:string,p:RefreshFamilyPolicy){return (await revokeAllD1RefreshFamiliesOutcome(db,accessToken,p))!=='invalid';}

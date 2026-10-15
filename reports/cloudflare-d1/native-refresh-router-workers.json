@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-15T04:06:32.899Z",
+  "checkedAt": "2026-10-15T04:11:51.517Z",
   "checks": [
     {
       "name": "default-off refresh leaves existing login unchanged and cannot create a family",
@@ -24,6 +24,10 @@
     },
     {
       "name": "actual default logout revokes family and global version; retry cannot revoke subsequent login",
+      "status": "PASS"
+    },
+    {
+      "name": "actual local logout retry preserves newer cookies and sessions",
       "status": "PASS"
     },
     {

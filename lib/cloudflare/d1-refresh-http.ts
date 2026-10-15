@@ -1,7 +1,7 @@
-import {attachD1RefreshFamily,refreshD1Family,revokeD1RefreshFamily,revokeAllD1RefreshFamilies,RefreshFamilyRateLimited,type RefreshFamilyPolicy} from '@/lib/cloudflare/d1-refresh-family';
-import {D1_SESSION_COOKIE,readD1SessionCookie,readBoundedAuthJson} from '@/lib/cloudflare/d1-auth-http';
+import {attachD1RefreshFamily,refreshD1Family,revokeD1RefreshFamilyOutcome,revokeAllD1RefreshFamiliesOutcome,RefreshFamilyRateLimited,type RefreshFamilyPolicy} from '@/lib/cloudflare/d1-refresh-family';
+import {readD1SessionCookie,readBoundedAuthJson} from '@/lib/cloudflare/d1-auth-http';
 import type {AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
-import {D1_REFRESH_COOKIE,createD1RefreshCookies} from '@/lib/cloudflare/d1-refresh-cookies';
+import {D1_REFRESH_COOKIE,createD1RefreshCookies,clearD1RefreshCookies} from '@/lib/cloudflare/d1-refresh-cookies';
 export {D1_REFRESH_COOKIE};
 type Options={db:AuthDatabase;origin:string;policy:RefreshFamilyPolicy;writeEnabled?:boolean;cookieMaxAgeSeconds:number;
  allowAttempt:(request:Request,subject:string)=>Promise<{allowed:boolean;retryAfter:number}>;
@@ -9,7 +9,6 @@ type Options={db:AuthDatabase;origin:string;policy:RefreshFamilyPolicy;writeEnab
 const privacy={'Cache-Control':'private, no-store','CDN-Cache-Control':'no-store','Cloudflare-CDN-Cache-Control':'no-store','Referrer-Policy':'no-referrer','Vary':'Cookie','X-Content-Type-Options':'nosniff'};
 function result(status:number,code:string,extra:Record<string,unknown>={}){return Response.json({ok:status===200,code,...extra},{status,headers:privacy});}
 function readRefresh(request:Request){const found=(request.headers.get('cookie')??'').split(';').map(v=>v.trim()).filter(v=>v.startsWith(D1_REFRESH_COOKIE+'='));return found.length===1?found[0].slice(D1_REFRESH_COOKIE.length+1):'';}
-function cookie(name:string,value:string,age:number|null){return `${name}=${value}; Path=/; Secure; HttpOnly; SameSite=Lax${age===null?'':'; Max-Age='+age}`;}
 // Mounted only behind the default-off staging refresh gate. No HTTP user
 // field, source-provider fallback, auth key or raw token appears in JSON/logs.
 export async function handleD1RefreshHttp(request:Request,options:Options){
@@ -33,8 +32,11 @@ export async function handleD1RefreshHttp(request:Request,options:Options){
   if(logout){
    // Match the inspected Source UI's default global SDK logout. An explicit
    // all:false is per-device and revokes every access lease of its own family.
-   if(body.all===false)await revokeD1RefreshFamily(options.db,access,policy);else await revokeAllD1RefreshFamilies(options.db,access,policy);
-   const response=result(200,'SIGNED_OUT');for(const name of [D1_SESSION_COOKIE,D1_REFRESH_COOKIE])response.headers.append('Set-Cookie',cookie(name,'',0));return response;
+   const outcome=body.all===false?await revokeD1RefreshFamilyOutcome(options.db,access,policy):await revokeAllD1RefreshFamiliesOutcome(options.db,access,policy);
+   if(outcome==='invalid')return result(401,'INVALID_SESSION');
+   const response=result(200,'SIGNED_OUT');
+   if(outcome==='revoked')for(const value of clearD1RefreshCookies())response.headers.append('Set-Cookie',value);
+   return response;
   }
   const pair=bootstrap?await attachD1RefreshFamily(options.db,access,{...policy,rememberLogin:body.rememberLogin===true}):await refreshD1Family(options.db,refresh,policy);
   if(!pair)return result(401,'INVALID_SESSION');

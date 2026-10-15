@@ -1,0 +1,29 @@
+{
+  "status": "TESTED_LOCAL_LOGOUT_REPLAY_COOKIE_FENCE_DEFAULT_OFF",
+  "checkedAt": "2026-10-15T04:12:25.087192+00:00",
+  "unitRegression": {
+    "pass": 95,
+    "fail": 0,
+    "newLogoutReplay": 7
+  },
+  "actualWorkerdRouterGroups": 10,
+  "typecheck": "PASS",
+  "scopedEslint": "PASS",
+  "vinextBuild": "PASS",
+  "assetPrune": "PASS",
+  "remoteChanges": false,
+  "replayedLogoutClearsCookies": false,
+  "invalidLogoutClearsCookies": false,
+  "limits": [
+    "Cookie jar is a model, not actual browser proof",
+    "First successful response arriving late and stale rotation SetCookie across tabs remain unresolved",
+    "Refresh-only logout after access cookie MaxAge requires implementation/test",
+    "No hosted/legacy adoption/native primary/final delta/reverse rollback"
+  ],
+  "sha256": {
+    "lib/cloudflare/d1-refresh-family.ts": "c0dabc22b19846ecf8a70ac4035ba462722571aac67c383eb8d2412e91c03d4c",
+    "lib/cloudflare/d1-refresh-http.ts": "d3ec81601aa1d1e36e188110bd5f723f21064edd074966023e404767713af939",
+    "tests/cloudflare-refresh-logout-replay.test.mjs": "37359f1a1abbd2df183b78005e236e8c831549c9b1bb42551f570bf92b8051d5",
+    "scripts/test-refresh-router-workers.mjs": "d64a5cb4b1d1767fe61bf64ef6dc04d5520d8227191edbff97eafd9cae30b023"
+  }
+}
