@@ -23,9 +23,8 @@ export default defineConfig({
       CF_NATIVE_QA_REFRESH_MODE: bindings.text("disabled"),
       // Enable only after callback allowlisting and query-log protection are verified.
       CF_NATIVE_QA_GOOGLE_MODE: bindings.text("disabled"),
-      NATIVE_GOOGLE_CLIENT_ID: bindings.secret(),
-      NATIVE_GOOGLE_CLIENT_SECRET: bindings.secret(),
-      NATIVE_GOOGLE_TRANSACTION_KEY: bindings.secret(),
+      // Google secrets are optional while this gate is disabled. The router
+      // validates all three at runtime before allowing the Google QA flow.
       NATIVE_AUTH_REFRESH_KEY: bindings.secret(),
       CF_NATIVE_QA_CREDENTIAL_WRITES: bindings.text("disabled"),
       NATIVE_AUTH_DB: bindings.d1({ name: "theanh-main-db-staging", id: "694139c9-6cda-4b8c-9228-c973dbcbb719" }),

@@ -1,3 +1,7 @@
+## 15/10/2026 08:48 UTC — Secret Google tùy chọn và kiểm thử bằng trình duyệt nội bộ
+
+Wrangler chặn deploy 45af34c vì ba Secret Google chưa được cấp; deployment đang phục vụ không đổi. Sửa cấu hình: cổng Google vẫn disabled, ba Secret tùy chọn được kiểm tra tại runtime trước khi mở luồng. Không tạo giá trị giả hoặc sao chép credential provider. Sáu nhóm workerd qua, gồm thiếu cả ba Secret vẫn 503/không gọi provider; typecheck Cloudflare, ESLint và build/prune qua. Đang chuẩn bị deploy staging; chưa phải bằng chứng Google thật. Theo chỉnh lại của anh, kiểm thử giao diện từ đây dùng trình duyệt nội bộ Codex; đã vào được trang đăng nhập staging qua Cloudflare Access, không sử dụng Chrome của anh.
+
 ## 15/10/2026 08:40 UTC — Google native và router staging: TESTED cục bộ
 
 Đã nối backend Google với Auth epoch/restore fence, cohort và refresh family; state/cookie/envelope gắn cùng authority, không tin email/role do trình duyệt đưa lên. Mất phản hồi sau commit hoặc attach family lỗi thu hồi các proof vừa cấp; lỗi hoàn tất giao dịch và freeze trong begin/claim/finish rollback. Phiên vẫn giữ UUID và luồng buộc đổi mật khẩu hiện có. Router staging có cổng `CF_NATIVE_QA_GOOGLE_MODE=disabled`, cần ba Secret Google riêng và refresh QA trước khi mở; router staging vẫn dùng mirror, chưa chọn native-primary.
