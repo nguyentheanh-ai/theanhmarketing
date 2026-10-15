@@ -4,10 +4,12 @@
   "verification": {
     "matched": true,
     "credentialRoundtrip": true,
-    "identityStatusMetadataAndCursorMatched": true
+    "identityStatusMetadataAndCursorMatched": true,
+    "localSessionVersionPreserved": true,
+    "verifiedLogoutCount": 2
   },
-  "sourceSnapshotAt": "2026-10-15T07:21:39.838881+00:00",
+  "sourceSnapshotAt": "2026-10-15T09:02:53.882946+00:00",
   "marker": "verified",
-  "revokedQaHistoryPreserved": 13,
+  "revokedQaHistoryPreserved": 23,
   "limits": "Explicit one-account QA projection only, not full Auth snapshot/customer native authority or hosted login"
 }

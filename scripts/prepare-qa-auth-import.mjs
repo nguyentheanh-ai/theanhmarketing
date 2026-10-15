@@ -22,7 +22,8 @@ try{
  }
  if(input.target){
   try {
-   const verification=await helpers.verifyD1InitialAuthRow(row,input.target,{projectId:'vsxxgdzwtscuxcmjfckt',credentialKey:input.credentialKey,resolveRole:()=>null});
+   const options={projectId:'vsxxgdzwtscuxcmjfckt',credentialKey:input.credentialKey,resolveRole:()=>null};
+   const verification=input.logoutHistory?await helpers.verifyD1QaAuthAfterLogout(row,input.target,options,input.logoutHistory):await helpers.verifyD1InitialAuthRow(row,input.target,options);
    process.stdout.write(JSON.stringify({status:'VERIFIED_QA_ONLY',verification}));process.exit(0);
   } catch {
    // Only field names leave this process. Never emit source/target values,

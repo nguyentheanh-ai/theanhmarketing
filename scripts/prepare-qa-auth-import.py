@@ -11,6 +11,9 @@ import urllib.request
 import urllib.error
 import uuid
 
+QA_LOGOUT_OPERATIONS_JSON_SQL = "SELECT json_group_array(json_object('id',id,'project_id',project_id,'user_id',user_id,'kind',kind,'expected_version',expected_version,'target_version',target_version,'status',status)) AS operations FROM (SELECT id,project_id,user_id,kind,expected_version,target_version,status FROM d1_auth_session_security_operations ORDER BY id)"
+QA_LOGOUT_MARKER_GUARD = "NOT EXISTS(SELECT 1 FROM d1_auth_credential_operations) AND NOT EXISTS(SELECT 1 FROM d1_auth_refresh_families WHERE revoked_at IS NULL) AND (" + QA_LOGOUT_OPERATIONS_JSON_SQL + ")=?22"
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
@@ -106,8 +109,14 @@ def main():
             counts = results[1]["results"][0]
             if len(results[0]["results"]) != 1 or counts.get("users") != 1 or counts.get("accounts") != 1 or counts.get("versions") != 1 or counts.get("invalid_sessions") != 0 or counts.get("marker") not in (["pending", "verified"] if args.allow_revoked_qa_history else ["pending"]) or (not args.allow_revoked_qa_history and counts.get("sessions") != 0):
                 raise RuntimeError("QA verification requires one original account, pending marker and only permitted revoked QA history")
+            logout_history = None
+            if args.allow_revoked_qa_history:
+                history_rows = d1([{"sql": QA_LOGOUT_OPERATIONS_JSON_SQL, "params": []}, {"sql": "SELECT (SELECT count(*) FROM d1_auth_refresh_families WHERE revoked_at IS NULL) AS active_families,(SELECT count(*) FROM d1_auth_credential_operations) AS credential_operations", "params": []}])
+                operations_json = history_rows[0]["results"][0]["operations"]
+                history_counts = history_rows[1]["results"][0]
+                logout_history = {"operations": json.loads(operations_json), "activeSessions": counts["invalid_sessions"], "activeFamilies": history_counts["active_families"], "credentialOperations": history_counts["credential_operations"]}
             verified = subprocess.run([node, "scripts/prepare-qa-auth-import.mjs"], cwd=root,
-                input=json.dumps({"source": payload["source"], "credentialKey": key, "target": results[0]["results"][0]}), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=30)
+                input=json.dumps({"source": payload["source"], "credentialKey": key, "target": results[0]["results"][0], "logoutHistory": logout_history}), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=30)
             result = json.loads(verified.stdout)
             if args.refresh_qa_timestamp and result.get("status") == "FAILED" and set(result.get("differences", [])) == {"updated_at", "source_revision", "source_digest"}:
                 operation_id = str(uuid.uuid4())
@@ -146,6 +155,9 @@ def main():
                 conditions = " AND ".join("a." + column + " IS ?" + str(i + 5) for i, column in enumerate(account_columns))
                 params = ["vsxxgdzwtscuxcmjfckt", cutoff.isoformat(), datetime.datetime.now(datetime.timezone.utc).isoformat(), target["id"]] + [target[column] for column in account_columns] + [target["normalized_email"], target["admin_role"], target["source_revision"], target["source_digest"], counts["marker"], counts["old_snapshot"], counts["old_verified"]]
                 history_guard = "NOT EXISTS(SELECT 1 FROM d1_auth_sessions WHERE revoked_at IS NULL OR user_id<>?4 OR project_id<>?1)" if args.allow_revoked_qa_history else "(SELECT count(*) FROM d1_auth_sessions)=0"
+                if logout_history is not None:
+                    params.append(operations_json)
+                    history_guard += " AND " + QA_LOGOUT_MARKER_GUARD
                 guard = "UPDATE d1_auth_sync_state SET source_snapshot_at=?2,last_verified_at=?3,status='verified' WHERE source_project_id=?1 AND status=?19 AND source_snapshot_at IS ?20 AND last_verified_at IS ?21 AND (SELECT count(*) FROM d1_access_users)=1 AND (SELECT count(*) FROM d1_auth_accounts)=1 AND (SELECT count(*) FROM d1_auth_source_versions)=1 AND julianday(?2) BETWEEN julianday('now')-300000/86400000.0 AND julianday('now') AND julianday(?3) BETWEEN julianday(?2) AND julianday('now') AND " + history_guard + " AND EXISTS(SELECT 1 FROM d1_auth_accounts a JOIN d1_access_users u ON u.id=a.user_id JOIN d1_auth_source_versions v ON v.user_id=a.user_id WHERE a.user_id=?4 AND " + conditions + " AND u.normalized_email=?15 AND u.admin_role IS ?16 AND v.source_project_id=?1 AND v.source_revision=?17 AND v.source_digest=?18) RETURNING status;"
                 updated = d1([{"sql": guard, "params": params}])
                 if updated[0]["results"] != [{"status": "verified"}]:

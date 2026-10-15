@@ -1,3 +1,11 @@
+## 15/10/2026 09:03 UTC — Kiểm thử học tập bằng trình duyệt nội bộ Codex
+
+A staging đã triển khai mã `df8a88b` (upload `fae4205c-988d-41d0-a4e3-277fc6b6643c`); sau QA config version `b42dfae5-87f4-4c5e-998f-10979038323a`. QA qua đăng nhập, URL bài học bắt buộc, video/phụ đề, refresh, bài trước/tiếp, premium, logout và chặn premium khi guest; kiểm viewport1365×900 và390×844. Không dùng Chrome của anh. Chưa phải Safari iPhone thật, không ghi progress/password/payment trong lượt này. Native vẫn là mirror staging, toàn migration **IN PROGRESS**.
+
+Sửa lỗi công cụ chuẩn bị: global logout tăng session_version hợp lệ; initial verifier đòi1 nên lượt QA tiếp theo bị chặn. Verifier riêng cho QA kiểm chuỗi logout done đầy đủ, đúng project/user, không active proof/credential writes; giữ nguyên counter, full Source parity và guard chống race ở marker. 6 Node tests+3 SQLite tests, typecheck/lint qua; readback cuối xác minh2logout và version3. Không thay runtime business code ở bước sửa verifier.
+
+Đã đóng cổng native/Google/refresh/context/marketing/progress/credential, cohort[],0active D1 access/family. Access A/B vẫn owner-only, giữ6Secret A/3Secret B; không tạo service token mới. B giữ config version `d5cf086f-43dc-4db2-9e57-9954edda3859`. Không thay DNS, webhook hoặc nguồn ghi production.
+
 ## 15/10/2026 08:40 UTC — Google native và router staging: TESTED cục bộ
 
 Đã nối backend Google với Auth epoch/restore fence, cohort và refresh family; state/cookie/envelope gắn cùng authority, không tin email/role do trình duyệt đưa lên. Mất phản hồi sau commit hoặc attach family lỗi thu hồi các proof vừa cấp; lỗi hoàn tất giao dịch và freeze trong begin/claim/finish rollback. Phiên vẫn giữ UUID và luồng buộc đổi mật khẩu hiện có. Router staging có cổng `CF_NATIVE_QA_GOOGLE_MODE=disabled`, cần ba Secret Google riêng và refresh QA trước khi mở; router staging vẫn dùng mirror, chưa chọn native-primary.
