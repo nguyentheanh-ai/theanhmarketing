@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-10-15T13:58:59.261513+00:00",
+  "database": "theanh-supabase-copy",
+  "status": "PASS",
+  "tables": 139,
+  "rows": 39471,
+  "mismatch": {},
+  "redactedColumns": {
+    "a_public__accounting_daily_report_runs": [
+      "lease_token"
+    ],
+    "a_public__admin_student_provisioning_operations": [
+      "lease_token"
+    ],
+    "a_public__orders": [
+      "meta_purchase_lease_token"
+    ],
+    "a_public__payment_remarketing_runs": [
+      "lease_token"
+    ],
+    "a_public__telegram_business_report_runs": [
+      "lease_token"
+    ],
+    "b_public__ads_assistant_meta_connections": [
+      "encrypted_token"
+    ],
+    "b_public__ads_os_telegram_links": [
+      "encrypted_bot_token"
+    ],
+    "b_public__facebook_provider_tokens": [
+      "access_token_encrypted",
+      "token_expires_at"
+    ]
+  },
+  "snapshot": [
+    "2026-10-15T13:41:18.526621+00:00",
+    "2026-10-15T13:50:59.955202+00:00"
+  ],
+  "limits": "Point-in-time copy (page reads are not one transaction); auth.users/passwords, sessions/refresh tokens and Storage bytes not included; secret-like columns left NULL; not bound to any Worker.",
+  "databaseId": "f0f2a18e-22c3-4695-99af-a5065aa7dbe5",
+  "contentSpotChecks": {
+    "b_public__facebook_post_drafts total text length": "match (chunked rows)",
+    "a_public__orders count/sum(amount)/paid": "match"
+  }
+}

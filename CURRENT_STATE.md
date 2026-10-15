@@ -1536,3 +1536,11 @@ Khác production / còn thiếu: Telegram dùng mẫu đơn chung, chưa có m�
 ### 15/10/2026 — Deploy staging A `613e0be1`: thêm thông báo sau thanh toán, cổng TẮT
 
 Apply `d1-native-paid-side-effects.sql` lên D1 staging (bảng `d1_native_paid_side_effects`, 0 hàng). Worker `theanh-main-cf-staging` version `613e0be1-4cf4-4ec4-a4f9-14947c0b631e` 100% từ commit sạch; mọi cổng kể cả `CF_NATIVE_QA_PAYMENT_MODE` = disabled, 6 Secret cũ giữ nguyên, staging vẫn sau Cloudflare Access (302). Rollback mã: `ec1e0091-bf45-46f3-81a3-9ede14f607ba`. Chưa có Secret thanh toán/thông báo staging, chưa thử webhook hosted.
+
+### 15/10/2026 — Bản sao toàn bộ dữ liệu Supabase A/B sang D1 riêng `theanh-supabase-copy`
+
+Theo yêu cầu "chuyển dữ liệu trước, không xóa Supabase/Vercel". `scripts/copy-supabase-to-d1.py` (fetch → upload → verify → clean) đọc read-only qua Management API (PAT Keychain) A `public`+`crm_v2`, B `public`, ghi vào D1 MỚI `theanh-supabase-copy` (id `f0f2a18e-22c3-4695-99af-a5065aa7dbe5`, APAC), **không gắn Worker nào**, không đụng `theanh-main-db-staging`. Bảng đặt tên `<a|b>_<schema>__<bảng>`, giữ tên cột/PK; numeric giữ dạng text chính xác, JSON/array dạng text. Hàng >90KB (B `facebook_post_drafts`, lớn nhất ~2,9MB) được chèn rồi nối từng đoạn theo PK.
+
+Kết quả: **139/139 bảng, 39.471 hàng khớp số lượng**; kiểm nội dung mẫu (tổng độ dài bài nháp FB, tổng tiền/số đơn paid của 1.034 đơn) khớp. Receipt `reports/cloudflare-d1/supabase-copy-verification.json` (chỉ tên bảng/số hàng, không có dữ liệu khách). File tạm local chứa dữ liệu khách đã xóa.
+
+Không chép (cố ý): `auth.users`/mật khẩu (thao tác niêm phong bcrypt bị chế độ an toàn Claude Code chặn — cần chủ dự án cho phép rồi chạy bằng `d1-auth-import`), phiên/refresh token, 8 cột token/lease (để NULL, liệt kê trong receipt, gồm token Facebook/Meta/Telegram mã hóa của B — cần cấp lại khi chuyển), byte Storage (A đã có bản R2 riêng 508 file từ trước). Đây là bản chụp tại một thời điểm, đọc theo trang nên không phải một transaction; Supabase vẫn là nguồn chính và tiếp tục thay đổi — trước khi chuyển hẳn phải chạy lại hoặc làm delta. Bước tiếp: chuyển từ bảng sao chép sang các bảng projection `d1_*` mà runtime dùng.
