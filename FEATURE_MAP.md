@@ -1,3 +1,7 @@
+## 15/10/2026 — Full Worker với public settings Source thật
+
+Đã kiểm6nhóm vinext Worker HTML với marketing Source thật và explicit brand absence (source_exists0/updated_atNULL),0outbound; khóa học/Auth vẫn synthetic.212tests/11settings và5provider groups đạt; typecheckCF/lint/build/prune đạt. Projection đọc giữ hành vi Source, chưa native writer/admin hoặc remote deploy. Cờ OFF, production không đổi, IN PROGRESS/chưa READY FOR CUTOVER. Chi tiết CLOUDFLARE_TEST_RESULTS.md/native-full-worker.json. Phần absence ghi chưa làm ở mục lịch sử ngay dưới đã được thay thế bởi bằng chứng này.
+
 ## 15/10/2026 — Provider public settings và full vinext HTML local
 
 210tests và6nhóm full built Worker HTTP đạt (D1 login → lesson → progress50% → reload nút hoàn thành; guest không nhận trang cache; bài tiếp UUID; stale context409),0outbound; thêm5nhóm provider marketing Source thật. Marketing/brand native default OFF, chưa deploy/apply schema remote. Brand Source hiện0hàng; fixture brand chỉ phục vụ test, chưa giải quyết snapshot absence/native-primary. Không browser/Safari/bài thật/media/payment toàn bộ. Tổng IN PROGRESS, chưa READY FOR CUTOVER; production không đổi. Chi tiết CLOUDFLARE_TEST_RESULTS.md và main/reports/cloudflare-d1/native-full-worker.json.

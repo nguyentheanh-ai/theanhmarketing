@@ -1,9 +1,9 @@
 {
   "status": "TESTED",
   "environment": "local-only/default-off",
-  "checkedAt": "2026-10-15T05:11:34.491567+00:00",
-  "relatedTests": 210,
-  "settingsAndServiceTests": 9,
+  "checkedAt": "2026-10-15T05:15:24.950027+00:00",
+  "relatedTests": 212,
+  "settingsAndServiceTests": 11,
   "actualSourceMarketingWorkerGroups": 5,
   "fullVinextHttpGroups": 6,
   "typecheckCloudflare": "PASS",
@@ -12,26 +12,28 @@
   "productionMutations": false,
   "remoteDeploy": false,
   "brandSourceRowsObserved": 0,
-  "brandAbsenceProjectionImplemented": false,
+  "brandAbsenceProjectionImplemented": true,
   "sourceHashes": {
     "cloudflare.config.ts": "c43e2f1cf74948b3206c565d9b735df479f265de457457c06a768b8e59612cbc",
-    "lib/cloudflare/d1-public-settings.ts": "24f96281f0599f3e81cbd0ff94482abb4c7f2ac744d954d2786ce97b8dc32165",
+    "lib/cloudflare/d1-public-settings.ts": "8b65c467b5dcb41a661dd66ac113eb5942fcab06f0a3924c610aac013616cf7e",
     "lib/cloudflare/d1-brand-settings.ts": "288f4db8325c5ef1625a2c184a7b0df32ce1bedad1cc3a353ca390c0407b57b4",
     "lib/cloudflare/d1-marketing-settings.ts": "843af4af4932f2c3a8313084583a5a422db0965ae23e17060aa6c500b5439f4b",
     "lib/cloudflare/native-marketing-settings.ts": "df5d7861e0313867e43b80d2b975779f60f41cd63b9c438b9dc729f60bec67c0",
     "lib/brand-settings.ts": "311d2e560a95d0b2c2c35aba174b4a88453d59095554c929f541f5a806a0e3b7",
     "services/brandService.ts": "d21b5484c5109d5eec0eadc8daa0c6c2c1bae2fb00ff5606fc8ea1501ed724bc",
     "services/marketingSettingsService.ts": "efd7d3c7f5ba3adbb289ba6826285908b4cdd1482e9a0e8cd736b83b8d1ef958",
-    "scripts/d1-marketing-settings-prototype.sql": "c75496f7e10fd019388e396e61527f5c1f72cb4505eb653d9aac63aea974b29d",
-    "scripts/test-native-full-worker.mjs": "8d422ce0a01ce7bd5d617236225e9cd17441f8355838f38d28b1c6e9dc461528",
+    "scripts/d1-marketing-settings-prototype.sql": "ec0593faabc2947b09ab7fa1911f34ae191f4030569d4cfe98dfca3a5cc51fc1",
+    "scripts/test-native-full-worker.mjs": "f4b2d193de850499bb03e68a0753f19af66026ddae9ed231deb4e6003487a83d",
     "scripts/test-marketing-settings-workers.mjs": "b060897ee87c52c0141dc2f12c7cb22fa5d9a216271121f3fea2f30f5a797621",
-    "tests/cloudflare-native-marketing.test.mjs": "3d476ae75d4b19697a7f073cd81d0a10b5926d1923e86269971d00bfc6a60db5",
+    "tests/cloudflare-native-marketing.test.mjs": "f8ce359fe74db389a3ae6c2000163c7ded9f91b5ab4c0c6a159a71cd652f845b",
     "tests/cloudflare-marketing-service-provider.test.mjs": "de30d811e18650ce136dc4cba7c587e64798a5b4b67cdc70b6ea946eafe3d680"
   },
   "limits": [
-    "Synthetic text-only full-render fixture; not real Facebook Ads lesson/video",
+    "Synthetic text-only Auth/course fixture; not real Facebook Ads lesson/video",
     "Not browser/hydration/Safari or hosted new runtime",
-    "Source mirror <=5min; no native-primary/admin writer/brand absence parity",
+    "Source mirror <=5min; no native-primary/admin writer/final delta",
     "Not whole migration READY FOR CUTOVER"
-  ]
+  ],
+  "actualSourcePublicSettingsFullRender": true,
+  "brandSourceExists": false
 }

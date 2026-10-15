@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-15T05:10:08.145Z",
+  "checkedAt": "2026-10-15T05:14:57.018Z",
   "checks": [
     {
       "name": "disabled native provider does not require a Source/D1 marketing row",
@@ -26,7 +26,7 @@
   "source": "captured-public-row-oracle",
   "actualSourceCapture": true,
   "sourceUpdatedAt": "2026-05-19T19:07:15.791Z",
-  "sourceSnapshotAt": "2026-10-15T05:09:54.814Z",
+  "sourceSnapshotAt": "2026-10-15T05:13:07.040Z",
   "sourceDigest": "ef993bc8785b4db724a0b12fd6b35dc5211c9f3fed5bf9bac5e29a3e5b1e717f",
   "normalizedDigest": "c37ef65ab667533cc948162916f7c5672bc4f77050b36d6250553194438261b4",
   "rawValuesPrinted": false,

@@ -19,3 +19,17 @@ test('brand uses the same atomic projection with independent key and original fa
  for(const invalid of [source(),{...s,value_json:'{"apiKey":"fixture"}'},{...s,value_json:'{"name":false}'}])await assert.rejects(h.prepareD1BrandSettings(invalid));
  f.sql.exec("UPDATE d1_marketing_snapshots SET status='pending' WHERE setting_key='brand'");await assert.rejects(h.readD1BrandSettings(f.db,{now}));assert.deepEqual(await h.readD1MarketingSettings(f.db,{now}),h.normalizeMarketingSettings(raw));
 });
+
+test('explicit verified Source absence serves original brand fallback without inventing a row timestamp',async t=>{
+ const f=fixture(t),absent=source({key:'brand',source_exists:false,value_json:'null',source_updated_at:null});
+ const p=await h.prepareD1BrandSettings(absent);assert.equal(p.updated,null);await f.db.batch([p.statement]);await assert.rejects(h.readD1BrandSettings(f.db,{now}));await h.verifyD1BrandSettings(f.db,absent,{now});assert.deepEqual(await h.readD1BrandSettings(f.db,{now}),h.normalizeBrandSettings(null));
+ const row=f.sql.prepare('SELECT * FROM d1_marketing_snapshots').get();assert.equal(row.source_exists,0);assert.equal(row.source_updated_at,null);
+ for(const bad of [{...absent,value_json:'{}'},{...absent,source_updated_at:new Date(now-1000).toISOString()},{...absent,source_exists:true},{...absent,source_exists:'false'}])await assert.rejects(h.prepareD1BrandSettings(bad));
+ await assert.rejects(h.readD1BrandSettings(f.db,{now:now+300001}));
+});
+test('settings presence/absence transitions require newer verified capture and do not affect marketing',async t=>{
+ const f=fixture(t);await load(f);const present=source({key:'brand',value_json:'{"name":"Existing fixture"}'});let p=await h.prepareD1BrandSettings(present);await f.db.batch([p.statement]);await h.verifyD1BrandSettings(f.db,present,{now});
+ const absent={...present,source_exists:false,value_json:'null',source_updated_at:null,captured_at:new Date(now).toISOString()};p=await h.prepareD1BrandSettings(absent);await f.db.batch([p.statement]);await h.verifyD1BrandSettings(f.db,absent,{now});assert.deepEqual(await h.readD1BrandSettings(f.db,{now}),h.normalizeBrandSettings(null));
+ await assert.rejects(h.verifyD1BrandSettings(f.db,present,{now}));assert.deepEqual(await h.readD1MarketingSettings(f.db,{now}),h.normalizeMarketingSettings(raw));
+ const recreated={...present,captured_at:new Date(now+1).toISOString(),source_updated_at:new Date(now+1).toISOString()};p=await h.prepareD1BrandSettings(recreated);await f.db.batch([p.statement]);await h.verifyD1BrandSettings(f.db,recreated,{now:now+1});assert.equal((await h.readD1BrandSettings(f.db,{now:now+1})).name,'Existing fixture');
+});

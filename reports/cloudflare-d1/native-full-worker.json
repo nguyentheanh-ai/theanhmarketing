@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-15T05:10:53.683Z",
+  "checkedAt": "2026-10-15T05:14:31.715Z",
   "checks": [
     {
       "name": "built Worker login creates the native session for the synthetic principal",
@@ -27,10 +27,12 @@
       "status": "PASS"
     }
   ],
+  "actualSourcePublicSettings": true,
+  "brandSourceExists": false,
   "outboundFetches": 0,
   "moduleCount": 535,
-  "moduleManifestDigest": "e0c676c10b9aecd850e350b2053eddf63a122e2fbbf02d30f4dbe32b6c64feb8",
-  "artifactHash": "8897dbd2ec8439fbdeff2d6b485f9b7700288b75b3ba53172f6521a185133a0d",
+  "moduleManifestDigest": "b025d56c6dc5c4f2a81192c753a08139a153c0ee43782ac69595ba9dd615408c",
+  "artifactHash": "e025bc6931cbf41006db8b4d7c3a1afc09037f09e68c27d123026530751afab3",
   "scope": "Actual built vinext Worker/root layout and synthetic D1 text-only lesson, HTTP only",
   "limits": "No browser/hydration/Safari, real Facebook Ads media, hosted deployment or native primary/cutover proof"
 }
