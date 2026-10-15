@@ -1674,3 +1674,9 @@ Không chép (cố ý): `auth.users`/mật khẩu (thao tác niêm phong bcrypt 
 Đối chiếu quyền học `scripts/verify-supabase-copy-access.mjs`: 439 học viên (3 admin loại trừ), 409 có quyền, 515 cặp quyền; 0 quyền từ đơn/lead bị thiếu ở resolver D1; 2 quyền thêm từ enrollment CRM (đúng thiết kế, chưa đối chiếu RPC Supabase live). Receipt `reports/cloudflare-d1/supabase-copy-projection.json`, `supabase-copy-access-parity.json`.
 
 Chưa làm: B projection (workspace/ads), marketing/public settings, `d1_auth_sync_state`, legacy enrollment owners. D1 này vẫn không gắn Worker. Để chạy thật cần: chép lại phần thay đổi (delta) ngay trước khi chuyển, gắn D1 này (hoặc import vào D1 của môi trường) với khóa credential đúng môi trường, bật authority native.
+
+### 15/10/2026 — Bản sao dữ liệu app B và cài đặt marketing A trên Cloudflare (Claude Code)
+
+- A: `main/scripts/project-supabase-copy-settings.mjs` đưa `marketing` (có) và `brand` (không tồn tại ở nguồn → snapshot absence) vào `d1_marketing_snapshots/settings` của D1 `theanh-supabase-copy`, trạng thái `pending`. `offer` chưa có projection runtime.
+- B: `student/scripts/project-supabase-copy-b.mjs --upload` dựng bảng runtime B trong D1 riêng MỚI `theanh-app-db-copy` (id `b6c8b0e4-03fc-459b-81bb-3a582def09b3`, không gắn Worker) từ bảng thô B trong `theanh-supabase-copy`: `d1_access_users` 271, `d1_b_profiles` 270 (269 student, 1 admin), `d1_b_workspaces` 3, `d1_b_memberships` 3, `d1_b_documents` 9, `d1_b_preferences` 2, hai marker sync `pending`. Kiểm từng hàng với schema B thật trước khi tải, 0 bị loại; readback khớp. Receipt `student/reports/cloudflare-d1/supabase-copy-b-projection.json`.
+- Chưa có cho B: SSO identity link (đăng nhập B qua A), dữ liệu Meta/ads snapshot và token kết nối (chỉ ở bảng thô, chưa có runtime native).
