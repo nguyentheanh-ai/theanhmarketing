@@ -4,6 +4,7 @@ import { RegisterForm } from "@/components/auth/register-form";
 import { PageShell } from "@/components/site/page-shell";
 import { SoftCard } from "@/components/ui/soft-card";
 import { getCourses } from "@/services/courseService";
+import { nativeEmailAuthProvider } from "@/lib/cloudflare/native-email-auth-page";
 
 export const metadata: Metadata = {
   title: "Đăng ký Growth System",
@@ -46,7 +47,7 @@ export default async function RegisterPage() {
 
         <SoftCard>
           <Suspense fallback={null}>
-            <RegisterForm courses={courses} />
+            <RegisterForm courses={courses} authProvider={nativeEmailAuthProvider()} />
           </Suspense>
         </SoftCard>
       </section>

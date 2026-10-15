@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 import { PageShell } from "@/components/site/page-shell";
 import { SoftCard } from "@/components/ui/soft-card";
+import { nativeEmailAuthProvider } from "@/lib/cloudflare/native-email-auth-page";
 
 export const metadata: Metadata = {
   title: "Quên mật khẩu",
@@ -25,7 +26,7 @@ export default function ForgotPasswordPage() {
           </p>
         </div>
         <SoftCard>
-          <ForgotPasswordForm />
+          <ForgotPasswordForm authProvider={nativeEmailAuthProvider()} />
         </SoftCard>
       </section>
     </PageShell>

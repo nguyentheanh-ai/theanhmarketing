@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 
-export function ForgotPasswordForm() {
+export function ForgotPasswordForm({ authProvider = "supabase" }: { authProvider?: "supabase" | "native-d1" }) {
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -14,7 +14,7 @@ export function ForgotPasswordForm() {
     setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
-    const response = await fetch("/api/auth/forgot-password", {
+    const response = await fetch(authProvider === "native-d1" ? "/api/cloudflare-auth/forgot-password" : "/api/auth/forgot-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: String(formData.get("email") ?? "") }),

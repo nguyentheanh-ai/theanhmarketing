@@ -90,7 +90,7 @@ export async function handleNativeEmailAuth(request: Request, env: NativeEmailAu
     if (url.pathname === '/api/cloudflare-auth/forgot-password') {
       const r = await requestNativeRecovery(db, email, options);
       if (r.status === 'not_found') return json(404, { ok: false, status: 'not_found', message: MSG.notFound });
-      const mail = buildPasswordResetEmail({ email, resetUrl: `${ORIGIN}/api/cloudflare-auth/recovery#token=${r.token}` });
+      const mail = buildPasswordResetEmail({ email, resetUrl: `${ORIGIN}/doi-mat-khau?mode=reset#token=${r.token}` });
       const sent = await send({ ...mail, to: email } as Parameters<NativeMailSender>[0], `tam-native-recovery/${r.token.slice(0, 16)}`);
       return sent.ok ? json(200, { ok: true, status: 'sent', message: MSG.sent }) : json(502, { ok: false, status: 'failed', message: MSG.unavailable });
     }

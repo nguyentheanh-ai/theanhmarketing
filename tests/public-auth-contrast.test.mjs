@@ -45,7 +45,8 @@ test("registration form has no copied white-on-light field or supporting text st
 
 test("forgot-password and registration behavior remain intact", () => {
   for (const behavior of [
-    'fetch("/api/auth/forgot-password"',
+    '"/api/auth/forgot-password"',
+    '"/api/cloudflare-auth/forgot-password"',
     "event.currentTarget.reset()",
   ]) {
     assert.ok(forgotSource.includes(behavior), `forgot-password form must preserve ${behavior}`);

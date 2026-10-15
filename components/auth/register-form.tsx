@@ -13,7 +13,7 @@ import { trackMarketingEvent } from "@/lib/tracking/events";
 import { InvoiceRequestFields } from "@/components/payment/invoice-request-fields";
 import { invoiceInputFromFormData } from "@/lib/orders/invoice";
 
-export function RegisterForm({ courses }: { courses: Course[] }) {
+export function RegisterForm({ courses, authProvider = "supabase" }: { courses: Course[]; authProvider?: "supabase" | "native-d1" }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = getSafeNextPath(searchParams.get("next"), "/dashboard");
@@ -50,6 +50,21 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
       ? cartItems.map((item) => item.title).join(", ")
       : selectedCourse?.title ?? courseSlug;
     const attribution = getClientAttribution();
+    if (authProvider === "native-d1") {
+      // Cloudflare staging: same account fields, confirmation email sent by the server.
+      const response = await fetch("/api/cloudflare-auth/signup", {
+        method: "POST",
+        signal: AbortSignal.timeout(20000),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, fullName, phone, interestedCourse }),
+      }).catch(() => null);
+      if (!response?.ok) {
+        const result = response ? ((await response.json().catch(() => null)) as { message?: string } | null) : null;
+        setMessage(result?.message || "Chưa tạo được tài khoản. Anh/chị thử lại sau ít phút.");
+        setIsSubmitting(false);
+        return;
+      }
+    } else {
     const supabase = createSupabaseBrowserClient();
 
     if (!supabase) {
@@ -74,6 +89,7 @@ export function RegisterForm({ courses }: { courses: Course[] }) {
       setMessage(error.message);
       setIsSubmitting(false);
       return;
+    }
     }
 
     const leadResponse = await fetch("/api/leads", {

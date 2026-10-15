@@ -9,6 +9,8 @@ import { shouldRequirePasswordChange } from "@/lib/auth/student-account";
 import { getSafeNextPath } from "@/lib/navigation";
 import {readNativePasswordPage} from "@/lib/cloudflare/native-password-page";
 import {getSafeNativeAppBridgePath} from "@/lib/cloudflare/native-app-bridge-path";
+import {nativeEmailAuthProvider} from "@/lib/cloudflare/native-email-auth-page";
+import {NativeResetPasswordForm} from "@/components/auth/native-reset-password-form";
 
 export const metadata: Metadata = {
   title: "Đổi mật khẩu",
@@ -54,7 +56,7 @@ export default async function ChangePasswordPage({
           </p>
         </div>
         <SoftCard>
-          {native && isPasswordResetMode ? <p role="alert">Đặt lại mật khẩu tạm thời chưa khả dụng. Vui lòng liên hệ hỗ trợ.</p> : <Suspense fallback={null}>
+          {isPasswordResetMode && nativeEmailAuthProvider() === "native-d1" ? <NativeResetPasswordForm /> : native && isPasswordResetMode ? <p role="alert">Đặt lại mật khẩu tạm thời chưa khả dụng. Vui lòng liên hệ hỗ trợ.</p> : <Suspense fallback={null}>
             <ChangePasswordForm {...(native?.authContext?{authContext:native.authContext}:{})} authProvider={native ? "native-d1" : "supabase"} />
           </Suspense>}
         </SoftCard>
