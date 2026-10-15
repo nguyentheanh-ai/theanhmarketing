@@ -1,12 +1,13 @@
 import bcrypt from 'bcryptjs';
+import {authProofDigest,type AuthAuthorityPolicy} from '@/lib/cloudflare/auth-proof-domain';
 import {getD1AuthSession,type AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
 import {assertD1AuthMirrorReady,authMirrorReadySql} from '@/lib/cloudflare/d1-auth-authority';
 import {openLegacyBcryptHash,sealLegacyBcryptHash,verifyLegacyBcryptPassword} from '@/lib/cloudflare/legacy-password';
-type Options={projectId:string;credentialKey:string;sessionTtlMs:number;allowedUserIds:readonly string[];refreshFamilies?:boolean;now?:number};
+type Options=AuthAuthorityPolicy&{credentialKey:string;sessionTtlMs:number;allowedUserIds:readonly string[];refreshFamilies?:boolean;now?:number};
 type Input={token:string;operationId:string;currentPassword:string;newPassword:string};
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/,TOKEN=/^[A-Za-z0-9_-]{43}$/;
 const done=()=>({changed:true as const,reauthenticate:true as const});
-async function sha(value:string){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value))),b=>b.toString(16).padStart(2,'0')).join('');}
+
 async function requestDigest(input:Input,options:Options,oldHash:string){
  if(!TOKEN.test(options.credentialKey))throw Error('Credential change unavailable');
  const raw=Uint8Array.from(atob(options.credentialKey.replaceAll('-','+').replaceAll('_','/')+'='),c=>c.charCodeAt(0));if(raw.length!==32)throw Error('Credential change unavailable');
@@ -22,7 +23,7 @@ export async function changeD1Password(db:AuthDatabase,input:Input,options:Optio
  if(!/^[a-z0-9]{20}$/.test(options.projectId)||!Array.isArray(options.allowedUserIds)||options.allowedUserIds.length>10||new Set(options.allowedUserIds).size!==options.allowedUserIds.length||options.allowedUserIds.some(v=>!UUID.test(v)))throw Error('Credential change unavailable');
  if(!options.allowedUserIds.length||!UUID.test(input.operationId)||!TOKEN.test(input.token)||typeof input.currentPassword!=='string'||!input.currentPassword||new TextEncoder().encode(input.currentPassword).length>4096)return null;
  const time=()=>options.now??Date.now();if(!Number.isFinite(time()))throw Error('Credential change unavailable');
- const oldHash=await sha(input.token),digest=await requestDigest(input,options,oldHash);
+ const oldHash=await authProofDigest(input.token,options),digest=await requestDigest(input,options,oldHash);
  async function retry(){
   const op=await db.first('SELECT * FROM d1_auth_credential_operations WHERE id=?1',[input.operationId]);if(!op)return undefined;
   if(op.status!=='done'||op.project_id!==options.projectId||op.old_session_hash!==oldHash||op.request_digest!==digest||typeof op.user_id!=='string'||!options.allowedUserIds.includes(op.user_id)||!(Date.parse(String(op.created_at))<=time())||!(Date.parse(String(op.retry_until))>time()))return null;
@@ -35,9 +36,9 @@ export async function changeD1Password(db:AuthDatabase,input:Input,options:Optio
  const oldCipher=row.credential_ciphertext,hash=await openLegacyBcryptHash(oldCipher,options.credentialKey,{projectId:options.projectId,userId:session.user.id});
  if(!await verifyLegacyBcryptPassword(input.currentPassword,hash))return null;
  const nextHash=await bcrypt.hash(input.newPassword,10),cipher=await sealLegacyBcryptHash(nextHash,options.credentialKey,{projectId:options.projectId,userId:session.user.id});
- const mirror=await assertD1AuthMirrorReady(db,{projectId:options.projectId,now:time()}),stamp=mirror.stamp;
+ const mirror=await assertD1AuthMirrorReady(db,{...options,now:time()}),stamp=mirror.stamp;
  const params:(string|number|null)[]=[input.operationId,oldHash,options.projectId,session.user.id,oldCipher,Number(row.session_version),cipher,Number(row.session_version)+1,stamp,new Date(Date.parse(stamp)+120000).toISOString(),digest,JSON.stringify(options.allowedUserIds),mirror.floor,session.user.email,row.user_metadata,row.updated_at,Number(row.must_change_password)];
- const ready=`${authMirrorReadySql(3,13,9)} AND EXISTS(SELECT 1 FROM json_each(?12) cohort WHERE cohort.value=?4)`;
+ const ready=`${authMirrorReadySql(3,13,9,options.nativeAuthority)} AND EXISTS(SELECT 1 FROM json_each(?12) cohort WHERE cohort.value=?4)`;
  const active=`a.email_confirmed_at IS NOT NULL AND julianday(a.email_confirmed_at)<=julianday(?9) AND a.deleted_at IS NULL AND a.is_anonymous=0 AND (a.banned_until IS NULL OR julianday(a.banned_until)<=julianday(?9))`;
  const old=`EXISTS(SELECT 1 FROM d1_auth_accounts a JOIN d1_access_users u ON u.id=a.user_id JOIN d1_auth_sessions s ON s.user_id=a.user_id WHERE a.user_id=?4 AND u.normalized_email=?14 AND a.credential_ciphertext=?5 AND a.session_version=?6 AND a.user_metadata=?15 AND a.updated_at=?16 AND a.must_change_password=?17 AND s.token_hash=?2 AND s.project_id=?3 AND s.revoked_at IS NULL AND julianday(s.expires_at)>julianday(?9) AND s.session_version=a.session_version AND ${active}) AND ${ready}`;
  const pending=`EXISTS(SELECT 1 FROM d1_auth_credential_operations WHERE id=?1 AND project_id=?3 AND user_id=?4 AND old_session_hash=?2 AND request_digest=?11 AND expected_version=?6 AND target_version=?8 AND status='pending')`;

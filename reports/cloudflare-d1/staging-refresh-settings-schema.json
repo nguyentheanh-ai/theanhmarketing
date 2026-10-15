@@ -1,0 +1,28 @@
+{
+  "status": "STAGING_SCHEMA_VERIFIED",
+  "checkedAt": "2026-10-15T05:45:29.578039+00:00",
+  "database": "694139c9-6cda-4b8c-9228-c973dbcbb719",
+  "schemaHashes": {
+    "d1-auth-refresh-family.sql": "ebd38a73bf4b87b49a80671d84f22d2594e22dff1dc6e9a3e00c255325c10b29",
+    "d1-marketing-settings-prototype.sql": "ec0593faabc2947b09ab7fa1911f34ae191f4030569d4cfe98dfca3a5cc51fc1"
+  },
+  "createdObjects": [
+    "d1_auth_refresh_families",
+    "d1_auth_refresh_family_user",
+    "d1_auth_refresh_receipt_family",
+    "d1_auth_refresh_receipts",
+    "d1_auth_session_security_operations",
+    "d1_marketing_settings",
+    "d1_marketing_snapshots"
+  ],
+  "rowCounts": {
+    "d1_auth_refresh_families": 0,
+    "d1_auth_refresh_receipts": 0,
+    "d1_auth_session_security_operations": 0,
+    "d1_marketing_snapshots": 0,
+    "d1_marketing_settings": 0
+  },
+  "nativeGates": "disabled",
+  "productionChanged": false,
+  "limits": "Schema only, no data import or hosted behavior verified"
+}

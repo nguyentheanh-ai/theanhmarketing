@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-15T05:31:42.340Z",
+  "checks": [
+    {
+      "name": "native policy cannot fall back to fresh Source mirror without explicit active handoff",
+      "status": "PASS"
+    },
+    {
+      "name": "actual HTTP native cookies and mirror cookies cannot cross proof namespaces",
+      "status": "PASS"
+    },
+    {
+      "name": "native login/refresh parent retry work one day later without modifying Source timestamps",
+      "status": "PASS"
+    },
+    {
+      "name": "authority change inside refresh transaction rolls back all rotation effects",
+      "status": "PASS"
+    },
+    {
+      "name": "native password HTTP uses rendered witness and revokes native families after Source expires",
+      "status": "PASS"
+    },
+    {
+      "name": "external expectation with changed restore fence rejects preserved old rows and accepts only newly issued proofs",
+      "status": "PASS"
+    },
+    {
+      "name": "frozen native authority returns outage without clearing cookies or reopening Source",
+      "status": "PASS"
+    }
+  ],
+  "outboundFetches": 0,
+  "networkCanaryBlocked": true,
+  "sourceTimestampHeartbeat": false,
+  "limits": "Local fixture HTTP controllers, synthetic account/keys/authority receipts; backend-selected policy not mounted in public router; no Source provider write fence, same-epoch restore detector, browser/hosted/native-primary cutover proof"
+}

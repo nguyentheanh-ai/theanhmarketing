@@ -1,0 +1,18 @@
+{
+  "status": "LOCAL_TESTED",
+  "checkedAt": "2026-10-15T05:47:57.995703+00:00",
+  "checks": [
+    "all new A gates disabled during cleanup",
+    "refresh failure does not skip A/B access/grant revocation",
+    "readback outage cannot be cleanup success",
+    "remaining SSO grant cannot be cleanup success",
+    "all zero readbacks required"
+  ],
+  "pythonFaultTests": 4,
+  "existingHostedRunnerTests": 5,
+  "sourceHashes": {
+    "scripts/run-native-ab-hosted-qa.py": "bea0e6f975cb1f33225a1999970ccac84229619c0607f7a8d502ae81b27e269f",
+    "scripts/test-native-qa-cleanup.py": "16d9e1abc0ed5d2e007e4247400473a548c2de4965906713ad2c4a9b8fd59084"
+  },
+  "limits": "Local fault injection, not hosted cleanup run for new version"
+}

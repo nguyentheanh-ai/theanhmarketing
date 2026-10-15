@@ -1,0 +1,39 @@
+{
+  "status": "DEPLOYED_STAGING_GATES_OFF",
+  "checkedAt": "2026-10-15T05:42:22.539176+00:00",
+  "worker": "theanh-main-cf-staging",
+  "version": "2f708430-7622-439b-842b-1531fd8e56b0",
+  "percentage": 100,
+  "baseCommit": "5ca4106fc1e5bbb29f91e000d2d225b9825061f0",
+  "workingDiffSha256": "a6339551032610e753adb827b74b731894e7fdd608d677b0e21f15538077adb4",
+  "artifactManifestSha256": "e7892e87072b61724eaf8d62b675f65cd17b6194c806d8db0ac85983ba019f45",
+  "vars": {
+    "AUTH_GUARD_ENABLED": "true",
+    "CF_R2_STAGE_PRIVATE_DELIVERY": "true",
+    "CF_NATIVE_MARKETING_MODE": "disabled",
+    "CF_NATIVE_AUTH_MODE": "disabled",
+    "CF_NATIVE_AUTH_ORIGIN": "https://theanh-main-cf-staging.12c1thdtheanh.workers.dev",
+    "CF_NATIVE_QA_USERS": "[]",
+    "CF_NATIVE_QA_PROGRESS_MODE": "disabled",
+    "CF_NATIVE_QA_AUTH_CONTEXT_MODE": "disabled",
+    "CF_NATIVE_QA_REFRESH_MODE": "disabled",
+    "CF_NATIVE_QA_CREDENTIAL_WRITES": "disabled"
+  },
+  "secretNames": [
+    "NATIVE_AUTH_CREDENTIAL_KEY",
+    "NATIVE_AUTH_LIMITER_KEY",
+    "NATIVE_AUTH_REFRESH_KEY",
+    "R2_PRIVATE_URL_SECRET",
+    "STUDENT_PORTAL_PROVISION_SECRET",
+    "SUPABASE_SERVICE_ROLE_KEY"
+  ],
+  "d1Id": "694139c9-6cda-4b8c-9228-c973dbcbb719",
+  "localEvidence": {
+    "tests": 280,
+    "typecheck": "PASS",
+    "build": "PASS",
+    "dryRun": "PASS",
+    "fullWorkerSyntheticGroups": 6
+  },
+  "limits": "Control-plane verified; no hosted authenticated behavior for this version, no new D1 schemas applied, native source authority not mounted, not READY FOR CUTOVER"
+}

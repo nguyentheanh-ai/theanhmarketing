@@ -1,3 +1,23 @@
+
+## 15/10/2026 — Schema staging và chuẩn bị QA sau deploy
+
+D1 A staging đã tạo5bảng refresh/public settings cùng2index, so sánh sqlite_master với DDL local trước/sau;5bảng đều0hàng. Cổng native/progress/refresh/context/marketing/credential OFF và cohort[]. Receipt: main/reports/cloudflare-d1/staging-refresh-settings-schema.json. Chưa apply ledger native authority, chưa chuyển nguồn ghi.
+
+Đối soát QA A Auth1tài khoản khớp identity/status/metadata/ciphertext; quyền học QA1khóa/26bài,10bảng/36hàng khớp nguồn mới,0lỗi FK. B snapshot1Auth/profile/workspace/membership,0document/preference được lưu mã hóa, verify fullfields và publish marker staging, volume unmount đọc lại. Marker có hạn5phút; phải đọc nguồn lại trong lượt hosted, không dùng các kết quả này làm heartbeat.
+
+Runner QA bổ sung đóng cổng refresh/context/marketing và thu hồi refresh family. Sửa cleanup để lỗi một UPDATE không bỏ qua các lần thu hồi còn lại; đọc lại sessions/families/grants độc lập, lỗi đọc/ghi hoặc số dư khác0 đều fail.4tests mô phỏng lỗi+5tests runner/readiness hiện có PASS. Receipt qa-cleanup-readiness.json. Chưa chạy hosted trên version2f708430, chưa tạo token45phút ở lượt này. Không thay production. Tổng IN PROGRESS, chưa READY FOR CUTOVER.
+
+
+## 15/10/2026 05:42 UTC — Mã mới đã triển khai staging A, cổng native OFF
+
+Worker `theanh-main-cf-staging` version `2f708430-7622-439b-842b-1531fd8e56b0` đã upload và API deployments xác nhận100%. Settings đọc lại đúng D1 A, toàn bộ cổng native/refresh/context/marketing/progress/credential disabled, cohort[];6Secret gốc+mới gồm NATIVE_AUTH_REFRESH_KEY, không có Secret Access QA tạm. Khóa refresh mới được lưu và đọc lại Keychain, chỉ xác minh metadata remote, chưa kiểm sử dụng hosted. B không thay đổi trong lượt này. Không đổi production/DNS/webhook/nguồn ghi.
+
+Mã build từ base5ca4106 cùng thay đổi Auth epoch chưa commit đang có trong worktree; không coi HEAD đơn lẻ là source artifact. Receipt `main/reports/cloudflare-d1/staging-current-deployment.json` lưu digest diff và toàn bộ manifest artifact.280tests Cloudflare PASS, typecheckCF/build/prune/dry-run PASS;6nhóm full Worker với Auth/course/public settings tổng hợp PASS,0outbound. Lượt này không dùng public settings nguồn thật và không phải browser/Safari/bài học khách hàng.
+
+Chưa apply schema refresh/public settings mới lên D1 remote; chưa bật QA trên phiên bản này, chưa tạo Access token/policy45phút. Hosted A→B8nhóm ở mục lịch sử thuộc runtime cũ, không chứng minh runtime vừa deploy. Candidate Auth epoch hiện có backend policy/proof namespace và test, nhưng public router chưa chọn native authority; không thể ngừng Supabase.
+
+Tiếp theo: đọc schema D1 staging, apply đúng DDL thiếu sau kiểm tra; cập nhật runner cleanup cho refresh/context/marketing và family revocation; capture/đối soát QA mới; dùng phê duyệt token QA A/B hiện có để thử phiên bản này và thu hồi. Rollback staging mã có thể về version dd6d2a68-55ee-4215-a4a7-d548713975b9 với cổng OFF; đây không phải rollback dữ liệu hay kế hoạch cutover production. Tổng IN PROGRESS, chưa READY FOR CUTOVER.
+
 ## 15/10/2026 — Candidate điều khiển nguồn Auth
 
 Bổ sung ledger/guard epoch + restore-fence + manifest/receipt được ghim, transition fenced→native/freeze có transaction/final assertion/idempotent retry.8tests và4nhóm workerd/D1 cục bộ đạt; typecheckCF/lint đạt. Chưa import vào runtime, không issuer/session epoch binding hay Source fence thực, không apply/deploy remote. Runtime vẫn mirror5phút; native-primary CHƯA đạt. IN PROGRESS/chưa READY FOR CUTOVER. Xem CLOUDFLARE_TEST_RESULTS.md/data-authority-workers.json.

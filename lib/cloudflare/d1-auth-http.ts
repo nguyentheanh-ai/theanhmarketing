@@ -1,9 +1,10 @@
+import {authAuthorityContext,type AuthAuthorityPolicy} from "@/lib/cloudflare/auth-proof-domain";
 import {attachD1RefreshFamily,type RefreshFamilyPolicy} from "@/lib/cloudflare/d1-refresh-family";
 import {assertRefreshCookieLifetime,createD1RefreshCookies} from "@/lib/cloudflare/d1-refresh-cookies";
 import { authenticateD1Password, getD1AuthSession, revokeAllD1AuthSessions, revokeD1AuthSession, type AuthDatabase } from "@/lib/cloudflare/d1-auth-core";
 
 export const D1_SESSION_COOKIE="__Host-tam-session";
-type Options={db:AuthDatabase;projectId:string;origin:string;credentialKey:string;sessionTtlMs:number;now?:number;allowedUserIds?:readonly string[];
+type Options=AuthAuthorityPolicy&{db:AuthDatabase;origin:string;credentialKey:string;sessionTtlMs:number;now?:number;allowedUserIds?:readonly string[];
  refreshFamily?:{policy:RefreshFamilyPolicy;cookieMaxAgeSeconds:number};
  // Called after body validation; must use shared backend limiter. Return a
  // decision instead of throwing an error with identifying request values.
@@ -55,6 +56,7 @@ export async function handleD1AuthHttp(request:Request,options:Options){
  let body:Record<string,unknown>;try{body=await boundedJson(request);}catch{return response(400,{ok:false,message:"Yêu cầu không hợp lệ."});}
  try{
   if(url.pathname.endsWith("/logout")){
+   if(options.nativeAuthority)throw Error("Native logout requires family controller");
    if(Object.keys(body).some(k=>k!=="all")||(body.all!==undefined&&typeof body.all!=="boolean"))return response(400,{ok:false});
    const token=readD1SessionCookie(request);
    if(body.all===true)await revokeAllD1AuthSessions(options.db,token,options);else await revokeD1AuthSession(options.db,token,options);
@@ -63,7 +65,8 @@ export async function handleD1AuthHttp(request:Request,options:Options){
   if(Object.keys(body).some(k=>!["email","password","rememberLogin"].includes(k))||typeof body.email!=="string"||typeof body.password!=="string"||(body.rememberLogin!==undefined&&typeof body.rememberLogin!=="boolean")||!body.email.trim()||body.email.length>320||!body.password||new TextEncoder().encode(body.password).length>4096)return response(400,{ok:false,message:"Yêu cầu không hợp lệ."});
   const decision=await options.allowAttempt(request,body.email.trim().toLowerCase());
   if(!decision.allowed)return response(429,{ok:false,message:"Quá nhiều yêu cầu. Vui lòng thử lại sau."},undefined,Math.max(1,Math.ceil(decision.retryAfter)));
-  if(options.refreshFamily)assertRefreshCookieLifetime(options.refreshFamily.cookieMaxAgeSeconds);
+  if(options.nativeAuthority&&!options.refreshFamily)throw Error('Native authority requires refresh lifecycle');
+  if(options.refreshFamily){if(options.refreshFamily.policy.projectId!==options.projectId)throw Error('Refresh project mismatch');assertRefreshCookieLifetime(options.refreshFamily.cookieMaxAgeSeconds);if(authAuthorityContext(options)!==authAuthorityContext(options.refreshFamily.policy))throw Error('Refresh authority mismatch');}
   const session=await authenticateD1Password(options.db,{email:body.email,password:body.password},{...options,allowAttempt:async()=>true});
   if(!session)return response(401,{ok:false,message:"Email hoặc mật khẩu chưa đúng."});
   if(options.refreshFamily){

@@ -1,9 +1,10 @@
+import type {AuthAuthorityPolicy} from '@/lib/cloudflare/auth-proof-domain';
 import {verifyNativeAuthContext} from '@/lib/cloudflare/native-auth-context';
 import {clearD1RefreshCookies} from '@/lib/cloudflare/d1-refresh-cookies';
 import {changeD1Password,validNativeNewPassword} from '@/lib/cloudflare/d1-password-change';
 import {readD1SessionCookie,readBoundedAuthJson,createD1SessionCookie} from '@/lib/cloudflare/d1-auth-http';
 import type {AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
-type Options={db:AuthDatabase;origin:string;projectId:string;credentialKey:string;sessionTtlMs:number;allowedUserIds:readonly string[];writeEnabled:boolean;refreshFamilies?:boolean;authContextKey?:string;allowAttempt:(request:Request,subject:string)=>Promise<{allowed:boolean;retryAfter:number}>};
+type Options=AuthAuthorityPolicy&{db:AuthDatabase;origin:string;credentialKey:string;sessionTtlMs:number;allowedUserIds:readonly string[];writeEnabled:boolean;refreshFamilies?:boolean;authContextKey?:string;allowAttempt:(request:Request,subject:string)=>Promise<{allowed:boolean;retryAfter:number}>};
 function reply(status:number,body:unknown,cookie?:string,retry?:number){const headers=new Headers({'Content-Type':'application/json; charset=utf-8','Cache-Control':'private, no-store','CDN-Cache-Control':'no-store','Vary':'Cookie','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'});if(cookie)headers.set('Set-Cookie',cookie);if(retry)headers.set('Retry-After',String(retry));return new Response(JSON.stringify(body),{status,headers});}
 export async function handleD1PasswordChangeHttp(request:Request,options:Options){
  const url=new URL(request.url);if(url.pathname!=='/api/cloudflare-auth/change-password')return reply(404,{ok:false});

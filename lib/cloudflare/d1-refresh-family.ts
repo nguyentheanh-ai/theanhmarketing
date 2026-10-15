@@ -1,10 +1,11 @@
+import {authProofDigest,authAuthorityContext,type AuthAuthorityPolicy} from '@/lib/cloudflare/auth-proof-domain';
 import {getD1AuthSession,type AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
 import {assertD1AuthMirrorReady,authMirrorReadySql} from '@/lib/cloudflare/d1-auth-authority';
 
 // Backend candidate behind the default-off staging refresh gate. Native primary authority and legacy-cookie
 // adoption remain separate gates; this never advances a source mirror marker.
-export type RefreshFamilyPolicy={
- projectId:string;now?:number;sessionTtlMs:number;maxSnapshotAgeMs?:number;allowedUserIds?:readonly string[];
+export type RefreshFamilyPolicy=AuthAuthorityPolicy&{
+ now?:number;sessionTtlMs:number;maxSnapshotAgeMs?:number;allowedUserIds?:readonly string[];
  activeKeyId:string;keys:Readonly<Record<string,string>>;
  absoluteTtlMs:number|null;idleTimeoutMs:number|null;reuseIntervalMs:number;rememberLogin?:boolean;
  allowFamilyAttempt?:(identity:{projectId:string;userId:string;familyId:string})=>Promise<{allowed:boolean;retryAfter:number}>;
@@ -27,7 +28,7 @@ function keyBytes(p:RefreshFamilyPolicy,id:string){
 }
 async function derive(p:RefreshFamilyPolicy,kind:'access'|'refresh',family:string,serial:number,keyId:string){
  const key=await crypto.subtle.importKey('raw',keyBytes(p,keyId),{name:'HMAC',hash:'SHA-256'},false,['sign']);
- const value=await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(JSON.stringify(['tam-native-family-v1',kind,p.projectId,family,serial])));
+ const value=await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(JSON.stringify(p.nativeAuthority?['tam-native-family-v2',authAuthorityContext(p),kind,p.projectId,family,serial]:['tam-native-family-v1',kind,p.projectId,family,serial])));
  return btoa(String.fromCharCode(...new Uint8Array(value))).replaceAll('+','-').replaceAll('/','_').replaceAll('=','');
 }
 async function context(db:AuthDatabase,p:RefreshFamilyPolicy):Promise<Context>{
@@ -38,15 +39,15 @@ async function context(db:AuthDatabase,p:RefreshFamilyPolicy):Promise<Context>{
  (ids!==undefined&&(!Array.isArray(ids)||ids.length>100||ids.some(id=>!UUID.test(id))||new Set(ids).size!==ids.length)))throw unavailable();
  keyBytes(p,p.activeKeyId);
  const mirror=await assertD1AuthMirrorReady(db,{...p,now});
- const digest=await hash(JSON.stringify([p.sessionTtlMs,p.absoluteTtlMs,p.idleTimeoutMs,p.reuseIntervalMs]));
+ const digest=await hash(JSON.stringify(p.nativeAuthority?[p.sessionTtlMs,p.absoluteTtlMs,p.idleTimeoutMs,p.reuseIntervalMs,authAuthorityContext(p)]:[p.sessionTtlMs,p.absoluteTtlMs,p.idleTimeoutMs,p.reuseIntervalMs]));
  return {...mirror,cohort:ids===undefined?'null':JSON.stringify(ids),digest,policy:p};
 }
 function cohortSql(){return `(?4='null' OR EXISTS(SELECT 1 FROM json_each(?4) allowed WHERE allowed.value=f.user_id))`;}
 function accountSql(){return `EXISTS(SELECT 1 FROM d1_auth_accounts a WHERE a.user_id=f.user_id AND a.session_version=f.session_version AND a.email_confirmed_at IS NOT NULL AND julianday(a.email_confirmed_at)<=julianday(?2) AND a.deleted_at IS NULL AND a.is_anonymous=0 AND (a.banned_until IS NULL OR julianday(a.banned_until)<=julianday(?2)))`;}
-function activeSql(){return `f.project_id=?1 AND f.revoked_at IS NULL AND f.policy_digest=?10 AND julianday(f.created_at)<=julianday(?2) AND julianday(f.last_used_at)<=julianday(?2)
+function activeSql(c:Context){return `f.project_id=?1 AND f.revoked_at IS NULL AND f.policy_digest=?10 AND julianday(f.created_at)<=julianday(?2) AND julianday(f.last_used_at)<=julianday(?2)
  AND (f.absolute_expires_at IS NULL OR julianday(f.absolute_expires_at)>julianday(?2))
  AND (f.idle_timeout_ms IS NULL OR CAST(round((julianday(?2)-julianday(f.last_used_at))*86400000) AS INTEGER)<f.idle_timeout_ms)
- AND ${accountSql()} AND ${authMirrorReadySql(1,3)} AND ${cohortSql()}
+ AND ${accountSql()} AND ${authMirrorReadySql(1,3,2,c.policy.nativeAuthority)} AND ${cohortSql()}
  AND EXISTS(SELECT 1 FROM d1_auth_sessions live WHERE live.token_hash=f.current_access_hash AND live.family_id=f.family_id AND live.user_id=f.user_id AND live.project_id=f.project_id AND live.session_version=f.session_version AND live.revoked_at IS NULL)`;}
 const fingerprint=(alias='f')=>`json_array(${columns.map(k=>alias+'.'+k).join(',')})`;
 function checkedFamily(row:Record<string,unknown>):Family{
@@ -69,13 +70,13 @@ function stmt(sql:string,p:(string|number|null)[]):Statement{
  const n=Math.max(0,...Array.from(sql.matchAll(/\?(\d+)/g),m=>Number(m[1])));return {sql,params:p.slice(0,n)};
 }
 async function familyBy(db:AuthDatabase,c:Context,where:string,proof:string){
- const row=await db.first(`SELECT f.* FROM d1_auth_refresh_families f WHERE ${activeSql()} AND ${where}`,parameters(c,'','','','',proof).map(v=>v===null?'':v));
+ const row=await db.first(`SELECT f.* FROM d1_auth_refresh_families f WHERE ${activeSql(c)} AND ${where}`,parameters(c,'','','','',proof).map(v=>v===null?'':v));
  if(!row)return null;const f=checkedFamily(row);verifyFamilyPolicy(f,c);return f;
 }
 async function pair(db:AuthDatabase,f:Family,p:RefreshFamilyPolicy){
  const accessToken=await derive(p,'access',String(f.family_id),Number(f.access_serial),String(f.access_key_id));
  const refreshToken=await derive(p,'refresh',String(f.family_id),Number(f.generation),String(f.refresh_key_id));
- if(await hash(accessToken)!==f.current_access_hash||await hash(refreshToken)!==f.current_hash)throw unavailable();
+ if(await authProofDigest(accessToken,p)!==f.current_access_hash||await authProofDigest(refreshToken,p)!==f.current_hash)throw unavailable();
  const current=await getD1AuthSession(db,accessToken,p);
  if(!current||current.user.id!==f.user_id||current.familyId!==f.family_id||current.expiresAt!==f.access_expires_at)throw unavailable();
  return {familyId:String(f.family_id),accessToken,refreshToken,expiresAt:String(f.access_expires_at),refreshExpiresAt:f.absolute_expires_at===null?null:String(f.absolute_expires_at),user:current.user,rememberLogin:f.remember_login===1};
@@ -88,10 +89,10 @@ function proofSql(kind:'bootstrap'|'current'|'replay'){
 async function mutate(db:AuthDatabase,c:Context,old:Family,next:Family,inputHash:string,kind:'current'|'replay'|'bootstrap'){
  const p=parameters(c,String(old.family_id),String(next.last_operation_id),JSON.stringify(columns.map(k=>old[k])),JSON.stringify(next),inputHash);
  const won=`f.family_id=?5 AND f.last_operation_id=?6`;
- const still=`${won} AND ${activeSql()}`;
+ const still=`${won} AND ${activeSql(c)}`;
  const changes=columns.filter(k=>k!=='family_id').map(k=>`${k}=json_extract(?8,'$.${k}')`).join(',');
- const statements=[stmt(`UPDATE d1_auth_refresh_families AS f SET ${changes} WHERE f.family_id=?5 AND ${fingerprint()}=?7 AND ${activeSql()} AND ${proofSql(kind)}`,p)];
- statements.push(stmt(`INSERT INTO d1_auth_sessions(token_hash,user_id,project_id,family_id,session_version,created_at,expires_at) SELECT f.current_access_hash,f.user_id,f.project_id,f.family_id,f.session_version,f.access_created_at,f.access_expires_at FROM d1_auth_refresh_families f WHERE ${won} AND ${accountSql()} AND ${authMirrorReadySql(1,3)} AND ${cohortSql()} ON CONFLICT(token_hash) DO NOTHING`,p));
+ const statements=[stmt(`UPDATE d1_auth_refresh_families AS f SET ${changes} WHERE f.family_id=?5 AND ${fingerprint()}=?7 AND ${activeSql(c)} AND ${proofSql(kind)}`,p)];
+ statements.push(stmt(`INSERT INTO d1_auth_sessions(token_hash,user_id,project_id,family_id,session_version,created_at,expires_at) SELECT f.current_access_hash,f.user_id,f.project_id,f.family_id,f.session_version,f.access_created_at,f.access_expires_at FROM d1_auth_refresh_families f WHERE ${won} AND ${accountSql()} AND ${authMirrorReadySql(1,3,2,c.policy.nativeAuthority)} AND ${cohortSql()} ON CONFLICT(token_hash) DO NOTHING`,p));
  if(kind==='current')statements.push(stmt(`INSERT INTO d1_auth_refresh_receipts(old_hash,project_id,family_id,old_generation,rotated_at) SELECT ?9,?1,f.family_id,json_extract(?8,'$.generation')-1,?2 FROM d1_auth_refresh_families f WHERE ${still}`,p));
  const receiptGuard=kind==='current'?`AND EXISTS(SELECT 1 FROM d1_auth_refresh_receipts r WHERE r.old_hash=?9 AND r.project_id=?1 AND r.family_id=f.family_id AND r.old_generation=f.generation-1 AND r.rotated_at=?2)`:`AND ${proofSql(kind)}`;
  // activeSql refers to the new access row; require exact values at commit, too.
@@ -106,16 +107,16 @@ async function mutate(db:AuthDatabase,c:Context,old:Family,next:Family,inputHash
 }
 async function nextState(f:Family,c:Context,rotate:boolean){
  const p=c.policy,n={...f,last_used_at:c.stamp,last_operation_id:crypto.randomUUID()};
- if(rotate){n.generation=Number(f.generation)+1;n.refresh_key_id=p.activeKeyId;n.current_hash=await hash(await derive(p,'refresh',String(f.family_id),Number(n.generation),p.activeKeyId));}
+ if(rotate){n.generation=Number(f.generation)+1;n.refresh_key_id=p.activeKeyId;n.current_hash=await authProofDigest(await derive(p,'refresh',String(f.family_id),Number(n.generation),p.activeKeyId),p);}
  if(rotate||Date.parse(String(f.access_expires_at))<=Date.parse(c.stamp)){
   n.access_serial=Number(f.access_serial)+1;n.access_key_id=p.activeKeyId;n.access_created_at=c.stamp;
   n.access_expires_at=new Date(Math.min(Date.parse(c.stamp)+p.sessionTtlMs,f.absolute_expires_at===null?Infinity:Date.parse(String(f.absolute_expires_at)))).toISOString();
-  n.current_access_hash=await hash(await derive(p,'access',String(f.family_id),Number(n.access_serial),p.activeKeyId));
+  n.current_access_hash=await authProofDigest(await derive(p,'access',String(f.family_id),Number(n.access_serial),p.activeKeyId),p);
  }
  return n;
 }
 export async function attachD1RefreshFamily(db:AuthDatabase,accessToken:string,p:RefreshFamilyPolicy){
- if(!tokenValid(accessToken))return null;const inputHash=await hash(accessToken);let rateChecked=false;
+ if(!tokenValid(accessToken))return null;const inputHash=await authProofDigest(accessToken,p);let rateChecked=false;
  for(let attempt=0;attempt<3;attempt++){
   const c=await context(db,p),existing=await familyBy(db,c,proofSql('bootstrap'),inputHash);
   if(existing){if(!rateChecked){await allowFamily(p,String(existing.family_id),String(existing.user_id));rateChecked=true;}const next=await nextState(existing,c,false);if(await mutate(db,c,existing,next,inputHash,'bootstrap'))return pair(db,next,p);continue;}
@@ -124,15 +125,15 @@ export async function attachD1RefreshFamily(db:AuthDatabase,accessToken:string,p
   const row=await db.first('SELECT session_version FROM d1_auth_accounts WHERE user_id=?1',[authenticated.user.id]);if(!row||!Number.isSafeInteger(row.session_version))throw unavailable();
   const family=authenticated.familyId,op=crypto.randomUUID(),absolute=p.absoluteTtlMs===null?null:new Date(Date.parse(c.stamp)+p.absoluteTtlMs).toISOString();
   const refresh=await derive(p,'refresh',family,1,p.activeKeyId),access=await derive(p,'access',family,1,p.activeKeyId);
-  const f:Family={family_id:family,project_id:p.projectId,user_id:authenticated.user.id,session_version:Number(row.session_version),generation:1,current_hash:await hash(refresh),refresh_key_id:p.activeKeyId,access_serial:1,current_access_hash:await hash(access),access_key_id:p.activeKeyId,access_created_at:c.stamp,access_expires_at:new Date(Math.min(Date.parse(c.stamp)+p.sessionTtlMs,absolute===null?Infinity:Date.parse(absolute))).toISOString(),created_at:c.stamp,last_used_at:c.stamp,absolute_expires_at:absolute,idle_timeout_ms:p.idleTimeoutMs,reuse_interval_ms:p.reuseIntervalMs,remember_login:p.rememberLogin===true?1:0,bootstrap_access_hash:inputHash,bootstrap_retry_until:new Date(Date.parse(c.stamp)+120000).toISOString(),last_operation_id:op,revoked_at:null,policy_digest:c.digest};
+  const f:Family={family_id:family,project_id:p.projectId,user_id:authenticated.user.id,session_version:Number(row.session_version),generation:1,current_hash:await authProofDigest(refresh,p),refresh_key_id:p.activeKeyId,access_serial:1,current_access_hash:await authProofDigest(access,p),access_key_id:p.activeKeyId,access_created_at:c.stamp,access_expires_at:new Date(Math.min(Date.parse(c.stamp)+p.sessionTtlMs,absolute===null?Infinity:Date.parse(absolute))).toISOString(),created_at:c.stamp,last_used_at:c.stamp,absolute_expires_at:absolute,idle_timeout_ms:p.idleTimeoutMs,reuse_interval_ms:p.reuseIntervalMs,remember_login:p.rememberLogin===true?1:0,bootstrap_access_hash:inputHash,bootstrap_retry_until:new Date(Date.parse(c.stamp)+120000).toISOString(),last_operation_id:op,revoked_at:null,policy_digest:c.digest};
   checkedFamily(f);verifyFamilyPolicy(f,c);
   const params=parameters(c,family,op,'',JSON.stringify(f),inputHash);
-  const original=`s.token_hash=?9 AND s.project_id=?1 AND s.family_id=?5 AND s.user_id=json_extract(?8,'$.user_id') AND s.session_version=a.session_version AND a.session_version=json_extract(?8,'$.session_version') AND s.revoked_at IS NULL AND julianday(s.expires_at)>julianday(?2) AND a.email_confirmed_at IS NOT NULL AND julianday(a.email_confirmed_at)<=julianday(?2) AND a.deleted_at IS NULL AND a.is_anonymous=0 AND (a.banned_until IS NULL OR julianday(a.banned_until)<=julianday(?2)) AND ${authMirrorReadySql(1,3)} AND (?4='null' OR EXISTS(SELECT 1 FROM json_each(?4) allowed WHERE allowed.value=s.user_id))`;
+  const original=`s.token_hash=?9 AND s.project_id=?1 AND s.family_id=?5 AND s.user_id=json_extract(?8,'$.user_id') AND s.session_version=a.session_version AND a.session_version=json_extract(?8,'$.session_version') AND s.revoked_at IS NULL AND julianday(s.expires_at)>julianday(?2) AND a.email_confirmed_at IS NOT NULL AND julianday(a.email_confirmed_at)<=julianday(?2) AND a.deleted_at IS NULL AND a.is_anonymous=0 AND (a.banned_until IS NULL OR julianday(a.banned_until)<=julianday(?2)) AND ${authMirrorReadySql(1,3,2,c.policy.nativeAuthority)} AND (?4='null' OR EXISTS(SELECT 1 FROM json_each(?4) allowed WHERE allowed.value=s.user_id))`;
   const won='f.family_id=?5 AND f.project_id=?1 AND f.last_operation_id=?6';
   const ss=[stmt(`INSERT INTO d1_auth_refresh_families(${columns.join(',')}) SELECT ${columns.map(k=>`json_extract(?8,'$.${k}')`).join(',')} FROM d1_auth_sessions s JOIN d1_auth_accounts a ON a.user_id=s.user_id WHERE ${original} ON CONFLICT(family_id) DO NOTHING`,params),
-   stmt(`INSERT INTO d1_auth_sessions(token_hash,user_id,project_id,family_id,session_version,created_at,expires_at) SELECT f.current_access_hash,f.user_id,f.project_id,f.family_id,f.session_version,f.access_created_at,f.access_expires_at FROM d1_auth_refresh_families f WHERE ${won} AND ${accountSql()} AND ${authMirrorReadySql(1,3)} AND ${cohortSql()} ON CONFLICT(token_hash) DO NOTHING`,params),
-   stmt(`UPDATE d1_auth_sessions SET revoked_at=?2 WHERE token_hash=?9 AND project_id=?1 AND family_id=?5 AND EXISTS(SELECT 1 FROM d1_auth_refresh_families f WHERE ${won} AND ${activeSql()})`,params),
-   stmt(`SELECT CASE WHEN EXISTS(SELECT 1 FROM d1_auth_refresh_families f WHERE ${won} AND ${activeSql()} AND ${fingerprint()}=json_array(${columns.map(k=>`json_extract(?8,'$.${k}')`).join(',')})) AND EXISTS(SELECT 1 FROM d1_auth_sessions WHERE token_hash=?9 AND project_id=?1 AND family_id=?5 AND revoked_at=?2) THEN 1 ELSE abs(-9223372036854775808) END AS valid`,params)];
+   stmt(`INSERT INTO d1_auth_sessions(token_hash,user_id,project_id,family_id,session_version,created_at,expires_at) SELECT f.current_access_hash,f.user_id,f.project_id,f.family_id,f.session_version,f.access_created_at,f.access_expires_at FROM d1_auth_refresh_families f WHERE ${won} AND ${accountSql()} AND ${authMirrorReadySql(1,3,2,c.policy.nativeAuthority)} AND ${cohortSql()} ON CONFLICT(token_hash) DO NOTHING`,params),
+   stmt(`UPDATE d1_auth_sessions SET revoked_at=?2 WHERE token_hash=?9 AND project_id=?1 AND family_id=?5 AND EXISTS(SELECT 1 FROM d1_auth_refresh_families f WHERE ${won} AND ${activeSql(c)})`,params),
+   stmt(`SELECT CASE WHEN EXISTS(SELECT 1 FROM d1_auth_refresh_families f WHERE ${won} AND ${activeSql(c)} AND ${fingerprint()}=json_array(${columns.map(k=>`json_extract(?8,'$.${k}')`).join(',')})) AND EXISTS(SELECT 1 FROM d1_auth_sessions WHERE token_hash=?9 AND project_id=?1 AND family_id=?5 AND revoked_at=?2) THEN 1 ELSE abs(-9223372036854775808) END AS valid`,params)];
   try{const results=await db.batch(ss);if(results.length!==ss.length||results.at(-1)?.results?.[0]?.valid!==1)throw unavailable();return pair(db,f,p);}catch{
    const actual=await db.first('SELECT * FROM d1_auth_refresh_families WHERE family_id=?1 AND project_id=?2',[family,p.projectId]);
    if(actual&&actual.last_operation_id!==op&&actual.bootstrap_access_hash===inputHash)continue;
@@ -153,7 +154,7 @@ async function revokeFamilyRow(db:AuthDatabase,f:Family,stamp:string,cohort:stri
  }
 }
 export async function refreshD1Family(db:AuthDatabase,refreshToken:string,p:RefreshFamilyPolicy){
- if(!tokenValid(refreshToken))return null;const inputHash=await hash(refreshToken);let rateChecked=false;
+ if(!tokenValid(refreshToken))return null;const inputHash=await authProofDigest(refreshToken,p);let rateChecked=false;
  for(let attempt=0;attempt<3;attempt++){
   const c=await context(db,p),f=await familyBy(db,c,`(f.current_hash=?9 OR EXISTS(SELECT 1 FROM d1_auth_refresh_receipts r WHERE r.old_hash=?9 AND r.family_id=f.family_id AND r.project_id=f.project_id))`,inputHash);if(!f)return null;
   if(!rateChecked){await allowFamily(p,String(f.family_id),String(f.user_id));rateChecked=true;}
@@ -175,7 +176,7 @@ export type FamilyRevocationOutcome='revoked'|'replayed'|'invalid';
 export async function revokeD1RefreshFamilyOutcome(db:AuthDatabase,accessToken:string,p:RefreshFamilyPolicy):Promise<FamilyRevocationOutcome>{
  if(!tokenValid(accessToken)||!Number.isFinite(policyTime(p))||!/^[a-z0-9]{20}$/.test(p.projectId))return 'invalid';
  const ids=p.allowedUserIds;if(ids!==undefined&&(!Array.isArray(ids)||ids.some(id=>!UUID.test(id))||new Set(ids).size!==ids.length||ids.length>100))throw unavailable();
- const h=await hash(accessToken);let limited=false;
+ const h=await authProofDigest(accessToken,p);let limited=false;
  for(let attempt=0;attempt<3;attempt++){
   const row=await db.first(`SELECT f.* FROM d1_auth_refresh_families f JOIN d1_auth_sessions s ON s.family_id=f.family_id AND s.project_id=f.project_id AND s.user_id=f.user_id WHERE s.token_hash=?1 AND f.project_id=?2`,[h,p.projectId]);
   if(!row||(ids!==undefined&&!ids.includes(String(row.user_id))))return 'invalid';
@@ -196,11 +197,11 @@ export async function revokeD1RefreshFamily(db:AuthDatabase,accessToken:string,p
 // records revocation time and fences late retries from killing a newer login.
 async function matchesAssociatedAccess(db:AuthDatabase,f:Family,p:RefreshFamilyPolicy,access?:string){
  if(access===undefined)return true;if(!tokenValid(access))return false;
- const row=await db.first('SELECT user_id,family_id FROM d1_auth_sessions WHERE token_hash=?1 AND project_id=?2',[await hash(access),p.projectId]);
+ const row=await db.first('SELECT user_id,family_id FROM d1_auth_sessions WHERE token_hash=?1 AND project_id=?2',[await authProofDigest(access,p),p.projectId]);
  return row?.user_id===f.user_id&&row?.family_id===f.family_id;
 }
 export async function revokeD1RefreshFamilyByRefreshOutcome(db:AuthDatabase,token:string,p:RefreshFamilyPolicy,associatedAccess?:string):Promise<FamilyRevocationOutcome>{
- if(!tokenValid(token))return 'invalid';const c=await context(db,p),inputHash=await hash(token);
+ if(!tokenValid(token))return 'invalid';const c=await context(db,p),inputHash=await authProofDigest(token,p);
  const f=await familyBy(db,c,`(f.current_hash=?9 OR ${proofSql('replay')})`,inputHash);
  if(!f){
   const row=await db.first(`SELECT f.* FROM d1_auth_refresh_families f WHERE f.project_id=?1 AND (f.current_hash=?2 OR EXISTS(SELECT 1 FROM d1_auth_refresh_receipts r WHERE r.old_hash=?2 AND r.project_id=f.project_id AND r.family_id=f.family_id)) AND (?3='null' OR EXISTS(SELECT 1 FROM json_each(?3) allowed WHERE allowed.value=f.user_id))`,[p.projectId,inputHash,c.cohort]);
@@ -208,7 +209,7 @@ export async function revokeD1RefreshFamilyByRefreshOutcome(db:AuthDatabase,toke
   const live=await db.first('SELECT 1 AS live FROM d1_auth_sessions WHERE family_id=?1 AND project_id=?2 AND user_id=?3 AND revoked_at IS NULL LIMIT 1',[String(old.family_id),p.projectId,String(old.user_id)]);if(live)throw unavailable();return 'replayed';
  }
  if(!await matchesAssociatedAccess(db,f,p,associatedAccess))return 'invalid';
- const access=await derive(p,'access',String(f.family_id),Number(f.access_serial),String(f.access_key_id));if(await hash(access)!==f.current_access_hash)throw unavailable();
+ const access=await derive(p,'access',String(f.family_id),Number(f.access_serial),String(f.access_key_id));if(await authProofDigest(access,p)!==f.current_access_hash)throw unavailable();
  return revokeD1RefreshFamilyOutcome(db,access,p);
 }
 
@@ -216,7 +217,7 @@ async function revokeAllFromProof(db:AuthDatabase,accessToken:string,p:RefreshFa
  if(!tokenValid(accessToken))return 'invalid';
  // Legacy ledger column source_session_hash holds a proof digest. Refresh
  // proofs use a domain-separated digest; they are never stored as raw tokens.
- const c=await context(db,p),sourceHash=await hash(accessToken),ledgerHash=kind==='refresh'?await hash('tam-logout-refresh-v1:'+accessToken):sourceHash;
+ const c=await context(db,p),sourceHash=await authProofDigest(accessToken,p),ledgerHash=kind==='refresh'?await authProofDigest('tam-logout-refresh-v1:'+accessToken,p):sourceHash;
  const recover=async()=>{
   const done=await db.first(`SELECT user_id FROM d1_auth_session_security_operations WHERE project_id=?1 AND source_session_hash=?2 AND kind='global_logout' AND status='done' AND (?3='null' OR EXISTS(SELECT 1 FROM json_each(?3) allowed WHERE allowed.value=user_id))`,[p.projectId,ledgerHash,c.cohort]);return Boolean(done);
  };
@@ -227,10 +228,10 @@ async function revokeAllFromProof(db:AuthDatabase,accessToken:string,p:RefreshFa
  if(refreshFamily&&!await matchesAssociatedAccess(db,refreshFamily,p,associatedAccess))return 'invalid';
  await allowFamily(p,session.familyId,session.user.id);
  const account=await db.first('SELECT session_version FROM d1_auth_accounts WHERE user_id=?1',[session.user.id]);if(!account||!Number.isSafeInteger(account.session_version)||Number(account.session_version)>=Number.MAX_SAFE_INTEGER)throw unavailable();
- const params:(string|number|null)[]=[p.projectId,c.stamp,c.floor,c.cohort,session.user.id,sourceHash,crypto.randomUUID(),Number(account.session_version),Number(account.session_version)+1,ledgerHash,refreshFamily?String(refreshFamily.family_id):null,refreshFamily?JSON.stringify(columns.map(k=>refreshFamily[k])):null,c.digest,associatedAccess?await hash(associatedAccess):null];
- const ready=`${authMirrorReadySql(1,3)} AND (?4='null' OR EXISTS(SELECT 1 FROM json_each(?4) allowed WHERE allowed.value=?5))`;
+ const params:(string|number|null)[]=[p.projectId,c.stamp,c.floor,c.cohort,session.user.id,sourceHash,crypto.randomUUID(),Number(account.session_version),Number(account.session_version)+1,ledgerHash,refreshFamily?String(refreshFamily.family_id):null,refreshFamily?JSON.stringify(columns.map(k=>refreshFamily[k])):null,c.digest,associatedAccess?await authProofDigest(associatedAccess,p):null];
+ const ready=`${authMirrorReadySql(1,3,2,c.policy.nativeAuthority)} AND (?4='null' OR EXISTS(SELECT 1 FROM json_each(?4) allowed WHERE allowed.value=?5))`;
  const actorProof=kind==='access'?`EXISTS(SELECT 1 FROM d1_auth_sessions s WHERE s.token_hash=?6 AND s.project_id=?1 AND s.user_id=a.user_id AND s.session_version=a.session_version AND s.revoked_at IS NULL AND julianday(s.expires_at)>julianday(?2))`:
-  `EXISTS(SELECT 1 FROM d1_auth_refresh_families f WHERE f.family_id=?11 AND f.user_id=a.user_id AND ${activeSql().replaceAll('?10','?13')} AND ${fingerprint()}=?12 AND (f.current_hash=?6 OR ${proofSql('replay').replaceAll('?9','?6')}) AND (?14 IS NULL OR EXISTS(SELECT 1 FROM d1_auth_sessions associated WHERE associated.token_hash=?14 AND associated.project_id=f.project_id AND associated.family_id=f.family_id AND associated.user_id=f.user_id)))`;
+  `EXISTS(SELECT 1 FROM d1_auth_refresh_families f WHERE f.family_id=?11 AND f.user_id=a.user_id AND ${activeSql(c).replaceAll('?10','?13')} AND ${fingerprint()}=?12 AND (f.current_hash=?6 OR ${proofSql('replay').replaceAll('?9','?6')}) AND (?14 IS NULL OR EXISTS(SELECT 1 FROM d1_auth_sessions associated WHERE associated.token_hash=?14 AND associated.project_id=f.project_id AND associated.family_id=f.family_id AND associated.user_id=f.user_id)))`;
  const own=`a.user_id=?5 AND a.session_version=?8 AND a.email_confirmed_at IS NOT NULL AND julianday(a.email_confirmed_at)<=julianday(?2) AND a.deleted_at IS NULL AND a.is_anonymous=0 AND (a.banned_until IS NULL OR julianday(a.banned_until)<=julianday(?2)) AND ${actorProof} AND ${ready}`;
  const pending=`EXISTS(SELECT 1 FROM d1_auth_session_security_operations o WHERE o.id=?7 AND o.project_id=?1 AND o.user_id=?5 AND o.source_session_hash=?10 AND o.expected_version=?8 AND o.target_version=?9 AND o.status='pending')`;
  const updated=`EXISTS(SELECT 1 FROM d1_auth_accounts WHERE user_id=?5 AND session_version=?9) AND ${ready}`;
