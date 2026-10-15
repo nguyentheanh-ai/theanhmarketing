@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-15T15:01:27.916Z",
+  "checkedAt": "2026-10-15T15:33:56.206Z",
   "checks": [
     {
       "name": "built Worker login creates the native session for the synthetic principal",
