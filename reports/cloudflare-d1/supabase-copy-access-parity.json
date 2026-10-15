@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-15T14:09:26.880Z",
+  "students": 439,
+  "admins": 3,
+  "withAccess": 409,
+  "accessPairs": 515,
+  "orderLeadAccessMissingInD1": 0,
+  "studentsWithMissing": 0,
+  "extraFromEnrollments": 2,
+  "errors": 0,
+  "status": "PASS",
+  "limits": "Local in-memory run of the generated projection; enrollment-based extras not compared to the live Supabase RPC; admins excluded."
+}

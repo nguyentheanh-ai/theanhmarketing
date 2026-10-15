@@ -1,0 +1,17 @@
+{
+  "snapshot": "2026-10-15T14:07:53.380Z",
+  "inserted": {
+    "d1_course_content": 10,
+    "d1_lms_courses": 10,
+    "d1_lms_modules": 23,
+    "d1_lms_lessons": 59,
+    "d1_lms_contacts": 193,
+    "d1_lms_enrollments": 146,
+    "d1_lms_progress": 4,
+    "d1_access_orders": 1034,
+    "d1_access_overrides": 46
+  },
+  "rejected": {},
+  "database": "theanh-supabase-copy",
+  "limits": "Projection of point-in-time copy; sync state left importing (not verified/native authority). Not bound to any Worker."
+}
