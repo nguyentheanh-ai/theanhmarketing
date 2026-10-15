@@ -1,3 +1,7 @@
+
+
+### 15/10/2026 — Native A→B runtime trên staging, vẫn OFF
+Đã deploy/readback: A source70fd850 / Worker5824ecba; B source060a296 / Worker70c01fc7. Mỗi Worker100% đúng bản staging, binding D1 riêng và5/3Secret cũ giữ nguyên; A auth/progress disabled/cohort[], B auth/dataoff/cả2cohort[]. Không tạo credential/policy mới. A native regression36PASS +3bridge-contract checks, B full1203PASS14skip/118files/TS/OpenNext, haiD1 localworkerd4checks đạt. Hosted runner đã chuẩn bị và syntax-check, **chưa chạy**; chờ quyền QA Access riêng B và fresh Source reconciliation trước bật QA. Không đổi production/DNS/webhook/writer hoặc tuyên bố READY/LIVE. Chi tiết receipt native-ab-disabled-readback.json trong mỗi repo và NATIVE_AB_SSO_LOCAL_RESULTS.json.
 ### 15/10/2026 — Native SSO A → B: kiểm thử cục bộ, chưa hosted
 
 **IN PROGRESS.** A đã có issuer đọc phiên D1 thật, giới hạn cohort, kiểm lại phiên sau khi B cấp mã; không nhận UUID/email/role từ trình duyệt. Worker trả redirect trực tiếp, đăng nhập A dùng điều hướng toàn trang khi quay lại bridge để tránh RSC nhận redirect chứa mã. B nối route native/đăng nhập/đăng xuất qua hai gate QA, mặc định `off`, cohort rỗng; giữ UUID A/B riêng và không tự link email. Logout app thu hồi phiên D1 trước khi xóa cookie, lỗi không giả vờ đăng xuất thành công.

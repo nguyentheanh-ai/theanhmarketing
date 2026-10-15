@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "exitCode": 0,
+  "versionId": "5824ecba-0b1c-4a2f-b90e-a5fdef47d749",
+  "sourceCommit": "70fd8507a484ed38a1178065ee83448fd43c64e4",
+  "scope": "A staging only; native auth/progress disabled, cohort empty; existing secrets preserved"
+}

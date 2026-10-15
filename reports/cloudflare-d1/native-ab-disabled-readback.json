@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-15T01:31:47.830919+00:00",
+  "sourceCommit": "70fd8507a484ed38a1178065ee83448fd43c64e4",
+  "versionId": "5824ecba-0b1c-4a2f-b90e-a5fdef47d749",
+  "trafficPercent": 100,
+  "d1DatabaseId": "694139c9-6cda-4b8c-9228-c973dbcbb719",
+  "flags": {
+    "auth": "disabled",
+    "progress": "disabled",
+    "cohort": []
+  },
+  "secretCountPreserved": 5,
+  "hostedNativeSsoTested": false,
+  "scope": "Staging metadata readback only; not LIVE production"
+}
