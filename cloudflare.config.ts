@@ -16,7 +16,10 @@ export default defineConfig({
     ...(attachDomains ? { triggers: [triggers.scheduled({ schedule: "*/5 * * * *" })], domains: ["theanhmarketing.com", "www.theanhmarketing.com"] } : {}),
     compatibilityDate: "2026-10-13",
     compatibilityFlags: ["nodejs_compat", "global_fetch_strictly_public"],
-    assets: { notFoundHandling: "none" },
+    // Vercel parity: /dir/index.html is served at /dir and /dir/ redirects to /dir.
+    // Pretty paths serve public/*.html directly (the /academy landings rely on it);
+    // rewrites whose path differs from the file name live in STATIC_ASSET_ALIASES.
+    assets: { notFoundHandling: "none", htmlHandling: "drop-trailing-slash" },
     observability: { enabled: false, redactQueryString: true },
     env: {
       ASSETS: bindings.assets(),

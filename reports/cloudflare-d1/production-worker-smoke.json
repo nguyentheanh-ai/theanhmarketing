@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-15T15:40:00Z",
+  "worker": "theanh-main-cf-production",
+  "url": "https://theanh-main-cf-production.12c1thdtheanh.workers.dev",
+  "version": "caa135c9-ae89-4863-984d-72da4835b315",
+  "previousVersions": ["94f4ce53-4cb9-417d-93de-7d74fb00bb40 (first deploy)", "6d8c160e-3165-4ea3-9d46-f8f8919ce075 (html_handling none, rolled back: /academy 404)"],
+  "domainsAttached": false,
+  "cronEnabled": false,
+  "secrets": "37 (33 from owner's .vercel/.env.production.local dated 2026-08-13; 4 fresh native keys); META_CODEX_CAPI_ACCESS_TOKEN absent",
+  "status": "PASS_PUBLIC_PAGES",
+  "checks": {
+    "bodyIdenticalToLive": ["/academy/facebook-ads-master-2026", "/academy/quang-cao-chuyen-gia", "/academy/ebook-facebook-ads-2026", "/academy/ebook-facebook-ads-2026-premium", "/academy/ai-master-x10-hieu-suat", "/doi-ngu-nhan-su-ai", "/robots.txt"],
+    "visibleTextIdenticalToLive": ["/", "/khoa-hoc", "/tai-lieu"],
+    "sameStatusAndTitle": ["/academy/bo-kit-agent-doanh-nghiep", "/dang-nhap", "/dang-ky", "/quen-mat-khau", "/gio-hang", "/sitemap.xml"],
+    "sameRedirectTarget": ["/khoa-hoc/facebook-ads-2026", "/learn/facebook-ads-2026", "/dashboard", "/admin"],
+    "video": "oversized proof video served from R2, 86440231 bytes like live",
+    "noindexOnWorkersDev": true
+  },
+  "knownDifferences": ["Direct *.html URLs get one 307 to the extension-less path (query kept, same body); Vercel serves 200 directly", "/doi-ngu-nhan-su-ai/ redirects with 307 instead of 308"],
+  "notTested": ["student/admin login", "order creation and SePay webhook", "real email/Telegram/Sheets/Meta sends", "cron (disabled until cutover)"]
+}

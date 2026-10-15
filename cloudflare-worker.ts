@@ -14,6 +14,9 @@ import {runWorkerCron} from './lib/cloudflare/worker-cron';
 // Exact public video path above the Workers asset limit; bytes live in R2 staging.
 const oversizedPublicVideo = "/doi-ngu-nhan-su-ai/media/proof/editor-ai-jun-08-2026.mp4";
 const oversizedPublicVideoKey = `public${oversizedPublicVideo}`;
+// next.config rewrites to a public .html whose pretty path differs from the
+// request path. Assets cannot match these, so serve the file here (Vercel parity).
+const STATIC_ASSET_ALIASES: Record<string, string> = { "/academy/quang-cao-chuyen-gia": "/industry-ads/chuyen-gia" };
 
 const stagingWorker = {
   async fetch(request: Request, env: unknown, context: Parameters<typeof app.fetch>[2]) {
@@ -27,6 +30,9 @@ const stagingWorker = {
   async route(request: Request, env: unknown, context: Parameters<typeof app.fetch>[2]) {
     return withNativePageRefresh(request,env as NativeStageEnv,async request=>{
     const url = new URL(request.url);
+    const alias = STATIC_ASSET_ALIASES[url.pathname];
+    const assets = (env as { ASSETS?: { fetch: (input: Request) => Promise<Response> } }).ASSETS;
+    if (alias && assets && (request.method === "GET" || request.method === "HEAD")) return assets.fetch(new Request(new URL(alias, url), request));
     // Default-disabled QA payment path; null keeps the existing webhook route.
     const payment=await handleNativePaymentStage(request,env as NativePaymentStageEnv,context&&'waitUntil' in context?task=>context.waitUntil(task):undefined);
     if(payment)return payment;
