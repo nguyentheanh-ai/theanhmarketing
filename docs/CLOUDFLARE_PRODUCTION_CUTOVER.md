@@ -1,6 +1,6 @@
 # Chuyển website A (theanhmarketing.com) từ Vercel sang Cloudflare Workers
 
-Trạng thái 15/10/2026: **CHUẨN BỊ XONG PHẦN CODE, CHỜ DUYỆT**. Chưa có gì chạy trên production Cloudflare; Vercel + Supabase vẫn phục vụ website thật.
+Trạng thái 15/10/2026 (cập nhật sau khi anh duyệt mục 1–5): **cấu hình production đã áp dụng và build đạt; chưa deploy** vì cần (a) phiên Vercel hợp lệ để chép biến môi trường và (b) quyền tạo Secret trên Worker production (chế độ an toàn chặn). Chưa có gì chạy trên production Cloudflare; Vercel + Supabase vẫn phục vụ website thật.
 
 ## Phạm vi giai đoạn 1 (bỏ Vercel, giữ Supabase)
 
@@ -27,7 +27,7 @@ const production = process.env.CF_DEPLOY_TARGET === "production";
 const attachDomains = production && process.env.CF_ATTACH_PRODUCTION_DOMAINS === "1";
 // defineWorker({
 //   name: production ? "theanh-main-cf-production" : "theanh-main-cf-staging",
-//   ...(production ? { triggers: [triggers.scheduled({ cron: "*/5 * * * *" })] } : {}),
+//   ...(production ? { triggers: [triggers.scheduled({ schedule: "*/5 * * * *" })] } : {}),
 //   ...(attachDomains ? { domains: ["theanhmarketing.com", "www.theanhmarketing.com"] } : {}),
 //   CF_R2_STAGE_PRIVATE_DELIVERY: production ? "false" : "true",   // prod giữ Storage Supabase
 //   CF_CRON_MODE: production ? "enabled" : "disabled",
@@ -56,12 +56,23 @@ Cách chép an toàn đề xuất: chủ dự án chạy `vercel env pull` vào 
 
 - Gỡ custom domain khỏi Worker và trỏ DNS lại Vercel (dự án Vercel giữ nguyên, không xóa); bật lại cron Vercel. Dữ liệu không cần khôi phục vì vẫn ở Supabase.
 
-## Danh sách cần anh duyệt (gom một lần)
+## Tiến độ mục 1–5 (anh đã duyệt)
 
-1. Cho phép sửa `cloudflare.config.ts` thêm bản production (nội dung ở trên).
-2. Tạo file `.env.cfproduction` (giá trị công khai) và build bản production.
-3. Chép Secret từ Vercel sang Worker production + tạo Secret native mới.
-4. Deploy Worker `theanh-main-cf-production` không gắn tên miền, đặt sau Cloudflare Access.
-5. Thử trên URL thử (gồm 1 đơn thật 2.000đ và email thật tới địa chỉ của anh).
-6. Tắt cron Vercel và gắn tên miền theanhmarketing.com vào Worker (chuyển DNS).
-7. Quyết định 11 file chưa commit trong thư mục phát hành cũ (phát hành hay bỏ).
+| Mục | Kết quả |
+|---|---|
+| 1. Cấu hình production | XONG — `cloudflare.config.ts`: `CF_DEPLOY_TARGET=production` → Worker `theanh-main-cf-production`, D1 `theanh-supabase-copy`, R2 private delivery tắt. Cron VÀ tên miền chỉ bật cùng lúc khi `CF_ATTACH_PRODUCTION_DOMAINS=1` (bước chuyển), để bản thử không chạy cron trùng với Vercel. Staging build ra cấu hình như cũ (thêm `CF_CRON_ORIGIN`, cron vẫn tắt). |
+| 2. Build | XONG — `.env.cfproduction` (ngoài Git, 0600) gồm 5 biến công khai: Supabase URL/anon key (cùng dự án A), `NEXT_PUBLIC_SITE_URL=https://www.theanhmarketing.com`, `NEXT_PUBLIC_APP_URL=https://app.theanhmarketing.com`, Pixel `1315653423712065` (lấy từ HTML website thật). `CF_DEPLOY_TARGET=production vite build --mode cfproduction` + prune đạt; bản dựng lưu tạm ở `/private/tmp/claude-501/dist-production`, thư mục `dist` đã trả về bản staging. Đường dẫn `*.workers.dev` nay trả `X-Robots-Tag: noindex, nofollow`. |
+| 3. Chép Secret | CHẶN — phiên Vercel CLI trên máy hết hạn (`invalidToken`); công cụ `scripts/sync-vercel-env-to-worker.py plan|public|secrets` đã viết (không in giá trị). Tạo Secret native mới bị chế độ an toàn chặn. |
+| 4. Deploy không tên miền | CHỜ mục 3 (cấu hình khai báo Secret bắt buộc). |
+| 5. Thử trên URL thử | CHỜ mục 4. |
+
+Kiểm chứng sau thay đổi: 1.287 test — 33 lỗi đều có sẵn, 0 lỗi mới; harness full-worker 6, payment 7, email-auth 7 PASS; typecheck, lint PASS.
+
+Cần thêm khi chuyển tên miền: Vercel hiện chuyển `theanhmarketing.com` → `www` (307). Trên Cloudflare phải có quy tắc chuyển hướng tương tự (Redirect Rule hoặc trong Worker) trước khi gắn tên miền gốc.
+
+## Danh sách cần anh làm/duyệt (gom một lần)
+
+1. Anh đăng nhập lại Vercel trên máy: chạy `npx vercel@latest login` trong Terminal (em không được nhập thông tin đăng nhập hộ).
+2. Cho phép thao tác tạo/chép Secret lên Worker `theanh-main-cf-production` khi Claude Code hỏi (hoặc thêm quy tắc cho phép trong cài đặt). Sau đó em chạy liền: `sync-vercel-env-to-worker.py plan` → `secrets` (kèm 4 Secret native ngẫu nhiên mới) → deploy bản đã build → thử trang chủ, `/khoa-hoc`, landing Facebook Ads (so HTML), đăng nhập, `/learn`, admin, CRM, đơn thử 2.000đ, email thật tới anh.
+3. (Sau khi thử xong) Tắt cron Vercel, thêm chuyển hướng apex→www, gắn tên miền.
+4. Quyết định 11 file chưa commit trong thư mục phát hành cũ.

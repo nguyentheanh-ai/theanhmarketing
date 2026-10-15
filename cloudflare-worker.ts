@@ -17,6 +17,14 @@ const oversizedPublicVideoKey = `public${oversizedPublicVideo}`;
 
 const stagingWorker = {
   async fetch(request: Request, env: unknown, context: Parameters<typeof app.fetch>[2]) {
+    const response = await stagingWorker.route(request, env, context);
+    // Test hostnames (*.workers.dev) must never be indexed next to the real domain.
+    if (!new URL(request.url).hostname.endsWith('.workers.dev')) return response;
+    const tagged = new Response(response.body, response);
+    tagged.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return tagged;
+  },
+  async route(request: Request, env: unknown, context: Parameters<typeof app.fetch>[2]) {
     return withNativePageRefresh(request,env as NativeStageEnv,async request=>{
     const url = new URL(request.url);
     // Default-disabled QA payment path; null keeps the existing webhook route.
