@@ -9,8 +9,10 @@ const privacy={'Cache-Control':'private, no-store','CDN-Cache-Control':'no-store
 function unavailable(status=503,code='NATIVE_APP_SIGN_IN_UNAVAILABLE'){return Response.json({ok:false,code},{status,headers:privacy});}
 function redirect(url:string){return new Response(null,{status:303,headers:{...privacy,Location:url}});}
 function validToken(value:unknown):value is string {if(typeof value!=='string'||!/^[A-Za-z0-9_-]{43}$/.test(value))return false;try{return btoa(atob(value.replaceAll('-','+').replaceAll('_','/')+'=')).replaceAll('+','-').replaceAll('/','_').replaceAll('=','')===value;}catch{return false;}}
+class NativeBridgeUpstreamError extends Error {constructor(public readonly code:string){super('Native bridge upstream unavailable');}}
 async function boundedResponse(response:Response){
- if(response.status!==200||response.headers.get('content-type')?.split(';',1)[0].trim().toLowerCase()!=='application/json')throw Error('Invalid bridge response');
+ if(response.status!==200){const codes:Record<number,string>={401:'NATIVE_APP_UPSTREAM_SECRET_DENIED',403:'NATIVE_APP_UPSTREAM_ACCESS_DENIED',404:'NATIVE_APP_UPSTREAM_NATIVE_DISABLED',503:'NATIVE_APP_UPSTREAM_UNAVAILABLE'};throw new NativeBridgeUpstreamError(codes[response.status]??'NATIVE_APP_UPSTREAM_REJECTED');}
+ if(response.headers.get('content-type')?.split(';',1)[0].trim().toLowerCase()!=='application/json')throw new NativeBridgeUpstreamError('NATIVE_APP_UPSTREAM_RESPONSE_INVALID');
  const declared=response.headers.get('content-length');if(declared!==null&&(!/^\d+$/.test(declared)||Number(declared)>8192))throw Error('Invalid bridge response');
  const reader=response.body?.getReader();if(!reader)throw Error('Invalid bridge response');let size=0,text='';const decoder=new TextDecoder('utf-8',{fatal:true});
  try{for(;;){const part=await reader.read();if(part.done)break;size+=part.value.length;if(size>8192){await reader.cancel();throw Error('Invalid bridge response');}text+=decoder.decode(part.value,{stream:true});}text+=decoder.decode();return JSON.parse(text) as unknown;}finally{reader.releaseLock();}
@@ -37,9 +39,9 @@ export async function handleNativeAppLoginBridge(request:Request,options:Options
   const current=await getD1AuthSession(options.db,token,policy);
   if(!current||current.user.id!==session.user.id||current.user.email!==session.user.email||current.user.mustChangePassword)return unavailable();
   return redirect(target.toString());
- }catch{
+ }catch(error){
   // Raw errors may contain an active grant URL or credential-bearing response.
-  return unavailable();
+  return unavailable(503,error instanceof NativeBridgeUpstreamError?error.code:'NATIVE_APP_SIGN_IN_UNAVAILABLE');
  }
 }
 export function nativeAppAccessHeaders(env:Pick<NativeStageEnv,'CF_ACCESS_STUDENT_APP_CLIENT_ID'|'CF_ACCESS_STUDENT_APP_CLIENT_SECRET'>):Record<string,string>{

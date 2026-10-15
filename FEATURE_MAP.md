@@ -1364,3 +1364,12 @@ Kết quả cuối A_SECURITY_ORACLE_RESULTS.json và B_SECURITY_ORACLE_RESULTS.
 ### 15/10/2026 — Access A→B: binding Worker tường minh
 
 Rà soát hosted preflight phát hiện NEXT_PUBLIC_APP_URL không phải runtime binding của A; lượt thử dừng trước mở cổng, cleanup đọc lại cổng OFF/0phiên hoạt động/0đổi mật khẩu/tài liệu không đổi/Secret QA đã gỡ. Đã đổi native issuer sang đọc trực tiếp cặp Secret tùy chọn từ Worker env, chỉ gửi tới endpoint B staging cố định; không phụ thuộc biến frontend hoặc process.env. Cặp thiếu một giá trị/CRLF/quá dài bị từ chối. 8tests bridge đạt; không thay bridge legacy hoặc production. Access token/policy đang trong lượt QA45phút đã duyệt, phải thu hồi và xác minh riêng sau lượt kiểm tra.
+
+
+### 15/10/2026 — Hosted QA A→B: đã tới A login, lỗi upstream đang phân lập
+
+Đối soát nguồn mới Auth/quyền học A, workspace/mapping B đạt. Hosted đã chứng minh B start303, A guest303 về /dang-nhap và A native password login200 giữ UUID gốc. Chưa cấp được phiên B: A bridge503 ở backend. Cả hai callback/session native khi thử riêng đều200 đúng định dạng, cổng đều đóng lại. Lượt khác thấy B404 vài lần trước khi200; control-plane config đúng chưa chứng minh edge đã hội tụ. Python readiness còn gặp403, Node probe cùng transport với runner đạt; nguyên nhân khác biệt transport chưa xác định, không thay quyền/WAF. Bộ chạy bổ sung readiness native chỉ đọc có giới hạn, không nhận AccessHTML/redirect200 là thành công;5tests runner/readiness PASS.
+
+Đã thêm mã lỗi upstream theo nhóm401/403/404/503, không tiết lộ body/grant/credential;9tests bridge PASS. Theo tài liệu Fetch/Compatibility flags của Cloudflare, global fetch giữa Worker cần cơ chế tương ứng; A chưa có global_fetch_strictly_public. Bổ sung cờ này chỉ staging để đi qua public front door/Access hiện hữu; nguyên nhân lỗi503 vẫn CANDIDATE cho đến hosted chứng minh. Nguồn: https://developers.cloudflare.com/workers/runtime-apis/fetch/ và https://developers.cloudflare.com/workers/configuration/compatibility-flags/#global-fetch-strictly-public .
+
+Sau từng lượt lỗi đã đọc lại A/B native/data OFF/cohort[],0phiên hoạt động,0credential operation, số tài liệu QA không đổi, Secret QA A gỡ. Token/policy45phút vẫn đang trong lượt QA đã duyệt; phải thu hồi riêng và đọc lại trước kết thúc lượt. Không đổi production. Tổng IN PROGRESS, chưa READY FOR CUTOVER; chưa hosted B login/data, browser/Safari/full app independence.

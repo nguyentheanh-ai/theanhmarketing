@@ -5,7 +5,7 @@ export default defineConfig({
     name: "theanh-main-cf-staging",
     entrypoint: "./cloudflare-worker.ts",
     compatibilityDate: "2026-10-13",
-    compatibilityFlags: ["nodejs_compat"],
+    compatibilityFlags: ["nodejs_compat", "global_fetch_strictly_public"],
     assets: { notFoundHandling: "none" },
     env: {
       ASSETS: bindings.assets(),
