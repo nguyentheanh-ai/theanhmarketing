@@ -1486,3 +1486,9 @@ Tổng IN PROGRESS, chưa READY FOR CUTOVER. B là app riêng, /learn thuộc A.
 
 ### 15/10/2026 07:30 UTC — Bản sửa namespace đã deploy staging OFF
 Commit A e1b5d80 → Worker version76a6a7e5-06a1-4b3c-aea6-87f464f1a6be, GET deployments100%, D1 binding đúng,6Secret giữ, mọi native gateOFF/cohort[],0active access/family/0credential operations/version1. Receipt main/reports/cloudflare-d1/native-epoch-page-deploy.json. Hosted refresh8nhóm và Chrome trước đó thuộc f26f925; bản sửa epoch chỉ local verified và chưa kích hoạt native-primary trên remote. Không đổi B hoặc production. Chrome hiện mở các tab công việc khác, cửa sổ/tab QA cũ không có trong inventory; đã đóng menu và không điều hướng tab công việc. Kiểm thử browser bổ sung chưa thực hiện ở lượt này.
+
+### 15/10/2026 — Phân loại lỗi tạm thời khi nhận thanh toán D1
+
+IN PROGRESS. Candidate native-order-settlement phân biệt dữ liệu không hợp lệ (422) với database/timeout/authority chưa sẵn sàng (503). Đã tái hiện 3 test HTTP thất bại trước sửa; sau sửa 27 test Node và 10 nhóm workerd + D1 đạt, outbound bằng 0. Gửi lại sau commit mất phản hồi chỉ giữ một receipt và một fulfillment intent. Typecheck, ESLint các file thay đổi và Vite build đạt. Bằng chứng: reports/cloudflare-d1/payment-retry-workers.json.
+
+Giới hạn: kiểm thử cục bộ với đơn giả lập; chưa webhook nhà cung cấp trên staging, chưa cấp quyền/email thực tế. Candidate chưa gắn vào webhook production; không deploy trong bước này, không đổi dữ liệu hay nguồn ghi production. Cần hoàn thiện dispatcher theo từng loại sản phẩm và kiểm thử đầy đủ trước cutover.

@@ -3,6 +3,7 @@ type Row=Record<string,unknown>;
 export type NativeOrderDatabase={first:(sql:string,params:readonly(string|number|null)[])=>Promise<Row|null>;all:(sql:string,params:readonly(string|number|null)[])=>Promise<Row[]>;batch:(statements:readonly{sql:string;params:(string|number|null)[]}[])=>Promise<{results?:Row[]}[]>};
 type Policy={expectedAccount:string;allowedOrderCodes:readonly string[]};
 export class NativePaymentDenied extends Error{constructor(){super('Native payment requires verified reconciliation');}}
+export class NativePaymentUnavailable extends Error{constructor(){super('Native payment temporarily unavailable');}}
 const deny=():never=>{throw new NativePaymentDenied()},PROJECT='vsxxgdzwtscuxcmjfckt';
 const ORDER=/^TAM[A-Z0-9]{1,77}$/,UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 // Mirror-only QA authority. Never turn this into a timestamp heartbeat when the
@@ -12,7 +13,7 @@ function vnd(value:unknown){if(typeof value!=='number'&&(typeof value!=='string'
 function identity(value:unknown){if(value===undefined||value===null||value==='')return null;if(typeof value==='number'&&(!Number.isSafeInteger(value)||value<0))return deny();if(typeof value!=='string'&&typeof value!=='number')return deny();const text=String(value).trim();return text&&text.length<=160&&!/[\x00-\x1f\x7f]/.test(text)?text:deny();}
 function account(value:unknown){return typeof value==='string'&&/^\d{4,40}$/.test(value.trim())?value.trim():deny();}
 function scope(policy:Policy){const ids=policy.allowedOrderCodes;if(!Array.isArray(ids)||!ids.length||ids.length>10||new Set(ids).size!==ids.length||ids.some(v=>typeof v!=='string'||!ORDER.test(v)))return deny();return JSON.stringify(ids);}
-async function assertReady(db:NativeOrderDatabase){if((await db.first(`SELECT 1 AS ready WHERE ${ready}`,[]))?.ready!==1)return deny();}
+async function assertReady(db:NativeOrderDatabase){if((await db.first(`SELECT 1 AS ready WHERE ${ready}`,[]))?.ready!==1)throw new NativePaymentUnavailable();}
 function decodeOrder(row:Row){if(typeof row.row_json!=='string'||typeof row.order_code!=='string'||!ORDER.test(row.order_code)||typeof row.id!=='string'||!UUID.test(row.id)||!Number.isSafeInteger(row.revision)||Number(row.revision)<0)return deny();const data=JSON.parse(row.row_json) as Row;if(data.id!==row.id||data.order_code!==row.order_code||data.status!==row.status||vnd(data.amount)!==row.amount_vnd||data.currency!=='VND')return deny();return data;}
 // Validate a complete source row without projecting away invoice, attribution,
 // product-plan, delivery markers, unknown future fields or private raw payload.
@@ -79,14 +80,16 @@ export async function settleNativeSepayOrder(db:NativeOrderDatabase,payload:Sepa
     // A failing scalar forces D1 rollback; a zero-row INSERT would not.
     {sql:`SELECT CASE WHEN EXISTS(SELECT 1 FROM d1_native_orders WHERE ${paid}) AND EXISTS(SELECT 1 FROM d1_native_order_fulfillment WHERE order_code=?1 AND receipt_key=?6 AND order_revision=?3+1 AND order_snapshot=${updated} AND status='pending') THEN 1 ELSE abs(-9223372036854775808) END AS settled`,params},
    ]);
-   if(result[3]?.results?.[0]?.settled!==1)return deny();
+   if(result[3]?.results?.[0]?.settled!==1)throw new NativePaymentUnavailable();
   }catch{
    // Concurrent identical deliveries may race at UNIQUE. Only an independently
    // confirmed matching committed receipt qualifies as a successful retry.
    const concurrent=await receipt(db,transaction,reference);
    if(concurrent&&sameReceipt(concurrent,code,amount,receiver,transaction,reference))return duplicate();
-   return deny();
+   // No confirmed matching commit: ask the provider to retry. A database or
+   // transport failure is not evidence that the payment payload is invalid.
+   throw new NativePaymentUnavailable();
   }
   return {status:'settled',orderCode:code};
- }catch{return deny();}
+ }catch(error){if(error instanceof NativePaymentDenied)throw error;throw new NativePaymentUnavailable();}
 }

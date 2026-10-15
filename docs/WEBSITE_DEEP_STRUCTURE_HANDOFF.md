@@ -3143,3 +3143,9 @@ Tiến độ hosted11nhóm trước đó thuộc runtimeea082d0; bản mới f26
 
 ### 15/10/2026 — Native refresh QA và Auth namespace
 8nhóm refresh hosted A/f26f925 đạt; cleanup gatesOFF/0active/Access revoked đã đọc lại. Runner chờ có giới hạn chỉ NATIVE_D1_DISABLED trước Auth. Candidate page recovery dùng authProofDigest theo epoch/fence, lỗi401tái hiện và sửa;58tests/8workerd-D1/TS/lint/build PASS. Xem CLOUDFLARE_TEST_RESULTS.md, native-refresh-hosted-http.json và native-epoch-page-recovery.json. Chưa native-primary/legacy-session/Safari/cutover, production giữ nguyên; B riêng,/learn A.
+
+### 15/10/2026 — Phân loại lỗi tạm thời khi nhận thanh toán D1
+
+IN PROGRESS. Candidate native-order-settlement phân biệt dữ liệu không hợp lệ (422) với database/timeout/authority chưa sẵn sàng (503). Đã tái hiện 3 test HTTP thất bại trước sửa; sau sửa 27 test Node và 10 nhóm workerd + D1 đạt, outbound bằng 0. Gửi lại sau commit mất phản hồi chỉ giữ một receipt và một fulfillment intent. Typecheck, ESLint các file thay đổi và Vite build đạt. Bằng chứng: reports/cloudflare-d1/payment-retry-workers.json.
+
+Giới hạn: kiểm thử cục bộ với đơn giả lập; chưa webhook nhà cung cấp trên staging, chưa cấp quyền/email thực tế. Candidate chưa gắn vào webhook production; không deploy trong bước này, không đổi dữ liệu hay nguồn ghi production. Cần hoàn thiện dispatcher theo từng loại sản phẩm và kiểm thử đầy đủ trước cutover.

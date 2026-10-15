@@ -9,3 +9,26 @@ test('distributed limiter denial or failure never settles a payment',async t=>{c
 test('form encoding remains supported, duplicate keys and oversized streams fail before payment',async t=>{const f=fixture(t);const form=new URLSearchParams(Object.entries(f.payload).map(([k,v])=>[k,String(v)]));const create=body=>new Request(origin+'/api/sepay/webhook',{method:'POST',headers:{authorization:'Apikey '+key,'content-type':'application/x-www-form-urlencoded'},body});const duplicate=new URLSearchParams(form);duplicate.append('transferAmount','200000');assert.equal((await h.handleNativeSepayWebhook(create(duplicate),f.options)).status,400);assert.equal((await h.handleNativeSepayWebhook(create('x='.padEnd(17000,'x')),f.options)).status,413);assert.equal((await h.handleNativeSepayWebhook(create(form),f.options)).status,200)});
 test('invalid receiver/amount creates no paid order or customer side effect',async t=>{const f=fixture(t);for(const patch of [{accountNumber:'9999'},{transferAmount:1},{transferType:'out'}]){const r=await h.handleNativeSepayWebhook(request({...f.payload,...patch}),f.options);assert.equal(r.status,422);const data=JSON.stringify(await r.json());assert(!data.includes(code));assert(!data.includes('qa@example.invalid'))}assert.equal(f.sql.prepare('SELECT count(*) n FROM d1_native_order_fulfillment').get().n,0)});
 test('unknown commit outcome is recovered from durable matching receipt without repeating settlement',async t=>{const f=fixture(t),batch=f.options.db.batch;f.options.db.batch=async ss=>{await batch(ss);throw Error('Synthetic network timeout after commit')};assert.equal((await h.handleNativeSepayWebhook(request(f.payload),f.options)).status,200);assert.equal(f.sql.prepare('SELECT count(*) n FROM d1_native_order_fulfillment').get().n,1);assert.equal((await h.handleNativeSepayWebhook(request(f.payload),f.options)).status,200);});
+test('temporary database outage returns retryable 503; retry settles exactly once',async t=>{
+ const f=fixture(t),original=f.options.db.first;f.options.db.first=async()=>{throw Error('synthetic private database outage')};
+ const failed=await h.handleNativeSepayWebhook(request(f.payload),f.options);assert.equal(failed.status,503);assert(!(await failed.text()).includes('private database'));
+ assert.equal(f.sql.prepare('SELECT status FROM d1_native_orders').get().status,'pending');f.options.db.first=original;
+ for(let i=0;i<2;i++)assert.equal((await h.handleNativeSepayWebhook(request(f.payload),f.options)).status,200);
+ assert.equal(f.sql.prepare('SELECT count(*) n FROM d1_native_order_fulfillment').get().n,1);
+});
+test('pre-commit timeout and unavailable recovery read never become permanent payload rejection',async t=>{
+ const f=fixture(t),batch=f.options.db.batch,all=f.options.db.all;
+ f.options.db.batch=async()=>{throw Error('synthetic timeout before commit')};
+ assert.equal((await h.handleNativeSepayWebhook(request(f.payload),f.options)).status,503);
+ assert.equal(f.sql.prepare('SELECT count(*) n FROM d1_native_sepay_receipts').get().n,0);
+ f.options.db.batch=async ss=>{await batch(ss);f.options.db.all=async()=>{throw Error('synthetic recovery lookup outage')};throw Error('synthetic lost acknowledgement')};
+ assert.equal((await h.handleNativeSepayWebhook(request(f.payload),f.options)).status,503);
+ f.options.db.batch=batch;f.options.db.all=all;
+ assert.equal((await h.handleNativeSepayWebhook(request(f.payload),f.options)).status,200);
+ assert.equal(f.sql.prepare('SELECT count(*) n FROM d1_native_order_fulfillment').get().n,1);
+});
+test('stale authority asks for retry and never acknowledges an unverified payment',async t=>{
+ const f=fixture(t);f.sql.exec("UPDATE d1_native_order_authority SET status='pending'");
+ assert.equal((await h.handleNativeSepayWebhook(request(f.payload),f.options)).status,503);
+ assert.equal(f.sql.prepare('SELECT status FROM d1_native_orders').get().status,'pending');
+});
