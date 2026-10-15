@@ -3189,3 +3189,7 @@ Cấu hình (Secret staging, tùy chọn, thiếu là bỏ qua và không ghi le
 Kiểm chứng: 433 test Node PASS (7 test mới + test accounting/Meta/Sheets/Telegram hiện có); harness `test-native-payment-stage-workers.mjs` 7 nhóm workerd/D1 PASS (mỗi đơn 1 email kế toán, 1 Meta, 1 Telegram, 1 Sheets; 12 ledger done; 0 outbound lạ). Hồi quy settlement/full-worker/refresh/google PASS; typecheck, lint, build PASS.
 
 Khác production / còn thiếu: Telegram dùng mẫu đơn chung, chưa có mẫu riêng đặt lịch support (production cần bản ghi booking Supabase); chưa xác nhận đặt lịch support, email tư vấn riêng, đồng bộ app B, log hoạt động admin. Chưa apply `d1-native-paid-side-effects.sql` lên D1 staging, chưa deploy bản này. Tránh trùng với production: khi thử staging nên dùng Meta test event code và Sheet/Telegram thử, không dùng kênh thật.
+
+### 15/10/2026 — Deploy staging A `613e0be1`: thêm thông báo sau thanh toán, cổng TẮT
+
+Apply `d1-native-paid-side-effects.sql` lên D1 staging (bảng `d1_native_paid_side_effects`, 0 hàng). Worker `theanh-main-cf-staging` version `613e0be1-4cf4-4ec4-a4f9-14947c0b631e` 100% từ commit sạch; mọi cổng kể cả `CF_NATIVE_QA_PAYMENT_MODE` = disabled, 6 Secret cũ giữ nguyên, staging vẫn sau Cloudflare Access (302). Rollback mã: `ec1e0091-bf45-46f3-81a3-9ede14f607ba`. Chưa có Secret thanh toán/thông báo staging, chưa thử webhook hosted.

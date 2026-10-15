@@ -1,12 +1,12 @@
 {
   "status": "DEPLOYED_STAGING_GATES_OFF",
-  "checkedAt": "2026-10-15T13:14:09.884467Z",
+  "checkedAt": "2026-10-15T13:27:47.382787Z",
   "worker": "theanh-main-cf-staging",
-  "version": "ec1e0091-bf45-46f3-81a3-9ede14f607ba",
+  "version": "613e0be1-4cf4-4ec4-a4f9-14947c0b631e",
   "percentage": 100,
-  "baseCommit": "02e305930465ad414cd70689181d15b7da4bde79",
+  "baseCommit": "a7fad78dfefe54cf035ff5864e13c6e8280533e7",
   "workingDiff": "none (clean tree at build)",
-  "previousVersionForRollback": "b42dfae5-87f4-4c5e-998f-10979038323a",
+  "previousVersionForRollback": "ec1e0091-bf45-46f3-81a3-9ede14f607ba",
   "vars": {
     "AUTH_GUARD_ENABLED": "true",
     "CF_R2_STAGE_PRIVATE_DELIVERY": "true",
@@ -49,11 +49,19 @@
     "deploymentsList": "ec1e0091 at 100%"
   },
   "localEvidence": {
-    "nodeTests": "367 PASS",
-    "paymentStageWorkerdGroups": 6,
+    "nodeTests": "433 PASS",
+    "paymentStageWorkerdGroups": 7,
     "typecheck": "PASS",
     "scopedLint": "PASS",
     "buildPrune": "PASS"
   },
-  "limits": "Staging only. CF_NATIVE_QA_PAYMENT_MODE disabled; no SePay/Resend staging secrets, no native Auth authority row, no hosted payment test. Production/DNS/SePay webhook unchanged."
+  "limits": "Staging only. CF_NATIVE_QA_PAYMENT_MODE disabled; no SePay/Resend/Meta/Telegram/Sheets staging secrets, no native Auth authority, no hosted payment test. Production/DNS/SePay webhook unchanged.",
+  "d1SchemaApplied2": {
+    "at": "2026-10-15T13:27:47.396872Z",
+    "sqlSha256": "cfbe543549fd78b3f45168aff2b7dca4494703fa07ee8fad6de67f3861ac4d55",
+    "files": [
+      "d1-native-paid-side-effects.sql"
+    ],
+    "rows": 0
+  }
 }
