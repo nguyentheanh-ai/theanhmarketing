@@ -9,6 +9,7 @@ import {handleNativeAppBridgeRequest} from './lib/cloudflare/native-app-login-br
 import {handleNativeResourceRequest} from './lib/cloudflare/native-resource-http';
 import {handleNativePaymentStage,type NativePaymentStageEnv} from './lib/cloudflare/native-payment-stage';
 import {handleNativeEmailAuth,type NativeEmailAuthEnv} from './lib/cloudflare/native-email-auth-http';
+import {runWorkerCron} from './lib/cloudflare/worker-cron';
 
 // Exact public video path above the Workers asset limit; bytes live in R2 staging.
 const oversizedPublicVideo = "/doi-ngu-nhan-su-ai/media/proof/editor-ai-jun-08-2026.mp4";
@@ -48,6 +49,11 @@ const stagingWorker = {
       return protectNativeLearningResponse(request,env as NativeStageEnv,response);
     });
     });
+  },
+  // Vercel cron parity (lib/cloudflare/worker-cron.ts); no-op unless CF_CRON_MODE=enabled.
+  async scheduled(controller: { scheduledTime: number }, env: unknown, context: Parameters<typeof app.fetch>[2]) {
+    const results = await runWorkerCron(controller.scheduledTime, env as Parameters<typeof runWorkerCron>[1], request => stagingWorker.fetch(request, env, context));
+    for (const r of results) if (r.status >= 400) console.warn('[cron] route failed', r.path, r.status);
   },
 };
 

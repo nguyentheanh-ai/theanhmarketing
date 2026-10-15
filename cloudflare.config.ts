@@ -27,6 +27,8 @@ export default defineConfig({
       CF_NATIVE_QA_PAYMENT_MODE: bindings.text("disabled"),
       // Native signup confirmation and password recovery for listed QA emails only.
       CF_NATIVE_QA_EMAIL_AUTH_MODE: bindings.text("disabled"),
+      // Vercel cron parity; enable only on the production Worker after cutover.
+      CF_CRON_MODE: bindings.text("disabled"),
       // Google secrets are optional while this gate is disabled. The router
       // validates all three at runtime before allowing the Google QA flow.
       NATIVE_AUTH_REFRESH_KEY: bindings.secret(),

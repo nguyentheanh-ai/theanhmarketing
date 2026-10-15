@@ -1700,3 +1700,7 @@ Kiểm chứng: toàn bộ `node --test tests/*.mjs` 1.280 test — 33 lỗi đ�
 ### 15/10/2026 — Deploy staging A `b6cc1fcc`: đăng ký/quên mật khẩu native, cổng TẮT
 
 Apply `d1-auth-email-tokens.sql` lên D1 staging (bảng `d1_auth_email_tokens`, 0 hàng). Worker `theanh-main-cf-staging` version `b6cc1fcc-bead-49ab-9633-dfb089c93bb7` 100% từ commit sạch; mọi cổng kể cả `CF_NATIVE_QA_EMAIL_AUTH_MODE` và `CF_NATIVE_QA_PAYMENT_MODE` = disabled, 6 Secret giữ nguyên, staging vẫn sau Cloudflare Access (302). Rollback mã: `613e0be1-4cf4-4ec4-a4f9-14947c0b631e`.
+
+### 15/10/2026 — Chuẩn bị chuyển website A khỏi Vercel (giai đoạn 1: Workers + Supabase)
+
+Cron Vercel → Worker: `lib/cloudflare/worker-cron.ts` + handler `scheduled` trong `cloudflare-worker.ts`, một trigger 5 phút khớp 8 lịch `vercel.json`, cổng `CF_CRON_MODE=disabled` trên staging; `tests/cloudflare-worker-cron.test.mjs` 7/7. Toàn bộ suite 1.287 test: 33 lỗi đều có sẵn từ trước, 0 lỗi mới; typecheck/lint/build PASS. Bản production đang chạy (`43cee59`) có trong nhánh; thư mục phát hành cũ còn 11 file chưa commit (6/10) CHƯA lên production và chưa có trong nhánh. Sửa `cloudflare.config.ts` để thêm Worker production bị chế độ an toàn chặn → đưa vào danh sách duyệt. Runbook, danh sách Secret, quay lui và danh sách duyệt gộp: `docs/CLOUDFLARE_PRODUCTION_CUTOVER.md`.
