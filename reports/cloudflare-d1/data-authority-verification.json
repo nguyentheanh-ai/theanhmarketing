@@ -1,0 +1,27 @@
+{
+  "status": "TESTED",
+  "scope": "Unintegrated Auth authority ledger/guard candidate, local only",
+  "checkedAt": "2026-10-15T05:23:22.937716+00:00",
+  "unitTests": 8,
+  "workerdD1Groups": 4,
+  "typecheckCloudflare": "PASS",
+  "scopedLint": "PASS",
+  "productionMutations": false,
+  "remoteSchemaApplied": false,
+  "runtimeIntegrated": false,
+  "sourceWriterFenceProven": false,
+  "authSessionEpochBindingImplemented": false,
+  "sameEpochRestoreResurrectionPrevented": false,
+  "sourceHashes": {
+    "lib/cloudflare/d1-data-authority.ts": "582a15110f7d456e6087b6738c23392c29478c3a33b21536b89fd8652b08ab18",
+    "scripts/d1-data-authority.sql": "c5898fac38f0b582faa041a5173ce5a99e311ec9640f5c263d4e3f0b09213c4b",
+    "scripts/test-data-authority-workers.mjs": "ea5a7020ceb230937eb5c6d7a7c7164642ce8934109dc427628af921e97268ef",
+    "tests/cloudflare-data-authority.test.mjs": "7dfa8d774d2a51aba0eac671329e8b8a1ef9cf13317dc8b99061910c4e3a5602"
+  },
+  "limits": [
+    "Fixture receipts are not actual approval or source fence proof",
+    "No native primary runtime/issuer/session binding",
+    "No epoch replacement or reverse rollback",
+    "Whole objective remains IN PROGRESS"
+  ]
+}

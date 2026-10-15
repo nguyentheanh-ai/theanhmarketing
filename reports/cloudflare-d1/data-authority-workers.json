@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-15T05:22:28.626Z",
+  "checks": [
+    {
+      "name": "missing or merely prepared authority denies; native guard pins epoch/project/restore fence without mirror heartbeat",
+      "status": "PASS"
+    },
+    {
+      "name": "distinct same-time activation cannot mint an operation receipt after an earlier winner",
+      "status": "PASS"
+    },
+    {
+      "name": "mutated approval manifest under the same epoch is rejected on actual D1 reads",
+      "status": "PASS"
+    },
+    {
+      "name": "D1 fault injection rolls back phase change and freeze replay cannot reactivate",
+      "status": "PASS"
+    }
+  ],
+  "outboundFetches": 0,
+  "networkCanaryBlocked": true,
+  "limits": "Unintegrated candidate ledger/guard only; fixture receipts, not Source fencing/owner approval/auth session epoch binding, hosted cutover or native-primary runtime"
+}

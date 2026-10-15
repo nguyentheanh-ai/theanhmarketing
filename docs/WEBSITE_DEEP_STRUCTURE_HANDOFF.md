@@ -1,3 +1,7 @@
+## 15/10/2026 — Candidate điều khiển nguồn Auth
+
+Bổ sung ledger/guard epoch + restore-fence + manifest/receipt được ghim, transition fenced→native/freeze có transaction/final assertion/idempotent retry.8tests và4nhóm workerd/D1 cục bộ đạt; typecheckCF/lint đạt. Chưa import vào runtime, không issuer/session epoch binding hay Source fence thực, không apply/deploy remote. Runtime vẫn mirror5phút; native-primary CHƯA đạt. IN PROGRESS/chưa READY FOR CUTOVER. Xem CLOUDFLARE_TEST_RESULTS.md/data-authority-workers.json.
+
 ## 15/10/2026 — Full Worker với public settings Source thật
 
 Đã kiểm6nhóm vinext Worker HTML với marketing Source thật và explicit brand absence (source_exists0/updated_atNULL),0outbound; khóa học/Auth vẫn synthetic.212tests/11settings và5provider groups đạt; typecheckCF/lint/build/prune đạt. Projection đọc giữ hành vi Source, chưa native writer/admin hoặc remote deploy. Cờ OFF, production không đổi, IN PROGRESS/chưa READY FOR CUTOVER. Chi tiết CLOUDFLARE_TEST_RESULTS.md/native-full-worker.json. Phần absence ghi chưa làm ở mục lịch sử ngay dưới đã được thay thế bởi bằng chứng này.
