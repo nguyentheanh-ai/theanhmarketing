@@ -49,3 +49,18 @@ CREATE TABLE IF NOT EXISTS d1_auth_delta_operations (
  source_revision TEXT NOT NULL,payload_digest TEXT NOT NULL,
  status TEXT NOT NULL CHECK(status IN ('pending','done')),created_at TEXT NOT NULL
 );
+-- Native QA credential changes fence source-delta replay for the same user.
+-- Keep this ledger after the short retry window; reconciliation is explicit.
+CREATE TABLE IF NOT EXISTS d1_auth_credential_operations (
+ id TEXT PRIMARY KEY,
+ project_id TEXT NOT NULL,
+ user_id TEXT NOT NULL REFERENCES d1_auth_accounts(user_id),
+ old_session_hash TEXT NOT NULL UNIQUE CHECK(length(old_session_hash)=64),
+ request_digest TEXT NOT NULL CHECK(length(request_digest)=64),
+ expected_version INTEGER NOT NULL CHECK(expected_version>0),
+ target_version INTEGER NOT NULL CHECK(target_version=expected_version+1),
+ status TEXT NOT NULL CHECK(status IN ('pending','done')),
+ created_at TEXT NOT NULL,
+ retry_until TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS d1_auth_credential_operations_user ON d1_auth_credential_operations(user_id,project_id);

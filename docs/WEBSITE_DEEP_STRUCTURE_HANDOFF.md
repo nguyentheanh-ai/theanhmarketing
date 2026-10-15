@@ -1,3 +1,13 @@
+## 15/10/2026 — Đổi mật khẩu native A và giữ đường quay về B: TESTED cục bộ
+
+Đã triển khai backend đổi mật khẩu D1 có xác thực mật khẩu hiện tại, CSRF cùng origin, giới hạn thử dùng D1 chung, mã thao tác chống lặp và transaction CAS. Hash bcrypt được mã hóa; đổi thành công thu hồi toàn bộ phiên D1 A của đúng tài khoản và yêu cầu đăng nhập lại. Không thu hồi phiên Supabase/B và không tuyên bố đã thay phục hồi mật khẩu/đăng ký/OAuth. Ledger chặn đồng bộ Source ghi đè credential đã đổi; cần đối soát riêng trước lần đồng bộ tiếp theo.
+
+Trang /doi-mat-khau dùng native session khi chọn chế độ QA, không gọi Source trong nhánh đó; nhánh reset native chưa hỗ trợ và từ chối rõ ràng. Đã sửa đường quay về /app-login-bridge chứa origin B: chỉ chấp nhận đúng staging B và state chuẩn, giữ qua đăng nhập/đổi mật khẩu; bộ lọc redirect chung vẫn giữ nguyên. Kiểm thử UI dùng helper redirect thật để phát hiện lỗi đã bị mock che.
+
+Bằng chứng: 125 kiểm thử hồi quy liên quan, 27 Auth core, 8 delta, 6 trường hợp workerd + D1 thực cục bộ đều đạt; TypeScript, ESLint theo phạm vi và vinext build đạt. Workerd chặn outbound, không dùng tài khoản khách. D1 A staging thêm duy nhất bảng ledger và index; readback schema PASS, 0 credential operations, 1 account/4 session lịch sử/0 session hoạt động, không thay dữ liệu Auth có sẵn. Cờ CF_NATIVE_QA_CREDENTIAL_WRITES mặc định disabled, native Auth/progress disabled, cohort rỗng. Chưa bật hoặc thử đổi mật khẩu trên hosted, chưa đổi mật khẩu QA/khách thực tế.
+
+Phạm vi tổng IN PROGRESS; chưa READY FOR CUTOVER. B là ứng dụng riêng, /learn thuộc A. Production DNS/webhook/nguồn ghi không đổi. Bước tiếp theo: deploy A staging cổng ghi OFF, làm mới đối soát dữ liệu QA rồi chạy A→B hosted với Access token đã duyệt và thu hồi đầy đủ sau kiểm tra.
+
 ## 15/10/2026 — Native order settlement và đầy đủ JSON đơn hàng: scoped TESTED
 
 **IN PROGRESS.** Thêm schema `d1-native-order-settlement.sql`, lõi TypeScript `native-order-settlement.ts` và HTTP candidate `native-sepay-http.ts`; chưa apply remote/chưa nối `/api/sepay/webhook`. Bốn bảng riêng giữ nguyên toàn bộ source order JSON, revision/CAS, receipt duy nhất theo transaction/reference và một fulfillment intent bền vững trong cùng D1 batch. Không dùng prototype Python sáu trường làm backend thật. Intent chưa có dispatcher cấp tài khoản/quyền/email/Meta/Telegram/Sheets, không xem việc ghi intent là hoàn tất giao dịch cho khách.

@@ -7,6 +7,8 @@ import { SoftCard } from "@/components/ui/soft-card";
 import { getCurrentAuth } from "@/lib/auth/session";
 import { shouldRequirePasswordChange } from "@/lib/auth/student-account";
 import { getSafeNextPath } from "@/lib/navigation";
+import {readNativePasswordPage} from "@/lib/cloudflare/native-password-page";
+import {getSafeNativeAppBridgePath} from "@/lib/cloudflare/native-app-bridge-path";
 
 export const metadata: Metadata = {
   title: "Đổi mật khẩu",
@@ -22,17 +24,20 @@ export default async function ChangePasswordPage({
   searchParams?: Promise<{ mode?: string; next?: string }>;
 }) {
   const params = await searchParams;
-  const nextPath = getSafeNextPath(params?.next, "/dashboard");
+  const native = await readNativePasswordPage();
+  const nextPath = (native ? getSafeNativeAppBridgePath(params?.next) : null) ?? getSafeNextPath(params?.next, native ? "/learn/facebook-ads-2026" : "/dashboard");
   const isPasswordResetMode = params?.mode === "reset";
   const isAccountMode = params?.mode === "account";
-  const { user } = await getCurrentAuth();
+  const { user } = native ? {user:null} : await getCurrentAuth();
+  const signedIn = native ? native.signedIn : Boolean(user);
+  const mustChange = native ? native.mustChangePassword : user ? shouldRequirePasswordChange(user) : false;
 
-  if (!user && !isPasswordResetMode) {
+  if (!signedIn && !isPasswordResetMode) {
     const returnPath = `/doi-mat-khau?next=${encodeURIComponent(nextPath)}${isAccountMode ? "&mode=account" : ""}`;
-    redirect(`/dang-nhap?next=${encodeURIComponent(returnPath)}`);
+    redirect(`/dang-nhap?next=${encodeURIComponent(native && !isAccountMode ? nextPath : returnPath)}`);
   }
 
-  if (user && !isPasswordResetMode && !isAccountMode && !shouldRequirePasswordChange(user)) {
+  if (signedIn && !isPasswordResetMode && !isAccountMode && !mustChange) {
     redirect(nextPath);
   }
 
@@ -49,9 +54,9 @@ export default async function ChangePasswordPage({
           </p>
         </div>
         <SoftCard>
-          <Suspense fallback={null}>
-            <ChangePasswordForm />
-          </Suspense>
+          {native && isPasswordResetMode ? <p role="alert">Đặt lại mật khẩu tạm thời chưa khả dụng. Vui lòng liên hệ hỗ trợ.</p> : <Suspense fallback={null}>
+            <ChangePasswordForm authProvider={native ? "native-d1" : "supabase"} />
+          </Suspense>}
         </SoftCard>
       </section>
     </PageShell>

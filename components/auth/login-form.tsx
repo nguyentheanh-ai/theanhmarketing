@@ -7,6 +7,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getPostLoginRedirect } from "@/lib/auth/student-account";
 import { getSafeNextPath } from "@/lib/navigation";
+import {getSafeNativeAuthReturnPath} from "@/lib/cloudflare/native-app-bridge-path";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 async function recordStudentLoginActivity() {
@@ -28,7 +29,7 @@ async function recordStudentLoginActivity() {
 export function LoginForm({ authProvider = "supabase" }: { authProvider?: "supabase" | "native-d1" }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nextPath = getSafeNextPath(searchParams.get("next"), authProvider === "native-d1" ? "/learn/facebook-ads-2026" : "/dashboard");
+  const nextPath = (authProvider === "native-d1" ? getSafeNativeAuthReturnPath(searchParams.get("next")) : null) ?? getSafeNextPath(searchParams.get("next"), authProvider === "native-d1" ? "/learn/facebook-ads-2026" : "/dashboard");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -98,6 +99,7 @@ export function LoginForm({ authProvider = "supabase" }: { authProvider?: "supab
 
   return (
     <>
+      {authProvider === "native-d1" && searchParams.get("passwordChanged") === "1" ? <p role="status" className="mb-4 rounded-xl bg-sky-50 p-4 text-sm text-sky-900">Mật khẩu đã được cập nhật. Vui lòng đăng nhập lại bằng mật khẩu mới.</p> : null}
       <form onSubmit={handleSubmit} className="grid gap-4">
         <div className="grid gap-2">
           <label className="text-sm font-bold text-slate-900">Email</label>

@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { getSafeNextPath } from "@/lib/navigation";
+import {getSafeNativeAppBridgePath} from "@/lib/cloudflare/native-app-bridge-path";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 async function recordPasswordChangedActivity(mode: string | null) {
@@ -22,11 +23,12 @@ async function recordPasswordChangedActivity(mode: string | null) {
   }
 }
 
-export function ChangePasswordForm() {
+export function ChangePasswordForm({authProvider="supabase"}:{authProvider?:"supabase"|"native-d1"}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode");
-  const nextPath = getSafeNextPath(searchParams.get("next"), mode === "account" ? "/tai-khoan" : "/dashboard");
+  const nextPath = (authProvider === "native-d1" ? getSafeNativeAppBridgePath(searchParams.get("next")) : null) ?? getSafeNextPath(searchParams.get("next"), authProvider === "native-d1" ? "/learn/facebook-ads-2026" : mode === "account" ? "/tai-khoan" : "/dashboard");
+  const [operationId] = useState(() => authProvider === "native-d1" ? crypto.randomUUID() : null);
   const resetError = searchParams.get("error");
   const [message, setMessage] = useState(resetError ? "Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn. Vui lòng yêu cầu link mới." : "");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,6 +51,28 @@ export function ChangePasswordForm() {
     if (password !== confirmPassword) {
       setMessage("Hai mật khẩu chưa khớp.");
       setIsSubmitting(false);
+      return;
+    }
+
+    if (authProvider === "native-d1") {
+      try {
+        const currentPassword = String(formData.get("currentPassword") ?? "");
+        if (mode === "reset") { setMessage("Đặt lại mật khẩu tạm thời chưa khả dụng. Vui lòng liên hệ hỗ trợ."); return; }
+        if (!currentPassword || !operationId) { setMessage("Vui lòng nhập mật khẩu hiện tại."); return; }
+        if (new TextEncoder().encode(password).length > 72) { setMessage("Mật khẩu mới quá dài. Vui lòng chọn mật khẩu ngắn hơn."); return; }
+        if (password === currentPassword) { setMessage("Vui lòng chọn mật khẩu mới khác mật khẩu hiện tại."); return; }
+        const response = await fetch("/api/cloudflare-auth/change-password", {method:"POST",signal:AbortSignal.timeout(20000),headers:{"Content-Type":"application/json"},body:JSON.stringify({currentPassword,newPassword:password,operationId})});
+        const result = await response.json().catch(() => null);
+        if (!response.ok || result?.ok !== true || result.reauthenticate !== true) {
+          setMessage(response.status === 401 ? "Phiên hoặc mật khẩu hiện tại chưa hợp lệ. Vui lòng kiểm tra lại." : "Chưa xác nhận được thay đổi. Vui lòng thử lại hoặc đăng nhập lại bằng mật khẩu mới.");
+          return;
+        }
+        window.location.assign('/dang-nhap?' + new URLSearchParams({passwordChanged:'1',next:nextPath}));
+      } catch {
+        setMessage("Chưa xác nhận được thay đổi. Vui lòng thử lại hoặc đăng nhập lại bằng mật khẩu mới.");
+      } finally {
+        setIsSubmitting(false);
+      }
       return;
     }
 
@@ -97,6 +121,11 @@ export function ChangePasswordForm() {
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-4">
+      {authProvider === "native-d1" ? <div className="grid gap-2">
+        <label htmlFor="current-password" className="text-sm font-bold text-slate-900">Mật khẩu hiện tại</label>
+        <input className="auth-readable-input min-h-12 rounded-xl border border-slate-300 bg-white px-4 text-slate-950 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:ring-4 focus:ring-sky-400/20" name="currentPassword" id="current-password" autoComplete="current-password" required type="password" />
+        <p className="text-sm text-slate-600">Sau khi đổi mật khẩu, bạn cần đăng nhập lại. Bạn sẽ đăng nhập bằng mật khẩu mới để tiếp tục.</p>
+      </div> : null}
       <div className="grid gap-2">
         <label htmlFor="new-password" className="text-sm font-bold text-slate-900">Mật khẩu mới</label>
         <input
