@@ -1,13 +1,15 @@
 {
   "status": "DEPLOYED_STAGING_GATES_OFF",
-  "checkedAt": "2026-10-15T08:49:04.360Z",
+  "checkedAt": "2026-10-15T13:14:09.884467Z",
   "worker": "theanh-main-cf-staging",
-  "version": "fae4205c-988d-41d0-a4e3-277fc6b6643c",
+  "version": "ec1e0091-bf45-46f3-81a3-9ede14f607ba",
   "percentage": 100,
-  "baseCommit": "df8a88b419a6ef958bee08e16dac736bf70efa3d",
-  "workingDiffSha256": "8fe18b99748f4c56765a78f181efe5c6e6a1f9ec2b7291df2cca7a7e5ee2bd7f",
-  "artifactManifestSha256": "bd496db82ef939e11b4436e0bf2531d9a3ca530ae29cace38628c492f83a451c",
+  "baseCommit": "02e305930465ad414cd70689181d15b7da4bde79",
+  "workingDiff": "none (clean tree at build)",
+  "previousVersionForRollback": "b42dfae5-87f4-4c5e-998f-10979038323a",
   "vars": {
+    "AUTH_GUARD_ENABLED": "true",
+    "CF_R2_STAGE_PRIVATE_DELIVERY": "true",
     "CF_NATIVE_MARKETING_MODE": "disabled",
     "CF_NATIVE_AUTH_MODE": "disabled",
     "CF_NATIVE_AUTH_ORIGIN": "https://theanh-main-cf-staging.12c1thdtheanh.workers.dev",
@@ -16,6 +18,7 @@
     "CF_NATIVE_QA_AUTH_CONTEXT_MODE": "disabled",
     "CF_NATIVE_QA_REFRESH_MODE": "disabled",
     "CF_NATIVE_QA_GOOGLE_MODE": "disabled",
+    "CF_NATIVE_QA_PAYMENT_MODE": "disabled",
     "CF_NATIVE_QA_CREDENTIAL_WRITES": "disabled"
   },
   "secretNames": [
@@ -27,11 +30,30 @@
     "SUPABASE_SERVICE_ROLE_KEY"
   ],
   "d1Id": "694139c9-6cda-4b8c-9228-c973dbcbb719",
+  "d1SchemaApplied": {
+    "at": "2026-10-15T13:10Z",
+    "sqlSha256": "9eeb30c1cb5070290c2dd3bff525d9df6e55186d94bc9ae98a355705fae695b9",
+    "files": [
+      "d1-data-authority.sql",
+      "d1-native-order-settlement.sql",
+      "d1-native-paid-order-access.sql",
+      "d1-native-paid-account.sql",
+      "d1-native-paid-email.sql"
+    ],
+    "tablesCreated": 9,
+    "rowsInNewTables": 0,
+    "kind": "CREATE TABLE/INDEX IF NOT EXISTS only"
+  },
+  "hostedReadback": {
+    "accessProtected": "GET / and POST /api/sepay/webhook return 302 to Cloudflare Access without login",
+    "deploymentsList": "ec1e0091 at 100%"
+  },
   "localEvidence": {
+    "nodeTests": "367 PASS",
+    "paymentStageWorkerdGroups": 6,
     "typecheck": "PASS",
     "scopedLint": "PASS",
-    "buildPrune": "PASS",
-    "googleRouterWorkerdGroups": 6
+    "buildPrune": "PASS"
   },
-  "limits": "Staging deployment only; all native gates disabled at baseline, browser QA next. No real Google login or production/source writer changes."
+  "limits": "Staging only. CF_NATIVE_QA_PAYMENT_MODE disabled; no SePay/Resend staging secrets, no native Auth authority row, no hosted payment test. Production/DNS/SePay webhook unchanged."
 }
