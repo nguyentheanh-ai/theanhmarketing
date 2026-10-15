@@ -1610,3 +1610,11 @@ Commit A e1b5d80 → Worker version76a6a7e5-06a1-4b3c-aea6-87f464f1a6be, GET dep
 IN PROGRESS. Candidate native-order-settlement phân biệt dữ liệu không hợp lệ (422) với database/timeout/authority chưa sẵn sàng (503). Đã tái hiện 3 test HTTP thất bại trước sửa; sau sửa 27 test Node và 10 nhóm workerd + D1 đạt, outbound bằng 0. Gửi lại sau commit mất phản hồi chỉ giữ một receipt và một fulfillment intent. Typecheck, ESLint các file thay đổi và Vite build đạt. Bằng chứng: reports/cloudflare-d1/payment-retry-workers.json.
 
 Giới hạn: kiểm thử cục bộ với đơn giả lập; chưa webhook nhà cung cấp trên staging, chưa cấp quyền/email thực tế. Candidate chưa gắn vào webhook production; không deploy trong bước này, không đổi dữ liệu hay nguồn ghi production. Cần hoàn thiện dispatcher theo từng loại sản phẩm và kiểm thử đầy đủ trước cutover.
+
+### 15/10/2026 — Áp dụng quyền từ đơn thanh toán D1
+
+IN PROGRESS. Candidate `native-paid-order-access.ts` nối receipt thanh toán và snapshot/revision đơn hàng tới `d1_access_orders` trong một batch nguyên tử; bảng `d1_native_order_access_applied` lưu riêng bằng chứng áp dụng. Gửi lại hoặc hai request đồng thời không tạo quyền trùng. Không đánh dấu toàn bộ fulfillment done: còn tài khoản/email/app B và tích hợp. Dùng nguyên bộ tính quyền hiện có: item combo ưu tiên fallback, cọc Agent Kit không mở khóa kit, full payment mở khóa, admin revoke vẫn hiệu lực; không ghi đè owner hoặc nội dung đơn nhập từ nguồn bị xung đột.
+
+Kiểm chứng: 36 test Node (9 test mới về quyền), 12 nhóm workerd/D1 thật cục bộ, outbound0; TS/lint/build đạt. Ca authority mất giữa batch, snapshot thay đổi, dữ liệu bị sửa bởi trigger đều rollback quyền và receipt cùng nhau. Chưa deploy hoặc chạy SQL từ bước này trên staging/production; adapter vẫn yêu cầu cohort QA và source authority trong 5 phút, chưa native-primary. Chưa phải bằng chứng khách hàng thực đăng nhập/nhận email. Receipt: reports/cloudflare-d1/payment-retry-workers.json.
+
+Tiếp theo: account provisioning và email/B outbox bền vững theo loại sản phẩm; kiểm thử hosted; thay authority mirror bằng writer fence đã đối soát khi đủ điều kiện.

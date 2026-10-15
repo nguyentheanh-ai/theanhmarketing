@@ -1,9 +1,9 @@
 {
-  "checkedAt": "2026-10-15T09:08:08.245Z",
+  "checkedAt": "2026-10-15T09:15:38.745Z",
   "status": "PASS",
-  "checks": 10,
+  "checks": 12,
   "outboundFetches": 0,
   "networkCanaryBlocked": true,
-  "scope": "Local workerd + actual D1 settlement only",
+  "scope": "Local workerd + actual D1 settlement and paid-order access application",
   "limits": "Synthetic orders/key/limiter; not hosted/provider webhook, real distributed limiter, customer access/email or production payment evidence"
 }
