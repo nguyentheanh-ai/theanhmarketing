@@ -1,3 +1,11 @@
+## 15/10/2026 — Bộ đọc phiên legacy A/B: TESTED local, chưa nối Auth
+
+Đã đọc SDK cài trong nhánh: A @supabase/ssr0.10.3 tạo cookie `sb-<project>-auth-token`, raw/base64url/chunked; B @supabase/supabase-js và auth-js2.106.2 lưu JSON tại `tam-student-portal-auth`. A createBrowserClient cuối cùng dùng cookie storage của SSR, ghi đè auth.storage truyền từ wrapper; không suy ra A dùng localStorage chỉ từ wrapper. Bộ đọc mới `lib/cloudflare/legacy-session-codec.ts` trả duy nhất `refreshToken` **chưa xác minh**, không trả/trust user/email/JWT/role. Không I/O, log, endpoint hoặc cấp phiên. Từ chối duplicate/mixed/gapped/alias chunk, sai project, percent/base64/UTF8 lỗi và vượt giới hạn32KiB/16chunk/4096ký tự proof. Không thể phát hiện mọi trộn thế hệ còn tạo JSON hợp lệ; xác minh proof qua trạng thái authoritative và chống replay vẫn bắt buộc.
+
+8tests mới dùng actual SSR storage writer A, actual B Auth serializer với storage cục bộ/network bị chặn, cùng31tests refresh đã có: **39/39 PASS**. Typecheck Cloudflare và ESLint module/test PASS. Không chạy lại build toàn app vì module chưa được import vào runtime; không có bằng chứng mới về browser hoặc hosted endpoint.
+
+Phát hiện tại SDK nhánh A: cookie writer ép maxAge400ngày cho cả `{}` và `{maxAge:30ngày}`; có test tái hiện. Cookie gửi lên server không mang lựa chọn remember. Chưa kiểm bản bundle production; không đổi hành vi Blue. Native policy/legacy adoption phải chọn rõ remember, không suy ra từ TTL fixture hoặc tự bảo toàn ý nghĩa UI bằng phỏng đoán. Kiểm client/SSR refresh, old-session authority/epoch/fence, final delta, provider/recovery/signup và reverse rollback còn thiếu. Không apply schema/deploy/credential/DNS/webhook/nguồn ghi. Tổng **IN PROGRESS**, chưa READY FOR CUTOVER/LIVE.
+
 ## 15/10/2026 — Refresh family và HTTP native: TESTED local, chưa mounted
 
 Đã bổ sung candidate d1-refresh-family.ts/d1-refresh-http.ts và SQL3bảng riêng, chưa apply remote hoặc nối router/client. Bootstrap nhận native access cookie đã xác thực, không phải cookie Supabase cũ. Family HMAC phân tách project/type/counter, chỉ hash trong DB; lease ngắn và family dài theo policy backend; không diễn giải TTL fixture1h là thời hạn phiên production. Chính sách timebox/inactivity/reuse có kiểm cấu trúc và đối chiếu family; không heartbeat mirror Source.

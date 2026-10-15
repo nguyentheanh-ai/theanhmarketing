@@ -1,0 +1,31 @@
+{
+  "status": "TESTED_LOCAL_UNMOUNTED",
+  "at": "2026-10-15T03:51:56.476039+00:00",
+  "sdk": {
+    "A_ssr": "0.10.3",
+    "B_supabase_js": "2.106.2",
+    "B_auth_js": "2.106.2"
+  },
+  "tests": {
+    "codec": 8,
+    "refresh_regression": 31,
+    "total": 39,
+    "pass": 39
+  },
+  "typecheck": "PASS",
+  "scoped_eslint": "PASS",
+  "full_build": "NOT_RUN_unimported_module",
+  "remote_changes": false,
+  "legacy_session_adoption": "NOT_IMPLEMENTED",
+  "authority_from_cookie_claims": false,
+  "limitations": [
+    "unverified opaque proof only",
+    "valid JSON mixed-generation still requires authoritative proof verification",
+    "browser and production bundle not tested",
+    "source refresh revocation/delta/native authority epoch incomplete"
+  ],
+  "sha256": {
+    "lib/cloudflare/legacy-session-codec.ts": "ca61c240b115f0b71ed2d5d04b7f39253de1f569e20c8757ac029fe021f75ffe",
+    "tests/cloudflare-legacy-session-codec.test.mjs": "46160f8189f9091d7987053292e9dcda6ccbe1deb553e3df3caaa807593b017c"
+  }
+}
