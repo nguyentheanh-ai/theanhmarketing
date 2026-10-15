@@ -1,7 +1,6 @@
 import {getD1AuthSession,type AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
 import {readD1SessionCookie} from '@/lib/cloudflare/d1-auth-http';
 import {resolveNativeStageOptions,type NativeStageEnv} from '@/lib/cloudflare/native-stage-router';
-import {getStudentAppStagingAccessHeaders} from '@/lib/cloudflare/student-app-access';
 export const NATIVE_APP_MAIN_ORIGIN='https://theanh-main-cf-staging.12c1thdtheanh.workers.dev';
 export const NATIVE_APP_B_ORIGIN='https://theanh-student-cf-staging.12c1thdtheanh.workers.dev';
 const endpoint=NATIVE_APP_B_ORIGIN+'/api/auth/native-b/issue',project='vsxxgdzwtscuxcmjfckt';
@@ -43,12 +42,18 @@ export async function handleNativeAppLoginBridge(request:Request,options:Options
   return unavailable();
  }
 }
+export function nativeAppAccessHeaders(env:Pick<NativeStageEnv,'CF_ACCESS_STUDENT_APP_CLIENT_ID'|'CF_ACCESS_STUDENT_APP_CLIENT_SECRET'>):Record<string,string>{
+ const id=env.CF_ACCESS_STUDENT_APP_CLIENT_ID?.trim(),secret=env.CF_ACCESS_STUDENT_APP_CLIENT_SECRET?.trim();
+ if(!id&&!secret)return {};
+ if(!id||!secret||id.length>512||secret.length>512||/[\r\n]/.test(id+secret))throw Error('Invalid staging Access bindings');
+ return {'CF-Access-Client-Id':id,'CF-Access-Client-Secret':secret};
+}
 // Worker boundary: never render a credential-bearing redirect through RSC/app
 // layouts/trackers, and never fall back to Supabase after native selection.
 export async function handleNativeAppBridgeRequest(request:Request,env:NativeStageEnv):Promise<Response|null>{
  const url=new URL(request.url);if(url.pathname!=='/app-login-bridge'||!url.searchParams.has('native_state'))return null;
  try{
   const options=resolveNativeStageOptions(request,env);if(!options)return unavailable();
-  return handleNativeAppLoginBridge(request,{...options,sharedSecret:env.STUDENT_PORTAL_PROVISION_SECRET??'',accessHeaders:getStudentAppStagingAccessHeaders(endpoint)});
+  return handleNativeAppLoginBridge(request,{...options,sharedSecret:env.STUDENT_PORTAL_PROVISION_SECRET??'',accessHeaders:nativeAppAccessHeaders(env)});
  }catch{return unavailable();}
 }

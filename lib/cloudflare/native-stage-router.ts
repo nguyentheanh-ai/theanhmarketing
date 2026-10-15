@@ -7,7 +7,7 @@ import {handleD1StudentHttp} from '@/lib/cloudflare/d1-student-http';
 import {consumeD1AuthAttempt} from '@/lib/cloudflare/d1-auth-rate-limit';
 import {resolveD1ProgressLesson} from '@/lib/cloudflare/d1-progress-publication';
 type WorkerConfig=UnwrapConfig<UnwrapConfig<typeof config>['worker']>;
-export type NativeStageEnv=Pick<InferEnv<WorkerConfig>,'CF_NATIVE_AUTH_MODE'|'CF_NATIVE_AUTH_ORIGIN'|'CF_NATIVE_QA_USERS'|'CF_NATIVE_QA_PROGRESS_MODE'|'NATIVE_AUTH_DB'|'NATIVE_AUTH_CREDENTIAL_KEY'|'NATIVE_AUTH_LIMITER_KEY'|'PRIVATE_ASSETS'|'R2_PRIVATE_URL_SECRET'> & Partial<Pick<InferEnv<WorkerConfig>,'STUDENT_PORTAL_PROVISION_SECRET'|'CF_NATIVE_QA_CREDENTIAL_WRITES'>>;
+export type NativeStageEnv=Pick<InferEnv<WorkerConfig>,'CF_NATIVE_AUTH_MODE'|'CF_NATIVE_AUTH_ORIGIN'|'CF_NATIVE_QA_USERS'|'CF_NATIVE_QA_PROGRESS_MODE'|'NATIVE_AUTH_DB'|'NATIVE_AUTH_CREDENTIAL_KEY'|'NATIVE_AUTH_LIMITER_KEY'|'PRIVATE_ASSETS'|'R2_PRIVATE_URL_SECRET'> & Partial<Pick<InferEnv<WorkerConfig>,'STUDENT_PORTAL_PROVISION_SECRET'|'CF_NATIVE_QA_CREDENTIAL_WRITES'>> & {CF_ACCESS_STUDENT_APP_CLIENT_ID?:string;CF_ACCESS_STUDENT_APP_CLIENT_SECRET?:string};
 const origin='https://theanh-main-cf-staging.12c1thdtheanh.workers.dev';
 function unavailable(code='NATIVE_D1_DISABLED'){return Response.json({ok:false,code},{status:503,headers:{'Cache-Control':'private, no-store','Vary':'Cookie','X-Content-Type-Options':'nosniff'}});}
 export function resolveNativeStageOptions(request:Request,env:NativeStageEnv){

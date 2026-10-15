@@ -2910,3 +2910,8 @@ Kết quả cuối A_SECURITY_ORACLE_RESULTS.json và B_SECURITY_ORACLE_RESULTS.
 12tests có bảo toàn role flags/NOLOGIN, chống collision/injection identifier/signature, chỉ replay exact missing schema grant, từ chối quyền dư/unknown grantor/PUBLIC grant option, giới hạn cron revoke và semantic diff phải exit2 (không exit0). Cùng restore và catalog SQL chạy thật trên A/B local. Công cụ scripts/restore-security-oracle.py,security-acl-normalization.py và test-security-{oracle-plans,acl-normalization}.py; capture SQL thêm databaseOwner.
 
 Đây chưa là oracle phân quyền theo hàng hoàn chỉnh: membership graph chưa replay/kiểm đủ, chưa thử user-vs-user/workspace-vs-workspace, NOLOGIN khác chủ đích với dịch vụ Auth nguồn, types/operators/platform Auth/Vault root key chưa nghiệm thu. Không suy ra backend D1 đã thay đủ RLS. Tổng migration IN PROGRESS, chưa READY FOR CUTOVER; full native Auth/providers/recovery/bridge, A/B data/business/admin/payment/jobs/Storage/browser/Safari/delta/write fence/reverse rollback và monitoring/cost vẫn còn. Worker runtime/flags, DNS/webhook/nguồn ghi không đổi. B riêng; /learn thuộc A.
+
+
+### 15/10/2026 — Access A→B: binding Worker tường minh
+
+Rà soát hosted preflight phát hiện NEXT_PUBLIC_APP_URL không phải runtime binding của A; lượt thử dừng trước mở cổng, cleanup đọc lại cổng OFF/0phiên hoạt động/0đổi mật khẩu/tài liệu không đổi/Secret QA đã gỡ. Đã đổi native issuer sang đọc trực tiếp cặp Secret tùy chọn từ Worker env, chỉ gửi tới endpoint B staging cố định; không phụ thuộc biến frontend hoặc process.env. Cặp thiếu một giá trị/CRLF/quá dài bị từ chối. 8tests bridge đạt; không thay bridge legacy hoặc production. Access token/policy đang trong lượt QA45phút đã duyệt, phải thu hồi và xác minh riêng sau lượt kiểm tra.
