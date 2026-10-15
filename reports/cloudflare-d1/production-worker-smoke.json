@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-15T16:20:00Z",
+  "checkedAt": "2026-10-15T16:45:00Z",
   "worker": "theanh-main-cf-production",
   "url": "https://theanh-main-cf-production.12c1thdtheanh.workers.dev",
   "version": "eddbb68e-7d39-40ec-a991-a75ef3b44a8c",
@@ -9,8 +9,8 @@
   ],
   "domainsAttached": false,
   "cronEnabled": false,
-  "secrets": "CORRECTION: the 13/8 file held one identical 11-char placeholder for 35 Sensitive vars. Real values on the Worker: STUDENT_PORTAL_PROVISION_URL + 4 fresh native keys only; 31 placeholder secrets remain until the owner enters real values (deletion was blocked by the safety mode). Privileged actions fail closed because Supabase/Resend/Telegram/SePay credentials are placeholders too. UPDATE: owner provided the legacy service_role JWT (role=service_role, ref=vsxxgdzwtscuxcmjfckt) via a local file; set as SUPABASE_SERVICE_ROLE_KEY without echo. CRM_V2_ENABLED=true, CRM_V2_USE_DEMO_DATA=false, CRM_V2_ALLOW_DEMO_SEED=false set.",
-  "status": "PASS_PUBLIC_STUDENT_ADMIN__PENDING_ORDER_EMAIL",
+  "secrets": "CORRECTION: the 13/8 file held one identical 11-char placeholder for 35 Sensitive vars. Real values on the Worker: STUDENT_PORTAL_PROVISION_URL + 4 fresh native keys only; 31 placeholder secrets remain until the owner enters real values (deletion was blocked by the safety mode). Privileged actions fail closed because Supabase/Resend/Telegram/SePay credentials are placeholders too. UPDATE: owner provided the legacy service_role JWT (role=service_role, ref=vsxxgdzwtscuxcmjfckt) via a local file; set as SUPABASE_SERVICE_ROLE_KEY without echo. CRM_V2_ENABLED=true, CRM_V2_USE_DEMO_DATA=false, CRM_V2_ALLOW_DEMO_SEED=false set. UPDATE 2: owner file key.rtf → SEPAY_WEBHOOK_API_KEY, RESEND_API_KEY, META_CAPI_ACCESS_TOKEN set; META_CAPI_DATASET_ID=public pixel 1315653423712065; *_EMAIL_FROM set to code default sender. SEPAY_BANK_CODE/ACCOUNT_NUMBER/ACCOUNT_NAME still '[SENSITIVE]' placeholder (setting public values VPB/2070519999/GREEZHUB CO LTD was blocked by safety mode).",
+  "status": "PASS_PUBLIC_STUDENT_ADMIN_ORDER__QR_BANK_PLACEHOLDER",
   "checks": {
     "bodyIdenticalToLive": [
       "/academy/facebook-ads-master-2026",
@@ -52,5 +52,14 @@
     "real email/Telegram/Sheets/Meta sends",
     "cron (disabled until cutover)"
   ],
-  "authenticatedTest": "Owner logged in. /dashboard shows owned Facebook Ads Master 2026 (23 lessons); /learn renders video + 23-lesson list; /admin/crm-v2 shows real 30-day revenue/orders/funnel."
+  "authenticatedTest": "Owner logged in. /dashboard shows owned Facebook Ads Master 2026 (23 lessons); /learn renders video + 23-lesson list; /admin/crm-v2 shows real 30-day revenue/orders/funnel.",
+  "orderTest": {
+    "orderCode": "TAMMV9QYDD1VKEJU",
+    "product": "Thư viện kiến thức Facebook Ads 2026",
+    "amount": 399000,
+    "created": "via test Worker checkout form (owner-approved, not paid)",
+    "paymentPageOnWorker": "renders amount and order code; QR image params bank/acc are '[SENSITIVE]' placeholders -> QR invalid",
+    "sameOrderOnLiveVercel": "renders VPB 2070519999 GREEZHUB CO LTD (order is in production Supabase)",
+    "pendingPaymentEmail": "owner to confirm inbox (Resend key set before order)"
+  }
 }
