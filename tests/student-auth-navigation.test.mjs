@@ -1,16 +1,19 @@
+import {nativeAuthCoordination,installNativeLockFixture} from './helpers/native-browser-lock-fixture.mjs';
+installNativeLockFixture();
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
 import ts from 'typescript';
 const jsx=(type,props)=>({type,props});
-function load(file,mocks,globals={}){const out=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;const m={exports:{}};new Function('exports','module','require',...Object.keys(globals),out)(m.exports,m,n=>{if(n in mocks)return mocks[n];throw Error(n)},...Object.values(globals));return m.exports;}
+function load(file,mocks,globals={}){const out=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;const m={exports:{}};new Function('exports','module','require',...Object.keys(globals),out)(m.exports,m,n=>{if(n in mocks)return mocks[n];if(n==='@/lib/cloudflare/native-auth-mutation')return nativeAuthCoordination;if(n==='@/lib/cloudflare/native-app-bridge-path')return {getSafeNativeAppBridgePath:()=>null};if(n==='@/lib/cloudflare/native-password-page')return {readNativePasswordPage:async()=>null};throw Error(n)},...Object.values(globals));return m.exports;}
 function fixture({session=true,error=null,throws=false}={}){
+ Object.defineProperty(globalThis,'navigator',{configurable:true,value:{locks:{request(){throw Error('Source must not acquire native lock')}}}});
  const states=[],pushes=[];const mocks={
  'react/jsx-runtime':{jsx,jsxs:jsx},'react':{useState:v=>[v,x=>states.push(x)]},
  'next/navigation':{useRouter:()=>({push:p=>pushes.push(p),refresh(){}}),useSearchParams:()=>new URLSearchParams('next=/learn/course/lesson')},
  '@/components/ui/button':{Button:'button'},'@/lib/navigation':{getSafeNextPath:(p,f)=>p||f},
  '@/lib/supabase/client':{createSupabaseBrowserClient:()=>({auth:{getSession:async()=>({data:{session}}),updateUser:async()=>{if(throws)throw Error('network');return {error}}}})},
- };const form=load('components/auth/change-password-form.tsx',mocks,{FormData:class{get(){return 'fixture-only-not-a-real-password'}},fetch:()=>new Promise(()=>{})}).ChangePasswordForm();
+ };const form=load('components/auth/change-password-form.tsx',mocks,{FormData:class{get(){return 'fixture-only-not-a-real-password'}},fetch:()=>new Promise(()=>{})}).ChangePasswordForm({});
  return {states,pushes,run:()=>form.props.onSubmit({preventDefault(){},currentTarget:{}})};
 }
 test('successful password update navigates without waiting for activity network',async()=>{const f=fixture();await Promise.race([f.run(),new Promise((_,rej)=>setTimeout(()=>rej(Error('blocked on activity')),200))]);assert.deepEqual(f.pushes,['/learn/course/lesson']);});

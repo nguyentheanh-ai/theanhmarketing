@@ -1,5 +1,6 @@
 "use client";
 
+import {withNativeAuthMutation,NativeAuthCoordinationError} from "@/lib/cloudflare/native-auth-mutation";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
@@ -45,21 +46,23 @@ export function LoginForm({ authProvider = "supabase" }: { authProvider?: "supab
     const rememberLogin = formData.get("rememberLogin") === "on";
     if (authProvider === "native-d1") {
       try {
-        const response = await fetch("/api/cloudflare-auth/login", { method: "POST", signal: AbortSignal.timeout(15000), headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password, rememberLogin }) });
-        const result = await response.json().catch(() => null);
-        if (!response.ok || !result?.ok || !result.user) {
-          setMessage(response.status === 401 ? "Email hoặc mật khẩu chưa đúng. Anh/chị kiểm tra lại thông tin đăng nhập." : "Hệ thống đăng nhập tạm thời chưa xử lý được. Vui lòng thử lại sau ít phút.");
-          return;
-        }
-        const destination = result.user.mustChangePassword ? `/doi-mat-khau?next=${encodeURIComponent(nextPath)}` : nextPath;
-        const nativeBridge = new URL(destination, "https://local.invalid");
-        if (nativeBridge.pathname === "/app-login-bridge" && nativeBridge.searchParams.has("native_state")) {
-          window.location.assign(destination);
-          return;
-        }
-        router.push(destination);
-        router.refresh();
-      } catch { setMessage("Chưa kết nối được hệ thống đăng nhập. Vui lòng kiểm tra mạng và thử lại."); }
+        await withNativeAuthMutation(async()=>{
+          const response = await fetch("/api/cloudflare-auth/login", { method: "POST", signal: AbortSignal.timeout(15000), headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password, rememberLogin }) });
+          const result = await response.json().catch(() => null);
+          if (!response.ok || !result?.ok || !result.user) {
+            setMessage(response.status === 401 ? "Email hoặc mật khẩu chưa đúng. Anh/chị kiểm tra lại thông tin đăng nhập." : "Hệ thống đăng nhập tạm thời chưa xử lý được. Vui lòng thử lại sau ít phút.");
+            return;
+          }
+          const destination = result.user.mustChangePassword ? `/doi-mat-khau?next=${encodeURIComponent(nextPath)}` : nextPath;
+          const nativeBridge = new URL(destination, "https://local.invalid");
+          if (nativeBridge.pathname === "/app-login-bridge" && nativeBridge.searchParams.has("native_state")) {
+            window.location.assign(destination);
+            return;
+          }
+          router.push(destination);
+          router.refresh();
+        });
+      } catch (error) { setMessage(error instanceof NativeAuthCoordinationError?error.message:"Chưa kết nối được hệ thống đăng nhập. Vui lòng kiểm tra mạng và thử lại."); }
       finally { setIsSubmitting(false); }
       return;
     }

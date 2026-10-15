@@ -1,5 +1,6 @@
 "use client";
 
+import {withNativeAuthMutation,NativeAuthCoordinationError} from "@/lib/cloudflare/native-auth-mutation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -22,11 +23,13 @@ export function SignOutButton({
     setMessage("");
     if (authProvider === "native-d1") {
       try {
-        const response = await fetch("/api/cloudflare-auth/logout", { method: "POST", signal: AbortSignal.timeout(15000), headers: { "Content-Type": "application/json" }, body: "{}" });
-        const result = await response.json().catch(() => null);
-        if (!response.ok || result?.ok !== true) { setMessage("Chưa đăng xuất được. Vui lòng thử lại."); setIsSubmitting(false); return; }
-        router.push("/"); router.refresh();
-      } catch { setMessage("Chưa đăng xuất được. Vui lòng thử lại."); setIsSubmitting(false); }
+        await withNativeAuthMutation(async()=>{
+          const response = await fetch("/api/cloudflare-auth/logout", { method: "POST", signal: AbortSignal.timeout(15000), headers: { "Content-Type": "application/json" }, body: "{}" });
+          const result = await response.json().catch(() => null);
+          if (!response.ok || result?.ok !== true) { setMessage("Chưa đăng xuất được. Vui lòng thử lại."); setIsSubmitting(false); return; }
+          router.push("/"); router.refresh();
+        });
+      } catch (error) { setMessage(error instanceof NativeAuthCoordinationError?error.message:"Chưa đăng xuất được. Vui lòng thử lại."); setIsSubmitting(false); }
       return;
     }
     const supabase = createSupabaseBrowserClient();

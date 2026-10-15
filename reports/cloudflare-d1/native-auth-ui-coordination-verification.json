@@ -1,0 +1,36 @@
+{
+  "status": "TESTED_MODEL_NATIVE_AUTH_UI_COORDINATION_NOT_BROWSER_VERIFIED",
+  "checkedAt": "2026-10-15T04:26:37.673906+00:00",
+  "unitRegression": {
+    "pass": 115,
+    "fail": 0,
+    "newCoordinator": 5
+  },
+  "typecheck": "PASS",
+  "scopedEslint": "PASS",
+  "vinextBuild": "PASS",
+  "assetPrune": "PASS",
+  "remoteChanges": false,
+  "sourcePathUsesNativeLock": false,
+  "actualBrowserOrSafariTest": false,
+  "limits": [
+    "LockManager is a model",
+    "Navigation dispatch only; does not await all SSR/RSC responses",
+    "No protection for old clients, crash/unload, unknown network outcomes or late SetCookie",
+    "Session-context binding after account switch still required",
+    "Unsupported browser strategy incomplete",
+    "No hosted deploy/native primary authority/legacy adoption/final delta/rollback"
+  ],
+  "reference": "https://w3c.github.io/web-locks/",
+  "sha256": {
+    "lib/cloudflare/native-auth-mutation.ts": "ce4f6f8604556d0e16411e53a9be594794e0da5a444e172d86dc3cde1bc31565",
+    "components/auth/login-form.tsx": "cafe6ddb2f4bda0e72003b15157d1a40a7435b5d31dbc5c6f19f463620cbdd72",
+    "components/auth/sign-out-button.tsx": "5a046b0992c81ef3917644b3f1d506b7e5cae2fd8b59e689aa063fb6d0240a7c",
+    "components/auth/change-password-form.tsx": "1309098ad6b3e8c458b4f7f26460cb40c24cd55f1c658cdcd98b64a85de04922",
+    "tests/cloudflare-native-auth-mutation.test.mjs": "54dacca4391f6395c0e2c5f38de7c7ff8c2b05b195af1fc22baff1c8bc328d27",
+    "tests/helpers/native-browser-lock-fixture.mjs": "c700450c02a82766d80e2a6de3ec82a59c40c05c6a6cb0d6755dbf7de87155fa",
+    "tests/cloudflare-native-auth-ui.test.mjs": "15dc86315ba0d870817b7b9b6a7e932738272ecf83f4eed0b74fd2458dcfad5e",
+    "tests/cloudflare-native-password-page.test.mjs": "d8263689469c41e270a37884094bbc19fecedbf87a96a149f92b9a1dbbe9d750",
+    "tests/student-auth-navigation.test.mjs": "c7cf9faa48ee5dbaa8771f7a4b064ad903f5aa0f36452bc3caf1edbd1e708921"
+  }
+}

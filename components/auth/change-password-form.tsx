@@ -1,5 +1,6 @@
 "use client";
 
+import {withNativeAuthMutation,NativeAuthCoordinationError} from "@/lib/cloudflare/native-auth-mutation";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
@@ -56,20 +57,22 @@ export function ChangePasswordForm({authProvider="supabase"}:{authProvider?:"sup
 
     if (authProvider === "native-d1") {
       try {
-        const currentPassword = String(formData.get("currentPassword") ?? "");
-        if (mode === "reset") { setMessage("Đặt lại mật khẩu tạm thời chưa khả dụng. Vui lòng liên hệ hỗ trợ."); return; }
-        if (!currentPassword || !operationId) { setMessage("Vui lòng nhập mật khẩu hiện tại."); return; }
-        if (new TextEncoder().encode(password).length > 72) { setMessage("Mật khẩu mới quá dài. Vui lòng chọn mật khẩu ngắn hơn."); return; }
-        if (password === currentPassword) { setMessage("Vui lòng chọn mật khẩu mới khác mật khẩu hiện tại."); return; }
-        const response = await fetch("/api/cloudflare-auth/change-password", {method:"POST",signal:AbortSignal.timeout(20000),headers:{"Content-Type":"application/json"},body:JSON.stringify({currentPassword,newPassword:password,operationId})});
-        const result = await response.json().catch(() => null);
-        if (!response.ok || result?.ok !== true || result.reauthenticate !== true) {
-          setMessage(response.status === 401 ? "Phiên hoặc mật khẩu hiện tại chưa hợp lệ. Vui lòng kiểm tra lại." : "Chưa xác nhận được thay đổi. Vui lòng thử lại hoặc đăng nhập lại bằng mật khẩu mới.");
-          return;
-        }
-        window.location.assign('/dang-nhap?' + new URLSearchParams({passwordChanged:'1',next:nextPath}));
-      } catch {
-        setMessage("Chưa xác nhận được thay đổi. Vui lòng thử lại hoặc đăng nhập lại bằng mật khẩu mới.");
+        await withNativeAuthMutation(async()=>{
+          const currentPassword = String(formData.get("currentPassword") ?? "");
+          if (mode === "reset") { setMessage("Đặt lại mật khẩu tạm thời chưa khả dụng. Vui lòng liên hệ hỗ trợ."); return; }
+          if (!currentPassword || !operationId) { setMessage("Vui lòng nhập mật khẩu hiện tại."); return; }
+          if (new TextEncoder().encode(password).length > 72) { setMessage("Mật khẩu mới quá dài. Vui lòng chọn mật khẩu ngắn hơn."); return; }
+          if (password === currentPassword) { setMessage("Vui lòng chọn mật khẩu mới khác mật khẩu hiện tại."); return; }
+          const response = await fetch("/api/cloudflare-auth/change-password", {method:"POST",signal:AbortSignal.timeout(20000),headers:{"Content-Type":"application/json"},body:JSON.stringify({currentPassword,newPassword:password,operationId})});
+          const result = await response.json().catch(() => null);
+          if (!response.ok || result?.ok !== true || result.reauthenticate !== true) {
+            setMessage(response.status === 401 ? "Phiên hoặc mật khẩu hiện tại chưa hợp lệ. Vui lòng kiểm tra lại." : "Chưa xác nhận được thay đổi. Vui lòng thử lại hoặc đăng nhập lại bằng mật khẩu mới.");
+            return;
+          }
+          window.location.assign('/dang-nhap?' + new URLSearchParams({passwordChanged:'1',next:nextPath}));
+        });
+      } catch (error) {
+        setMessage(error instanceof NativeAuthCoordinationError?error.message:"Chưa xác nhận được thay đổi. Vui lòng thử lại hoặc đăng nhập lại bằng mật khẩu mới.");
       } finally {
         setIsSubmitting(false);
       }
