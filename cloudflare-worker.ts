@@ -7,6 +7,7 @@ import {runNativeRequestContext} from './lib/cloudflare/native-request-context';
 import {protectNativeLearningResponse} from './lib/cloudflare/native-learning-response';
 import {handleNativeAppBridgeRequest} from './lib/cloudflare/native-app-login-bridge';
 import {handleNativeResourceRequest} from './lib/cloudflare/native-resource-http';
+import {handleNativePaymentStage,type NativePaymentStageEnv} from './lib/cloudflare/native-payment-stage';
 
 // Exact public video path above the Workers asset limit; bytes live in R2 staging.
 const oversizedPublicVideo = "/doi-ngu-nhan-su-ai/media/proof/editor-ai-jun-08-2026.mp4";
@@ -16,6 +17,9 @@ const stagingWorker = {
   async fetch(request: Request, env: unknown, context: Parameters<typeof app.fetch>[2]) {
     return withNativePageRefresh(request,env as NativeStageEnv,async request=>{
     const url = new URL(request.url);
+    // Default-disabled QA payment path; null keeps the existing webhook route.
+    const payment=await handleNativePaymentStage(request,env as NativePaymentStageEnv,context&&'waitUntil' in context?task=>context.waitUntil(task):undefined);
+    if(payment)return payment;
     const native=await handleNativeStageRequest(request,env as NativeStageEnv);
     if(native)return native;
     const appBridge=await handleNativeAppBridgeRequest(request,env as NativeStageEnv);

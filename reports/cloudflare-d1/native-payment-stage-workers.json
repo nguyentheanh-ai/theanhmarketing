@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-15T13:06:11.348Z",
+  "status": "PASS",
+  "checks": 6,
+  "blockedOutbound": 0,
+  "resendCallsToLocalFake": 4,
+  "scope": "Local workerd + D1: mounted staging SePay webhook gate → access → native account → handover email ledger",
+  "limits": "Synthetic orders, keys and native authority fixture; Resend is a local fake (no real email); not hosted, not production, real distributed limiter not exercised"
+}

@@ -23,6 +23,8 @@ export default defineConfig({
       CF_NATIVE_QA_REFRESH_MODE: bindings.text("disabled"),
       // Enable only after callback allowlisting and query-log protection are verified.
       CF_NATIVE_QA_GOOGLE_MODE: bindings.text("disabled"),
+      // Native SePay settle→access→account→email for listed QA orders only.
+      CF_NATIVE_QA_PAYMENT_MODE: bindings.text("disabled"),
       // Google secrets are optional while this gate is disabled. The router
       // validates all three at runtime before allowing the Google QA flow.
       NATIVE_AUTH_REFRESH_KEY: bindings.secret(),
