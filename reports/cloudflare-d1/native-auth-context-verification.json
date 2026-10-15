@@ -1,0 +1,54 @@
+{
+  "status": "TESTED_LOCAL_NATIVE_UI_CONTEXT_DEFAULT_OFF",
+  "checkedAt": "2026-10-15T04:37:22.642396+00:00",
+  "unitRegression": {
+    "pass": 145,
+    "fail": 0,
+    "newWitness": 8
+  },
+  "actualWorkerdRouterGroups": 12,
+  "typecheck": "PASS",
+  "scopedEslint": "PASS",
+  "vinextBuild": "PASS",
+  "assetPrune": "PASS",
+  "clientSignerLiteralScan": {
+    "clientJs": 129,
+    "matches": 0,
+    "serverMatches": 1
+  },
+  "remoteChanges": false,
+  "witnessIsAuthenticationBearer": false,
+  "guardedActions": [
+    "logout",
+    "change-password",
+    "student-progress"
+  ],
+  "limits": [
+    "No actual browser/Safari or full vinext hosted proof",
+    "Late in-flight response cookie races unresolved",
+    "React remount is source/SSR-model verified only",
+    "Other API/provider/B integrations not covered by this guard",
+    "No native primary authority/legacy adoption/final delta/reverse rollback",
+    "Positive context-protected published progress through full Worker/browser remains unverified"
+  ],
+  "sha256": {
+    "cloudflare.config.ts": "2b07006c9847ee041092dd404d69028d98110d1363f15cbab0324c468413bb07",
+    "lib/cloudflare/native-auth-context.ts": "6301bda22bda178645408976d052b1e3d062ea016cf49c1b9fb6af9521dc90d0",
+    "lib/cloudflare/native-ui-auth-context.ts": "daab8c4aea3d7c0bd44568b88087fa5504d5f100e38b014582eaf7f8297d60f3",
+    "lib/cloudflare/d1-password-change-http.ts": "c772341385eb5830d868b7b4bc96aaaf946419afbdeb107065512a11b55267ed",
+    "lib/cloudflare/d1-refresh-http.ts": "a5078cbd1606feed2e71e9f6188d92920d42d6d38b51888c3f67d283435cfb83",
+    "lib/cloudflare/d1-student-http.ts": "0ad9c248194a55c6800165ad44648e83889caf3f5a692dda5e61bd0550ca0fc1",
+    "lib/cloudflare/native-stage-router.ts": "5f166db13705eaf21d0208715dc2d407f59f05f473303e06f53bd5fe9fbbb546",
+    "lib/cloudflare/native-learning-page.ts": "81c41f001a009e211533b09c8285ed99ad0e2c63095c187cfb8d722a6a040b13",
+    "lib/cloudflare/native-password-page.ts": "6d35a8ceb76f13e94f923d8d757445d9f40091af8a84fb63e61ba4704af16b38",
+    "components/auth/change-password-form.tsx": "41f2365f3e0c4176575487fab25a0e34df6fe80b864e48ceba7c8ce1fc47ab0d",
+    "components/auth/sign-out-button.tsx": "94a843a953ade4080856207d39ad9afff0a7f8ed5236a51772c4dec3d86f96f7",
+    "components/course/learning-room.tsx": "448f10fe571883335a2daef32c83474a03d814432a23e8ccc653140fb69a39b3",
+    "components/app/student-area-shell.tsx": "b1626d92056e625763944539283942919fa3478c0f3563a2ec0f1e3b454de5e0",
+    "app/doi-mat-khau/page.tsx": "0c82fd87faf6a79d0672d78f15af589581e2463b4efe53f84afda7ffead9652b",
+    "app/dashboard/agents/page.tsx": "78b8db3d34bfa0695a0917bb7783682026b7a3e347f51f5ebfa9a26245fc759d",
+    "app/learn/[course]/[lesson]/page.tsx": "f5a36a863d14a663a6558f50bf5f00bd3e241af20c2af4a7def54f942e2dab1c",
+    "tests/cloudflare-native-auth-context.test.mjs": "9be7f1e3b405f987d1ade145031a8f772eb89251f272687ef0b85331df953f06",
+    "scripts/test-refresh-router-workers.mjs": "f08d7a4c475c93bd3a056205047739c25816461d306eb76e0e7c62c729ccfd6f"
+  }
+}

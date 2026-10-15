@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-15T04:17:23.405Z",
+  "checkedAt": "2026-10-15T04:35:15.424Z",
   "checks": [
     {
       "name": "default-off refresh leaves existing login unchanged and cannot create a family",
@@ -40,6 +40,10 @@
     },
     {
       "name": "actual refresh-only global logout keeps scope, creates no intermediate session and retries without clearing newer login",
+      "status": "PASS"
+    },
+    {
+      "name": "actual rendered context rejects stale form after new login without revoking current identity",
       "status": "PASS"
     },
     {

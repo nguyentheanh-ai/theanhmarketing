@@ -1,9 +1,10 @@
+import {verifyNativeAuthContext} from '@/lib/cloudflare/native-auth-context';
 import type {AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
 import {readD1SessionCookie,readBoundedAuthJson} from '@/lib/cloudflare/d1-auth-http';
 import {readD1StudentSessionAccess,readD1StudentLesson} from '@/lib/cloudflare/d1-student-session-access';
 import {markD1SessionLessonCompleted} from '@/lib/cloudflare/d1-lesson-progress';
 import type {D1ProgressPublicationProof} from '@/lib/cloudflare/d1-progress-publication';
-type Options={db:AuthDatabase;origin:string;sessionTtlMs:number;now?:number;allowedUserIds?:readonly string[];qaWriteUserIds?:readonly string[];requirePublicationProof?:boolean;
+type Options={db:AuthDatabase;origin:string;sessionTtlMs:number;now?:number;allowedUserIds?:readonly string[];qaWriteUserIds?:readonly string[];requirePublicationProof?:boolean;authContextKey?:string;
  resolveLesson?:(courseSlug:string,lessonId:string)=>Promise<{id:string;title:string;publicationProof?:D1ProgressPublicationProof}|null>};
 function reply(status:number,body:unknown){return Response.json(body,{status,headers:{'Cache-Control':'private, no-store','Vary':'Cookie','X-Content-Type-Options':'nosniff'}});}
 const bad={ok:false,message:'Không thể xử lý yêu cầu học tập.'};
@@ -46,6 +47,7 @@ export async function handleD1StudentHttp(request:Request,options:Options){
   if(Object.keys(body).some(key=>!['courseSlug','lessonId','operationId','completed'].includes(key))
    ||typeof body.courseSlug!=='string'||typeof body.lessonId!=='string'||typeof body.operationId!=='string'
    ||(body.completed!==undefined&&typeof body.completed!=='boolean'))return reply(400,bad);
+  if(options.authContextKey&&!await verifyNativeAuthContext(options.db,{accessToken:token},request.headers.get('X-TAM-Auth-Context')??'',{projectId:'vsxxgdzwtscuxcmjfckt',sessionTtlMs:options.sessionTtlMs,now:options.now,allowedUserIds:writeUsers,key:options.authContextKey}))return reply(409,{ok:false,code:'AUTH_CONTEXT_CHANGED',message:'Tài khoản đã thay đổi ở phiên khác. Vui lòng tải lại trang trước khi lưu tiến độ.'});
   const result=await markD1SessionLessonCompleted(options.db,token,{
    courseSlug:body.courseSlug,lessonId:body.lessonId,operationId:body.operationId,completed:body.completed as boolean|undefined,
   },{sessionTtlMs:options.sessionTtlMs,now:options.now,qaUserIds:writeUsers,resolveLesson:options.resolveLesson,requirePublicationProof:options.requirePublicationProof});

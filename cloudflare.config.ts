@@ -17,6 +17,7 @@ export default defineConfig({
       CF_NATIVE_AUTH_ORIGIN: bindings.text("https://theanh-main-cf-staging.12c1thdtheanh.workers.dev"),
       CF_NATIVE_QA_USERS: bindings.text("[]"),
       CF_NATIVE_QA_PROGRESS_MODE: bindings.text("disabled"),
+      CF_NATIVE_QA_AUTH_CONTEXT_MODE: bindings.text("disabled"),
       CF_NATIVE_QA_REFRESH_MODE: bindings.text("disabled"),
       NATIVE_AUTH_REFRESH_KEY: bindings.secret(),
       CF_NATIVE_QA_CREDENTIAL_WRITES: bindings.text("disabled"),

@@ -1,9 +1,10 @@
+import {verifyNativeAuthContext} from '@/lib/cloudflare/native-auth-context';
 import {attachD1RefreshFamily,refreshD1Family,revokeD1RefreshFamilyOutcome,revokeAllD1RefreshFamiliesOutcome,revokeD1RefreshFamilyByRefreshOutcome,revokeAllD1RefreshFamiliesByRefreshOutcome,RefreshFamilyRateLimited,type RefreshFamilyPolicy} from '@/lib/cloudflare/d1-refresh-family';
 import {readD1SessionCookie,readBoundedAuthJson} from '@/lib/cloudflare/d1-auth-http';
 import type {AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
 import {D1_REFRESH_COOKIE,createD1RefreshCookies,clearD1RefreshCookies} from '@/lib/cloudflare/d1-refresh-cookies';
 export {D1_REFRESH_COOKIE};
-type Options={db:AuthDatabase;origin:string;policy:RefreshFamilyPolicy;writeEnabled?:boolean;cookieMaxAgeSeconds:number;
+type Options={db:AuthDatabase;origin:string;policy:RefreshFamilyPolicy;writeEnabled?:boolean;cookieMaxAgeSeconds:number;authContextKey?:string;
  allowAttempt:(request:Request,subject:string)=>Promise<{allowed:boolean;retryAfter:number}>;
  allowVerifiedAttempt:(request:Request,subject:string)=>Promise<{allowed:boolean;retryAfter:number}>};
 const privacy={'Cache-Control':'private, no-store','CDN-Cache-Control':'no-store','Cloudflare-CDN-Cache-Control':'no-store','Referrer-Policy':'no-referrer','Vary':'Cookie','X-Content-Type-Options':'nosniff'};
@@ -33,6 +34,7 @@ export async function handleD1RefreshHttp(request:Request,options:Options){
   if(!decision.allowed){const response=result(429,'RATE_LIMITED');response.headers.set('Retry-After',String(Math.max(1,Math.ceil(decision.retryAfter))));return response;}
   const policy={...options.policy,allowFamilyAttempt:async(identity:{projectId:string;userId:string;familyId:string})=>options.allowVerifiedAttempt(request,'refresh-user:'+identity.userId)};
   if(logout){
+   if(options.authContextKey&&!await verifyNativeAuthContext(options.db,{...(access?{accessToken:access}:{}),...(refresh?{refreshToken:refresh}:{})},request.headers.get('X-TAM-Auth-Context')??'',{...policy,key:options.authContextKey}))return result(409,'AUTH_CONTEXT_CHANGED');
    // Match the inspected Source UI's default global SDK logout. An explicit
    // all:false is per-device and revokes every access lease of its own family.
    let outcome=access?(body.all===false?await revokeD1RefreshFamilyOutcome(options.db,access,policy):await revokeAllD1RefreshFamiliesOutcome(options.db,access,policy)):'invalid';

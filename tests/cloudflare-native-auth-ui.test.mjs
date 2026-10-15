@@ -20,9 +20,9 @@ test('failed native logout leaves navigation unchanged and success does not call
  try{
   const mocks={'react/jsx-runtime':{jsx,jsxs:jsx},react:{useState:x=>[x,v=>messages.push(v)]},'next/navigation':{useRouter:()=>({push:x=>{assert(nativeLockHeld());navigated.push(x)},refresh(){}})},'@/lib/supabase/client':{createSupabaseBrowserClient:()=>{throw Error('Source provider must not run')}}};
   const {SignOutButton}=load('components/auth/sign-out-button.tsx',mocks);
-  globalThis.fetch=async()=>new Response(null,{status:503});await nodes(SignOutButton({authProvider:'native-d1'})).find(n=>n.type==='button').props.onClick();assert.deepEqual(navigated,[]);assert(messages.includes('Chưa đăng xuất được. Vui lòng thử lại.'));
-  globalThis.fetch=async()=>new Response('<html>Gateway sign-in</html>',{status:200});await nodes(SignOutButton({authProvider:'native-d1'})).find(n=>n.type==='button').props.onClick();assert.deepEqual(navigated,[]);
-  globalThis.fetch=async(url,opts)=>{assert(nativeLockHeld());assert.equal(url,'/api/cloudflare-auth/logout');assert.equal(opts.body,'{}');return Response.json({ok:true})};await nodes(SignOutButton({authProvider:'native-d1'})).find(n=>n.type==='button').props.onClick();assert.deepEqual(navigated,['/']);
+  globalThis.fetch=async()=>new Response(null,{status:503});await nodes(SignOutButton({authProvider:'native-d1',authContext:'A'.repeat(43)})).find(n=>n.type==='button').props.onClick();assert.deepEqual(navigated,[]);assert(messages.includes('Chưa đăng xuất được. Vui lòng thử lại.'));
+  globalThis.fetch=async()=>new Response('<html>Gateway sign-in</html>',{status:200});await nodes(SignOutButton({authProvider:'native-d1',authContext:'A'.repeat(43)})).find(n=>n.type==='button').props.onClick();assert.deepEqual(navigated,[]);
+  globalThis.fetch=async(url,opts)=>{assert(nativeLockHeld());assert.equal(url,'/api/cloudflare-auth/logout');assert.equal(opts.headers['X-TAM-Auth-Context'],'A'.repeat(43));assert.equal(opts.body,'{}');return Response.json({ok:true})};await nodes(SignOutButton({authProvider:'native-d1',authContext:'A'.repeat(43)})).find(n=>n.type==='button').props.onClick();assert.deepEqual(navigated,['/']);
  }finally{globalThis.fetch=previous;}
 });
 test('native app SSO uses full browser navigation instead of RSC redirect',async()=>{

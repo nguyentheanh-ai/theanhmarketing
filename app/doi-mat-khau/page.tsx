@@ -55,7 +55,7 @@ export default async function ChangePasswordPage({
         </div>
         <SoftCard>
           {native && isPasswordResetMode ? <p role="alert">Đặt lại mật khẩu tạm thời chưa khả dụng. Vui lòng liên hệ hỗ trợ.</p> : <Suspense fallback={null}>
-            <ChangePasswordForm authProvider={native ? "native-d1" : "supabase"} />
+            <ChangePasswordForm {...(native?.authContext?{authContext:native.authContext}:{})} authProvider={native ? "native-d1" : "supabase"} />
           </Suspense>}
         </SoftCard>
       </section>

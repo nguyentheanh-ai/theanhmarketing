@@ -31,11 +31,11 @@ export default async function LessonPage({ params }: LessonPageProps) {
     if (native.status === "not-found") notFound();
     if (native.status === "redirect") redirect(native.path);
     if (native.status === "lesson") return <LearningRoom
-      key={`${native.course.slug}:${native.currentLesson.id}`}
+      key={`${native.course.slug}:${native.currentLesson.id}${native.authContext?":"+native.authContext:""}`}
       course={native.course} currentLesson={native.currentLesson}
       currentLessonCompleted={native.currentLessonCompleted} lessons={native.lessons}
       previousLesson={native.previousLesson} nextLesson={native.nextLesson}
-      referencePacks={getCourseReferencePacks(native.course.slug)} authProvider="native-d1"
+      referencePacks={getCourseReferencePacks(native.course.slug)} authProvider="native-d1" authContext={native.authContext}
     />;
   }
   const [course, { adminRole, user }] = await Promise.all([

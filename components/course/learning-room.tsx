@@ -28,7 +28,7 @@ type LearningRoomProps = {
   previousLesson?: Pick<LearningLesson, "id">;
   nextLesson?: Pick<LearningLesson, "id">;
   referencePacks?: CourseReferencePack[];
-  authProvider?: "supabase" | "native-d1";
+  authProvider?: "supabase" | "native-d1";authContext?:string;
 };
 
 function getLessonHref(courseSlug: string, lessonId: string) {
@@ -46,7 +46,7 @@ export function LearningRoom({
   lessons,
   nextLesson,
   previousLesson,
-  authProvider = "supabase",
+  authProvider = "supabase",authContext,
   referencePacks = [],
 }: LearningRoomProps) {
   const router = useRouter();
@@ -81,7 +81,7 @@ export function LearningRoom({
       const response = await fetch(authProvider === "native-d1" ? "/api/cloudflare-student/progress" : "/api/student/progress", {
         method: "POST",
         signal: AbortSignal.timeout(15000),
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",...(authProvider==='native-d1'&&authContext?{"X-TAM-Auth-Context":authContext}:{}) },
         body: JSON.stringify({
           courseSlug: course.slug,
           lessonId: currentLesson.id,
@@ -145,7 +145,7 @@ export function LearningRoom({
             </span>
           </div>
           <SignOutButton
-            authProvider={authProvider}
+            authProvider={authProvider} authContext={authContext}
             className="rounded-xl border border-white/10 px-4 py-3 text-left text-sm font-bold text-white/62 hover:bg-white/8 hover:text-white"
           />
         </div>

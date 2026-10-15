@@ -24,7 +24,7 @@ async function recordPasswordChangedActivity(mode: string | null) {
   }
 }
 
-export function ChangePasswordForm({authProvider="supabase"}:{authProvider?:"supabase"|"native-d1"}) {
+export function ChangePasswordForm({authProvider="supabase",authContext}:{authProvider?:"supabase"|"native-d1";authContext?:string}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode");
@@ -63,10 +63,10 @@ export function ChangePasswordForm({authProvider="supabase"}:{authProvider?:"sup
           if (!currentPassword || !operationId) { setMessage("Vui lòng nhập mật khẩu hiện tại."); return; }
           if (new TextEncoder().encode(password).length > 72) { setMessage("Mật khẩu mới quá dài. Vui lòng chọn mật khẩu ngắn hơn."); return; }
           if (password === currentPassword) { setMessage("Vui lòng chọn mật khẩu mới khác mật khẩu hiện tại."); return; }
-          const response = await fetch("/api/cloudflare-auth/change-password", {method:"POST",signal:AbortSignal.timeout(20000),headers:{"Content-Type":"application/json"},body:JSON.stringify({currentPassword,newPassword:password,operationId})});
+          const response = await fetch("/api/cloudflare-auth/change-password", {method:"POST",signal:AbortSignal.timeout(20000),headers:{"Content-Type":"application/json",...(authContext?{"X-TAM-Auth-Context":authContext}:{})},body:JSON.stringify({currentPassword,newPassword:password,operationId})});
           const result = await response.json().catch(() => null);
           if (!response.ok || result?.ok !== true || result.reauthenticate !== true) {
-            setMessage(response.status === 401 ? "Phiên hoặc mật khẩu hiện tại chưa hợp lệ. Vui lòng kiểm tra lại." : "Chưa xác nhận được thay đổi. Vui lòng thử lại hoặc đăng nhập lại bằng mật khẩu mới.");
+            setMessage(response.status===409?"Tài khoản đã thay đổi ở phiên khác. Vui lòng tải lại trang trước khi đổi mật khẩu.":response.status === 401 ? "Phiên hoặc mật khẩu hiện tại chưa hợp lệ. Vui lòng kiểm tra lại." : "Chưa xác nhận được thay đổi. Vui lòng thử lại hoặc đăng nhập lại bằng mật khẩu mới.");
             return;
           }
           window.location.assign('/dang-nhap?' + new URLSearchParams({passwordChanged:'1',next:nextPath}));

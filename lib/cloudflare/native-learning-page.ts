@@ -1,3 +1,4 @@
+import {readNativeUiAuthContext} from '@/lib/cloudflare/native-ui-auth-context';
 import {getNativeRequestContext} from '@/lib/cloudflare/native-request-context';
 import {resolveNativeStageOptions} from '@/lib/cloudflare/native-stage-router';
 import {readD1StudentLesson} from '@/lib/cloudflare/d1-student-session-access';
@@ -9,5 +10,7 @@ export function nativeLearningProvider(){return options()?'native-d1' as const:'
 // snapshot or invalid configuration must surface an error, not mixed authority.
 export async function readNativeLearningPage(courseSlug:string,lessonId:string){
  const native=options();if(!native)return null;
- return readD1StudentLesson(native.settings.db,readD1SessionCookie(native.context.request),{courseSlug,lessonId},native.settings);
+ const result=await readD1StudentLesson(native.settings.db,readD1SessionCookie(native.context.request),{courseSlug,lessonId},native.settings);
+ if(result.status==='lesson'){const authContext=await readNativeUiAuthContext();return {...result,...(authContext?{authContext}:{})};}
+ return result;
 }
