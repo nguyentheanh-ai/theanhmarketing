@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-15T03:33:19.702Z",
+  "checks": [
+    {
+      "name": "actual workerd login, explicit refresh gate, bootstrap and retry keep original UUID and two private cookies",
+      "status": "PASS"
+    },
+    {
+      "name": "current refresh creates exactly one receipt and the old parent retry returns the same successor",
+      "status": "PASS"
+    },
+    {
+      "name": "expired access lease renews via direct parent while preserving current refresh generation",
+      "status": "PASS"
+    },
+    {
+      "name": "authority loss during an actual D1 batch rolls back family/session/receipt and retains cookies",
+      "status": "PASS"
+    },
+    {
+      "name": "lost receipt or corrupted operation marker cannot commit a partial real D1 rotation",
+      "status": "PASS"
+    },
+    {
+      "name": "local logout revokes its entire family despite stale mirror and preserves another device",
+      "status": "PASS"
+    },
+    {
+      "name": "global logout is atomic and late retry leaves a later login valid",
+      "status": "PASS"
+    },
+    {
+      "name": "verified-user D1 limiter stays effective when refresh token and edge IP change",
+      "status": "PASS"
+    },
+    {
+      "name": "cross-origin request is rejected before mutation and transport never exposes either token in JSON",
+      "status": "PASS"
+    }
+  ],
+  "outboundFetches": 0,
+  "networkCanaryBlocked": true,
+  "scope": "Actual local workerd, D1 binding withSession, core/HTTP controller and shared D1 rate limit",
+  "limits": "Synthetic users/keys; not mounted, no hosted UI/legacy Supabase cookie adoption/provider/native primary authority or production changes"
+}
