@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-10-15T14:02:02.088429+00:00",
+  "database": "theanh-supabase-copy",
+  "status": "PASS",
+  "tables": 6,
+  "rows": 2139,
+  "mismatch": {},
+  "auth": {
+    "a": {
+      "users": 442,
+      "passwordCredentials": 428,
+      "passwordlessUsers": 14,
+      "confirmedUsers": 435,
+      "protectedAdmins": 3,
+      "sourceUsers": 442,
+      "skippedWithoutEmail": 0
+    },
+    "b": {
+      "users": 271,
+      "passwordCredentials": 271,
+      "passwordlessUsers": 0,
+      "confirmedUsers": 271,
+      "protectedAdmins": 0,
+      "sourceUsers": 271,
+      "skippedWithoutEmail": 0
+    }
+  },
+  "limits": "Password hashes sealed with the staging credential key (project+user bound); no raw hash stored. Users without email skipped; sessions/refresh tokens not copied. B admin roles not inferred.",
+  "credentialOpenCheck": {
+    "a": "428/428 opened to valid bcrypt",
+    "b": "271/271 opened to valid bcrypt"
+  }
+}

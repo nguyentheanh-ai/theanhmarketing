@@ -109,11 +109,12 @@ def literal(v):
     return "'" + str(v).replace("'", "''") + "'"
 
 
-def dump_sql(args):
-    work = Path(args.work); db = sqlite3.connect(work / "copy.sqlite")
-    out = work / "copy.sql"
+def dump_sql(args, source="copy", only=None):
+    work = Path(args.work); db = sqlite3.connect(work / f"{source}.sqlite")
+    out = work / f"{source}.sql"
     with out.open("w") as f:
         for name, create in db.execute("SELECT name, sql FROM sqlite_master WHERE type='table' ORDER BY name").fetchall():
+            if only is not None and name not in only: continue
             f.write(create + ";\n")
             cols = [r[1] for r in db.execute(f'PRAGMA table_info("{name}")')]
             pk = [r[1] for r in sorted(db.execute(f'PRAGMA table_info("{name}")'), key=lambda r: r[5]) if r[5] > 0]
@@ -142,6 +143,50 @@ def wrangler(args, *extra, capture=True):
     return subprocess.run(cmd, cwd=ROOT, capture_output=capture, text=True)
 
 
+AUTH_TABLES = ("access_users", "auth_accounts", "auth_source_versions")
+
+
+def auth_fetch(args, pat):
+    """Auth users through the existing audited import: each bcrypt hash is sealed
+    (AES-GCM, bound to project+user) with the staging credential key. Raw hashes
+    exist only in this process and the captured helper; sessions/tokens are not copied."""
+    work = Path(args.work); path = work / "auth.sqlite"
+    if path.exists(): path.unlink()
+    db = sqlite3.connect(path); manifest = {"tables": {}, "auth": {}}
+    cred = keychain("native-a-credential", "theanh-main-cf-staging-credential")
+    for key, (ref, _) in PROJECTS.items():
+        prefix = f"{key}_auth__"
+        for name in ("d1-course-access-source-prototype.sql", "d1-auth-core-prototype.sql"):
+            db.executescript((ROOT / "scripts" / name).read_text().replace("d1_", prefix))
+        users = query(ref, """SELECT coalesce(json_agg(json_build_object('id',id,'email',email,'encryptedPassword',nullif(encrypted_password,''),
+          'emailConfirmedAt',email_confirmed_at,'bannedUntil',banned_until,'deletedAt',deleted_at,'isAnonymous',coalesce(is_anonymous,false),
+          'userMetadata',raw_user_meta_data,'appMetadata',raw_app_meta_data,'createdAt',created_at,'updatedAt',updated_at) ORDER BY id),'[]'::json) r FROM auth.users""", pat)[0]["r"]
+        with_email = [u for u in users if (u.get("email") or "").strip()]
+        proc = subprocess.run(["node", str(ROOT / "scripts/copy-supabase-auth-plan.mjs")], cwd=ROOT, capture_output=True, text=True,
+                              input=json.dumps({"projectId": ref, "credentialKey": cred, "adminRoles": key == "a", "users": with_email}))
+        if proc.returncode != 0:
+            raise SystemExit("Auth import plan failed for " + key)
+        plan = json.loads(proc.stdout)
+        for stmt in plan["statements"]:
+            sql = re.sub(r"\?(\d+)", lambda m: "?", stmt["sql"].replace("INSERT INTO d1_", "INSERT INTO " + prefix))
+            db.execute(sql, stmt["params"])
+        for t in AUTH_TABLES:
+            manifest["tables"][prefix + t] = {"source": f"{ref}:auth.users", "rows": db.execute(f'SELECT count(*) FROM "{prefix}{t}"').fetchone()[0]}
+        manifest["auth"][key] = {**plan["summary"], "sourceUsers": len(users), "skippedWithoutEmail": len(users) - len(with_email)}
+        print(f"auth {key}: {plan['summary']['users']} users", flush=True)
+    db.commit(); db.close()
+    (work / "auth-manifest.json").write_text(json.dumps(manifest, indent=2))
+
+
+def auth_upload(args):
+    manifest = json.loads((Path(args.work) / "auth-manifest.json").read_text())
+    path = dump_sql(args, "auth", set(manifest["tables"]))
+    r = wrangler(args, "--yes", "--file", str(path))
+    if r.returncode != 0:
+        raise SystemExit("Auth upload failed: " + (r.stderr or r.stdout)[-300:])
+    print("auth uploaded", flush=True)
+
+
 def upload(args):
     path = dump_sql(args)
     print("sql sha256", hashlib.sha256(path.read_bytes()).hexdigest(), flush=True)
@@ -152,7 +197,7 @@ def upload(args):
 
 
 def verify(args):
-    manifest = json.loads((Path(args.work) / "manifest.json").read_text())
+    manifest = json.loads((Path(args.work) / ("auth-manifest.json" if args.stage == "auth-verify" else "manifest.json")).read_text())
     tables = list(manifest["tables"])
     actual = {}
     def count(names):
@@ -172,10 +217,14 @@ def verify(args):
     mismatch = {t: (m["rows"], actual.get(t)) for t, m in manifest["tables"].items() if actual.get(t) != m["rows"]}
     receipt = {"checkedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(), "database": args.database,
                "status": "PASS" if not mismatch else "MISMATCH", "tables": len(tables), "rows": sum(m["rows"] for m in manifest["tables"].values()),
-               "mismatch": mismatch, "redactedColumns": manifest["redactedColumns"],
-               "snapshot": [manifest["snapshotStartedAt"], manifest["snapshotFinishedAt"]],
+               "mismatch": mismatch, "redactedColumns": manifest.get("redactedColumns"),
+               "snapshot": [manifest.get("snapshotStartedAt"), manifest.get("snapshotFinishedAt")],
                "limits": "Point-in-time copy (page reads are not one transaction); auth.users/passwords, sessions/refresh tokens and Storage bytes not included; secret-like columns left NULL; not bound to any Worker."}
-    out = ROOT / "reports/cloudflare-d1/supabase-copy-verification.json"
+    if args.stage == "auth-verify":
+        receipt = {k: receipt[k] for k in ("checkedAt", "database", "status", "tables", "rows", "mismatch")}
+        receipt["auth"] = manifest["auth"]
+        receipt["limits"] = "Password hashes sealed with the staging credential key (project+user bound); no raw hash stored. Users without email skipped; sessions/refresh tokens not copied. B admin roles not inferred."
+    out = ROOT / "reports/cloudflare-d1/" / ("supabase-auth-copy-verification.json" if args.stage == "auth-verify" else "supabase-copy-verification.json")
     out.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n")
     print(json.dumps({k: receipt[k] for k in ("status", "tables", "rows", "mismatch")}))
     if mismatch: sys.exit(1)
@@ -183,16 +232,18 @@ def verify(args):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("stage", choices=["fetch", "upload", "verify", "clean"])
+    p.add_argument("stage", choices=["fetch", "upload", "verify", "auth-fetch", "auth-upload", "auth-verify", "clean"])
     p.add_argument("--work", required=True)
     p.add_argument("--database", default="theanh-supabase-copy")
     args = p.parse_args()
     if args.stage == "fetch":
         fetch(args, keychain("pat", "theanh-cloudflare-migration-supabase-scoped-pat"))
     elif args.stage == "upload": upload(args)
-    elif args.stage == "verify": verify(args)
+    elif args.stage in ("verify", "auth-verify"): verify(args)
+    elif args.stage == "auth-fetch": auth_fetch(args, keychain("pat", "theanh-cloudflare-migration-supabase-scoped-pat"))
+    elif args.stage == "auth-upload": auth_upload(args)
     else:
-        for name in ("copy.sqlite", "copy.sql"):
+        for name in ("copy.sqlite", "copy.sql", "auth.sqlite", "auth.sql"):
             f = Path(args.work) / name
             if f.exists(): f.unlink()
         print("cleaned")
