@@ -1,0 +1,28 @@
+{
+  "status": "TESTED_LOCAL",
+  "checkedAt": "2026-10-15T08:39:27.866154+00:00",
+  "unitTests": {
+    "nativeGoogle": 16,
+    "refreshRegression": 21,
+    "sourceAuthUiContract": 3,
+    "total": 40
+  },
+  "googleMirrorTransactionGroups": 18,
+  "workerdGroups": {
+    "nativeAuthorityGoogle": 6,
+    "actualStagingRouterGoogle": 6,
+    "refreshRouterRegression": 14
+  },
+  "checks": {
+    "cloudflareTypecheck": "PASS",
+    "scopedEslint": "PASS",
+    "viteBuildAndAssetPrune": "PASS"
+  },
+  "mountedInBranch": true,
+  "googleGateDefault": "disabled",
+  "liveGoogleLoginTested": false,
+  "providerCredentialsCopied": false,
+  "sourceAuthUiChanged": false,
+  "productionChanges": false,
+  "limits": "Chỉ fixture Google/local D1; chưa deployed mã mới, chưa native-primary trên hosted router, Google thật/browser/iPhone chưa được kiểm."
+}

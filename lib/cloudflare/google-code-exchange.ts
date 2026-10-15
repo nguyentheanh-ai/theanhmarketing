@@ -5,7 +5,8 @@ export async function exchangeGoogleAuthorizationCode(transaction:ClaimedGoogleT
  const tx=requireClaimedGoogleTransaction(transaction);
  if(!code||code.length>8192||!clientSecret||clientSecret.length>4096)throw new Error('Google code exchange unavailable');
  const body=new URLSearchParams({grant_type:'authorization_code',code,client_id:tx.clientId,client_secret:clientSecret,redirect_uri:tx.redirectUri,code_verifier:tx.verifier});
- let response:Response;try{response=await fetcher('https://oauth2.googleapis.com/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body,redirect:'error',signal:AbortSignal.timeout(10000)});}catch{throw new Error('Google code exchange unavailable');}
+ let response:Response;try{response=await fetcher('https://oauth2.googleapis.com/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body,redirect:'manual',signal:AbortSignal.timeout(10000)});}catch{throw new Error('Google code exchange unavailable');}
+ // Workers supports manual/follow; reject every redirect before parsing a body.
  if(!response.ok){try{await response.body?.cancel();}catch{}throw new Error('Google code exchange rejected');}
  const reader=response.body?.getReader();if(!reader)throw new Error('Google code exchange unavailable');
  const chunks:Uint8Array[]=[];let size=0;

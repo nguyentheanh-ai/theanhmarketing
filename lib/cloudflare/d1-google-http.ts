@@ -1,4 +1,7 @@
-import type {AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
+import {revokeD1AuthSession,type AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
+import {authAuthorityContext} from '@/lib/cloudflare/auth-proof-domain';
+import {assertD1RefreshFamilyPolicy,attachD1RefreshFamily,revokeD1RefreshFamily,type RefreshFamilyPolicy} from '@/lib/cloudflare/d1-refresh-family';
+import {assertRefreshCookieLifetime,createD1RefreshCookies} from '@/lib/cloudflare/d1-refresh-cookies';
 import {beginD1GoogleTransaction,claimD1GoogleTransaction,failD1GoogleTransaction,GOOGLE_TRANSACTION_COOKIE,type GoogleTransactionPolicy,type ClaimedGoogleTransaction} from '@/lib/cloudflare/d1-google-transaction';
 import {createGoogleIdTokenVerifier} from '@/lib/cloudflare/google-id-token';
 import {exchangeGoogleAuthorizationCode} from '@/lib/cloudflare/google-code-exchange';
@@ -6,11 +9,12 @@ import {finishD1GoogleSession} from '@/lib/cloudflare/d1-google-session';
 import {readBoundedAuthJson,createD1SessionCookie} from '@/lib/cloudflare/d1-auth-http';
 import {getPostLoginRedirect} from '@/lib/auth/student-account';
 type Options=GoogleTransactionPolicy&{db:AuthDatabase;clientSecret:string;sessionTtlMs:number;
+ refreshFamily?:{policy:RefreshFamilyPolicy;cookieMaxAgeSeconds:number};
  allowRequest:(request:Request,phase:'start'|'callback')=>Promise<{allowed:boolean;retryAfter:number}>;
  // Backend test injection only; never construct these from HTTP JSON/query.
  fetcher?:typeof fetch;verifyIdToken?:ReturnType<typeof createGoogleIdTokenVerifier>};
 const clearFlow=`${GOOGLE_TRANSACTION_COOKIE}=; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=0`;
-function headers(){return new Headers({'Cache-Control':'private, no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff','Vary':'Cookie'});}
+function headers(){return new Headers({'Cache-Control':'private, no-store','CDN-Cache-Control':'no-store','Cloudflare-CDN-Cache-Control':'no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff','Vary':'Cookie'});}
 function reply(status:number,cookie?:string,retryAfter?:number){const h=headers();h.set('Content-Type','application/json; charset=utf-8');if(cookie)h.append('Set-Cookie',cookie);if(retryAfter)h.set('Retry-After',String(retryAfter));return new Response(JSON.stringify({ok:false,message:'Không thể hoàn tất đăng nhập. Vui lòng thử lại.'}),{status,headers:h});}
 function browserToken(request:Request){const values=(request.headers.get('Cookie')??'').split(';').map(s=>s.trim()).filter(s=>s.startsWith(GOOGLE_TRANSACTION_COOKIE+'='));if(values.length!==1)return '';const token=values[0].slice(GOOGLE_TRANSACTION_COOKIE.length+1);return /^[A-Za-z0-9_-]{43}$/.test(token)?token:'';}
 // Staging candidate only. Before deployment disable/redact invocation URL query
@@ -26,6 +30,13 @@ export async function handleD1GoogleHttp(request:Request,options:Options){
  try{const limit=await options.allowRequest(request,start?'start':'callback');if(!limit.allowed)return reply(429,undefined,Math.max(1,Math.ceil(limit.retryAfter)));}catch{return reply(503);}
  // Fail configuration before redirecting a user to a provider that cannot complete.
  if(!options.clientSecret||options.clientSecret.length>4096||!Number.isInteger(options.sessionTtlMs)||options.sessionTtlMs<1000||options.sessionTtlMs>30*86400000)return reply(503);
+ try{
+  if(options.nativeAuthority&&!options.refreshFamily)throw Error('Native authority requires refresh lifecycle');
+  if(options.refreshFamily){
+   const {policy,cookieMaxAgeSeconds}=options.refreshFamily;assertD1RefreshFamilyPolicy(policy);assertRefreshCookieLifetime(cookieMaxAgeSeconds);
+   if(policy.projectId!==options.projectId||authAuthorityContext(policy)!==authAuthorityContext(options)||policy.sessionTtlMs!==options.sessionTtlMs||policy.now!==options.now||JSON.stringify(policy.allowedUserIds===undefined?null:[...policy.allowedUserIds].sort())!==JSON.stringify(options.allowedUserIds===undefined?null:[...options.allowedUserIds].sort()))throw Error('Google refresh policy mismatch');
+  }
+ }catch{return reply(503);}
  if(start){
   let input:Record<string,unknown>;try{input=await readBoundedAuthJson(request);}catch{return reply(400);}
   if(Object.keys(input).some(k=>!['returnTo','rememberLogin'].includes(k))||(input.returnTo!==undefined&&typeof input.returnTo!=='string')||(input.rememberLogin!==undefined&&typeof input.rememberLogin!=='boolean'))return reply(400);
@@ -43,9 +54,25 @@ export async function handleD1GoogleHttp(request:Request,options:Options){
   const token=await exchangeGoogleAuthorizationCode(tx,code,options.clientSecret,options.fetcher);
   const verify=options.verifyIdToken??createGoogleIdTokenVerifier({clientId:options.clientId,projectId:options.projectId});
   const proof=await verify(token,tx.nonce,options.now);if(!proof){await failD1GoogleTransaction(options.db,tx,options.now);return reply(401,clearFlow);}
-  const session=await finishD1GoogleSession(options.db,tx,proof,{sessionTtlMs:options.sessionTtlMs,now:options.now});
+  const now=options.now??Date.now();
+  const session=await finishD1GoogleSession(options.db,tx,proof,{sessionTtlMs:options.sessionTtlMs,now,nativeAuthority:options.nativeAuthority,allowedUserIds:options.allowedUserIds});
   if(!session){await failD1GoogleTransaction(options.db,tx,options.now);return reply(401,clearFlow);}
-  const h=headers();h.set('Location',getPostLoginRedirect({user_metadata:{must_change_password:session.user.mustChangePassword}},session.returnTo));h.append('Set-Cookie',clearFlow);h.append('Set-Cookie',createD1SessionCookie(session.token,options.sessionTtlMs,session.rememberLogin));
+  let user=session.user,cookies:string[];
+  try{
+   if(options.refreshFamily){
+    const {policy,cookieMaxAgeSeconds}=options.refreshFamily;
+    const pair=await attachD1RefreshFamily(options.db,session.token,{...policy,now,rememberLogin:session.rememberLogin});
+    if(!pair)throw Error('Google refresh session setup unavailable');
+    user=pair.user;cookies=createD1RefreshCookies(pair,now,cookieMaxAgeSeconds);
+   }else cookies=[createD1SessionCookie(session.token,options.sessionTtlMs,session.rememberLogin)];
+  }catch{
+   // The issuer owns this fresh proof, including an attachment whose commit
+   // response was lost. Revoke the whole family before discarding the proof.
+   try{if(options.refreshFamily)await revokeD1RefreshFamily(options.db,session.token,{...options.refreshFamily.policy,now,allowedUserIds:undefined,allowFamilyAttempt:undefined});}
+   finally{await revokeD1AuthSession(options.db,session.token,{...options,now,allowedUserIds:undefined});}
+   throw Error('Google refresh session setup unavailable');
+  }
+  const h=headers();h.set('Location',getPostLoginRedirect({user_metadata:{must_change_password:user.mustChangePassword}},session.returnTo));h.append('Set-Cookie',clearFlow);for(const value of cookies)h.append('Set-Cookie',value);
   return new Response(null,{status:303,headers:h});
  }catch{
   if(tx)try{await failD1GoogleTransaction(options.db,tx,options.now);}catch{/* No raw provider/DB error logging. */}

@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-15T04:47:22.774Z",
+  "checkedAt": "2026-10-15T08:31:40.031Z",
   "checks": [
     {
       "name": "default-off refresh leaves existing login unchanged and cannot create a family",

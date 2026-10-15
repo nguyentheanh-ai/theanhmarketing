@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-15T08:23:20.576Z",
+  "checks": [
+    {
+      "name": "pending Source marker: Google callback creates one original-UUID native family, safe cookies, no provider role trust",
+      "status": "PASS"
+    },
+    {
+      "name": "native cookie refresh after access expiry works without Source and rejects cross-origin refresh",
+      "status": "PASS"
+    },
+    {
+      "name": "device logout closes the Google family and old/new refresh tokens cannot reopen it",
+      "status": "PASS"
+    },
+    {
+      "name": "ignored OAuth completion rolls back in actual D1 and sends no authentication cookies",
+      "status": "PASS"
+    },
+    {
+      "name": "native authority freeze inside start transaction rolls back the OAuth redirect state",
+      "status": "PASS"
+    },
+    {
+      "name": "Google retains forced-password-change routing and session cookies when remember-login is false",
+      "status": "PASS"
+    }
+  ],
+  "networkCanaryBlocked": true,
+  "outboundFetches": 0,
+  "limits": "Synthetic signer and handoff receipts; local workerd/D1 only. No real Google login, public/hosted route, Source cutover, browser/mobile test or credential configuration verified."
+}

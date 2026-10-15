@@ -31,13 +31,17 @@ async function derive(p:RefreshFamilyPolicy,kind:'access'|'refresh',family:strin
  const value=await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(JSON.stringify(p.nativeAuthority?['tam-native-family-v2',authAuthorityContext(p),kind,p.projectId,family,serial]:['tam-native-family-v1',kind,p.projectId,family,serial])));
  return btoa(String.fromCharCode(...new Uint8Array(value))).replaceAll('+','-').replaceAll('/','_').replaceAll('=','');
 }
-async function context(db:AuthDatabase,p:RefreshFamilyPolicy):Promise<Context>{
+export function assertD1RefreshFamilyPolicy(p:RefreshFamilyPolicy){
  const now=policyTime(p),ids=p.allowedUserIds;
  if(!/^[a-z0-9]{20}$/.test(p.projectId)||!Number.isFinite(now)||!Number.isSafeInteger(p.sessionTtlMs)||p.sessionTtlMs<1000||p.sessionTtlMs>30*86400000||
  ![p.absoluteTtlMs,p.idleTimeoutMs].every(v=>v===null||Number.isSafeInteger(v)&&v>0&&v<=400*86400000)||!Number.isSafeInteger(p.reuseIntervalMs)||p.reuseIntervalMs<0||p.reuseIntervalMs>60000||
  !p.keys||typeof p.keys!=='object'||Array.isArray(p.keys)||Object.keys(p.keys).length<1||Object.keys(p.keys).length>4||Object.keys(p.keys).some(id=>!KEY_ID.test(id))||!KEY_ID.test(p.activeKeyId)||
  (ids!==undefined&&(!Array.isArray(ids)||ids.length>100||ids.some(id=>!UUID.test(id))||new Set(ids).size!==ids.length)))throw unavailable();
  keyBytes(p,p.activeKeyId);
+ authAuthorityContext(p);
+}
+async function context(db:AuthDatabase,p:RefreshFamilyPolicy):Promise<Context>{
+ assertD1RefreshFamilyPolicy(p);const now=policyTime(p),ids=p.allowedUserIds;
  const mirror=await assertD1AuthMirrorReady(db,{...p,now});
  const digest=await hash(JSON.stringify(p.nativeAuthority?[p.sessionTtlMs,p.absoluteTtlMs,p.idleTimeoutMs,p.reuseIntervalMs,authAuthorityContext(p)]:[p.sessionTtlMs,p.absoluteTtlMs,p.idleTimeoutMs,p.reuseIntervalMs]));
  return {...mirror,cohort:ids===undefined?'null':JSON.stringify(ids),digest,policy:p};

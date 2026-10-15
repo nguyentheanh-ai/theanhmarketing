@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-15T08:31:02.925Z",
+  "checks": [
+    {
+      "name": "router refuses Google/default-off, native-off, refresh-off and missing provider secret before outbound",
+      "status": "PASS"
+    },
+    {
+      "name": "actual router, PKCE exchange and JWKS verification issue original QA UUID with refresh cookies",
+      "status": "PASS"
+    },
+    {
+      "name": "email collision from an unlinked Google subject cannot borrow the QA account",
+      "status": "PASS"
+    },
+    {
+      "name": "router still enforces mirror freshness and native logout closes its Google refresh family",
+      "status": "PASS"
+    },
+    {
+      "name": "provider redirects fail closed on real Workers fetch without following the destination",
+      "status": "PASS"
+    },
+    {
+      "name": "provider start retains persisted IP limits and exact-Origin CSRF protection",
+      "status": "PASS"
+    }
+  ],
+  "networkCanaryBlocked": true,
+  "unexpectedOutboundFetches": 0,
+  "syntheticProviderFetches": 4,
+  "limits": "Actual router with synthetic provider endpoints, QA account and mirror readiness. Not real Google/browser/hosted QA or native-primary authority. Public customer UI unchanged; Google flag remains disabled."
+}
