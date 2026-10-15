@@ -4,6 +4,7 @@ import { isCurrentStorageKey } from "./lib/cloudflare/current-storage-index";
 import {handleNativeStageRequest,type NativeStageEnv} from './lib/cloudflare/native-stage-router';
 import {runNativeRequestContext} from './lib/cloudflare/native-request-context';
 import {protectNativeLearningResponse} from './lib/cloudflare/native-learning-response';
+import {handleNativeAppBridgeRequest} from './lib/cloudflare/native-app-login-bridge';
 import {handleNativeResourceRequest} from './lib/cloudflare/native-resource-http';
 
 // Exact public video path above the Workers asset limit; bytes live in R2 staging.
@@ -15,6 +16,8 @@ const stagingWorker = {
     const url = new URL(request.url);
     const native=await handleNativeStageRequest(request,env as NativeStageEnv);
     if(native)return native;
+    const appBridge=await handleNativeAppBridgeRequest(request,env as NativeStageEnv);
+    if(appBridge)return appBridge;
     const resource=await handleNativeResourceRequest(request,env as NativeStageEnv);
     if(resource)return resource;
     if (url.pathname === "/__cf/private-r2") {

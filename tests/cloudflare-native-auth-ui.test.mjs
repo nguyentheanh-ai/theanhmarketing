@@ -21,3 +21,14 @@ test('failed native logout leaves navigation unchanged and success does not call
   globalThis.fetch=async(url,opts)=>{assert.equal(url,'/api/cloudflare-auth/logout');assert.equal(opts.body,'{}');return Response.json({ok:true})};await nodes(SignOutButton({authProvider:'native-d1'})).find(n=>n.type==='button').props.onClick();assert.deepEqual(navigated,['/']);
  }finally{globalThis.fetch=previous;}
 });
+test('native app SSO uses full browser navigation instead of RSC redirect',async()=>{
+ const previous={fetch:globalThis.fetch,FormData:globalThis.FormData,window:globalThis.window},navigated=[];
+ try{
+  globalThis.FormData=class{get(name){return {email:'fixture@example.invalid',password:'Synthetic password'}[name]}};
+  globalThis.fetch=async()=>Response.json({ok:true,user:{mustChangePassword:false}});
+  globalThis.window={location:{assign:next=>navigated.push(next)}};
+  const next='/app-login-bridge?native_state='+ 'A'.repeat(43)+'&origin=https%3A%2F%2Ffixture.invalid';
+  const form=load('components/auth/login-form.tsx',{'react/jsx-runtime':{jsx,jsxs:jsx},react:{useState:x=>[x,()=>{}]},'next/navigation':{useRouter:()=>({push(){throw Error('RSC navigation forbidden for SSO')},refresh(){throw Error('RSC refresh forbidden for SSO')}}),useSearchParams:()=>new URLSearchParams({next})},'next/link':{default:'a'},'lucide-react':{},'@/components/ui/button':{Button:'button'},'@/lib/auth/student-account':{},'@/lib/navigation':{getSafeNextPath:next=>next},'@/lib/supabase/client':{createSupabaseBrowserClient(){throw Error('Source forbidden')}}}).LoginForm({authProvider:'native-d1'});
+  await nodes(form).find(n=>n.type==='form').props.onSubmit({preventDefault(){},currentTarget:{}});assert.deepEqual(navigated,[next]);
+ }finally{globalThis.fetch=previous.fetch;globalThis.FormData=previous.FormData;if(previous.window===undefined)delete globalThis.window;else globalThis.window=previous.window;}
+});

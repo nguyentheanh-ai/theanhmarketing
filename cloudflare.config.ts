@@ -20,6 +20,7 @@ export default defineConfig({
       NATIVE_AUTH_DB: bindings.d1({ name: "theanh-main-db-staging", id: "694139c9-6cda-4b8c-9228-c973dbcbb719" }),
       NATIVE_AUTH_CREDENTIAL_KEY: bindings.secret(),
       NATIVE_AUTH_LIMITER_KEY: bindings.secret(),
+      STUDENT_PORTAL_PROVISION_SECRET: bindings.secret(),
     },
   }),
 });

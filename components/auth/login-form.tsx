@@ -50,7 +50,13 @@ export function LoginForm({ authProvider = "supabase" }: { authProvider?: "supab
           setMessage(response.status === 401 ? "Email hoặc mật khẩu chưa đúng. Anh/chị kiểm tra lại thông tin đăng nhập." : "Hệ thống đăng nhập tạm thời chưa xử lý được. Vui lòng thử lại sau ít phút.");
           return;
         }
-        router.push(result.user.mustChangePassword ? `/doi-mat-khau?next=${encodeURIComponent(nextPath)}` : nextPath);
+        const destination = result.user.mustChangePassword ? `/doi-mat-khau?next=${encodeURIComponent(nextPath)}` : nextPath;
+        const nativeBridge = new URL(destination, "https://local.invalid");
+        if (nativeBridge.pathname === "/app-login-bridge" && nativeBridge.searchParams.has("native_state")) {
+          window.location.assign(destination);
+          return;
+        }
+        router.push(destination);
         router.refresh();
       } catch { setMessage("Chưa kết nối được hệ thống đăng nhập. Vui lòng kiểm tra mạng và thử lại."); }
       finally { setIsSubmitting(false); }

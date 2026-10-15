@@ -1,7 +1,7 @@
 import {assertD1AuthMirrorReady,authMirrorReadySql} from "@/lib/cloudflare/d1-auth-authority";
 import { openLegacyBcryptHash, verifyLegacyBcryptPassword } from "@/lib/cloudflare/legacy-password";
 
-// Backend core only. No HTTP route or application provider uses this yet.
+// Backend Auth core. HTTP/native-page consumers must retain the policy gates.
 // Caller must implement IP/email rate limiting before expensive verification,
 // and set the returned opaque token only as a Secure/HttpOnly host-only cookie.
 type Statement={sql:string;params:(string|number|null)[]};

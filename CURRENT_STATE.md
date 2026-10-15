@@ -1,3 +1,13 @@
+### 15/10/2026 — Native SSO A → B: kiểm thử cục bộ, chưa hosted
+
+**IN PROGRESS.** A đã có issuer đọc phiên D1 thật, giới hạn cohort, kiểm lại phiên sau khi B cấp mã; không nhận UUID/email/role từ trình duyệt. Worker trả redirect trực tiếp, đăng nhập A dùng điều hướng toàn trang khi quay lại bridge để tránh RSC nhận redirect chứa mã. B nối route native/đăng nhập/đăng xuất qua hai gate QA, mặc định `off`, cohort rỗng; giữ UUID A/B riêng và không tự link email. Logout app thu hồi phiên D1 trước khi xóa cookie, lỗi không giả vờ đăng xuất thành công.
+
+Callback mới đưa mã vào fragment, trang HTML riêng có CSP nonce/no-referrer/no-store, xóa fragment rồi POST consume cùng origin; GET không cấp phiên. Không đưa mã vào query URL hoặc app shell/tracker. Đây giảm một đường lộ mã, chưa phải kiểm chứng toàn bộ pipeline logging trình duyệt/CDN.
+
+**Bằng chứng hiện tại:** A 13 kiểm tra Node/SQLite/UI contract, Cloudflare TypeScript/scoped ESLint/vinext build đạt. Hai D1 cục bộ workerd A→B đạt4 kiểm tra (A cookie thật với phiên tổng hợp, guest/identity/grant/POST consume/replay/logout/revocation),0 outbound sau canary. B controller4 và middleware/API3 workerd checks đạt; OpenNext build đạt. Bộ B cuối **1203 PASS/14 skipped,118files**, TypeScript sau build đạt. Test UI đầu dùng query `tab` không thuộc allowlist nguồn nên trả `/ads`; sửa fixture sang `days=7`, không nới quyền redirect.
+
+**Chưa đạt:** chưa deploy thay đổi này/chưa bật cohort/chưa hosted A-password→B→workspace/SSR/browser/iPhone Safari. B Access QA cần credential/policy riêng được duyệt; không suy rộng quyền token A sang B. Snapshot QA phải capture/đối soát nguồn mới trước khi bật; không tăng timestamp giả. Dữ liệu khách/provider/recovery/admin/payment/jobs/delta/reverse rollback đầy đủ vẫn còn nghiệm thu. Không Source write, DNS, webhook, primary writer hay production cutover.
+
 ## 15/10/2026 — Google OAuth HTTP adapter: scoped TESTED
 
 Thêm `d1-google-http.ts` cho POST start/GET callback, exact HTTPS origin/CSRF ở start, callback state + cookie host-only, shared limiter hook bắt buộc. Body đọc giới hạn/strict fields; duplicate state/code/error và duplicate cookie bị từ chối. Thiếu clientSecret/session policy trả 503 trước redirect Google. Start trả303 và cookie flow Secure/HttpOnly/SameSite=Lax/Path=/.

@@ -16,9 +16,11 @@ function getDefaultAppOrigin() {
 }
 
 const defaultAppOrigin = getDefaultAppOrigin();
+export const dynamic = "force-dynamic";
 
 type SearchParams = {
   origin?: string | string[];
+  native_state?: string | string[];
 };
 
 function isAllowedAppOrigin(rawOrigin: string | undefined) {
@@ -99,11 +101,14 @@ async function requestAppLoginLink(payload: { email: string; fullName: string; s
 }
 
 export default async function AppLoginBridge({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const resolvedSearchParams = await searchParams;
+  // Native requests belong to the Cloudflare Worker boundary. A non-Worker
+  // runtime must fail closed rather than create a legacy Supabase magic link.
+  if (resolvedSearchParams.native_state !== undefined) return buildErrorMessage("Đăng nhập ứng dụng tạm thời chưa khả dụng. Vui lòng thử lại sau.");
   if (!hasSupabaseEnv()) {
     return buildErrorMessage("Website login config error: Supabase is not enabled.");
   }
 
-  const resolvedSearchParams = await searchParams;
   const requestedOrigin = Array.isArray(resolvedSearchParams.origin)
     ? resolvedSearchParams.origin[0]
     : resolvedSearchParams.origin;
