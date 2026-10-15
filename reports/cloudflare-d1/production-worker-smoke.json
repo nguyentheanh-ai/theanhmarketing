@@ -60,6 +60,6 @@
     "created": "via test Worker checkout form (owner-approved, not paid)",
     "paymentPageOnWorker": "renders amount and order code; QR image params bank/acc are '[SENSITIVE]' placeholders -> QR invalid",
     "sameOrderOnLiveVercel": "renders VPB 2070519999 GREEZHUB CO LTD (order is in production Supabase)",
-    "pendingPaymentEmail": "owner to confirm inbox (Resend key set before order)"
+    "pendingPaymentEmail": "DELIVERED — owner confirmed receipt (Resend key valid)"
   }
 }
