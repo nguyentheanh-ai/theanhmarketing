@@ -1,3 +1,7 @@
+## 15/10/2026 — Kiểm luồng học có context local
+
+14nhóm router/workerd/D1 đạt, gồm lưu50%/reload/idempotent và stale context không ghi bài kế. Chỉ fixture text-only; runtime giữ revisionc867e3c, không deploy/production change. Root layout marketing service còn đọc Supabase khi cachemiss. Tổng IN PROGRESS, chưa READY FOR CUTOVER. Xem _cloudflare-migration/CLOUDFLARE_TEST_RESULTS.md.
+
 ## 15/10/2026 — Ràng buộc biểu mẫu/trang học với phiên gốc: TESTED local/default OFF
 
 Thêm witness HMAC domain `tam-native-ui-context-v1` từ user UUID/family/session-version đáng tin cậy trong D1; chỉ render chuỗi opaque43ký tự, không token/key/identity payload. Witness KHÔNG là bearer hoặc quyền học; mọi guard sống/role/quyền course/transaction cũ vẫn chạy. Sinh witness cần active session đã xác minh, witness cũ không làm sống lại phiên bị revoke. Verify lịch sử family/version để status-only retry sau logout/password change vẫn dùng được, không tự cấp phiên. Refresh cùng family không đổi witness.

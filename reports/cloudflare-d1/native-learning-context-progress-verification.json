@@ -1,0 +1,48 @@
+{
+  "status": "TESTED_LOCAL_CONTEXT_PROGRESS_WITH_SYNTHETIC_DATA",
+  "checkedAt": "2026-10-15T04:49:32.690209+00:00",
+  "actualWorkerdGroups": 14,
+  "newLearningGroups": 2,
+  "runtimeCodeCommit": "c867e3c",
+  "runtimeChangedThisTurn": false,
+  "syntax": "PASS",
+  "scopedEslint": "PASS",
+  "applicationBuild": "NOT_RERUN_runtime_unchanged_prior_c867e3c_PASS",
+  "fixture": {
+    "courseSlug": "qa-course",
+    "lessons": 2,
+    "type": "text-only",
+    "customerRecords": 0,
+    "courseProgressPercent": 50,
+    "lessonProgressPercent": 100,
+    "progressRows": 1,
+    "idempotentOperationRows": 1
+  },
+  "sourceFetchesInHarness": 0,
+  "productionChanges": false,
+  "newCodeVerifiedDependency": {
+    "entry": "app/layout.tsx",
+    "service": "services/marketingSettingsService.ts",
+    "source": "Supabase site_settings marketing on cache miss",
+    "nativeAdapterInService": false,
+    "liveTracePerformed": false
+  },
+  "limits": [
+    "Not full vinext renderer or browser/Safari",
+    "Not original mandatory Facebook Ads lesson/media",
+    "Root marketing dependency bypassed by harness",
+    "No native primary/legacy adoption/final delta/payment/full RLS/B/reverse rollback proof"
+  ],
+  "sha256": {
+    "scripts/test-refresh-router-workers.mjs": "f2776d1d08afa90de42a3ddc9f85c7370b30a1aaec8dafec74d213e13bb1f474",
+    "lib/cloudflare/native-stage-router.ts": "5f166db13705eaf21d0208715dc2d407f59f05f473303e06f53bd5fe9fbbb546",
+    "lib/cloudflare/native-auth-context.ts": "6301bda22bda178645408976d052b1e3d062ea016cf49c1b9fb6af9521dc90d0",
+    "lib/cloudflare/native-learning-page.ts": "81c41f001a009e211533b09c8285ed99ad0e2c63095c187cfb8d722a6a040b13",
+    "lib/cloudflare/d1-student-http.ts": "0ad9c248194a55c6800165ad44648e83889caf3f5a692dda5e61bd0550ca0fc1",
+    "lib/cloudflare/d1-lesson-progress.ts": "77b23f6e7c5c866f874d992bed96fce6036d137516a598e6f86751cc8e6743b7",
+    "lib/cloudflare/d1-progress-publication.ts": "8d45b267c16f6b875845dbaea6e34f5db8c385200becdff68561380c71a99ce7",
+    "lib/cloudflare/d1-student-session-access.ts": "32f84fbdb12a12ed825240a1372a65c89d7b822f7c5cbfdb9c8985da567f163a",
+    "app/layout.tsx": "d2c33f7aa147442a91826210e243f36c738c894f561f2d79af61b08734133803",
+    "services/marketingSettingsService.ts": "406af8f30456d1ac335dd8da85f9c30dc0bdb63ef084a145bd4097086d5da339"
+  }
+}

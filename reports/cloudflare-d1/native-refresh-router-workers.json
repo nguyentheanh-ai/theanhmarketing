@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-15T04:35:15.424Z",
+  "checkedAt": "2026-10-15T04:47:22.774Z",
   "checks": [
     {
       "name": "default-off refresh leaves existing login unchanged and cannot create a family",
@@ -16,6 +16,14 @@
     },
     {
       "name": "actual router refresh and old-parent retry produce same successor and persisted session",
+      "status": "PASS"
+    },
+    {
+      "name": "context-protected actual lesson and progress persist with stable UUID and idempotent retry",
+      "status": "PASS"
+    },
+    {
+      "name": "old learning context cannot complete the next lesson after another native family logs in",
       "status": "PASS"
     },
     {
@@ -53,6 +61,13 @@
   ],
   "outboundFetches": 0,
   "networkCanaryBlocked": true,
-  "scope": "Actual native-stage-router and real workerd/D1, synthetic principals only",
-  "limitations": "No hosted deploy/browser/full vinext SSR/legacy session adoption/native primary authority; simulated clock and synthetic Source readiness only"
+  "scope": "Actual native-stage-router, ALS native lesson reader, publication guard and real workerd/D1; synthetic principals/course only",
+  "syntheticCourse": {
+    "slug": "qa-course",
+    "lessons": 2,
+    "progressPercent": 50,
+    "progressRows": 1,
+    "idempotentRetry": true
+  },
+  "limitations": "No hosted deploy/browser/full vinext SSR/original customer lesson/video/legacy session adoption/native primary authority; simulated clock and synthetic Source readiness only"
 }
