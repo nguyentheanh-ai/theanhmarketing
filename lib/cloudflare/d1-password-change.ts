@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import {getD1AuthSession,type AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
 import {assertD1AuthMirrorReady,authMirrorReadySql} from '@/lib/cloudflare/d1-auth-authority';
 import {openLegacyBcryptHash,sealLegacyBcryptHash,verifyLegacyBcryptPassword} from '@/lib/cloudflare/legacy-password';
-type Options={projectId:string;credentialKey:string;sessionTtlMs:number;allowedUserIds:readonly string[];now?:number};
+type Options={projectId:string;credentialKey:string;sessionTtlMs:number;allowedUserIds:readonly string[];refreshFamilies?:boolean;now?:number};
 type Input={token:string;operationId:string;currentPassword:string;newPassword:string};
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/,TOKEN=/^[A-Za-z0-9_-]{43}$/;
 const done=()=>({changed:true as const,reauthenticate:true as const});
@@ -26,7 +26,7 @@ export async function changeD1Password(db:AuthDatabase,input:Input,options:Optio
  async function retry(){
   const op=await db.first('SELECT * FROM d1_auth_credential_operations WHERE id=?1',[input.operationId]);if(!op)return undefined;
   if(op.status!=='done'||op.project_id!==options.projectId||op.old_session_hash!==oldHash||op.request_digest!==digest||typeof op.user_id!=='string'||!options.allowedUserIds.includes(op.user_id)||!(Date.parse(String(op.created_at))<=time())||!(Date.parse(String(op.retry_until))>time()))return null;
-  return done();
+  return options.refreshFamilies===true?{...done(),clearCookies:false}:done();
  }
  const replay=await retry();if(replay!==undefined)return replay;
  const session=await getD1AuthSession(db,input.token,options);if(!session)return null;
@@ -43,18 +43,20 @@ export async function changeD1Password(db:AuthDatabase,input:Input,options:Optio
  const pending=`EXISTS(SELECT 1 FROM d1_auth_credential_operations WHERE id=?1 AND project_id=?3 AND user_id=?4 AND old_session_hash=?2 AND request_digest=?11 AND expected_version=?6 AND target_version=?8 AND status='pending')`;
  const metadata=`json_set(?15,'$.must_change_password',json('false'),'$.password_changed_at',?9)`;
  const updated=`EXISTS(SELECT 1 FROM d1_auth_accounts a JOIN d1_access_users u ON u.id=a.user_id WHERE a.user_id=?4 AND u.normalized_email=?14 AND a.credential_ciphertext=?7 AND a.session_version=?8 AND a.must_change_password=0 AND a.user_metadata=${metadata} AND a.updated_at=?9 AND ${active}) AND ${ready}`;
- const revoked=`NOT EXISTS(SELECT 1 FROM d1_auth_sessions WHERE user_id=?4 AND project_id=?3 AND revoked_at IS NULL)`;
+ const refreshRevoked=options.refreshFamilies===true?` AND NOT EXISTS(SELECT 1 FROM d1_auth_refresh_families WHERE user_id=?4 AND project_id=?3 AND revoked_at IS NULL)`:'';
+ const revoked=`NOT EXISTS(SELECT 1 FROM d1_auth_sessions WHERE user_id=?4 AND project_id=?3 AND revoked_at IS NULL)${refreshRevoked}`;
  const statement=(sql:string)=>({sql,params:params.slice(0,Math.max(...Array.from(sql.matchAll(/\?(\d+)/g),m=>Number(m[1]))))});
  try{
   const result=await db.batch([
    statement(`INSERT INTO d1_auth_credential_operations(id,project_id,user_id,old_session_hash,request_digest,expected_version,target_version,status,created_at,retry_until) SELECT ?1,?3,?4,?2,?11,?6,?8,'pending',?9,?10 WHERE ${old}`),
    statement(`UPDATE d1_auth_accounts SET credential_ciphertext=?7,session_version=?8,must_change_password=0,user_metadata=${metadata},updated_at=?9 WHERE user_id=?4 AND ${pending} AND ${old}`),
    statement(`UPDATE d1_auth_sessions SET revoked_at=?9 WHERE user_id=?4 AND project_id=?3 AND revoked_at IS NULL AND ${pending} AND ${updated}`),
+   ...(options.refreshFamilies===true?[statement(`UPDATE d1_auth_refresh_families SET revoked_at=?9 WHERE user_id=?4 AND project_id=?3 AND revoked_at IS NULL AND ${pending} AND ${updated}`)]:[]),
    statement(`UPDATE d1_auth_credential_operations SET status='done' WHERE id=?1 AND ${pending} AND ${updated} AND ${revoked}`),
    statement(`SELECT CASE WHEN EXISTS(SELECT 1 FROM d1_auth_credential_operations WHERE id=?1 AND status='done' AND user_id=?4 AND project_id=?3 AND old_session_hash=?2 AND request_digest=?11 AND expected_version=?6 AND target_version=?8) AND ${updated} AND ${revoked} THEN 1 ELSE abs(-9223372036854775808) END AS changed`),
   ]);
-  if(result[4]?.results?.[0]?.changed!==1)throw Error('Credential change outcome unavailable');
-  return done();
+  if(result.at(-1)?.results?.[0]?.changed!==1)throw Error('Credential change outcome unavailable');
+  return options.refreshFamilies===true?{...done(),clearCookies:true}:done();
  }catch{
   const recovered=await retry();if(recovered)return recovered;
   const current=await db.first('SELECT credential_ciphertext,session_version,user_metadata,updated_at FROM d1_auth_accounts WHERE user_id=?1',[session.user.id]);

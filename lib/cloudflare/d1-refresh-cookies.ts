@@ -10,3 +10,5 @@ export function createD1RefreshCookies(pair:NativeRefreshPair,now:number,cookieM
  const refreshAge=pair.refreshExpiresAt===null?cookieMaxAgeSeconds:Math.max(1,Math.min(cookieMaxAgeSeconds,Math.ceil((Date.parse(pair.refreshExpiresAt)-now)/1000)));
  return [['__Host-tam-session',pair.accessToken,accessAge],[D1_REFRESH_COOKIE,pair.refreshToken,refreshAge]].map(([name,value,age])=>`${name}=${value}; Path=/; Secure; HttpOnly; SameSite=Lax${pair.rememberLogin?'; Max-Age='+age:''}`);
 }
+
+export function clearD1RefreshCookies(){return ['__Host-tam-session',D1_REFRESH_COOKIE].map(name=>`${name}=; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=0`);}

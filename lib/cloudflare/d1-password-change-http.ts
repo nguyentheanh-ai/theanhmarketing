@@ -1,7 +1,8 @@
+import {clearD1RefreshCookies} from '@/lib/cloudflare/d1-refresh-cookies';
 import {changeD1Password,validNativeNewPassword} from '@/lib/cloudflare/d1-password-change';
 import {readD1SessionCookie,readBoundedAuthJson,createD1SessionCookie} from '@/lib/cloudflare/d1-auth-http';
 import type {AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
-type Options={db:AuthDatabase;origin:string;projectId:string;credentialKey:string;sessionTtlMs:number;allowedUserIds:readonly string[];writeEnabled:boolean;allowAttempt:(request:Request,subject:string)=>Promise<{allowed:boolean;retryAfter:number}>};
+type Options={db:AuthDatabase;origin:string;projectId:string;credentialKey:string;sessionTtlMs:number;allowedUserIds:readonly string[];writeEnabled:boolean;refreshFamilies?:boolean;allowAttempt:(request:Request,subject:string)=>Promise<{allowed:boolean;retryAfter:number}>};
 function reply(status:number,body:unknown,cookie?:string,retry?:number){const headers=new Headers({'Content-Type':'application/json; charset=utf-8','Cache-Control':'private, no-store','CDN-Cache-Control':'no-store','Vary':'Cookie','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'});if(cookie)headers.set('Set-Cookie',cookie);if(retry)headers.set('Retry-After',String(retry));return new Response(JSON.stringify(body),{status,headers});}
 export async function handleD1PasswordChangeHttp(request:Request,options:Options){
  const url=new URL(request.url);if(url.pathname!=='/api/cloudflare-auth/change-password')return reply(404,{ok:false});
@@ -16,6 +17,13 @@ export async function handleD1PasswordChangeHttp(request:Request,options:Options
   const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token));const subject='credential-change:'+Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join('');
   const limit=await options.allowAttempt(request,subject);if(!limit.allowed)return reply(429,{ok:false},undefined,Math.max(1,Math.ceil(limit.retryAfter)));
   const result=await changeD1Password(options.db,{token,currentPassword:body.currentPassword,newPassword:body.newPassword,operationId:body.operationId},options);
-  return result?reply(200,{ok:true,reauthenticate:true},createD1SessionCookie('',0,true)):reply(401,{ok:false,message:'Phiên hoặc mật khẩu hiện tại chưa hợp lệ.'});
+  if(!result)return reply(401,{ok:false,message:'Phiên hoặc mật khẩu hiện tại chưa hợp lệ.'});
+  if(options.refreshFamilies===true){
+   const response=reply(200,{ok:true,reauthenticate:true});
+   // A status-only retry may arrive after a newer login. Do not clear its cookies.
+   if('clearCookies' in result&&result.clearCookies===true)for(const value of clearD1RefreshCookies())response.headers.append('Set-Cookie',value);
+   return response;
+  }
+  return reply(200,{ok:true,reauthenticate:true},createD1SessionCookie('',0,true));
  }catch{return reply(503,{ok:false,message:'Chưa xác nhận được thay đổi. Vui lòng thử lại hoặc đăng nhập lại bằng mật khẩu mới.'});}
 }

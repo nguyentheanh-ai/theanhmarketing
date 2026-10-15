@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-15T04:02:01.589Z",
+  "checkedAt": "2026-10-15T04:06:32.899Z",
   "checks": [
     {
       "name": "default-off refresh leaves existing login unchanged and cannot create a family",
@@ -27,6 +27,10 @@
       "status": "PASS"
     },
     {
+      "name": "actual password writer revokes families, clears both cookies and requires new login",
+      "status": "PASS"
+    },
+    {
       "name": "expired one-hour access refreshes before ALS-render boundary using a synthetic fresh Source mirror",
       "status": "PASS"
     },
@@ -38,5 +42,5 @@
   "outboundFetches": 0,
   "networkCanaryBlocked": true,
   "scope": "Actual native-stage-router and real workerd/D1, synthetic principals only",
-  "limitations": "No hosted deploy/browser/full vinext SSR/legacy session adoption/password-change refresh/native primary authority; simulated clock and synthetic Source readiness only"
+  "limitations": "No hosted deploy/browser/full vinext SSR/legacy session adoption/native primary authority; simulated clock and synthetic Source readiness only"
 }
