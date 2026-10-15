@@ -70,9 +70,29 @@ Kiểm chứng sau thay đổi: 1.287 test — 33 lỗi đều có sẵn, 0 lỗ
 
 Cần thêm khi chuyển tên miền: Vercel hiện chuyển `theanhmarketing.com` → `www` (307). Trên Cloudflare phải có quy tắc chuyển hướng tương tự (Redirect Rule hoặc trong Worker) trước khi gắn tên miền gốc.
 
+## Kết quả chép Secret từ Vercel (15/10 tối)
+
+Phiên Vercel mới hợp lệ, nhưng dự án `theanhmarketing` chỉ có 3 biến thường đọc được (`NEXT_PUBLIC_SUPABASE_URL`, `STUDENT_PORTAL_PROVISION_URL`, `ADS_OS_STAGED_ORIGIN`); **36 biến kiểu Sensitive — Vercel không bao giờ trả lại giá trị** (cả CLI lẫn API). Vì vậy không thể "chép" từ Vercel. Đọc file `.env` trên máy để tìm giá trị cũ bị chế độ an toàn chặn.
+
+Cách làm: chủ dự án tự nhập bằng `scripts/set-production-secrets.sh` (gõ ẩn, em không thấy giá trị; Enter để bỏ qua; cuối cùng tự tạo 4 khóa native ngẫu nhiên). Nơi lấy giá trị:
+
+| Nhóm | Biến | Lấy ở đâu |
+|---|---|---|
+| Supabase | `SUPABASE_SERVICE_ROLE_KEY` | Supabase → project theanhmarketing → Project Settings → API Keys → service_role (Reveal) |
+| Email | `RESEND_API_KEY` | Resend → API Keys (tạo key mới, quyền Sending, domain theanhmarketing.com) |
+| SePay | `SEPAY_WEBHOOK_API_KEY`, `SEPAY_WEBHOOK_SECRET`, `SEPAY_BANK_*` | my.sepay.vn → Webhooks (API key đang cấu hình) / thông tin tài khoản nhận tiền |
+| Meta | `META_CAPI_ACCESS_TOKEN`, `META_CAPI_DATASET_ID`, `META_CODEX_CAPI_ACCESS_TOKEN`, `META_ADS_*`, `META_APP_ID/SECRET` | Events Manager → Dataset → Settings → Conversions API token; Business/Ads Manager; developers.facebook.com → App |
+| Telegram | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | @BotFather (token bot hiện có) / chat ID nhóm báo cáo |
+| Google Sheets | `GOOGLE_SHEETS_WEBHOOK_URL` | Apps Script → Deploy → Web app URL |
+| Tự đặt mới được | `CRON_SECRET`, `CHECKOUT_ABUSE_HMAC_KEY`, `TELEGRAM_REPORT_SECRET` | chuỗi ngẫu nhiên mới (chỉ dùng nội bộ Worker) |
+| App B | `STUDENT_PORTAL_PROVISION_SECRET` | phải TRÙNG giá trị app B production đang dùng |
+| Cấu hình thường | email người nhận/người gửi, `ADMIN_*`, `CRM_V2_*` | giá trị anh đang dùng (không bí mật) |
+
+Sau khi nhập xong: em deploy bản đã build (`/private/tmp/claude-501/dist-production`, hoặc build lại `CF_DEPLOY_TARGET=production vite build --mode cfproduction`) bằng `wrangler deploy --config dist/server/wrangler.json`, rồi thử như mục 5.
+
 ## Danh sách cần anh làm/duyệt (gom một lần)
 
-1. Anh đăng nhập lại Vercel trên máy: chạy `npx vercel@latest login` trong Terminal (em không được nhập thông tin đăng nhập hộ).
-2. Cho phép thao tác tạo/chép Secret lên Worker `theanh-main-cf-production` khi Claude Code hỏi (hoặc thêm quy tắc cho phép trong cài đặt). Sau đó em chạy liền: `sync-vercel-env-to-worker.py plan` → `secrets` (kèm 4 Secret native ngẫu nhiên mới) → deploy bản đã build → thử trang chủ, `/khoa-hoc`, landing Facebook Ads (so HTML), đăng nhập, `/learn`, admin, CRM, đơn thử 2.000đ, email thật tới anh.
+1. ~~Đăng nhập lại Vercel~~ (xong, nhưng giá trị Sensitive không đọc được).
+2. Anh chạy `scripts/set-production-secrets.sh` để nhập Secret (bảng nơi lấy ở trên), hoặc cho phép em đọc file `.env` cũ trên máy nếu anh còn lưu. Sau đó cho phép lên Worker `theanh-main-cf-production` khi Claude Code hỏi (hoặc thêm quy tắc cho phép trong cài đặt). Sau đó em chạy liền: `sync-vercel-env-to-worker.py plan` → `secrets` (kèm 4 Secret native ngẫu nhiên mới) → deploy bản đã build → thử trang chủ, `/khoa-hoc`, landing Facebook Ads (so HTML), đăng nhập, `/learn`, admin, CRM, đơn thử 2.000đ, email thật tới anh.
 3. (Sau khi thử xong) Tắt cron Vercel, thêm chuyển hướng apex→www, gắn tên miền.
 4. Quyết định 11 file chưa commit trong thư mục phát hành cũ.
