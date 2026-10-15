@@ -1,7 +1,8 @@
 import {attachD1RefreshFamily,refreshD1Family,revokeD1RefreshFamily,revokeAllD1RefreshFamilies,RefreshFamilyRateLimited,type RefreshFamilyPolicy} from '@/lib/cloudflare/d1-refresh-family';
 import {D1_SESSION_COOKIE,readD1SessionCookie,readBoundedAuthJson} from '@/lib/cloudflare/d1-auth-http';
 import type {AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
-export const D1_REFRESH_COOKIE='__Host-tam-refresh';
+import {D1_REFRESH_COOKIE,createD1RefreshCookies} from '@/lib/cloudflare/d1-refresh-cookies';
+export {D1_REFRESH_COOKIE};
 type Options={db:AuthDatabase;origin:string;policy:RefreshFamilyPolicy;writeEnabled?:boolean;cookieMaxAgeSeconds:number;
  allowAttempt:(request:Request,subject:string)=>Promise<{allowed:boolean;retryAfter:number}>;
  allowVerifiedAttempt:(request:Request,subject:string)=>Promise<{allowed:boolean;retryAfter:number}>};
@@ -9,7 +10,7 @@ const privacy={'Cache-Control':'private, no-store','CDN-Cache-Control':'no-store
 function result(status:number,code:string,extra:Record<string,unknown>={}){return Response.json({ok:status===200,code,...extra},{status,headers:privacy});}
 function readRefresh(request:Request){const found=(request.headers.get('cookie')??'').split(';').map(v=>v.trim()).filter(v=>v.startsWith(D1_REFRESH_COOKIE+'='));return found.length===1?found[0].slice(D1_REFRESH_COOKIE.length+1):'';}
 function cookie(name:string,value:string,age:number|null){return `${name}=${value}; Path=/; Secure; HttpOnly; SameSite=Lax${age===null?'':'; Max-Age='+age}`;}
-// Controller candidate only; not mounted by native-stage-router. No HTTP user
+// Mounted only behind the default-off staging refresh gate. No HTTP user
 // field, source-provider fallback, auth key or raw token appears in JSON/logs.
 export async function handleD1RefreshHttp(request:Request,options:Options){
  const url=new URL(request.url),paths=['/api/cloudflare-auth/refresh-bootstrap','/api/cloudflare-auth/refresh','/api/cloudflare-auth/logout'];
@@ -37,10 +38,8 @@ export async function handleD1RefreshHttp(request:Request,options:Options){
   }
   const pair=bootstrap?await attachD1RefreshFamily(options.db,access,{...policy,rememberLogin:body.rememberLogin===true}):await refreshD1Family(options.db,refresh,policy);
   if(!pair)return result(401,'INVALID_SESSION');
-  const now=options.policy.now??Date.now(),accessAge=Math.max(1,Math.ceil((Date.parse(pair.expiresAt)-now)/1000));
-  const refreshAge=pair.refreshExpiresAt===null?options.cookieMaxAgeSeconds:Math.max(1,Math.min(options.cookieMaxAgeSeconds,Math.ceil((Date.parse(pair.refreshExpiresAt)-now)/1000)));
   const response=result(200,'SESSION_REFRESHED',{expiresAt:pair.expiresAt});
-  response.headers.append('Set-Cookie',cookie(D1_SESSION_COOKIE,pair.accessToken,pair.rememberLogin?Math.min(accessAge,options.cookieMaxAgeSeconds):null));
-  response.headers.append('Set-Cookie',cookie(D1_REFRESH_COOKIE,pair.refreshToken,pair.rememberLogin?refreshAge:null));return response;
+  for(const value of createD1RefreshCookies(pair,options.policy.now??Date.now(),options.cookieMaxAgeSeconds))response.headers.append('Set-Cookie',value);
+  return response;
  }catch(error){if(error instanceof RefreshFamilyRateLimited){const response=result(429,'RATE_LIMITED');response.headers.set('Retry-After',String(Math.max(1,Math.ceil(error.retryAfter))));return response;}return result(503,'REFRESH_UNAVAILABLE');}
 }

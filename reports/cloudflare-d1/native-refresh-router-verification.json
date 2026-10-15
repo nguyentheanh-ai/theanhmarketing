@@ -1,0 +1,34 @@
+{
+  "status": "TESTED_LOCAL_ROUTER_MOUNTED_DEFAULT_OFF",
+  "checkedAt": "2026-10-15T03:57:14.011262+00:00",
+  "unitRegression": {
+    "pass": 59,
+    "fail": 0
+  },
+  "realWorkerdRouterGroups": 6,
+  "typecheck": "PASS",
+  "scopedEslint": "PASS",
+  "routerConfig": "PASS",
+  "vinextBuild": "PASS",
+  "assetPrune": "PASS",
+  "remoteChanges": false,
+  "limitations": [
+    "No hosted deploy",
+    "No native SSR/client refresh coordination",
+    "No legacy adoption",
+    "Password-change refresh integration incomplete",
+    "No native primary Auth writer/epoch/rollback",
+    "Login and family attach are separate transactions; unknown outcome can leave undelivered leases"
+  ],
+  "sha256": {
+    "cloudflare.config.ts": "e35c23ef7445643caf4fa5ef923bfe7588a9841e3349a44a7c7d759929fde01f",
+    "lib/cloudflare/d1-auth-http.ts": "651d952840d27419e7dfc87f1f2aeedd1e98670f9d9ea9872d01d8fe592853e2",
+    "lib/cloudflare/d1-refresh-family.ts": "738e67adcfb16786af4896d685420cf2a49b274abf2538f662067734ae6378ca",
+    "lib/cloudflare/d1-refresh-http.ts": "1bc957f26c50c38b98b3dbc21e1f870754d457e8ef4bf77842be0252893e3489",
+    "lib/cloudflare/d1-refresh-cookies.ts": "8cc8c94b50a2de0a8dce2e710ca217de864e7966303c07dfd41fef047c80f10d",
+    "lib/cloudflare/native-stage-router.ts": "8c0ee67535605597daa5dbfb1ad118552acb0c8cc15a2996c1be682e76d15f07",
+    "scripts/test-refresh-router-workers.mjs": "c9d9a1561a313f303d865c5e64d46a84c9e0be14d0285cf48dc3ef92baed92f3",
+    "tests/cloudflare-refresh-login.test.mjs": "f23f3669c4caf75f27260e4275bcb4a8fd17864f783fdbc71c69683a3e4c5154",
+    "tests/helpers/native-refresh-fixture.mjs": "72207585a2b29fd3692cb56f47ade7ac4107cc5c76bf74676f7e679c483485bd"
+  }
+}

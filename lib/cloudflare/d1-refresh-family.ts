@@ -1,7 +1,7 @@
 import {getD1AuthSession,type AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
 import {assertD1AuthMirrorReady,authMirrorReadySql} from '@/lib/cloudflare/d1-auth-authority';
 
-// Unmounted backend candidate. Native primary authority and legacy-cookie
+// Backend candidate behind the default-off staging refresh gate. Native primary authority and legacy-cookie
 // adoption remain separate gates; this never advances a source mirror marker.
 export type RefreshFamilyPolicy={
  projectId:string;now?:number;sessionTtlMs:number;maxSnapshotAgeMs?:number;allowedUserIds?:readonly string[];

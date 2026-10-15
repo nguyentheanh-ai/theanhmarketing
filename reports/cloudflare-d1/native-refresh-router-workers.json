@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-15T03:55:33.754Z",
+  "checks": [
+    {
+      "name": "default-off refresh leaves existing login unchanged and cannot create a family",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid gate or missing dedicated key fails closed before login without cookies",
+      "status": "PASS"
+    },
+    {
+      "name": "actual router login issues both cookies and unchanged original principal without bearer JSON",
+      "status": "PASS"
+    },
+    {
+      "name": "actual router refresh and old-parent retry produce same successor and persisted session",
+      "status": "PASS"
+    },
+    {
+      "name": "actual router enforces origin and body integrity before changing refresh generation",
+      "status": "PASS"
+    },
+    {
+      "name": "actual default logout revokes family and global version; retry cannot revoke subsequent login",
+      "status": "PASS"
+    }
+  ],
+  "outboundFetches": 0,
+  "networkCanaryBlocked": true,
+  "scope": "Actual native-stage-router and real workerd/D1, synthetic principals only",
+  "limitations": "No hosted deploy/browser/SSR refresh/legacy session adoption/password-change refresh/native primary authority"
+}
