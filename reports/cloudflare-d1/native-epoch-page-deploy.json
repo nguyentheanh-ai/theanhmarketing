@@ -1,0 +1,39 @@
+{
+  "status": "STAGING_DEPLOYED_GATES_OFF",
+  "sourceCommit": "e1b5d80",
+  "checkedAt": "2026-10-15T07:30:09.957539+00:00",
+  "versions": [
+    {
+      "version_id": "76a6a7e5-06a1-4b3c-aea6-87f464f1a6be",
+      "percentage": 100
+    }
+  ],
+  "gates": {
+    "CF_NATIVE_AUTH_MODE": "disabled",
+    "CF_NATIVE_AUTH_ORIGIN": "https://theanh-main-cf-staging.12c1thdtheanh.workers.dev",
+    "CF_NATIVE_MARKETING_MODE": "disabled",
+    "CF_NATIVE_QA_AUTH_CONTEXT_MODE": "disabled",
+    "CF_NATIVE_QA_CREDENTIAL_WRITES": "disabled",
+    "CF_NATIVE_QA_PROGRESS_MODE": "disabled",
+    "CF_NATIVE_QA_REFRESH_MODE": "disabled",
+    "CF_NATIVE_QA_USERS": "[]"
+  },
+  "secretNames": [
+    "NATIVE_AUTH_CREDENTIAL_KEY",
+    "NATIVE_AUTH_LIMITER_KEY",
+    "NATIVE_AUTH_REFRESH_KEY",
+    "R2_PRIVATE_URL_SECRET",
+    "STUDENT_PORTAL_PROVISION_SECRET",
+    "SUPABASE_SERVICE_ROLE_KEY"
+  ],
+  "d1BindingVerified": true,
+  "qaState": {
+    "active_sessions": 0,
+    "active_families": 0,
+    "credential_operations": 0,
+    "min_version": 1,
+    "max_version": 1
+  },
+  "productionChanged": false,
+  "limits": "Code deployment verified; hosted refresh mirror 8 groups belong to f26f925. Native-authority page fix tested locally, not enabled remotely."
+}

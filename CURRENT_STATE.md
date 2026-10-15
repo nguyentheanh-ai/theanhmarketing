@@ -1,3 +1,9 @@
+## 15/10/2026 08:10 UTC — Đối soát phiên cũ và backend chuyển phiên: TESTED cục bộ
+
+Đã kiểm graph Auth từ bản sao A/B (1.054 session, 3.698 token row) và backend chuyển proof cũ sang native session bằng 50 tests, 10 nhóm workerd/D1 cục bộ; dữ liệu phiên đã được đối soát trong image mã hóa. Không có raw token trong projection. Chưa triển khai endpoint chuyển phiên hoặc chứng nhận final thật; toàn hệ thống vẫn IN PROGRESS, chưa READY FOR CUTOVER. Hosted A/B native gates OFF và Access owner-only đã đọc lại 08:05 UTC. Chi tiết ở `../CLOUDFLARE_TEST_RESULTS.md` và `NATIVE_AUTH_SESSION_BRIDGE_DESIGN.md`.
+
+Mã mới: `legacy-session-snapshot.ts`, `d1-legacy-session-adoption.ts`, schema `d1-auth-legacy-snapshot.sql`, verifier/exporter trong image mã hóa và hai harness workerd. Không import các candidate vào router/public runtime.
+
 
 ## 15/10/2026 13:19 — Hosted A→B bản mới đạt; /learn còn chưa đạt
 
@@ -1454,3 +1460,7 @@ Cleanup hosted đã đọc lại gatesOFF,0active access/family, version1 bảo 
 Sau đó phát hiện và tái hiện401trong candidate Auth native-primary: before-render kiểm access cũ bằng SHA256 thường, trong khi issuer đã băm theo epoch/restore-fence. Đổi sang cùng authProofDigest(access,policy); mirror hiện hành giữ cách băm cũ. Hai test mới kiểm recovery namespace, cặp mirror/native bị chặn và fence khác503;58tests liên quan/8nhóm workerd-D1/CFtypecheck/lint/build/prune PASS. Source mirror được đặt pending trong fixture, không heartbeat; clock/manifest/receipt là giả lập. Receipt native-epoch-page-recovery.json và auth-epoch-workers.json. Bản sửa local chờ receipt deploy riêng, không kích hoạt native-primary.
 
 Tổng IN PROGRESS, chưa READY FOR CUTOVER. B là app riêng, /learn thuộc A. Còn phiên legacy/provider/recovery/signup, toàn dữ liệu/RLS/nghiệp vụ, thanh toán/tác vụ, delta/fence/rollback dữ liệu và Safari; cutover/decommission cần duyệt riêng. Hosted8nhóm không phải bằng chứng đã bỏ Supabase.
+
+
+### 15/10/2026 07:30 UTC — Bản sửa namespace đã deploy staging OFF
+Commit A e1b5d80 → Worker version76a6a7e5-06a1-4b3c-aea6-87f464f1a6be, GET deployments100%, D1 binding đúng,6Secret giữ, mọi native gateOFF/cohort[],0active access/family/0credential operations/version1. Receipt main/reports/cloudflare-d1/native-epoch-page-deploy.json. Hosted refresh8nhóm và Chrome trước đó thuộc f26f925; bản sửa epoch chỉ local verified và chưa kích hoạt native-primary trên remote. Không đổi B hoặc production. Chrome hiện mở các tab công việc khác, cửa sổ/tab QA cũ không có trong inventory; đã đóng menu và không điều hướng tab công việc. Kiểm thử browser bổ sung chưa thực hiện ở lượt này.

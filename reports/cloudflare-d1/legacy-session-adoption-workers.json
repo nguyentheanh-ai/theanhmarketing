@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-15T08:06:29.816Z",
+  "checks": [
+    {
+      "name": "pending restored graph and unactivated authority both deny bridge issuance",
+      "status": "PASS"
+    },
+    {
+      "name": "native authority freeze during D1 claim rolls back all new sessions and ledger rows",
+      "status": "PASS"
+    },
+    {
+      "name": "actual codec and D1 adopt parent/current concurrently into the original UUID only",
+      "status": "PASS"
+    },
+    {
+      "name": "adopted native cookie uses real session/refresh controllers without a Source marker",
+      "status": "PASS"
+    },
+    {
+      "name": "late old proof cannot create another redemption after the bounded bridge retry window",
+      "status": "PASS"
+    },
+    {
+      "name": "replay revocation failure rolls back its tombstone; successful retry closes the same family",
+      "status": "PASS"
+    }
+  ],
+  "networkCanaryBlocked": true,
+  "outboundFetches": 0,
+  "limits": "Synthetic local HTTP controller, final-certification rows and authority evidence. No public/hosted route, live Source fence/delta, real browser cookie rollout, provider/login completion or reverse migration proof"
+}

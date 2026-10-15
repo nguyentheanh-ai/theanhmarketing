@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-15T08:04:21.455Z",
+  "checks": [
+    {
+      "name": "prepared HMAC graph roundtrips through actual D1 types, constraints and row verifier",
+      "status": "PASS"
+    },
+    {
+      "name": "same source UUIDs and bearer fixtures in project B cannot share project A proof digests",
+      "status": "PASS"
+    },
+    {
+      "name": "pending snapshots cannot publish readiness or silently overwrite existing source history",
+      "status": "PASS"
+    },
+    {
+      "name": "cross-project family mutation rolls back its whole D1 batch",
+      "status": "PASS"
+    }
+  ],
+  "networkCanaryBlocked": true,
+  "outboundFetches": 0,
+  "nativeSessionsIssued": 0,
+  "limits": "Synthetic local workerd/D1 only; pending restored-backup representation cannot authenticate, activate final authority or accept browser proof"
+}

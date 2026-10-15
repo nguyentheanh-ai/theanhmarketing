@@ -1,3 +1,9 @@
+## 15/10/2026 08:10 UTC — Đối soát phiên cũ và backend chuyển phiên: TESTED cục bộ
+
+Đã kiểm graph Auth từ bản sao A/B (1.054 session, 3.698 token row) và backend chuyển proof cũ sang native session bằng 50 tests, 10 nhóm workerd/D1 cục bộ; dữ liệu phiên đã được đối soát trong image mã hóa. Không có raw token trong projection. Chưa triển khai endpoint chuyển phiên hoặc chứng nhận final thật; toàn hệ thống vẫn IN PROGRESS, chưa READY FOR CUTOVER. Hosted A/B native gates OFF và Access owner-only đã đọc lại 08:05 UTC. Chi tiết ở `../CLOUDFLARE_TEST_RESULTS.md` và `NATIVE_AUTH_SESSION_BRIDGE_DESIGN.md`.
+
+Mã mới: `legacy-session-snapshot.ts`, `d1-legacy-session-adoption.ts`, schema `d1-auth-legacy-snapshot.sql`, verifier/exporter trong image mã hóa và hai harness workerd. Không import các candidate vào router/public runtime.
+
 
 ## 15/10/2026 13:19 — Hosted A→B bản mới đạt; /learn còn chưa đạt
 
@@ -1572,3 +1578,7 @@ Lượt07:11:34Z bật riêng refreshqa/publicsettingsqa dừng ở login503 JSO
 
 ### 15/10/2026 — Native refresh QA và Auth namespace
 8nhóm refresh hosted A/f26f925 đạt; cleanup gatesOFF/0active/Access revoked đã đọc lại. Runner chờ có giới hạn chỉ NATIVE_D1_DISABLED trước Auth. Candidate page recovery dùng authProofDigest theo epoch/fence, lỗi401tái hiện và sửa;58tests/8workerd-D1/TS/lint/build PASS. Xem CLOUDFLARE_TEST_RESULTS.md, native-refresh-hosted-http.json và native-epoch-page-recovery.json. Chưa native-primary/legacy-session/Safari/cutover, production giữ nguyên; B riêng,/learn A.
+
+
+### 15/10/2026 07:30 UTC — Bản sửa namespace đã deploy staging OFF
+Commit A e1b5d80 → Worker version76a6a7e5-06a1-4b3c-aea6-87f464f1a6be, GET deployments100%, D1 binding đúng,6Secret giữ, mọi native gateOFF/cohort[],0active access/family/0credential operations/version1. Receipt main/reports/cloudflare-d1/native-epoch-page-deploy.json. Hosted refresh8nhóm và Chrome trước đó thuộc f26f925; bản sửa epoch chỉ local verified và chưa kích hoạt native-primary trên remote. Không đổi B hoặc production. Chrome hiện mở các tab công việc khác, cửa sổ/tab QA cũ không có trong inventory; đã đóng menu và không điều hướng tab công việc. Kiểm thử browser bổ sung chưa thực hiện ở lượt này.

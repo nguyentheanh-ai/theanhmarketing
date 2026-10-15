@@ -1,3 +1,9 @@
+## 15/10/2026 08:10 UTC — Đối soát phiên cũ và backend chuyển phiên: TESTED cục bộ
+
+Đã kiểm graph Auth từ bản sao A/B (1.054 session, 3.698 token row) và backend chuyển proof cũ sang native session bằng 50 tests, 10 nhóm workerd/D1 cục bộ; dữ liệu phiên đã được đối soát trong image mã hóa. Không có raw token trong projection. Chưa triển khai endpoint chuyển phiên hoặc chứng nhận final thật; toàn hệ thống vẫn IN PROGRESS, chưa READY FOR CUTOVER. Hosted A/B native gates OFF và Access owner-only đã đọc lại 08:05 UTC. Chi tiết ở `../CLOUDFLARE_TEST_RESULTS.md` và `NATIVE_AUTH_SESSION_BRIDGE_DESIGN.md`.
+
+Mã mới: `legacy-session-snapshot.ts`, `d1-legacy-session-adoption.ts`, schema `d1-auth-legacy-snapshot.sql`, verifier/exporter trong image mã hóa và hai harness workerd. Không import các candidate vào router/public runtime.
+
 
 ## 15/10/2026 13:19 — Hosted A→B bản mới đạt; /learn còn chưa đạt
 

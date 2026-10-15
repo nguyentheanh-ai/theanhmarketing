@@ -1,0 +1,26 @@
+{
+  "status": "TESTED_LOCAL_CANDIDATE",
+  "checkedAt": "2026-10-15T08:08:03.189513+00:00",
+  "unitTests": 50,
+  "snapshotWorkerdGroups": 4,
+  "adoptionWorkerdGroups": 6,
+  "cloudflareTypecheck": "PASS",
+  "scopedEslint": "PASS",
+  "restoredParityReport": "../LEGACY_SESSION_SNAPSHOT_PARITY_RESULTS.json",
+  "sourceWrites": false,
+  "remoteD1Writes": false,
+  "publicEndpointMounted": false,
+  "fullAppBuild": "Not repeated: new backend candidates are not imported by public runtime; esbuild/workerd compiled actual candidate modules",
+  "microsecondRegression": "RED: token changed 1 microsecond after cutoff was accepted by julianday; PASS with 20-digit revisions",
+  "limits": "Historical encrypted restore and synthetic final certification/native authority. No live Source fence, final delta, browser/hosted legacy adoption, complete Auth/providers/other app or rollback readiness.",
+  "fileSha256": {
+    "lib/cloudflare/legacy-session-snapshot.ts": "24e736ac31f5a2a4bee6de30398c16d753224b482456b4e88ef8421f69befa2d",
+    "lib/cloudflare/d1-legacy-session-adoption.ts": "f7a7d01b08bfc231379f4522db365b4e1b590c7ff507b60a21309d77228700af",
+    "scripts/d1-auth-legacy-snapshot.sql": "8af6ad7760ef6e3191ecfe81ccdf1ad9cc7777092f6464871f27953245579d88",
+    "scripts/verify-legacy-session-snapshot.mjs": "bfa7c4400b77292cbfd04fc866e8aba54cd1495fcc9e5f5a7164126159129b99",
+    "scripts/test-legacy-session-snapshot-workers.mjs": "19b087fac01f7e31442ab05c57831962aaf2df81f6d320b85aaa2eb6873295a0",
+    "scripts/test-legacy-session-adoption-workers.mjs": "9ef83f3f8c7cd3f6c71ec1ba201d1bd9c4224b42224d475c9537dcd23279b314",
+    "tests/cloudflare-legacy-session-snapshot.test.mjs": "bb6042186e8291b8d987940457ae52d4ebea6a631ca4f6de9a9577951d30e0fc",
+    "tests/cloudflare-legacy-session-adoption.test.mjs": "7fb973126df0f3f246e26480f57e8197de37568754bb0d5e0f3512ab5119814c"
+  }
+}

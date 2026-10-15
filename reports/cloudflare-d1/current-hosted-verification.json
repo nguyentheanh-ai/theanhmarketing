@@ -133,8 +133,8 @@
   },
   "limits": "A native Chrome lesson/login/logout/header and 13 HTTP settings/lesson groups verified on f26f925. Prior A-to-B and 11 progress groups on ea082d0. Historical state below is timestamped, not current config. All native gates closed after each run. Still Source mirror and partial app; not READY FOR CUTOVER.",
   "learningHttpReceipt": "native-qa-learning-ssr-http.json",
-  "latestRuntimeCommit": "f26f925",
-  "latestCodeDeployVersion": "69a0ea3a-21b2-408a-9610-6b720e0f0123",
+  "latestRuntimeCommit": "e1b5d80",
+  "latestCodeDeployVersion": "76a6a7e5-06a1-4b3c-aea6-87f464f1a6be",
   "browserReceipt": "native-header-chrome-qa.json",
   "publicSettingsHttpReceipt": "native-public-settings-hosted-http.json",
   "publicSettingsCleanupReceipt": "native-public-settings-access-cleanup.json",
@@ -144,5 +144,8 @@
   "refreshReceipt": "native-refresh-hosted-http.json",
   "refreshCleanupReceipt": "native-refresh-access-cleanup.json",
   "refreshRuntimeCommit": "f26f925",
-  "refreshLimits": "8 hosted HTTP groups; removed access cookie to test refresh-only SSR. No 1h elapsed/browser/Safari/native-primary proof."
+  "refreshLimits": "8 hosted HTTP groups; removed access cookie to test refresh-only SSR. No 1h elapsed/browser/Safari/native-primary proof.",
+  "latestDeployReceipt": "native-epoch-page-deploy.json",
+  "browserRuntimeCommit": "f26f925",
+  "publicSettingsRuntimeCommit": "f26f925"
 }
