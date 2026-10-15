@@ -16,6 +16,12 @@ for line in Path(sys.argv[1]).read_text().splitlines():
     v = m.group(2)
     if len(v) >= 2 and v[0] == v[-1] == '"': v = json.loads(v)
     if v: env[m.group(1)] = v
+# `vercel env pull` writes the same short placeholder for every Sensitive var.
+# Refuse such files instead of pushing placeholders as secrets.
+import collections
+repeated = [v for v, n in collections.Counter(env.values()).items() if n > 2]
+if repeated:
+    sys.exit(f"Refusing: {sum(collections.Counter(env.values())[v] for v in repeated)} variables share identical values (Sensitive placeholders). Use scripts/set-production-secrets.sh.")
 for k in FRESH: env[k] = base64.urlsafe_b64encode(secrets.token_bytes(32)).decode().rstrip("=")
 fd, tmp = tempfile.mkstemp(suffix=".json"); os.close(fd); os.chmod(tmp, 0o600)
 try:
