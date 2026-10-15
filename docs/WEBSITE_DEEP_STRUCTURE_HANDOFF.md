@@ -3157,3 +3157,11 @@ IN PROGRESS. Candidate `native-paid-order-access.ts` nối receipt thanh toán v
 Kiểm chứng: 36 test Node (9 test mới về quyền), 12 nhóm workerd/D1 thật cục bộ, outbound0; TS/lint/build đạt. Ca authority mất giữa batch, snapshot thay đổi, dữ liệu bị sửa bởi trigger đều rollback quyền và receipt cùng nhau. Chưa deploy hoặc chạy SQL từ bước này trên staging/production; adapter vẫn yêu cầu cohort QA và source authority trong 5 phút, chưa native-primary. Chưa phải bằng chứng khách hàng thực đăng nhập/nhận email. Receipt: reports/cloudflare-d1/payment-retry-workers.json.
 
 Tiếp theo: account provisioning và email/B outbox bền vững theo loại sản phẩm; kiểm thử hosted; thay authority mirror bằng writer fence đã đối soát khi đủ điều kiện.
+
+### 15/10/2026 — Native paid-account provisioning
+
+IN PROGRESS. Candidate `native-paid-account.ts` dùng receipt thanh toán/access và native Auth authority đã pin để tạo tài khoản D1, giữ UUID tài khoản cũ và không reset mật khẩu/phiên cũ. Mật khẩu mới dùng helper hiện có, bcrypt10 bọc AES-GCM theo project+UUID; chỉ kết quả nội bộ server có mật khẩu tạm, không trả qua public API/log. Ledger `d1_native_paid_accounts` tách biệt với fulfillment toàn bộ. Retry/concurrent cùng đơn giữ một tài khoản; sau đổi mật khẩu không trả lại mật khẩu tạm. Không hồi sinh tài khoản banned/unconfirmed/deleted. Cọc Agent Kit, tư vấn, support booking không tạo tài khoản học.
+
+Kiểm chứng: 46test Node tổng (10account), 13nhóm workerd/D1 với chuỗi thanh toán→access→account→bcrypt login thật trong local runtime; outbound0. TS/lint/Vite build đạt. Native authority freeze hoặc order snapshot đổi giữa read/commit rollback toàn bộ tài khoản và ledger. Receipt reports/cloudflare-d1/payment-retry-workers.json.
+
+Giới hạn: chưa mounted/deploy; native authority trong test là fixture, không phải phê duyệt hay bằng chứng cutover; order authority còn mirror5phút. Chưa Resend, account email template cho existing user, B provisioning, outbox/retry liên dịch vụ. Không đánh dấu fulfillment done, READY hoặc LIVE. Cần đưa nhánh existing-account vào email mà không yêu cầu mật khẩu tạm; production service hiện có thể reset password khi mua tiếp, candidate giữ nguyên theo yêu cầu bảo toàn Auth của migration. Production không thay đổi.
