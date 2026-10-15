@@ -4,9 +4,11 @@ import { HeaderAuthActions } from "@/components/site/header-auth-actions";
 import { MobileMenu } from "@/components/site/mobile-menu";
 import { mainNav } from "@/data/site";
 import { getBrandSettings } from "@/services/brandService";
+import { nativeLearningProvider } from "@/lib/cloudflare/native-learning-page";
 
 export async function SiteHeader() {
   const brand = await getBrandSettings();
+  const authProvider = nativeLearningProvider();
 
   return (
     <header className="tam-public-header site-header-motion fixed inset-x-0 top-0 z-50 border-b border-[#dbe7f1]/80 bg-white/88 backdrop-blur-xl">
@@ -28,9 +30,9 @@ export async function SiteHeader() {
           </nav>
 
           <div className="ml-auto hidden items-center gap-2 lg:flex">
-            <HeaderAuthActions />
+            <HeaderAuthActions provider={authProvider} />
           </div>
-          <MobileMenu items={mainNav} />
+          <MobileMenu items={mainNav} authProvider={authProvider} />
       </div>
     </header>
   );

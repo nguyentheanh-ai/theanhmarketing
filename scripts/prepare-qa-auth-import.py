@@ -8,6 +8,7 @@ import re
 import subprocess
 import urllib.request
 import urllib.error
+import uuid
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -16,11 +17,14 @@ def main():
     mode.add_argument("--verify-staging", action="store_true")
     parser.add_argument("--mark-qa-verified", action="store_true")
     parser.add_argument("--allow-revoked-qa-history", action="store_true")
+    parser.add_argument("--refresh-qa-timestamp", action="store_true")
     args = parser.parse_args()
     if args.allow_revoked_qa_history and not args.verify_staging:
         raise RuntimeError("Revoked QA history option requires verification mode")
     if args.mark_qa_verified and not args.verify_staging:
         raise RuntimeError("QA marker update requires complete source/target verification")
+    if args.refresh_qa_timestamp and not (args.verify_staging and args.allow_revoked_qa_history):
+        raise RuntimeError("QA timestamp refresh requires existing QA verification mode")
     root = Path(__file__).resolve().parents[1]
     spec = importlib.util.spec_from_file_location("qa_keychain", root.parent / "scripts/backup-secrets.py")
     keychain = importlib.util.module_from_spec(spec)
@@ -104,7 +108,32 @@ def main():
             verified = subprocess.run([node, "scripts/prepare-qa-auth-import.mjs"], cwd=root,
                 input=json.dumps({"source": payload["source"], "credentialKey": key, "target": results[0]["results"][0]}), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=30)
             result = json.loads(verified.stdout)
+            if args.refresh_qa_timestamp and result.get("status") == "FAILED" and set(result.get("differences", [])) == {"updated_at", "source_revision", "source_digest"}:
+                operation_id = str(uuid.uuid4())
+                planned = subprocess.run([node, "scripts/prepare-qa-auth-import.mjs"], cwd=root,
+                    input=json.dumps({"source": payload["source"], "credentialKey": key, "target": results[0]["results"][0], "timestampDelta": True, "operationId": operation_id}), capture_output=True, text=True, timeout=30)
+                plan = json.loads(planned.stdout)
+                if planned.returncode or plan.get("status") != "TIMESTAMP_DELTA_PREPARED" or plan.get("securityChanged") is not False:
+                    raise RuntimeError("QA timestamp delta rejected; no mutation attempted")
+                # Exact OFF baseline before the one transaction. Read guards and
+                # final assertion are inside the batch; no blind overwrite.
+                current_bindings = cloud("/workers/scripts/theanh-main-cf-staging/settings")["bindings"]
+                required = {"CF_NATIVE_AUTH_MODE":"disabled", "CF_NATIVE_QA_USERS":"[]", "CF_NATIVE_QA_PROGRESS_MODE":"disabled", "CF_NATIVE_QA_CREDENTIAL_WRITES":"disabled", "CF_NATIVE_QA_REFRESH_MODE":"disabled", "CF_NATIVE_QA_AUTH_CONTEXT_MODE":"disabled"}
+                if any(not any(b.get("name")==k and b.get("text")==v for b in current_bindings) for k,v in required.items()):
+                    raise RuntimeError("QA timestamp delta requires closed staging gates")
+                applied_delta = d1(plan["statements"])
+                if applied_delta[0]["results"] != [{"matched":1}] or applied_delta[-1]["results"] != [{"matched":1}]:
+                    raise RuntimeError("QA timestamp transaction assertion failed")
+                # Full independent source readback in a new invocation below is
+                # required to promote the marker. This action leaves it pending.
+                report = {"status":"QA_TIMESTAMP_DELTA_APPLIED_PENDING_VERIFY", "securityChanged":False, "operationId":operation_id, "updatedFields":["updated_at","source_revision","source_digest"], "sourceSnapshotAt":payload["snapshotAt"], "productionWrites":False}
+                (root / "reports/cloudflare-d1/qa-auth-timestamp-delta.json").write_text(json.dumps(report,indent=2)+"\n")
+                print(json.dumps(report));return
             if verified.returncode or result.get("status") != "VERIFIED_QA_ONLY":
+                allowed = {"id", "user_id", "normalized_email", "admin_role", "email_confirmed_at", "banned_until", "deleted_at", "is_anonymous", "session_version", "must_change_password", "user_metadata", "created_at", "updated_at", "source_revision", "source_digest", "source_project_id", "credential"}
+                fields = result.get("differences", [])
+                if fields and isinstance(fields, list) and all(isinstance(field, str) and field in allowed for field in fields):
+                    raise RuntimeError("QA parity mismatch fields: " + ",".join(fields))
                 raise RuntimeError("QA full-field/source-hash verification mismatch; marker remains pending")
             marker = counts["marker"]
             if args.mark_qa_verified:

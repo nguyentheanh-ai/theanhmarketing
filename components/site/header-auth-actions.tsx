@@ -2,44 +2,36 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ButtonLink } from "@/components/ui/button-link";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { observeHeaderAuth, type HeaderAuthProvider, type HeaderAuthState } from "@/lib/auth/header-auth-state";
 
-type AuthState = "guest" | "student";
-
-function useHeaderAuthState() {
-  const [state, setState] = useState<AuthState>("guest");
+function useHeaderAuthState(provider: HeaderAuthProvider) {
+  const pathname = usePathname();
+  const [state, setState] = useState<HeaderAuthState>("guest");
 
   useEffect(() => {
-    const supabase = createSupabaseBrowserClient();
-
-    if (!supabase) {
-      return;
-    }
-
-    let mounted = true;
-
-    supabase.auth.getSession().then(({ data }) => {
-      if (mounted) {
-        setState(data.session ? "student" : "guest");
-      }
+    const observer = observeHeaderAuth(provider, {
+      createSourceClient: createSupabaseBrowserClient,
+      fetchSession: fetch,
+      onState: setState,
     });
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setState(session ? "student" : "guest");
-    });
-
+    const onVisible = () => { if (document.visibilityState === "visible") observer.refresh(); };
+    window.addEventListener("focus", observer.refresh);
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
-      mounted = false;
-      listener.subscription.unsubscribe();
+      observer.close();
+      window.removeEventListener("focus", observer.refresh);
+      document.removeEventListener("visibilitychange", onVisible);
     };
-  }, []);
+  }, [provider, pathname]);
 
   return state;
 }
 
-export function HeaderAuthActions() {
-  const state = useHeaderAuthState();
+export function HeaderAuthActions({ provider = "supabase" }: { provider?: HeaderAuthProvider }) {
+  const state = useHeaderAuthState(provider);
   const isStudent = state === "student";
 
   return (
@@ -59,8 +51,8 @@ export function HeaderAuthActions() {
   );
 }
 
-export function HeaderMobileActions() {
-  const state = useHeaderAuthState();
+export function HeaderMobileActions({ provider = "supabase" }: { provider?: HeaderAuthProvider }) {
+  const state = useHeaderAuthState(provider);
 
   if (state === "student") {
     return (

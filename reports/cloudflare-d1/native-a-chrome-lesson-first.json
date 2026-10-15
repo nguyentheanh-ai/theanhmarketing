@@ -1,0 +1,50 @@
+{
+  "checkedAt": "2026-10-15T06:36:36.657037+00:00",
+  "status": "PARTIAL_BROWSER_TESTED",
+  "environment": "A Cloudflare staging, existing Chrome desktop",
+  "runtime": "ea082d0",
+  "checks": [
+    {
+      "name": "Access owner policy allowed existing owner browser",
+      "result": "PASS"
+    },
+    {
+      "name": "native password login after native session API readiness",
+      "result": "PASS",
+      "d1ActiveSessionCount": 1
+    },
+    {
+      "name": "required lesson route and title",
+      "result": "PASS"
+    },
+    {
+      "name": "real YouTube video playback",
+      "result": "PASS",
+      "evidence": "Visible moving video scene, subtitles and playing audio indicator; not whole duration"
+    },
+    {
+      "name": "next Premium lesson navigation",
+      "result": "PASS"
+    },
+    {
+      "name": "Premium lesson refresh",
+      "result": "PASS"
+    },
+    {
+      "name": "previous required lesson navigation",
+      "result": "PASS"
+    },
+    {
+      "name": "course menu hydration",
+      "result": "PASS"
+    },
+    {
+      "name": "UI logout",
+      "result": "INCONCLUSIVE",
+      "reason": "UI error; 240-second gate window closed around action; zero D1 sessions after cleanup does not prove UI logout"
+    }
+  ],
+  "firstLoginObservation": "First form loaded before native readiness; no D1 session, header switched to signed-in and stayed login page. Source fallback suspected, not network-traced. Repeat after browser GET native session user:null and fresh login page created D1 session and navigated correctly.",
+  "limits": "No progress write, full-duration playback, device mobile/Safari, expiry/refresh-token rotation proof or full independence. Public layout still Source-backed.",
+  "productionDataWrites": "No customer data/progress; QA first sign-in may have used Source Auth before readiness."
+}

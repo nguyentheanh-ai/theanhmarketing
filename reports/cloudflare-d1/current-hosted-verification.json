@@ -1,5 +1,5 @@
 {
-  "status": "HOSTED_AB_TESTED_LEARNING_PENDING",
+  "status": "HOSTED_AB_AND_LESSON_HTTP_TESTED",
   "runtimeBaseCommit": "ea082d0",
   "abHttpReceipt": "native-ab-current-http.json",
   "abAccessCleanup": {
@@ -131,5 +131,6 @@
       }
     ]
   },
-  "limits": "A→B HTTP flow passed. Latest learning attempt failed in preparation; earlier learning attempt failed readiness. Refresh/context/marketing native gates stayed disabled. No browser/Safari or full migration proof."
+  "limits": "A\u2192B 8 HTTP groups and required lesson 12 HTTP/SSR checks pass on current runtime. Browser verification in progress. Refresh/context/marketing/progress/password gates were OFF in these receipts. No full migration or cutover claim.",
+  "learningHttpReceipt": "native-qa-learning-ssr-http.json"
 }

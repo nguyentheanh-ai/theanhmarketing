@@ -1531,3 +1531,25 @@ Rà soát hosted preflight phát hiện NEXT_PUBLIC_APP_URL không phải runtim
 Đã thêm mã lỗi upstream theo nhóm401/403/404/503, không tiết lộ body/grant/credential;9tests bridge PASS. Theo tài liệu Fetch/Compatibility flags của Cloudflare, global fetch giữa Worker cần cơ chế tương ứng; A chưa có global_fetch_strictly_public. Bổ sung cờ này chỉ staging để đi qua public front door/Access hiện hữu; nguyên nhân lỗi503 vẫn CANDIDATE cho đến hosted chứng minh. Nguồn: https://developers.cloudflare.com/workers/runtime-apis/fetch/ và https://developers.cloudflare.com/workers/configuration/compatibility-flags/#global-fetch-strictly-public .
 
 Sau từng lượt lỗi đã đọc lại A/B native/data OFF/cohort[],0phiên hoạt động,0credential operation, số tài liệu QA không đổi, Secret QA A gỡ. Token/policy45phút vẫn đang trong lượt QA đã duyệt; phải thu hồi riêng và đọc lại trước kết thúc lượt. Không đổi production. Tổng IN PROGRESS, chưa READY FOR CUTOVER; chưa hosted B login/data, browser/Safari/full app independence.
+
+
+## 15/10/2026 — URL bài học bắt buộc: HTTP/SSR TESTED trên runtime hiện tại
+
+Lượt06:23:23Z đạt12kiểm tra: native password giữ UUID gốc/cookie Secure HttpOnly; session đọc lại; quyền khóa; lesson ID cũ và progress chưa hoàn thành; lesson API reload; login SSR native; lesson SSR có embed YouTube thật; SSR reload; sai mật khẩu401; progress gate503; logout thu hồi; guest lesson401. Mã runtime từ ea082d0, không thay production. Nhãn refresh trong receipt chỉ là đọc lại session, chưa phải xoay refresh token.
+
+Operator chuẩn bị/đối soát Source khi gateOFF trước khi tạo token Access, đợi envelope tối đa120giây rồi chạy. Cuối cùng đọc lại gatesOFF,0active access/family và xóa envelope. Token/policy A đã DELETE và GET xác minh vắng mặt, chỉ còn Owner policy. Receipt native-qa-learning-ssr-http.json, native-learning-current-driver.json, native-learning-current-access-cleanup.json. Thay trạng thái /learn pending ở báo cáo trước bằng HTTP/SSR TESTED; không xóa lịch sử lỗi hoặc coi nguyên nhân prep/readiness cũ đã xác định.
+
+Chưa có bằng chứng phát video/hydration/Safari/ghi progress trong lượt này. Marketing nativeOFF nên layout công khai còn Source; chưa toàn bộ Auth/provider/payment/data/RLS/delta/rollback. Anh đã duyệt Chrome staging A/B; công cụ hiện dùng được, chưa cần đổi managed requirements/restart. Tổng IN PROGRESS, chưa READY FOR CUTOVER/LIVE.
+
+
+## 15/10/2026 — Chrome bài học, tiến độ D1 và sửa nhãn phiên đăng nhập
+
+Chrome desktop thật đã mở URL bài bắt buộc, phát video YouTube thật, chuyển bài sau/trước và tải lại giữ bài. Lượt riêng xác minh logout khi cổng QA vẫn mở: D1 active sessions về0; URL bài cũ chuyển về đăng nhập. Chưa Safari/iPhone và chưa toàn bộ video. Lượt đầu trang đăng nhập được tải trước khi native gate hội tụ có dấu hiệu đi Source; không tuyên bố toàn lượt trình duyệt không gọi Supabase. Sau khi endpoint native guest sẵn sàng, login mới tạo đúng phiên D1.
+
+Sau QA đăng nhập, Source updated_at của đúng tài khoản thử thay đổi. Bộ đối soát từ chối đúng; không bỏ kiểm tra. Công cụ timestamp delta chỉ cho phép updated_at/source_revision/source_digest lệch, giữ ciphertext/UUID/session_version và mọi thuộc tính bảo mật; transaction CAS kiểm quyền, phiên đang hoạt động, ledger và assertion cuối. Đã áp dụng staging rồi đọc Source mới đối soát độc lập đạt;5tests hành vi PASS. Không sửa Source qua công cụ này.
+
+Hosted progress lúc06:54:26Z đạt11nhóm: login UUID gốc; bài chưa hoàn thành; từ chối giả user/CSRF; hoàn thành; retry cùng receipt; API/SSR reload giữ trạng thái; bỏ hoàn thành; retry cũ không ghi đè thao tác mới; logout. Đã khôi phục toàn bộ hàng QA bằng CAS, giữ ledger, cổngOFF/0active sessions/families. Access token/policy tạm đã DELETE và GET xác minh vắng mặt, Owner policy còn nguyên. Lượt trước thất bại tại login thiếu diagnostic, nguyên nhân UNKNOWN; lượt mới có chẩn đoán an toàn và PASS, không coi đó là bằng chứng nguyên nhân.
+
+Chrome phát hiện header công khai còn lấy cookie Supabase cũ sau native logout. Đã sửa để desktop/mobile nhận provider từ request server, native chỉ đọc endpoint session riêng, lỗi/malformed trả nhãn guest, không fallback Source. Request trễ không ghi đè kết quả mới; unmount hủy đọc; pathname/focus/visibility cập nhật lại.14tests liên quan, TypeScript và ESLint scoped PASS; vinext build PASS. Bản sửa chưa có bằng chứng hosted/browser cho tới receipt riêng sau deploy.
+
+Bằng chứng main/reports/cloudflare-d1/native-a-chrome-{lesson-first,logout}.json, native-qa-progress-http.json, native-progress-current-{driver,access-cleanup}.json, qa-auth-timestamp-delta.json. Native marketing/refresh/context/password OFF; layout và nhiều luồng vẫn phụ thuộc Supabase. IN PROGRESS, chưa READY FOR CUTOVER. Không đổi DNS/webhook/nguồn ghi production. B là app riêng, /learn thuộc A.

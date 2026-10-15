@@ -1,5 +1,5 @@
 {
-  "status": "FAILED",
+  "status": "WINDOW_CLOSED",
   "productionWrites": false,
   "cleanup": {
     "gatesOff": true,
@@ -7,7 +7,7 @@
     "d1_auth_sessionsInactive": true,
     "localQaEnvelopeCleared": true
   },
-  "error": "prepare-qa-auth-import.py: PRIVATE_DIAGNOSTIC_WITHHELD",
-  "checkedAt": "2026-10-15T06:17:24.037564+00:00",
-  "limits": "HTTP lesson/native API/SSR reads only; refresh/context/marketing/progress/password gates OFF; no browser/video playback/full independence"
+  "closedBy": "operator",
+  "checkedAt": "2026-10-15T06:45:18.494255+00:00",
+  "limits": "Gate controller only; browser evidence separately recorded. Marketing/progress/password gates OFF; refresh/context enabled only with explicit operator option"
 }

@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-15T06:45:10.134068+00:00",
+  "scope": "Existing Chrome desktop, native QA A login and logout before window expiry",
+  "checks": [
+    "native session guest confirmed in browser before login",
+    "fresh login navigated to required lesson",
+    "UI course menu opened",
+    "UI logout navigated to root",
+    "D1 session count0 while native mode still qa",
+    "reopening required lesson redirected to /dang-nhap with original next path"
+  ],
+  "remainingIssue": "Public HeaderAuthActions still reads Supabase browser session; header showed account links after native logout. Native lesson remained denied. Must route header auth to native provider.",
+  "limits": "No refresh-family/context, progress write or mobile/Safari in this run"
+}

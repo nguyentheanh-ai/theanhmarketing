@@ -1,0 +1,19 @@
+{
+  "status": "QA_TIMESTAMP_DELTA_APPLIED_PENDING_VERIFY",
+  "securityChanged": false,
+  "operationId": "e2f08710-a459-442c-948e-c3798893dbf3",
+  "updatedFields": [
+    "updated_at",
+    "source_revision",
+    "source_digest"
+  ],
+  "sourceSnapshotAt": "2026-10-15T06:41:50.271417+00:00",
+  "productionWrites": false,
+  "independentSourceReverification": {
+    "status": "PASS",
+    "sourceSnapshotAt": "2026-10-15T06:42:21Z",
+    "allStableFieldsMatched": true,
+    "credentialRoundTrip": true,
+    "markerVerified": true
+  }
+}

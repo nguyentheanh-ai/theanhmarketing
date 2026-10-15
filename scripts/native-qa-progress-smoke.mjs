@@ -2,6 +2,7 @@
 import {privateDecrypt,constants} from 'node:crypto';
 import {readFileSync,writeFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
+import {observeNativeSession} from './native-session-readiness.mjs';
 const [keyFile,sealedFile,stateFile]=process.argv.slice(2);
 if(!keyFile?.startsWith('/private/tmp/theanh-native-api-qa-')||!sealedFile?.startsWith('/private/tmp/theanh-native-api-qa-')||!stateFile?.startsWith('/private/tmp/theanh-native-progress-qa-'))throw Error('Private QA paths required');
 const bytes=privateDecrypt({key:readFileSync(keyFile),padding:constants.RSA_PKCS1_OAEP_PADDING,oaepHash:'sha256'},Buffer.from(JSON.parse(readFileSync(sealedFile,'utf8')).sealed,'base64'));
@@ -12,16 +13,16 @@ const origin='https://theanh-main-cf-staging.12c1thdtheanh.workers.dev',checks=[
 const course=saved.before.enrollment.course_slug,lesson=saved.before.progress.lesson_id;
 const lessonPath='/api/cloudflare-student/lesson?courseSlug='+encodeURIComponent(course)+'&lessonId='+encodeURIComponent(lesson);
 const pagePath='/learn/'+encodeURIComponent(course)+'/'+encodeURIComponent(lesson);
-let cookie,step='ready';
+let cookie,step='ready',readinessProbes=[],lastResponse;
 const headers={'CF-Access-Client-Id':access.client_id,'CF-Access-Client-Secret':access.client_secret};
-async function call(path,body,extra={}){return fetch(origin+path,{method:body===undefined?'GET':'POST',redirect:'manual',signal:AbortSignal.timeout(20000),headers:{...headers,...(cookie?{Cookie:cookie}:{}),...(body===undefined?{}:{Origin:origin,'Content-Type':'application/json'}),...extra},body:body===undefined?undefined:JSON.stringify(body)})}
+async function call(path,body,extra={}){lastResponse=undefined;const response=await fetch(origin+path,{method:body===undefined?'GET':'POST',redirect:'manual',signal:AbortSignal.timeout(20000),headers:{...headers,...(cookie?{Cookie:cookie}:{}),...(body===undefined?{}:{Origin:origin,'Content-Type':'application/json'}),...extra},body:body===undefined?undefined:JSON.stringify(body)});lastResponse={status:response.status,contentType:response.headers.get('content-type'),redirected:response.status>=300&&response.status<400};return response;}
 async function bounded(response,limit=65536){const reader=response.body.getReader(),chunks=[];let size=0;try{for(;;){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>limit){await reader.cancel();throw Error('QA response exceeds bound')}chunks.push(value)}return Buffer.concat(chunks).toString()}finally{reader.releaseLock()}}
 async function json(response){return JSON.parse(await bounded(response))}
 function privateResponse(response){assert(response.headers.get('Cache-Control')?.includes('private'));assert(response.headers.get('Cache-Control')?.includes('no-store'));assert(response.headers.get('Vary')?.toLowerCase().includes('cookie'));assert.notEqual(response.headers.get('CF-Cache-Status'),'HIT')}
 const progress=op=>call('/api/cloudflare-student/progress',{courseSlug:course,lessonId:lesson,operationId:op.id,completed:op.completed});
 const reportFile='reports/cloudflare-d1/native-qa-progress-http.json';
 try{
- for(let i=0;i<4;i++){const r=await call('/api/cloudflare-auth/session');if(r.status===200){assert.equal((await json(r)).user,null);break}await r.body?.cancel();if(i===3)throw Error('QA mode not ready');await new Promise(resolve=>setTimeout(resolve,1500))}
+ const readiness=await observeNativeSession(call,json,origin);readinessProbes=readiness.probes;assert(readiness.ready,'Native session not ready');
  step='native-password-login';const login=await call('/api/cloudflare-auth/login',{email:qa.email,password:qa.password,rememberLogin:true});assert.equal(login.status,200);assert.equal((await json(login)).user.id,qa.auth_user_id);cookie=login.headers.get('Set-Cookie')?.split(';')[0];assert(cookie?.startsWith('__Host-tam-session='));checks.push({name:step,status:200,originalUuid:true});
  step='baseline-existing-lesson';const baseline=await call(lessonPath);assert.equal(baseline.status,200);privateResponse(baseline);const data=await json(baseline);assert.equal(data.currentLesson.id,lesson);assert.equal(data.currentLessonCompleted,false);checks.push({name:step,status:200,uncompleted:true});
  step='reject-client-authority';const forged=await call('/api/cloudflare-student/progress',{courseSlug:course,lessonId:lesson,operationId:saved.plannedOperations[0].id,userId:'forged'});assert.equal(forged.status,400);await forged.body?.cancel();const csrf=await call('/api/cloudflare-student/progress',{}, {Origin:'https://attacker.example.invalid'});assert.equal(csrf.status,403);await csrf.body?.cancel();checks.push({name:step,bodyStatus:400,csrfStatus:403});
@@ -34,7 +35,8 @@ try{
  step='refresh-undone-ssr';const undoPage=await call(pagePath);assert.equal(undoPage.status,200);privateResponse(undoPage);const undoHtml=await bounded(undoPage,2000000);assert(undoHtml.includes('Hoàn thành bài học'));assert(!undoHtml.includes('✓ Đã hoàn thành'));checks.push({name:step,status:200,uncompletedVisible:true});
  step='logout';const out=await call('/api/cloudflare-auth/logout',{});assert.equal(out.status,200);assert.equal((await json(out)).ok,true);const denied=await call(lessonPath);assert.equal(denied.status,401);await denied.body?.cancel();checks.push({name:step,status:200,oldCookieDenied:true});
  const result={status:'PASS',checkedAt:new Date().toISOString(),scope:'Hosted D1 QA progress on one existing row, API and HTTP SSR',checks,limits:'QA row requires separate full-field CAS restoration; no browser/video playback, customer write authority or production cutover claim'};writeFileSync(reportFile,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
-}catch{
+}catch(error){
+ const failedResponse=lastResponse;
  if(cookie)try{await (await call('/api/cloudflare-auth/logout',{})).body?.cancel()}catch{}
- const result={status:'FAILED',step,completedChecks:checks.length,limits:'QA restore and cleanup still required; sensitive response/credential withheld'};writeFileSync(reportFile,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));process.exitCode=1;
+ const result={status:'FAILED',step,completedChecks:checks.length,readinessProbes,failedResponse,errorCategory:['AssertionError','TimeoutError','AbortError','TypeError','SyntaxError'].includes(error?.name)?error.name:'CHECK_FAILED',limits:'QA restore and cleanup still required; sensitive response/credential withheld'};writeFileSync(reportFile,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));process.exitCode=1;
 }

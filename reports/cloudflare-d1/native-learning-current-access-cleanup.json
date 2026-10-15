@@ -1,0 +1,20 @@
+{
+  "status": "VERIFIED",
+  "cleanup": {
+    "out": [
+      {
+        "label": "a",
+        "policyDelete": true,
+        "tokenDelete": true,
+        "remainingPolicies": [
+          {
+            "id": "37b8eed3-52a3-4e7e-9df7-5d4560f154c7",
+            "decision": "allow"
+          }
+        ]
+      }
+    ],
+    "createdTokensAbsent": true
+  },
+  "privateEnvelopeCleared": true
+}
