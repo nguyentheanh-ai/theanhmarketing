@@ -3104,3 +3104,18 @@ Hosted progress lúc06:54:26Z đạt11nhóm: login UUID gốc; bài chưa hoàn 
 Chrome phát hiện header công khai còn lấy cookie Supabase cũ sau native logout. Đã sửa để desktop/mobile nhận provider từ request server, native chỉ đọc endpoint session riêng, lỗi/malformed trả nhãn guest, không fallback Source. Request trễ không ghi đè kết quả mới; unmount hủy đọc; pathname/focus/visibility cập nhật lại.14tests liên quan, TypeScript và ESLint scoped PASS; vinext build PASS. Bản sửa chưa có bằng chứng hosted/browser cho tới receipt riêng sau deploy.
 
 Bằng chứng main/reports/cloudflare-d1/native-a-chrome-{lesson-first,logout}.json, native-qa-progress-http.json, native-progress-current-{driver,access-cleanup}.json, qa-auth-timestamp-delta.json. Native marketing/refresh/context/password OFF; layout và nhiều luồng vẫn phụ thuộc Supabase. IN PROGRESS, chưa READY FOR CUTOVER. Không đổi DNS/webhook/nguồn ghi production. B là app riêng, /learn thuộc A.
+
+
+## 15/10/2026 — Header native đã kiểm Chrome; public settings đã kiểm hosted
+
+Source f26f925 đã deploy A staging version69a0ea3a-21b2-408a-9610-6b720e0f0123; readback100%, đúng D1,6Secret giữ nguyên, các gateOFF. Chrome thật xác minh header guest dù cookie Source QA cũ còn tồn tại, login mở đúng URL bài bắt buộc và D1 có1phiên, nút logout đưa D1 về0khi gateqa vẫn mở; header trang chủ trở lại Đăng ký/Đăng nhập, URL bài cũ redirect đăng nhập giữ next. Controller kết thúc bằng yêu cầu operator và đọc lại gatesOFF/0active access/family. Receipt native-header-{staging-deploy,chrome-qa}.json/native-browser-current-driver.json. Desktop only; chưa Safari/mobile, không ghi progress trong lượt Chrome này.
+
+Công cụ prepare-public-settings.py/.mjs đọc đúng2key marketing/brand bằng query read_only, không ghi Source. D1 snapshot pending rồi đối soát raw/normalized/digest/absence và publish CAS; mỗi batch yêu cầu cổngOFF và đúng binding. Source thực có marketing, brand vắng mặt được biểu diễn source_exists0, không bịa timestamp.11tests projection/service PASS, AST/Node syntax PASS. Không thêm production scheduler.
+
+Lượt hosted07:06:42Z với marketingqa + Authqa đạt13nhóm:12nhóm login/quyền/bài cũ/API/SSR/logout và metadata SEO bài/tên thương hiệu trang đăng nhập khớp dữ liệu D1 đã đối soát. Refresh trong receipt là2lần đọc session; refresh-token/context/progress/password gatesOFF. Chưa network trace0outbound hoặc native-primary writer. Sau lượt đã đóng mọi gate,0phiên/family hoạt động, token/policy Access DELETE+GET xác minh vắng mặt, Owner policy nguyên vẹn. Receipts public-settings-staging-import.json/native-public-settings-{hosted-http,current-driver,access-cleanup}.json.
+
+Tiến độ hosted11nhóm trước đó thuộc runtimeea082d0; bản mới f26f925 chỉ sửa header và operator, không sửa writer. Không dùng bằng chứng khác phiên bản làm bản kiểm thử toàn hệ thống. Tổng IN PROGRESS; còn fullAuth/session bridge/refresh, toàn database/RLS/business/payment/Storage, data delta/writer fence/reverse rollback, Safari và cutover approval. Production chưa đổi.
+
+
+### 15/10/2026 — Native refresh QA và Auth namespace
+8nhóm refresh hosted A/f26f925 đạt; cleanup gatesOFF/0active/Access revoked đã đọc lại. Runner chờ có giới hạn chỉ NATIVE_D1_DISABLED trước Auth. Candidate page recovery dùng authProofDigest theo epoch/fence, lỗi401tái hiện và sửa;58tests/8workerd-D1/TS/lint/build PASS. Xem CLOUDFLARE_TEST_RESULTS.md, native-refresh-hosted-http.json và native-epoch-page-recovery.json. Chưa native-primary/legacy-session/Safari/cutover, production giữ nguyên; B riêng,/learn A.

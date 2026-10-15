@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-15T07:18:57.407Z",
+  "policyDeleted": true,
+  "tokenDeleted": true,
+  "ownerOnly": true,
+  "tokenAbsent": true,
+  "localEnvelopeCleared": true,
+  "limits": "Diagnostic attempt: exact NATIVE_D1_DISABLED before login; no completed checks. Gates/sessions cleanup in driver."
+}

@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-15T05:31:42.340Z",
+  "checkedAt": "2026-10-15T07:25:26.106Z",
   "checks": [
     {
       "name": "native policy cannot fall back to fresh Source mirror without explicit active handoff",
@@ -24,6 +24,10 @@
     },
     {
       "name": "external expectation with changed restore fence rejects preserved old rows and accepts only newly issued proofs",
+      "status": "PASS"
+    },
+    {
+      "name": "expired native access and refresh recover before page render under the same restore fence",
       "status": "PASS"
     },
     {

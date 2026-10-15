@@ -3,8 +3,12 @@ import {privateDecrypt,constants} from 'node:crypto';
 import {readFileSync,writeFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {observeNativeSession} from './native-session-readiness.mjs';
-const [keyFile,sealedFile]=process.argv.slice(2);
+const [keyFile,sealedFile,settingsFile]=process.argv.slice(2);
 if(!keyFile?.startsWith('/private/tmp/theanh-native-api-qa-')||!sealedFile?.startsWith('/private/tmp/theanh-native-api-qa-'))throw Error('Temporary QA path required');
+if(settingsFile&&!settingsFile.startsWith('/private/tmp/theanh-native-api-qa-'))throw Error('Temporary settings path required');
+const settings=settingsFile?JSON.parse(readFileSync(settingsFile,'utf8')):null;
+const reportFile=settings?'reports/cloudflare-d1/native-public-settings-hosted-http.json':'reports/cloudflare-d1/native-qa-learning-ssr-http.json';
+const escapeHtml=value=>String(value).replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll("'",'&#x27;').replaceAll('<','&lt;').replaceAll('>','&gt;');
 const sealed=JSON.parse(readFileSync(sealedFile,'utf8'));
 const bytes=privateDecrypt({key:readFileSync(keyFile),padding:constants.RSA_PKCS1_OAEP_PADDING,oaepHash:'sha256'},Buffer.from(sealed.sealed,'base64'));
 const access=JSON.parse(bytes.toString());bytes.fill(0);
@@ -24,12 +28,13 @@ try{
  currentStep='native-login-ssr';const loginPage=await call('/dang-nhap?next=%2Flearn%2Ffacebook-ads-2026');assert.equal(loginPage.status,200);const loginHtml=await loginPage.text();assert(loginHtml.includes('native-d1'));assert(!loginHtml.includes(qa.password));checks.push({name:currentStep,status:200,nativeProvider:true});
  currentStep='native-lesson-ssr';const pagePath='/learn/facebook-ads-2026/47da65a2-c6c6-4a21-a109-c1feb1d64c8f';const page=await call(pagePath);assert.equal(page.status,200);const html=await page.text();assert(html.length<2000000);assert(html.includes('native-d1'));assert(html.includes('47da65a2-c6c6-4a21-a109-c1feb1d64c8f'));assert(html.includes('youtube.com/embed/'));assert(!html.includes(qa.password));assert(!html.includes('__Host-tam-session='));checks.push({name:currentStep,status:200,originalLessonId:true,realVideoEmbed:true,nativeProvider:true});
  currentStep='native-lesson-ssr-refresh';const pageAgain=await call(pagePath);assert.equal(pageAgain.status,200);const again=await pageAgain.text();assert(again.includes('native-d1'));checks.push({name:currentStep,status:200});
+ if(settings){currentStep='d1-public-settings-ssr';assert(html.includes('<title>'+escapeHtml(settings.marketing.seoTitle)+'</title>'));assert(html.includes('name="description" content="'+escapeHtml(settings.marketing.seoDescription)+'"'));assert(loginHtml.includes('aria-label="'+escapeHtml(settings.brand.name)+'"'));checks.push({name:currentStep,status:200,lessonMetadataMatchesD1:true,loginBrandMatchesD1:true});}
  currentStep='wrong-password';const wrong=await call('/api/cloudflare-auth/login',{email:qa.email,password:'Wrong-QA-password-only'});assert.equal(wrong.status,401);assert.equal(wrong.headers.get('Set-Cookie'),null);await wrong.body?.cancel();checks.push({name:currentStep,status:401});
  currentStep='progress-disabled';const disabled=await call('/api/cloudflare-student/progress',{});assert.equal(disabled.status,503);assert.equal((await json(disabled)).code,'WRITE_DISABLED');checks.push({name:currentStep,status:503});
  currentStep='logout';const out=await call('/api/cloudflare-auth/logout',{});assert.equal(out.status,200);assert.match(out.headers.get('Set-Cookie'),/Max-Age=0/);await out.body?.cancel();const after=await call('/api/cloudflare-auth/session');assert.equal((await json(after)).user,null);checks.push({name:currentStep,status:200,revokedCookieIsGuest:true});const denied=await call(lessonPath);assert.equal(denied.status,401);await denied.body?.cancel();checks.push({name:'logged-out-lesson',status:401});
- const report={status:'PASS',checkedAt:new Date().toISOString(),scope:'Hosted native D1 QA session/course rights/lesson and SSR reads',checks,limits:'HTTP SSR and API only; no browser hydration/video playback/progress write/provider login/source bridge/customer migration claim'};writeFileSync('reports/cloudflare-d1/native-qa-learning-ssr-http.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
+ const report={status:'PASS',checkedAt:new Date().toISOString(),scope:'Hosted native D1 QA session/course rights/lesson and SSR reads',publicSettingsOracle:!!settings,checks,limits:'HTTP SSR and API only; no network trace/browser hydration/video playback/progress write/provider login/source bridge/customer migration claim'};writeFileSync(reportFile,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
 }catch{
  // Best-effort revoke a session created before a later check failed.
  if(cookie)try{await (await call('/api/cloudflare-auth/logout',{})).body?.cancel()}catch{}
- const report={status:'FAILED',checkedAt:new Date().toISOString(),step:currentStep,completedChecks:checks.length,readinessProbes,limits:'Sensitive response/error withheld; native QA not verified'};writeFileSync('reports/cloudflare-d1/native-qa-learning-ssr-http.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));process.exitCode=1;
+ const report={status:'FAILED',checkedAt:new Date().toISOString(),step:currentStep,completedChecks:checks.length,readinessProbes,limits:'Sensitive response/error withheld; native QA not verified'};writeFileSync(reportFile,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));process.exitCode=1;
 }

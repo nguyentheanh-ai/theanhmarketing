@@ -1,0 +1,31 @@
+{
+  "status": "STAGING_DEPLOYED_NOT_BROWSER_VERIFIED",
+  "sourceCommit": "f26f925",
+  "checkedAt": "2026-10-15T06:57:34.376043+00:00",
+  "versions": [
+    {
+      "version_id": "69a0ea3a-21b2-408a-9610-6b720e0f0123",
+      "percentage": 100
+    }
+  ],
+  "gates": {
+    "CF_NATIVE_AUTH_MODE": "disabled",
+    "CF_NATIVE_AUTH_ORIGIN": "https://theanh-main-cf-staging.12c1thdtheanh.workers.dev",
+    "CF_NATIVE_MARKETING_MODE": "disabled",
+    "CF_NATIVE_QA_AUTH_CONTEXT_MODE": "disabled",
+    "CF_NATIVE_QA_CREDENTIAL_WRITES": "disabled",
+    "CF_NATIVE_QA_PROGRESS_MODE": "disabled",
+    "CF_NATIVE_QA_REFRESH_MODE": "disabled",
+    "CF_NATIVE_QA_USERS": "[]"
+  },
+  "secretNames": [
+    "NATIVE_AUTH_CREDENTIAL_KEY",
+    "NATIVE_AUTH_LIMITER_KEY",
+    "NATIVE_AUTH_REFRESH_KEY",
+    "R2_PRIVATE_URL_SECRET",
+    "STUDENT_PORTAL_PROVISION_SECRET",
+    "SUPABASE_SERVICE_ROLE_KEY"
+  ],
+  "d1BindingVerified": true,
+  "productionChanged": false
+}

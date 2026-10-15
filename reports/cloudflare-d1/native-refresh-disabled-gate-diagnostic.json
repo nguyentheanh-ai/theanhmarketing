@@ -1,0 +1,33 @@
+{
+  "status": "FAILED",
+  "checkedAt": "2026-10-15T07:18:21.926Z",
+  "step": "login-with-refresh-family",
+  "completedChecks": 0,
+  "readinessProbes": [
+    {
+      "attempt": 1,
+      "status": 503,
+      "contentType": "application/json",
+      "ready": false
+    },
+    {
+      "attempt": 2,
+      "status": 503,
+      "contentType": "application/json",
+      "ready": false
+    },
+    {
+      "attempt": 3,
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "ready": true
+    }
+  ],
+  "failedResponse": {
+    "status": 503,
+    "contentType": "application/json",
+    "code": "NATIVE_D1_DISABLED"
+  },
+  "errorCategory": "AssertionError",
+  "limits": "Operator must close gates and revoke QA access/families; sensitive response/credentials withheld"
+}

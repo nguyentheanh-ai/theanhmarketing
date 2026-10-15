@@ -1,5 +1,5 @@
 {
-  "status": "HOSTED_AB_AND_LESSON_HTTP_TESTED",
+  "status": "STAGING_QA_PARTIALLY_TESTED",
   "runtimeBaseCommit": "ea082d0",
   "abHttpReceipt": "native-ab-current-http.json",
   "abAccessCleanup": {
@@ -131,6 +131,18 @@
       }
     ]
   },
-  "limits": "A\u2192B 8 HTTP groups and required lesson 12 HTTP/SSR checks pass on current runtime. Browser verification in progress. Refresh/context/marketing/progress/password gates were OFF in these receipts. No full migration or cutover claim.",
-  "learningHttpReceipt": "native-qa-learning-ssr-http.json"
+  "limits": "A native Chrome lesson/login/logout/header and 13 HTTP settings/lesson groups verified on f26f925. Prior A-to-B and 11 progress groups on ea082d0. Historical state below is timestamped, not current config. All native gates closed after each run. Still Source mirror and partial app; not READY FOR CUTOVER.",
+  "learningHttpReceipt": "native-qa-learning-ssr-http.json",
+  "latestRuntimeCommit": "f26f925",
+  "latestCodeDeployVersion": "69a0ea3a-21b2-408a-9610-6b720e0f0123",
+  "browserReceipt": "native-header-chrome-qa.json",
+  "publicSettingsHttpReceipt": "native-public-settings-hosted-http.json",
+  "publicSettingsCleanupReceipt": "native-public-settings-access-cleanup.json",
+  "progressReceipt": "native-qa-progress-http.json",
+  "progressRuntimeCommit": "ea082d0",
+  "refreshHostedStatus": "HTTP_TESTED",
+  "refreshReceipt": "native-refresh-hosted-http.json",
+  "refreshCleanupReceipt": "native-refresh-access-cleanup.json",
+  "refreshRuntimeCommit": "f26f925",
+  "refreshLimits": "8 hosted HTTP groups; removed access cookie to test refresh-only SSR. No 1h elapsed/browser/Safari/native-primary proof."
 }

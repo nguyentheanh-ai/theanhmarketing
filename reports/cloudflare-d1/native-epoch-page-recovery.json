@@ -1,0 +1,25 @@
+{
+  "status": "TESTED_LOCAL",
+  "checkedAt": "2026-10-15T07:26:33.929500+00:00",
+  "reproducedBeforeFix": {
+    "test": "native epoch page recovery",
+    "expectedStatus": 200,
+    "actualStatus": 401
+  },
+  "cause": "Expired access association used raw SHA256 instead of the policy-bound Auth proof digest.",
+  "correction": "Use authProofDigest(access, policy) for the historical lease association; mirror byte semantics unchanged.",
+  "tests": {
+    "relatedUnit": 58,
+    "workerdD1Groups": 8,
+    "typecheckCloudflare": "PASS",
+    "scopedLint": "PASS",
+    "vinextBuild": "PASS",
+    "prune": "PASS"
+  },
+  "sourceFiles": {
+    "lib/cloudflare/native-page-refresh.ts": "b52d1387f9fd850795becc309bcfc3f4dae46af9b5d355bded695fa346389b17",
+    "tests/cloudflare-auth-epoch.test.mjs": "be8d6777f28cef7c931112d9e99e2cf6f5310c35e5818ba20fe191c578d576a7",
+    "scripts/test-auth-epoch-workers.mjs": "6e6fd6962e0d5a244fa0b2180bbb91aafb926d194b12a16cc2378db0100789c2"
+  },
+  "limits": "Local synthetic native-authority receipts and clock; not real Source write fence, hosted native-primary, browser, legacy adoption or cutover. Hosted refresh mirror proof is separately on f26f925."
+}

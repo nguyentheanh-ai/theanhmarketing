@@ -1,0 +1,13 @@
+{
+  "status": "WINDOW_CLOSED",
+  "productionWrites": false,
+  "cleanup": {
+    "gatesOff": true,
+    "d1_auth_refresh_familiesInactive": true,
+    "d1_auth_sessionsInactive": true,
+    "localQaEnvelopeCleared": true
+  },
+  "closedBy": "operator",
+  "checkedAt": "2026-10-15T07:01:00.578101+00:00",
+  "limits": "Gate controller only; browser evidence separately recorded. Marketing/progress/password gates OFF; refresh/context enabled only with explicit operator option"
+}

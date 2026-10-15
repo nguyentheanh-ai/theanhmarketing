@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import traceback
 import urllib.request
 import urllib.error
 import uuid
@@ -189,5 +190,9 @@ if __name__ == "__main__":
         main()
     except Exception as error:
         message = str(error) if isinstance(error, RuntimeError) else "QA preparation unavailable; sensitive output withheld"
-        print(json.dumps({"status": "FAILED", "message": message, "exceptionType": type(error).__name__}))
+        # Locations only: never include exception values, locals, source rows or
+        # keychain data. This preserves a useful diagnostic for transient errors.
+        frames = [{"file": Path(f.filename).name, "line": f.lineno, "function": f.name}
+                  for f in traceback.extract_tb(error.__traceback__)]
+        print(json.dumps({"status": "FAILED", "message": message, "exceptionType": type(error).__name__, "exceptionFrames": frames}))
         raise SystemExit(1)

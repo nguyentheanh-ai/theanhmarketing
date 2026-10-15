@@ -4,6 +4,7 @@ import {getD1AuthSession,type AuthDatabase} from '@/lib/cloudflare/d1-auth-core'
 import {readD1SessionCookie,D1_SESSION_COOKIE} from '@/lib/cloudflare/d1-auth-http';
 import {refreshD1Family,RefreshFamilyRateLimited,type RefreshFamilyPolicy} from '@/lib/cloudflare/d1-refresh-family';
 import {D1_REFRESH_COOKIE,createD1RefreshCookies} from '@/lib/cloudflare/d1-refresh-cookies';
+import {authProofDigest} from '@/lib/cloudflare/auth-proof-domain';
 type Decision={allowed:boolean;retryAfter:number};
 type Options={db:AuthDatabase;policy:RefreshFamilyPolicy;cookieMaxAgeSeconds:number;allowAttempt:(request:Request,subject:string)=>Promise<Decision>;allowVerifiedAttempt:(request:Request,subject:string)=>Promise<Decision>};
 const privacy={'Cache-Control':'private, no-store','CDN-Cache-Control':'no-store','Cloudflare-CDN-Cache-Control':'no-store','Vary':'Cookie','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'};
@@ -34,7 +35,7 @@ export async function refreshNativePageRequest(request:Request,options:Options,r
     // The old expired access lease is an association check, never authority.
     if(accessValues.length){
      if(!access)return failure(401);
-     const old=await options.db.first('SELECT user_id,family_id FROM d1_auth_sessions WHERE token_hash=?1 AND project_id=?2',[await digest(access),options.policy.projectId]);
+     const old=await options.db.first('SELECT user_id,family_id FROM d1_auth_sessions WHERE token_hash=?1 AND project_id=?2',[await authProofDigest(access,options.policy),options.policy.projectId]);
      if(!old||old.user_id!==pair.user.id||old.family_id!==pair.familyId)return failure(401);
     }
     cookies=createD1RefreshCookies(pair,options.policy.now??Date.now(),options.cookieMaxAgeSeconds);

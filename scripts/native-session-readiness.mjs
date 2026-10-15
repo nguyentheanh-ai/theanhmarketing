@@ -17,3 +17,17 @@ export async function observeNativeSession(call, parseJson, origin, pause = ms =
  }
  return {ready:false,probes};
 }
+
+// A settings update may reach two consecutive requests at different times.
+// Only this exact router guard is safe to replay: it runs before Auth/DB work.
+// Never retry generic 503s, network failures, or a response that issued cookies.
+export async function requestAfterNativeGate(request, parseJson, {origin,path,pause=ms=>new Promise(resolve=>setTimeout(resolve,ms))}) {
+ for(let attempt=1;attempt<=16;attempt++) {
+  const response=await request();
+  if(attempt===16||response.url!==origin+path||response.status!==503||response.headers.has('set-cookie')||!response.headers.get('content-type')?.startsWith('application/json'))return response;
+  let data;try{data=await parseJson(response.clone());}catch{return response;}
+  if(data?.ok!==false||data?.code!=='NATIVE_D1_DISABLED')return response;
+  await response.body?.cancel();
+  await pause(2000);
+ }
+}

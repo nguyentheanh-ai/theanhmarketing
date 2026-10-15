@@ -1,0 +1,95 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-15T07:23:27.897Z",
+  "checks": [
+    {
+      "name": "login-with-refresh-family",
+      "originalUuid": true,
+      "twoSecureHttpOnlyCookies": true
+    },
+    {
+      "name": "concurrent-refresh-retry",
+      "both200": true,
+      "sameCookieOutcome": true
+    },
+    {
+      "name": "refresh-cookie-only-page-recovery",
+      "status": 200,
+      "realLessonRendered": true,
+      "twoCookiesRestored": true
+    },
+    {
+      "name": "restored-session-identity",
+      "originalUuid": true
+    },
+    {
+      "name": "reject-cross-origin-refresh",
+      "status": 403,
+      "noCookieMutation": true
+    },
+    {
+      "name": "per-device-logout",
+      "status": 200,
+      "twoCookiesCleared": true
+    },
+    {
+      "name": "revoked-refresh-cannot-resurrect",
+      "status": 401
+    },
+    {
+      "name": "guest-lesson-denied",
+      "status": 401
+    }
+  ],
+  "gateDelays": [
+    {
+      "path": "/api/cloudflare-auth/session",
+      "waitMs": 2000
+    },
+    {
+      "path": "/api/cloudflare-auth/session",
+      "waitMs": 2000
+    },
+    {
+      "path": "/api/cloudflare-auth/session",
+      "waitMs": 2000
+    },
+    {
+      "path": "/api/cloudflare-auth/session",
+      "waitMs": 2000
+    },
+    {
+      "path": "/api/cloudflare-auth/session",
+      "waitMs": 2000
+    },
+    {
+      "path": "/api/cloudflare-auth/session",
+      "waitMs": 2000
+    },
+    {
+      "path": "/api/cloudflare-auth/session",
+      "waitMs": 2000
+    },
+    {
+      "path": "/api/cloudflare-auth/session",
+      "waitMs": 2000
+    },
+    {
+      "path": "/api/cloudflare-auth/session",
+      "waitMs": 2000
+    },
+    {
+      "path": "/api/cloudflare-auth/session",
+      "waitMs": 2000
+    },
+    {
+      "path": "/api/cloudflare-auth/session",
+      "waitMs": 2000
+    },
+    {
+      "path": "/api/cloudflare-auth/session",
+      "waitMs": 2000
+    }
+  ],
+  "limits": "Hosted QA HTTP cookie jar, not a real browser or waiting for 1h expiry. Refresh-only page recovery; no global logout, context, password mutation, legacy Supabase session bridge or primary authority proof."
+}

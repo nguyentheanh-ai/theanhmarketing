@@ -1,0 +1,26 @@
+{
+  "status": "FAILED",
+  "productionWrites": false,
+  "cleanup": {
+    "gatesOff": true,
+    "d1_auth_refresh_familiesInactive": true,
+    "d1_auth_sessionsInactive": true,
+    "qaCredentialVersionPreserved": true,
+    "localQaEnvelopeCleared": true
+  },
+  "publicSettingsSnapshots": [
+    {
+      "key": "brand",
+      "snapshotId": "89641fce6321c695c1e1eefb3fdeda3af67b15d12550b8bdade564152cbda515"
+    },
+    {
+      "key": "marketing",
+      "snapshotId": "4143e5bcf48439006f86af8f99be3328e79dcf4d07540b1766d971fdbb59bead"
+    }
+  ],
+  "error": "native-qa-refresh-smoke.mjs: PRIVATE_DIAGNOSTIC_WITHHELD",
+  "checkedAt": "2026-10-15T07:18:30.669077+00:00",
+  "publicSettingsEnabledDuringQa": true,
+  "refreshEnabledDuringQa": true,
+  "limits": "HTTP QA only; context/progress/password gates OFF; marketing/refresh enabled only for their operator options; no browser/full independence"
+}

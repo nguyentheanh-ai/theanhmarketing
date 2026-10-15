@@ -1,0 +1,24 @@
+{
+  "status": "TESTED_DESKTOP_CHROME",
+  "checkedAt": "2026-10-15T07:00:51.235713+00:00",
+  "sourceCommit": "f26f925",
+  "codeDeployVersion": "69a0ea3a-21b2-408a-9610-6b720e0f0123",
+  "checks": {
+    "guestHeaderWithOldSourceCookie": true,
+    "nativeLoginOriginalLesson": true,
+    "activeD1SessionAfterLogin": 1,
+    "logoutClickedInLessonMenu": true,
+    "activeD1SessionsAfterLogoutWhileQaModeStillEnabled": 0,
+    "logoutRedirectedHome": true,
+    "headerShowsRegisterAndLoginAfterLogout": true,
+    "oldLessonGuestRedirectPreservesNext": true
+  },
+  "limits": [
+    "Desktop Chrome only",
+    "No progress write in this browser run",
+    "Earlier API progress evidence applies to ea082d0 runtime",
+    "Marketing, refresh, context and credential-write modes OFF",
+    "Public root still Source-backed",
+    "No full independence or cutover claim"
+  ]
+}

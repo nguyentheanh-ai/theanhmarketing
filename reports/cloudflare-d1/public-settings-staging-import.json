@@ -1,0 +1,28 @@
+{
+  "status": "STAGING_PUBLIC_SETTINGS_VERIFIED_GATES_OFF",
+  "checkedAt": "2026-10-15T07:22:07.983Z",
+  "receipts": [
+    {
+      "key": "brand",
+      "sourceExists": false,
+      "sourceSnapshotAt": "2026-10-15T07:21:58.822Z",
+      "sourceUpdatedAt": null,
+      "sourceDigest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "normalizedDigest": "d5522d5a77f101e945d482f5b3fe2bafa3f0d7e5a901f3a80b80450a66f84986",
+      "snapshotId": "8903813e3c7173b05b9c282574944873d18769a91215a7444e48e22f630afc92",
+      "readbackMatched": true
+    },
+    {
+      "key": "marketing",
+      "sourceExists": true,
+      "sourceSnapshotAt": "2026-10-15T07:21:58.822Z",
+      "sourceUpdatedAt": "2026-05-19T19:07:15.791Z",
+      "sourceDigest": "ef993bc8785b4db724a0b12fd6b35dc5211c9f3fed5bf9bac5e29a3e5b1e717f",
+      "normalizedDigest": "c37ef65ab667533cc948162916f7c5672bc4f77050b36d6250553194438261b4",
+      "snapshotId": "05768784c48d2ece8c4ae76ae99d9f5908c38c5041c7bb95604fab3c43ebf0e6",
+      "readbackMatched": true
+    }
+  ],
+  "productionWrites": false,
+  "limits": "Two public settings only; five-minute Source snapshot, no native-primary/admin writer or hosted render claim"
+}

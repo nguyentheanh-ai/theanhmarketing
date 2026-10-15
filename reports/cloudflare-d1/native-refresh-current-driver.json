@@ -1,0 +1,65 @@
+{
+  "status": "HTTP_TESTED_PENDING_ACCESS_CLEANUP",
+  "productionWrites": false,
+  "cleanup": {
+    "gatesOff": true,
+    "d1_auth_refresh_familiesInactive": true,
+    "d1_auth_sessionsInactive": true,
+    "qaCredentialVersionPreserved": true,
+    "localQaEnvelopeCleared": true
+  },
+  "publicSettingsSnapshots": [
+    {
+      "key": "brand",
+      "snapshotId": "8903813e3c7173b05b9c282574944873d18769a91215a7444e48e22f630afc92"
+    },
+    {
+      "key": "marketing",
+      "snapshotId": "05768784c48d2ece8c4ae76ae99d9f5908c38c5041c7bb95604fab3c43ebf0e6"
+    }
+  ],
+  "checks": [
+    {
+      "name": "login-with-refresh-family",
+      "originalUuid": true,
+      "twoSecureHttpOnlyCookies": true
+    },
+    {
+      "name": "concurrent-refresh-retry",
+      "both200": true,
+      "sameCookieOutcome": true
+    },
+    {
+      "name": "refresh-cookie-only-page-recovery",
+      "status": 200,
+      "realLessonRendered": true,
+      "twoCookiesRestored": true
+    },
+    {
+      "name": "restored-session-identity",
+      "originalUuid": true
+    },
+    {
+      "name": "reject-cross-origin-refresh",
+      "status": 403,
+      "noCookieMutation": true
+    },
+    {
+      "name": "per-device-logout",
+      "status": 200,
+      "twoCookiesCleared": true
+    },
+    {
+      "name": "revoked-refresh-cannot-resurrect",
+      "status": 401
+    },
+    {
+      "name": "guest-lesson-denied",
+      "status": 401
+    }
+  ],
+  "checkedAt": "2026-10-15T07:23:37.160277+00:00",
+  "publicSettingsEnabledDuringQa": true,
+  "refreshEnabledDuringQa": true,
+  "limits": "HTTP QA only; context/progress/password gates OFF; marketing/refresh enabled only for their operator options; no browser/full independence"
+}
