@@ -1,0 +1,135 @@
+{
+  "status": "HOSTED_AB_TESTED_LEARNING_PENDING",
+  "runtimeBaseCommit": "ea082d0",
+  "abHttpReceipt": "native-ab-current-http.json",
+  "abAccessCleanup": {
+    "out": [
+      {
+        "label": "a",
+        "policyDelete": true,
+        "tokenDelete": true,
+        "remainingPolicies": [
+          {
+            "id": "37b8eed3-52a3-4e7e-9df7-5d4560f154c7",
+            "decision": "allow"
+          }
+        ]
+      },
+      {
+        "label": "b",
+        "policyDelete": true,
+        "tokenDelete": true,
+        "remainingPolicies": [
+          {
+            "id": "eaf013b9-6aa2-4434-8faa-8e106594dd1d",
+            "decision": "allow"
+          }
+        ]
+      }
+    ],
+    "createdTokensAbsent": true
+  },
+  "learningAccessCleanup": {
+    "out": [
+      {
+        "label": "a",
+        "policyDelete": true,
+        "tokenDelete": true,
+        "remainingPolicies": [
+          {
+            "id": "37b8eed3-52a3-4e7e-9df7-5d4560f154c7",
+            "decision": "allow"
+          }
+        ]
+      }
+    ],
+    "createdTokensAbsent": true
+  },
+  "state": {
+    "checkedAt": "2026-10-15T06:19:20.854Z",
+    "workers": [
+      {
+        "name": "theanh-main-cf-staging",
+        "status": 200,
+        "gates": [
+          {
+            "name": "CF_NATIVE_AUTH_MODE",
+            "value": "disabled"
+          },
+          {
+            "name": "CF_NATIVE_MARKETING_MODE",
+            "value": "disabled"
+          },
+          {
+            "name": "CF_NATIVE_QA_AUTH_CONTEXT_MODE",
+            "value": "disabled"
+          },
+          {
+            "name": "CF_NATIVE_QA_CREDENTIAL_WRITES",
+            "value": "disabled"
+          },
+          {
+            "name": "CF_NATIVE_QA_PROGRESS_MODE",
+            "value": "disabled"
+          },
+          {
+            "name": "CF_NATIVE_QA_REFRESH_MODE",
+            "value": "disabled"
+          },
+          {
+            "name": "CF_NATIVE_QA_USERS",
+            "value": "[]"
+          }
+        ],
+        "secretNames": [
+          "NATIVE_AUTH_CREDENTIAL_KEY",
+          "NATIVE_AUTH_LIMITER_KEY",
+          "NATIVE_AUTH_REFRESH_KEY",
+          "R2_PRIVATE_URL_SECRET",
+          "STUDENT_PORTAL_PROVISION_SECRET",
+          "SUPABASE_SERVICE_ROLE_KEY"
+        ],
+        "versions": [
+          {
+            "version_id": "afb42faa-e7ef-4551-bd66-186a39dd5659",
+            "percentage": 100
+          }
+        ]
+      },
+      {
+        "name": "theanh-student-cf-staging",
+        "status": 200,
+        "gates": [
+          {
+            "name": "CF_B_NATIVE_AUTH_MODE",
+            "value": "off"
+          },
+          {
+            "name": "CF_B_NATIVE_SOURCE_QA_USER_IDS",
+            "value": "[]"
+          },
+          {
+            "name": "CF_B_WORKSPACE_DATA_MODE",
+            "value": "off"
+          },
+          {
+            "name": "CF_B_WORKSPACE_QA_USER_IDS",
+            "value": "[]"
+          }
+        ],
+        "secretNames": [
+          "STUDENT_PORTAL_PROVISION_SECRET",
+          "STUDENT_PORTAL_SESSION_SECRET",
+          "SUPABASE_SERVICE_ROLE_KEY"
+        ],
+        "versions": [
+          {
+            "version_id": "8a38337f-be15-4a60-8d6d-f19cf8109b89",
+            "percentage": 100
+          }
+        ]
+      }
+    ]
+  },
+  "limits": "A→B HTTP flow passed. Latest learning attempt failed in preparation; earlier learning attempt failed readiness. Refresh/context/marketing native gates stayed disabled. No browser/Safari or full migration proof."
+}

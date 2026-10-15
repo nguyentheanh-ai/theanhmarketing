@@ -1,4 +1,24 @@
 
+## 15/10/2026 13:19 — Hosted A→B bản mới đạt; /learn còn chưa đạt
+
+Luồng HTTP A→B trên runtime A đã build từ ea082d0 đạt8nhóm lúc06:09:28Z: binding/cohort, B start/A guest redirect, password UUID gốc, issuer→fragment, callback/verifier/replay, B profile/refresh, document QA save/read/refresh/delete và logout. Driver đã đọc lại OFF/cohort[],0active A/B access/family/SSO,baseline docs0,password operations0,QA Secret A→B gỡ. Token/policy A/B đã thu hồi và GET xác minh chỉ còn Owner policy. Receipt native-ab-current-http.json/current-hosted-verification.json.
+
+Sau đó thử riêng bài học bắt buộc: khóa nguồn1/3modules/26lessons/23published đối soát khớp, không nhập demo. Lượt đầu learning smoke dừng ready0checks, chưa có HTTP diagnostic đủ; lượt tiếp dừng Auth preparation, chưa vào ứng dụng. Đã thu hồi token A riêng, xóa envelope, đọc lại cổngOFF/0active sessions. Chưa thể gọi /learn TESTED trên runtime mới.
+
+Thêm operator scripts/run-native-a-learning-qa.py (đọc-only Source,QA native login/SSR only,progress/password OFF,finally close/revoke). Thêm observeNativeSession: đúngURL/JSON ok+usernull mới sẵn sàng, chỉ404/503 retry tối đa20lần,403/HTML/redirect/network error fail có mã, không forward body.4tests readiness mới PASS;7tests cleanup/diagnostic PASS. Chưa hosted chứng minh helper mới giải quyết lỗi. Nguyên nhân prep/readiness còn UNKNOWN; không ghi thành lỗi nghiệp vụ học viên.
+
+Readback06:19:20Z: A config version afb42faa-e7ef-4551-bd66-186a39dd5659 100%,B8a38337f-be15-4a60-8d6d-f19cf8109b89 100%; đây là config version sau QA,không phải thay code B. A6Secret/B3Secret gốc,không QA secret/probe. Production không đổi. Tổng IN PROGRESS,chưa READY FOR CUTOVER; còn /learn/refresh/context/nativepublicsettings/Storage/payment/fullAuth/RLS/data/reverseRollback/browser/Safari và toàn bộ scope gốc.
+
+
+## 15/10/2026 13:05 — Hosted QA phiên bản mới: chưa đạt, cleanup đã xác minh
+
+Ba lượt thử đều dừng trước gọi luồng ứng dụng: lần1 prepare-qa-learning lỗi, lần2 prepare-qa-auth-import lỗi, lần3 qua toàn bộ chuẩn bị nhưng Secret readback thiếu. Các bước chuẩn bị độc lập và một chuỗi5bước đã PASS; chưa xác định nguyên nhân hai lỗi chuẩn bị. Tất cả token/policy45phút của ba lượt đã DELETE và GET xác minh vắng mặt; mỗi app chỉ còn Owner policy. Runner đã xác minh cổng OFF/cohort[],0active access/refresh/SSO,QA docs baseline0,credential writes0,QA Secrets gỡ. Envelope/private RSA tạm ghi rỗng sau thu hồi. Không production change.
+
+Runner thêm chẩn đoán static cho reason/message/exceptionType, không chuyển tiếp payload; bounded read-only metadata observation sau một mutation, không retry ghi hoặc coi timeout thành công.7tests fault/diagnostic/observation PASS. API schema secrets-bulk đã đối chiếu; probe secret ngẫu nhiên không cấp quyền trên staging đọc thấy ngay lần1 và xóa/readback đạt. Độ trễ metadata vẫn CANDIDATE, chưa xác minh là nguyên nhân lượt3. Chưa có hosted HTTP pass cho runtime mới; kết quả hosted cũ không dùng thay thế. IN PROGRESS, chưa READY FOR CUTOVER.
+
+Bằng chứng: current-preparation-diagnostics.json, hosted-current-access-cleanup.json, secret-metadata-probe.json, qa-cleanup-readiness.json dưới main/reports/cloudflare-d1; NATIVE_AB_HOSTED_DRIVER_RESULTS.json ghi lỗi cuối và cleanup. Tiếp theo cần hoàn tất hosted với readback đã sửa, rồi kiểm refresh/context/bài thật/public settings, giữ đầy đủ các cổng Auth/data/payment/RLS/rollback còn thiếu.
+
+
 ## 15/10/2026 — Schema staging và chuẩn bị QA sau deploy
 
 D1 A staging đã tạo5bảng refresh/public settings cùng2index, so sánh sqlite_master với DDL local trước/sau;5bảng đều0hàng. Cổng native/progress/refresh/context/marketing/credential OFF và cohort[]. Receipt: main/reports/cloudflare-d1/staging-refresh-settings-schema.json. Chưa apply ledger native authority, chưa chuyển nguồn ghi.

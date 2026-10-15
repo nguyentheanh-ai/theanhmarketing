@@ -1,0 +1,8 @@
+{
+  "status": "FAILED_BEFORE_HOSTED_QA",
+  "tokensRemoved": true,
+  "policiesRemoved": true,
+  "privateEnvelopesCleared": true,
+  "reason": "prepare-qa-learning.py failed; cause under investigation",
+  "productionWrites": false
+}

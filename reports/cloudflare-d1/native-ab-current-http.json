@@ -1,0 +1,212 @@
+{
+  "status": "PASS",
+  "step": "complete",
+  "checkedAt": "2026-10-15T06:09:28.862Z",
+  "checks": [
+    {
+      "name": "exact staging native modes, bindings and dedicated cohorts",
+      "status": "PASS"
+    },
+    {
+      "name": "B start and A guest redirect",
+      "status": "PASS"
+    },
+    {
+      "name": "A native password login retains original UUID",
+      "status": "PASS"
+    },
+    {
+      "name": "A D1 issuer returns exact B fragment, no query grant",
+      "status": "PASS"
+    },
+    {
+      "name": "isolated callback and browser-bound POST exchange",
+      "status": "PASS"
+    },
+    {
+      "name": "native B workspace profile and refresh",
+      "status": "PASS"
+    },
+    {
+      "name": "dedicated QA document save/read/refresh/delete",
+      "status": "PASS"
+    },
+    {
+      "name": "app logout revokes B opaque session, A logout revokes its own session",
+      "status": "PASS"
+    }
+  ],
+  "httpTrace": [
+    {
+      "app": "B",
+      "path": "/api/auth/native-b/start",
+      "method": "GET",
+      "status": 303,
+      "contentType": null,
+      "destination": {
+        "origin": "https://theanh-main-cf-staging.12c1thdtheanh.workers.dev",
+        "path": "/app-login-bridge"
+      }
+    },
+    {
+      "app": "A",
+      "path": "/app-login-bridge",
+      "method": "GET",
+      "status": 303,
+      "contentType": null,
+      "destination": {
+        "origin": "https://theanh-main-cf-staging.12c1thdtheanh.workers.dev",
+        "path": "/dang-nhap"
+      }
+    },
+    {
+      "app": "A",
+      "path": "/api/cloudflare-auth/login",
+      "method": "POST",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "app": "A",
+      "path": "/app-login-bridge",
+      "method": "GET",
+      "status": 303,
+      "contentType": null,
+      "destination": {
+        "origin": "https://theanh-student-cf-staging.12c1thdtheanh.workers.dev",
+        "path": "/api/auth/native-b/callback"
+      }
+    },
+    {
+      "app": "B",
+      "path": "/api/auth/native-b/callback",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "app": "B",
+      "path": "/api/auth/native-b/consume",
+      "method": "POST",
+      "status": 403,
+      "contentType": "application/json"
+    },
+    {
+      "app": "B",
+      "path": "/api/auth/native-b/consume",
+      "method": "POST",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "app": "B",
+      "path": "/api/auth/native-b/consume",
+      "method": "POST",
+      "status": 403,
+      "contentType": "application/json"
+    },
+    {
+      "app": "B",
+      "path": "/api/ads/os/workspace",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "app": "B",
+      "path": "/api/ads/os/workspace",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "app": "B",
+      "path": "/api/ads/os/documents",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "app": "B",
+      "path": "/api/ads/os/documents",
+      "method": "POST",
+      "status": 201,
+      "contentType": "application/json"
+    },
+    {
+      "app": "B",
+      "path": "/api/ads/os/documents",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "app": "B",
+      "path": "/api/ads/os/documents",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "app": "B",
+      "path": "/api/ads/os/documents",
+      "method": "DELETE",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "app": "B",
+      "path": "/api/ads/os/documents",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "app": "B",
+      "path": "/api/auth/logout",
+      "method": "POST",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "app": "B",
+      "path": "/api/ads/os/workspace",
+      "method": "GET",
+      "status": 401,
+      "contentType": "application/json"
+    },
+    {
+      "app": "A",
+      "path": "/api/cloudflare-auth/logout",
+      "method": "POST",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "app": "A",
+      "path": "/api/cloudflare-auth/session",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "app": "B",
+      "path": "/api/auth/logout",
+      "method": "POST",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "app": "A",
+      "path": "/api/cloudflare-auth/logout",
+      "method": "POST",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    }
+  ],
+  "cleanup": {
+    "qaDocumentRemoved": true,
+    "sessionsRevoked": true
+  },
+  "limits": "HTTP only; fragment client script separately tested, not browser/hydration/Safari/provider/full-app independence proof; QA only; Source verification and Access/gate cleanup are separate driver gates"
+}

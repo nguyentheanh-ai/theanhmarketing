@@ -1,0 +1,34 @@
+{
+  "status": "VERIFIED",
+  "attempts": 3,
+  "lastCleanup": {
+    "out": [
+      {
+        "label": "a",
+        "policyDelete": true,
+        "tokenDelete": true,
+        "remainingPolicies": [
+          {
+            "id": "37b8eed3-52a3-4e7e-9df7-5d4560f154c7",
+            "decision": "allow"
+          }
+        ]
+      },
+      {
+        "label": "b",
+        "policyDelete": true,
+        "tokenDelete": true,
+        "remainingPolicies": [
+          {
+            "id": "eaf013b9-6aa2-4434-8faa-8e106594dd1d",
+            "decision": "allow"
+          }
+        ]
+      }
+    ],
+    "createdTokensAbsent": true
+  },
+  "temporaryEnvelopesCleared": true,
+  "hostedFlowReached": false,
+  "limits": "Three attempts stopped before hosted application flow. First two preparation failures not reproduced independently; third Secret metadata readback failed. All temporary resources revoked and private envelopes cleared."
+}
