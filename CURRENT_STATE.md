@@ -1,3 +1,17 @@
+## 15/10/2026 — Native order settlement và đầy đủ JSON đơn hàng: scoped TESTED
+
+**IN PROGRESS.** Thêm schema `d1-native-order-settlement.sql`, lõi TypeScript `native-order-settlement.ts` và HTTP candidate `native-sepay-http.ts`; chưa apply remote/chưa nối `/api/sepay/webhook`. Bốn bảng riêng giữ nguyên toàn bộ source order JSON, revision/CAS, receipt duy nhất theo transaction/reference và một fulfillment intent bền vững trong cùng D1 batch. Không dùng prototype Python sáu trường làm backend thật. Intent chưa có dispatcher cấp tài khoản/quyền/email/Meta/Telegram/Sheets, không xem việc ghi intent là hoàn tất giao dịch cho khách.
+
+**Bằng chứng:** 24 Node/SQLite core+HTTP checks, 102 hồi quy liên quan, CF TypeScript/scoped ESLint đạt;7 local workerd+D1 checks, canary chặn mạng và0outbound. Bao gồm retry đồng thời chỉ một paid transition/intent, mã ngân hàng không trả hai đơn, snapshot/order revision thay đổi, quyền nguồn hết hiệu lực, lỗi ở intent/final assertion đều rollback; timeout sau commit được đọc lại receipt thay vì ghi lần hai. Receiver/direction/VND integer bắt buộc, auth Apikey không có dev bypass, body bounded16KiB/JSON+form và duplicate form keys deny; limiter là hook thử, chưa limiter phân tán thật. Đây là candidate chặt hơn Source ở các payload thiếu receiver/direction, amount lẻ/không an toàn/content-type lạ; cần nghiệm thu provider variants trước nối route.
+
+**Dữ liệu thật từ backup phục hồi, không đọc/ghi production:** 1.023/1.023 đơn, đủ67 trường,0loại bỏ; exact JSON multiset SHA256 khớp. Snapshot418paid/603expired/1pending/1failed. 391paid giữ transaction ID,27paid không có bank identity đáng tin;0nhóm trùng transaction/reference. Các đơn paid cũ vẫn giữ nguyên; late retry chỉ acknowledge khi khớp bank proof gốc, không tạo receipt/intent mới; trường hợp thiếu/không khớp phải review, không tự bịa mã ngân hàng. Phát hiện và tái hiện race: chỉ kiểm identifier của đơn lịch sử trước batch chưa đủ; đã thêm kiểm trong từng SQL/final assertion, actual D1 trigger fixture chứng minh rollback cả alias mutation. Native Access projection chưa nối bảng order mới, chưa cấp quyền tự động.
+
+**Nguồn production:** connector giải domain www/apex tới dpl_9CRgmS18JCQzhQ6LzsKiE6vVx8QA READY/production/project A, nguồn CLI không có Git SHA. File-id orderService khớp SHA1 bản trong commit30ac018; canonical đang có thêm alias Zoom nhưng chưa chứng minh live. Hai service kế toán và helper SePay có file-id khớp local/canonical; route lookup theo local file-id thành công nhưng nội dung connector bị truncate. Docs PAYMENT-FLOW08/08 nói bỏ email kế toán từng đơn, mã hiện hành còn gọi service; chưa chứng minh delivery vì endpoint env metadata lỗi (không decrypt). Ghi NEED_VERIFY; chưa chọn chính sách dispatcher hoặc sửa production theo một phía.
+
+Tất cả raw JSON/customer data/SQLite chỉ trong AES; PostgreSQL chặn outbound/cron off đã dừng, volume unmounted. Không có giao dịch/Resend/Meta thật; Worker A/B vẫn bản staging OFF đã đọc ở lượt trước. Chưa full data/delta/RLS, native fulfillment/admin/order-create/polling, hosted/provider/browser/Safari/rollback dữ liệu, chưa READY FOR CUTOVER.
+
+Bằng chứng: `NATIVE_ORDER_SOURCE_PARITY_RESULTS.json`, `A_PAYMENT_SOURCE_BINDING_RESULTS.json`, `main/reports/cloudflare-d1/native-order-settlement-tests.json`.
+
 
 
 ### 15/10/2026 — Native A→B runtime trên staging, vẫn OFF

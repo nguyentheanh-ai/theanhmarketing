@@ -1,0 +1,24 @@
+{
+  "status": "TESTED_SCOPED",
+  "overall": "IN PROGRESS",
+  "checkedAt": "2026-10-15T01:53:05.728459+00:00",
+  "nodeSqliteTests": 24,
+  "relatedRegressionPass": 102,
+  "workerdD1Checks": 7,
+  "outboundFetches": 0,
+  "networkCanaryBlocked": true,
+  "typescript": "PASS",
+  "scopedEslint": "PASS",
+  "fullOrderSnapshotReceipt": "../NATIVE_ORDER_SOURCE_PARITY_RESULTS.json",
+  "schemaRemoteApplied": false,
+  "webhookRouteMounted": false,
+  "externalProviderCalls": 0,
+  "productionChanges": false,
+  "limits": [
+    "Synthetic payment/key/rate-limiter tests; no hosted webhook or real distributed limiter proof",
+    "One durable pending fulfillment intent; no native access/account/email/Meta/Telegram/Sheets dispatcher yet",
+    "Legacy paid bank proof only; manual/unknown proof requires review",
+    "QA mirror freshness only; no native primary writer approval or cutover",
+    "Complete JSON preservation is not full SQL relation/constraint/RLS or live delta parity"
+  ]
+}
