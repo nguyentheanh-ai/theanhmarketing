@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-15T04:11:51.517Z",
+  "checkedAt": "2026-10-15T04:17:23.405Z",
   "checks": [
     {
       "name": "default-off refresh leaves existing login unchanged and cannot create a family",
@@ -36,6 +36,10 @@
     },
     {
       "name": "expired one-hour access refreshes before ALS-render boundary using a synthetic fresh Source mirror",
+      "status": "PASS"
+    },
+    {
+      "name": "actual refresh-only global logout keeps scope, creates no intermediate session and retries without clearing newer login",
       "status": "PASS"
     },
     {

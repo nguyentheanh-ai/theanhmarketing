@@ -1,0 +1,30 @@
+{
+  "status": "TESTED_LOCAL_REFRESH_ONLY_LOGOUT_DEFAULT_OFF",
+  "checkedAt": "2026-10-15T04:19:18.478333+00:00",
+  "unitRegression": {
+    "pass": 103,
+    "fail": 0,
+    "newRefreshOnlyLogout": 8
+  },
+  "actualWorkerdRouterGroups": 11,
+  "typecheck": "PASS",
+  "scopedEslint": "PASS",
+  "vinextBuild": "PASS",
+  "assetPrune": "PASS",
+  "remoteChanges": false,
+  "globalRefreshLogoutCreatesIntermediateSessions": false,
+  "globalLogoutScopePreserved": true,
+  "limits": [
+    "Synthetic clock/Source readiness",
+    "No actual browser or hosted proof",
+    "Local refresh-only logout still requires ready mirror and retained key",
+    "Late first-success/rotation cookies across tabs unresolved",
+    "No native primary/final delta/legacy adoption/reverse rollback"
+  ],
+  "sha256": {
+    "lib/cloudflare/d1-refresh-family.ts": "869a2d67f5f76f0cb16767021e78bccf4d56ce1c1bea1ebcd36b6b55c354c64a",
+    "lib/cloudflare/d1-refresh-http.ts": "9b9134364d06709ca829e3e9bb96c2e17fb46b0f709a699bb9542adeb7762436",
+    "tests/cloudflare-refresh-only-logout.test.mjs": "725f171a372dc0a9e00626618598df1f51bf3592c21f6d2a9a84906f49e51f35",
+    "scripts/test-refresh-router-workers.mjs": "06fb93c21d881db26eb7299fb5702ff48e6bef971551b02f284beac1d01c6248"
+  }
+}

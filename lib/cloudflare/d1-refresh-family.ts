@@ -194,29 +194,56 @@ export async function revokeD1RefreshFamily(db:AuthDatabase,accessToken:string,p
 
 // Global sign-out preserves the Source fields in the account. Its own ledger
 // records revocation time and fences late retries from killing a newer login.
-export async function revokeAllD1RefreshFamiliesOutcome(db:AuthDatabase,accessToken:string,p:RefreshFamilyPolicy):Promise<FamilyRevocationOutcome>{
+async function matchesAssociatedAccess(db:AuthDatabase,f:Family,p:RefreshFamilyPolicy,access?:string){
+ if(access===undefined)return true;if(!tokenValid(access))return false;
+ const row=await db.first('SELECT user_id,family_id FROM d1_auth_sessions WHERE token_hash=?1 AND project_id=?2',[await hash(access),p.projectId]);
+ return row?.user_id===f.user_id&&row?.family_id===f.family_id;
+}
+export async function revokeD1RefreshFamilyByRefreshOutcome(db:AuthDatabase,token:string,p:RefreshFamilyPolicy,associatedAccess?:string):Promise<FamilyRevocationOutcome>{
+ if(!tokenValid(token))return 'invalid';const c=await context(db,p),inputHash=await hash(token);
+ const f=await familyBy(db,c,`(f.current_hash=?9 OR ${proofSql('replay')})`,inputHash);
+ if(!f){
+  const row=await db.first(`SELECT f.* FROM d1_auth_refresh_families f WHERE f.project_id=?1 AND (f.current_hash=?2 OR EXISTS(SELECT 1 FROM d1_auth_refresh_receipts r WHERE r.old_hash=?2 AND r.project_id=f.project_id AND r.family_id=f.family_id)) AND (?3='null' OR EXISTS(SELECT 1 FROM json_each(?3) allowed WHERE allowed.value=f.user_id))`,[p.projectId,inputHash,c.cohort]);
+  if(!row||row.revoked_at===null)return 'invalid';const old=checkedFamily(row);if(!await matchesAssociatedAccess(db,old,p,associatedAccess))return 'invalid';
+  const live=await db.first('SELECT 1 AS live FROM d1_auth_sessions WHERE family_id=?1 AND project_id=?2 AND user_id=?3 AND revoked_at IS NULL LIMIT 1',[String(old.family_id),p.projectId,String(old.user_id)]);if(live)throw unavailable();return 'replayed';
+ }
+ if(!await matchesAssociatedAccess(db,f,p,associatedAccess))return 'invalid';
+ const access=await derive(p,'access',String(f.family_id),Number(f.access_serial),String(f.access_key_id));if(await hash(access)!==f.current_access_hash)throw unavailable();
+ return revokeD1RefreshFamilyOutcome(db,access,p);
+}
+
+async function revokeAllFromProof(db:AuthDatabase,accessToken:string,p:RefreshFamilyPolicy,kind:'access'|'refresh',associatedAccess?:string):Promise<FamilyRevocationOutcome>{
  if(!tokenValid(accessToken))return 'invalid';
- const c=await context(db,p),sourceHash=await hash(accessToken);
+ // Legacy ledger column source_session_hash holds a proof digest. Refresh
+ // proofs use a domain-separated digest; they are never stored as raw tokens.
+ const c=await context(db,p),sourceHash=await hash(accessToken),ledgerHash=kind==='refresh'?await hash('tam-logout-refresh-v1:'+accessToken):sourceHash;
  const recover=async()=>{
-  const done=await db.first(`SELECT user_id FROM d1_auth_session_security_operations WHERE project_id=?1 AND source_session_hash=?2 AND kind='global_logout' AND status='done' AND (?3='null' OR EXISTS(SELECT 1 FROM json_each(?3) allowed WHERE allowed.value=user_id))`,[p.projectId,sourceHash,c.cohort]);return Boolean(done);
+  const done=await db.first(`SELECT user_id FROM d1_auth_session_security_operations WHERE project_id=?1 AND source_session_hash=?2 AND kind='global_logout' AND status='done' AND (?3='null' OR EXISTS(SELECT 1 FROM json_each(?3) allowed WHERE allowed.value=user_id))`,[p.projectId,ledgerHash,c.cohort]);return Boolean(done);
  };
  if(await recover())return 'replayed';
- const session=await getD1AuthSession(db,accessToken,p);if(!session)return 'invalid';
+ const refreshFamily=kind==='refresh'?await familyBy(db,c,`(f.current_hash=?9 OR ${proofSql('replay')})`,sourceHash):null;
+ const session=kind==='access'?await getD1AuthSession(db,accessToken,p):refreshFamily?{user:{id:String(refreshFamily.user_id)},familyId:String(refreshFamily.family_id)}:null;
+ if(!session)return 'invalid';
+ if(refreshFamily&&!await matchesAssociatedAccess(db,refreshFamily,p,associatedAccess))return 'invalid';
  await allowFamily(p,session.familyId,session.user.id);
  const account=await db.first('SELECT session_version FROM d1_auth_accounts WHERE user_id=?1',[session.user.id]);if(!account||!Number.isSafeInteger(account.session_version)||Number(account.session_version)>=Number.MAX_SAFE_INTEGER)throw unavailable();
- const params:(string|number|null)[]=[p.projectId,c.stamp,c.floor,c.cohort,session.user.id,sourceHash,crypto.randomUUID(),Number(account.session_version),Number(account.session_version)+1];
+ const params:(string|number|null)[]=[p.projectId,c.stamp,c.floor,c.cohort,session.user.id,sourceHash,crypto.randomUUID(),Number(account.session_version),Number(account.session_version)+1,ledgerHash,refreshFamily?String(refreshFamily.family_id):null,refreshFamily?JSON.stringify(columns.map(k=>refreshFamily[k])):null,c.digest,associatedAccess?await hash(associatedAccess):null];
  const ready=`${authMirrorReadySql(1,3)} AND (?4='null' OR EXISTS(SELECT 1 FROM json_each(?4) allowed WHERE allowed.value=?5))`;
- const own=`a.user_id=?5 AND a.session_version=?8 AND a.email_confirmed_at IS NOT NULL AND julianday(a.email_confirmed_at)<=julianday(?2) AND a.deleted_at IS NULL AND a.is_anonymous=0 AND (a.banned_until IS NULL OR julianday(a.banned_until)<=julianday(?2)) AND EXISTS(SELECT 1 FROM d1_auth_sessions s WHERE s.token_hash=?6 AND s.project_id=?1 AND s.user_id=a.user_id AND s.session_version=a.session_version AND s.revoked_at IS NULL AND julianday(s.expires_at)>julianday(?2)) AND ${ready}`;
- const pending=`EXISTS(SELECT 1 FROM d1_auth_session_security_operations o WHERE o.id=?7 AND o.project_id=?1 AND o.user_id=?5 AND o.source_session_hash=?6 AND o.expected_version=?8 AND o.target_version=?9 AND o.status='pending')`;
+ const actorProof=kind==='access'?`EXISTS(SELECT 1 FROM d1_auth_sessions s WHERE s.token_hash=?6 AND s.project_id=?1 AND s.user_id=a.user_id AND s.session_version=a.session_version AND s.revoked_at IS NULL AND julianday(s.expires_at)>julianday(?2))`:
+  `EXISTS(SELECT 1 FROM d1_auth_refresh_families f WHERE f.family_id=?11 AND f.user_id=a.user_id AND ${activeSql().replaceAll('?10','?13')} AND ${fingerprint()}=?12 AND (f.current_hash=?6 OR ${proofSql('replay').replaceAll('?9','?6')}) AND (?14 IS NULL OR EXISTS(SELECT 1 FROM d1_auth_sessions associated WHERE associated.token_hash=?14 AND associated.project_id=f.project_id AND associated.family_id=f.family_id AND associated.user_id=f.user_id)))`;
+ const own=`a.user_id=?5 AND a.session_version=?8 AND a.email_confirmed_at IS NOT NULL AND julianday(a.email_confirmed_at)<=julianday(?2) AND a.deleted_at IS NULL AND a.is_anonymous=0 AND (a.banned_until IS NULL OR julianday(a.banned_until)<=julianday(?2)) AND ${actorProof} AND ${ready}`;
+ const pending=`EXISTS(SELECT 1 FROM d1_auth_session_security_operations o WHERE o.id=?7 AND o.project_id=?1 AND o.user_id=?5 AND o.source_session_hash=?10 AND o.expected_version=?8 AND o.target_version=?9 AND o.status='pending')`;
  const updated=`EXISTS(SELECT 1 FROM d1_auth_accounts WHERE user_id=?5 AND session_version=?9) AND ${ready}`;
  const none=`NOT EXISTS(SELECT 1 FROM d1_auth_sessions WHERE project_id=?1 AND user_id=?5 AND revoked_at IS NULL) AND NOT EXISTS(SELECT 1 FROM d1_auth_refresh_families WHERE project_id=?1 AND user_id=?5 AND revoked_at IS NULL)`;
- const ss=[stmt(`INSERT INTO d1_auth_session_security_operations(id,project_id,user_id,source_session_hash,kind,expected_version,target_version,status,created_at) SELECT ?7,?1,a.user_id,?6,'global_logout',?8,?9,'pending',?2 FROM d1_auth_accounts a WHERE ${own}`,params),
+ const ss=[stmt(`INSERT INTO d1_auth_session_security_operations(id,project_id,user_id,source_session_hash,kind,expected_version,target_version,status,created_at) SELECT ?7,?1,a.user_id,?10,'global_logout',?8,?9,'pending',?2 FROM d1_auth_accounts a WHERE ${own}`,params),
   stmt(`UPDATE d1_auth_accounts AS a SET session_version=?9 WHERE ${pending} AND ${own}`,params),
   stmt(`UPDATE d1_auth_refresh_families SET revoked_at=coalesce(revoked_at,?2) WHERE project_id=?1 AND user_id=?5 AND ${pending} AND ${updated}`,params),
   stmt(`UPDATE d1_auth_sessions SET revoked_at=coalesce(revoked_at,?2) WHERE project_id=?1 AND user_id=?5 AND ${pending} AND ${updated}`,params),
   stmt(`UPDATE d1_auth_session_security_operations SET status='done' WHERE id=?7 AND ${pending} AND ${updated} AND ${none}`,params),
-  stmt(`SELECT CASE WHEN EXISTS(SELECT 1 FROM d1_auth_session_security_operations WHERE id=?7 AND project_id=?1 AND user_id=?5 AND source_session_hash=?6 AND expected_version=?8 AND target_version=?9 AND status='done') AND ${updated} AND ${none} THEN 1 ELSE abs(-9223372036854775808) END AS valid`,params)];
+  stmt(`SELECT CASE WHEN EXISTS(SELECT 1 FROM d1_auth_session_security_operations WHERE id=?7 AND project_id=?1 AND user_id=?5 AND source_session_hash=?10 AND expected_version=?8 AND target_version=?9 AND status='done') AND ${updated} AND ${none} THEN 1 ELSE abs(-9223372036854775808) END AS valid`,params)];
  try{const result=await db.batch(ss);if(result.length!==ss.length||result.at(-1)?.results?.[0]?.valid!==1)throw unavailable();return 'revoked';}catch{if(await recover())return 'replayed';throw unavailable();}
 }
 
-export async function revokeAllD1RefreshFamilies(db:AuthDatabase,accessToken:string,p:RefreshFamilyPolicy){return (await revokeAllD1RefreshFamiliesOutcome(db,accessToken,p))!=='invalid';}
+export async function revokeAllD1RefreshFamiliesOutcome(db:AuthDatabase,token:string,p:RefreshFamilyPolicy){return revokeAllFromProof(db,token,p,'access');}
+export async function revokeAllD1RefreshFamiliesByRefreshOutcome(db:AuthDatabase,token:string,p:RefreshFamilyPolicy,associatedAccess?:string){return revokeAllFromProof(db,token,p,'refresh',associatedAccess);}
+export async function revokeAllD1RefreshFamilies(db:AuthDatabase,token:string,p:RefreshFamilyPolicy){return (await revokeAllD1RefreshFamiliesOutcome(db,token,p))!=='invalid';}
