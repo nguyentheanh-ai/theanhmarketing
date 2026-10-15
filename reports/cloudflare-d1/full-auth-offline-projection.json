@@ -1,0 +1,95 @@
+{
+  "status": "VERIFIED_OFFLINE_NATIVE_AUTH_PROJECTIONS",
+  "sourceContacted": false,
+  "remoteD1Written": false,
+  "projects": {
+    "A": {
+      "status": "VERIFIED_OFFLINE_NATIVE_AUTH_PROJECTION",
+      "sourceContacted": false,
+      "remoteD1Written": false,
+      "scope": "Offline native credential/account projection only; no provider/session/account activation or full Auth parity",
+      "sourceUsers": 436,
+      "identityProviderCounts": {
+        "email": 410,
+        "google": 89
+      },
+      "preflight": {
+        "duplicateIds": 0,
+        "duplicateNormalizedEmails": 0,
+        "missingEmail": 0,
+        "unsupportedCredentials": 0,
+        "passwordless": 14,
+        "anonymous": 0,
+        "deleted": 0,
+        "unconfirmed": 5
+      },
+      "providerIdentityRowsMatched": 499,
+      "passwordlessAccountsWithImportedGoogleLink": 14,
+      "summary": {
+        "users": 436,
+        "passwordCredentials": 422,
+        "passwordlessUsers": 14,
+        "confirmedUsers": 431,
+        "protectedAdmins": 2
+      },
+      "rowsMatched": 436,
+      "counts": {
+        "d1_access_users": 436,
+        "d1_auth_accounts": 436,
+        "d1_auth_source_versions": 436,
+        "d1_auth_sessions": 0,
+        "d1_auth_credential_operations": 0,
+        "d1_auth_sync_state": 0,
+        "d1_auth_provider_identities": 499
+      },
+      "allCredentialEnvelopesRoundtrip": true,
+      "foreignKeyViolations": 0,
+      "roleLimit": "A protected app_metadata role projection only; configured owner-email policy not verified. B profile authorization not replaced. Providers, recovery, phone and sessions are separate migration gates."
+    },
+    "B": {
+      "status": "VERIFIED_OFFLINE_NATIVE_AUTH_PROJECTION",
+      "sourceContacted": false,
+      "remoteD1Written": false,
+      "scope": "Offline native credential/account projection only; no provider/session/account activation or full Auth parity",
+      "sourceUsers": 269,
+      "identityProviderCounts": {
+        "email": 269
+      },
+      "preflight": {
+        "duplicateIds": 0,
+        "duplicateNormalizedEmails": 0,
+        "missingEmail": 0,
+        "unsupportedCredentials": 0,
+        "passwordless": 0,
+        "anonymous": 0,
+        "deleted": 0,
+        "unconfirmed": 0
+      },
+      "providerIdentityRowsMatched": 269,
+      "passwordlessAccountsWithImportedGoogleLink": 0,
+      "summary": {
+        "users": 269,
+        "passwordCredentials": 269,
+        "passwordlessUsers": 0,
+        "confirmedUsers": 269,
+        "protectedAdmins": 0
+      },
+      "rowsMatched": 269,
+      "counts": {
+        "d1_access_users": 269,
+        "d1_auth_accounts": 269,
+        "d1_auth_source_versions": 269,
+        "d1_auth_sessions": 0,
+        "d1_auth_credential_operations": 0,
+        "d1_auth_sync_state": 0,
+        "d1_auth_provider_identities": 269
+      },
+      "allCredentialEnvelopesRoundtrip": true,
+      "foreignKeyViolations": 0,
+      "roleLimit": "A protected app_metadata role projection only; configured owner-email policy not verified. B profile authorization not replaced. Providers, recovery, phone and sessions are separate migration gates."
+    }
+  },
+  "outboundNetworkDenied": true,
+  "serverStopped": true,
+  "encryptedVolumeUnmounted": true
+}

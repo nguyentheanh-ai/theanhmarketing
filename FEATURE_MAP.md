@@ -1,3 +1,13 @@
+## 15/10/2026 — Toàn bộ tài khoản snapshot A/B và identity: TESTED offline
+
+Đọc chỉ đọc hai bản phục hồi đã đối soát dump, PostgreSQL local chỉ Unix socket0700, outbound bị sandbox chặn, cron off/net inert. Tạo hai SQLite riêng và khóa AES-GCM riêng chỉ trong volume AES-256; không nhập khách lên D1 remote, không cấp phiên/marker verified và không liên hệ production. Giữ nguyên UUID, trạng thái xác nhận/ban/delete/anonymous, metadata dùng bởi projection, phiên bản Source và bcrypt hash mã hóa; giải mã/đối chiếu từng hàng với nguồn phục hồi.
+
+Kết quả A436/436users,422credential mật khẩu và14passwordless; B269/269users và269credential.0UUID/email chuẩn hóa trùng,0thiếu email,0hash không hỗ trợ,0FK lỗi. A5tài khoản chưa xác nhận được giữ nguyên. Source protected app_metadata A có2admin được giữ trong phạm vi metadata-role; chưa xác minh owner-email cấu hình production. B phân quyền profile không thay bằng admin-role của A.
+
+Nhập và so đủ10trường từng identity: A499identity (410email/89Google), B269email; giữ identity ID/provider subject/user UUID gốc, không tự nối theo email. Cả14passwordless A đều có link Google trong bản sao. Không xuất hash, credential hoặc dữ liệu từng khách vào log/report; toàn bộ nguồn/SQLite/key nằm mã hóa.0session/0credential operation/0Auth authority marker. Server dừng, volume unmount được xác minh.
+
+Công cụ scripts/verify-native-auth-snapshots.py và main/scripts/verify-native-auth-snapshot.mjs dùng importer/verifier hiện có.5tests Auth importer và9tests Google crypto/mapping/SQL guards PASS; toàn dataset thực offline qua readback. NATIVE_AUTH_SNAPSHOT_PARITY_RESULTS.json và main/reports/cloudflare-d1/full-auth-offline-projection.json ghi số liệu. Đây là snapshot cố định, chưa dữ liệu hiện tại/delta/remote binding/password login mọi khách; chưa provider OAuth thực, recovery/signup/rolling sessions và role policy hoàn chỉnh. Không ép14passwordless đặt lại mật khẩu. Tổng IN PROGRESS, chưa READY FOR CUTOVER/LIVE; Source/DNS/webhook/nguồn ghi không đổi.
+
 ## 15/10/2026 — Hosted native A→B: TESTED và thu hồi QA đã xác minh
 
 Luồng HTTP trên hai Worker thật đã PASS 8 nhóm: đúng binding/cohort; B start và A guest redirect; A password login giữ UUID gốc; A backend issuer trả đúng callback B bằng fragment; callback cô lập/CSP và POST ràng buộc browser verifier, thiếu verifier/phát lại bị từ chối; workspace và refresh; tài liệu QA lưu–đọc–refresh–xóa; logout B/A thu hồi phiên. Hai UUID A/B khác nhau giữ nguyên theo mapping đã đối soát nguồn, không auto-link bằng email browser. Không dùng tài khoản khách và không đổi mật khẩu.
