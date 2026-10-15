@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-15T05:10:53.683Z",
+  "checks": [
+    {
+      "name": "built Worker login creates the native session for the synthetic principal",
+      "status": "PASS"
+    },
+    {
+      "name": "cold built vinext lesson renders D1 content, root metadata and context without outbound",
+      "status": "PASS"
+    },
+    {
+      "name": "built progress action persists and page reload renders completion",
+      "status": "PASS"
+    },
+    {
+      "name": "guest cannot receive a cached authenticated lesson and keeps its exact return URL",
+      "status": "PASS"
+    },
+    {
+      "name": "next lesson retains original UUID route and starts incomplete",
+      "status": "PASS"
+    },
+    {
+      "name": "old rendered form cannot write after a new family login",
+      "status": "PASS"
+    }
+  ],
+  "outboundFetches": 0,
+  "moduleCount": 535,
+  "moduleManifestDigest": "e0c676c10b9aecd850e350b2053eddf63a122e2fbbf02d30f4dbe32b6c64feb8",
+  "artifactHash": "8897dbd2ec8439fbdeff2d6b485f9b7700288b75b3ba53172f6521a185133a0d",
+  "scope": "Actual built vinext Worker/root layout and synthetic D1 text-only lesson, HTTP only",
+  "limits": "No browser/hydration/Safari, real Facebook Ads media, hosted deployment or native primary/cutover proof"
+}

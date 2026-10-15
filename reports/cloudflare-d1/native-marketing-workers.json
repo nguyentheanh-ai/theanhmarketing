@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-15T05:10:08.145Z",
+  "checks": [
+    {
+      "name": "disabled native provider does not require a Source/D1 marketing row",
+      "status": "PASS"
+    },
+    {
+      "name": "missing/pending native snapshot does not turn into fallback or Source settings",
+      "status": "PASS"
+    },
+    {
+      "name": "real D1 candidate verification and publication returns exact existing normalized Source values",
+      "status": "PASS"
+    },
+    {
+      "name": "unverified and failed replacement never removes the existing public snapshot",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong host or mode cannot expose another environment or fall back to Supabase",
+      "status": "PASS"
+    }
+  ],
+  "source": "captured-public-row-oracle",
+  "actualSourceCapture": true,
+  "sourceUpdatedAt": "2026-05-19T19:07:15.791Z",
+  "sourceSnapshotAt": "2026-10-15T05:09:54.814Z",
+  "sourceDigest": "ef993bc8785b4db724a0b12fd6b35dc5211c9f3fed5bf9bac5e29a3e5b1e717f",
+  "normalizedDigest": "c37ef65ab667533cc948162916f7c5672bc4f77050b36d6250553194438261b4",
+  "rawValuesPrinted": false,
+  "outboundFetches": 0,
+  "networkCanaryBlocked": true,
+  "limits": "Local worker/native provider only; not full vinext root render/browser, native primary writer/admin updates or production migration"
+}

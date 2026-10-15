@@ -1,3 +1,7 @@
+## 15/10/2026 — Provider public settings và full vinext HTML local
+
+210tests và6nhóm full built Worker HTTP đạt (D1 login → lesson → progress50% → reload nút hoàn thành; guest không nhận trang cache; bài tiếp UUID; stale context409),0outbound; thêm5nhóm provider marketing Source thật. Marketing/brand native default OFF, chưa deploy/apply schema remote. Brand Source hiện0hàng; fixture brand chỉ phục vụ test, chưa giải quyết snapshot absence/native-primary. Không browser/Safari/bài thật/media/payment toàn bộ. Tổng IN PROGRESS, chưa READY FOR CUTOVER; production không đổi. Chi tiết CLOUDFLARE_TEST_RESULTS.md và main/reports/cloudflare-d1/native-full-worker.json.
+
 ## 15/10/2026 — Kiểm luồng học có context local
 
 14nhóm router/workerd/D1 đạt, gồm lưu50%/reload/idempotent và stale context không ghi bài kế. Chỉ fixture text-only; runtime giữ revisionc867e3c, không deploy/production change. Root layout marketing service còn đọc Supabase khi cachemiss. Tổng IN PROGRESS, chưa READY FOR CUTOVER. Xem _cloudflare-migration/CLOUDFLARE_TEST_RESULTS.md.

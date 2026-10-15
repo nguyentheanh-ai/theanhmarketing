@@ -1,40 +1,8 @@
-import { siteConfig } from "@/data/site";
-import { unstable_cache } from "next/cache";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-
-export type BrandSettings = {
-  name: string;
-  shortName: string;
-  logoMark: string;
-  logoImage: string;
-  tagline: string;
-  phone: string;
-  email: string;
-  primaryCtaLabel: string;
-  primaryCtaHref: string;
-  heroImageUrl: string;
-  heroVideoUrl: string;
-};
-
-type DbSetting = {
-  key: string;
-  value: BrandSettings | null;
-};
-
-export const fallbackBrandSettings: BrandSettings = {
-  name: siteConfig.name,
-  shortName: siteConfig.shortName,
-  logoMark: siteConfig.logoMark,
-  logoImage: siteConfig.logoImage,
-  tagline: siteConfig.tagline,
-  phone: siteConfig.phone,
-  email: siteConfig.email,
-  primaryCtaLabel: "Khám phá Growth System",
-  primaryCtaHref: "/dang-ky",
-  heroImageUrl: "",
-  heroVideoUrl: "",
-};
-
+import {unstable_cache} from "next/cache";
+import {createSupabaseServerClient} from "@/lib/supabase/server";
+import {fallbackBrandSettings,normalizeBrandSettings,type BrandSettings} from '@/lib/brand-settings';
+import {readNativeBrandSettings} from '@/lib/cloudflare/native-marketing-settings';
+export {fallbackBrandSettings,type BrandSettings} from '@/lib/brand-settings';
 async function fetchBrandSettings(): Promise<BrandSettings> {
   const supabase = createSupabaseServerClient();
 
@@ -52,19 +20,14 @@ async function fetchBrandSettings(): Promise<BrandSettings> {
     return fallbackBrandSettings;
   }
 
-  const setting = data as DbSetting;
+  const setting = data as {key:string;value:BrandSettings|null};
 
-  const value: Partial<BrandSettings> = setting.value ?? {};
-
-  return {
-    ...fallbackBrandSettings,
-    ...value,
-    logoImage: value.logoImage || fallbackBrandSettings.logoImage,
-    logoMark: value.logoMark || fallbackBrandSettings.logoMark,
-  };
+  return normalizeBrandSettings(setting.value);
 }
 
-export const getBrandSettings = unstable_cache(fetchBrandSettings, ["site-settings-brand"], {
+const getSourceBrandSettings = unstable_cache(fetchBrandSettings, ["site-settings-brand"], {
   revalidate: 300,
   tags: ["site-settings", "site-settings:brand"],
 });
+
+export async function getBrandSettings():Promise<BrandSettings>{const native=await readNativeBrandSettings();return native??getSourceBrandSettings();}

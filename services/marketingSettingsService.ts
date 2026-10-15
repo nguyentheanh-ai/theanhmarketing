@@ -1,3 +1,4 @@
+import {readNativeMarketingSettings} from '@/lib/cloudflare/native-marketing-settings';
 import { unstable_cache } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
@@ -32,10 +33,17 @@ async function fetchMarketingSettings(): Promise<MarketingSettings> {
   return normalizeMarketingSettings(setting.value);
 }
 
-export const getMarketingSettings = unstable_cache(fetchMarketingSettings, ["site-settings-marketing"], {
+const getSourceMarketingSettings = unstable_cache(fetchMarketingSettings, ["site-settings-marketing"], {
   revalidate: 300,
   tags: ["site-settings", "site-settings:marketing"],
 });
+
+// Select the provider before entering the legacy cache. A warm Source entry
+// must not mask native settings, and native outages must not change tracking.
+export async function getMarketingSettings():Promise<MarketingSettings>{
+ const native=await readNativeMarketingSettings();
+ return native??getSourceMarketingSettings();
+}
 
 export type { MarketingSettings } from "@/lib/marketing-settings";
 export { fallbackMarketingSettings, getAbsoluteSocialImage, normalizeMarketingSettings } from "@/lib/marketing-settings";

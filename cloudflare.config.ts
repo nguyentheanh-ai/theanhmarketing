@@ -13,6 +13,7 @@ export default defineConfig({
       CF_R2_STAGE_PRIVATE_DELIVERY: bindings.text("true"),
       PRIVATE_ASSETS: bindings.r2({ name: "theanh-main-assets-staging" }),
       R2_PRIVATE_URL_SECRET: bindings.secret(),
+      CF_NATIVE_MARKETING_MODE: bindings.text("disabled"),
       CF_NATIVE_AUTH_MODE: bindings.text("disabled"),
       CF_NATIVE_AUTH_ORIGIN: bindings.text("https://theanh-main-cf-staging.12c1thdtheanh.workers.dev"),
       CF_NATIVE_QA_USERS: bindings.text("[]"),
