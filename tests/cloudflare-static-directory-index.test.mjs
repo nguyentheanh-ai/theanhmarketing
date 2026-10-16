@@ -10,3 +10,7 @@ test('every static .html rewrite is reachable on Workers assets',()=>{
  for(const [s,d] of Object.entries(aliases))assert(rewrites.some(([a,b])=>a===s&&b===d+'.html'),`stale alias ${s}`);
  assert.match(readFileSync('cloudflare.config.ts','utf8'),/htmlHandling: "drop-trailing-slash"/);
 });
+test('apex domain redirects to www with 307 like Vercel, before any app routing',()=>{
+ const worker=readFileSync('cloudflare-worker.ts','utf8'),fetchBody=worker.slice(worker.indexOf('async fetch('),worker.indexOf('stagingWorker.route(request'));
+ assert.match(fetchBody,/hostname === "theanhmarketing\.com"/);assert.match(fetchBody,/"www\.theanhmarketing\.com"/);assert.match(fetchBody,/Response\.redirect\(incoming\.toString\(\), 307\)/);
+});

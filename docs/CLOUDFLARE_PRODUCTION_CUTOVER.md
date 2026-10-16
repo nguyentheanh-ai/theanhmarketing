@@ -68,7 +68,7 @@ Cách chép an toàn đề xuất: chủ dự án chạy `vercel env pull` vào 
 
 Kiểm chứng sau thay đổi: 1.287 test — 33 lỗi đều có sẵn, 0 lỗi mới; harness full-worker 6, payment 7, email-auth 7 PASS; typecheck, lint PASS.
 
-Cần thêm khi chuyển tên miền: Vercel hiện chuyển `theanhmarketing.com` → `www` (307). Trên Cloudflare phải có quy tắc chuyển hướng tương tự (Redirect Rule hoặc trong Worker) trước khi gắn tên miền gốc.
+Chuyển hướng `theanhmarketing.com` → `www` (307, giữ path/query) đã có trong Worker (16/10). Harness `scripts/test-worker-cron-workers.mjs` trên bản build thật: apex→www, route cron từ chối bearer sai không chạm Supabase, `scheduled` 01:30 UTC chạy orders/expire + email worker qua route thật, giờ yên tĩnh không gọi gì — 4/4 PASS. Worker thử hiện tại `e775f4ab`.
 
 ## Kết quả chép Secret từ Vercel (15/10 tối)
 

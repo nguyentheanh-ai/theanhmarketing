@@ -1716,3 +1716,7 @@ Chép 37 Secret: 33 từ file `.vercel/.env.production.local` ngày 13/8 của c
 ### 15/10/2026 — ĐÍNH CHÍNH Secret Worker production thử
 
 File `.vercel/.env.production.local` (13/8) chỉ chứa giá trị giữ chỗ giống nhau (11 ký tự) cho 35 biến Sensitive — không phải khóa thật. Đã đẩy nhầm lên `theanh-main-cf-production`; xóa bị chế độ an toàn chặn (vô hại: khóa Supabase/Resend/Telegram/SePay đều là giữ chỗ nên thao tác đặc quyền thất bại). Chủ dự án đăng nhập được trên URL thử, nhưng `/dashboard`, `/learn` lỗi do service role giữ chỗ (xác định bằng endpoint chẩn đoán tạm chỉ báo định dạng/độ dài, đã gỡ; bản hiện tại `eddbb68e`). `push-env-file-to-worker.py` nay từ chối file có giá trị lặp. Cần nhập khóa thật bằng `scripts/set-production-secrets.sh`.
+
+### 16/10/2026 — Chuẩn bị ngày chuyển: apex→www và cron trên bản build thật
+
+`cloudflare-worker.ts`: `theanhmarketing.com` → 307 `www.theanhmarketing.com` (giữ path/query) trước mọi routing. `scripts/test-worker-cron-workers.mjs` (miniflare trên `dist/server` thật): 4/4 PASS — apex→www; `/api/orders/expire` trả 401 khi thiếu/sai bearer và không gọi Supabase; `scheduled` 01:30 UTC đi qua dispatcher tới route thật (gọi Supabase, bị chặn ở harness); phút yên tĩnh không gọi gì. Suite 1.289 test: 33 lỗi có sẵn, 0 mới. Worker thử redeploy `e775f4ab`, trang chính/landing vẫn 200. Vẫn chờ chủ dự án: `SEPAY_BANK_*` (QR), Telegram, Sheets, các email nhận thông báo, `CRON_SECRET`, `STUDENT_PORTAL_PROVISION_SECRET`.

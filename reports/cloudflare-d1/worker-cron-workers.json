@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-16T03:22:22.651Z",
+  "status": "PASS",
+  "checks": 4,
+  "build": "theanh-main-cf-staging",
+  "outboundHosts": [
+    "vsxxgdzwtscuxcmjfckt.supabase.co"
+  ],
+  "scope": "Real vinext build: scheduled -> worker-cron -> Next cron routes with Bearer CRON_SECRET; apex->www redirect",
+  "limits": "Outbound blocked (Supabase returns 599), so route side effects are not executed; not hosted"
+}

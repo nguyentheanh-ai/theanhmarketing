@@ -20,6 +20,12 @@ const STATIC_ASSET_ALIASES: Record<string, string> = { "/academy/quang-cao-chuye
 
 const stagingWorker = {
   async fetch(request: Request, env: unknown, context: Parameters<typeof app.fetch>[2]) {
+    // Vercel parity once custom domains are attached: apex -> www, path and query kept.
+    const incoming = new URL(request.url);
+    if (incoming.hostname === "theanhmarketing.com") {
+      incoming.hostname = "www.theanhmarketing.com";
+      return Response.redirect(incoming.toString(), 307);
+    }
     const response = await stagingWorker.route(request, env, context);
     // Test hostnames (*.workers.dev) must never be indexed next to the real domain.
     if (!new URL(request.url).hostname.endsWith('.workers.dev')) return response;
