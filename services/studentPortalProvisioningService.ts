@@ -1,4 +1,5 @@
 import { getStudentAppStagingAccessHeaders } from "@/lib/cloudflare/student-app-access";
+import { fetchStudentApp } from "@/lib/cloudflare/student-app-fetch";
 
 type StudentPortalOrderInput = {
   orderCode: string;
@@ -60,7 +61,7 @@ export async function notifyStudentPortalProvisioning({
 
   const payload = buildStudentPortalProvisioningPayload({ order });
 
-  const response = await fetch(endpoint, {
+  const response = await fetchStudentApp(endpoint, {
     method: "POST",
     headers: {
       "content-type": "application/json",

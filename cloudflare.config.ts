@@ -53,6 +53,8 @@ export default defineConfig({
       NATIVE_AUTH_CREDENTIAL_KEY: bindings.secret(),
       NATIVE_AUTH_LIMITER_KEY: bindings.secret(),
       STUDENT_PORTAL_PROVISION_SECRET: bindings.secret(),
+      // Production only: direct A -> B calls (workers.dev Worker-to-Worker fetch is refused).
+      ...(production ? { STUDENT_APP: bindings.worker({ worker: "theanh-student-cf-production" }) } : {}),
     },
   }),
 });

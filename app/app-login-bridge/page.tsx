@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { fetchStudentApp } from "@/lib/cloudflare/student-app-fetch";
 import { cookies } from "next/headers";
 import { hasSupabaseEnv } from "@/lib/supabase/client";
 import { createSupabaseAuthServerClient } from "@/lib/auth/session";
@@ -77,7 +78,7 @@ async function requestAppLoginLink(payload: { email: string; fullName: string; s
   }
 
   const endpoint = `${appUrl}/api/auth/website-login`;
-  const response = await fetch(endpoint, {
+  const response = await fetchStudentApp(endpoint, {
     method: "POST",
     headers: {
       "content-type": "application/json",

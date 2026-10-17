@@ -18,6 +18,8 @@ function loadTsModule(relativePath) {
   const runner = new Function("exports", "module", "require", compiled);
   runner(cjsModule.exports, cjsModule, (id) => {
     if (id === "@/lib/cloudflare/student-app-access") return { getStudentAppStagingAccessHeaders: () => ({}) };
+    // Outside the Worker (Vercel) fetchStudentApp is plain global fetch.
+    if (id === "@/lib/cloudflare/student-app-fetch") return { fetchStudentApp: (url, init) => globalThis.fetch(url, init) };
     throw new Error(`Unexpected test import: ${id}`);
   });
   return cjsModule.exports;
