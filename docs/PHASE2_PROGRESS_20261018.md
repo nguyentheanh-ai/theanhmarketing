@@ -202,3 +202,7 @@ Gate mới `CF_NATIVE_QA_PROFILE_WRITES=disabled` mặc định; artifact checke
 35tests Node scoped/hồi quy PASS (7SQL/HTTPprofile,4forminteraction,password/sourceaccount/artifact),CloudflareTypeScript/scopedESLint PASS; buildproduction bằng đúng `scripts/build-cloudflare-production.sh` PASS,10gatesOFF/noattach. ActualvinextWorkerD1/R2local **15nhómPASS,0outbound** gồm tài khoản–lưu profile–refreshdashboard/account–guest307–stalewitness/progress/Ebook. Receipt `reports/cloudflare-d1/native-full-worker.json`; fixture tổng hợp,khôngbrowser/hydration/hosted/productionwrite. Reviewer tìm lỗi thiếuwitness rồi7tests xác nhậnfix; không suy ra quyền cutover.
 
 Còn nativeemailchange,adminCRMCRUD/fullRLS,providerreal/sessionadoption,finaldelta/fence/reverserollback và hostedQA trước bỏSupabase. Không tạo/đổi secret,DNS,Sourcewriter,email hay dịch vụcũ.
+
+### 18/10 — Chuẩn bị phát hành staging đã được anh duyệt
+
+Đăng ký riêng hai root phase2-main/phase2-app chỉ targetWorkerstaging, đồng bộ GitHub khôngforce và preflightSHA đạt. Artifactstaging riêng cũng đã chạy actualWorkerlocal15nhómA/8nhómB,0outbound; chưaupload tại checkpointnày. SourceRPCoracleQA trước đây dùngSQLrole không cóEXECUTE; candidate mới dùng service_role hiệncó chỉRAM/RESTread, kiểmbodySTABLEvàsecurityinvokertrước, sođủinput liênquan tại2đầucửa sổ/expiry.4testswindowPASS; chưa chạyreadAPIởcheckpointnày. KhôngGRANT,khônggọiLoginSource,khôngclaimsameMVCC/finalfence.
