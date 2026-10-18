@@ -57,3 +57,7 @@ Chủ hệ thống duyệt trọn gói theo các điều kiện dừng, không c
 11 file cũ chưa commit và xóa file khóa xử lý riêng sau chuyển; chưa có quyết định gộp/xóa. Giai đoạn 2 vẫn cần đồng bộ D1 mới, Auth/RLS/admin/CRM/Storage và kiểm chứng bỏ Supabase đầy đủ.
 
 Tham khảo hiện hành: https://developers.cloudflare.com/workers/configuration/routing/custom-domains/ và https://developers.cloudflare.com/dns/zone-setups/full-setup/setup/ .
+
+## 18/10/2026 — Kiểm tra lại nơi lưu khóa theo yêu cầu chủ hệ thống
+
+Đã tìm trong47filedotenv của41worktree thuộc đúng haiGit repo A/B; các khóa Meta/Sheets/cấpquyền cần tìm chỉ có template/rỗng/placeholder, chưa thấy giá trị ứng viên. Keychain có khóa backup/native và ba mục provider đọc được trong bộ nhớ: com.theanhmarketing.resend.production, com.theanhmarketing.sepay.webhook.production, theanh-main.resend. Không yêu cầu nhập lại Resend API/SePay key đã lưu. Không thấy service metadata liên quan các khóa Meta/Sheets đang thiếu trong phạm vi tên đã tìm. Vercel CLI lấy env bị403, connector env listing chưa khả dụng; không suy ra giá trịSensitive đã mất khỏiVercel. Mọi giá trị không in/log/lưu vào báo cáo. Không đổi secret/production. Receipt local-secret-inventory.json chỉ có tên/trạng thái/path.
