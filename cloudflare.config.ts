@@ -3,7 +3,7 @@ import { bindings, defineConfig, defineWorker, triggers } from "cf/config";
 // One codebase, two Workers. Default is staging (unchanged). Production is
 // built with CF_DEPLOY_TARGET=production (docs/CLOUDFLARE_PRODUCTION_CUTOVER.md):
 // same app on Workers, data still on Supabase, every native gate disabled.
-// Custom domains AND Vercel-parity crons switch on together only with
+// Exact-host routes AND Vercel-parity crons switch on together only with
 // CF_ATTACH_PRODUCTION_DOMAINS=1 (the approved cutover deploy), so the test
 // deploy never runs a cron twice alongside Vercel.
 const production = process.env.CF_DEPLOY_TARGET === "production";
@@ -13,7 +13,13 @@ export default defineConfig({
   worker: defineWorker({
     name: production ? "theanh-main-cf-production" : "theanh-main-cf-staging",
     entrypoint: "./cloudflare-worker.ts",
-    ...(attachDomains ? { triggers: [triggers.scheduled({ schedule: "*/5 * * * *" })], domains: ["theanhmarketing.com", "www.theanhmarketing.com"] } : {}),
+    // Keep existing DNS records during hosting migration. Exact-host routes
+    // take traffic only after those records are proxied; rollback preserves Blue.
+    ...(attachDomains ? { triggers: [
+      triggers.scheduled({ schedule: "*/5 * * * *" }),
+      triggers.fetch({ pattern: "theanhmarketing.com/*", zone: "theanhmarketing.com" }),
+      triggers.fetch({ pattern: "www.theanhmarketing.com/*", zone: "theanhmarketing.com" }),
+    ] } : {}),
     compatibilityDate: "2026-10-13",
     compatibilityFlags: ["nodejs_compat", "global_fetch_strictly_public"],
     // Vercel parity: /dir/index.html is served at /dir and /dir/ redirects to /dir.

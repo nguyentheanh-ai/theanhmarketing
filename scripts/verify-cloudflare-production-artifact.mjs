@@ -19,7 +19,7 @@ export function verifyProductionWorkerConfig(config,{attachDomains=false,appUrl,
   const crons=config.triggers?.crons??[],routes=config.routes??[];
   if(attachDomains){
     if(crons.length!==1||crons[0]!=='*/5 * * * *')fail('Wrong production cron trigger');
-    if(routes.length!==2||!['theanhmarketing.com','www.theanhmarketing.com'].every(domain=>routes.some(r=>r.pattern===domain&&r.custom_domain===true)))fail('Wrong custom domains');
+    if(routes.length!==2||!['theanhmarketing.com','www.theanhmarketing.com'].every(domain=>routes.some(r=>r.pattern===domain+'/*'&&r.custom_domain!==true&&(r.zone_name==='theanhmarketing.com'||r.zone_id==='48a5bf3cb46181f0cc406162be54d8b5'))))fail('Wrong exact-host production routes');
   }else if(crons.length||routes.length)fail('Preview build unexpectedly attaches domains or cron');
   return {worker:config.name,attachDomains,checkedGates:gates.length,status:'PASS'};
 }
