@@ -206,3 +206,19 @@ Còn nativeemailchange,adminCRMCRUD/fullRLS,providerreal/sessionadoption,finalde
 ### 18/10 — Chuẩn bị phát hành staging đã được anh duyệt
 
 Đăng ký riêng hai root phase2-main/phase2-app chỉ targetWorkerstaging, đồng bộ GitHub khôngforce và preflightSHA đạt. Artifactstaging riêng cũng đã chạy actualWorkerlocal15nhómA/8nhómB,0outbound; chưaupload tại checkpointnày. SourceRPCoracleQA trước đây dùngSQLrole không cóEXECUTE; candidate mới dùng service_role hiệncó chỉRAM/RESTread, kiểmbodySTABLEvàsecurityinvokertrước, sođủinput liênquan tại2đầucửa sổ/expiry.4testswindowPASS; chưa chạyreadAPIởcheckpointnày. KhôngGRANT,khônggọiLoginSource,khôngclaimsameMVCC/finalfence.
+
+### 18/10 — Staging đã triển khai, đối soát QA mới
+
+Hai Worker staging đã nhận candidate: A version `1eca732c-c908-4ac9-99c4-63d6f1294a95` từ `3b49dfa`, B version `8d30c058-dbee-4f20-ba0b-f15d564ae738` từ `4bc1340`. Đây là staging, không domain/cron production. Artifact riêng staging A15/B8 nhóm actualWorker local đạt; không lấy bản build staging làm production artifact.
+
+Source QA thay đổi từ snapshot cũ: thêm quyền/tài liệu, tiến độ completed và dấu thời gian Auth. Đã giữ counter3 cùng2 global-logout đã chứng minh, chỉ đồng bộ cursor Auth khi bảo mật/credential/metadata khớp. B append tài liệu Source QA mới, không sửa/xóa tài liệu nền. A refresh đúng khóa Facebook với CAS đầy đủ, giữ quyền cũ, append quyền QA mới; không sửa Source. Oracle RPC thật + fullfield staging đọc lại đạt1enrollment/1progress/2ownedproducts. Hai đầu cửa sổ Source bằng nhau, chưa loại trừ thay đổi thoáng qua hoặc finalfence.
+
+Catalog công khai13:45UTC nhập/publish/đọc lại D1 staging khớp actual Source service10course/1resource, không lessonprivatepayload. Marketing/brand snapshot mới đọc lại đủ trường; thiếu brand Source dùng đúng mapper default hiện hành. Trạng thái hostedQA còn IN PROGRESS; chưa suy ra native Auth/writer/Storage production hoặc bỏ Supabase/Vercel.
+
+## 18/10 — kiểm thử HTTP staging và sửa trang tài khoản
+
+- A → App B riêng: đăng nhập, chống replay, workspace, tạo/đọc/xóa tài liệu QA, logout đã qua kiểm thử hosted HTTP; dữ liệu tài liệu có sẵn giữ nguyên.
+- A: bài học bắt buộc, dashboard, Ebook PDF/PNG riêng tư và Range đã qua hosted HTTP. Tiến độ QA ban đầu đã hoàn thành: thử bỏ hoàn thành rồi hoàn thành lại; CAS khôi phục đầy đủ bản gốc sau thử.
+- Phát hiện `/dashboard` và `/tai-khoan` thiếu route refresh và header bảo vệ ở ranh giới Worker. Test RED: thiếu Cache-Control, phiên hết hạn trả 303. Sửa đúng hai đường dẫn; 16 unit PASS, workerd/D1 kiểm phiên hết hạn PASS, bản vinext thực 15 nhóm PASS và không có fetch ra ngoài.
+- Kiểm thử hồ sơ lần đầu dừng trước thao tác ghi; trạng thái QA được xác nhận không đổi, gates đóng và phiên QA thu hồi. Đang thử lại sau bản sửa.
+- Không phải bằng chứng browser hydration/Safari hay đủ điều kiện chuyển nguồn ghi. Supabase production vẫn writer/Auth/Storage; native chỉ QA staging.

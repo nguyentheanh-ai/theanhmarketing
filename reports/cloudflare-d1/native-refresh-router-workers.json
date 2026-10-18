@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-15T14:34:25.901Z",
+  "checkedAt": "2026-10-18T14:12:05.890Z",
   "checks": [
     {
       "name": "default-off refresh leaves existing login unchanged and cannot create a family",
@@ -52,6 +52,10 @@
     },
     {
       "name": "actual rendered context rejects stale form after new login without revoking current identity",
+      "status": "PASS"
+    },
+    {
+      "name": "dashboard and account refresh expired access before rendering without Source traffic",
       "status": "PASS"
     },
     {

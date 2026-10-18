@@ -17,3 +17,19 @@ test('metadata, credential, ownership and security differences cannot be disguis
 test('concurrent account changes abort all delta writes without updating marker or ledger',async t=>{const f=await fixture(t),p=await h.prepareQaAuthTimestampDelta(f.next,f.target(),f.opts);f.sql.exec("UPDATE d1_auth_accounts SET user_metadata='{}'");const before=f.target();assert.throws(()=>f.execute(p.statements),/malformed JSON/);assert.deepEqual(f.target(),before);assert.equal(f.sql.prepare('SELECT count(*) n FROM d1_auth_delta_operations').get().n,0);assert.equal(f.sql.prepare('SELECT status FROM d1_auth_sync_state').get().status,'verified')});
 test('active session or extra identity refuses transaction',async t=>{for(const foreign of [false,true]){const f=await fixture(t),p=await h.prepareQaAuthTimestampDelta(f.next,f.target(),f.opts);if(foreign)f.sql.prepare('INSERT INTO d1_access_users VALUES(?,?,NULL)').run(op,'other@example.invalid');else f.sql.prepare('INSERT INTO d1_auth_sessions(token_hash,user_id,project_id,family_id,session_version,created_at,expires_at,revoked_at) VALUES(?,?,?,?,1,?,?,NULL)').run('a'.repeat(64),uid,f.opts.projectId,'qa-fixture',stamp,'2099-01-01T00:00:00.000Z');assert.throws(()=>f.execute(p.statements),/malformed JSON/);assert.equal(f.sql.prepare('SELECT count(*) n FROM d1_auth_delta_operations').get().n,0)}});
 test('stale source and missing successful commit assertion never pass',async t=>{const f=await fixture(t);await assert.rejects(h.prepareQaAuthTimestampDelta(f.source,f.target(),f.opts),/stale/);const p=await h.prepareQaAuthTimestampDelta(f.next,f.target(),f.opts);f.sql.exec("CREATE TRIGGER suppress_qa_op BEFORE UPDATE ON d1_auth_delta_operations WHEN NEW.status='done' BEGIN SELECT RAISE(IGNORE); END");assert.throws(()=>f.execute(p.statements),/malformed JSON/);assert.equal(f.sql.prepare('SELECT count(*) n FROM d1_auth_delta_operations').get().n,0)});
+async function logoutFixture(t){
+ const f=await fixture(t),operations=[];
+ for(let i=1;i<=2;i++){
+  const row={id:'00000000-0000-4000-8000-00000000001'+i,project_id:f.opts.projectId,user_id:uid,kind:'global_logout',expected_version:i,target_version:i+1,status:'done'};operations.push(row);
+  f.sql.prepare('INSERT INTO d1_auth_session_security_operations(id,project_id,user_id,source_session_hash,kind,expected_version,target_version,status,created_at) VALUES(?,?,?,?,?,?,?,?,?)').run(row.id,row.project_id,uid,String(i).repeat(64),row.kind,i,i+1,'done',stamp);
+ }
+ f.sql.exec('UPDATE d1_auth_accounts SET session_version=3');return {...f,history:{operations,activeSessions:0,activeFamilies:0,credentialOperations:0}};
+}
+test('timestamp-only delta preserves verified logout counter and revalidates full source row',async t=>{
+ const f=await logoutFixture(t),p=await h.prepareQaAuthTimestampDelta(f.next,f.target(),f.opts,f.history);f.execute(p.statements);assert.equal(f.target().session_version,3);assert.equal(f.sql.prepare('SELECT status FROM d1_auth_sync_state').get().status,'pending');assert((await h.verifyD1QaAuthAfterLogout(f.next,f.target(),{...f.opts,resolveRole:()=>null},f.history)).matched);
+});
+test('missing, tampered or concurrently altered logout proof refuses timestamp delta',async t=>{
+ const f=await logoutFixture(t);await assert.rejects(h.prepareQaAuthTimestampDelta(f.next,f.target(),f.opts));
+ await assert.rejects(h.prepareQaAuthTimestampDelta(f.next,f.target(),f.opts,{...f.history,operations:f.history.operations.slice(1)}));
+ const p=await h.prepareQaAuthTimestampDelta(f.next,f.target(),f.opts,f.history);f.sql.exec("UPDATE d1_auth_session_security_operations SET status='pending' WHERE expected_version=1");const before=f.target();assert.throws(()=>f.execute(p.statements));assert.deepEqual(f.target(),before);assert.equal(f.sql.prepare('SELECT count(*) n FROM d1_auth_delta_operations').get().n,0);
+});

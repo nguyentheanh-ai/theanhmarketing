@@ -3,6 +3,8 @@
 import {build} from 'esbuild';
 import {DatabaseSync} from 'node:sqlite';
 import {readFileSync,writeFileSync} from 'node:fs';
+import {homedir} from 'node:os';
+import path from 'node:path';
 let stage='setup';
 const receipt='reports/cloudflare-phase2-20261018/source-public-student-catalog-a.json';
 try{
@@ -45,6 +47,19 @@ try{
   const canonical=value=>JSON.stringify(value,(_key,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(k=>[k,v[k]])):v);
   if(canonical(actual.courses)!==canonical(expectedCourses)||canonical(actual.resources)!==canonical(source.resources.map(core.mapDbResource)))throw Error();
   const report={status:'TESTED_PUBLIC_SOURCE_SERVICE_AND_NATIVE_CATALOG',sourceWindowStartedAt:startedAt,sourceWindowEndedAt:capturedAt,sourceAnonymousReads:requests,sourceCourses:source.courses.length,sourceResources:source.resources.length,normalizedCourses:actual.courses.length,normalizedResources:actual.resources.length,coursesComparedAgainstActualSourceService:true,resourcesComparedAgainstSharedSourceMapper:true,allRetainedFieldsReadBack:true,privateLessonContentRetained:false,database:'IN_MEMORY_SQLITE_ONLY',sourceInputsSameMvccStatement:false,productionWritten:false,remoteD1Written:false,readyForCutover:false};
+  if(process.argv.includes('--apply-staging')){
+   stage='staging-identity-and-disabled-gates';
+   const token=readFileSync(path.join(homedir(),'Library/Preferences/.wrangler/config/default.toml'),'utf8').match(/^oauth_token\s*=\s*"([^"\r\n]+)"/m)?.[1];if(!token)throw Error();
+   const base='https://api.cloudflare.com/client/v4/accounts/8035ac71ae1041614760882f4b8862b2',database='694139c9-6cda-4b8c-9228-c973dbcbb719';
+   async function api(suffix,body){const r=await nativeFetch(base+suffix,{method:body===undefined?'GET':'POST',redirect:'error',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},...(body===undefined?{}:{body:JSON.stringify(body)}),signal:AbortSignal.timeout(45000)});if(!r.ok)throw Error();const value=await r.json();if(value.success!==true)throw Error();return value.result;}
+   const metadata=await api('/d1/database/'+database),settings=await api('/workers/scripts/theanh-main-cf-staging/settings'),bindings=Object.fromEntries(settings.bindings.map(b=>[b.name,b]));
+   if(metadata.uuid!==database||metadata.name!=='theanh-main-db-staging'||bindings.NATIVE_AUTH_DB?.id!==database||bindings.CF_NATIVE_AUTH_MODE?.text!=='disabled'||bindings.CF_NATIVE_QA_USERS?.text!=='[]')throw Error();
+   async function batch(statements){const result=await api('/d1/database/'+database+'/query',{batch:statements});if(result.length!==statements.length||result.some(r=>r.success!==true))throw Error();return result;}
+   const remote={first:async(sql,params)=>{const r=await batch([{sql,params}]);if(r[0].results.length>1)throw Error();return r[0].results[0]??null;},batch};
+   stage='staging-public-catalog-import';await batch([plan.statement]);await core.verifyD1StudentPublicCatalog(remote,source,capturedAt);
+   const readback=await core.readD1StudentPublicCatalog(remote);if(canonical(readback)!==canonical(actual))throw Error();
+   report.remoteD1Written=true;report.remoteReadbackVerified=true;report.targetDatabase='A_STAGING_ONLY';report.database='LOCAL_SQLITE_AND_REMOTE_STAGING_D1';
+  }
   writeFileSync(receipt,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
  }finally{sql.close();}
 }catch{

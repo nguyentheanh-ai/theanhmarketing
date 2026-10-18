@@ -1,0 +1,71 @@
+{
+  "status": "HTTP_TESTED_PENDING_ACCESS_CLEANUP",
+  "productionWrites": false,
+  "privateStatePath": "/private/tmp/theanh-native-progress-qa-24da6ccbb3c549df87c71fbbb3a33c42/state.json",
+  "cleanup": {
+    "gatesOff": true,
+    "d1_auth_refresh_familiesInactive": true,
+    "d1_auth_sessionsInactive": true,
+    "qaStateRestored": true,
+    "localQaEnvelopeCleared": true
+  },
+  "checks": [
+    {
+      "name": "native-password-login",
+      "status": 200,
+      "originalUuid": true
+    },
+    {
+      "name": "baseline-existing-lesson",
+      "status": 200,
+      "sourceStateRetained": true
+    },
+    {
+      "name": "reject-client-authority",
+      "bodyStatus": 400,
+      "csrfStatus": 403
+    },
+    {
+      "name": "save-completion",
+      "status": 200,
+      "percentMatchesPublishedCount": true
+    },
+    {
+      "name": "retry-identical-intent",
+      "status": 200,
+      "sameReceipt": true
+    },
+    {
+      "name": "refresh-completed-api",
+      "status": 200,
+      "completionPersisted": true
+    },
+    {
+      "name": "refresh-completed-ssr",
+      "status": 200,
+      "visibleCompletion": true,
+      "privateNoStore": true
+    },
+    {
+      "name": "undo-qa-completion",
+      "status": 200
+    },
+    {
+      "name": "late-original-retry",
+      "status": 200,
+      "lateRetryDidNotOverwriteUndo": true
+    },
+    {
+      "name": "refresh-undone-ssr",
+      "status": 200,
+      "uncompletedVisible": true
+    },
+    {
+      "name": "logout",
+      "status": 200,
+      "oldCookieDenied": true
+    }
+  ],
+  "checkedAt": "2026-10-18T14:03:06.125744+00:00",
+  "limits": "HTTP progress/SSR only on original QA row. Full-field restore separately verified. Refresh/context/password OFF; public settings from fresh D1 snapshot. No customer or production writes."
+}

@@ -5,7 +5,7 @@ const stagingOrigin='https://theanh-main-cf-staging.12c1thdtheanh.workers.dev';
 // Preserve the stream and existing Vary/Set-Cookie headers without buffering.
 export function protectNativeLearningResponse(request:Request,env:NativeStageEnv,response:Response){
  const url=new URL(request.url);
- const learning=url.pathname==='/learn'||url.pathname.startsWith('/learn/')||url.pathname==='/dang-nhap'||url.pathname==='/doi-mat-khau'||url.pathname==='/thu-vien/facebook-ads'||url.pathname==='/thu-vien/facebook-ads/pdf'||url.pathname==='/dashboard/agents'||url.pathname.startsWith('/dashboard/agents/');
+ const learning=url.pathname==='/dashboard'||url.pathname==='/tai-khoan'||url.pathname==='/learn'||url.pathname.startsWith('/learn/')||url.pathname==='/dang-nhap'||url.pathname==='/doi-mat-khau'||url.pathname==='/thu-vien/facebook-ads'||url.pathname==='/thu-vien/facebook-ads/pdf'||url.pathname==='/dashboard/agents'||url.pathname.startsWith('/dashboard/agents/');
  if((env.CF_NATIVE_AUTH_MODE as string)!=='qa'||env.CF_NATIVE_AUTH_ORIGIN!==stagingOrigin||url.origin!==stagingOrigin||!learning)return response;
  const headers=new Headers(response.headers);
  headers.set('Cache-Control','private, no-store');

@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import traceback
 import urllib.request
 import urllib.error
 
@@ -14,8 +15,12 @@ def main():
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument("--apply-staging", action="store_true")
     modes.add_argument("--verify-staging", action="store_true")
+    modes.add_argument("--refresh-qa-progress", action="store_true")
     parser.add_argument("--mark-qa-verified", action="store_true")
+    parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
+    if args.dry_run and not args.refresh_qa_progress:
+        raise RuntimeError("Dry run requires QA progress refresh")
     if args.mark_qa_verified and not args.verify_staging:
         raise RuntimeError("Marker promotion requires source revalidation")
     root = Path(__file__).resolve().parents[1]
@@ -54,7 +59,7 @@ def main():
             raise RuntimeError("Disabled Worker with empty cohort required")
         if not any(b.get("name") == "NATIVE_AUTH_DB" and b.get("id") == "694139c9-6cda-4b8c-9228-c973dbcbb719" for b in bindings):
             raise RuntimeError("Exact D1 staging required")
-    if args.apply_staging or args.verify_staging:
+    if args.apply_staging or args.verify_staging or args.refresh_qa_progress:
         check_worker()
         identity = d1([{"sql": "SELECT (SELECT count(*) FROM d1_access_users) AS users,(SELECT count(*) FROM d1_auth_accounts) AS accounts,(SELECT count(*) FROM d1_auth_sessions WHERE revoked_at IS NULL) AS sessions,(SELECT count(*) FROM d1_access_users WHERE id=?1 AND normalized_email=?2 AND admin_role IS NULL) AS qa", "params": [uid, email.strip().lower()]}])[0]["results"][0]
         if identity != {"users": 1, "accounts": 1, "sessions": 0, "qa": 1}:
@@ -66,13 +71,17 @@ def main():
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=70)
         oracle = json.loads(parity.stdout)
         if parity.returncode or oracle.get("status") != "TESTED_REMOTE_QA_ACCESS_PARITY" or oracle.get("matched") is not True:
-            raise RuntimeError("Actual source/D1 semantic parity required")
+            detail=oracle.get("reason","")
+            known={"QA source inputs changed during RPC window":"SOURCE_INPUT_CHANGED","Source scoped read function drift; no RPC executed":"RPC_DEFINITION_DRIFT","QA source/D1 entitlement parity mismatch":"PARITY_MISMATCH","QA parity unavailable; private output withheld":"PARITY_PRIVATE_FAILURE","Exact QA identity unavailable":"QA_IDENTITY_UNAVAILABLE","QA source/D1 parity failed; private payload and credentials withheld":"NODE_PARITY_FAILURE"}
+            raise RuntimeError("Actual source/D1 semantic parity required: "+(known.get(detail) or ("HTTP_"+str(oracle["httpStatus"]) if isinstance(oracle.get("httpStatus"),int) else "UNCLASSIFIED"))+"; "+str(oracle.get("stage","NO_STAGE"))+"; "+str(oracle.get("exceptionType","NO_EXCEPTION"))+"; HTTP_"+str(oracle.get("httpStatus","NONE")))
     course_sql = (root / "scripts/course-content-source.sql").read_text().strip().rstrip(";")
     literal = email.replace("'", "''")
     query = """WITH course_doc AS (%s),
       qa AS(SELECT id,email FROM auth.users WHERE id='%s'::uuid AND lower(email)=lower('%s')),
       contacts AS(SELECT c.* FROM crm_v2.contacts c,qa WHERE lower(trim(c.email))=lower(trim(qa.email))),
-      enrollments AS(SELECT e.* FROM crm_v2.enrollments e,qa WHERE e.user_id=qa.id OR e.contact_id IN(SELECT id FROM contacts) OR lower(trim(e.metadata->>'student_email'))=lower(trim(qa.email)))
+      enrollments AS(SELECT e.* FROM crm_v2.enrollments e,qa WHERE
+       (e.user_id=qa.id OR e.contact_id IN(SELECT id FROM contacts) OR lower(trim(e.metadata->>'student_email'))=lower(trim(qa.email)))
+       AND coalesce(nullif(e.course_slug,''),nullif(e.metadata->>'course_slug',''),(SELECT c.slug FROM public.courses c WHERE c.id=e.course_id))='facebook-ads-2026')
       SELECT jsonb_build_object('snapshotAt',clock_timestamp(),'qaAccounts',(SELECT count(*) FROM qa),
       'course',(SELECT payload->'source' FROM course_doc),
       'contacts',coalesce((SELECT jsonb_agg(to_jsonb(c)) FROM contacts c),'[]'::jsonb),
@@ -97,18 +106,33 @@ def main():
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=30)
         output = json.loads(result.stdout)
         if result.returncode or output.get("status") == "FAILED":
-            raise RuntimeError("QA learning verification failed; private source withheld")
+            raise RuntimeError("QA learning verification failed; private source withheld; " + output.get("diagnostic", "UNAVAILABLE") + "; changedFields=" + json.dumps({k:output.get(k,[]) for k in ["changedFields","addedColumns","removedColumns"]}) + "; " + json.dumps({"enrollments":len(payload["enrollments"]),"courseIdMatch":sum(e.get("course_id")==payload["course"]["id"] for e in payload["enrollments"]),"courseSlugMatch":sum(e.get("course_slug")==payload["course"]["slug"] for e in payload["enrollments"])}))
         return output
     report = prepare()
     if report.get("status") != "TESTED_QA_LEARNING_PREPARE":
         raise RuntimeError("Unexpected QA preparation state")
-    if args.verify_staging:
+    if args.verify_staging or args.refresh_qa_progress:
         tables = ["d1_lms_courses", "d1_lms_modules", "d1_lms_lessons", "d1_lms_contacts", "d1_lms_enrollments", "d1_lms_progress", "d1_access_orders", "d1_access_overrides", "d1_qa_learning_source", "d1_access_sync_state"]
         results = d1([{"sql": "SELECT * FROM " + table, "params": []} for table in tables])
         target = {table: result["results"] for table, result in zip(tables, results)}
         content = d1([{"sql": "SELECT * FROM d1_course_content WHERE slug=?1", "params": ["facebook-ads-2026"]}])[0]["results"]
         if len(content) != 1:
             raise RuntimeError("Exactly one source-compatible content document required")
+        if args.refresh_qa_progress:
+            refreshed = prepare("refresh", targetRows=target, targetCourse=content[0])
+            if refreshed.get("status") != "PREPARED_QA_PROGRESS_REFRESH_INTERNAL":
+                raise RuntimeError("QA source progress refresh rejected")
+            if args.dry_run:
+                print(json.dumps({"status":"PREPARED_QA_PROGRESS_REFRESH_DRY_RUN","statements":len(refreshed["statements"]),"sourceSnapshotAt":refreshed["sourceSnapshotAt"],"sourceWrites":0,"targetWrites":0}))
+                return
+            check_worker()
+            d1(refreshed["statements"])
+            report.update(status="REFRESHED_QA_PROGRESS_PENDING_VERIFICATION", appliedToD1=True, progressRows=1,
+                sourceSnapshotAt=refreshed["sourceSnapshotAt"], marker="pending", sourceWrites=0,
+                limits="Dedicated QA copy refreshed from Source; separate parity/readback required before serving")
+            (root / "reports/cloudflare-d1/qa-learning-progress-refresh.json").write_text(json.dumps(report, indent=2) + "\n")
+            print(json.dumps(report))
+            return
         verified = prepare("reverify", targetRows=target, targetCourse=content[0])
         if verified.get("status") != "PREPARED_QA_VERIFICATION_INTERNAL":
             raise RuntimeError("QA current source/target revalidation failed")
@@ -161,5 +185,5 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as error:
-        print(json.dumps({"status": "FAILED", "reason": str(error) if isinstance(error, RuntimeError) else "QA source preparation unavailable; private output withheld"}))
+        print(json.dumps({"status": "FAILED", "reason": str(error) if isinstance(error, RuntimeError) else "QA source preparation unavailable; private output withheld", "exceptionType":type(error).__name__, "exceptionFrames":[{"file":Path(f.filename).name,"line":f.lineno,"function":f.name} for f in traceback.extract_tb(error.__traceback__)[-3:]]}))
         raise SystemExit(1)

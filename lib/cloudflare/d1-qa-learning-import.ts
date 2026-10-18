@@ -1,3 +1,4 @@
+import {authSourceRevision} from '@/lib/cloudflare/auth-source-fingerprint';
 import {prepareD1CourseContent} from '@/lib/cloudflare/d1-course-content';
 import {mapDbCourseToCourse,type DbCourse} from '@/lib/courses/course-projection';
 type Row=Record<string,unknown>;
@@ -33,7 +34,9 @@ export async function prepareD1QaLearningImport(payload:unknown,qa:{userId:strin
  for(const c of contacts){if(email(c.email)!==mail)throw Error('Foreign QA contact');add('INSERT INTO d1_lms_contacts(id,normalized_email,source_email) VALUES(?1,?2,?3)',[id(c.id),mail,text(c.email)]);}
  for(const e of enrollments){
   const metadata=e.metadata===null?{}:obj(e.metadata),contact=text(e.contact_id),user=text(e.user_id),cid=text(e.course_id),storedSlug=text(e.course_slug);
-  if((user!==null&&user!==uid)||(contact!==null&&!contactIds.has(contact))||(cid!==null&&cid!==courseId))throw Error('Foreign QA enrollment');
+  if(user!==null&&user!==uid)throw Error('Foreign QA enrollment user');
+  if(contact!==null&&!contactIds.has(contact))throw Error('Foreign QA enrollment contact');
+  if(cid!==null&&cid!==courseId)throw Error('Foreign QA enrollment course');
   if(user!==uid&&!(contact&&contactIds.has(contact))&&email(metadata.student_email)!==mail)throw Error('Unowned QA enrollment');
   if((storedSlug!==null&&storedSlug!==slug)||(cid===null&&storedSlug!==slug&&metadata.course_slug!==slug))throw Error('Unmapped QA enrollment course');
   if(!['active','paused','completed','revoked'].includes(String(e.status)))throw Error('Unsupported QA enrollment status');
@@ -102,4 +105,62 @@ export async function prepareD1QaLearningVerification(payload:unknown,qa:{userId
  const next=structuredClone(expected);next.d1_qa_learning_source[0].status='verified';next.d1_qa_learning_source[0].source_snapshot_at=freshSnapshot;
  const access:Statement={sql:`UPDATE d1_access_sync_state SET status='verified',source_snapshot_at=?2,last_verified_at=?3 WHERE source_project_id=?5 AND EXISTS(SELECT 1 FROM d1_qa_learning_source WHERE user_id=?4 AND status='verified' AND source_snapshot_at=?2) AND ${clock} AND ${guard(next)} RETURNING status`,params:[canonical(next),freshSnapshot,verifiedAt,qa.userId,project]};
  return {statements:[archive,access],readback:{matched:true as const,tables:Object.keys(expected).length},sourceSnapshotAt:freshSnapshot,limits:'One QA source revalidation only; no native primary-write authority'};
+}
+
+// Operator-only refresh of one dedicated QA progress row from a new Source
+// snapshot. Local edits are never overwritten: target must match its complete
+// previous archive. The caller proves staging binding and closed cohort.
+export async function prepareD1QaLearningProgressRefresh(payload:unknown,qa:{userId:string;email:string},actual:unknown,now=Date.now()){
+ const source=obj(payload),target=obj(actual),archives=target.d1_qa_learning_source;
+ if(!Array.isArray(archives)||archives.length!==1)throw Error('One QA archive required');
+ const archive=obj(archives[0]),old=obj(JSON.parse(String(archive.source_document)));
+ for(const key of ['contacts','orders'])if(canonical(source[key])!==canonical(old[key])){
+  const before=rows(old[key]),after=rows(source[key]);
+  const fields=before.length===1&&after.length===1?Object.keys(before[0]).filter(k=>canonical(before[0][k])!==canonical(after[0][k])).filter(k=>['updated_at','last_seen_at','metadata','status','expires_at','email','custom_fields'].includes(k)):[];
+  throw Object.assign(Error('Only source QA progress may refresh: '+key),{changedFields:fields});
+ }
+ const oldOverrides=rows(old.overrides),newOverrides=rows(source.overrides);
+ if(newOverrides.length<oldOverrides.length||newOverrides.length-oldOverrides.length>10||oldOverrides.some(a=>!newOverrides.some(b=>canonical(a)===canonical(b))))throw Error('QA override overwrite or removal refused');
+ const oldEnrollments=rows(old.enrollments),newEnrollments=rows(source.enrollments);
+ if(oldEnrollments.length!==1||newEnrollments.length!==1)throw Error('One existing QA enrollment required');
+ const e0=oldEnrollments[0],e1=newEnrollments[0],learningFields=new Set(['updated_at','last_seen_at','metadata']);
+ if(Object.keys(e0).sort().join()!==Object.keys(e1).sort().join()||Object.keys(e0).some(k=>!learningFields.has(k)&&canonical(e0[k])!==canonical(e1[k])))throw Error('QA enrollment authority drift');
+ if(authSourceRevision(String(e1.updated_at))<authSourceRevision(String(e0.updated_at)))throw Error('QA enrollment clock regression');
+ const m0=obj(e0.metadata??{}),m1=obj(e1.metadata??{}),allowedMetadata=new Set(['progress_percent','last_lesson_id','last_lesson_title']);
+ for(const k of new Set([...Object.keys(m0),...Object.keys(m1)]))if(!allowedMetadata.has(k)&&canonical(m0[k]??null)!==canonical(m1[k]??null))throw Error('QA enrollment metadata authority drift');
+ const previous=rows(old.progress),current=rows(source.progress);
+ if(previous.length!==1||current.length!==1)throw Error('One existing QA progress required');
+ const allowed=new Set(['status','progress_percent','completed_at','updated_at','metadata','progress_seconds','last_activity_at']);
+ const a=previous[0],b=current[0];
+ if(Object.keys(a).sort().join()!==Object.keys(b).sort().join()||Object.keys(a).some(k=>!allowed.has(k)&&canonical(a[k])!==canonical(b[k])))throw Object.assign(Error('QA progress identity drift'),{addedColumns:Object.keys(b).filter(k=>!(k in a)&&/^[a-z_]+$/.test(k)),removedColumns:Object.keys(a).filter(k=>!(k in b)&&/^[a-z_]+$/.test(k)),changedFields:Array.from(new Set([...Object.keys(a),...Object.keys(b)])).filter(k=>canonical(a[k]??null)!==canonical(b[k]??null)).filter(k=>/^[a-z_]+$/.test(k))});
+ if(!stamp(b.updated_at)||authSourceRevision(String(b.updated_at))<authSourceRevision(String(a.updated_at)))throw Error('Source QA progress clock regression');
+ if(b.last_activity_at!=null){if(!stamp(b.last_activity_at)||(a.last_activity_at!=null&&authSourceRevision(String(b.last_activity_at))<authSourceRevision(String(a.last_activity_at))))throw Error('Source QA progress clock regression');}
+ else if(a.last_activity_at!=null)throw Error('Source QA progress clock regression');
+ // Reconstruct and verify every historical normalized field and archived hash.
+ await prepareD1QaLearningVerification({...source,...old},qa,target,now);
+ const plan=await prepareD1QaLearningImport(source,qa),fresh=plan.snapshot;
+ if(now<Date.parse(fresh)||now-Date.parse(fresh)>120000)throw Error('Fresh QA source required');
+ const next=structuredClone(target) as Record<string,Row[]>;
+ next.d1_lms_progress=plan.expectedRows.d1_lms_progress;
+ next.d1_lms_enrollments=plan.expectedRows.d1_lms_enrollments;
+ next.d1_qa_learning_source=plan.expectedRows.d1_qa_learning_source;
+ next.d1_access_sync_state=plan.expectedRows.d1_access_sync_state;
+ next.d1_access_overrides=plan.expectedRows.d1_access_overrides;
+ const guard=(expected:Record<string,unknown>)=>Object.entries(expected).map(([table,value])=>{
+  if(!/^d1_[a-z_]+$/.test(table)||!Array.isArray(value))throw Error('Invalid QA target');
+  const columns=value.length?Object.keys(obj(value[0])):[];
+  if(columns.some(k=>!/^\w+$/.test(k)))throw Error('Invalid QA column');
+  return `(SELECT count(*) FROM ${table})=json_array_length(?1,'$.${table}') AND NOT EXISTS(SELECT 1 FROM json_each(?1,'$.${table}') wanted WHERE NOT EXISTS(SELECT 1 FROM ${table} actual WHERE ${columns.map(k=>`actual.${k} IS json_extract(wanted.value,'$.${k}')`).join(' AND ')||'1=1'}))`;
+ }).join(' AND ');
+ const assertion=(expected:Record<string,unknown>):Statement=>({sql:`SELECT CASE WHEN ${guard(expected)} AND NOT EXISTS(SELECT 1 FROM d1_auth_sessions WHERE revoked_at IS NULL) AND NOT EXISTS(SELECT 1 FROM d1_auth_refresh_families WHERE revoked_at IS NULL) AND julianday(?2) BETWEEN julianday('now')-120000/86400000.0 AND julianday('now') THEN 1 ELSE json('qa_source_refresh_conflict') END AS matched`,params:[canonical(expected),fresh]});
+ const statements:Statement[]=[assertion(target)];
+ for(const table of ['d1_lms_progress','d1_lms_enrollments','d1_qa_learning_source','d1_access_sync_state']){
+  const record=next[table][0],columns=Object.keys(record),key=table==='d1_lms_progress'||table==='d1_lms_enrollments'?'id':table==='d1_qa_learning_source'?'user_id':'source_project_id';
+  statements.push({sql:`UPDATE ${table} SET ${columns.map((k,i)=>`${k}=?${i+1}`).join(',')} WHERE ${key}=?${columns.length+1}`,params:[...columns.map(k=>record[k] as string|number|null),record[key] as string]});
+ }
+ for(const record of next.d1_access_overrides.filter(r=>!(target.d1_access_overrides as Row[]).some(old=>old.id===r.id))){
+  const columns=Object.keys(record);statements.push({sql:`INSERT INTO d1_access_overrides(${columns.join(',')}) VALUES(${columns.map((_,i)=>'?'+(i+1)).join(',')})`,params:columns.map(k=>record[k] as string|number|null)});
+ }
+ statements.push(assertion(next));
+ return {statements,progressRows:1,sourceSnapshotAt:fresh,marker:'pending',limits:'Dedicated QA source refresh only; no customer or Source mutation'};
 }

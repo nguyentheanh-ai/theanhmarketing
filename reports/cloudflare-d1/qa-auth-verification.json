@@ -8,8 +8,8 @@
     "localSessionVersionPreserved": true,
     "verifiedLogoutCount": 2
   },
-  "sourceSnapshotAt": "2026-10-15T09:02:53.882946+00:00",
+  "sourceSnapshotAt": "2026-10-18T14:05:01.448274+00:00",
   "marker": "verified",
-  "revokedQaHistoryPreserved": 23,
+  "revokedQaHistoryPreserved": 27,
   "limits": "Explicit one-account QA projection only, not full Auth snapshot/customer native authority or hosted login"
 }

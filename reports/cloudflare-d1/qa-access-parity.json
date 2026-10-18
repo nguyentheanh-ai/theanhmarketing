@@ -3,9 +3,17 @@
   "matched": true,
   "enrollments": 1,
   "progress": 1,
-  "ownedCourses": 1,
-  "completedLessons": 0,
+  "ownedCourses": 2,
+  "completedLessons": 1,
   "limits": "Actual source RPC plus source legacy inputs compared to D1 snapshot calculation; no marker promotion, session/UI or customer authority claim",
   "targetMirrorState": "verified",
-  "sourceReadAt": "2026-10-15T08:59:05.188237+00:00"
+  "sourceReadAt": "2026-10-18T14:05:10.271094+00:00",
+  "sourceRpcTransport": "EXISTING_SERVICE_ROLE_READ_REST",
+  "sourceWindowStartedAt": "2026-10-18T14:05:10.271094+00:00",
+  "sourceWindowEndedAt": "2026-10-18T14:05:18.152632+00:00",
+  "inputRowsEqualAtWindowEndpoints": true,
+  "transientSourceChangesExcluded": false,
+  "sourceInputsAndOracleSameMvccStatement": false,
+  "sourceWriterFenced": false,
+  "serviceRolePersisted": false
 }

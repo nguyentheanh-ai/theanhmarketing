@@ -1,0 +1,15 @@
+{
+  "status": "FAILED",
+  "productionWrites": false,
+  "privateStatePath": "/private/tmp/theanh-native-profile-qa-f1ab637c30c54de69751e080f0bd1a5e/state.json",
+  "cleanup": {
+    "gatesOff": true,
+    "d1_auth_refresh_familiesInactive": true,
+    "d1_auth_sessionsInactive": true,
+    "qaStateRestored": true,
+    "localQaEnvelopeCleared": true
+  },
+  "error": "native-phase2-a-profile-smoke.mjs: PRIVATE_DIAGNOSTIC_WITHHELD",
+  "checkedAt": "2026-10-18T14:06:18.030895+00:00",
+  "limits": "HTTP profile/SSR on dedicated QA account, refresh/context enabled, full-field restoration checked; progress/password/email gates OFF. No customer or production writes."
+}

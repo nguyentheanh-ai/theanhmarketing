@@ -1,0 +1,28 @@
+{
+  "status": "REFRESHED_QA_PROGRESS_PENDING_VERIFICATION",
+  "summary": {
+    "courses": 1,
+    "modules": 3,
+    "lessons": 26,
+    "contacts": 1,
+    "enrollments": 1,
+    "progress": 1,
+    "orders": 0,
+    "overrides": 2
+  },
+  "statements": 37,
+  "sourceSnapshotAt": "2026-10-18T13:41:50.297Z",
+  "localSqliteExecution": true,
+  "foreignKeyViolations": 0,
+  "fullSourceArchiveRoundtrip": true,
+  "readback": {
+    "matched": true,
+    "tables": 10,
+    "rows": 37
+  },
+  "marker": "pending",
+  "limits": "Dedicated QA copy refreshed from Source; separate parity/readback required before serving",
+  "appliedToD1": true,
+  "progressRows": 1,
+  "sourceWrites": 0
+}

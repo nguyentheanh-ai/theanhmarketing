@@ -59,3 +59,13 @@
 ## VERIFIED — Profile mutation phải buộc form identity (18/10/2026)
 
 Áp dụng: A native QA `/tai-khoan` và POSTprofile. AuthContext optional với profilewrite cho phép giữformA nhưng cookieB ghi nhầm hồsơB. WebLock chỉserialize khôngbindidentity. Correction: thiếukey503,thiếu/saiwitness409; UIthiếuwitnesskhôngfetch.7SQLHTTPtestsPASS(gồm2users/newfamily/CASauthorityrollback),4clientinteractionPASS vàactualWorkerprofile/stalefamilyPASS. Không khẳng định browser/hydration/hosted; không dùng Sourcefallback hoặc tinUUIDbrowser.
+
+## 18/10 — QA nguồn thay đổi sau lần chụp (VERIFIED trong phạm vi staging)
+
+- Quan sát: QA có thêm khóa/quyền Ebook; tiến độ Facebook, enrollment last_seen/metadata và Auth updated_at đã đổi từ snapshot cũ. Chỉ so số hàng cho kết quả sai. Công cụ chuẩn bị một khóa cũ còn chọn enrollment của mọi khóa nên từ chối course ID.
+- Sửa: selector resolved slug Facebook theo RPC đã đọc; refresh operator chỉ QA, toàn bộ bản đích phải khớp archive cũ, quyền/identity/expiry không đổi; append override nguồn mới, không sửa/xóa quyền cũ. Batch CAS trước/sau và phiên inactive, marker pending/importing. So timestamp microsecond bằng authSourceRevision, không dùng Date.parse để so revision.
+- Kiểm: 10 fixture learning + 10 auth/parity PASS; dry run rồi nhập staging, oracle RPC thật đối soát enrollment/progress/quyền PASS. Nguồn không bị ghi; không có chứng nhận writer cutover hoặc loại trừ thay đổi thoáng qua giữa hai lần đọc.
+- Giới hạn: không áp dụng refresh này cho dữ liệu khách hàng hoặc target có thay đổi native chưa đối soát; không tự reset counter/session version. Nội dung/private payload và secret chỉ ở RAM hoặc kho mã hóa.
+
+### VERIFIED — trang mới phải vào cả refresh và response privacy
+Áp dụng: native QA staging A với trang tài khoản D1. Dashboard/account đã render được nhưng thiếu hai allowlist ranh giới. RED cho thấy cache header thiếu và expired access trả redirect guest. Thêm đúng hai path vào refresh và response policy; 16 unit, workerd/D1 và vinext thực xác minh. Không mở rộng sang toàn bộ dashboard/admin, không áp dụng mặc định production.

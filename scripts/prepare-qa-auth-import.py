@@ -118,17 +118,17 @@ def main():
             verified = subprocess.run([node, "scripts/prepare-qa-auth-import.mjs"], cwd=root,
                 input=json.dumps({"source": payload["source"], "credentialKey": key, "target": results[0]["results"][0], "logoutHistory": logout_history}), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=30)
             result = json.loads(verified.stdout)
-            if args.refresh_qa_timestamp and result.get("status") == "FAILED" and set(result.get("differences", [])) == {"updated_at", "source_revision", "source_digest"}:
+            if args.refresh_qa_timestamp and result.get("status") == "FAILED" and set(result.get("differences", [])) in [{"updated_at", "source_revision", "source_digest"}, {"session_version", "updated_at", "source_revision", "source_digest"}]:
                 operation_id = str(uuid.uuid4())
                 planned = subprocess.run([node, "scripts/prepare-qa-auth-import.mjs"], cwd=root,
-                    input=json.dumps({"source": payload["source"], "credentialKey": key, "target": results[0]["results"][0], "timestampDelta": True, "operationId": operation_id}), capture_output=True, text=True, timeout=30)
+                    input=json.dumps({"source": payload["source"], "credentialKey": key, "target": results[0]["results"][0], "timestampDelta": True, "operationId": operation_id, "logoutHistory": logout_history}), capture_output=True, text=True, timeout=30)
                 plan = json.loads(planned.stdout)
                 if planned.returncode or plan.get("status") != "TIMESTAMP_DELTA_PREPARED" or plan.get("securityChanged") is not False:
                     raise RuntimeError("QA timestamp delta rejected; no mutation attempted")
                 # Exact OFF baseline before the one transaction. Read guards and
                 # final assertion are inside the batch; no blind overwrite.
                 current_bindings = cloud("/workers/scripts/theanh-main-cf-staging/settings")["bindings"]
-                required = {"CF_NATIVE_AUTH_MODE":"disabled", "CF_NATIVE_QA_USERS":"[]", "CF_NATIVE_QA_PROGRESS_MODE":"disabled", "CF_NATIVE_QA_CREDENTIAL_WRITES":"disabled", "CF_NATIVE_QA_REFRESH_MODE":"disabled", "CF_NATIVE_QA_AUTH_CONTEXT_MODE":"disabled"}
+                required = {"CF_NATIVE_AUTH_MODE":"disabled", "CF_NATIVE_QA_USERS":"[]", "CF_NATIVE_QA_PROGRESS_MODE":"disabled", "CF_NATIVE_QA_CREDENTIAL_WRITES":"disabled", "CF_NATIVE_QA_REFRESH_MODE":"disabled", "CF_NATIVE_QA_AUTH_CONTEXT_MODE":"disabled", "CF_NATIVE_QA_PROFILE_WRITES":"disabled"}
                 if any(not any(b.get("name")==k and b.get("text")==v for b in current_bindings) for k,v in required.items()):
                     raise RuntimeError("QA timestamp delta requires closed staging gates")
                 applied_delta = d1(plan["statements"])

@@ -8,17 +8,17 @@
     "enrollments": 1,
     "progress": 1,
     "orders": 0,
-    "overrides": 1
+    "overrides": 2
   },
-  "statements": 36,
-  "sourceSnapshotAt": "2026-10-15T08:59:07.836Z",
+  "statements": 37,
+  "sourceSnapshotAt": "2026-10-18T14:05:20.545Z",
   "localSqliteExecution": true,
   "foreignKeyViolations": 0,
   "fullSourceArchiveRoundtrip": true,
   "readback": {
     "matched": true,
     "tables": 10,
-    "rows": 36
+    "rows": 37
   },
   "marker": "verified",
   "limits": "One QA dataset current-source verification only; Worker disabled, no native Auth/content refresh, serving or primary-writer/cutover claim",

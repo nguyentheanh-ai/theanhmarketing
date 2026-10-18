@@ -108,11 +108,13 @@ def main():
     (root / "reports/cloudflare-d1/qa-access-parity.json").write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps(report))
     if result.returncode or report.get("status") != "TESTED_REMOTE_QA_ACCESS_PARITY":
-        raise RuntimeError("Source/D1 QA parity did not pass")
+        raise SystemExit(1)
 
 if __name__ == "__main__":
     try:
         main()
     except Exception as error:
-        print(json.dumps({"status": "FAILED", "reason": str(error) if isinstance(error, RuntimeError) else "QA parity unavailable; private output withheld"}))
+        failure={"status": "FAILED", "reason": str(error) if isinstance(error, RuntimeError) else "QA parity unavailable; private output withheld", "exceptionType":type(error).__name__, **({"httpStatus":error.code} if isinstance(error,urllib.error.HTTPError) else {})}
+        Path(__file__).resolve().parents[1].joinpath("reports/cloudflare-d1/qa-access-parity-last-failure.json").write_text(json.dumps(failure,indent=2)+"\n")
+        print(json.dumps(failure))
         raise SystemExit(1)

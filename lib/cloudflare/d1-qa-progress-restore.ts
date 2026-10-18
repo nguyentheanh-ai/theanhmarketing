@@ -29,13 +29,15 @@ export function prepareQaProgressRestore(input:unknown){
  const e0=ordered(before.enrollment,qaRestoreColumns.enrollment),p0=ordered(before.progress,qaRestoreColumns.progress);
  const e1=ordered(after.enrollment,qaRestoreColumns.enrollment),p1=ordered(after.progress,qaRestoreColumns.progress);
  const enrollmentId=uuid(e0.id),progressId=uuid(p0.id),lessonId=uuid(p0.lesson_id);
- if(p0.enrollment_id!==enrollmentId||e0.status!=='active'||!['not_started','in_progress'].includes(String(p0.status))||p0.progress_percent!==0||p0.completed_at!==null)throw Error('Uncompleted existing QA progress required');
+ const initiallyCompleted=p0.status==='completed'&&p0.progress_percent===100&&typeof p0.completed_at==='string'&&Number.isFinite(Date.parse(p0.completed_at));
+ const initiallyIncomplete=['not_started','in_progress'].includes(String(p0.status))&&p0.progress_percent===0&&p0.completed_at===null;
+ if(p0.enrollment_id!==enrollmentId||e0.status!=='active'||!initiallyCompleted&&!initiallyIncomplete)throw Error('Consistent existing QA progress required');
  if(!Number.isInteger(before.lessonCount)||Number(before.lessonCount)<1||after.lessonCount!==before.lessonCount)throw Error('Stable published lesson count required');
  const operations=(value:unknown)=>{if(!Array.isArray(value))throw Error('Invalid QA ledger');return value.map(v=>ordered(v,qaRestoreColumns.operation)).sort((a,b)=>String(a.id).localeCompare(String(b.id)))};
  const oldOps=operations(before.operations),allOps=operations(after.operations);
  if(oldOps.some(o=>o.user_id!==uid||o.normalized_email!==mail||o.status!=='applied'))throw Error('Only existing QA operation history allowed');
  if(!Array.isArray(request.plannedOperations)||request.plannedOperations.length!==2)throw Error('Two planned QA intents required');
- const plan=request.plannedOperations.map((v,i)=>{const o=row(v);if(o.completed!==(i===0))throw Error('QA completion/undo order required');return {id:uuid(o.id),completed:i===0?1:0}});
+ const plan=request.plannedOperations.map((v,i)=>{const o=row(v);const expected=i===0?!initiallyCompleted:initiallyCompleted;if(o.completed!==expected)throw Error('QA toggle/restore order required');return {id:uuid(o.id),completed:expected?1:0}});
  if(plan[0].id===plan[1].id||oldOps.some(o=>plan.some(p=>p.id===o.id)))throw Error('Fresh QA operation IDs required');
  if(oldOps.some(old=>!allOps.some(current=>canonical(current)===canonical(old))))throw Error('Historical ledger changed');
  const changes=allOps.filter(o=>!oldOps.some(old=>old.id===o.id));

@@ -1,0 +1,17 @@
+{
+  "status": "FAILED",
+  "checkedAt": "2026-10-18T14:06:01.141Z",
+  "step": "login",
+  "checks": [
+    {
+      "name": "native-refresh-family-login",
+      "status": 200
+    }
+  ],
+  "lastResponse": {
+    "status": 200,
+    "contentType": "text/html; charset=utf-8"
+  },
+  "requiresDriverCleanup": true,
+  "limits": "Dedicated QA profile HTTP/SSR only. Driver must close gates, revoke both families and restore original full QA account; no browser, email/password change or production claim"
+}

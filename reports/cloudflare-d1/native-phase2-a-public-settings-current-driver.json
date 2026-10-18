@@ -1,0 +1,117 @@
+{
+  "status": "HTTP_TESTED_PENDING_ACCESS_CLEANUP",
+  "productionWrites": false,
+  "cleanup": {
+    "gatesOff": true,
+    "d1_auth_refresh_familiesInactive": true,
+    "d1_auth_sessionsInactive": true,
+    "localQaEnvelopeCleared": true
+  },
+  "publicSettingsSnapshots": [
+    {
+      "key": "brand",
+      "snapshotId": "ac2bd7728860ae4707ff23d8f6b415f8b6d68eef6a43537a86701b526220131b"
+    },
+    {
+      "key": "marketing",
+      "snapshotId": "a22d59dbeab124e0cd46909bc01605e2a3488d173a9a8d6e922387263d9cfc8b"
+    }
+  ],
+  "checks": [
+    {
+      "name": "google-disabled",
+      "status": 503,
+      "noProviderFlow": true
+    },
+    {
+      "name": "password-login",
+      "status": 200,
+      "originalUuid": true,
+      "secureCookie": true
+    },
+    {
+      "name": "refresh",
+      "reads": 2,
+      "status": 200
+    },
+    {
+      "name": "course-rights",
+      "status": 200,
+      "ownedCourse": true
+    },
+    {
+      "name": "required-lesson",
+      "status": 200,
+      "originalLessonId": true,
+      "sourceProgressRetained": true
+    },
+    {
+      "name": "lesson-refresh",
+      "status": 200
+    },
+    {
+      "name": "native-login-ssr",
+      "status": 200,
+      "nativeProvider": true
+    },
+    {
+      "name": "native-lesson-ssr",
+      "status": 200,
+      "originalLessonId": true,
+      "realVideoEmbed": true,
+      "nativeProvider": true
+    },
+    {
+      "name": "native-lesson-ssr-refresh",
+      "status": 200
+    },
+    {
+      "name": "d1-public-settings-ssr",
+      "status": 200,
+      "lessonMetadataMatchesD1": true,
+      "loginBrandMatchesD1": true
+    },
+    {
+      "name": "/dashboard",
+      "status": 200,
+      "dedicatedQaIdentity": true
+    },
+    {
+      "name": "/tai-khoan",
+      "status": 200,
+      "dedicatedQaIdentity": true
+    },
+    {
+      "name": "ebook-pdf-range",
+      "status": 206,
+      "realPdfSignature": true
+    },
+    {
+      "name": "ebook-private-image",
+      "status": 206,
+      "tamperDenied": true,
+      "realPngSignature": true
+    },
+    {
+      "name": "wrong-password",
+      "status": 401
+    },
+    {
+      "name": "progress-disabled",
+      "status": 503
+    },
+    {
+      "name": "logout",
+      "status": 200,
+      "revokedCookieIsGuest": true
+    },
+    {
+      "name": "logged-out-lesson",
+      "status": 401
+    }
+  ],
+  "checkedAt": "2026-10-18T13:54:32.473564+00:00",
+  "publicSettingsEnabledDuringQa": true,
+  "refreshEnabledDuringQa": false,
+  "limits": "HTTP QA only; context/progress/password gates OFF; marketing/refresh enabled only for their operator options; no browser/full independence"
+}

@@ -1,0 +1,100 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-18T13:54:15.848Z",
+  "scope": "Hosted native D1 QA session/course rights/lesson and SSR reads",
+  "publicSettingsOracle": true,
+  "checks": [
+    {
+      "name": "google-disabled",
+      "status": 503,
+      "noProviderFlow": true
+    },
+    {
+      "name": "password-login",
+      "status": 200,
+      "originalUuid": true,
+      "secureCookie": true
+    },
+    {
+      "name": "refresh",
+      "reads": 2,
+      "status": 200
+    },
+    {
+      "name": "course-rights",
+      "status": 200,
+      "ownedCourse": true
+    },
+    {
+      "name": "required-lesson",
+      "status": 200,
+      "originalLessonId": true,
+      "sourceProgressRetained": true
+    },
+    {
+      "name": "lesson-refresh",
+      "status": 200
+    },
+    {
+      "name": "native-login-ssr",
+      "status": 200,
+      "nativeProvider": true
+    },
+    {
+      "name": "native-lesson-ssr",
+      "status": 200,
+      "originalLessonId": true,
+      "realVideoEmbed": true,
+      "nativeProvider": true
+    },
+    {
+      "name": "native-lesson-ssr-refresh",
+      "status": 200
+    },
+    {
+      "name": "d1-public-settings-ssr",
+      "status": 200,
+      "lessonMetadataMatchesD1": true,
+      "loginBrandMatchesD1": true
+    },
+    {
+      "name": "/dashboard",
+      "status": 200,
+      "dedicatedQaIdentity": true
+    },
+    {
+      "name": "/tai-khoan",
+      "status": 200,
+      "dedicatedQaIdentity": true
+    },
+    {
+      "name": "ebook-pdf-range",
+      "status": 206,
+      "realPdfSignature": true
+    },
+    {
+      "name": "ebook-private-image",
+      "status": 206,
+      "tamperDenied": true,
+      "realPngSignature": true
+    },
+    {
+      "name": "wrong-password",
+      "status": 401
+    },
+    {
+      "name": "progress-disabled",
+      "status": 503
+    },
+    {
+      "name": "logout",
+      "status": 200,
+      "revokedCookieIsGuest": true
+    },
+    {
+      "name": "logged-out-lesson",
+      "status": 401
+    }
+  ],
+  "limits": "HTTP SSR and API only; no network trace/browser hydration/video playback/progress write/provider login/source bridge/customer migration claim"
+}

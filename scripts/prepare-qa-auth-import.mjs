@@ -17,7 +17,7 @@ try{
  const decrypted=await helpers.openLegacyBcryptHash(prepared.statements[1].params[1],input.credentialKey,{projectId:'vsxxgdzwtscuxcmjfckt',userId:row.id});
  if(decrypted!==row.encryptedPassword)throw Error('QA ciphertext mismatch');
  if(input.timestampDelta){
-  const plan=await helpers.prepareQaAuthTimestampDelta(row,input.target,{projectId:'vsxxgdzwtscuxcmjfckt',credentialKey:input.credentialKey,operationId:input.operationId});
+  const plan=await helpers.prepareQaAuthTimestampDelta(row,input.target,{projectId:'vsxxgdzwtscuxcmjfckt',credentialKey:input.credentialKey,operationId:input.operationId},input.logoutHistory);
   process.stdout.write(JSON.stringify({status:'TIMESTAMP_DELTA_PREPARED',...plan}));process.exit(0);
  }
  if(input.target){

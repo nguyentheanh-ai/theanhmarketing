@@ -88,9 +88,12 @@ def main():
         return
     if args.mode == "snapshot":
         before = read_state(qa)
-        if before["enrollment"]["status"] != "active" or before["progress"]["status"] not in ("not_started", "in_progress") or before["progress"]["progress_percent"] != 0 or before["progress"]["completed_at"] is not None:
-            raise RuntimeError("Existing uncompleted QA progress required")
-        plan = [{"id": str(uuid.uuid4()), "completed": True}, {"id": str(uuid.uuid4()), "completed": False}]
+        progress=before["progress"]
+        completed=progress["status"]=="completed" and progress["progress_percent"]==100 and isinstance(progress["completed_at"],str)
+        incomplete=progress["status"] in ("not_started","in_progress") and progress["progress_percent"]==0 and progress["completed_at"] is None
+        if before["enrollment"]["status"] != "active" or not (completed or incomplete):
+            raise RuntimeError("Consistent existing QA progress required")
+        plan = [{"id": str(uuid.uuid4()), "completed": not completed}, {"id": str(uuid.uuid4()), "completed": completed}]
         payload = {"qa": qa, "before": before, "plannedOperations": plan, "capturedAt": datetime.datetime.now(datetime.timezone.utc).isoformat()}
         fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         with os.fdopen(fd, "w") as output:
