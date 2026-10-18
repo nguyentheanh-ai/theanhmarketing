@@ -1,0 +1,94 @@
+{
+  "checkedAt": "2026-10-18T10:26:29.851898+00:00",
+  "records": [
+    {
+      "id": "86dc9aed864361aaf9e9534c03df2d31",
+      "type": "A",
+      "name": "theanhmarketing.com",
+      "content": "216.198.79.1",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "id": "bc31b42eff7efb292a8176ec53a10283",
+      "type": "CNAME",
+      "name": "adsplan.theanhmarketing.com",
+      "content": "cname.vercel-dns.com",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "id": "928ac362604a6f9fc08af897cd9abde5",
+      "type": "CNAME",
+      "name": "app-blue-origin.theanhmarketing.com",
+      "content": "38867413fd8b3480.vercel-dns-017.com",
+      "ttl": 120,
+      "proxied": false
+    },
+    {
+      "id": "99d42740d92f63380467a73b6c2dd0dd",
+      "type": "CNAME",
+      "name": "app.theanhmarketing.com",
+      "content": "cname.vercel-dns.com",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "id": "b7db39a021bec6fbc9a5b32c6bed3594",
+      "type": "CNAME",
+      "name": "ladipageverify.theanhmarketing.com",
+      "content": "dns.ladipage.com",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "id": "925d44be25f83cf5815ecd11179d8fb0",
+      "type": "CNAME",
+      "name": "mail.theanhmarketing.com",
+      "content": "mail.resend-dns.com",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "id": "eebd7e1e9ede60acc217ea622b85610a",
+      "type": "CNAME",
+      "name": "www.theanhmarketing.com",
+      "content": "02a6b1bed5462f9d.vercel-dns-017.com",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "id": "bf9d3fe001f9ec9eb0911969a7c91691",
+      "type": "MX",
+      "name": "send.theanhmarketing.com",
+      "content": "feedback-smtp.ap-northeast-1.amazonses.com",
+      "ttl": 300,
+      "proxied": false,
+      "priority": 10
+    },
+    {
+      "id": "4d2cf307b86ddc981b596b56fdc53d18",
+      "type": "TXT",
+      "name": "_dmarc.theanhmarketing.com",
+      "content": "\"v=DMARC1; p=none;\"",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "id": "a592568a6499769dae1f767f33b524a0",
+      "type": "TXT",
+      "name": "resend._domainkey.theanhmarketing.com",
+      "content": "\"p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRjbx4GLY/KBySYKQ1iAV2cb+pdMSe1xQ2VUF6g/GN9kbFdav2KH4jEyC80FQOKmHvIsBpfy0p2Bseyz1cYv3cBXSdY8Ihwvd29V4dvfN/LgO08FFpvgADtmAZGz58iwrVsbCuC2EM3YHAO2IMfY+EI/75z/L1U53hqlQHWOAgRQIDAQAB\"",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "id": "424e2c139e9d43ef3a370768d138af64",
+      "type": "TXT",
+      "name": "send.theanhmarketing.com",
+      "content": "\"v=spf1 include:amazonses.com ~all\"",
+      "ttl": 300,
+      "proxied": false
+    }
+  ]
+}

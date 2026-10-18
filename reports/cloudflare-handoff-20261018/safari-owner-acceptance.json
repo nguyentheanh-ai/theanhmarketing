@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-18T10:26:29.851898+00:00",
+  "status": "PASS_OWNER_REPORTED",
+  "source": "Direct owner reply in this chat",
+  "ownerReply": "Đã thử, cả bốn mục đều đạt",
+  "checks": [
+    "Video playback",
+    "Lesson navigation and refresh retaining state",
+    "Ebook opens",
+    "Separate App B login"
+  ],
+  "limits": "Physical iPhone Safari verified by owner, not automation or agent-held device",
+  "qaOnly": true
+}

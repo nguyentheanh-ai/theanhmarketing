@@ -83,3 +83,7 @@ Email hướng dẫn Safari đã được máy chủ nhận thư chấp nhận (
 Rollback: không tắt/xóa Green khi receipt pending; Blue không hiểu receiptGreen. Giữ Source writer và endpointGreen để đối soát/tiếp tục từng đơn; không reset paid/receipt hoặc gỡ unique index. B profile write không chứng minh mọi nhóm truy cập B: hiện slug khóa A và access-group B khác nhau; giữ hợp đồng baseline, không tự cấp quyền sản phẩm khác.
 
 Chi tiết: `main/docs/SEPAY_FULFILLMENT_RECOVERY_20261018.md`, receipts `main/reports/cloudflare-handoff-20261018/{payment-preview-readback,payment-recovery-validation,sepay-retry-readback}.json`.
+
+
+### GO hosting 18/10 sau xác nhận Safari của chủ hệ thống
+Anh trả lời trực tiếp: “Đã thử, cả bốn mục đều đạt” cho video, chuyển bài/refresh, Ebook và đăng nhập App B trên Safari iPhone. Đây là owner-reported device evidence. SePay retry đã bật/đọc lại; A source3aefbb4 đã preview c1d1dd8e, 81test và kiểm tra sau phát hành đạt. Áp dụng gói chuyển đã duyệt: backup DNS11records, build A bằng script bắt buộc với attach1, source preflight cả hai; tắt/đọc lại Vercel cron trước Workers trigger, chuyển B rồi A. Kiểm production sau từng domain; lỗi critical phải quay lui theo bản ghi cũ. Không chuyển writer/Auth/Storage hoặc ngừng Bluebridge/Supabase.
