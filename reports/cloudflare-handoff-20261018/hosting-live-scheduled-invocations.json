@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-10-18T10:53:53.461Z",
+  "success": true,
+  "groups": [
+    {
+      "groups": [
+        {
+          "key": "$workers.eventType",
+          "value": "fetch"
+        },
+        {
+          "key": "$workers.outcome",
+          "value": "ok"
+        }
+      ],
+      "count": 63
+    },
+    {
+      "groups": [
+        {
+          "key": "$workers.eventType",
+          "value": "scheduled"
+        },
+        {
+          "key": "$workers.outcome",
+          "value": "ok"
+        }
+      ],
+      "count": 2
+    }
+  ],
+  "scope": "Actual Workers scheduled invocations; outcome ok proves scheduler execution, not all eight business jobs completed"
+}

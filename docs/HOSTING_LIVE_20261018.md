@@ -30,7 +30,7 @@ Custom Domain trả lỗi100117 vì bản ghi DNS hiện có. Không xóa CNAME 
 
 ## Lịch và theo dõi
 
-Vercel A đã tắt cron, tải lại trang xác nhận Disabled. Workers A bật trigger `*/5 * * * *`, dispatcher giữ8lịch UTC cũ; B không có cron. Tại thời điểm ghi chưa quan sát tick đầu tiên sau propagation, không gọi việc cấu hình thành công là mọi tác vụ nghiệp vụ đã chạy. Không bấm Run production để ép kết quả.
+Vercel A đã tắt cron, tải lại trang xác nhận Disabled. Workers A bật trigger `*/5 * * * *`, dispatcher giữ8lịch UTC cũ; B không có cron. Đến17:53:53VN, telemetry đã ghi **2 invocation loại scheduled, outcome=ok** từ lúc deploy. Lịch đã thực sự kích hoạt trên Workers; chưa đồng nghĩa cả8tác vụ nghiệp vụ đều đã đến giờ và hoàn tất. Không bấm Run production để ép kết quả. Trường eventType thực tế là `scheduled`, không phải `cron`.
 
 Telemetry17:38:58–17:41:00VN ghi25log events A và4B, không có event chứa metadata.error trong cửa sổ đó; không phải thống kê cả ngày hoặc số người dùng. Lịch theo dõi trong Codex chạy30phút/lần đến20/10 17:45VN, chỉ đọc và báo khi có thay đổi cần xử lý. ID `theo-d-i-cloudflare-a-b-sau-chuy-n-48-gi`. Chi phí tháng phải dựa usage đủ dài, không suy từ vài phút đầu.
 

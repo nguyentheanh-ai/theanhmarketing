@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-18T10:46:00Z",
+  "checkedAt": "2026-10-18T10:53:53Z",
   "status": "LIVE_HOSTING_PHASE_A",
   "fullMigration": "IN_PROGRESS",
   "aVersion": "920ab23f-0a34-4e86-be3e-44fbd8af2dc4",
@@ -13,7 +13,7 @@
   "ownerSafari": "PASS_OWNER_REPORTED",
   "mainVideo": "Playback verified; paused without completion/progress mutation",
   "vercelCron": "DISABLED_RELOAD_VERIFIED",
-  "workersCron": "ENABLED; first actual scheduled tick awaiting observation",
+  "workersCron": "ENABLED; 2 actual scheduled invocations outcome ok observed from10:37:27Z to10:53:53Z; business jobs await due times",
   "sourceAuthority": "Supabase A/B writer/Auth/private Storage",
   "temporaryDependency": "Vercel B Blue auth bridge and rollback origins",
   "sepayRetry": true,
