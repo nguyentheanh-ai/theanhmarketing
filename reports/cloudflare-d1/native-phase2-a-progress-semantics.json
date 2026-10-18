@@ -1,0 +1,12 @@
+{
+  "scope": "Dedicated QA D1 staging only",
+  "baselineCompleted": true,
+  "plannedCompletionBooleans": [
+    false,
+    true
+  ],
+  "meaning": "First write undoes baseline completion; second restores baseline boolean; late retry must not overwrite the later state. Full-field CAS restoration is separately verified.",
+  "httpReceipt": "native-phase2-a-progress-http.json",
+  "restorationReceipt": "native-qa-progress-restoration.json",
+  "historicalLabels": "Earlier completion/undo labels are not literal for an initially completed lesson; expected assertions used the planned booleans."
+}

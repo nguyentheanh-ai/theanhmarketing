@@ -1,5 +1,5 @@
 {
-  "status": "HTTP_TESTED_PENDING_ACCESS_CLEANUP",
+  "status": "HTTP_TESTED",
   "productionWrites": false,
   "privateStatePath": "/private/tmp/theanh-native-progress-qa-24da6ccbb3c549df87c71fbbb3a33c42/state.json",
   "cleanup": {
@@ -7,7 +7,8 @@
     "d1_auth_refresh_familiesInactive": true,
     "d1_auth_sessionsInactive": true,
     "qaStateRestored": true,
-    "localQaEnvelopeCleared": true
+    "localQaEnvelopeCleared": true,
+    "externalAccessTokensPoliciesRevoked": true
   },
   "checks": [
     {
@@ -67,5 +68,6 @@
     }
   ],
   "checkedAt": "2026-10-18T14:03:06.125744+00:00",
-  "limits": "HTTP progress/SSR only on original QA row. Full-field restore separately verified. Refresh/context/password OFF; public settings from fresh D1 snapshot. No customer or production writes."
+  "limits": "HTTP progress/SSR only on original QA row. Full-field restore separately verified. Refresh/context/password OFF; public settings from fresh D1 snapshot. No customer or production writes.",
+  "accessCleanupReceipt": "reports/cloudflare-phase2-20261018/access-qa-phase2-cleanup.json"
 }

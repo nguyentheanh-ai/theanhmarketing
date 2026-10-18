@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-18T14:12:28.963Z",
+  "checkedAt": "2026-10-18T14:22:36.418Z",
   "checks": [
     {
       "name": "built Worker login creates the native session for the synthetic principal",
@@ -61,6 +61,10 @@
     {
       "name": "old rendered form cannot write after a new family login",
       "status": "PASS"
+    },
+    {
+      "name": "built Worker stops unported legacy writes, API jobs and callbacks before Source",
+      "status": "PASS"
     }
   ],
   "accountFormSerialization": {
@@ -74,8 +78,8 @@
   "brandSourceExists": true,
   "outboundFetches": 0,
   "moduleCount": 547,
-  "moduleManifestDigest": "5ea19ca03ae5a33549bf23bc4baf5059ca3ca2372795bd097c6f8b173f4a867f",
-  "artifactHash": "19cbfb5a8a216f9a716ac0c8e1b1ae99c1cf5e1b49a1a4974c6a5b4180c39120",
+  "moduleManifestDigest": "400bc366a59ea0461761a9e318105a6c1703370cc2f47fbef58e19f41399b5ac",
+  "artifactHash": "d605e31bc2bb0ff6535f55c1816772da15b1eb1cdc813ca5990c0377b3815611",
   "scope": "Actual built vinext Worker/root layout, synthetic D1 dashboard/profile/progress/activity, lesson and protected Ebook PDF/PNG delivery through real local R2, HTTP only",
   "limits": "No browser/hydration/Safari, real Facebook Ads media, hosted deployment or native primary/cutover proof"
 }

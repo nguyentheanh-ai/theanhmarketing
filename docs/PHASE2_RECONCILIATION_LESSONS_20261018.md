@@ -69,3 +69,9 @@
 
 ### VERIFIED — trang mới phải vào cả refresh và response privacy
 Áp dụng: native QA staging A với trang tài khoản D1. Dashboard/account đã render được nhưng thiếu hai allowlist ranh giới. RED cho thấy cache header thiếu và expired access trả redirect guest. Thêm đúng hai path vào refresh và response policy; 16 unit, workerd/D1 và vinext thực xác minh. Không mở rộng sang toàn bộ dashboard/admin, không áp dụng mặc định production.
+
+### VERIFIED — giữ lỗi chính trước cleanup QA
+Áp dụng: hosted profile smoke. `finally` logout dùng cùng helper làm đổi lastResponse, khiến báo cáo có thể hiện409 cleanup dù lỗi chính khác. Chụp failedResponse trong catch, báo cleanup riêng, chỉ ghi tên loại lỗi và assertion số; không ghi body/cookie/witness. Lượt mới7checkPASS, nhưng không xác định được nguyên nhân lần lỗi cũ. Khi đọc lại B, tên bảng phiên đúng theo DDL là d1_b_native_sessions; không suy từ tên bảng A.
+
+### VERIFIED — signup D1 chưa đồng nghĩa checkout native
+Áp dụng: nhánh native trong RegisterForm A. Sau signup vẫn gọi legacy lead/order API Source; không được bật emailQA rồi coi end-to-end chỉ dựa confirm email. Chốt Worker QA chặn unported API/job/callback/action trước Source, defaultOFF/prod giữ nguyên. Actual Worker16nhóm0outbound xác minh. Phải port nghiệp vụ lead/order thật; chốt503 không phải tính năng đã hoàn tất hoặc cách ly mọi browserSDK.

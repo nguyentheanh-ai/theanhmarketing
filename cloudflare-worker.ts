@@ -1,3 +1,4 @@
+import {protectNativeQaSourceBoundary} from './lib/cloudflare/native-source-boundary';
 import {withNativePageRefresh} from "./lib/cloudflare/native-page-refresh";
 import app from "vinext/server/fetch-handler";
 import { servePrivateR2, serveR2Object, type PrivateR2Bucket } from "./lib/cloudflare/private-r2";
@@ -64,6 +65,8 @@ const stagingWorker = {
       if (!bucket) return new Response(null, { status: 503, headers: { "Cache-Control": "no-store" } });
       return serveR2Object(request, bucket, oversizedPublicVideoKey, "public, max-age=3600");
     }
+    const sourceBoundary=protectNativeQaSourceBoundary(request,env as NativeStageEnv);
+    if(sourceBoundary)return sourceBoundary;
     return runNativeRequestContext(request,env as NativeStageEnv,async()=>{
       const response=await app.fetch(request, env, context);
       return protectNativeLearningResponse(request,env as NativeStageEnv,response);

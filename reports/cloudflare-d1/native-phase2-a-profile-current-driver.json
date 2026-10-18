@@ -1,15 +1,50 @@
 {
-  "status": "FAILED",
+  "status": "HTTP_TESTED",
   "productionWrites": false,
-  "privateStatePath": "/private/tmp/theanh-native-profile-qa-f1ab637c30c54de69751e080f0bd1a5e/state.json",
+  "privateStatePath": "/private/tmp/theanh-native-profile-qa-f4b528cd18184208a8e372290df5dc43/state.json",
   "cleanup": {
     "gatesOff": true,
     "d1_auth_refresh_familiesInactive": true,
     "d1_auth_sessionsInactive": true,
     "qaStateRestored": true,
-    "localQaEnvelopeCleared": true
+    "localQaEnvelopeCleared": true,
+    "externalAccessTokensPoliciesRevoked": true
   },
-  "error": "native-phase2-a-profile-smoke.mjs: PRIVATE_DIAGNOSTIC_WITHHELD",
-  "checkedAt": "2026-10-18T14:06:18.030895+00:00",
-  "limits": "HTTP profile/SSR on dedicated QA account, refresh/context enabled, full-field restoration checked; progress/password/email gates OFF. No customer or production writes."
+  "checks": [
+    {
+      "name": "native-refresh-family-login",
+      "status": 200
+    },
+    {
+      "name": "server-rendered-account-witness",
+      "status": 200
+    },
+    {
+      "name": "guard-missing-context",
+      "missingContext": 409,
+      "wrongOrigin": 403
+    },
+    {
+      "name": "profile-write",
+      "status": 200,
+      "refreshReadback": true
+    },
+    {
+      "name": "refresh-family",
+      "status": 200,
+      "profileRetained": true
+    },
+    {
+      "name": "old-form-new-family",
+      "status": 409
+    },
+    {
+      "name": "logout-device",
+      "status": 200,
+      "oldCookieDenied": true
+    }
+  ],
+  "checkedAt": "2026-10-18T14:18:16.967462+00:00",
+  "limits": "HTTP profile/SSR on dedicated QA account, refresh/context enabled, full-field restoration checked; progress/password/email gates OFF. No customer or production writes.",
+  "accessCleanupReceipt": "reports/cloudflare-phase2-20261018/access-qa-phase2-cleanup.json"
 }

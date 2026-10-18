@@ -1,16 +1,52 @@
 {
-  "status": "FAILED",
-  "checkedAt": "2026-10-18T14:06:01.141Z",
-  "step": "login",
+  "status": "PASS",
+  "checkedAt": "2026-10-18T14:18:02.416Z",
+  "step": "complete",
   "checks": [
     {
       "name": "native-refresh-family-login",
       "status": 200
+    },
+    {
+      "name": "server-rendered-account-witness",
+      "status": 200
+    },
+    {
+      "name": "guard-missing-context",
+      "missingContext": 409,
+      "wrongOrigin": 403
+    },
+    {
+      "name": "profile-write",
+      "status": 200,
+      "refreshReadback": true
+    },
+    {
+      "name": "refresh-family",
+      "status": 200,
+      "profileRetained": true
+    },
+    {
+      "name": "old-form-new-family",
+      "status": 409
+    },
+    {
+      "name": "logout-device",
+      "status": 200,
+      "oldCookieDenied": true
     }
   ],
   "lastResponse": {
     "status": 200,
-    "contentType": "text/html; charset=utf-8"
+    "contentType": "application/json; charset=utf-8"
+  },
+  "accountDiagnostic": {
+    "cacheControl": "private, no-store",
+    "phase": "context-extraction",
+    "htmlBytes": 89923,
+    "rawContextKeys": 2,
+    "matchingContexts": 1,
+    "undefinedContext": false
   },
   "requiresDriverCleanup": true,
   "limits": "Dedicated QA profile HTTP/SSR only. Driver must close gates, revoke both families and restore original full QA account; no browser, email/password change or production claim"

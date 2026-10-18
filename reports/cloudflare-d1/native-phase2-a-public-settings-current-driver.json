@@ -1,11 +1,12 @@
 {
-  "status": "HTTP_TESTED_PENDING_ACCESS_CLEANUP",
+  "status": "HTTP_TESTED",
   "productionWrites": false,
   "cleanup": {
     "gatesOff": true,
     "d1_auth_refresh_familiesInactive": true,
     "d1_auth_sessionsInactive": true,
-    "localQaEnvelopeCleared": true
+    "localQaEnvelopeCleared": true,
+    "externalAccessTokensPoliciesRevoked": true
   },
   "publicSettingsSnapshots": [
     {
@@ -113,5 +114,6 @@
   "checkedAt": "2026-10-18T13:54:32.473564+00:00",
   "publicSettingsEnabledDuringQa": true,
   "refreshEnabledDuringQa": false,
-  "limits": "HTTP QA only; context/progress/password gates OFF; marketing/refresh enabled only for their operator options; no browser/full independence"
+  "limits": "HTTP QA only; context/progress/password gates OFF; marketing/refresh enabled only for their operator options; no browser/full independence",
+  "accessCleanupReceipt": "reports/cloudflare-phase2-20261018/access-qa-phase2-cleanup.json"
 }

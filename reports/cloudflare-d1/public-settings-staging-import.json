@@ -1,25 +1,25 @@
 {
   "status": "STAGING_PUBLIC_SETTINGS_VERIFIED_GATES_OFF",
-  "checkedAt": "2026-10-18T14:05:35.102Z",
+  "checkedAt": "2026-10-18T14:16:55.051Z",
   "receipts": [
     {
       "key": "brand",
       "sourceExists": false,
-      "sourceSnapshotAt": "2026-10-18T14:05:26.135Z",
+      "sourceSnapshotAt": "2026-10-18T14:16:46.617Z",
       "sourceUpdatedAt": null,
       "sourceDigest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
       "normalizedDigest": "d5522d5a77f101e945d482f5b3fe2bafa3f0d7e5a901f3a80b80450a66f84986",
-      "snapshotId": "0a4e3c3b44f183301e470374ef3d8487b8a3f1f7d055b6c0028528e4397d6d62",
+      "snapshotId": "b65c65f57bf6d2a1af0573843e9f3fed745dc7837527ef0c63a0fda10d49d27e",
       "readbackMatched": true
     },
     {
       "key": "marketing",
       "sourceExists": true,
-      "sourceSnapshotAt": "2026-10-18T14:05:26.135Z",
+      "sourceSnapshotAt": "2026-10-18T14:16:46.617Z",
       "sourceUpdatedAt": "2026-05-19T19:07:15.791Z",
       "sourceDigest": "ef993bc8785b4db724a0b12fd6b35dc5211c9f3fed5bf9bac5e29a3e5b1e717f",
       "normalizedDigest": "c37ef65ab667533cc948162916f7c5672bc4f77050b36d6250553194438261b4",
-      "snapshotId": "e3b1051234af56c8602aa2de739b85b85300a4b76ea87c3f1036e0e969bc38ef",
+      "snapshotId": "137c86ad25fdbabf04b0ee5ce73d16eb897d370bed9a3501e6fb56d567276509",
       "readbackMatched": true
     }
   ],

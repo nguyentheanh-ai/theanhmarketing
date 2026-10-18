@@ -222,3 +222,16 @@ Catalog công khai13:45UTC nhập/publish/đọc lại D1 staging khớp actual 
 - Phát hiện `/dashboard` và `/tai-khoan` thiếu route refresh và header bảo vệ ở ranh giới Worker. Test RED: thiếu Cache-Control, phiên hết hạn trả 303. Sửa đúng hai đường dẫn; 16 unit PASS, workerd/D1 kiểm phiên hết hạn PASS, bản vinext thực 15 nhóm PASS và không có fetch ra ngoài.
 - Kiểm thử hồ sơ lần đầu dừng trước thao tác ghi; trạng thái QA được xác nhận không đổi, gates đóng và phiên QA thu hồi. Đang thử lại sau bản sửa.
 - Không phải bằng chứng browser hydration/Safari hay đủ điều kiện chuyển nguồn ghi. Supabase production vẫn writer/Auth/Storage; native chỉ QA staging.
+
+### 14:19 UTC — hoàn tất lượt QA hosted và thu hồi quyền tạm
+
+- Hồ sơ hosted HTTP 7 kiểm tra PASS: login family, witness SSR, thiếu witness409/sai Origin403, cập nhật tên/điện thoại+SSR, refresh giữ dữ liệu, biểu mẫu family cũ409, logout/cookie cũ bị từ chối. Lượt thất bại trước đã được khôi phục; nguyên nhân chưa chứng minh, không coi một lần chạy lại đạt là bằng chứng sửa nguyên nhân. Bổ sung stage/type/numeric assertion diagnostics và giữ response lỗi trước cleanup để lần sau không nhầm409 của logout với lỗi chính.
+- CAS restore nguyên bản hồ sơ/progress QA đạt; bốn driver chuyển HTTP_TESTED sau xác minh Access ngoài đã thu hồi. Hai policy/token45phút bị thu hồi lúc14:18:39UTC; owner policy nguyên vẹn. Hai Secret QA đã gỡ, A6/B3 Secret cũ còn nguyên; A10gateOFF, Bnativeoff/cohort[], active sessions/families0. Image mã hóa không mount.
+- Đọc lại production14:19:20UTC: A920ab23f, B94854193 vẫn100%; không deploy/chuyển nguồn production. Receipt chung: ../reports/cloudflare-phase2-20261018/native-hosted-final-readback.json và access-qa-phase2-cleanup.json.
+- Browser nội bộ mới kiểm guest desktop/mobile viewport; authenticated hydration/Safari phase2, signup/recovery/Google live, admin/CRM, toàn App B và fence/reverse rollback còn phải hoàn tất trước quyết định bỏ Supabase.
+
+### Chốt chống ghi nhầm Source từ native QA
+
+Audit RegisterForm xác nhận nhánh signup D1 tiếp tục POST /api/leads và /api/orders hiện còn Source. Giữ email QA OFF. Thêm ranh giới sau native handlers trước app.fetch: đúng staging A, native Auth/email/payment mode hoạt động hoặc sai cấu hình thì chặn mọi API cũ (kể cả GET job), callback Auth cũ và server action/non-GET. Chuẩn hóa path mã hóa/slash/backslash; production/default-OFF giữ nguyên. Đây là containment503, không thay cho port checkout. Không chứng minh cách ly mọi SDK network từ browser.
+
+RED actual vinext cũ nhận400 từ legacy handler thay vì chặn503; bản mới20focused PASS, TypeScript/buildcfstaging PASS, actual vinext16nhóm/D1/R2 PASS0outbound. Reviewer không thấy blocker. Bằng chứng native-full-worker.json; tiếp theo port pipeline signup/lead/order/invoice/idempotency trước khi bật đăng ký/email QA.
