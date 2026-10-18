@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-10-18T10:52:18.529055+00:00",
+  "legacyRoot": "/Users/theanh/CodexProjects/TheAnh-Web/worktrees/theanhmarketing-email-account-hotfix",
+  "head": "43cee59ebcaaf3badc524d2fa2a635b2ff7923af",
+  "dirtyFiles": [
+    "app/thanh-toan/[code]/page.tsx",
+    "docs/WEBSITE_DEEP_STRUCTURE_HANDOFF.md",
+    "lib/notifications/payment-success-email.ts",
+    "lib/notifications/pending-payment-email.ts",
+    "public/academy/facebook-ads-master-2026.html",
+    "public/ladipage/facebook-ads-2026.html",
+    "services/orderService.ts",
+    "tests/facebook-ads-combo-evergreen.test.mjs",
+    "tests/facebook-ads-landing.test.mjs",
+    "tests/payment-success-email.test.mjs",
+    "tests/pending-payment-email.test.mjs"
+  ],
+  "decision": "PRESERVE_UNCOMMITTED_DRAFT; do not merge into hosting migration or change another branch",
+  "reason": "Changes add a new Zoom offer; old Vercel public landing returned200, existing base offer present, draft plan identifiers absent",
+  "legacyPublicRollbackHttps": 200,
+  "productionOfferChangeIntroduced": false,
+  "sourceFilesModified": false
+}

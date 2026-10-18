@@ -1,7 +1,7 @@
 {
-  "checkedAt": "2026-10-18T10:36:22.505Z",
+  "checkedAt": "2026-10-18T10:39:06.700Z",
   "status": "PASS",
-  "edgePinned": true,
+  "edgePinned": false,
   "checks": [
     {
       "check": "real-domain-mints-two-cookie-generations",

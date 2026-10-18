@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-10-18T10:46:00Z",
+  "status": "LIVE_HOSTING_PHASE_A",
+  "fullMigration": "IN_PROGRESS",
+  "aVersion": "920ab23f-0a34-4e86-be3e-44fbd8af2dc4",
+  "bVersion": "94854193-2688-4ef4-8a43-fd5adff74e78",
+  "aSource": "0f20ec3",
+  "bSource": "354cb34",
+  "aDnsSwitchedUtc": "2026-10-18T10:38:58Z",
+  "aHostedChecks": 9,
+  "bHostedChecks": 4,
+  "abBrowserLoginAndRefresh": "PASS",
+  "ownerSafari": "PASS_OWNER_REPORTED",
+  "mainVideo": "Playback verified; paused without completion/progress mutation",
+  "vercelCron": "DISABLED_RELOAD_VERIFIED",
+  "workersCron": "ENABLED; first actual scheduled tick awaiting observation",
+  "sourceAuthority": "Supabase A/B writer/Auth/private Storage",
+  "temporaryDependency": "Vercel B Blue auth bridge and rollback origins",
+  "sepayRetry": true,
+  "otherDnsRecordsUnchanged": true,
+  "paidMissingEmail24h": 0,
+  "greenPendingReceipts": 0,
+  "automation": "theo-d-i-cloudflare-a-b-sau-chuy-n-48-gi",
+  "monitorUntilUtc": "2026-10-20T10:45:00Z",
+  "limits": [
+    "No live bank settlement test; actual Workers/PG clone uses Auth/B/Resend fixtures",
+    "Meta deferred by owner",
+    "A workers.dev disabled; retained main-host Worker routes support edge-pinned authenticated recovery during DNS rollback"
+  ]
+}

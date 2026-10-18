@@ -1727,3 +1727,8 @@ File `.vercel/.env.production.local` (13/8) chỉ chứa giá trị giữ chỗ 
 ### 16/10/2026 — Chuẩn bị ngày chuyển: apex→www và cron trên bản build thật
 
 `cloudflare-worker.ts`: `theanhmarketing.com` → 307 `www.theanhmarketing.com` (giữ path/query) trước mọi routing. `scripts/test-worker-cron-workers.mjs` (miniflare trên `dist/server` thật): 4/4 PASS — apex→www; `/api/orders/expire` trả 401 khi thiếu/sai bearer và không gọi Supabase; `scheduled` 01:30 UTC đi qua dispatcher tới route thật (gọi Supabase, bị chặn ở harness); phút yên tĩnh không gọi gì. Suite 1.289 test: 33 lỗi có sẵn, 0 mới. Worker thử redeploy `e775f4ab`, trang chính/landing vẫn 200. Vẫn chờ chủ dự án: `SEPAY_BANK_*` (QR), Telegram, Sheets, các email nhận thông báo, `CRON_SECRET`, `STUDENT_PORTAL_PROVISION_SECRET`.
+
+
+## 18/10/2026 — Hosting A/B đã LIVE
+
+Xem tài liệu hiện hành tại docs/HOSTING_LIVE_20261018.md. Website A (gồm /learn) và App B riêng đã chạy trên domain thật qua Cloudflare Workers. Cron Vercel đã tắt, lịch Workers đã bật; theo dõi lần chạy thực và tác vụ đến hạn. Supabase vẫn là nguồn ghi/Auth/Storage; B còn cầu Blue Vercel để tương thích và quay lui. Theo dõi chỉ đọc 48 giờ đã bật. Migration toàn bộ vẫn IN PROGRESS, chưa hủy dịch vụ cũ.

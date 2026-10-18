@@ -1636,3 +1636,8 @@ File `.vercel/.env.production.local` (13/8) chỉ chứa giá trị giữ chỗ 
 - Supabase/D1 native vẫn giai đoạn2; bảncopy15/10 không là dữ liệu đang đồng bộ, không hủy Vercel/Supabase hoặc xóa file khóa. Giữ11file dirty của release A cũ.
 
 Bằng chứng ở `reports/cloudflare-handoff-20261018/`: b-blue-compatibility-origin.json, b-compatibility-deploy-readback.json, b-compatibility-browser-qa.json, b-source-workspace-document-qa.json, private-ebook-hosted-qa.json, a-private-response-headers.json, current-a-b-compatibility-binding.json, qa-b-session-revocation.json. Ảnh b-compatibility-refresh-browser.jpg là UI đã tải Meta unavailable; ab-compatibility-browser.jpg chỉ là khung đang tải sau refresh, không dùng làm chứng cứ tải dữ liệu hoàn chỉnh.
+
+
+## 18/10/2026 — Hosting A/B đã LIVE
+
+Xem tài liệu hiện hành tại docs/HOSTING_LIVE_20261018.md. Website A (gồm /learn) và App B riêng đã chạy trên domain thật qua Cloudflare Workers. Cron Vercel đã tắt, lịch Workers đã bật; theo dõi lần chạy thực và tác vụ đến hạn. Supabase vẫn là nguồn ghi/Auth/Storage; B còn cầu Blue Vercel để tương thích và quay lui. Theo dõi chỉ đọc 48 giờ đã bật. Migration toàn bộ vẫn IN PROGRESS, chưa hủy dịch vụ cũ.

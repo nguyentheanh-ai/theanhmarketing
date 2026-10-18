@@ -1,3 +1,7 @@
+## 18/10/2026 — Hosting A/B đã LIVE
+
+Xem tài liệu hiện hành tại HOSTING_LIVE_20261018.md. Website A (gồm /learn) và App B riêng đã chạy trên domain thật qua Cloudflare Workers. Cron Vercel đã tắt, lịch Workers đã bật; theo dõi lần chạy thực và tác vụ đến hạn. Supabase vẫn là nguồn ghi/Auth/Storage; B còn cầu Blue Vercel để tương thích và quay lui. Theo dõi chỉ đọc 48 giờ đã bật. Migration toàn bộ vẫn IN PROGRESS, chưa hủy dịch vụ cũ.
+
 # Tiếp nhận A/B ngày 18/10/2026
 
 Trạng thái: **IN PROGRESS — chưa READY FOR CUTOVER**. Phạm vi hiện tại là chuyển hosting sang Workers, giữ Supabase A/B làm nguồn dữ liệu. App B là AdsMind/resource app riêng; LMS `/learn/*` thuộc A. Không dùng bằng chứng local/D1 cũ để kết luận đã bỏ Supabase.

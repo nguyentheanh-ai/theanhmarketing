@@ -1,0 +1,228 @@
+{
+  "checkedAt": "2026-10-18T10:39:36.351Z",
+  "dns": [
+    {
+      "id": "86dc9aed864361aaf9e9534c03df2d31",
+      "name": "theanhmarketing.com",
+      "type": "A",
+      "content": "216.198.79.1",
+      "ttl": 1,
+      "proxied": true
+    },
+    {
+      "id": "bc31b42eff7efb292a8176ec53a10283",
+      "name": "adsplan.theanhmarketing.com",
+      "type": "CNAME",
+      "content": "cname.vercel-dns.com",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "id": "928ac362604a6f9fc08af897cd9abde5",
+      "name": "app-blue-origin.theanhmarketing.com",
+      "type": "CNAME",
+      "content": "38867413fd8b3480.vercel-dns-017.com",
+      "ttl": 120,
+      "proxied": false
+    },
+    {
+      "id": "99d42740d92f63380467a73b6c2dd0dd",
+      "name": "app.theanhmarketing.com",
+      "type": "CNAME",
+      "content": "cname.vercel-dns.com",
+      "ttl": 1,
+      "proxied": true
+    },
+    {
+      "id": "b7db39a021bec6fbc9a5b32c6bed3594",
+      "name": "ladipageverify.theanhmarketing.com",
+      "type": "CNAME",
+      "content": "dns.ladipage.com",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "id": "925d44be25f83cf5815ecd11179d8fb0",
+      "name": "mail.theanhmarketing.com",
+      "type": "CNAME",
+      "content": "mail.resend-dns.com",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "id": "eebd7e1e9ede60acc217ea622b85610a",
+      "name": "www.theanhmarketing.com",
+      "type": "CNAME",
+      "content": "02a6b1bed5462f9d.vercel-dns-017.com",
+      "ttl": 1,
+      "proxied": true
+    },
+    {
+      "id": "bf9d3fe001f9ec9eb0911969a7c91691",
+      "name": "send.theanhmarketing.com",
+      "type": "MX",
+      "content": "feedback-smtp.ap-northeast-1.amazonses.com",
+      "ttl": 300,
+      "proxied": false,
+      "priority": 10
+    },
+    {
+      "id": "4d2cf307b86ddc981b596b56fdc53d18",
+      "name": "_dmarc.theanhmarketing.com",
+      "type": "TXT",
+      "content": "\"v=DMARC1; p=none;\"",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "id": "a592568a6499769dae1f767f33b524a0",
+      "name": "resend._domainkey.theanhmarketing.com",
+      "type": "TXT",
+      "content": "\"p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRjbx4GLY/KBySYKQ1iAV2cb+pdMSe1xQ2VUF6g/GN9kbFdav2KH4jEyC80FQOKmHvIsBpfy0p2Bseyz1cYv3cBXSdY8Ihwvd29V4dvfN/LgO08FFpvgADtmAZGz58iwrVsbCuC2EM3YHAO2IMfY+EI/75z/L1U53hqlQHWOAgRQIDAQAB\"",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "id": "424e2c139e9d43ef3a370768d138af64",
+      "name": "send.theanhmarketing.com",
+      "type": "TXT",
+      "content": "\"v=spf1 include:amazonses.com ~all\"",
+      "ttl": 300,
+      "proxied": false
+    }
+  ],
+  "routes": [
+    {
+      "id": "24e005b8ffa84a709b35ff7f80ba2efe",
+      "pattern": "app.theanhmarketing.com/*",
+      "script": "theanh-student-cf-production",
+      "request_limit_fail_open": false
+    },
+    {
+      "id": "a902c518bfe84cc18599ffd9f69ab100",
+      "pattern": "www.theanhmarketing.com/*",
+      "script": "theanh-main-cf-production",
+      "request_limit_fail_open": false
+    },
+    {
+      "id": "948dd1f1a19e4653b3588af69228e426",
+      "pattern": "theanhmarketing.com/*",
+      "script": "theanh-main-cf-production",
+      "request_limit_fail_open": false
+    }
+  ],
+  "workers": [
+    {
+      "name": "A",
+      "secretNames": [
+        "ACCOUNTING_NOTIFICATION_EMAIL",
+        "ADMIN_EMAILS",
+        "ADMIN_LOGIN_EMAIL",
+        "CHECKOUT_ABUSE_HMAC_KEY",
+        "CRM_V2_ALLOW_DEMO_SEED",
+        "CRM_V2_ENABLED",
+        "CRM_V2_USE_DEMO_DATA",
+        "CRON_SECRET",
+        "GOOGLE_SHEETS_WEBHOOK_URL",
+        "META_ADS_ACCESS_TOKEN",
+        "META_ADS_AD_ACCOUNT_ID",
+        "META_APP_ID",
+        "META_APP_SECRET",
+        "META_CAPI_ACCESS_TOKEN",
+        "META_CAPI_API_VERSION",
+        "META_CAPI_DATASET_ID",
+        "NATIVE_AUTH_CREDENTIAL_KEY",
+        "NATIVE_AUTH_LIMITER_KEY",
+        "NATIVE_AUTH_REFRESH_KEY",
+        "NEW_LEAD_NOTIFICATION_TO",
+        "PAYMENT_SUCCESS_EMAIL_FROM",
+        "PENDING_PAYMENT_EMAIL_FROM",
+        "R2_PRIVATE_URL_SECRET",
+        "REGISTRATION_NOTIFICATION_EMAIL",
+        "REGISTRATION_NOTIFICATION_FROM",
+        "RESEND_API_KEY",
+        "RESEND_WEBHOOK_SECRET",
+        "SEPAY_BANK_ACCOUNT_NAME",
+        "SEPAY_BANK_ACCOUNT_NUMBER",
+        "SEPAY_BANK_CODE",
+        "SEPAY_WEBHOOK_API_KEY",
+        "SEPAY_WEBHOOK_SECRET",
+        "STUDENT_PORTAL_PROVISION_SECRET",
+        "STUDENT_PORTAL_PROVISION_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "TELEGRAM_BOT_TOKEN",
+        "TELEGRAM_CHAT_ID",
+        "TELEGRAM_REPORT_SECRET"
+      ],
+      "cronMode": "enabled",
+      "observability": {
+        "enabled": true,
+        "head_sampling_rate": 1,
+        "redact_query_string": true,
+        "logs": {
+          "enabled": true,
+          "head_sampling_rate": 1,
+          "persist": true,
+          "invocation_logs": true
+        },
+        "traces": {
+          "enabled": false,
+          "persist": true,
+          "head_sampling_rate": 1
+        }
+      },
+      "versions": [
+        {
+          "version_id": "920ab23f-0a34-4e86-be3e-44fbd8af2dc4",
+          "percentage": 100
+        }
+      ]
+    },
+    {
+      "name": "B",
+      "secretNames": [
+        "CRON_SECRET",
+        "STUDENT_PORTAL_PROVISION_SECRET",
+        "STUDENT_PORTAL_SESSION_SECRET",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "observability": {
+        "enabled": true,
+        "head_sampling_rate": 1,
+        "redact_query_string": true,
+        "logs": {
+          "enabled": true,
+          "head_sampling_rate": 1,
+          "persist": true,
+          "invocation_logs": true
+        },
+        "traces": {
+          "enabled": false,
+          "persist": true,
+          "head_sampling_rate": 1
+        }
+      },
+      "versions": [
+        {
+          "version_id": "94854193-2688-4ef4-8a43-fd5adff74e78",
+          "percentage": 100
+        }
+      ]
+    }
+  ],
+  "schedules": {
+    "schedules": [
+      {
+        "cron": "*/5 * * * *",
+        "created_on": "2026-10-18T10:37:27.680157Z",
+        "modified_on": "2026-10-18T10:37:27.680157Z"
+      }
+    ]
+  },
+  "workersDevA": {
+    "enabled": false,
+    "previews_enabled": false
+  },
+  "otherDnsRecordsUnchanged": true
+}

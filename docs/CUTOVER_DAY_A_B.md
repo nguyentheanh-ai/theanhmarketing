@@ -1,3 +1,7 @@
+## 18/10/2026 — Hosting A/B đã LIVE
+
+Xem tài liệu hiện hành tại HOSTING_LIVE_20261018.md. Website A (gồm /learn) và App B riêng đã chạy trên domain thật qua Cloudflare Workers. Cron Vercel đã tắt, lịch Workers đã bật; theo dõi lần chạy thực và tác vụ đến hạn. Supabase vẫn là nguồn ghi/Auth/Storage; B còn cầu Blue Vercel để tương thích và quay lui. Theo dõi chỉ đọc 48 giờ đã bật. Migration toàn bộ vẫn IN PROGRESS, chưa hủy dịch vụ cũ.
+
 > **18/10 cập nhật Auth/cầu tạm:** B742a15d đã deploy preview, Meta được hoãn. Domain chính/cron chưa chuyển; QA B đang inactive sau thu hồi phiên, không bật trước14:38:11VN. Xem mục cuối CODEX_RETAKE_A_B_20261018.md trước mọi lệnh lịch sử.
 
 > **18/10 13:10:** Index SePay concurrent đã áp dụng/valid; Workers A monitoring và tải TXT browser đã kiểm chứng. Hosting chưa chuyển; Meta và legacy Auth/session còn gate. Xem CODEX_RETAKE_A_B_20261018.md.

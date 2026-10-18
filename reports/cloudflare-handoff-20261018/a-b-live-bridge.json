@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-18T10:41:41.407Z",
+  "status": "PASS",
+  "httpStatus": 307,
+  "cloudflare": true,
+  "providerOrigin": "https://pppiqhkectojxbmhqcnx.supabase.co",
+  "callbackOrigin": "https://app.theanhmarketing.com",
+  "scope": "Real www A Workers -> B Service Binding -> Source B Auth redirect; QA only; browser completion checked separately",
+  "browserOverviewPassed": true,
+  "browserRefreshPassed": true,
+  "browserQaOnly": true
+}

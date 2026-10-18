@@ -1,0 +1,53 @@
+{
+  "checkedAt": "2026-10-18T10:39:38.814Z",
+  "status": "PASS",
+  "edgePinned": false,
+  "checks": [
+    {
+      "check": "homepage",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "check": "QA-old-lesson-URL-progress-retained",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "check": "private-lesson-no-shared-cache",
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "passed": true
+    },
+    {
+      "check": "guest-paid-lesson-denied",
+      "status": 307,
+      "passed": true
+    },
+    {
+      "check": "QA-Ebook-entitlement",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "check": "payment-wrong-key",
+      "status": 401,
+      "passed": true
+    },
+    {
+      "check": "payment-verified-key-invalid-json",
+      "status": 400,
+      "passed": true
+    },
+    {
+      "check": "cron-denies-guest",
+      "status": 401,
+      "passed": true
+    },
+    {
+      "check": "apex-preserves-path-query",
+      "status": 307,
+      "passed": true
+    }
+  ],
+  "scope": "Source QA auth; real host/SNI and verified TLS; no progress writes or valid payment payload; no secret/body stored"
+}
