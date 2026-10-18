@@ -1,0 +1,18 @@
+{
+  "status": "LOCAL_TESTED_NOT_MOUNTED",
+  "pricingImplementationIdenticalAfterTypeErasure": true,
+  "pricingDigest": "80eaacc3c8271070ba89e5e4fb9f667986bbf63ff9490521a61df905b4a749fd",
+  "focusedTests": 16,
+  "sourceDatabaseClientImportedByQuote": false,
+  "limits": "Pure pricing reused from current Source service, verified D1 catalogue read only; no order/lead INSERT, provider event, hosted or cutover proof. Future INSERT must atomically recheck catalogue/authority. Unknown partial carts fail closed.",
+  "typecheck": "PASS",
+  "scopedLint": "PASS",
+  "stagingBuild": "PASS",
+  "stagingBuildArtifactHash": "8cf8548063d57d36aa81ac857befb0f7edfa3f0d163a5ac2f3d41704fea92bcd",
+  "mounted": false,
+  "deployed": false,
+  "reviewFindingsResolved": [
+    "Array selection cannot bypass ended preorder availability",
+    "Fixed consultation cannot bypass unknown or mixed cart"
+  ]
+}

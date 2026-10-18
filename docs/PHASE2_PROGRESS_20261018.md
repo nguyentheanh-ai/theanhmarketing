@@ -235,3 +235,9 @@ Catalog công khai13:45UTC nhập/publish/đọc lại D1 staging khớp actual 
 Audit RegisterForm xác nhận nhánh signup D1 tiếp tục POST /api/leads và /api/orders hiện còn Source. Giữ email QA OFF. Thêm ranh giới sau native handlers trước app.fetch: đúng staging A, native Auth/email/payment mode hoạt động hoặc sai cấu hình thì chặn mọi API cũ (kể cả GET job), callback Auth cũ và server action/non-GET. Chuẩn hóa path mã hóa/slash/backslash; production/default-OFF giữ nguyên. Đây là containment503, không thay cho port checkout. Không chứng minh cách ly mọi SDK network từ browser.
 
 RED actual vinext cũ nhận400 từ legacy handler thay vì chặn503; bản mới20focused PASS, TypeScript/buildcfstaging PASS, actual vinext16nhóm/D1/R2 PASS0outbound. Reviewer không thấy blocker. Bằng chứng native-full-worker.json; tiếp theo port pipeline signup/lead/order/invoice/idempotency trước khi bật đăng ký/email QA.
+
+### Checkout D1 — giá backend dùng chung, chưa mount/deploy
+
+Khối pricing chuyển nguyên từ orderService sang lib/orders/payment-package.ts, Source import lại; JS sau loại type khớp chính xác bản gốc. readD1CheckoutQuote chỉ đọc danh mục verified/fresh, không nhận amount từ client, không tạo lead/đơn hoặc gửi provider. INSERT tương lai phải kiểm publication/authority trong cùng transaction; quote không phải write lease.
+
+Reviewer tái hiện hai bypass legacy: courseSlugs bỏ guard hết hạn preorder và consultation shortcut bỏ qua giỏ override unknown. Core D1 đã chuẩn hóa lựa chọn hiệu lực và chặn; hai hồi quy RED→GREEN. Source production giữ hành vi cũ. Tổng16 test SQLite/golden, TS, scoped lint, cfstaging build PASS. Reviewer6 test quote PASS, không blocker. Receipt: reports/cloudflare-d1/native-checkout-quote-preparation.json. Tiếp tục atomic lead/contact/order/invoice/idempotency rồi Auth/signup/recovery/provider.

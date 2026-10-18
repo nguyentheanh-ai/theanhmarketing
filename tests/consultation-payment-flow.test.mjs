@@ -13,7 +13,7 @@ test("consultation uses one fixed server-known 500.000đ product", () => {
   assert.match(constants, /CONSULTATION_PAYMENT_PLAN = "consultation-deposit-500"/);
   assert.match(constants, /CONSULTATION_PRICE_VND = 500_000/);
   assert.match(orders, /getFixedPaymentPackage/);
-  assert.match(orders, /CONSULTATION_PRICE_VND/);
+  assert.match(read("lib/orders/payment-package.ts"), /CONSULTATION_PRICE_VND/);
 });
 
 test("consultation API validates the service and creates a real payment order", () => {

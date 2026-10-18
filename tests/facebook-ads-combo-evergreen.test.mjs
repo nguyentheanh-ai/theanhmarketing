@@ -4,8 +4,8 @@ import vm from "node:vm";
 import test from "node:test";
 import ts from "typescript";
 
-const source = readFileSync(new URL("../services/orderService.ts", import.meta.url), "utf8");
-const packageSource = source.slice(source.indexOf("const coursePaymentPlans:"), source.indexOf("export async function createPaymentOrder"));
+const source = readFileSync(new URL("../lib/orders/payment-package.ts", import.meta.url), "utf8");
+const packageSource = source.slice(source.indexOf("const coursePaymentPlans:"), source.indexOf("export {getFixedPaymentPackage"));
 const context = vm.createContext({
   VIETNAM_THANG_THAI_LAN_PROMOTION_PLAN: "zoom-kit-ebook-vietnam-thang-thai-lan-20",
   isVietnamThangThaiLanPromotionActive: () => false,

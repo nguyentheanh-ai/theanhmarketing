@@ -15,7 +15,7 @@ test('Codex uses the current enterprise Kit offer and the server charges that am
   assert.ok(bundle.includes(money(offer.price)));
   assert.ok(bundle.includes(money(offer.originalPrice)));
   assert.ok(bundle.includes(offer.paymentPlan));
-  const source = read('services/orderService.ts');
+  const source = read('lib/orders/payment-package.ts');
   const context = vm.createContext({
     VIETNAM_THANG_THAI_LAN_PROMOTION_PLAN: 'promotion', isVietnamThangThaiLanPromotionActive: () => false,
     AGENT_KIT_SLUG: 'agent-kit', AGENT_KIT_PREORDER_PAYMENT_PLAN: 'preorder',
@@ -23,7 +23,7 @@ test('Codex uses the current enterprise Kit offer and the server charges that am
     AGENT_KIT_PREORDER_DEPOSIT_VND: 399000, AGENT_KIT_OFFICIAL_PAYMENT_PLAN: 'official',
     AGENT_KIT_OFFICIAL_PRICE_VND: 999000, formatVnd: String,
   });
-  vm.runInContext(ts.transpile(source.slice(source.indexOf('const coursePaymentPlans:'), source.indexOf('export async function createPaymentOrder'))), context);
+  vm.runInContext(ts.transpile(source.slice(source.indexOf('const coursePaymentPlans:'), source.indexOf('export {getFixedPaymentPackage'))), context);
   const result = context.buildOrderPackage([{slug:'agent-kit', title:'Đội ngũ nhân sự AI'}], offer.paymentPlan);
   assert.equal(result.amount, offer.price);
   assert.equal(result.orderItems[0].price, offer.price);
