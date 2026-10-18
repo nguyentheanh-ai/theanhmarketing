@@ -26,5 +26,5 @@ key=None
 if r.returncode:raise SystemExit('Hosted probe failed; raw diagnostic withheld')
 checks=json.loads(r.stdout)
 from datetime import datetime,timezone
-report={'checkedAt':datetime.now(timezone.utc).isoformat(),'status':'PASS' if all(c['passed'] for c in checks) else 'FAIL','checks':checks,'scope':'Hosted A ff6361a2 auth/parser negative probes only; no valid payment JSON or authorized cron execution, no bank settlement, email or customer mutation'}
+report={'checkedAt':datetime.now(timezone.utc).isoformat(),'status':'PASS' if all(c['passed'] for c in checks) else 'FAIL','checks':checks,'scope':'Hosted A preview auth/parser negative probes only; no valid payment JSON or authorized cron execution, no bank settlement, email or customer mutation'}
 (ROOT/'reports/cloudflare-handoff-20261018/hosted-payment-cron-negative.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n');print(json.dumps(report));raise SystemExit(0 if report['status']=='PASS' else 1)

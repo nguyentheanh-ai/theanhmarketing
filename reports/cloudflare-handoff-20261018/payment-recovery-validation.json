@@ -1,6 +1,6 @@
 {
   "checkedAt": "2026-10-18T10:20:56.725928+00:00",
-  "status": "TESTED_LOCAL_PENDING_PREVIEW",
+  "status": "TESTED_PREVIEW_PENDING_DEVICE_GATE",
   "relatedTests": {
     "passed": 81,
     "failed": 0
@@ -36,5 +36,16 @@
     "Actual Vercel cron shutdown not performed; Workers schedules empty"
   ],
   "latestAmendment": "A email persisted before B retry; CAS sent marker fence; require actual B write acknowledgement",
-  "sepayRetry": "ENABLED_AND_REOPEN_VERIFIED_OWNER_APPROVED"
+  "sepayRetry": "ENABLED_AND_REOPEN_VERIFIED_OWNER_APPROVED",
+  "sourceCommit": "3aefbb450922ac6be50bd4b891d409cee5392859",
+  "workerVersion": "c1d1dd8e-c31e-40df-8153-1d4d6fb9b454",
+  "hostedNegativeChecks": 11,
+  "hostedPrivateDownloadChecks": 12,
+  "chromiumLessonRefresh": "PASS: required old URL, QA completed marker retained after deploy",
+  "latestReadOnlySourceCounts": {
+    "checkedAt": "2026-10-18T10:24:08.149098+00:00",
+    "paidMissingEmail24h": 0,
+    "greenPendingReceipts": 0,
+    "recentOpenCheckouts": 0
+  }
 }

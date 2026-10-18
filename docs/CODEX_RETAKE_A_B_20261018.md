@@ -191,3 +191,18 @@ Kiểm chứng cuối lượt: A typecheck:cloudflare và build production qua s
 IN PROGRESS, chưa READY/LIVE. Sửa lỗi webhook đã paid bỏ qua việc cấp account/email còn thiếu: receipt CAS cùng paid commit trong orders, giữ mật khẩu/Auth cũ, provider key/hash chống trùng,503khi chưa hoàn tất; consultation/deposit/support giữ flow.75test liên quan,13realPGclone,8HTTPartifactWorkers+realPGclone đạt; Auth/B/Resend là fixtures trong8test, không gọi thanh toán thật/khách thật. Typecheck/lint runtime/build production9gate đạt. Chi tiết/giới hạn và rollback pending: docs/SEPAY_FULFILLMENT_RECOVERY_20261018.md.
 
 Cron dispatcher đủ8lịch đã kiểm trên artifact cục bộ, vẫnOFF trên Workers; Vercel Enabled. Lịch17:05VN thực tế chạy nhưng failed vì dữ liệu snapshotMeta thiếu24giờ (Meta được hoãn), không kết luậncronkhôngchạy/không giả số liệu. QA B đã bật lại đúng1profile sau TTL token thu hồi, không đổi khách thật. SafariiPhone chưa có thiết bị/bằng chứng; chưa chuyển domain. Trước chuyển phải đọc lại pendingpayments, xác minh retrySePay, tắt/đọc lại Vercelcron rồi mới bật Workerscron. Giữ Supabase writer/Auth/Storage và cầu BlueB tạm.
+
+
+## Cập nhật 18/10 — 17:24 VN: bản phục hồi thanh toán đã lên preview
+
+**IN PROGRESS — chưa chuyển domain/cron, chưa LIVE hosting Cloudflare.** A source `3aefbb4`, Worker version `c1d1dd8e-c31e-40df-8153-1d4d6fb9b454`; giữ assets cũ 86400 giây, 38 secret và binding B. B source/runtime không đổi. Domain Workers chính0, lịch Workers rỗng, Vercel cron vẫn Enabled; Supabase vẫn writer/Auth/Storage và B còn cầu Blue tạm.
+
+81 test liên quan,13 realPGclone,8 actual Workers HTTP+PGclone (Auth/B/Resend fixtures),4 cron artifact đạt. Sau deploy:11 kiểm hosted auth/parser/cron-denial và12 private Ebook/Range/hash đạt; refresh đúng URL bài học giữ trạng thái QA hoàn thành. B lỗi không chặn email/quyền học A, retry tiếp tục B riêng; B phải xác nhận JSON write đúng identity. Chưa có thanh toán ngân hàng thật trong kiểm thử.
+
+Anh đã duyệt riêng bật retry SePay; mở lại webhook active thấy checkbox1, URL `https://www.theanhmarketing.com/api/sepay/webhook` giữ nguyên, không gửi thử giao dịch thật. Read-only gần17:24VN: paid thiếu email24h0, receiptGreen pending0, checkout gần2h0. Đây là snapshot, phải đọc lại trước cutover.
+
+Email hướng dẫn Safari đã được máy chủ nhận thư chấp nhận (delivered); **chưa có kết quả iPhone thật**. Không dùng Chromium thay Safari. Đang chờ kết quả thiết bị trước khi đánh dấu READY và thực hiện gói chuyển domain/cron đã duyệt. Meta được hoãn; báo cáo Ads baseline không đủ snapshot vẫn phải báo lỗi, không giả dữ liệu.
+
+Rollback: không tắt/xóa Green khi receipt pending; Blue không hiểu receiptGreen. Giữ Source writer và endpointGreen để đối soát/tiếp tục từng đơn; không reset paid/receipt hoặc gỡ unique index. B profile write không chứng minh mọi nhóm truy cập B: hiện slug khóa A và access-group B khác nhau; giữ hợp đồng baseline, không tự cấp quyền sản phẩm khác.
+
+Chi tiết: `main/docs/SEPAY_FULFILLMENT_RECOVERY_20261018.md`, receipts `main/reports/cloudflare-handoff-20261018/{payment-preview-readback,payment-recovery-validation,sepay-retry-readback}.json`.

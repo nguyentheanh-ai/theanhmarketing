@@ -68,3 +68,18 @@ Học viên App B sẽ phải đăng nhập lại App B một lần (cookie mớ
 6. Deploy B rồi A gắn tên miền, kiểm tra theo bước 6.
 7. Quyết định 11 file chưa commit trong thư mục phát hành cũ của A.
 8. (Sau) Xóa các file khóa `~/Documents/key.rtf`, `~/Documents/Không có tiêu đề.rtf`, iCloud `Khóa SEpay Bot.rtf`.
+
+
+## Cập nhật 18/10 — 17:24 VN: bản phục hồi thanh toán đã lên preview
+
+**IN PROGRESS — chưa chuyển domain/cron, chưa LIVE hosting Cloudflare.** A source `3aefbb4`, Worker version `c1d1dd8e-c31e-40df-8153-1d4d6fb9b454`; giữ assets cũ 86400 giây, 38 secret và binding B. B source/runtime không đổi. Domain Workers chính0, lịch Workers rỗng, Vercel cron vẫn Enabled; Supabase vẫn writer/Auth/Storage và B còn cầu Blue tạm.
+
+81 test liên quan,13 realPGclone,8 actual Workers HTTP+PGclone (Auth/B/Resend fixtures),4 cron artifact đạt. Sau deploy:11 kiểm hosted auth/parser/cron-denial và12 private Ebook/Range/hash đạt; refresh đúng URL bài học giữ trạng thái QA hoàn thành. B lỗi không chặn email/quyền học A, retry tiếp tục B riêng; B phải xác nhận JSON write đúng identity. Chưa có thanh toán ngân hàng thật trong kiểm thử.
+
+Anh đã duyệt riêng bật retry SePay; mở lại webhook active thấy checkbox1, URL `https://www.theanhmarketing.com/api/sepay/webhook` giữ nguyên, không gửi thử giao dịch thật. Read-only gần17:24VN: paid thiếu email24h0, receiptGreen pending0, checkout gần2h0. Đây là snapshot, phải đọc lại trước cutover.
+
+Email hướng dẫn Safari đã được máy chủ nhận thư chấp nhận (delivered); **chưa có kết quả iPhone thật**. Không dùng Chromium thay Safari. Đang chờ kết quả thiết bị trước khi đánh dấu READY và thực hiện gói chuyển domain/cron đã duyệt. Meta được hoãn; báo cáo Ads baseline không đủ snapshot vẫn phải báo lỗi, không giả dữ liệu.
+
+Rollback: không tắt/xóa Green khi receipt pending; Blue không hiểu receiptGreen. Giữ Source writer và endpointGreen để đối soát/tiếp tục từng đơn; không reset paid/receipt hoặc gỡ unique index. B profile write không chứng minh mọi nhóm truy cập B: hiện slug khóa A và access-group B khác nhau; giữ hợp đồng baseline, không tự cấp quyền sản phẩm khác.
+
+Chi tiết: `main/docs/SEPAY_FULFILLMENT_RECOVERY_20261018.md`, receipts `main/reports/cloudflare-handoff-20261018/{payment-preview-readback,payment-recovery-validation,sepay-retry-readback}.json`.

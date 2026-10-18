@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-18T10:11:28.070240+00:00",
+  "checkedAt": "2026-10-18T10:23:00.800945+00:00",
   "status": "PASS",
   "checks": [
     {
@@ -77,5 +77,6 @@
       "passed": true
     }
   ],
-  "scope": "Hosted A ff6361a2 auth/parser negative probes only; no valid payment JSON or authorized cron execution, no bank settlement, email or customer mutation"
+  "scope": "Hosted A c1d1dd8e auth/parser negative probes only; no valid payment JSON or authorized cron execution, no bank settlement, email or customer mutation",
+  "workerVersion": "c1d1dd8e-c31e-40df-8153-1d4d6fb9b454"
 }

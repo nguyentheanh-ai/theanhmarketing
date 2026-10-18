@@ -1,6 +1,6 @@
 # Phục hồi cấp quyền sau thanh toán SePay — 18/10/2026
 
-Trạng thái: TESTED cục bộ; bản d114070 đã phát hành Workers preview, bản bổ sung đang chờ phát hành/kiểm tra preview. Chưa chuyển domain/cron, không đổi nguồn dữ liệu.
+Trạng thái: TESTED preview; bản bổ sung 3aefbb4 đã phát hành Worker c1d1dd8e. Chưa đủ bằng chứng iPhone Safari để READY FOR CUTOVER. Chưa chuyển domain/cron, không đổi nguồn dữ liệu.
 
 ## Lỗi đã tái hiện và sửa
 

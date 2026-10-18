@@ -1,0 +1,147 @@
+{
+  "checkedAt": "2026-10-18T10:22:37.654Z",
+  "workers": [
+    {
+      "worker": "theanh-main-cf-production",
+      "secretNames": [
+        "ACCOUNTING_NOTIFICATION_EMAIL",
+        "ADMIN_EMAILS",
+        "ADMIN_LOGIN_EMAIL",
+        "CHECKOUT_ABUSE_HMAC_KEY",
+        "CRM_V2_ALLOW_DEMO_SEED",
+        "CRM_V2_ENABLED",
+        "CRM_V2_USE_DEMO_DATA",
+        "CRON_SECRET",
+        "GOOGLE_SHEETS_WEBHOOK_URL",
+        "META_ADS_ACCESS_TOKEN",
+        "META_ADS_AD_ACCOUNT_ID",
+        "META_APP_ID",
+        "META_APP_SECRET",
+        "META_CAPI_ACCESS_TOKEN",
+        "META_CAPI_API_VERSION",
+        "META_CAPI_DATASET_ID",
+        "NATIVE_AUTH_CREDENTIAL_KEY",
+        "NATIVE_AUTH_LIMITER_KEY",
+        "NATIVE_AUTH_REFRESH_KEY",
+        "NEW_LEAD_NOTIFICATION_TO",
+        "PAYMENT_SUCCESS_EMAIL_FROM",
+        "PENDING_PAYMENT_EMAIL_FROM",
+        "R2_PRIVATE_URL_SECRET",
+        "REGISTRATION_NOTIFICATION_EMAIL",
+        "REGISTRATION_NOTIFICATION_FROM",
+        "RESEND_API_KEY",
+        "RESEND_WEBHOOK_SECRET",
+        "SEPAY_BANK_ACCOUNT_NAME",
+        "SEPAY_BANK_ACCOUNT_NUMBER",
+        "SEPAY_BANK_CODE",
+        "SEPAY_WEBHOOK_API_KEY",
+        "SEPAY_WEBHOOK_SECRET",
+        "STUDENT_PORTAL_PROVISION_SECRET",
+        "STUDENT_PORTAL_PROVISION_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "TELEGRAM_BOT_TOKEN",
+        "TELEGRAM_CHAT_ID",
+        "TELEGRAM_REPORT_SECRET"
+      ],
+      "safeVars": [
+        {
+          "name": "CF_CRON_MODE",
+          "text": "disabled"
+        }
+      ],
+      "services": [
+        {
+          "name": "STUDENT_APP",
+          "service": "theanh-student-cf-production"
+        }
+      ],
+      "schedules": {
+        "schedules": []
+      },
+      "deployment": {
+        "id": "b86d1469-592c-43d2-b5d3-19e33c807fad",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "annotations": {
+          "workers/message": "Preview only: preserve A email while retrying B; domains and cron disabled",
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "c1d1dd8e-c31e-40df-8153-1d4d6fb9b454",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-18T10:22:13.615706Z"
+      },
+      "observability": {
+        "enabled": true,
+        "head_sampling_rate": 1,
+        "redact_query_string": true,
+        "logs": {
+          "enabled": true,
+          "head_sampling_rate": 1,
+          "persist": true,
+          "invocation_logs": true
+        },
+        "traces": {
+          "enabled": false,
+          "persist": true,
+          "head_sampling_rate": 1
+        }
+      }
+    },
+    {
+      "worker": "theanh-student-cf-production",
+      "secretNames": [
+        "CRON_SECRET",
+        "STUDENT_PORTAL_PROVISION_SECRET",
+        "STUDENT_PORTAL_SESSION_SECRET",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "safeVars": [
+        {
+          "name": "CF_B_LEGACY_AUTH_BRIDGE",
+          "text": "on"
+        }
+      ],
+      "services": [],
+      "schedules": {
+        "schedules": []
+      },
+      "deployment": {
+        "id": "0d0978e9-78d8-4628-a839-847775b8e855",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "5dbf0a76-d7ed-4699-b9a3-3fa552d8368c",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-18T06:27:42.173538Z"
+      },
+      "observability": {
+        "enabled": true,
+        "head_sampling_rate": 1,
+        "redact_query_string": true,
+        "logs": {
+          "enabled": true,
+          "head_sampling_rate": 1,
+          "persist": true,
+          "invocation_logs": true
+        },
+        "traces": {
+          "enabled": false,
+          "persist": true,
+          "head_sampling_rate": 1
+        }
+      }
+    }
+  ],
+  "mainDomains": []
+}
