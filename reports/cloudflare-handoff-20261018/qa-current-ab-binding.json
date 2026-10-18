@@ -1,0 +1,13 @@
+{
+  "status": 307,
+  "providerHost": "pppiqhkectojxbmhqcnx.supabase.co",
+  "providerPath": "/auth/v1/verify",
+  "redirectOrigin": "https://app.theanhmarketing.com",
+  "bindingCall": "Actual hosted A bridge; B source Auth link returned",
+  "browserCallbackRetargeted": true,
+  "scope": "QA callback retargeted to B preview; not production domain continuity proof",
+  "previewOverviewReached": true,
+  "previewRefreshPassed": true,
+  "metaDataAvailable": false,
+  "unmodifiedCallbackToVercel": "Returned to login; cause UNKNOWN; not continuity PASS"
+}

@@ -1,0 +1,170 @@
+{
+  "worker": {
+    "success": true,
+    "observability": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "redact_query_string": true,
+      "logs": {
+        "enabled": true,
+        "head_sampling_rate": 1,
+        "persist": true,
+        "invocation_logs": true
+      },
+      "traces": {
+        "enabled": false,
+        "persist": true,
+        "head_sampling_rate": 1
+      }
+    },
+    "secretNames": [
+      "ACCOUNTING_NOTIFICATION_EMAIL",
+      "ADMIN_EMAILS",
+      "ADMIN_LOGIN_EMAIL",
+      "CHECKOUT_ABUSE_HMAC_KEY",
+      "CRM_V2_ALLOW_DEMO_SEED",
+      "CRM_V2_ENABLED",
+      "CRM_V2_USE_DEMO_DATA",
+      "CRON_SECRET",
+      "GOOGLE_SHEETS_WEBHOOK_URL",
+      "META_ADS_ACCESS_TOKEN",
+      "META_ADS_AD_ACCOUNT_ID",
+      "META_APP_ID",
+      "META_APP_SECRET",
+      "META_CAPI_ACCESS_TOKEN",
+      "META_CAPI_API_VERSION",
+      "META_CAPI_DATASET_ID",
+      "NATIVE_AUTH_CREDENTIAL_KEY",
+      "NATIVE_AUTH_LIMITER_KEY",
+      "NATIVE_AUTH_REFRESH_KEY",
+      "NEW_LEAD_NOTIFICATION_TO",
+      "PAYMENT_SUCCESS_EMAIL_FROM",
+      "PENDING_PAYMENT_EMAIL_FROM",
+      "R2_PRIVATE_URL_SECRET",
+      "REGISTRATION_NOTIFICATION_EMAIL",
+      "REGISTRATION_NOTIFICATION_FROM",
+      "RESEND_API_KEY",
+      "RESEND_WEBHOOK_SECRET",
+      "SEPAY_BANK_ACCOUNT_NAME",
+      "SEPAY_BANK_ACCOUNT_NUMBER",
+      "SEPAY_BANK_CODE",
+      "SEPAY_WEBHOOK_API_KEY",
+      "SEPAY_WEBHOOK_SECRET",
+      "STUDENT_PORTAL_PROVISION_SECRET",
+      "STUDENT_PORTAL_PROVISION_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "TELEGRAM_BOT_TOKEN",
+      "TELEGRAM_CHAT_ID",
+      "TELEGRAM_REPORT_SECRET"
+    ],
+    "gates": [
+      {
+        "name": "CF_CRON_MODE",
+        "value": "disabled"
+      },
+      {
+        "name": "CF_NATIVE_AUTH_MODE",
+        "value": "disabled"
+      },
+      {
+        "name": "CF_NATIVE_AUTH_ORIGIN",
+        "value": "https://theanh-main-cf-staging.12c1thdtheanh.workers.dev"
+      },
+      {
+        "name": "CF_NATIVE_MARKETING_MODE",
+        "value": "disabled"
+      },
+      {
+        "name": "CF_NATIVE_QA_AUTH_CONTEXT_MODE",
+        "value": "disabled"
+      },
+      {
+        "name": "CF_NATIVE_QA_CREDENTIAL_WRITES",
+        "value": "disabled"
+      },
+      {
+        "name": "CF_NATIVE_QA_EMAIL_AUTH_MODE",
+        "value": "disabled"
+      },
+      {
+        "name": "CF_NATIVE_QA_GOOGLE_MODE",
+        "value": "disabled"
+      },
+      {
+        "name": "CF_NATIVE_QA_PAYMENT_MODE",
+        "value": "disabled"
+      },
+      {
+        "name": "CF_NATIVE_QA_PROGRESS_MODE",
+        "value": "disabled"
+      },
+      {
+        "name": "CF_NATIVE_QA_REFRESH_MODE",
+        "value": "disabled"
+      },
+      {
+        "name": "CF_NATIVE_QA_USERS",
+        "value": "[]"
+      },
+      {
+        "name": "CF_R2_STAGE_PRIVATE_DELIVERY",
+        "value": "false"
+      }
+    ],
+    "serviceBindings": [
+      {
+        "environment": "production",
+        "name": "STUDENT_APP",
+        "service": "theanh-student-cf-production",
+        "type": "service"
+      }
+    ],
+    "schedules": {
+      "schedules": []
+    },
+    "customDomainCount": 0
+  },
+  "alerting": {
+    "policy": {
+      "id": "e1092f743993411c8cf67efab8db1090",
+      "name": "The Anh A-B Workers migration runtime errors",
+      "enabled": true,
+      "alert_type": "workers_observability_real_time_issue",
+      "emailRecipientCount": 1
+    },
+    "automationResultKeys": [
+      "automations"
+    ],
+    "automations": [
+      {
+        "id": "c25b234e-8b5c-4a65-a529-9b20ce1b8fa2",
+        "service": "theanh-student-cf-production",
+        "name": "The Anh migration theanh-student-cf-production",
+        "enabled": true,
+        "threshold": 3,
+        "policyId": "e1092f743993411c8cf67efab8db1090"
+      },
+      {
+        "id": "61dbc498-2a68-4153-8062-f6336cae1c1a",
+        "service": "theanh-main-cf-production",
+        "name": "The Anh migration theanh-main-cf-production",
+        "enabled": true,
+        "threshold": 3,
+        "policyId": "e1092f743993411c8cf67efab8db1090"
+      }
+    ],
+    "success": true
+  },
+  "version": "5f41de9b-d95b-4363-8515-f7626493cc4f",
+  "source": "cacf7bcc2d57fe17b30bbf50c1c404d138d18e42",
+  "canary": {
+    "matchedRequestEvents": 1,
+    "queryValueLeaked": false,
+    "queryNameLeaked": false
+  },
+  "alertTest": {
+    "apiAccepted": true,
+    "emailReceiptProven": true,
+    "proof": "Gmail received notification for exact policy ID at 2026-10-18T05:53:58Z; fixture checkout-worker/2022 in test template; no actual A/B exception induced"
+  }
+}

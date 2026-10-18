@@ -1,0 +1,18 @@
+{
+  "status": "TESTED_HTTP_RANGE",
+  "scope": "Oversized public R2 video only; not private LMS files",
+  "start": {
+    "status": 206,
+    "bytes": 64,
+    "content_range": "bytes 0-63/86440231"
+  },
+  "suffix": {
+    "status": 206,
+    "bytes": 64,
+    "content_range": "bytes 86440167-86440230/86440231"
+  },
+  "outOfBounds": {
+    "status": 416,
+    "content_range": "bytes */86440231"
+  }
+}

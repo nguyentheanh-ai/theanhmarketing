@@ -146,3 +146,16 @@ Anh yêu cầu tạm tiếp tục mục khác thay vì xác thực lại Meta. M
 - Chuẩn bị phát hành A: bật persisted invocation logs, redactQueryString=true, tracing tắt; guard artifact chặn mất redaction/logging. Typecheck Cloudflare, build qua script production bắt buộc và 4/4 test guard đạt. Thêm attachment header chỉ cho sáu TXT master-prompts, còn cần kiểm thử tải browser sau deploy. Không tuyên bố đã sửa Range.
 - Đã tạo policy Cloudflare runtime errors và automation chỉ hai Worker A/B, ngưỡng 3, email chỉ chủ hệ thống. Chưa chứng minh email cảnh báo được nhận hay bao phủ mọi HTTP 5xx. Các ID có trong receipt triển khai quan sát khi đọc lại.
 - Hosting domain vẫn Vercel, cron Workers chưa bật, Supabase A/B vẫn là nguồn dữ liệu. Tổng IN PROGRESS, chưa READY FOR CUTOVER. Meta được anh hoãn xác thực; compatibility legacy A→B/cookie, private/download và các gate còn lại tiếp tục xử lý.
+
+
+## 18/10/2026 13:10 — Bản quan sát/tải tài liệu đã deploy và kiểm chứng
+
+A source cacf7bc, Worker version5f41de9b-d95b-4363-8515-f7626493cc4f. Source preflight clean+remote đạt. Build bằng script production đã đạt; verifier chạy riêng cần truyền hai NEXT_PUBLIC URL (thiếu env gây mismatch, không phải artifact chứa staging). Đọc lại artifact với URL production đạt; cấu hình không routes/cron. Bản deploy giữ38tên secret, STUDENT_APP đúng B, native gatesOFF, private deliveryfalse, domains0/schedulesrỗng. Không chuyển production hosting.
+
+Log persisted đã bật, query redaction=true, trace=false. Request QA /api/student/progress có query canary bị401/no-store; query telemetry thấy đúng một progress event, không có tên/value canary. Cảnh báo runtime lỗi chỉ A/B, ngưỡng3, một email owner: API test200; Gmail đã nhận thư đúng policy ID (test template dùng checkout-worker/mốc2022, không phải lỗi A/B thật). Chưa chứng minh mọiHTTP5xx được cảnh báo.
+
+Tải TXT qua liên kết trang học trong trình duyệt nội bộ đã lưu file27314byte, SHA256khớp source; Content-Disposition đúng filename. Đây thay thế trạng thái chưa chứng minh tải TXT ở các dòng lịch sử, không suy ra mọifile/private. Video công khai R2 kiểm đầu/cuối206đúng64byte, vượt kích thước416đúngContent-Range; TXT partial Range khác Vercel vẫn chưa sửa.
+
+Kiểm mới A→B: tài khoảnQA gọi hosted A bridge, qua binding B trả307đúngSupabaseB/auth/v1/verify, redirectTo app.theanhmarketing.com. Retarget duy nhất callback QA sang B preview allowlisted, trình duyệt vào /app/overview. Chưa thay URLứng dụng/cấu hình. Luồng nguyên bản sang B Vercel đã quay lại/login?next; nguyên nhânchưa xác minh, không đánh dấu continuity/rollback Vercel PASS. API Vercel env qua connector lại403; không thử lách quyền. Meta và legacy provision/session vẫn là gate.
+
+Receipts: monitoring-preview-readback.json, qa-public-txt-browser-download.json, public-r2-video-range.json, qa-current-ab-binding.json. Supabase tiếp tục writer/Auth/Storage, chưa được hủy.
