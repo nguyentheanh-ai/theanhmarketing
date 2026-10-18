@@ -51,3 +51,7 @@
 ## VERIFIED — Tiến độ Source có hai mẫu số và thứ tự enrollment chưa xác định
 
 Áp dụng: services/lmsService.ts mapEnrollment/getStudentLmsAccess hiện hành. BySlug được thay bằng RPC playable count, byId fallback vẫn published count gồm bài rỗng. Đã tái hiện fixture50%/33% và giữ cùng phép tính. RPC không ORDER BY nên nhiều enrollment có giá trị khác nhau không có thứ tự ổn định: native từ chối thay vì chọn UUID/updated_at mới; không tự sửa thứ tự Source. Archive444subject và mẫu SourceRPC5subject đạt; chưa chứng minh mọi trạng thái phát sinh hoặc tương thích thứ tự cho trường hợp xung đột.
+
+## VERIFIED — Guard page sau loading boundary có thể redirect bằng stream200
+
+Áp dụng: vinext1.1.0 dashboard QA có loading.tsx. Bỏ guard layout để page tự auth làm guest nhận200 thay307 trong full built workerd test. Đã thêm await kiểm session native ở layout trước children, giữ kiểm lại quyền/version trong data query; rebuild và cùng harness guest307/noidentity/0outbound đạt. Không suy mọi redirect200 là lộ dữ liệu hoặc mọi router khác cần cùng sửa; lần lỗi ban đầu dừng trước assertion nội dung guest, nên không tuyên bố có/không rò rỉ từ lần đó. Production chưa dùng nhánh này.

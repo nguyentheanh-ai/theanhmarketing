@@ -28,7 +28,7 @@ test('student access queries are literal, scoped, minimal and paginated',async()
 test('missing identity never starts a global query',async()=>{const f=clientFixture({});assert.deepEqual(await access(f.client).getStudentPortalAccessRecords(' '),{orders:[],leads:[]});assert.equal(f.calls.length,0);});
 test('access read failure is surfaced instead of rendering an empty ownership list',async()=>{const q=new Proxy({},{get:(_,k)=>k==='range'?async()=>({data:null,error:{message:'offline'}}):()=>q});await assert.rejects(access({from:()=>q}).getStudentPortalAccessRecords('a@example.invalid'),/offline/);});
 test('dashboard response does not wait for activity writes',async()=>{
- const scheduled=[];let logged=0;const page=load('app/dashboard/page.tsx',{'next/server':{after:(fn)=>scheduled.push(fn)},'react/jsx-runtime':{jsx,jsxs:jsx},'@/components/app/student-dashboard':{StudentDashboard:'dashboard'},'@/services/studentPortalService':{getStudentPortalSnapshot:async()=>({user:{id:'fixture',email:'fixture@example.invalid'},courses:[],resources:[],ownedSlugs:[],progressBySlug:{},email:'fixture@example.invalid',displayName:'Fixture'})},'@/services/activityLogService':{logStudentActivity:async()=>{logged++;}}});
+ const scheduled=[];let logged=0;const page=load('app/dashboard/page.tsx',{'@/lib/cloudflare/native-dashboard-page':{readNativeDashboardPage:async()=>null},'next/navigation':{redirect:()=>{throw Error('Unexpected redirect')}},'next/server':{after:(fn)=>scheduled.push(fn)},'react/jsx-runtime':{jsx,jsxs:jsx},'@/components/app/student-dashboard':{StudentDashboard:'dashboard'},'@/services/studentPortalService':{getStudentPortalSnapshot:async()=>({user:{id:'fixture',email:'fixture@example.invalid'},courses:[],resources:[],ownedSlugs:[],progressBySlug:{},email:'fixture@example.invalid',displayName:'Fixture'})},'@/services/activityLogService':{logStudentActivity:async()=>{logged++;}}});
  assert.equal((await page.default()).type,'dashboard');assert.equal(logged,0);assert.equal(scheduled.length,1);await scheduled[0]();assert.equal(logged,1);
 });
 
@@ -65,4 +65,16 @@ test('single-course lookup filters before downloading lessons and only fetches t
 test('anonymous preview does not read LMS data at all',async()=>{
  const service=load('services/lmsService.ts',{'@/lib/supabase/admin':{createSupabaseAdminClient:()=>{throw new Error('should not query')}},'@/lib/security/validation':{},'@/services/activityLogService':{},'@/services/studentProvisioningOperationService':{},'@/lib/admin/command-center-source':{}});
  assert.deepEqual(await service.getStudentLmsAccess({}),{ownedSlugs:[],progressBySlug:{},completedLessonIds:[],enrollmentIdsBySlug:{}});
+});
+
+test('native dashboard schedules its own activity and never calls Source snapshot or Source logger',async()=>{
+ const scheduled=[];let logged=0;
+ const page=load('app/dashboard/page.tsx',{
+  '@/lib/cloudflare/native-dashboard-page':{readNativeDashboardPage:async()=>({status:'student',courses:[],resources:[],ownedSlugs:[],progressBySlug:{},lessonCountsBySlug:{},email:'qa@example.invalid',displayName:'QA',authContext:'synthetic-witness',recordVisit:async()=>{logged++;}})},
+  'next/navigation':{redirect:()=>{throw Error('Unexpected redirect')}},'next/server':{after:fn=>scheduled.push(fn)},'react/jsx-runtime':{jsx,jsxs:jsx},
+  '@/components/app/student-dashboard':{StudentDashboard:'dashboard'},
+  '@/services/studentPortalService':{getStudentPortalSnapshot:async()=>{throw Error('Source must not be called')}},
+  '@/services/activityLogService':{logStudentActivity:async()=>{throw Error('Source must not be called')}},
+ });
+ const rendered=await page.default();assert.equal(rendered.type,'dashboard');assert.equal(rendered.props.authProvider,'native-d1');assert.equal(rendered.props.authContext,'synthetic-witness');assert.equal(logged,0);assert.equal(scheduled.length,1);await scheduled[0]();assert.equal(logged,1);
 });

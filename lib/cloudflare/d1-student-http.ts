@@ -26,8 +26,8 @@ export async function handleD1StudentHttp(request:Request,options:Options){
    const result=await readD1StudentSessionProgress(options.db,token,options);
    if(result.status==='guest')return reply(401,{ok:false,code:'LOGIN_REQUIRED'});
    if(result.status==='password-change-required')return reply(409,{ok:false,code:'PASSWORD_CHANGE_REQUIRED'});
-   if(!('progressBySlug' in result.access)||!('lessonCountsBySlug' in result.access))throw Error('Student progress unavailable');
-   return reply(200,{ok:true,ownedSlugs:result.access.ownedSlugs,progressBySlug:result.access.progressBySlug,lessonCountsBySlug:result.access.lessonCountsBySlug});
+   if(!result.dashboardProgress)throw Error('Student progress unavailable');
+   return reply(200,{ok:true,ownedSlugs:result.access.ownedSlugs,progressBySlug:result.dashboardProgress.progressBySlug,lessonCountsBySlug:result.dashboardProgress.lessonCountsBySlug});
   }
   if(lesson){
    const keys=Array.from(url.searchParams.keys());

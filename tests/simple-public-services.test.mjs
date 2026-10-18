@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import test from "node:test";
+import {build} from "esbuild";
 
 const read = (path) => readFileSync(path, "utf8");
 
@@ -57,17 +58,18 @@ test("resources is a real page and retained pages do not link to removed routes"
   assert.doesNotMatch(`${workshop}\n${home}`, /\/he-sinh-thai|\/hoc-vien|\/blog/);
 });
 
-test("Meta Ads audit workbook is bundled and downloadable from the resource card", () => {
+test("Meta Ads audit workbook is bundled and downloadable from the resource card", async () => {
   const workbookPath = "public/tai-lieu/checklist-audit-tai-khoan-quang-cao-meta.xlsx";
   const fallbackResources = read("data/resources.ts");
-  const resourceService = read("services/resourceService.ts");
   const resourcesPage = read("app/tai-lieu/page.tsx");
 
   assert.equal(existsSync(workbookPath), true, "approved workbook must be bundled in public/tai-lieu");
   assert.match(fallbackResources, /title: "Checklist audit tài khoản quảng cáo"/);
   assert.match(fallbackResources, /fileUrl: "\/tai-lieu\/checklist-audit-tai-khoan-quang-cao-meta\.xlsx"/);
-  assert.match(resourceService, /checklist-audit-tai-khoan-quang-cao/);
-  assert.match(resourceService, /\/tai-lieu\/checklist-audit-tai-khoan-quang-cao-meta\.xlsx/);
+  const bundle=await build({entryPoints:["lib/resources/resource-projection.ts"],bundle:true,platform:"node",format:"esm",write:false});
+  const {mapDbResource}=await import('data:text/javascript;base64,'+Buffer.from(bundle.outputFiles[0].text).toString('base64'));
+  const mapped=mapDbResource({id:"fixture",title:"Checklist audit tài khoản quảng cáo",description:null,thumbnail:null,file_url:null,access_type:"free",created_at:null});
+  assert.equal(mapped.fileUrl,"/tai-lieu/checklist-audit-tai-khoan-quang-cao-meta.xlsx");
   assert.match(resourcesPage, /isDirectDownload/);
   assert.match(resourcesPage, /download=\{isDirectDownload \? true : undefined\}/);
   assert.match(resourcesPage, /Tải file Excel →/);

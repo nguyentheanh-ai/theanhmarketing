@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-18T12:19:28.668Z",
+  "checkedAt": "2026-10-18T12:55:17.367Z",
   "checks": [
     {
       "name": "built Worker login creates the native session for the synthetic principal",
@@ -12,6 +12,18 @@
     },
     {
       "name": "built progress action persists and page reload renders completion",
+      "status": "PASS"
+    },
+    {
+      "name": "built dashboard shows native profile and 50 percent after lesson completion, with correct logout context",
+      "status": "PASS"
+    },
+    {
+      "name": "built dashboard guest cannot receive cached identity or progress",
+      "status": "PASS"
+    },
+    {
+      "name": "built dashboard activity completes in D1 and repeat visits are deduplicated",
       "status": "PASS"
     },
     {
@@ -42,9 +54,9 @@
   "actualSourcePublicSettings": false,
   "brandSourceExists": true,
   "outboundFetches": 0,
-  "moduleCount": 544,
-  "moduleManifestDigest": "766782c1e1a2da245f7930221821f4ec25a5843ada17e2718fb528831cc2a301",
-  "artifactHash": "01f7a9299cf33646e5847e6fab2f683f87ff182525e10469297e54ff7aec2811",
-  "scope": "Actual built vinext Worker/root layout, synthetic D1 lesson and protected Ebook PDF/PNG delivery through real local R2, HTTP only",
+  "moduleCount": 547,
+  "moduleManifestDigest": "9b64f8280054516753d2a7851164c9c8bc35a938a83ee274a1a59f5b46f4b0b5",
+  "artifactHash": "14b32aa26cb37f2c516a1eacc9fd8f5b714f6df328493fe295c6cb2e1fe8b096",
+  "scope": "Actual built vinext Worker/root layout, synthetic D1 dashboard/profile/progress/activity, lesson and protected Ebook PDF/PNG delivery through real local R2, HTTP only",
   "limits": "No browser/hydration/Safari, real Facebook Ads media, hosted deployment or native primary/cutover proof"
 }

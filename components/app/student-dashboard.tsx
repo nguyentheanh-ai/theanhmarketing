@@ -17,6 +17,7 @@ type StudentDashboardProps = {
   lessonCountsBySlug?: Record<string, number>;
   courses: Course[]; ownedSlugs: string[]; progressBySlug: Record<string, number>;
   resources: ResourceItem[]; studentName: string; studentEmail: string;
+  authProvider?:"supabase"|"native-d1";authContext?:string;
 };
 const courseImage = (course: Course) => course.thumbnailImageUrl || course.bannerImageUrl || toYouTubeThumbnailUrl(course.videoPreviewUrl) || "";
 const boundedProgress = (value: number) => Number.isFinite(value) ? Math.max(0, Math.min(100, Math.round(value))) : 0;
@@ -44,13 +45,13 @@ function CourseTile({ course, progress, lessonCount }: { course: Course; progres
   </article>;
 }
 
-export function StudentDashboard({ lessonCountsBySlug = {}, courses, ownedSlugs, progressBySlug, resources, studentName, studentEmail }: StudentDashboardProps) {
+export function StudentDashboard({ lessonCountsBySlug = {}, courses, ownedSlugs, progressBySlug, resources, studentName, studentEmail,authProvider="supabase",authContext }: StudentDashboardProps) {
   const ownedCourses = getOwnedCoursesInAccessOrder(courses, ownedSlugs);
   const suggestedCourses = getSuggestedCoursesForDashboard(courses, ownedSlugs).filter((course) => course.status === "open");
   const activeCourse = getPrimaryDashboardCourse(courses, ownedSlugs);
   const nextLessonHref = activeCourse ? getStudentCourseHref(activeCourse) : "/khoa-hoc";
   const availableResources = resources.filter((item) => item.fileUrl && item.access === "Miễn phí").slice(0, 4);
-  return <StudentAreaShell ownedCount={ownedCourses.length} studentName={studentName} studentEmail={studentEmail}>
+  return <StudentAreaShell ownedCount={ownedCourses.length} studentName={studentName} studentEmail={studentEmail} authProvider={authProvider} authContext={authContext}>
         <section className={styles.welcome}>
           <div><p className={styles.eyebrow}>HỌC. THỰC HÀNH. TIẾN BỘ.</p><h1>Chào {studentName || "anh/chị"}<span className={styles.greetingDot}>.</span></h1><p>Tiếp tục từ điều anh/chị đang học, áp dụng vào công việc hôm nay.</p></div>
           <Link href={nextLessonHref} className={styles.primary}>{activeCourse ? "Tiếp tục học" : "Khám phá khóa học"}<ArrowRight size={18} /></Link>

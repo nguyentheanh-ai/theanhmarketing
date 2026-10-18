@@ -39,6 +39,11 @@ export function withD1StudentProgressSql(sql:string,scopePosition?:number){
      FROM matching m JOIN d1_lms_enrollments e ON e.id=m.id)))) AS progress_context_json,`);
 }
 
+export function decodeD1StudentProfile(raw:unknown){
+ const snapshot=object(raw),profile=object(decode(snapshot.student_profile_json));
+ return {fullName:typeof profile.fullName==='string'?profile.fullName:'',phone:typeof profile.phone==='string'?profile.phone:''};
+}
+
 // Repository Source mapEnrollment semantics, using only IDs already authorized
 // by deriveD1StudentCourseAccess. No subject, role or grant is inferred here.
 export function deriveD1StudentProgress(raw:unknown,access:{ownedSlugs:string[];enrollmentIdsBySlug:Record<string,string[]>}){

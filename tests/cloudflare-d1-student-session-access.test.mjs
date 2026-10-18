@@ -60,7 +60,7 @@ test('lesson HTTP rejects subject injection/duplicate keys and does not serializ
 
 test('dashboard progress uses the opaque session and rechecks revocation/cohort in the same snapshot',async t=>{
  const f=fixture(t),read=allowedUserIds=>readD1StudentSessionProgress(f.db,token,{now,sessionTtlMs:3600000,allowedUserIds});
- const result=await read();assert.equal(result.status,'student');assert.equal(result.access.progressBySlug['course-a'],0);assert.equal(result.access.progressBySlug['course-b'],undefined);
+ const result=await read();assert.equal(result.status,'student');assert.equal(result.dashboardProgress.progressBySlug['course-a'],0);assert.equal(result.dashboardProgress.progressBySlug['course-b'],undefined);
  assert.equal((await read([])).status,'guest');
  f.race(()=>f.sql.prepare('UPDATE d1_auth_sessions SET revoked_at=?').run(stamp));
  assert.equal((await read()).status,'guest');

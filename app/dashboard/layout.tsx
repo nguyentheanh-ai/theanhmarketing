@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { requireStudentAuth } from "@/lib/auth/session";
+import {nativeDashboardProvider,readNativeDashboardAuth} from "@/lib/cloudflare/native-dashboard-page";
+import {redirect} from "next/navigation";
 
 export const metadata: Metadata = {
   robots: {
@@ -15,7 +17,11 @@ export default async function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await requireStudentAuth("/dashboard");
+  if(nativeDashboardProvider()==="native-d1"){
+    const auth=await readNativeDashboardAuth();
+    if(auth==="guest")redirect("/dang-nhap?next=%2Fdashboard");
+    if(auth==="password-change-required")redirect("/doi-mat-khau?next=%2Fdashboard");
+  }else await requireStudentAuth("/dashboard");
 
   return children;
 }

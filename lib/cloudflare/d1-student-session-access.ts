@@ -3,7 +3,7 @@ import {assertD1AuthMirrorReady,authMirrorReadySql} from '@/lib/cloudflare/d1-au
 import {readD1StudentCourseAccess,scopeD1StudentAccessSql} from '@/lib/cloudflare/d1-course-access';
 import {d1CourseContentRowSql,decodeD1PublishedCourseRow} from '@/lib/cloudflare/d1-course-content';
 import {getOrderedCourseLessons} from '@/lib/course-learning';
-import {deriveD1StudentProgress,withD1StudentProgressSql} from '@/lib/cloudflare/d1-student-progress-read';
+import {decodeD1StudentProfile,deriveD1StudentProgress,withD1StudentProgressSql} from '@/lib/cloudflare/d1-student-progress-read';
 
 const projectId='vsxxgdzwtscuxcmjfckt';
 // Student read boundary for app A only. Caller provides an opaque cookie token,
@@ -33,7 +33,8 @@ async function readSnapshot(db:AuthDatabase,token:string,policy:Policy,courseSlu
  let progressSnapshot:unknown;
  try{
   const access=await readD1StudentCourseAccess(async(sql,args)=>{
-   const progressSql=includeProgress?withD1StudentProgressSql(sql):sql;
+   const progressSql=includeProgress?withD1StudentProgressSql(sql).replace('SELECT u.admin_role,',`SELECT u.admin_role,
+    (SELECT json_object('fullName',json_extract(a.user_metadata,'$.full_name'),'phone',json_extract(a.user_metadata,'$.phone')) FROM d1_auth_accounts a WHERE a.user_id=u.id) AS student_profile_json,`):sql;
    const projection=courseSlug===undefined?progressSql:scopeD1StudentAccessSql(progressSql,8).replace('SELECT u.admin_role,',`SELECT u.admin_role, (${d1CourseContentRowSql(8,4,3,9)}) AS course_content_json,`);
    const value=await db.first(projection+guard,[...args,tokenHash,mirror.floor,policy.allowedUserIds===undefined?'null':JSON.stringify(policy.allowedUserIds),...(courseSlug===undefined?[]:[courseSlug,300000])]);
    content=value?.course_content_json;
@@ -41,7 +42,7 @@ async function readSnapshot(db:AuthDatabase,token:string,policy:Policy,courseSlu
    if(!value)denied=true;
    return value;
   },session.user,{now});
-  return {status:'student' as const,user:session.user,access:includeProgress?{...access,...deriveD1StudentProgress(progressSnapshot,access)}:access,...(courseSlug===undefined?{}:{content})};
+  return {status:'student' as const,user:session.user,...(includeProgress?{studentProfile:decodeD1StudentProfile(progressSnapshot),dashboardProgress:deriveD1StudentProgress(progressSnapshot,access)}:{}),access,...(courseSlug===undefined?{}:{content})};
  }catch(error){
   if(denied){await assertD1AuthMirrorReady(db,{projectId,now});return {status:'guest' as const};}
   throw error;
