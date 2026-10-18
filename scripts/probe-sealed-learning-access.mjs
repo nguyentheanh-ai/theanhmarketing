@@ -41,6 +41,16 @@ export function sourceLearningExpectations(tables,subject,now,getCourseAccessSlu
   return {legacyOwnedSlugs:legacy,lmsOwnedSlugs:Object.keys(byCourse),ownedSlugs:[...legacy,...Object.keys(byCourse)],
     completedLessonIds:completed,enrollmentIdsBySlug:byCourse};
 }
+export function rpcLearningExpectations(tables,rpc,legacyOwnedSlugs,courseSlug){
+  if(!rpc||!Array.isArray(rpc.enrollments)||!Array.isArray(rpc.progress)||!rpc.lesson_counts||typeof rpc.lesson_counts!=='object')throw Error('LEARNING_RPC_ORACLE_UNAVAILABLE');
+  const courses=new Map(tables.courses.map(c=>[c.id,c]));
+  const matching=rpc.enrollments.map(e=>({...e,resolvedSlug:e.course_slug||e.metadata?.course_slug||courses.get(e.course_id)?.slug}));
+  const published=tables.courses.filter(c=>(courseSlug===undefined||c.slug===courseSlug)&&(c.lms_status??(c.status==='open'?'published':c.status==='closed'?'archived':'draft'))==='published');
+  const byCourse=Object.fromEntries(published.map(c=>[c.slug,matching.filter(e=>e.resolvedSlug===c.slug||e.course_id===c.id).map(e=>e.id)]).filter(([,ids])=>ids.length));
+  const ids=new Set(Object.values(byCourse).flat());
+  return {legacyOwnedSlugs,lmsOwnedSlugs:Object.keys(byCourse),ownedSlugs:[...legacyOwnedSlugs,...Object.keys(byCourse)],
+    completedLessonIds:rpc.progress.filter(p=>ids.has(p.enrollment_id)&&(p.status==='completed'||p.completed_at)).map(p=>p.lesson_id),enrollmentIdsBySlug:byCourse};
+}
 export async function probeLearningAccess(input,core){
   const tables=Object.fromEntries([...Object.keys(fields),'courses','course_modules','lessons','lesson_resources','course_resources'].map(n=>[n,[]]));
   const users=[];
@@ -62,7 +72,22 @@ export async function probeLearningAccess(input,core){
     if(!expected.has(name))expected.set(name,{columns,rows:[]});expected.get(name).rows.push(values);
     sql.prepare(`INSERT INTO ${name}(${columns.join(',')}) VALUES(${columns.map(()=>'?').join(',')})`).run(...values);
   }
-  let studentsChecked=0,knownAdminsSkipped=0,crossSubjectIdentityDenials=0,courseScopedComparisons=0;
+  let studentsChecked=0,knownAdminsSkipped=0,crossSubjectIdentityDenials=0,courseScopedComparisons=0,rpcResultsCompared=0;
+  let checkedUsers=users;
+  if(input.subjectIds!==undefined){
+    if(!Array.isArray(input.subjectIds)||!input.subjectIds.length||input.subjectIds.length>100||new Set(input.subjectIds).size!==input.subjectIds.length||input.subjectIds.some(id=>typeof id!=='string'||!users.some(u=>u.id===id)))throw Error('LEARNING_RPC_ORACLE_UNAVAILABLE');
+    checkedUsers=users.filter(u=>input.subjectIds.includes(u.id));
+  }
+  const oracle=input.rpcOracle===undefined?null:new Map();
+  if(oracle){
+    if(!Array.isArray(input.rpcOracle))throw Error('LEARNING_RPC_ORACLE_UNAVAILABLE');
+    for(const entry of input.rpcOracle){
+      if(typeof entry.id!=='string'||entry.scope!==null&&typeof entry.scope!=='string'||typeof entry.value!=='string')throw Error('LEARNING_RPC_ORACLE_UNAVAILABLE');
+      const key=JSON.stringify([entry.id,entry.scope]);if(oracle.has(key))throw Error('LEARNING_RPC_ORACLE_UNAVAILABLE');
+      oracle.set(key,parseExactJson(entry.value));
+    }
+    if(oracle.size!==checkedUsers.length*(tables.courses.length+1))throw Error('LEARNING_RPC_ORACLE_UNAVAILABLE');
+  }
   try{
     for(const schema of input.schemas)sql.exec(schema);
     sql.exec('BEGIN');
@@ -91,16 +116,28 @@ export async function probeLearningAccess(input,core){
       if(JSON.stringify(actual)!==JSON.stringify(value.rows.map(r=>JSON.stringify(r)).sort()))throw Error('LEARNING_TARGET_READBACK_MISMATCH');
     }
     const now=Date.parse(input.archive.manifest.header.capturedAt),read=async(q,p)=>sql.prepare(q).get(...p)??null;
-    for(const user of users){
+    for(const user of checkedUsers){
       if(['owner','editor'].includes(user.appMetadata?.admin_role)||core.isAdminEmail(user.email)){knownAdminsSkipped++;continue;}
       const subject={id:user.id,email:user.email},actual=await core.readD1StudentCourseAccess(read,subject,{now});
-      const wanted=sourceLearningExpectations(tables,subject,now,core.getCourseAccessSlugs);
+      const expectedAt=scope=>{
+        const reference=sourceLearningExpectations(tables,subject,now,core.getCourseAccessSlugs,scope);
+        if(!oracle)return reference;
+        const rpc=oracle.get(JSON.stringify([user.id,scope??null]));
+        if(!rpc)throw Error('LEARNING_RPC_ORACLE_UNAVAILABLE');
+        const result=rpcLearningExpectations(tables,rpc,reference.legacyOwnedSlugs,scope);
+        const expectedCourses=tables.courses.filter(c=>scope===undefined||c.slug===scope);
+        if(Object.keys(rpc.lesson_counts).length!==expectedCourses.length)throw Error('LEARNING_RPC_COUNT_MISMATCH');
+        for(const c of expectedCourses){const count=sql.prepare("SELECT count(*) n FROM d1_lms_modules m JOIN d1_lms_lessons l ON l.module_id=m.id WHERE m.course_id=? AND m.status='published' AND l.status='published' AND l.playable=1").get(c.id).n;
+          if(rpc.lesson_counts[c.slug]!==count)throw Error('LEARNING_RPC_COUNT_MISMATCH');}
+        rpcResultsCompared++;return result;
+      };
+      const wanted=expectedAt();
       for(const name of ['legacyOwnedSlugs','lmsOwnedSlugs','ownedSlugs','completedLessonIds'])if(stableSet(actual[name])!==stableSet(wanted[name]))throw Error('LEARNING_PERMISSION_PARITY_MISMATCH');
       for(const slug of new Set([...Object.keys(actual.enrollmentIdsBySlug),...Object.keys(wanted.enrollmentIdsBySlug)]))
         if(stableSet(actual.enrollmentIdsBySlug[slug]??[])!==stableSet(wanted.enrollmentIdsBySlug[slug]??[]))throw Error('LEARNING_ENROLLMENT_PARITY_MISMATCH');
       for(const course of tables.courses){
         const scoped=await core.readD1StudentCourseAccess(async(q,p)=>sql.prepare(core.scopeD1StudentAccessSql(q,5)).get(...p,course.slug)??null,subject,{now});
-        const reference=sourceLearningExpectations(tables,subject,now,core.getCourseAccessSlugs,course.slug);
+        const reference=expectedAt(course.slug);
         for(const name of ['legacyOwnedSlugs','lmsOwnedSlugs','ownedSlugs','completedLessonIds'])if(stableSet(scoped[name])!==stableSet(reference[name]))throw Error('LEARNING_PERMISSION_PARITY_MISMATCH');
         for(const slug of new Set([...Object.keys(scoped.enrollmentIdsBySlug),...Object.keys(reference.enrollmentIdsBySlug)]))
           if(stableSet(scoped.enrollmentIdsBySlug[slug]??[])!==stableSet(reference.enrollmentIdsBySlug[slug]??[]))throw Error('LEARNING_ENROLLMENT_PARITY_MISMATCH');
@@ -114,7 +151,9 @@ export async function probeLearningAccess(input,core){
     return {project:'a',sourceSnapshotAt:input.archive.manifest.header.capturedAt,database:'IN_MEMORY_SQLITE_ONLY',clock:'SNAPSHOT_TIME_OFFLINE_REPLAY',
       projectedRows:Object.fromEntries([...expected].map(([table,v])=>[table,v.rows.length])),allProjectedRowsReadBack:true,
       studentsChecked,knownAdminsSkipped,crossSubjectIdentityDenials,courseScopedComparisons,studentRightsAndCompletedLessonSetsMatched:true,
-      sourceRpcExecuted:false,reference:'CURRENT_REPOSITORY_SOURCE_SERVICE_PREDICATES_AND_SHARED_ENTITLEMENT_RULES',
+      allSourceSubjectsCompared:checkedUsers.length===users.length,selectedSubjects:checkedUsers.length,
+      sourceRpcExecuted:Boolean(oracle),sourceRpcResultsCompared:rpcResultsCompared,
+      reference:oracle?'POSTGRESQL_RPC_WITH_REPOSITORY_POSTPROCESSING_AND_ENTITLEMENT_RULES_CONSISTENCY_CHECKED_BY_CALLER':'CURRENT_REPOSITORY_SOURCE_SERVICE_PREDICATES_AND_SHARED_ENTITLEMENT_RULES',
       extraConfiguredOwnerRoleParityVerified:false,progressPercentParityVerified:false,progressWritesExecuted:0,
       productionWritten:false,remoteD1Written:false,readyForCutover:false};
   }finally{sql.close();}

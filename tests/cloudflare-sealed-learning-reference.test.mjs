@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {sourceLearningExpectations} from '../scripts/probe-sealed-learning-access.mjs';
+import {sourceLearningExpectations,rpcLearningExpectations} from '../scripts/probe-sealed-learning-access.mjs';
 test('reference retains Source exact email selector, expiry, contact precedence and published course filter',()=>{
   let picked;
   const tables={orders:[{id:'1',status:'paid',email:'QA@example.invalid'},{id:'2',status:'paid',email:' qa@example.invalid '}],leads:[],
@@ -23,4 +23,10 @@ test('Source dashboard attaches a legacy slug enrollment by course ID, while les
   tables.enrollments[0].course_slug='other-published';
   assert.deepEqual(sourceLearningExpectations(tables,subject,Date.now(),rule).lmsOwnedSlugs,['new-course','other-published']);
   assert.deepEqual(sourceLearningExpectations(tables,subject,Date.now(),rule,'other-published').lmsOwnedSlugs,['other-published']);
+});
+test('live RPC oracle supplies matching/progress; repository postprocessing preserves ID-or-slug and published scope',()=>{
+ const tables={courses:[{id:'a',slug:'first',lms_status:'published'},{id:'b',slug:'second',lms_status:'published'},{id:'c',slug:'hidden',lms_status:'draft'}]};
+ const rpc={lesson_counts:{first:2,second:3,hidden:1},enrollments:[{id:'e',course_id:'a',course_slug:'second',metadata:{}},{id:'draft-e',course_id:'c',course_slug:'hidden',metadata:{}}],progress:[{enrollment_id:'e',lesson_id:'done',status:'completed',completed_at:null},{enrollment_id:'draft-e',lesson_id:'hidden-done',status:'completed',completed_at:null}]};
+ const dashboard=rpcLearningExpectations(tables,rpc,['paid-only']);assert.deepEqual(dashboard.enrollmentIdsBySlug,{first:['e'],second:['e']});assert.deepEqual(dashboard.completedLessonIds,['done']);assert.deepEqual(dashboard.legacyOwnedSlugs,['paid-only']);
+ const scoped=rpcLearningExpectations(tables,rpc,[],'second');assert.deepEqual(scoped.enrollmentIdsBySlug,{second:['e']});assert.throws(()=>rpcLearningExpectations(tables,{enrollments:[],progress:[]},[]));
 });

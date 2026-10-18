@@ -1,0 +1,21 @@
+{
+  "status": "TESTED_PRIVATE_R2_BYTES_AND_INDEX",
+  "sourceMetadataCheckedAt": "2026-10-18T12:17:57.534320+00:00",
+  "completedAt": "2026-10-18T12:29:19.161704+00:00",
+  "sourceObjects": 508,
+  "localHashVerifiedObjects": 508,
+  "r2HashVerifiedObjects": 508,
+  "bytesVerified": 941709415,
+  "currentIndexMatched": true,
+  "r2DevDisabled": true,
+  "customDomainsAbsent": true,
+  "sourceMetadataUnchangedDuringAudit": true,
+  "sourceFileBytesFetchedThisRun": false,
+  "studentAuthorizationVerifiedThisRun": false,
+  "productionWritten": false,
+  "remoteR2Written": false,
+  "readyForCutover": false,
+  "r2ConfigAndIndexRecheckedAt": "2026-10-18T12:31:12.262284+00:00",
+  "sourceMetadataRecheckedAt": "2026-10-18T12:31:00.813832+00:00",
+  "r2ChecksRepeatedAfterByteReadback": true
+}

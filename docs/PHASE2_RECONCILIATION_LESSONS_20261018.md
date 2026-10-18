@@ -39,3 +39,11 @@
 ## VERIFIED — Không suy schema từ cột target tương thích
 
 Áp dụng: A public.orders snapshot18/10. Probe đầu yêu cầu deleted_at vì D1 access slice có cột đó, nhưng catalog Source hiện hành không có. Chỉ đọc lại tên cột để xác định nguyên nhân; bỏ yêu cầu trường Source, giữ nullable compatibility column NULL vì Source selector không lọc deleted_at. Không sửa Source hoặc mặc định bỏ mọi trường thiếu; các trường khác vẫn kiểm schema nghiêm. Probe thật sau sửa đạt.
+
+## VERIFIED — Keychain CLI cần kiểm đọc lại toàn bộ giá trị
+
+Áp dụng: macOS/security CLI trong lượt Auth-policy18/10. Giá trị JSON nhập stdin cho add-generic-password -w bị cắt còn128byte trên máy này; parse/readback phát hiện trước khi dùng. Đã chuyển sang chunk base64 tối đa96byte và manifest SHA256/size, tạo riêng v2 không ghi đè entry cũ; fixture lớn/tamper và đọc lại cấu hình thật đạt. Không suy giới hạn128byte cho mọi API Keychain; chỉ dùng cache v2 đã xác minh, không in giá trị.
+
+## VERIFIED — RPC HTTP nhiều lượt chỉ có đối soát hai đầu cửa sổ
+
+Áp dụng: mẫu55lượt RPC read-only A.11bảng chụp trước/sau bằng nhau và expiry không vượt cửa sổ; vẫn không loại trừ update rồi phục hồi giữa các request. Đã đổi receipt thành inputRowsEqualAtWindowEndpoints và transientSourceChangesExcluded=false; sameMvcc/writerFenced=false. Không dùng mẫu này làm final consistency/cutover proof. Management SQL thiếu EXECUTE dừng trước gọi, không đổi quyền.

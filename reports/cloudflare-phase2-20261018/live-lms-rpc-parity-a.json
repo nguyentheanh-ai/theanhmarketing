@@ -1,0 +1,10 @@
+{
+  "status": "BLOCKED_SOURCE_RPC_EXECUTE_PERMISSION",
+  "stage": "source-rpc-execute-permission",
+  "errorType": "PermissionError",
+  "httpStatus": null,
+  "sourceRpcExecuted": false,
+  "permissionsChanged": false,
+  "productionWritten": false,
+  "readyForCutover": false
+}

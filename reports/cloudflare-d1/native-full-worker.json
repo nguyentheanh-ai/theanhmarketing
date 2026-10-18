@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-18T12:02:22.836Z",
+  "checkedAt": "2026-10-18T12:19:28.668Z",
   "checks": [
     {
       "name": "built Worker login creates the native session for the synthetic principal",
@@ -23,6 +23,18 @@
       "status": "PASS"
     },
     {
+      "name": "built native Ebook API denies guests and a student without Ebook ownership",
+      "status": "PASS"
+    },
+    {
+      "name": "built D1 entitlement issues a private PDF link and R2 streams exact bytes with HTTP Range",
+      "status": "PASS"
+    },
+    {
+      "name": "built native PNG redirect resolves to private R2 and rejects tampering or unindexed objects",
+      "status": "PASS"
+    },
+    {
       "name": "old rendered form cannot write after a new family login",
       "status": "PASS"
     }
@@ -33,6 +45,6 @@
   "moduleCount": 544,
   "moduleManifestDigest": "766782c1e1a2da245f7930221821f4ec25a5843ada17e2718fb528831cc2a301",
   "artifactHash": "01f7a9299cf33646e5847e6fab2f683f87ff182525e10469297e54ff7aec2811",
-  "scope": "Actual built vinext Worker/root layout and synthetic D1 text-only lesson, HTTP only",
+  "scope": "Actual built vinext Worker/root layout, synthetic D1 lesson and protected Ebook PDF/PNG delivery through real local R2, HTTP only",
   "limits": "No browser/hydration/Safari, real Facebook Ads media, hosted deployment or native primary/cutover proof"
 }

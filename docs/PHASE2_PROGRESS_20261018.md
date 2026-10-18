@@ -162,3 +162,13 @@ PHASE2_TYPESCRIPT_ROOT=../main node --test tests/cloudflare-phase2-dependency-in
 ```
 
 Operator dùng `compare --project a|b --baseline <copy.sqlite cũ> --current <copy.sqlite mới> --baseline-manifest <manifest cũ> --current-manifest <manifest mới>`; muốn chọn bảng thêm `--tables ...`. Chuẩn bị bản diễn tập bằng `prepare-local --project a|b --baseline ... --target <tệp mới trong image mã hóa>`, sau đó `apply-local` với cùng cặp snapshot/manifest và target. Không chạy trên database đang phục vụ hoặc đưa bản sao dữ liệu vào repository.
+
+### 18/10 — R2, cấu hình Auth và RPC học chỉ đọc
+
+- TESTED: đọc lại toàn bộ508file R2,941.709.415byte, SHA-256/size khớp bản sao mã hóa và metadata Source; index/bucket riêng tư kiểm lại sau lượt đọc. Không tải lại byte từ Source trong lượt này, không chứng minh người học tải thật. Image đã đóng.
+- TESTED cục bộ: actual built vinext/workerd/D1 có9nhóm đạt, bổ sung Ebook/PDF Range206, PNG đúng byte, guest/unowned/tampered/index thiếu bị chặn;0fetch ngoài. Fixture không thay browser/Safari/hosted native.
+- TESTED mẫu Source RPC thật:5subject×11scope=55lượt đọc, quyền và tập bài hoàn thành khớp native.11bảng đầu vào bằng nhau tại hai đầu cửa sổ12:36:31–12:37:16UTC. Không có expiry vượt cửa sổ; **không loại trừ thay đổi tạm ở giữa**, không phải cùng MVCC hoặc source fence, chưa phần trăm tiến độ/toàn bộ học viên. Phương án Management SQL RPC bị thiếu EXECUTE đã dừng, không GRANT; dùng service-role RAM-only được anh duyệt, không lưu key.
+- TESTED cấu hình: đọc Auth A/B và cache phần allowlist nhạy cảm vào Keychain, kiểm đọc lại SHA/JSON. A bật Google, B bật email/Facebook trong cấu hình; B hiện dùng cầu A→B, không suy Facebook đang được App sử dụng. ES256 public JWKS mỗi project1key, TTL3600s/refresh rotation bật. JWT shared secret không trả về. Chưa đổi redirect/provider/Worker secret hoặc chạy OAuth thật.
+- Công cụ Python11test và Node reference3test đạt; reviewer không thấy blocker trong chunked Keychain/oracle. Báo cáo chi tiết không PII: `private-storage-a-readback.json`, `source-auth-policy.json`, `source-lms-rpc-window-a.json` trong reports/cloudflare-phase2-20261018. Phiên bản script mới thêm kiểm clock và mô tả đúng giới hạn hai đầu cửa sổ.
+
+IN PROGRESS: dashboard tiến độ, admin/CRM đầy đủ, provider B, rolling Auth/phiên cũ, staging native, source fence/delta và rollback giữ ghi mới. Không deploy, không đổi nguồn ghi/Auth/Storage production, không gửi email hoặc hủy dịch vụ. Supabase và Blue B bridge vẫn cần giữ.
