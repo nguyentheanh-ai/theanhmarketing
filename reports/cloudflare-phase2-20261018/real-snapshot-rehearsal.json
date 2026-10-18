@@ -1,0 +1,33 @@
+{
+  "status": "TESTED_LOCAL_SNAPSHOT_MIRROR_ONLY",
+  "productionWritten": false,
+  "remoteD1Written": false,
+  "sameSnapshotRoundtrip": true,
+  "freshIntervalDeltaTested": false,
+  "authIncluded": false,
+  "privateStorageBytesIncluded": false,
+  "projects": {
+    "a": {
+      "tables": 81,
+      "rows": 32392,
+      "sourceSnapshotAt": "2026-10-18T11:14:25.84771+00:00",
+      "snapshotConsistency": "single-postgresql-statement",
+      "allTableManifestDigestsVerified": true,
+      "redactedTablesBlocked": 5,
+      "localMirrorTablesVerified": 76,
+      "fullApplicationMigrationBlocked": true,
+      "readyForCutover": false
+    },
+    "b": {
+      "tables": 58,
+      "rows": 7882,
+      "sourceSnapshotAt": "2026-10-18T11:15:16.60991+00:00",
+      "snapshotConsistency": "single-postgresql-statement",
+      "allTableManifestDigestsVerified": true,
+      "redactedTablesBlocked": 3,
+      "localMirrorTablesVerified": 55,
+      "fullApplicationMigrationBlocked": true,
+      "readyForCutover": false
+    }
+  }
+}

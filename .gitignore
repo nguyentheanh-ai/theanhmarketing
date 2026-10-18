@@ -60,3 +60,8 @@ next-env.d.ts
 .vinext/
 .cloudflare/
 .wrangler/
+
+# Intermediate static inventory passes; final receipt is committed separately.
+/reports/cloudflare-phase2-20261018/supabase-dependencies.json
+/reports/cloudflare-phase2-20261018/supabase-dependencies-v2.json
+/reports/cloudflare-phase2-20261018/supabase-dependencies-v3.json

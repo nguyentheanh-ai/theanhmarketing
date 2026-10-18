@@ -1641,3 +1641,23 @@ Bằng chứng ở `reports/cloudflare-handoff-20261018/`: b-blue-compatibility-
 ## 18/10/2026 — Hosting A/B đã LIVE
 
 Xem tài liệu hiện hành tại docs/HOSTING_LIVE_20261018.md. Website A (gồm /learn) và App B riêng đã chạy trên domain thật qua Cloudflare Workers. Cron Vercel đã tắt, lịch Workers đã bật; theo dõi lần chạy thực và tác vụ đến hạn. Supabase vẫn là nguồn ghi/Auth/Storage; B còn cầu Blue Vercel để tương thích và quay lui. Theo dõi chỉ đọc 48 giờ đã bật. Migration toàn bộ vẫn IN PROGRESS, chưa hủy dịch vụ cũ.
+
+
+## 18/10/2026 - Phase 2: D1 delta and Source dependency audit
+
+**IN PROGRESS.** Nhánh riêng `codex/cloudflare-native-phase2-20261018`, tách từ A `538889f`; không thay mã hoặc nguồn ghi production. A bao gồm `/learn`; B là App riêng. Hosting Cloudflare đã LIVE theo bàn giao, nhưng database/Auth/Storage vẫn dùng Supabase và B còn cầu tương thích Vercel. Chưa có điều kiện hủy Supabase hoặc Vercel.
+
+Đã thêm công cụ đối soát và diễn tập đồng bộ chênh lệch cục bộ, công cụ rà phụ thuộc mã nguồn, SQL đọc catalog hiện hành. Đây là công cụ chuẩn bị migration; chưa nối chúng vào runtime hay đồng bộ production.
+
+
+Chi tiết: docs/PHASE2_PROGRESS_20261018.md. Local tests: 15 Python + 5 Node PASS; not a production data cutover.
+
+
+## 18/10/2026 - Phase 2 snapshot verification update
+
+**IN PROGRESS.** Nhánh riêng `codex/cloudflare-native-phase2-20261018`, tách từ A `538889f`; không thay mã hoặc nguồn ghi production. A bao gồm `/learn`; B là App riêng. Hosting Cloudflare đã LIVE theo bàn giao, nhưng database/Auth/Storage vẫn dùng Supabase và B còn cầu tương thích Vercel. Chưa có điều kiện hủy Supabase hoặc Vercel.
+
+Đã thêm công cụ xuất snapshot nhất quán, đối soát và diễn tập đồng bộ chênh lệch cục bộ, công cụ rà phụ thuộc mã nguồn, SQL đọc catalog hiện hành. Đã xuất bản chụp mới 139 bảng/40.274 hàng vào image AES-256 và kiểm checksum toàn bộ; khôi phục mirror cục bộ 131 bảng không có cột bị lược bỏ đạt. Đây là dữ liệu ứng dụng chuẩn bị migration; chưa nối vào runtime hay đồng bộ production.
+
+
+Evidence: reports/cloudflare-phase2-20261018/real-snapshot-rehearsal.json. Tests: delta16 + exporter5 + AST5 PASS. Offline mirror only; Auth/Storage/secret fields and production writer not migrated.

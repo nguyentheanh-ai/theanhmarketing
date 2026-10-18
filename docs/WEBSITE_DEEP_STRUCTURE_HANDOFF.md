@@ -3376,3 +3376,23 @@ Kiểm chứng cuối lượt: A typecheck:cloudflare và build production qua s
 IN PROGRESS, chưa READY/LIVE. Sửa lỗi webhook đã paid bỏ qua việc cấp account/email còn thiếu: receipt CAS cùng paid commit trong orders, giữ mật khẩu/Auth cũ, provider key/hash chống trùng,503khi chưa hoàn tất; consultation/deposit/support giữ flow.75test liên quan,13realPGclone,8HTTPartifactWorkers+realPGclone đạt; Auth/B/Resend là fixtures trong8test, không gọi thanh toán thật/khách thật. Typecheck/lint runtime/build production9gate đạt. Chi tiết/giới hạn và rollback pending: docs/SEPAY_FULFILLMENT_RECOVERY_20261018.md.
 
 Cron dispatcher đủ8lịch đã kiểm trên artifact cục bộ, vẫnOFF trên Workers; Vercel Enabled. Lịch17:05VN thực tế chạy nhưng failed vì dữ liệu snapshotMeta thiếu24giờ (Meta được hoãn), không kết luậncronkhôngchạy/không giả số liệu. QA B đã bật lại đúng1profile sau TTL token thu hồi, không đổi khách thật. SafariiPhone chưa có thiết bị/bằng chứng; chưa chuyển domain. Trước chuyển phải đọc lại pendingpayments, xác minh retrySePay, tắt/đọc lại Vercelcron rồi mới bật Workerscron. Giữ Supabase writer/Auth/Storage và cầu BlueB tạm.
+
+
+## 18/10/2026 - Phase 2: D1 delta and Source dependency audit
+
+**IN PROGRESS.** Nhánh riêng `codex/cloudflare-native-phase2-20261018`, tách từ A `538889f`; không thay mã hoặc nguồn ghi production. A bao gồm `/learn`; B là App riêng. Hosting Cloudflare đã LIVE theo bàn giao, nhưng database/Auth/Storage vẫn dùng Supabase và B còn cầu tương thích Vercel. Chưa có điều kiện hủy Supabase hoặc Vercel.
+
+Đã thêm công cụ đối soát và diễn tập đồng bộ chênh lệch cục bộ, công cụ rà phụ thuộc mã nguồn, SQL đọc catalog hiện hành. Đây là công cụ chuẩn bị migration; chưa nối chúng vào runtime hay đồng bộ production.
+
+
+Chi tiết: docs/PHASE2_PROGRESS_20261018.md. Local tests: 15 Python + 5 Node PASS; not a production data cutover.
+
+
+## 18/10/2026 - Phase 2 snapshot verification update
+
+**IN PROGRESS.** Nhánh riêng `codex/cloudflare-native-phase2-20261018`, tách từ A `538889f`; không thay mã hoặc nguồn ghi production. A bao gồm `/learn`; B là App riêng. Hosting Cloudflare đã LIVE theo bàn giao, nhưng database/Auth/Storage vẫn dùng Supabase và B còn cầu tương thích Vercel. Chưa có điều kiện hủy Supabase hoặc Vercel.
+
+Đã thêm công cụ xuất snapshot nhất quán, đối soát và diễn tập đồng bộ chênh lệch cục bộ, công cụ rà phụ thuộc mã nguồn, SQL đọc catalog hiện hành. Đã xuất bản chụp mới 139 bảng/40.274 hàng vào image AES-256 và kiểm checksum toàn bộ; khôi phục mirror cục bộ 131 bảng không có cột bị lược bỏ đạt. Đây là dữ liệu ứng dụng chuẩn bị migration; chưa nối vào runtime hay đồng bộ production.
+
+
+Evidence: reports/cloudflare-phase2-20261018/real-snapshot-rehearsal.json. Tests: delta16 + exporter5 + AST5 PASS. Offline mirror only; Auth/Storage/secret fields and production writer not migrated.

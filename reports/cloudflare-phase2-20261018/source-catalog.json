@@ -1,0 +1,74 @@
+{
+  "format": "tam-phase2-source-catalog-v1",
+  "readOnly": true,
+  "includesCustomerRows": false,
+  "projects": {
+    "A": {
+      "schemas": [
+        {
+          "schema": "crm_v2",
+          "tables": 38,
+          "rlsenabled": 38
+        },
+        {
+          "schema": "public",
+          "tables": 43,
+          "rlsenabled": 43
+        }
+      ],
+      "storage": [
+        {
+          "public": false,
+          "buckets": 3
+        }
+      ],
+      "authUsers": 447,
+      "capturedAt": "2026-10-18T11:07:02.38974+00:00",
+      "policyCount": 95,
+      "triggerCount": 9,
+      "functionCount": 55,
+      "databaseVersion": "17.6",
+      "storageObjectCount": 508,
+      "tablesWithoutPrimaryKey": [],
+      "authIdentitiesByProvider": [
+        {
+          "provider": "email",
+          "identities": 421
+        },
+        {
+          "provider": "google",
+          "identities": 89
+        }
+      ]
+    },
+    "B": {
+      "schemas": [
+        {
+          "schema": "public",
+          "tables": 58,
+          "rlsenabled": 58
+        }
+      ],
+      "storage": [
+        {
+          "public": false,
+          "buckets": 1
+        }
+      ],
+      "authUsers": 276,
+      "capturedAt": "2026-10-18T11:07:03.35964+00:00",
+      "policyCount": 66,
+      "triggerCount": 31,
+      "functionCount": 14,
+      "databaseVersion": "17.6",
+      "storageObjectCount": 0,
+      "tablesWithoutPrimaryKey": [],
+      "authIdentitiesByProvider": [
+        {
+          "provider": "email",
+          "identities": 276
+        }
+      ]
+    }
+  }
+}

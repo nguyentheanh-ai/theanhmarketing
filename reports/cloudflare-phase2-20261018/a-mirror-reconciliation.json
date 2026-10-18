@@ -1,0 +1,1074 @@
+{
+  "format": "tam-offline-mirror-delta-v1",
+  "project": "a",
+  "sourceProject": "vsxxgdzwtscuxcmjfckt",
+  "scope": "application-mirror-only",
+  "snapshotConsistency": "NOT_PROVEN",
+  "readyForCutover": false,
+  "tables": [
+    {
+      "table": "a_crm_v2__audit_logs",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__contact_tags",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__contacts",
+      "beforeRows": 193,
+      "afterRows": 193,
+      "beforeDigest": "53a00a7ac7512a949a2d58d4185c7ace80f5eb1c2b47f17e5504400b5a00e787",
+      "afterDigest": "53a00a7ac7512a949a2d58d4185c7ace80f5eb1c2b47f17e5504400b5a00e787",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__coupons",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__course_progress",
+      "beforeRows": 4,
+      "afterRows": 4,
+      "beforeDigest": "3231bcd2edef3aa30d2a21455f18436f091cbf47452fe7c76703482abcfc7d2b",
+      "afterDigest": "3231bcd2edef3aa30d2a21455f18436f091cbf47452fe7c76703482abcfc7d2b",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__crm_daily_metrics",
+      "beforeRows": 30,
+      "afterRows": 30,
+      "beforeDigest": "2a0c044bb4961c6f4654c6b2cabff2ede7be50d90c83eccf39cbc61cf6f9d0ab",
+      "afterDigest": "2a0c044bb4961c6f4654c6b2cabff2ede7be50d90c83eccf39cbc61cf6f9d0ab",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__crm_email_metrics",
+      "beforeRows": 1,
+      "afterRows": 1,
+      "beforeDigest": "30c4dfc2fce53a1e7e6d5416aa7eca0546079cd296086b1d74e854dfa8b1f3e6",
+      "afterDigest": "30c4dfc2fce53a1e7e6d5416aa7eca0546079cd296086b1d74e854dfa8b1f3e6",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__crm_events",
+      "beforeRows": 1075,
+      "afterRows": 1075,
+      "beforeDigest": "7a2227ec2c54d330396bcfdee41cb66bd8f4b4ddee1a069dcd7e19ebaf7d9a60",
+      "afterDigest": "7a2227ec2c54d330396bcfdee41cb66bd8f4b4ddee1a069dcd7e19ebaf7d9a60",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__crm_pipeline_metrics",
+      "beforeRows": 5,
+      "afterRows": 5,
+      "beforeDigest": "ff9dcc5ed6113f4f9214110224a06432ebeb8cb054a6ae4612e20daa5f7410a6",
+      "afterDigest": "ff9dcc5ed6113f4f9214110224a06432ebeb8cb054a6ae4612e20daa5f7410a6",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__email_campaigns",
+      "beforeRows": 3,
+      "afterRows": 3,
+      "beforeDigest": "a4aff843a32a407efa892e625e6b425af67f4e3b1558767b24ab1f371161becd",
+      "afterDigest": "a4aff843a32a407efa892e625e6b425af67f4e3b1558767b24ab1f371161becd",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__email_events",
+      "beforeRows": 2886,
+      "afterRows": 2886,
+      "beforeDigest": "2b349d95c4bb04f035a73e7176d30950e2dee6e448971d1a03f2163eb11db6f4",
+      "afterDigest": "2b349d95c4bb04f035a73e7176d30950e2dee6e448971d1a03f2163eb11db6f4",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__email_sends",
+      "beforeRows": 317,
+      "afterRows": 317,
+      "beforeDigest": "d7a6f0e755b1b6d362d927bac71cd61a6f546ae255c6ed10c1c5c5994c471230",
+      "afterDigest": "d7a6f0e755b1b6d362d927bac71cd61a6f546ae255c6ed10c1c5c5994c471230",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__email_suppression_list",
+      "beforeRows": 29,
+      "afterRows": 29,
+      "beforeDigest": "d2a74b20ce204e0f40116a11b2dbb9f53a4818e10d2eedf619eb465c2b46d41c",
+      "afterDigest": "d2a74b20ce204e0f40116a11b2dbb9f53a4818e10d2eedf619eb465c2b46d41c",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__email_templates",
+      "beforeRows": 3,
+      "afterRows": 3,
+      "beforeDigest": "5b1cb62db8386e93fd067e9abb5c8dc5bc23465e57f7aa1cd94c681725eb1b22",
+      "afterDigest": "5b1cb62db8386e93fd067e9abb5c8dc5bc23465e57f7aa1cd94c681725eb1b22",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__enrollments",
+      "beforeRows": 147,
+      "afterRows": 147,
+      "beforeDigest": "f21f278b45eaa6e5b20572d28e098e5f37fe65c00bca5ac135efbcf70187c75b",
+      "afterDigest": "f21f278b45eaa6e5b20572d28e098e5f37fe65c00bca5ac135efbcf70187c75b",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__integration_accounts",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__lead_score_events",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__leads",
+      "beforeRows": 264,
+      "afterRows": 264,
+      "beforeDigest": "cb1544276105ef37df3bd23763f994026d29d40a768315ef9fc373f588b545fb",
+      "afterDigest": "cb1544276105ef37df3bd23763f994026d29d40a768315ef9fc373f588b545fb",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__legacy_id_map",
+      "beforeRows": 1583,
+      "afterRows": 1583,
+      "beforeDigest": "65cf3945a73a7fa88d0c2d5c4b55e271e5f70984a0f49d1cf53555e749279e06",
+      "afterDigest": "65cf3945a73a7fa88d0c2d5c4b55e271e5f70984a0f49d1cf53555e749279e06",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__migration_runs",
+      "beforeRows": 1,
+      "afterRows": 1,
+      "beforeDigest": "ec4c7cccb43c23230d1f384a980bf789824fb537bba960c448762ab71b674772",
+      "afterDigest": "ec4c7cccb43c23230d1f384a980bf789824fb537bba960c448762ab71b674772",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__notes",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__orders",
+      "beforeRows": 139,
+      "afterRows": 139,
+      "beforeDigest": "258c0c0c8a09ce1db428fecc32a47b6d409f1e8f447b8dfef837004bd85599bd",
+      "afterDigest": "258c0c0c8a09ce1db428fecc32a47b6d409f1e8f447b8dfef837004bd85599bd",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__payments",
+      "beforeRows": 138,
+      "afterRows": 138,
+      "beforeDigest": "287cc1543dcddd8ac58b073b6dd143bd92fd3869cf308635d7a01feef0e63a14",
+      "afterDigest": "287cc1543dcddd8ac58b073b6dd143bd92fd3869cf308635d7a01feef0e63a14",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__refunds",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__segment_memberships",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__segment_rules",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__segments",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__student_notes",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__support_tickets",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__tags",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__tasks",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__webhook_events",
+      "beforeRows": 2628,
+      "afterRows": 2628,
+      "beforeDigest": "d3bc053d1aab1068a720197396bca983a4e6621cf75c8497fb2f26c345cf9d3a",
+      "afterDigest": "d3bc053d1aab1068a720197396bca983a4e6621cf75c8497fb2f26c345cf9d3a",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__workflow_edges",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__workflow_nodes",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__workflow_runs",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__workflow_step_runs",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__workflow_versions",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_crm_v2__workflows",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__accounting_daily_report_runs",
+      "beforeRows": 24,
+      "afterRows": 24,
+      "beforeDigest": "ecf5161f2044e4f02f30909c1f54ecb6f356098fb600604c29ceab593fe65097",
+      "afterDigest": "ecf5161f2044e4f02f30909c1f54ecb6f356098fb600604c29ceab593fe65097",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": [
+        "REDACTED_COLUMNS_REQUIRE_SECURE_MIGRATION"
+      ]
+    },
+    {
+      "table": "a_public__activity_logs",
+      "beforeRows": 13919,
+      "afterRows": 13919,
+      "beforeDigest": "ab6373a0b7ab4de0c6811277f57207c7d512d3153d850778bcf6ddab322da2ac",
+      "afterDigest": "ab6373a0b7ab4de0c6811277f57207c7d512d3153d850778bcf6ddab322da2ac",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__admin_ad_costs",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__admin_deleted_students",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__admin_student_provisioning_operations",
+      "beforeRows": 3,
+      "afterRows": 3,
+      "beforeDigest": "b413a69445a4c2219ace61f5b2a7fec4c054039ab2323a18447e04f7fbb908ba",
+      "afterDigest": "b413a69445a4c2219ace61f5b2a7fec4c054039ab2323a18447e04f7fbb908ba",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": [
+        "REDACTED_COLUMNS_REQUIRE_SECURE_MIGRATION"
+      ]
+    },
+    {
+      "table": "a_public__admin_users",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__app_settings",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__automation_flows",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__automation_runs",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__blog_posts",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__checkout_abuse_blocks",
+      "beforeRows": 4,
+      "afterRows": 4,
+      "beforeDigest": "9179415cc7746bb50360f435ac0c5e786a83663dd705a53cc77e37c33885f9c0",
+      "afterDigest": "9179415cc7746bb50360f435ac0c5e786a83663dd705a53cc77e37c33885f9c0",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__checkout_abuse_events",
+      "beforeRows": 8,
+      "afterRows": 8,
+      "beforeDigest": "d19dafb46d080ce07ddc114fb90797876c84a132991baf5866d1f8e0fc09e698",
+      "afterDigest": "d19dafb46d080ce07ddc114fb90797876c84a132991baf5866d1f8e0fc09e698",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__click_events",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__coupons",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__course_modules",
+      "beforeRows": 23,
+      "afterRows": 23,
+      "beforeDigest": "ecd1bd5631ed2916a32537e13295ffe58a19f6a4811d4c1fbe2243ddbe7cff2d",
+      "afterDigest": "ecd1bd5631ed2916a32537e13295ffe58a19f6a4811d4c1fbe2243ddbe7cff2d",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__course_resources",
+      "beforeRows": 11,
+      "afterRows": 11,
+      "beforeDigest": "e24a62537ce645d3527838f40f39656fe1ed978d144fc99d3162af3fe6dbba9e",
+      "afterDigest": "e24a62537ce645d3527838f40f39656fe1ed978d144fc99d3162af3fe6dbba9e",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__courses",
+      "beforeRows": 10,
+      "afterRows": 10,
+      "beforeDigest": "c68261638d85659d3e933e260d189a85918767cbae8bbb648c0cc608f5f6050c",
+      "afterDigest": "c68261638d85659d3e933e260d189a85918767cbae8bbb648c0cc608f5f6050c",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__email_campaign_recipients",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__email_campaigns",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__email_contacts",
+      "beforeRows": 32,
+      "afterRows": 32,
+      "beforeDigest": "5dba930fe1bb17cd7870f903ba7e77592654ebc70ade613e26e024d36e552064",
+      "afterDigest": "5dba930fe1bb17cd7870f903ba7e77592654ebc70ade613e26e024d36e552064",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__email_events",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__email_logs",
+      "beforeRows": 596,
+      "afterRows": 596,
+      "beforeDigest": "ed9f3d3950071421a36a36e77ab77a822ddd5ca630f249162d231f96cbe204dc",
+      "afterDigest": "ed9f3d3950071421a36a36e77ab77a822ddd5ca630f249162d231f96cbe204dc",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__email_templates",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__landing_pages",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__lead_activities",
+      "beforeRows": 915,
+      "afterRows": 915,
+      "beforeDigest": "65924f7d77084d3b6398dbbedfe8372f057afb906c82c159244b76013a17bffa",
+      "afterDigest": "65924f7d77084d3b6398dbbedfe8372f057afb906c82c159244b76013a17bffa",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__lead_email_logs",
+      "beforeRows": 3,
+      "afterRows": 3,
+      "beforeDigest": "46356f9ec30e9a6e80c89e79ac41afd5ebb9186d9deb0adff4154eef9b2e9710",
+      "afterDigest": "46356f9ec30e9a6e80c89e79ac41afd5ebb9186d9deb0adff4154eef9b2e9710",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__lead_notes",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__leads",
+      "beforeRows": 1067,
+      "afterRows": 1067,
+      "beforeDigest": "8b3ba379fd44ab9985d1b3c6ddbe85ef8425cdc4d111533809ab0e336de24850",
+      "afterDigest": "8b3ba379fd44ab9985d1b3c6ddbe85ef8425cdc4d111533809ab0e336de24850",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__lesson_comments",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__lesson_resources",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "beforeDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterDigest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__lesson_tasks",
+      "beforeRows": 44,
+      "afterRows": 44,
+      "beforeDigest": "5ea51641e7ac115f8035f756175fd1be12242e2c874f398d94b5014ff3c5695b",
+      "afterDigest": "5ea51641e7ac115f8035f756175fd1be12242e2c874f398d94b5014ff3c5695b",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__lessons",
+      "beforeRows": 59,
+      "afterRows": 59,
+      "beforeDigest": "46916bca787cd3e3970fee632bfac8f6967de0393eaefdfc4a69ea2ee4ba1f8e",
+      "afterDigest": "46916bca787cd3e3970fee632bfac8f6967de0393eaefdfc4a69ea2ee4ba1f8e",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__orders",
+      "beforeRows": 1049,
+      "afterRows": 1049,
+      "beforeDigest": "ed3f874b294d83fc039375171ad2c7fb79f1032aeb48ec373134b259bb78ca99",
+      "afterDigest": "ed3f874b294d83fc039375171ad2c7fb79f1032aeb48ec373134b259bb78ca99",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": [
+        "REDACTED_COLUMNS_REQUIRE_SECURE_MIGRATION"
+      ]
+    },
+    {
+      "table": "a_public__payment_remarketing_runs",
+      "beforeRows": 558,
+      "afterRows": 558,
+      "beforeDigest": "9c67f164b89e7ebd9a304cd0d2f8f1847ea007e14bc9eaeb6a963cd54a95796f",
+      "afterDigest": "9c67f164b89e7ebd9a304cd0d2f8f1847ea007e14bc9eaeb6a963cd54a95796f",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": [
+        "REDACTED_COLUMNS_REQUIRE_SECURE_MIGRATION"
+      ]
+    },
+    {
+      "table": "a_public__resources",
+      "beforeRows": 1,
+      "afterRows": 1,
+      "beforeDigest": "090f76aad62cc4fcd9bda5b66768a59b3244d2bf2cbbc60067a86b4d264c8af0",
+      "afterDigest": "090f76aad62cc4fcd9bda5b66768a59b3244d2bf2cbbc60067a86b4d264c8af0",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__site_settings",
+      "beforeRows": 2,
+      "afterRows": 2,
+      "beforeDigest": "cdd0934aaf1fee66ba4580f28c97d5d05f401221322870e4e5ab079fe6b094a9",
+      "afterDigest": "cdd0934aaf1fee66ba4580f28c97d5d05f401221322870e4e5ab079fe6b094a9",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__spam_logs",
+      "beforeRows": 1,
+      "afterRows": 1,
+      "beforeDigest": "57f36933f880a97ea1c61f6ef90e529eaf3a989dcff285baa9a9ee121ee7d773",
+      "afterDigest": "57f36933f880a97ea1c61f6ef90e529eaf3a989dcff285baa9a9ee121ee7d773",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__student_lesson_task_progress",
+      "beforeRows": 60,
+      "afterRows": 60,
+      "beforeDigest": "14304273263461e097d715d502bfc9a573625c0d22c39933264b0d6488228312",
+      "afterDigest": "14304273263461e097d715d502bfc9a573625c0d22c39933264b0d6488228312",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__support_bookings",
+      "beforeRows": 11,
+      "afterRows": 11,
+      "beforeDigest": "37b794a2c8836834fa5cd7b8f225c50e0ceffbcad37541a569886bd4d5fda736",
+      "afterDigest": "37b794a2c8836834fa5cd7b8f225c50e0ceffbcad37541a569886bd4d5fda736",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__support_busy_dates",
+      "beforeRows": 1,
+      "afterRows": 1,
+      "beforeDigest": "97e989e0dffaf77cc27847082077d96048e6fd305c3a6ce6c214892e71a7b223",
+      "afterDigest": "97e989e0dffaf77cc27847082077d96048e6fd305c3a6ce6c214892e71a7b223",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__telegram_business_report_runs",
+      "beforeRows": 63,
+      "afterRows": 63,
+      "beforeDigest": "d78e7aa360a33c3328fda288a4898fc230f86d33e63abdd08477c76e10b8ab65",
+      "afterDigest": "d78e7aa360a33c3328fda288a4898fc230f86d33e63abdd08477c76e10b8ab65",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": [
+        "REDACTED_COLUMNS_REQUIRE_SECURE_MIGRATION"
+      ]
+    },
+    {
+      "table": "a_public__telegram_meta_campaign_hourly_snapshots",
+      "beforeRows": 4481,
+      "afterRows": 4481,
+      "beforeDigest": "7908f88a57144d9c32974032ecc304b535d5368fa82e64601e55086d1f573699",
+      "afterDigest": "7908f88a57144d9c32974032ecc304b535d5368fa82e64601e55086d1f573699",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    },
+    {
+      "table": "a_public__testimonials",
+      "beforeRows": 1,
+      "afterRows": 1,
+      "beforeDigest": "abd57aa309c18eac5398e61c5cccc6e0aec0dfa479d9eb9de155e453a2f09df2",
+      "afterDigest": "abd57aa309c18eac5398e61c5cccc6e0aec0dfa479d9eb9de155e453a2f09df2",
+      "changes": {
+        "insert": 0,
+        "update": 0,
+        "delete": 0
+      },
+      "blockers": []
+    }
+  ],
+  "blocked": true
+}
