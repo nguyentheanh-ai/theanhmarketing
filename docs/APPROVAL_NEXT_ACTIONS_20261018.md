@@ -8,3 +8,18 @@ Trạng thái: **CHỜ DUYỆT**, chưa thực hiện các thao tác dưới đ�
 4. **QA:** tài khoản thử và dữ liệu QA riêng; cho phép đơn thử không chuyển tiền và email thật chỉ đến chủ hệ thống/QA. Không sửa tiến độ học viên, không tạo thanh toán ngân hàng thật. Nếu lỗi cốt lõi, dừng cutover, xử lý tiếp trên preview.
 
 Duyệt không có nghĩa bỏ qua các điều kiện dừng. Meta/Sheets/legacy provision key chưa tìm thấy, cron readback chưa khả dụng, release Workers chưa đăng ký. Hosting phase1 vẫn dùng Supabase A/B; chưa thể hủy Supabase. Không tuyên bố LIVE/READY chỉ vì DNS copy hoàn tất.
+
+## Cập nhật12:02 ngày18/10
+Chỉ bốn thao tác credential đã được duyệt bằng chữ và thực hiện/readback xong. NS vẫn chưa lưu; các quyền release/cutover chưa được tự suy rộng từ phê duyệt bốn khóa. Worker dư phát sinh do lỗi CLI không dùng, chưa xóa. Xem audit/receipt mới trước khi làm tiếp.
+
+## Các thao tác còn lại cần xác nhận bằng chữ — một lần
+
+Bốn runtime secret đã xong, không yêu cầu duyệt lại. Phê duyệt bằng ảnh chưa được reviewer chấp nhận cho các bước production sau:
+
+1. iNET: lưu NS `theanhmarketing.com` sang `ivy.ns.cloudflare.com`, `jason.ns.cloudflare.com`, giữ10bản ghi/email/Adplan nguyên đích. Biểu mẫu đã điền, chưa lưu.
+2. Áp dụng đúng hai đăng ký release trong CLOUDFLARE_RELEASE_REGISTRATION_PROPOSAL.json, đối chiếu/publish nhánh migration khôngforce, deploy Workers A/B preview trước và chỉ gắn apex/www/app, chuyển cron Vercel→Workers sau đủ mọi gate. Không bỏ qua preflight, không đổi webhook URL, nguồn ghi Supabase hoặc hủy dịch vụ cũ. Nếu phải sửa provider/cấu hình khác ngoài danh sách, dừng và nêu cụ thể.
+3. Nhập khóa còn thiếu từ nguồn có sẵn đã xác minh/key.rtf vào đúng A/B qua stdin; giữ nguyên META_APP_SECRET A. Tạo ADS_META_TOKEN_KEY B chỉ khi không khôi phục được khóa cũ, chấp nhận các kết nối Meta B hiện có cần kết nối lại; không xóa kết nối/dữ liệu.
+4. QA tài khoản thử/đơn thử không thanh toán, email thật chỉ gửi chủ hệ thống/QA; không sửa tiến độ học viên hay tạo giao dịch ngân hàng thật.
+5. Xóa duy nhất Worker bản nháp tạo nhầm `theanh-student-cf-production-production` và secret CRON_SECRET trùng của nó sau precondition/readback; khôngforce, không đụng hai Worker A/B thật hoặc bất kỳ Vercel/Supabase. Bản nháp không có domain/cron/DB/Storage/traffic, workers.dev/previewsOFF; khóa đúng B đã đặt và vẫn giữ trong Keychain.
+
+Duyệt không thay thế kiểm thử hoặc tự chọn ngày chuyển khi các gate chưa đạt.

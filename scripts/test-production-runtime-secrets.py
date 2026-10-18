@@ -42,6 +42,22 @@ class RuntimeSecretSafety(unittest.TestCase):
             self.assertNotIn(value, args[0])
             self.assertEqual(kwargs['input'], value + '\n')
             self.assertTrue(kwargs['capture_output'])
+            self.assertEqual(kwargs['env']['WRANGLER_WRITE_LOGS'], 'false')
+            self.assertEqual(kwargs['env']['WRANGLER_LOG_SANITIZE'], 'true')
+
+    def test_b_uses_environment_name_without_suffixing_explicit_name(self):
+        result = type('Result', (), {'returncode': 0})()
+        with patch.object(m.subprocess, 'run', return_value=result) as run:
+            m.put_secret('theanh-student-cf-production', 'CRON_SECRET', 'synthetic')
+            cmd = run.call_args.args[0]
+            self.assertNotIn('--name', cmd)
+            self.assertEqual(cmd[cmd.index('--env') + 1], 'production')
+            self.assertEqual(cmd[cmd.index('--config') + 1], str(m.B / 'wrangler.jsonc'))
+
+    def test_targeted_retry_does_not_touch_a(self):
+        with patch.object(m.sys, 'argv', ['script', '--apply', '--only-worker', 'theanh-student-cf-production']), patch.object(m, 'keychain_get', return_value='synthetic'), patch.object(m, 'put_secret') as put, contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(m.main(), 0)
+            put.assert_called_once_with('theanh-student-cf-production', 'CRON_SECRET', 'synthetic')
 
 if __name__ == '__main__':
     unittest.main()

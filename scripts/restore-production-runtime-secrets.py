@@ -70,10 +70,14 @@ def put_secret(worker, name, value):
     if not config.is_file():
         raise RuntimeError('Reviewed Worker config missing')
     cmd = ['node', str(root / 'node_modules/wrangler/bin/wrangler.js'), 'secret', 'put',
-           name, '--name', worker, '--config', str(config)]
+           name, '--config', str(config)]
     if is_b:
+        # Wrangler secret commands append env to an explicit --name. Let the
+        # reviewed env.production.name choose the exact B Worker instead.
         cmd += ['--env', 'production']
-    env = dict(os.environ, CI='1')
+    else:
+        cmd += ['--name', worker]
+    env = dict(os.environ, CI='1', WRANGLER_WRITE_LOGS='false', WRANGLER_LOG_SANITIZE='true')
     r = subprocess.run(cmd, cwd=root, input=value + '\n', capture_output=True,
                        text=True, env=env, timeout=90)
     if r.returncode:
@@ -83,6 +87,7 @@ def put_secret(worker, name, value):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--apply', action='store_true')
+    parser.add_argument('--only-worker', choices=sorted({w for w, _, _ in TASKS}))
     args = parser.parse_args()
     if not args.apply:
         print(json.dumps({'mode': 'PLAN_ONLY', 'requires_specific_owner_approval': True,
@@ -91,6 +96,8 @@ def main():
     current = 'preparation'
     try:
         for worker, name, source in TASKS:
+            if args.only_worker and args.only_worker != worker:
+                continue
             current = worker + ':' + name
             value = keychain_get(PREFIX + name, worker)
             if not value:

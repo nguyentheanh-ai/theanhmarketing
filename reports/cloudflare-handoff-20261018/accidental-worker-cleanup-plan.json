@@ -1,0 +1,27 @@
+{
+  "checked_at": "2026-10-18T05:04:07.143Z",
+  "account_id": "8035ac71ae1041614760882f4b8862b2",
+  "worker": "theanh-student-cf-production-production",
+  "bindings": [
+    {
+      "name": "CRON_SECRET",
+      "type": "secret_text"
+    }
+  ],
+  "secret_names": [
+    "CRON_SECRET"
+  ],
+  "schedules": [],
+  "subdomain": {
+    "enabled": false,
+    "previews_enabled": false
+  },
+  "custom_domains": [],
+  "safe_empty_draft": true,
+  "delete_options": {
+    "force": false
+  },
+  "reason": "Compensating cleanup of empty draft accidentally created by this operation; actual A/B preserved",
+  "execution_status": "BLOCKED_BY_AUTOMATIC_APPROVAL_REVIEW",
+  "reason_for_block": "Specific owner approval required to delete Worker and its secret; DELETE did not execute"
+}
