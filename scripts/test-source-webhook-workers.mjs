@@ -45,7 +45,7 @@ async function outbound(req){
   if(u.pathname==='/auth/v1/logout')return new Response(null,{status:204});
  }
  if(u.host==='app.theanhmarketing.com'&&u.pathname==='/qa-provision'){
-  portalCalls++;const data=await req.json();assert.equal(data.email,email);return json({ok:!portalDown},portalDown?503:200);
+  portalCalls++;const data=await req.json();assert.equal(data.email,email);return json({ok:!portalDown,mode:'write',payload:{email,userId}},portalDown?503:200);
  }
  if(u.host==='api.resend.com'&&u.pathname==='/emails'){
   emailCalls++;const data=await req.json();assert.equal(data.to,email);const key=req.headers.get('idempotency-key');assert(key?.startsWith('tam-sepay-paid-email/'+prefix));
@@ -66,7 +66,7 @@ try{
  await check('valid bank receipt settles and fulfills through actual Workers HTTP route',async()=>{const r=await post('A');assert.equal(r.status,200);assert.equal(r.body.success,true);assert.equal(delivered.size,1);assert.equal(portalCalls,1);});
  await check('paid replay creates no second email or Auth operation',async()=>{const before=authCalls;assert.equal((await post('A')).status,200);assert.equal(delivered.size,1);assert.equal(emailCalls,1);assert.equal(authCalls,before);});
  await check('Auth outage after paid commit returns503 then retry finishes access/email',async()=>{authDown=true;assert.equal((await post('B')).status,503);authDown=false;assert.equal((await post('B')).status,200);assert.equal(delivered.size,2);});
- await check('App B provisioning outage blocks email until a successful retry',async()=>{portalDown=true;const before=emailCalls;assert.equal((await post('C')).status,503);assert.equal(emailCalls,before);portalDown=false;assert.equal((await post('C')).status,200);assert.equal(delivered.size,3);});
+ await check('App B outage preserves A email and retries B without duplicate email',async()=>{portalDown=true;const before=emailCalls;assert.equal((await post('C')).status,503);assert.equal(emailCalls,before+1);portalDown=false;assert.equal((await post('C')).status,200);assert.equal(emailCalls,before+1);assert.equal(delivered.size,3);});
  await check('provider accepted-response loss retries one idempotent delivery',async()=>{loseProviderResponse=true;assert.equal((await post('D')).status,503);assert.equal((await post('D')).status,200);assert.equal(delivered.size,4);});
  await check('two concurrent bank events deliver one email and retain paid state',async()=>{const before=delivered.size;const r=await Promise.all([post('E'),post('E')]);assert(r.some(x=>x.status===200));assert.equal(delivered.size-before,1);assert.equal((await post('E')).status,200);assert.equal(delivered.size-before,1);});
  await check('underpayment does not create an account or send mail',async()=>{const before=emailCalls;assert.equal((await post('F',{amount:1000})).status,422);assert.equal(emailCalls,before);});

@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-18T06:32:25.978Z",
+  "checkedAt": "2026-10-18T10:09:17.249Z",
   "checks": [
     {
       "path": "/learn/facebook-ads-2026/47da65a2-c6c6-4a21-a109-c1feb1d64c8f",
@@ -12,7 +12,7 @@
     {
       "path": "/api/ebook/facebook-ads/pdf?accepted=1&format=json",
       "authenticated": true,
-      "status": 403,
+      "status": 200,
       "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
       "cdnCacheControl": null,
       "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch, Next-Url, X-Vinext-Interception-Context, X-Vinext-Interception-Id, X-Vinext-Mounted-Slots, X-Vinext-Rsc-Render-Mode, X-Vinext-Rsc-State-Fingerprint"

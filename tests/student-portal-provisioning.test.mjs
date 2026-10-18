@@ -70,3 +70,18 @@ test("builds the app provisioning payload even when website has no auth user id"
     source: "theanhmarketing.com",
   });
 });
+
+for (const [name,body,passed] of [
+  ['write acknowledgement', {ok:true,mode:'write',payload:{email:'qa@example.invalid',userId:'11111111-1111-4111-8111-111111111111'}},true],
+  ['dry-run200', {ok:true,mode:'dry-run',payload:{email:'qa@example.invalid',userId:'11111111-1111-4111-8111-111111111111'}},false],
+  ['wrong identity200', {ok:true,mode:'write',payload:{email:'other@example.invalid',userId:'11111111-1111-4111-8111-111111111111'}},false],
+  ['empty200', {},false],
+]) {
+ test('provisioning verifies '+name+' beyond HTTP status', async()=>{
+  const originalFetch=globalThis.fetch,endpoint=process.env.STUDENT_PORTAL_PROVISION_URL,secret=process.env.STUDENT_PORTAL_PROVISION_SECRET;
+  process.env.STUDENT_PORTAL_PROVISION_URL='https://app.example.invalid/provision';process.env.STUDENT_PORTAL_PROVISION_SECRET='fixture-only';
+  globalThis.fetch=async()=>Response.json(body);
+  try {const {notifyStudentPortalProvisioning}=loadTsModule('services/studentPortalProvisioningService.ts');const r=await notifyStudentPortalProvisioning({order:{orderCode:'QA',studentName:'QA',email:'qa@example.invalid',phone:'',courseSlug:'fixture'}});assert.equal(r.ok,passed);}
+  finally {globalThis.fetch=originalFetch;if(endpoint===undefined)delete process.env.STUDENT_PORTAL_PROVISION_URL;else process.env.STUDENT_PORTAL_PROVISION_URL=endpoint;if(secret===undefined)delete process.env.STUDENT_PORTAL_PROVISION_SECRET;else process.env.STUDENT_PORTAL_PROVISION_SECRET=secret;}
+ });
+}

@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-18T10:12:07.188Z",
+  "providerAccepted": true,
+  "messageId": "01a14e7f-48b7-76e1-959e-1b91fdef71ca",
+  "purpose": "Owner QA Safari iPhone checklist; no customer recipient",
+  "actualSafariResult": "PENDING_OWNER_DEVICE",
+  "credentialsPrinted": false,
+  "providerEvent": "delivered",
+  "deliveryCheckedAt": "2026-10-18T10:15:29.790Z",
+  "limits": "Provider delivered means receiving mail server acceptance, not inbox/open or Safari test completion"
+}

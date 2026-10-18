@@ -1,12 +1,8 @@
 {
-  "checkedAt": "2026-10-18T06:32:30.452Z",
+  "checkedAt": "2026-10-18T10:09:20.065Z",
   "status": "PASS",
   "httpStatus": 307,
   "providerOrigin": "https://pppiqhkectojxbmhqcnx.supabase.co",
   "callbackOrigin": "https://app.theanhmarketing.com",
-  "scope": "Actual A Workers bridge via STUDENT_APP into B742a15d Source Auth; QA callback retargeted only for preview, not main-domain cutover",
-  "previewBrowserCallbackPassed": true,
-  "previewBrowserRefreshPassed": true,
-  "browserScreenshot": "ab-compatibility-browser.jpg",
-  "screenshotLimit": "Loading shell immediately after refresh; final loaded state was checked separately before QA B was disabled"
+  "scope": "Actual A Workers bridge via STUDENT_APP into B742a15d Source Auth; QA callback retargeted only for preview, not main-domain cutover"
 }

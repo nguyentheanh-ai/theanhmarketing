@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-18T10:05:32.526Z",
+  "checkedAt": "2026-10-18T10:16:05.613Z",
   "status": "PASS",
   "checks": [
     {
@@ -19,7 +19,7 @@
       "passed": true
     },
     {
-      "name": "App B provisioning outage blocks email until a successful retry",
+      "name": "App B outage preserves A email and retries B without duplicate email",
       "passed": true
     },
     {

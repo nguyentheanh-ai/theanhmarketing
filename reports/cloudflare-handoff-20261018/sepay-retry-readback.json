@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-18T10:20:56.726179+00:00",
+  "status": "VERIFIED",
+  "activeWebhook": true,
+  "receiver": "https://www.theanhmarketing.com/api/sepay/webhook",
+  "retryOnServerError": true,
+  "proof": "Reopened editor after successful save; checkbox value 1",
+  "ownerApproval": "Duy\u1ec7t b\u1eadt g\u1eedi l\u1ea1i webhook SePay",
+  "testTransactionSent": false,
+  "otherConfigurationChanges": false
+}

@@ -7,13 +7,13 @@ import {NextResponse} from 'next/server.js';
 
 // Actual Source route; provider/Auth boundaries are fixtures, no network or DB.
 function harness({alreadyPaid=true,accountFails=false,portalFails=false,emailFails=false,kind='course'}={}){
- const flags={accountFails,portalFails,emailFails,existingAccount:false,loseEmailResponse:false,loseAcceptedWriteResponse:false,portalDelayMs:0,hangAux:false};
+ const flags={accountFails,portalFails,emailFails,existingAccount:false,loseEmailResponse:false,loseAcceptedWriteResponse:false,portalDelayMs:0,accountDelayMs:0,hangAux:false};
  let now=Date.now();
  const calls={account:0,portal:0,email:0,accounting:0,booking:0};
  const order={orderCode:'TAMCFQARECOVERY',status:'paid',email:'qa@example.invalid',studentName:'QA',phone:'',courseSlug:kind==='support'?'support':'facebook-ads-2026',orderItems:[],paymentEmailSentAt:null,accountingEmailSentAt:'2026-01-01T00:00:00Z',purchaseEventSent:true};
  const storeRow={payment_email_last_error:'{"protocol":"sepay-fulfillment-v1"}',payment_email_sent_at:null};
  const deliveries=new Map();
- const store={read:async()=>({...storeRow}),replace:async(code,previous,next,sentAt)=>{if(storeRow.payment_email_sent_at||storeRow.payment_email_last_error!==previous)return false;storeRow.payment_email_last_error=next;if(flags.loseAcceptedWriteResponse&&next&&JSON.parse(next).accepted){flags.loseAcceptedWriteResponse=false;throw Error('synthetic-write-response-loss');}if(sentAt){storeRow.payment_email_sent_at=sentAt;order.paymentEmailSentAt=sentAt;}return true;}};
+ const store={read:async()=>({...storeRow}),replace:async(code,previous,next,sentAt,expectedSentAt=null)=>{if(storeRow.payment_email_sent_at!==expectedSentAt||storeRow.payment_email_last_error!==previous)return false;storeRow.payment_email_last_error=next;if(flags.loseAcceptedWriteResponse&&next&&JSON.parse(next).accepted){flags.loseAcceptedWriteResponse=false;throw Error('synthetic-write-response-loss');}if(sentAt){storeRow.payment_email_sent_at=sentAt;order.paymentEmailSentAt=sentAt;}return true;}};
  const mocks={
   'next/server':{NextResponse},
   '@/lib/notifications/payment-success-email':{shouldSendPaymentSuccessEmail:o=>o.status==='paid'&&!o.paymentEmailSentAt,buildPaymentSuccessEmailPayload:(o,options)=>({subject:'fixture',account:options.account}),buildPreorderDepositEmailPayload:()=>({subject:'deposit-fixture'}),sendPaymentSuccessEmail:async(o,options)=>{calls.email++;if(flags.emailFails)return{ok:false,skipped:false};const body=JSON.stringify(options.account);if(deliveries.has(options.idempotencyKey)){assert.equal(deliveries.get(options.idempotencyKey),body);}else{deliveries.set(options.idempotencyKey,body);}if(flags.loseEmailResponse){flags.loseEmailResponse=false;throw Error('synthetic-provider-response-loss');}return{ok:true,skipped:false,resendEmailId:'fixture-message-id'};}},
@@ -30,7 +30,7 @@ function harness({alreadyPaid=true,accountFails=false,portalFails=false,emailFai
   '@/services/accountingNotificationService':{notifyAccountingForPaidOrder:async()=>{calls.accounting++;if(flags.hangAux)throw Error('synthetic-auxiliary-outage');return{ok:true,skipped:true};}},
   '@/services/activityLogService':{logStudentActivity:async()=>{}},
   '@/services/orderService':{confirmOrderFromSepay:async()=>({order,wasAlreadyPaid:alreadyPaid}),markPaymentEmailError:async()=>({ok:true}),markPaymentEmailSent:async()=>{order.paymentEmailSentAt='2026-01-01T00:00:00Z';return{ok:true};}},
-  '@/services/studentAccountService':{ensureStudentAccountForPaidOrder:async(o,options)=>{assert.equal(options.preserveExistingAuth,true);assert.equal(options.provisioningOperationId,'sepay:'+order.orderCode);calls.account++;return flags.accountFails?{ok:false,reason:'auth-unavailable'}:{ok:true,userId:'qa-user',email:order.email,temporaryPassword:flags.existingAccount?null:'fixture-only',created:true};}},
+  '@/services/studentAccountService':{ensureStudentAccountForPaidOrder:async(o,options)=>{assert.equal(options.preserveExistingAuth,true);assert.equal(options.provisioningOperationId,'sepay:'+order.orderCode);calls.account++;now+=flags.accountDelayMs;return flags.accountFails?{ok:false,reason:'auth-unavailable'}:{ok:true,userId:'qa-user',email:order.email,temporaryPassword:flags.existingAccount?null:'fixture-only',created:true};}},
   '@/services/studentPortalProvisioningService':{notifyStudentPortalProvisioning:async()=>{calls.portal++;now+=flags.portalDelayMs;return{ok:!flags.portalFails,skipped:false,resendEmailId:'fixture-message-id'};}},
   '@/data/site':{siteConfig:{url:'https://example.invalid'}},
   '@/lib/agent-kit-preorder':{isAgentKitPreorderDepositOrder:()=>kind==='preorder'},
@@ -53,7 +53,7 @@ test('incomplete mandatory fulfillment does not acknowledge final success',async
  const h=harness({alreadyPaid:false,accountFails:true});const r=await h.post();assert.equal(r.status,503);assert.equal(h.calls.email,0);
 });
 
-test('portal failure withholds email and returns retryable HTTP status',async()=>{const h=harness({portalFails:true});assert.equal((await h.post()).status,503);assert.equal(h.calls.email,0);});
+test('App B outage never blocks A login email and retry resumes only B',async()=>{const h=harness({portalFails:true});assert.equal((await h.post()).status,503);assert.equal(h.calls.email,1);assert.ok(h.storeRow.payment_email_sent_at);h.flags.portalFails=false;assert.equal((await h.post()).status,200);assert.equal(h.calls.email,1);assert.equal(h.calls.account,1);assert.equal(h.calls.portal,2);});
 test('provider failure returns retryable status and retains first attempt/hash',async()=>{const h=harness({emailFails:true});assert.equal((await h.post()).status,503);const receipt=JSON.parse(h.storeRow.payment_email_last_error);assert.equal(typeof receipt.hash,'string');assert.equal(typeof receipt.started,'number');assert.equal(receipt.until,0);});
 test('concurrent duplicates only execute one account/email workflow',async()=>{const h=harness();const r=await Promise.all([h.post(),h.post()]);assert(r.some(x=>x.status===200));assert.equal(h.calls.account,1);assert.equal(h.calls.email,1);});
 test('legacy paid order without a protocol receipt requires reconciliation before sending',async()=>{const h=harness();h.storeRow.payment_email_last_error=null;assert.equal((await h.post()).status,503);assert.equal(h.calls.email,0);assert.equal(h.calls.account,0);});
@@ -74,5 +74,5 @@ test('response lost after provider acceptance retries the same payload/key with 
 test('changed email payload after an ambiguous attempt requires review rather than another send',async()=>{const h=harness();h.flags.loseEmailResponse=true;assert.equal((await h.post()).status,503);h.flags.existingAccount=true;assert.equal((await h.post()).status,503);assert.equal(h.calls.email,1);assert.equal(h.deliveries.size,1);});
 test('lost database response after accepted receipt reconciles without another provider request',async()=>{const h=harness();h.flags.loseAcceptedWriteResponse=true;assert.equal((await h.post()).status,503);h.advance(121_000);assert.equal((await h.post()).status,200);assert.equal(h.calls.email,1);assert.equal(h.deliveries.size,1);});
 
-test('provider expiry is checked again after a slow provisioning step',async()=>{const h=harness({emailFails:true});await h.post();h.advance(22.99*60*60_000);h.flags.portalDelayMs=1.02*60*60_000;h.flags.emailFails=false;assert.equal((await h.post()).status,503);assert.equal(h.calls.email,1);});
+test('provider expiry is checked again after a slow provisioning step',async()=>{const h=harness({emailFails:true});await h.post();h.advance(22.99*60*60_000);h.flags.accountDelayMs=1.02*60*60_000;h.flags.emailFails=false;assert.equal((await h.post()).status,503);assert.equal(h.calls.email,1);});
 test('mandatory access/email finishes before an auxiliary notification failure',async()=>{const h=harness();h.flags.hangAux=true;await h.post();assert.equal(h.calls.email,1);assert.ok(h.storeRow.payment_email_sent_at);});

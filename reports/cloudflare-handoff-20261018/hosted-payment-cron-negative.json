@@ -1,0 +1,81 @@
+{
+  "checkedAt": "2026-10-18T10:11:28.070240+00:00",
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "missing-key",
+      "status": 401,
+      "applicationJson": true,
+      "passed": true
+    },
+    {
+      "check": "wrong-key",
+      "status": 401,
+      "applicationJson": true,
+      "passed": true
+    },
+    {
+      "check": "verified-key-invalid-json",
+      "status": 400,
+      "applicationJson": true,
+      "passed": true
+    },
+    {
+      "check": "cron-denies-guest",
+      "path": "/api/orders/expire",
+      "status": 401,
+      "applicationJson": true,
+      "passed": true
+    },
+    {
+      "check": "cron-denies-guest",
+      "path": "/api/orders/sync-google-sheet",
+      "status": 403,
+      "applicationJson": true,
+      "passed": true
+    },
+    {
+      "check": "cron-denies-guest",
+      "path": "/api/admin/purge-deleted",
+      "status": 401,
+      "applicationJson": true,
+      "passed": true
+    },
+    {
+      "check": "cron-denies-guest",
+      "path": "/api/meta/purchase-retry",
+      "status": 401,
+      "applicationJson": true,
+      "passed": true
+    },
+    {
+      "check": "cron-denies-guest",
+      "path": "/api/agent-kit/preorder-launch",
+      "status": 401,
+      "applicationJson": true,
+      "passed": true
+    },
+    {
+      "check": "cron-denies-guest",
+      "path": "/api/reports/telegram/full-day",
+      "status": 401,
+      "applicationJson": true,
+      "passed": true
+    },
+    {
+      "check": "cron-denies-guest",
+      "path": "/api/email/campaigns/send-due",
+      "status": 401,
+      "applicationJson": true,
+      "passed": true
+    },
+    {
+      "check": "cron-denies-guest",
+      "path": "/api/email/worker/send-due",
+      "status": 401,
+      "applicationJson": true,
+      "passed": true
+    }
+  ],
+  "scope": "Hosted A ff6361a2 auth/parser negative probes only; no valid payment JSON or authorized cron execution, no bank settlement, email or customer mutation"
+}

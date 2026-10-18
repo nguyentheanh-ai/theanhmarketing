@@ -1,8 +1,8 @@
 {
-  "checkedAt": "2026-10-18T10:07:00.179633+00:00",
+  "checkedAt": "2026-10-18T10:20:56.725928+00:00",
   "status": "TESTED_LOCAL_PENDING_PREVIEW",
   "relatedTests": {
-    "passed": 75,
+    "passed": 81,
     "failed": 0
   },
   "postgresCloneChecks": 13,
@@ -34,5 +34,7 @@
     "Legacy unmarked incomplete payments require review; no blind resend",
     "Auxiliary Telegram/Sheets do not have the same new durable fulfillment receipt; source Sheets catch-up job remains",
     "Actual Vercel cron shutdown not performed; Workers schedules empty"
-  ]
+  ],
+  "latestAmendment": "A email persisted before B retry; CAS sent marker fence; require actual B write acknowledgement",
+  "sepayRetry": "ENABLED_AND_REOPEN_VERIFIED_OWNER_APPROVED"
 }
