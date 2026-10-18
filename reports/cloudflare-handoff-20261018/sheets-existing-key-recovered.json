@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-10-18T05:35:16.095745+00:00",
+  "worker": "theanh-main-cf-production",
+  "name": "GOOGLE_SHEETS_WEBHOOK_URL",
+  "source": "Existing Apps Script deployment v6, modified 2026-07-03; exact Sheet ID and monthly-safe source matched",
+  "health_version": "google-sheets-monthly-orders-v1-safe",
+  "non_order_probe": "ok/skipped NON_ORDER_PAYLOAD_IGNORED; no row upsert",
+  "keychain_saved_and_readback": true,
+  "worker_secret_written": true,
+  "provider_deployment_changed": false,
+  "valid_order_sync_tested": false,
+  "credential_value_in_helper_stdout": false
+}

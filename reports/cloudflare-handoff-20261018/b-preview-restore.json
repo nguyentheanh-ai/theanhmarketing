@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-10-18T05:35:42.463Z",
+  "success": true,
+  "status": 200,
+  "errors": [],
+  "active_versions": [
+    {
+      "version_id": "4dc9e7d1-0259-400c-91b2-f9b6d8d01fb9",
+      "percentage": 100
+    }
+  ]
+}

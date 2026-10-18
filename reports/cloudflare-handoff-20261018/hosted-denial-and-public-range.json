@@ -1,0 +1,73 @@
+{
+  "checked_at": "2026-10-18T05:32:47.028542+00:00",
+  "scope": "No-session/invalid-token denial and public-file Range only; not cross-user isolation, valid payment or private-file streaming",
+  "transport_observation": "Default Python-urllib agent got edge text/plain 403; explicit TheAnhMigration/1 got application/json 401 on same progress URL. No protection setting changed.",
+  "results": [
+    {
+      "check": "A_dashboard",
+      "status": 307,
+      "passed": true,
+      "content_type": null,
+      "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "check": "A_paid_lesson",
+      "status": 307,
+      "passed": true,
+      "content_type": null,
+      "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "check": "A_progress",
+      "status": 401,
+      "passed": true,
+      "content_type": "application/json",
+      "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "check": "A_payment_admin",
+      "status": 401,
+      "passed": true,
+      "content_type": "application/json",
+      "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "check": "A_sepay_wrong_key",
+      "status": 401,
+      "passed": true,
+      "content_type": "application/json",
+      "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "check": "B_meta_status",
+      "status": 401,
+      "passed": true,
+      "content_type": "application/json",
+      "cache_control": "private, no-store"
+    },
+    {
+      "check": "B_session_invalid",
+      "status": 401,
+      "passed": true,
+      "content_type": "application/json",
+      "cache_control": null
+    },
+    {
+      "check": "public_resource_range",
+      "origin": "https://www.theanhmarketing.com",
+      "status": 206,
+      "bytes": 64,
+      "content_range": "bytes 0-63/27314",
+      "passed": true
+    },
+    {
+      "check": "public_resource_range",
+      "origin": "https://theanh-main-cf-production.12c1thdtheanh.workers.dev",
+      "status": 200,
+      "bytes": 27314,
+      "content_range": null,
+      "passed": false
+    }
+  ],
+  "status": "FAIL"
+}

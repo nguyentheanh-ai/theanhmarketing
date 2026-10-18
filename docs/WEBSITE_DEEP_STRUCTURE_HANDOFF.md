@@ -3304,3 +3304,21 @@ Anh đã duyệt bằng chữ: “Duyệt cả 5 việc còn lại với các đ
 - Vercel dashboard trong trình duyệt nội bộ đã đăng nhập; thấy đủ8cron A đang bật và control. API CLI vẫn403; chưa tắt cron và chưa chứng minh thao tác toggle/readback. Meta AutoReport ID883213173833696 khớp tài liệu B, đã xem cấu hình, không đổi; Reveal yêu cầu anh xác thực lại mật khẩu. Không xoay original META_APP_SECRET A hoặc tự đồng nhất với key B.
 
 **IN PROGRESS — chưa READY FOR CUTOVER/LIVE Workers:** còn khôi phục/kiểm chứng Meta/Sheets, compatibility legacy A→B/cookie và rollback, giám sát, kiểm thử đủ nghiệp vụ. Supabase A/B vẫn là nguồn dữ liệu, không đủ điều kiện hủy Supabase. Giữ11file dirty ở release Vercel A cũ.
+
+
+## 18/10/2026 12:40 — Hai bản Workers đã triển khai thử, Sheets đã khôi phục
+
+**IN PROGRESS, chưa READY FOR CUTOVER/LIVE Workers.** Các dòng trước là lịch sử; cập nhật này thay thế trạng thái “chưa deploy code”.
+
+- Source preflight A/B đạt với nhánh remote trùng SHA, root/Worker/account đúng. A build qua script bắt buộc tại09b7e79, deploy code c22d916e; B OpenNext tại0dd71b4, deploy4dc9e7d1. Đọc lại toàn bộ tên secret được giữ, Service Binding A→B đúng, native gates/cohort OFF/rỗng. Custom domains0, schedules A/B rỗng. Receipt preview-code-deploy-readback.json.
+- Khôi phục GOOGLE_SHEETS_WEBHOOK_URL từ Apps Script hiện có: SheetID và mã monthly-safe trùng source, deployment version6 ngày3/7. doGet trả đúng google-sheets-monthly-orders-v1-safe; POST non-order trả skipped trước upsert. Lưu Keychain/đọc lại, đặt qua Wrangler stdin vào A; phiên bản mới f3bb783b. Không sửa deployment Google, không ghi đơn/bảng hoặc gửi email. Chưa kiểm đơn hợp lệ từ Worker tới Sheets. Receipt sheets-existing-key-recovered.json.
+- QA A giữ phiên và bài47da65a2-c6c6-4a21-a109-c1feb1d64c8f hoàn tất sau deploy và sau cập nhật Secret/refresh; screenshot qa-lesson-progress-after-redeploy.jpg. Không thay tiến độ ngoài QA.
+- QA B: dùng service_role đúng B từ key.rtf (không in giá trị), xác minh đúng profile student/active, tạo magic link không gửi email, vào /app/overview và refresh đạt. Meta hiển thị chưa sẵn sàng. Đây không thay cho một lần kiểm A→B mới qua Service Binding.
+- Đã diễn tập rollback riêng B preview4dc9e7d1→fc1fbf8f→4dc9e7d1, khôngforce; mỗi bước GET đọc lại100%, QA tiếp tục vào overview. Không domain/cron/dữ liệu thay đổi. Đây KHÔNG chứng minh Vercel B đọc được cookie mới. Receipts b-preview-rollback.json/b-preview-restore.json.
+- SePay key hiện có được Worker chấp nhận: JSON cố ý sai trả400 trước confirmOrderFromSepay; key sai trả401. Không thanh toán/settle/cấp quyền/email. Resend3probe trước đó chỉ kiểm chữ ký/parser, không chứng minh xử lý sự kiện hợp lệ/idempotency.
+- Hosted denial: dashboard và premium lesson khi không session→login307; progress/payment admin sai phiên401; B Meta/status và token đăng nhập giả401. Content-Type phải đúng ứng dụng, không nhầm403 ngoài ứng dụng là PASS.
+- Public TXT Range chưa tương đương: Vercel206/64byte, Workers200/toàn27314byte. Hash toàn file khớp nhưng chưa chứng minh browser download/streaming private. Không sửa bảo vệ để vượt test. Bộ probe báo FAIL riêng chênh lệch này, không che kết quả.
+- Harness bản build thật4/4 đạt, outbound bị chặn nên không thực hiện tác dụng Supabase; không coi là hosted settlement. Lần đầu localhost EPERM do sandbox, lần chạy được cấp quyền mới thực thi.
+- Hai URL Blue B từ metadata Vercel không chứng minh fallback public: URL immutable trả302 sang vercel.com khi không session. Không xây proxy dựa trên HTML200 sau redirect hoặc dùng cookie/kỹ thuật ẩn vượt protection.
+
+Anh yêu cầu tạm tiếp tục mục khác thay vì xác thực lại Meta. Mục Meta giữ nguyên; không xoay A META_APP_SECRET, chưa tạo B token key hay giả lập app secret. Các gate còn: khóa Meta và phiên bản API đã xác minh, legacy provision/cookie continuity và rollback Vercel, quan sát/cảnh báo, download/private Range, QA phân quyền/thanh toán/thiết bị đầy đủ. Giai đoạn bỏ Supabase chưa đủ điều kiện; nguồn ghi vẫn A/B Supabase. Vercel/email/adsplan vẫn nguyên đích DNS.

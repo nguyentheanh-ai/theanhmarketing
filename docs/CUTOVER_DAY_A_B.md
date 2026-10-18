@@ -1,3 +1,5 @@
+> **18/10 12:40:** Đã deploy lại Workers preview A/B và khôi phục Sheets. Chưa GO; còn Meta, legacy Auth/session compatibility, monitoring và QA. Xem CODEX_RETAKE_A_B_20261018.md trước phần lịch sử bên dưới.
+
 > **Cập nhật 18/10/2026:** Chưa đủ điều kiện chuyển. Xem [đối chiếu tiếp nhận](CODEX_RETAKE_A_B_20261018.md) trước mọi bước bên dưới: artifact A lúc nhận là staging (đã rebuild đúng), cần compatibility secret cũ/mới khi B chuyển trước A, xác minh Resend webhook, DNS đầy đủ, cron Vercel và release roots. Các kết quả lịch sử/khóa trong phần cũ không tự chứng minh trạng thái hiện tại.
 
 # Ngày chuyển website A + App B từ Vercel sang Cloudflare Workers

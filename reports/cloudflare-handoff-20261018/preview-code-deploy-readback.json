@@ -1,0 +1,184 @@
+{
+  "checked_at": "2026-10-18T05:30:10.033Z",
+  "workers": [
+    {
+      "worker": "theanh-main-cf-production",
+      "settings_ok": true,
+      "secret_names": [
+        "ACCOUNTING_NOTIFICATION_EMAIL",
+        "ADMIN_EMAILS",
+        "ADMIN_LOGIN_EMAIL",
+        "CHECKOUT_ABUSE_HMAC_KEY",
+        "CRM_V2_ALLOW_DEMO_SEED",
+        "CRM_V2_ENABLED",
+        "CRM_V2_USE_DEMO_DATA",
+        "CRON_SECRET",
+        "GOOGLE_SHEETS_WEBHOOK_URL",
+        "META_ADS_ACCESS_TOKEN",
+        "META_ADS_AD_ACCOUNT_ID",
+        "META_APP_ID",
+        "META_APP_SECRET",
+        "META_CAPI_ACCESS_TOKEN",
+        "META_CAPI_API_VERSION",
+        "META_CAPI_DATASET_ID",
+        "NATIVE_AUTH_CREDENTIAL_KEY",
+        "NATIVE_AUTH_LIMITER_KEY",
+        "NATIVE_AUTH_REFRESH_KEY",
+        "NEW_LEAD_NOTIFICATION_TO",
+        "PAYMENT_SUCCESS_EMAIL_FROM",
+        "PENDING_PAYMENT_EMAIL_FROM",
+        "R2_PRIVATE_URL_SECRET",
+        "REGISTRATION_NOTIFICATION_EMAIL",
+        "REGISTRATION_NOTIFICATION_FROM",
+        "RESEND_API_KEY",
+        "RESEND_WEBHOOK_SECRET",
+        "SEPAY_BANK_ACCOUNT_NAME",
+        "SEPAY_BANK_ACCOUNT_NUMBER",
+        "SEPAY_BANK_CODE",
+        "SEPAY_WEBHOOK_API_KEY",
+        "SEPAY_WEBHOOK_SECRET",
+        "STUDENT_PORTAL_PROVISION_SECRET",
+        "STUDENT_PORTAL_PROVISION_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "TELEGRAM_BOT_TOKEN",
+        "TELEGRAM_CHAT_ID",
+        "TELEGRAM_REPORT_SECRET"
+      ],
+      "runtime": [
+        {
+          "name": "CF_CRON_MODE",
+          "text": "disabled"
+        },
+        {
+          "name": "CF_CRON_ORIGIN",
+          "text": "https://www.theanhmarketing.com"
+        },
+        {
+          "name": "CF_NATIVE_AUTH_MODE",
+          "text": "disabled"
+        },
+        {
+          "name": "CF_NATIVE_AUTH_ORIGIN",
+          "text": "https://theanh-main-cf-staging.12c1thdtheanh.workers.dev"
+        },
+        {
+          "name": "CF_NATIVE_MARKETING_MODE",
+          "text": "disabled"
+        },
+        {
+          "name": "CF_NATIVE_QA_AUTH_CONTEXT_MODE",
+          "text": "disabled"
+        },
+        {
+          "name": "CF_NATIVE_QA_CREDENTIAL_WRITES",
+          "text": "disabled"
+        },
+        {
+          "name": "CF_NATIVE_QA_EMAIL_AUTH_MODE",
+          "text": "disabled"
+        },
+        {
+          "name": "CF_NATIVE_QA_GOOGLE_MODE",
+          "text": "disabled"
+        },
+        {
+          "name": "CF_NATIVE_QA_PAYMENT_MODE",
+          "text": "disabled"
+        },
+        {
+          "name": "CF_NATIVE_QA_PROGRESS_MODE",
+          "text": "disabled"
+        },
+        {
+          "name": "CF_NATIVE_QA_REFRESH_MODE",
+          "text": "disabled"
+        },
+        {
+          "name": "CF_NATIVE_QA_USERS",
+          "text": "[]"
+        },
+        {
+          "name": "CF_R2_STAGE_PRIVATE_DELIVERY",
+          "text": "false"
+        }
+      ],
+      "service_bindings": [
+        {
+          "environment": "production",
+          "name": "STUDENT_APP",
+          "service": "theanh-student-cf-production",
+          "type": "service"
+        }
+      ],
+      "deployment": {
+        "id": "5b19dd58-730f-4611-b515-c54cc40b3eb3",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "c22d916e-49c2-4088-bbcf-9193497ce8d9",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-18T05:29:05.664777Z"
+      },
+      "schedules": {
+        "schedules": []
+      },
+      "secret_names_preserved": true
+    },
+    {
+      "worker": "theanh-student-cf-production",
+      "settings_ok": true,
+      "secret_names": [
+        "CRON_SECRET",
+        "STUDENT_PORTAL_PROVISION_SECRET",
+        "STUDENT_PORTAL_SESSION_SECRET",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "runtime": [
+        {
+          "name": "CF_B_NATIVE_AUTH_MODE",
+          "text": "off"
+        },
+        {
+          "name": "CF_B_NATIVE_SOURCE_QA_USER_IDS",
+          "text": "[]"
+        },
+        {
+          "name": "CF_B_WORKSPACE_DATA_MODE",
+          "text": "off"
+        },
+        {
+          "name": "CF_B_WORKSPACE_QA_USER_IDS",
+          "text": "[]"
+        }
+      ],
+      "service_bindings": [],
+      "deployment": {
+        "id": "75b51367-4ca5-450a-b5b3-cf65c0719bb4",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "4dc9e7d1-0259-400c-91b2-f9b6d8d01fb9",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-18T05:29:40.561871Z"
+      },
+      "schedules": {
+        "schedules": []
+      },
+      "secret_names_preserved": true
+    }
+  ],
+  "owned_domains": []
+}

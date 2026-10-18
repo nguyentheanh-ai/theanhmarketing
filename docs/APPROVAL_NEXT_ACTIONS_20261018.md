@@ -1,3 +1,5 @@
+> **Hiện hành18/10:** Đủ5việc đã được anh duyệt bằng chữ. NS active, hai root đã đăng ký, hai Worker đã deploy preview và Worker rỗng đã xóa có readback. Hosting thật/cron/nguồn ghi chưa chuyển; xem cập nhật cuối trong CODEX_RETAKE_A_B_20261018.md. Không yêu cầu duyệt lại danh sách này.
+
 # Danh sách duyệt tiếp theo — A/B Cloudflare
 
 Trạng thái: **CHỜ DUYỆT**, chưa thực hiện các thao tác dưới đây. Bộ kiểm duyệt tự động chặn credential apply vì yêu cầu migration chung chưa được coi là duyệt cụ thể thay đổi secret production. Không đổi phương thức để vượt chặn.

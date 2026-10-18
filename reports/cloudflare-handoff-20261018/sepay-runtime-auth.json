@@ -1,0 +1,7 @@
+{
+  "checked_at": "2026-10-18T05:38:29.897407+00:00",
+  "check": "Existing SePay key accepted, invalid JSON rejected before confirmOrderFromSepay",
+  "status": 400,
+  "passed": true,
+  "scope": "Credential authentication/parser only; no valid transaction, bank payment, order update or email"
+}

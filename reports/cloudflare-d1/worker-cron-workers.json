@@ -1,8 +1,8 @@
 {
-  "checkedAt": "2026-10-16T03:22:22.651Z",
+  "checkedAt": "2026-10-18T05:29:55.567Z",
   "status": "PASS",
   "checks": 4,
-  "build": "theanh-main-cf-staging",
+  "build": "theanh-main-cf-production",
   "outboundHosts": [
     "vsxxgdzwtscuxcmjfckt.supabase.co"
   ],

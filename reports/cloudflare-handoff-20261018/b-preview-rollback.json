@@ -1,0 +1,14 @@
+{
+  "checked_at": "2026-10-18T05:35:26.494Z",
+  "worker": "theanh-student-cf-production",
+  "success": true,
+  "status": 200,
+  "errors": [],
+  "active_versions": [
+    {
+      "version_id": "fc1fbf8f-091b-4e69-9f05-d0424b986089",
+      "percentage": 100
+    }
+  ],
+  "scope": "Preview only; no force, no domain/cron/data change"
+}

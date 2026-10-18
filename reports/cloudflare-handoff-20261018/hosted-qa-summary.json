@@ -1,0 +1,23 @@
+{
+  "status": "TESTED_PREVIEW_SCOPED",
+  "A_runtime_source_commit": "09b7e792b0695010abfd580423d64924bb179e05",
+  "A_code_version": "c22d916e-49c2-4088-bbcf-9193497ce8d9",
+  "A_after_verified_Sheets_secret": "f3bb783b-544a-4c20-a5f8-c354f09f686f",
+  "B_runtime_source_commit": "0dd71b49fdff6517745edff2a1c40424cfaed16d",
+  "B_restored_version": "4dc9e7d1-0259-400c-91b2-f9b6d8d01fb9",
+  "A_existing_QA_session_survived_deploy": true,
+  "A_required_lesson_and_completed_progress_survived_refresh": true,
+  "B_QA_source_magiclink_login_and_refresh": true,
+  "B_preview_rollback_and_restore_kept_QA_session": true,
+  "limitations": [
+    "B login used QA-only Source admin magiclink, not a fresh A to B bridge check",
+    "B preview rollback is not Vercel rollback compatibility",
+    "Meta remains not configured; owner deferred reauthentication",
+    "Public TXT byte Range differs: Workers200/full vs Vercel206/64bytes",
+    "No successful browser download proof, private Range, expired-session, cross-user isolation or actual iPhone Safari proof",
+    "No valid payment settlement or replay; auth/parser probes only"
+  ],
+  "production_custom_domains": false,
+  "production_crons_switched": false,
+  "data_source": "Supabase A/B unchanged"
+}
