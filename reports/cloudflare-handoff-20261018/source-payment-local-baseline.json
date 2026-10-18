@@ -1,0 +1,44 @@
+{
+  "checkedAt": "2026-10-18T05:48:00.381Z",
+  "status": "FAIL",
+  "checks": [
+    {
+      "name": "valid receipt settles pending QA order",
+      "passed": true
+    },
+    {
+      "name": "same-order replay preserves paid_at and reports already paid",
+      "passed": true
+    },
+    {
+      "name": "concurrent same-order events have exactly one first settlement",
+      "passed": true
+    },
+    {
+      "name": "late receipt for expired QA order is reconciled",
+      "passed": true
+    },
+    {
+      "name": "underpayment is rejected",
+      "passed": true
+    },
+    {
+      "name": "lost response after commit can be retried without a second settlement",
+      "passed": true
+    },
+    {
+      "name": "same transaction cannot settle two distinct orders concurrently",
+      "passed": false
+    }
+  ],
+  "lostCommittedResponses": 1,
+  "outsideNetworkAttempts": 0,
+  "productionContacted": false,
+  "scope": "Actual confirmOrderFromSepay via official PostgREST and restored PostgreSQL, synthetic orders only; no webhook fulfillment/email/Meta or live-bank proof",
+  "candidateIndexAppliedToCloneOnly": false,
+  "realPostgrest": true,
+  "originalRestoreChanged": false,
+  "ephemeralCloneDropped": true,
+  "localServerStopped": true,
+  "encryptedVolumeUnmounted": true
+}

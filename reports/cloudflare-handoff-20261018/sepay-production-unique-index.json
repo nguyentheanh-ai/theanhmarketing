@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-18T05:52:59.863051+00:00",
+  "project": "vsxxgdzwtscuxcmjfckt",
+  "approval": "Owner approved concurrent unique index only; no order updates; stop on duplicates or concurrent failure",
+  "data_rows_modified": false,
+  "before": {
+    "index": null,
+    "duplicate_groups": 0
+  },
+  "after": {
+    "index": {
+      "ready": true,
+      "valid": true,
+      "unique": true,
+      "definition": "CREATE UNIQUE INDEX orders_sepay_transaction_id_unique ON public.orders USING btree (btrim(sepay_transaction_id)) WHERE (NULLIF(btrim(sepay_transaction_id), ''::text) IS NOT NULL)"
+    },
+    "duplicate_groups": 0
+  },
+  "status": "TESTED"
+}

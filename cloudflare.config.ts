@@ -20,7 +20,15 @@ export default defineConfig({
     // Pretty paths serve public/*.html directly (the /academy landings rely on it);
     // rewrites whose path differs from the file name live in STATIC_ASSET_ALIASES.
     assets: { notFoundHandling: "none", htmlHandling: "drop-trailing-slash" },
-    observability: { enabled: false, redactQueryString: true },
+    // Hosting cutover needs persisted request outcomes. Never retain OAuth
+    // codes or signed resource query strings; tracing remains disabled.
+    observability: {
+      enabled: production,
+      headSamplingRate: 1,
+      redactQueryString: true,
+      logs: { enabled: production, headSamplingRate: 1, invocationLogs: true, persist: true },
+      traces: { enabled: false },
+    },
     env: {
       ASSETS: bindings.assets(),
       AUTH_GUARD_ENABLED: bindings.text("true"),

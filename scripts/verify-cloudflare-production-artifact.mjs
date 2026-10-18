@@ -5,6 +5,7 @@ import {pathToFileURL} from 'node:url';
 export function verifyProductionWorkerConfig(config,{attachDomains=false,appUrl,siteUrl}={}) {
   const fail=message=>{throw new Error(message);};
   if(config.name!=='theanh-main-cf-production')fail('Wrong Worker: rebuild with scripts/build-cloudflare-production.sh');
+  if(config.observability?.enabled!==true||config.observability?.redact_query_string!==true||config.observability?.traces?.enabled!==false)fail('Production request monitoring or query redaction is not configured safely');
   if(appUrl!=='https://app.theanhmarketing.com'||siteUrl!=='https://www.theanhmarketing.com')fail('Production public URL mismatch');
   const vars=config.vars??{};
   const gates=['CF_NATIVE_MARKETING_MODE','CF_NATIVE_AUTH_MODE','CF_NATIVE_QA_PROGRESS_MODE','CF_NATIVE_QA_AUTH_CONTEXT_MODE','CF_NATIVE_QA_REFRESH_MODE','CF_NATIVE_QA_GOOGLE_MODE','CF_NATIVE_QA_PAYMENT_MODE','CF_NATIVE_QA_EMAIL_AUTH_MODE','CF_NATIVE_QA_CREDENTIAL_WRITES'];
