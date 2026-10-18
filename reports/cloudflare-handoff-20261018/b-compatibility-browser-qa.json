@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-18T06:31:10.110436+00:00",
+  "version": "5dbf0a76-d7ed-4699-b9a3-3fa552d8368c",
+  "status": "PASS",
+  "checks": [
+    "QA magic link callback reaches overview",
+    "refresh keeps overview after Meta not_configured loads",
+    "reports navigation remains signed in after data load",
+    "logout returns login",
+    "restore callback without Source SDK session returns login",
+    "A exact required lesson refresh retains completion100percent"
+  ],
+  "limits": [
+    "Internal Chromium viewport504x450; not actual iPhone Safari",
+    "Blue old UI Meta-disconnected loop remains baseline; API rollback authentication tested separately",
+    "No production domain cutover"
+  ]
+}

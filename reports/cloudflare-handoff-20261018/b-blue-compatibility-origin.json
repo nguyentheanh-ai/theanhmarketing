@@ -1,0 +1,75 @@
+{
+  "checkedAt": "2026-10-18T06:28:29.296Z",
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "Blue-signed-cookie-original-authority",
+      "origin": "https://app-blue-origin.theanhmarketing.com",
+      "status": 200,
+      "appShell": true,
+      "passed": true
+    },
+    {
+      "check": "Blue-signed-cookie-original-authority",
+      "origin": "https://app.theanhmarketing.com",
+      "status": 200,
+      "appShell": true,
+      "passed": true
+    },
+    {
+      "check": "invalid-shared-key-stays-denied",
+      "status": 401,
+      "passed": true
+    },
+    {
+      "check": "invalid-source-token-not-mirrored",
+      "passed": true
+    },
+    {
+      "check": "Green-mints-both-authenticated-generations",
+      "status": 200,
+      "cookieNames": [
+        "tam_student_portal_session",
+        "__Host-tam_student_portal_cf",
+        "__Host-tam_b_native_session"
+      ],
+      "passed": true
+    },
+    {
+      "check": "Green-both-cookies",
+      "status": 200,
+      "businessStatus": "not_configured",
+      "passed": true
+    },
+    {
+      "check": "Green-CF-cookie-only",
+      "status": 200,
+      "businessStatus": "not_configured",
+      "passed": true
+    },
+    {
+      "check": "Blue-rollback-original-cookie",
+      "status": 200,
+      "businessStatus": "disconnected",
+      "passed": true
+    },
+    {
+      "check": "Green-tampered-CF-cookie",
+      "status": 401,
+      "businessStatus": null,
+      "passed": true
+    },
+    {
+      "check": "Green-logout-clears-both-cookies",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "check": "Green-invalid-Source-token-denied",
+      "status": 401,
+      "noCookies": true,
+      "passed": true
+    }
+  ],
+  "scope": "Actual hosted Green mirror and Blue rollback API authentication, QA only; not full Blue Meta-disconnected browser outcome or old-key successful relay; no cutover"
+}

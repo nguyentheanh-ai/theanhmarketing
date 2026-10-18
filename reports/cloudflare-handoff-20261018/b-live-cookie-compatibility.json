@@ -1,0 +1,55 @@
+{
+  "scope": "QA-only Source auth token and actual B session-cookie/middleware; no customer writes",
+  "cookieMint": {
+    "blue": {
+      "status": 200,
+      "ok": true,
+      "hasCookie": true,
+      "errorCategory": null
+    },
+    "green": {
+      "status": 200,
+      "ok": true,
+      "hasCookie": true,
+      "errorCategory": null
+    }
+  },
+  "matrix": [
+    {
+      "origin": "blue",
+      "cookieFrom": "none",
+      "status": 307,
+      "redirectPath": "/login"
+    },
+    {
+      "origin": "blue",
+      "cookieFrom": "blue",
+      "status": 200,
+      "redirectPath": null
+    },
+    {
+      "origin": "blue",
+      "cookieFrom": "green",
+      "status": 307,
+      "redirectPath": "/login"
+    },
+    {
+      "origin": "green",
+      "cookieFrom": "none",
+      "status": 307,
+      "redirectPath": "/login"
+    },
+    {
+      "origin": "green",
+      "cookieFrom": "blue",
+      "status": 307,
+      "redirectPath": "/login"
+    },
+    {
+      "origin": "green",
+      "cookieFrom": "green",
+      "status": 200,
+      "redirectPath": null
+    }
+  ]
+}

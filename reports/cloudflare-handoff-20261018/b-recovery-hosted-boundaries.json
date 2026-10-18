@@ -1,0 +1,24 @@
+{
+  "version": "5d6e19d9-d3d9-4175-8c79-57c55598bd39",
+  "checks": [
+    {
+      "name": "legacy-page",
+      "status": 307,
+      "redirectPath": "/auth/callback",
+      "passed": true
+    },
+    {
+      "name": "guest-page",
+      "status": 307,
+      "redirectPath": "/login",
+      "passed": true
+    },
+    {
+      "name": "legacy-api",
+      "status": 401,
+      "redirectPath": null,
+      "passed": true
+    }
+  ],
+  "scope": "Actual middleware recovery/guest/API boundaries; not browser Source session restoration"
+}

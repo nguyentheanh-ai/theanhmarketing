@@ -1,3 +1,5 @@
+> **18/10 cập nhật Auth/cầu tạm:** B742a15d đã deploy preview, Meta được hoãn. Domain chính/cron chưa chuyển; QA B đang inactive sau thu hồi phiên, không bật trước14:38:11VN. Xem mục cuối CODEX_RETAKE_A_B_20261018.md trước mọi lệnh lịch sử.
+
 > **18/10 13:10:** Index SePay concurrent đã áp dụng/valid; Workers A monitoring và tải TXT browser đã kiểm chứng. Hosting chưa chuyển; Meta và legacy Auth/session còn gate. Xem CODEX_RETAKE_A_B_20261018.md.
 
 > **18/10 12:40:** Đã deploy lại Workers preview A/B và khôi phục Sheets. Chưa GO; còn Meta, legacy Auth/session compatibility, monitoring và QA. Xem CODEX_RETAKE_A_B_20261018.md trước phần lịch sử bên dưới.

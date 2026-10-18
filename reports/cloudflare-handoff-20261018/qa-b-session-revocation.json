@@ -1,0 +1,46 @@
+{
+  "checkedAt": "2026-10-18T06:38:10.798Z",
+  "status": "SECURED_QA_INACTIVE",
+  "qaProfileChanged": 1,
+  "qaGlobalSessionsRevoked": true,
+  "checks": [
+    {
+      "check": "QA-cookie-denied-after-profile-revocation",
+      "origin": "https://theanh-student-cf-production.12c1thdtheanh.workers.dev",
+      "status": 401,
+      "passed": true
+    },
+    {
+      "check": "QA-token-cannot-mint-active-cookie",
+      "origin": "https://theanh-student-cf-production.12c1thdtheanh.workers.dev",
+      "status": 401,
+      "passed": true
+    },
+    {
+      "check": "QA-cookie-denied-after-profile-revocation",
+      "origin": "https://app-blue-origin.theanhmarketing.com",
+      "status": 401,
+      "passed": true
+    },
+    {
+      "check": "QA-token-cannot-mint-active-cookie",
+      "origin": "https://app-blue-origin.theanhmarketing.com",
+      "status": 401,
+      "passed": true
+    },
+    {
+      "check": "QA-cookie-denied-after-profile-revocation",
+      "origin": "https://app.theanhmarketing.com",
+      "status": 401,
+      "passed": true
+    },
+    {
+      "check": "QA-token-cannot-mint-active-cookie",
+      "origin": "https://app.theanhmarketing.com",
+      "status": 401,
+      "passed": true
+    }
+  ],
+  "incident": "QA-only Source B callback token appeared in tool observation output; no value retained in receipt. QA profile disabled and global refresh sessions revoked; previously minted cookies/token denied by actual Blue/Green backend.",
+  "limits": "JWT may remain cryptographically valid until its TTL; current profile checks deny access. Do not reactivate QA B before one hour after this receipt. This is not a change to any real student or system secret."
+}

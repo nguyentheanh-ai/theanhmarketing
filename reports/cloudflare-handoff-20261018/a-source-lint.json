@@ -1,0 +1,193 @@
+{
+  "scope": "A source lint excluding generated dist/.wrangler only; no config/rule bypass",
+  "files": 891,
+  "errors": 120,
+  "warnings": 11640,
+  "problemFiles": [
+    ".cloudflare/types/index.d.ts",
+    "docs/landing-source/doi-ngu-nhan-su-ai/RegistrationForm.jsx",
+    "public/doi-ngu-nhan-su-ai/assets/index-B6nOFIRm.js",
+    "public/doi-ngu-nhan-su-ai/assets/index-BJ6yWQEz.js",
+    "public/doi-ngu-nhan-su-ai/assets/index-BXy-GC-t.js",
+    "public/doi-ngu-nhan-su-ai/assets/index-BdJ14PRW.js",
+    "public/doi-ngu-nhan-su-ai/assets/index-CAc6PztN.js",
+    "public/doi-ngu-nhan-su-ai/assets/index-CmdFTkr4.js",
+    "public/doi-ngu-nhan-su-ai/assets/index-Cnd463jX.js",
+    "public/doi-ngu-nhan-su-ai/assets/index-CpjGKm78.js",
+    "public/doi-ngu-nhan-su-ai/assets/index-D6QwDJZe.js",
+    "public/doi-ngu-nhan-su-ai/assets/index-DPkUN-zm.js",
+    "public/doi-ngu-nhan-su-ai/assets/index-DRg0gN6G.js",
+    "public/doi-ngu-nhan-su-ai/assets/index-DglJfGeU.js",
+    "public/doi-ngu-nhan-su-ai/assets/index-DkW-zXg0.js",
+    "public/doi-ngu-nhan-su-ai/assets/index-OXmoeCXd.js",
+    "public/doi-ngu-nhan-su-ai/assets/index-Oy35VaNk.js",
+    "public/doi-ngu-nhan-su-ai/assets/index-hfjgpMVs.js",
+    "scripts/probe-b-source-workspace.mjs",
+    "scripts/revoke-qa-b-after-checks.mjs",
+    "tests/agent-kit-preorder-lifecycle.test.mjs",
+    "tests/header-auth-provider.test.mjs",
+    "tests/learning-room-render.test.mjs",
+    "tests/support-booking-prompt.test.mjs"
+  ],
+  "baselineDiagnostics": [
+    {
+      "file": ".cloudflare/types/index.d.ts",
+      "unchangedFromHead": false,
+      "generated": true,
+      "errors": 0,
+      "warnings": 2
+    },
+    {
+      "file": "docs/landing-source/doi-ngu-nhan-su-ai/RegistrationForm.jsx",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 0,
+      "warnings": 1
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-B6nOFIRm.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 0,
+      "warnings": 725
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-BJ6yWQEz.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 21,
+      "warnings": 731
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-BXy-GC-t.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 0,
+      "warnings": 726
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-BdJ14PRW.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 0,
+      "warnings": 725
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-CAc6PztN.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 16,
+      "warnings": 725
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-CmdFTkr4.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 0,
+      "warnings": 728
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-Cnd463jX.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 15,
+      "warnings": 731
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-CpjGKm78.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 0,
+      "warnings": 725
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-D6QwDJZe.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 21,
+      "warnings": 731
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-DPkUN-zm.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 18,
+      "warnings": 725
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-DRg0gN6G.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 0,
+      "warnings": 725
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-DglJfGeU.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 0,
+      "warnings": 725
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-DkW-zXg0.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 15,
+      "warnings": 731
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-OXmoeCXd.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 0,
+      "warnings": 725
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-Oy35VaNk.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 0,
+      "warnings": 728
+    },
+    {
+      "file": "public/doi-ngu-nhan-su-ai/assets/index-hfjgpMVs.js",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 12,
+      "warnings": 725
+    },
+    {
+      "file": "tests/agent-kit-preorder-lifecycle.test.mjs",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "tests/header-auth-provider.test.mjs",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "tests/learning-room-render.test.mjs",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 0,
+      "warnings": 1
+    },
+    {
+      "file": "tests/support-booking-prompt.test.mjs",
+      "unchangedFromHead": true,
+      "generated": false,
+      "errors": 0,
+      "warnings": 1
+    }
+  ],
+  "newHelperWarningsFixed": [
+    "scripts/probe-b-source-workspace.mjs",
+    "scripts/revoke-qa-b-after-checks.mjs"
+  ],
+  "overallLintPassed": false
+}

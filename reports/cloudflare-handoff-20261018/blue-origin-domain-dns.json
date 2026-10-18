@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-18T06:39:54.952497+00:00",
+  "domain": "app-blue-origin.theanhmarketing.com",
+  "vercelProject": "prj_JnAYX1BcLLcL7iASxA2FBLIP5vHp",
+  "verified": true,
+  "misconfigured": false,
+  "dnsRecordId": "928ac362604a6f9fc08af897cd9abde5",
+  "cname": "38867413fd8b3480.vercel-dns-017.com",
+  "proxied": false,
+  "ttl": 120,
+  "httpsLogin": 200,
+  "sourceUi": "AdsMind",
+  "zoneRecordCount": 11,
+  "mainWebDnsStillVercel": true,
+  "workerCustomDomains": 0,
+  "workerSchedules": [],
+  "scope": "Exact newly approved temporary origin; no Vercel deployment or main domain cutover"
+}

@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-10-18T06:36:47.305Z",
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "QA-Source-workspace",
+      "status": 200,
+      "ready": "ready",
+      "passed": true
+    },
+    {
+      "check": "QA-documents-list",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "check": "QA-document-create",
+      "status": 201,
+      "passed": true
+    },
+    {
+      "check": "QA-document-survives-refresh",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "check": "Source-B-data-readback",
+      "passed": true
+    },
+    {
+      "check": "unowned-workspace-denied",
+      "status": 403,
+      "passed": true
+    },
+    {
+      "check": "cross-origin-document-write-denied",
+      "status": 403,
+      "passed": true
+    },
+    {
+      "check": "guest-documents-denied",
+      "status": 401,
+      "passed": true
+    }
+  ],
+  "scope": "Actual B Workers Source workspace/documents API and Supabase readback, QA-only document retained, no delete or Meta/payment/email mutation; D1 gates off"
+}

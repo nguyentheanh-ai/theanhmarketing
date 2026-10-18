@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-18T06:17:43.236Z",
+  "checks": [
+    {
+      "aHost": "blue",
+      "status": 307,
+      "returnsBAuthLink": true
+    },
+    {
+      "aHost": "green",
+      "status": 307,
+      "returnsBAuthLink": true
+    }
+  ],
+  "status": "PASS",
+  "scope": "QA actual Blue A->Blue B and Green A->Green B login bridge; callback retargeted only for preview browser QA; cross legacy-key-to-Green not proven"
+}

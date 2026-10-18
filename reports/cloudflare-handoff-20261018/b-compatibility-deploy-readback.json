@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-10-18T06:29:18.221705+00:00",
+  "source": "742a15db852363a7e8abd6c41e13b23c1cbe5793",
+  "worker": "theanh-student-cf-production",
+  "version": "5dbf0a76-d7ed-4699-b9a3-3fa552d8368c",
+  "sourcePreflight": true,
+  "build": "PASS",
+  "tests": {
+    "passed": 1233,
+    "skipped": 14,
+    "filesPassed": 124
+  },
+  "legacyBridge": "on",
+  "nativeAuth": "off",
+  "workspaceData": "off",
+  "secretNames": [
+    "CRON_SECRET",
+    "STUDENT_PORTAL_PROVISION_SECRET",
+    "STUDENT_PORTAL_SESSION_SECRET",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+  ],
+  "scope": "workers.dev only; no main custom domains/cron/Source writer change"
+}

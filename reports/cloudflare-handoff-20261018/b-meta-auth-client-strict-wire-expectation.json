@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-18T06:17:12.925Z",
+  "status": "FAIL",
+  "checks": [
+    {
+      "authenticated": true,
+      "httpStatus": 200,
+      "failureCode": "disconnected",
+      "requestsLoginRecovery": false,
+      "passed": false
+    },
+    {
+      "authenticated": false,
+      "httpStatus": 401,
+      "failureCode": "authentication_required",
+      "requestsLoginRecovery": true,
+      "passed": true
+    }
+  ],
+  "bSource": "b889e08dede93ead2883ab0ccb291a847e1d2291",
+  "scope": "Actual candidate adsRead and recovery classifier against actual Blue API; QA only, no mock provider/app API, not a browser navigation or production cutover"
+}

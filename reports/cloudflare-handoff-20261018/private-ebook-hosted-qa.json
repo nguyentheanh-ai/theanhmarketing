@@ -1,0 +1,103 @@
+{
+  "checkedAt": "2026-10-18T06:36:03.747Z",
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "QA-private-PDF-link",
+      "origin": "https://www.theanhmarketing.com",
+      "status": 200,
+      "sourceStorage": true,
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "passed": true
+    },
+    {
+      "check": "private-PDF-Range",
+      "origin": "https://www.theanhmarketing.com",
+      "range": "bytes=0-63",
+      "status": 206,
+      "bytes": 64,
+      "contentRange": "bytes 0-63/40864427",
+      "pdfHeader": true,
+      "passed": true
+    },
+    {
+      "check": "private-PDF-Range",
+      "origin": "https://www.theanhmarketing.com",
+      "range": "bytes=-64",
+      "status": 206,
+      "bytes": 64,
+      "contentRange": "bytes 40864363-40864426/40864427",
+      "passed": true
+    },
+    {
+      "check": "tampered-private-signature-denied",
+      "origin": "https://www.theanhmarketing.com",
+      "status": 400,
+      "passed": true
+    },
+    {
+      "check": "QA-private-Ebook-page",
+      "origin": "https://www.theanhmarketing.com",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 2377783,
+      "png": true,
+      "hash": "518a435765b007e03e169b46213aa3304e9b2e9f3e3406ee3f7aeeb88aedf675",
+      "passed": true
+    },
+    {
+      "check": "QA-private-PDF-link",
+      "origin": "https://theanh-main-cf-production.12c1thdtheanh.workers.dev",
+      "status": 200,
+      "sourceStorage": true,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "passed": true
+    },
+    {
+      "check": "private-PDF-Range",
+      "origin": "https://theanh-main-cf-production.12c1thdtheanh.workers.dev",
+      "range": "bytes=0-63",
+      "status": 206,
+      "bytes": 64,
+      "contentRange": "bytes 0-63/40864427",
+      "pdfHeader": true,
+      "passed": true
+    },
+    {
+      "check": "private-PDF-Range",
+      "origin": "https://theanh-main-cf-production.12c1thdtheanh.workers.dev",
+      "range": "bytes=-64",
+      "status": 206,
+      "bytes": 64,
+      "contentRange": "bytes 40864363-40864426/40864427",
+      "passed": true
+    },
+    {
+      "check": "tampered-private-signature-denied",
+      "origin": "https://theanh-main-cf-production.12c1thdtheanh.workers.dev",
+      "status": 400,
+      "passed": true
+    },
+    {
+      "check": "QA-private-Ebook-page",
+      "origin": "https://theanh-main-cf-production.12c1thdtheanh.workers.dev",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 2377783,
+      "png": true,
+      "hash": "518a435765b007e03e169b46213aa3304e9b2e9f3e3406ee3f7aeeb88aedf675",
+      "passed": true
+    },
+    {
+      "check": "Blue-Green-private-bytes-equal",
+      "range": "bytes=0-63",
+      "passed": true
+    },
+    {
+      "check": "Blue-Green-private-bytes-equal",
+      "range": "bytes=-64",
+      "passed": true
+    }
+  ],
+  "scope": "QA active Ebook entitlement; actual Source Storage remains source; file access/Range/signed denial proven, not R2 cutover or full PDF checksum"
+}

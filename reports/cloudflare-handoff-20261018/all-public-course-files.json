@@ -1,0 +1,441 @@
+{
+  "checkedAt": "2026-10-18T06:06:38.740450+00:00",
+  "scope": "All 31 public course-resource files, actual HTTP bytes on both hosts; not private purchased files",
+  "status": "PASS",
+  "files": [
+    {
+      "path": "/course-resources/facebook-ads-2026/bo-hinh-anh-ai-tham-khao.zip",
+      "sourceBytes": 3749661,
+      "blue": {
+        "status": 200,
+        "bytes": 3749661,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 3749661,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/bo-ke-hoach-chien-dich-facebook-ads.zip",
+      "sourceBytes": 9519,
+      "blue": {
+        "status": 200,
+        "bytes": 9519,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 9519,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/nghien-cuu-doi-thu-facebook-ads.png",
+      "sourceBytes": 86359,
+      "blue": {
+        "status": 200,
+        "bytes": 86359,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 86359,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/hinh-anh-ai-tham-khao.png",
+      "sourceBytes": 1673340,
+      "blue": {
+        "status": 200,
+        "bytes": 1673340,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 1673340,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/ke-hoach-chien-dich-facebook-ads.png",
+      "sourceBytes": 122620,
+      "blue": {
+        "status": 200,
+        "bytes": 122620,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 122620,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/bo-nghien-cuu-doi-thu-facebook-ads.zip",
+      "sourceBytes": 20519,
+      "blue": {
+        "status": 200,
+        "bytes": 20519,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 20519,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/research-overview.png",
+      "sourceBytes": 108766,
+      "blue": {
+        "status": 200,
+        "bytes": 108766,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 108766,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/measurement-plan-facebook-ads.md",
+      "sourceBytes": 2272,
+      "blue": {
+        "status": 200,
+        "bytes": 2272,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 2272,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/research-competitor-map.png",
+      "sourceBytes": 184142,
+      "blue": {
+        "status": 200,
+        "bytes": 184142,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 184142,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/ads-plan-facebook-ads.md",
+      "sourceBytes": 5449,
+      "blue": {
+        "status": 200,
+        "bytes": 5449,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 5449,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/workflow-nghien-cuu-doi-thu-facebook-ad-library.xlsx",
+      "sourceBytes": 9654,
+      "blue": {
+        "status": 200,
+        "bytes": 9654,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 9654,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/nghien-cuu-doi-thu-facebook-ads-theo-mau-ad-library.xlsx",
+      "sourceBytes": 40327,
+      "blue": {
+        "status": 200,
+        "bytes": 40327,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 40327,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/plan-board-facebook-ads-deep.html",
+      "sourceBytes": 14864,
+      "blue": {
+        "status": 200,
+        "bytes": 14864,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 14864,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/phan-tich-doi-thu-facebook-ads-quet-lai.md",
+      "sourceBytes": 19546,
+      "blue": {
+        "status": 200,
+        "bytes": 19546,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 19546,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/research-sources-limitations.png",
+      "sourceBytes": 131742,
+      "blue": {
+        "status": 200,
+        "bytes": 131742,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 131742,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/evidence-log-facebook-ads.csv",
+      "sourceBytes": 4025,
+      "blue": {
+        "status": 200,
+        "bytes": 4025,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 4025,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/imc-deep-plan-facebook-ads.md",
+      "sourceBytes": 20673,
+      "blue": {
+        "status": 200,
+        "bytes": 20673,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 20673,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/content-plan-facebook-ads.csv",
+      "sourceBytes": 4538,
+      "blue": {
+        "status": 200,
+        "bytes": 4538,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 4538,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/research-opportunities.png",
+      "sourceBytes": 122208,
+      "blue": {
+        "status": 200,
+        "bytes": 122208,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 122208,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/design-media-brief-facebook-ads.md",
+      "sourceBytes": 1891,
+      "blue": {
+        "status": 200,
+        "bytes": 1891,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 1891,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/research-ad-angle.png",
+      "sourceBytes": 138750,
+      "blue": {
+        "status": 200,
+        "bytes": 138750,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 138750,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/assumption-test-plan-facebook-ads.csv",
+      "sourceBytes": 2549,
+      "blue": {
+        "status": 200,
+        "bytes": 2549,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 2549,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/plan-board-facebook-ads-18-phan.html",
+      "sourceBytes": 8534,
+      "blue": {
+        "status": 200,
+        "bytes": 8534,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 8534,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/bao-cao-nghien-cuu-doi-thu-facebook-ad-library.xlsx",
+      "sourceBytes": 15069,
+      "blue": {
+        "status": 200,
+        "bytes": 15069,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 15069,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/approved-samples/phan-tich-ad-library-facebook-ads-ap-dung.md",
+      "sourceBytes": 27321,
+      "blue": {
+        "status": 200,
+        "bytes": 27321,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 27321,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/master-prompts/02_MASTER_PROMPT_TAO_HINH_ANH_HANG_LOAT_CHATGPT.txt",
+      "sourceBytes": 27917,
+      "blue": {
+        "status": 200,
+        "bytes": 27917,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 27917,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/master-prompts/05_MASTER_PROMPT_LAP_KE_HOACH_CONTENT.txt",
+      "sourceBytes": 39798,
+      "blue": {
+        "status": 200,
+        "bytes": 39798,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 39798,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/master-prompts/06_MASTER_PROMPT_LAP_KE_HOACH_QUANG_CAO.txt",
+      "sourceBytes": 47599,
+      "blue": {
+        "status": 200,
+        "bytes": 47599,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 47599,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/master-prompts/01_MASTER_PROMPT_NGHIEN_CUU_DOI_THU_FACEBOOK.txt",
+      "sourceBytes": 27314,
+      "blue": {
+        "status": 200,
+        "bytes": 27314,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 27314,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/master-prompts/03_MASTER_PROMPT_PHAN_TICH_VA_TAI_TAO_VISUAL.txt",
+      "sourceBytes": 37482,
+      "blue": {
+        "status": 200,
+        "bytes": 37482,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 37482,
+        "matchesSource": true
+      }
+    },
+    {
+      "path": "/course-resources/facebook-ads-2026/master-prompts/04_MASTER_PROMPT_XUAT_TOAN_BO_CHI_SO_QUANG_CAO.txt",
+      "sourceBytes": 42284,
+      "blue": {
+        "status": 200,
+        "bytes": 42284,
+        "matchesSource": true
+      },
+      "green": {
+        "status": 200,
+        "bytes": 42284,
+        "matchesSource": true
+      }
+    }
+  ]
+}

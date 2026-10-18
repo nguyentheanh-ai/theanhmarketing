@@ -1,0 +1,8 @@
+{
+  "source": "Blue B production, QA account only",
+  "sessionCookieIssued": 200,
+  "accountsHttpStatus": 409,
+  "accountsStatus": "disconnected",
+  "applicationAuthLayer": null,
+  "scope": "No Meta API token/connection mutated; shows provider disconnect vs application authentication"
+}
