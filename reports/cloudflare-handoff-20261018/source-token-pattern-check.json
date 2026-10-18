@@ -1,0 +1,7 @@
+{
+  "checked_at": "2026-10-18T05:15:12.540698+00:00",
+  "scope": "Added lines relative to fetched migration branch; high-confidence token patterns only, not a complete secret scanner",
+  "added_lines_checked": 12293,
+  "flags": [],
+  "passed": true
+}

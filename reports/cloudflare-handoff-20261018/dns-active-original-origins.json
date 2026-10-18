@@ -1,0 +1,85 @@
+{
+  "checked_at": "2026-10-18T05:19:43.839Z",
+  "zone": {
+    "id": "48a5bf3cb46181f0cc406162be54d8b5",
+    "status": "active",
+    "activated_on": "2026-10-18T05:09:34.617008Z",
+    "name_servers": [
+      "ivy.ns.cloudflare.com",
+      "jason.ns.cloudflare.com"
+    ]
+  },
+  "records": [
+    {
+      "name": "theanhmarketing.com",
+      "type": "A",
+      "content": "216.198.79.1",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "name": "adsplan.theanhmarketing.com",
+      "type": "CNAME",
+      "content": "cname.vercel-dns.com",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "name": "app.theanhmarketing.com",
+      "type": "CNAME",
+      "content": "cname.vercel-dns.com",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "name": "ladipageverify.theanhmarketing.com",
+      "type": "CNAME",
+      "content": "dns.ladipage.com",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "name": "mail.theanhmarketing.com",
+      "type": "CNAME",
+      "content": "mail.resend-dns.com",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "name": "www.theanhmarketing.com",
+      "type": "CNAME",
+      "content": "02a6b1bed5462f9d.vercel-dns-017.com",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "name": "send.theanhmarketing.com",
+      "type": "MX",
+      "content": "feedback-smtp.ap-northeast-1.amazonses.com",
+      "ttl": 300,
+      "proxied": false,
+      "priority": 10
+    },
+    {
+      "name": "_dmarc.theanhmarketing.com",
+      "type": "TXT",
+      "content": "\"v=DMARC1; p=none;\"",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "name": "resend._domainkey.theanhmarketing.com",
+      "type": "TXT",
+      "content": "\"p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRjbx4GLY/KBySYKQ1iAV2cb+pdMSe1xQ2VUF6g/GN9kbFdav2KH4jEyC80FQOKmHvIsBpfy0p2Bseyz1cYv3cBXSdY8Ihwvd29V4dvfN/LgO08FFpvgADtmAZGz58iwrVsbCuC2EM3YHAO2IMfY+EI/75z/L1U53hqlQHWOAgRQIDAQAB\"",
+      "ttl": 300,
+      "proxied": false
+    },
+    {
+      "name": "send.theanhmarketing.com",
+      "type": "TXT",
+      "content": "\"v=spf1 include:amazonses.com ~all\"",
+      "ttl": 300,
+      "proxied": false
+    }
+  ]
+}

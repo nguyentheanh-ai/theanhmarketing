@@ -1,0 +1,9 @@
+{
+  "checked_at": "2026-10-18T05:05:26.226Z",
+  "worker": "theanh-student-cf-production-production",
+  "deleted": true,
+  "status": 200,
+  "errors": [],
+  "absent_after_delete": true,
+  "actual_workers_preserved": true
+}

@@ -1,0 +1,43 @@
+{
+  "checked_at": "2026-10-18T05:05:58.981079+00:00",
+  "approval": "Owner typed approval of five remaining actions",
+  "before_sha256": "b99578010b9a151951b9ab13990dda126efa332e57820f318df974e0fd1bb42d",
+  "after_sha256": "b1d0e55e9732ce77a64deb9ebca36e9fd50251e16040de896c3af54d80510ebd",
+  "added": [
+    {
+      "project_id": "theanh-main",
+      "root": {
+        "path": "/Users/theanh/CodexProjects/Kinh doanh/_cloudflare-migration/main",
+        "role": "release",
+        "deploy_allowed": true,
+        "deployment_provider": "cloudflare",
+        "allowed_branches": [
+          "codex/cloudflare-staging-main-20261013"
+        ],
+        "cloudflare": {
+          "account_id": "8035ac71ae1041614760882f4b8862b2",
+          "worker_name": "theanh-main-cf-production"
+        }
+      }
+    },
+    {
+      "project_id": "student-resource-app",
+      "root": {
+        "path": "/Users/theanh/CodexProjects/TheAnh-Web/worktrees/b-cf-production-20261017",
+        "role": "release",
+        "deploy_allowed": true,
+        "deployment_provider": "cloudflare",
+        "allowed_branches": [
+          "codex/b-cf-production-20261017"
+        ],
+        "cloudflare": {
+          "account_id": "8035ac71ae1041614760882f4b8862b2",
+          "worker_name": "theanh-student-cf-production"
+        }
+      }
+    }
+  ],
+  "existing_roots_unchanged": true,
+  "existing_vercel_allowed_branches_unchanged": true,
+  "backup_path": "/Users/theanh/CodexProjects/Kinh doanh/_cloudflare-migration/reports/release-control-20261018/projects-registry-before-cf.json"
+}

@@ -1,5 +1,5 @@
 {
-  "status": "PROPOSAL_NOT_APPLIED",
+  "status": "APPLIED_OWNER_APPROVED_20261018",
   "scope": "Cloudflare release registration only; existing Vercel roots and guards preserved",
   "account_id": "8035ac71ae1041614760882f4b8862b2",
   "registrations": [
@@ -35,5 +35,6 @@
         }
       }
     }
-  ]
+  ],
+  "receipt": "reports/cloudflare-handoff-20261018/release-registration-applied.json"
 }

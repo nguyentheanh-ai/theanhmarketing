@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-10-18T05:20:29.416173+00:00",
+  "target": "https://theanh-main-cf-production.12c1thdtheanh.workers.dev/api/resend/webhook",
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "valid_signature_invalid_json",
+      "status": 400,
+      "expected_status": 400,
+      "passed": true
+    },
+    {
+      "check": "wrong_signature",
+      "status": 401,
+      "expected_status": 401,
+      "passed": true
+    },
+    {
+      "check": "expired_signature",
+      "status": 401,
+      "expected_status": 401,
+      "passed": true
+    }
+  ],
+  "scope": "Signature acceptance/rejection only; invalid JSON stops before event handling. No delivery/payment/valid-event idempotency claim."
+}
