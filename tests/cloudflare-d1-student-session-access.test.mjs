@@ -5,7 +5,7 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {build} from 'esbuild';
 const bundled=await build({stdin:{contents:'export * from "./lib/cloudflare/d1-student-session-access";export * from "./lib/cloudflare/d1-course-content";export * from "./lib/cloudflare/d1-student-http";',resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',write:false});
-const {readD1StudentSessionAccess,readD1StudentLesson,prepareD1CourseContent,handleD1StudentHttp}=await import('data:text/javascript;base64,'+Buffer.from(bundled.outputFiles[0].text).toString('base64'));
+const {readD1StudentSessionProgress,readD1StudentSessionAccess,readD1StudentLesson,prepareD1CourseContent,handleD1StudentHttp}=await import('data:text/javascript;base64,'+Buffer.from(bundled.outputFiles[0].text).toString('base64'));
 const now=Date.parse('2026-10-15T00:00:00Z'),stamp=new Date(now).toISOString(),project='vsxxgdzwtscuxcmjfckt';
 const token='a'.repeat(43),hash=createHash('sha256').update(token).digest('hex');
 function fixture(t){
@@ -56,4 +56,25 @@ test('lesson HTTP rejects subject injection/duplicate keys and does not serializ
  const request=query=>new Request(origin+'/api/cloudflare-student/lesson?'+query,{headers:{Cookie:'__Host-tam-session='+token}});
  for(const query of ['courseSlug=course-a&lessonId='+cid(4)+'&userId=user-b','courseSlug=course-a&courseSlug=course-b&lessonId='+cid(4),'courseSlug=course-a'])assert.equal((await handleD1StudentHttp(request(query),options)).status,400);
  const response=await handleD1StudentHttp(request('courseSlug=course-a&lessonId='+cid(4)),options);assert.equal(response.status,200);assert.equal(response.headers.get('Cache-Control'),'private, no-store');const body=await response.json();assert.equal(body.currentLesson.id,cid(4));assert.equal(body.access,undefined);assert.equal(body.user,undefined);assert.equal(body.content,undefined);assert(!JSON.stringify(body).includes('evidenceJson'));
+});
+
+test('dashboard progress uses the opaque session and rechecks revocation/cohort in the same snapshot',async t=>{
+ const f=fixture(t),read=allowedUserIds=>readD1StudentSessionProgress(f.db,token,{now,sessionTtlMs:3600000,allowedUserIds});
+ const result=await read();assert.equal(result.status,'student');assert.equal(result.access.progressBySlug['course-a'],0);assert.equal(result.access.progressBySlug['course-b'],undefined);
+ assert.equal((await read([])).status,'guest');
+ f.race(()=>f.sql.prepare('UPDATE d1_auth_sessions SET revoked_at=?').run(stamp));
+ assert.equal((await read()).status,'guest');
+});
+test('dashboard progress HTTP rejects injected subjects, cross-site requests and serializes no access evidence',async t=>{
+ const f=fixture(t),origin='https://fixture.example.invalid',path='/api/cloudflare-student/dashboard-progress';
+ const options={db:f.db,origin,now,sessionTtlMs:3600000};
+ const call=(query='',headers={Cookie:'__Host-tam-session='+token},method='GET')=>handleD1StudentHttp(new Request(origin+path+query,{method,headers}),options);
+ const good=await call();assert.equal(good.status,200);assert.equal(good.headers.get('Cache-Control'),'private, no-store');assert.equal(good.headers.get('Vary'),'Cookie');
+ const body=await good.json();assert.deepEqual(body.ownedSlugs,['course-a']);assert.equal(body.progressBySlug['course-a'],0);
+ for(const name of ['user','access','legacyAccessProof','enrollmentIdsBySlug','completedLessonIds','userId'])assert.equal(body[name],undefined);
+ for(const query of ['?userId=user-b','?courseSlug=course-b','?email=b@example.invalid'])assert.equal((await call(query)).status,400);
+ assert.equal((await call('',{})).status,401);assert.equal((await call('',{},'POST')).status,405);
+ assert.equal((await call('',{Cookie:'__Host-tam-session='+token,Origin:'https://foreign.example.invalid'})).status,403);
+ assert.equal((await call('',{Cookie:'__Host-tam-session='+token,'Sec-Fetch-Site':'cross-site'})).status,403);
+ f.sql.exec("UPDATE d1_access_sync_state SET status='stale'");assert.equal((await call()).status,503);
 });

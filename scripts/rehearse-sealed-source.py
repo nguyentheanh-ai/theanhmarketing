@@ -18,7 +18,7 @@ sealed = importlib.util.module_from_spec(SPEC); SPEC.loader.exec_module(sealed)
 B_SOURCE = Path('/Users/theanh/CodexProjects/TheAnh-Web/worktrees/b-cf-production-20261017')
 SAFE_FAILURES = {'LEARNING_SOURCE_SCHEMA_UNAVAILABLE', 'LEARNING_TARGET_REJECTED',
                  'LEARNING_TARGET_READBACK_MISMATCH', 'LEARNING_PERMISSION_PARITY_MISMATCH',
-                 'LEARNING_ENROLLMENT_PARITY_MISMATCH', 'LEARNING_CROSS_SUBJECT_ACCEPTED',
+                 'LEARNING_ENROLLMENT_PARITY_MISMATCH', 'LEARNING_CROSS_SUBJECT_ACCEPTED', 'LEARNING_PROGRESS_PARITY_MISMATCH', 'Ambiguous source progress order',
                  'B_AUTHORIZATION_SNAPSHOT_STALE', 'B_AUTHORIZATION_PROJECTION_REJECTED',
                  'B_AUTHORIZATION_PROFILE_MISMATCH', 'B_AUTHORIZATION_MEMBERSHIP_MISMATCH',
                  'B_AUTHORIZATION_CROSS_WORKSPACE_ACCEPTED'}
@@ -43,7 +43,10 @@ def main():
     parser.add_argument('--directory', required=True)
     parser.add_argument('--before-directory')
     parser.add_argument('--qa-file', help='Existing private QA credential file; never passed as a command argument to Node')
+    parser.add_argument('--with-progress', action='store_true', help='Compare dashboard percentages during the offline learning probe')
     args = parser.parse_args()
+    if args.with_progress and args.operation != 'learning-access':
+        raise ValueError('progress scope mismatch')
     if (args.operation == 'b-authorization' and args.project != 'b') or (args.operation in ['orders', 'courses', 'learning-access', 'admin-orders'] and args.project != 'a') or (args.qa_file and args.operation != 'auth'):
         raise ValueError('operation scope mismatch')
     data = {'project': args.project, 'archive': archive(args.directory),
@@ -79,6 +82,7 @@ def main():
                             'd1-admin-role-prototype.sql', 'd1-native-order-settlement.sql']]
     elif args.operation == 'learning-access':
         script = 'probe-sealed-learning-access.mjs'
+        data['verifyProgress'] = args.with_progress
         data['schemas'] = [(ROOT / 'scripts' / name).read_text() for name in
                            ['d1-course-access-source-prototype.sql', 'd1-lms-compatibility-prototype.sql',
                             'd1-lms-legacy-enrollment-owners-prototype.sql']]

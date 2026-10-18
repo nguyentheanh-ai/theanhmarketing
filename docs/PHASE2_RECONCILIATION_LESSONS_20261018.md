@@ -47,3 +47,7 @@
 ## VERIFIED — RPC HTTP nhiều lượt chỉ có đối soát hai đầu cửa sổ
 
 Áp dụng: mẫu55lượt RPC read-only A.11bảng chụp trước/sau bằng nhau và expiry không vượt cửa sổ; vẫn không loại trừ update rồi phục hồi giữa các request. Đã đổi receipt thành inputRowsEqualAtWindowEndpoints và transientSourceChangesExcluded=false; sameMvcc/writerFenced=false. Không dùng mẫu này làm final consistency/cutover proof. Management SQL thiếu EXECUTE dừng trước gọi, không đổi quyền.
+
+## VERIFIED — Tiến độ Source có hai mẫu số và thứ tự enrollment chưa xác định
+
+Áp dụng: services/lmsService.ts mapEnrollment/getStudentLmsAccess hiện hành. BySlug được thay bằng RPC playable count, byId fallback vẫn published count gồm bài rỗng. Đã tái hiện fixture50%/33% và giữ cùng phép tính. RPC không ORDER BY nên nhiều enrollment có giá trị khác nhau không có thứ tự ổn định: native từ chối thay vì chọn UUID/updated_at mới; không tự sửa thứ tự Source. Archive444subject và mẫu SourceRPC5subject đạt; chưa chứng minh mọi trạng thái phát sinh hoặc tương thích thứ tự cho trường hợp xung đột.

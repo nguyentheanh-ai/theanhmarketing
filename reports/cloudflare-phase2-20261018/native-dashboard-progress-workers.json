@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-18T12:45:27.594Z",
+  "checks": 5,
+  "scope": "Local real workerd + D1 guarded HTTP dashboard progress with synthetic fixtures",
+  "outboundFetches": 0,
+  "productionWritten": false,
+  "hostedUiVerified": false,
+  "readyForCutover": false
+}

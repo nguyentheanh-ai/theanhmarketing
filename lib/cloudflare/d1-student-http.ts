@@ -1,7 +1,7 @@
 import {verifyNativeAuthContext} from '@/lib/cloudflare/native-auth-context';
 import type {AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
 import {readD1SessionCookie,readBoundedAuthJson} from '@/lib/cloudflare/d1-auth-http';
-import {readD1StudentSessionAccess,readD1StudentLesson} from '@/lib/cloudflare/d1-student-session-access';
+import {readD1StudentSessionAccess,readD1StudentSessionProgress,readD1StudentLesson} from '@/lib/cloudflare/d1-student-session-access';
 import {markD1SessionLessonCompleted} from '@/lib/cloudflare/d1-lesson-progress';
 import type {D1ProgressPublicationProof} from '@/lib/cloudflare/d1-progress-publication';
 type Options={db:AuthDatabase;origin:string;sessionTtlMs:number;now?:number;allowedUserIds?:readonly string[];qaWriteUserIds?:readonly string[];requirePublicationProof?:boolean;authContextKey?:string;
@@ -14,12 +14,21 @@ export async function handleD1StudentHttp(request:Request,options:Options){
  const origin=new URL(options.origin),url=new URL(request.url);
  if(origin.protocol!=='https:'||origin.origin!==options.origin)throw new Error('Invalid student origin');
  if(url.origin!==options.origin)return reply(403,bad);
- const access=url.pathname==='/api/cloudflare-student/access',lesson=url.pathname==='/api/cloudflare-student/lesson',progress=url.pathname==='/api/cloudflare-student/progress';
- if(!access&&!lesson&&!progress)return reply(404,bad);
- if(((access||lesson)&&request.method!=='GET')||(progress&&request.method!=='POST'))return reply(405,bad);
+ const access=url.pathname==='/api/cloudflare-student/access',lesson=url.pathname==='/api/cloudflare-student/lesson',progress=url.pathname==='/api/cloudflare-student/progress',dashboardProgress=url.pathname==='/api/cloudflare-student/dashboard-progress';
+ if(!access&&!lesson&&!progress&&!dashboardProgress)return reply(404,bad);
+ if(((access||lesson||dashboardProgress)&&request.method!=='GET')||(progress&&request.method!=='POST'))return reply(405,bad);
+ if(dashboardProgress&&(request.headers.get('Origin')!==null&&request.headers.get('Origin')!==options.origin||request.headers.get('Sec-Fetch-Site')==='cross-site'))return reply(403,bad);
  if(progress&&(request.headers.get('Origin')!==options.origin||request.headers.get('Sec-Fetch-Site')==='cross-site'))return reply(403,bad);
  const token=readD1SessionCookie(request);
  try{
+  if(dashboardProgress){
+   if(url.search)return reply(400,bad);
+   const result=await readD1StudentSessionProgress(options.db,token,options);
+   if(result.status==='guest')return reply(401,{ok:false,code:'LOGIN_REQUIRED'});
+   if(result.status==='password-change-required')return reply(409,{ok:false,code:'PASSWORD_CHANGE_REQUIRED'});
+   if(!('progressBySlug' in result.access)||!('lessonCountsBySlug' in result.access))throw Error('Student progress unavailable');
+   return reply(200,{ok:true,ownedSlugs:result.access.ownedSlugs,progressBySlug:result.access.progressBySlug,lessonCountsBySlug:result.access.lessonCountsBySlug});
+  }
   if(lesson){
    const keys=Array.from(url.searchParams.keys());
    if(keys.length!==2||new Set(keys).size!==2||keys.some(key=>!['courseSlug','lessonId'].includes(key)))return reply(400,bad);

@@ -16,6 +16,24 @@ const fields={contacts:['id','email'],enrollments:['id','contact_id','user_id','
   leads:['id','email','source','created_at','deleted_at']};
 const normalize=value=>typeof value==='string'?value.trim().toLowerCase():'';
 const stableSet=values=>JSON.stringify([...new Set(values)].sort());
+export function sourceProgressExpectations(tables,enrollments,byCourse,lessonCounts,courseSlug){
+  const catalog=tables.courses.filter(c=>courseSlug===undefined||c.slug===courseSlug);
+  const byId=new Map(catalog.map(c=>[c.id,c])),bySlug=new Map(catalog.map(c=>[c.slug,c]));
+  const publishedCount=id=>{const modules=new Set((tables.course_modules??[]).filter(m=>m.course_id===id&&(m.status??'published')==='published').map(m=>m.id));
+    return (tables.lessons??[]).filter(l=>modules.has(l.module_id)&&(l.status??'published')==='published').length;};
+  const playableCount=id=>{const modules=new Set((tables.course_modules??[]).filter(m=>m.course_id===id&&(m.status??'published')==='published').map(m=>m.id));
+    return (tables.lessons??[]).filter(l=>modules.has(l.module_id)&&(l.status??'published')==='published'&&['youtube_url','embed_url','content'].some(k=>typeof l[k]==='string'&&l[k].trim())).length;};
+  const counts=lessonCounts??Object.fromEntries(catalog.map(c=>[c.slug,playableCount(c.id)]));
+  const progress=Object.fromEntries(Object.entries(byCourse).map(([slug,ids])=>{
+    const e=enrollments.find(e=>e.id===ids[0]);if(!e)throw Error('LEARNING_PROGRESS_REFERENCE_UNAVAILABLE');
+    const resolved=e.course_slug||e.metadata?.course_slug||byId.get(e.course_id)?.slug;
+    const total=bySlug.has(resolved)?counts[resolved]:byId.has(e.course_id)?publishedCount(e.course_id):0;
+    const completed=(tables.course_progress??[]).filter(p=>p.enrollment_id===e.id&&(p.status==='completed'||p.completed_at)).length;
+    const number=Number(e.metadata?.progress_percent??0),stored=Number.isFinite(number)?number:0;
+    return [slug,Math.max(0,Math.min(100,total>0?Math.round(completed/total*100):stored))];
+  }));
+  return {progressBySlug:progress,lessonCountsBySlug:counts};
+}
 export function sourceLearningExpectations(tables,subject,now,getCourseAccessSlugs,courseSlug){
   // Match the CURRENT Source service selector: ILIKE on the stored email does
   // NOT trim stored values. Wildcard characters in the supplied email are escaped.
@@ -39,7 +57,7 @@ export function sourceLearningExpectations(tables,subject,now,getCourseAccessSlu
   const ids=new Set(matchingPublished.map(e=>e.id));
   const completed=tables.course_progress.filter(p=>ids.has(p.enrollment_id)&&(p.status==='completed'||p.completed_at)).map(p=>p.lesson_id);
   return {legacyOwnedSlugs:legacy,lmsOwnedSlugs:Object.keys(byCourse),ownedSlugs:[...legacy,...Object.keys(byCourse)],
-    completedLessonIds:completed,enrollmentIdsBySlug:byCourse};
+    completedLessonIds:completed,enrollmentIdsBySlug:byCourse,...sourceProgressExpectations(tables,matching,byCourse,undefined,courseSlug)};
 }
 export function rpcLearningExpectations(tables,rpc,legacyOwnedSlugs,courseSlug){
   if(!rpc||!Array.isArray(rpc.enrollments)||!Array.isArray(rpc.progress)||!rpc.lesson_counts||typeof rpc.lesson_counts!=='object')throw Error('LEARNING_RPC_ORACLE_UNAVAILABLE');
@@ -49,7 +67,7 @@ export function rpcLearningExpectations(tables,rpc,legacyOwnedSlugs,courseSlug){
   const byCourse=Object.fromEntries(published.map(c=>[c.slug,matching.filter(e=>e.resolvedSlug===c.slug||e.course_id===c.id).map(e=>e.id)]).filter(([,ids])=>ids.length));
   const ids=new Set(Object.values(byCourse).flat());
   return {legacyOwnedSlugs,lmsOwnedSlugs:Object.keys(byCourse),ownedSlugs:[...legacyOwnedSlugs,...Object.keys(byCourse)],
-    completedLessonIds:rpc.progress.filter(p=>ids.has(p.enrollment_id)&&(p.status==='completed'||p.completed_at)).map(p=>p.lesson_id),enrollmentIdsBySlug:byCourse};
+    completedLessonIds:rpc.progress.filter(p=>ids.has(p.enrollment_id)&&(p.status==='completed'||p.completed_at)).map(p=>p.lesson_id),enrollmentIdsBySlug:byCourse,...sourceProgressExpectations({...tables,course_progress:rpc.progress},matching,byCourse,rpc.lesson_counts,courseSlug)};
 }
 export async function probeLearningAccess(input,core){
   const tables=Object.fromEntries([...Object.keys(fields),'courses','course_modules','lessons','lesson_resources','course_resources'].map(n=>[n,[]]));
@@ -118,7 +136,7 @@ export async function probeLearningAccess(input,core){
     const now=Date.parse(input.archive.manifest.header.capturedAt),read=async(q,p)=>sql.prepare(q).get(...p)??null;
     for(const user of checkedUsers){
       if(['owner','editor'].includes(user.appMetadata?.admin_role)||core.isAdminEmail(user.email)){knownAdminsSkipped++;continue;}
-      const subject={id:user.id,email:user.email},actual=await core.readD1StudentCourseAccess(read,subject,{now});
+      const subject={id:user.id,email:user.email},actual=await (input.verifyProgress?core.readD1StudentCourseProgress:core.readD1StudentCourseAccess)(read,subject,{now});
       const expectedAt=scope=>{
         const reference=sourceLearningExpectations(tables,subject,now,core.getCourseAccessSlugs,scope);
         if(!oracle)return reference;
@@ -132,6 +150,11 @@ export async function probeLearningAccess(input,core){
         rpcResultsCompared++;return result;
       };
       const wanted=expectedAt();
+      if(input.verifyProgress){
+        for(const slug of actual.ownedSlugs)if(actual.progressBySlug[slug]!== (wanted.progressBySlug[slug]??0))throw Error('LEARNING_PROGRESS_PARITY_MISMATCH');
+        const entries=value=>JSON.stringify(Object.entries(value).sort(([a],[b])=>a.localeCompare(b)));
+        if(entries(actual.lessonCountsBySlug)!==entries(wanted.lessonCountsBySlug))throw Error('LEARNING_PROGRESS_PARITY_MISMATCH');
+      }
       for(const name of ['legacyOwnedSlugs','lmsOwnedSlugs','ownedSlugs','completedLessonIds'])if(stableSet(actual[name])!==stableSet(wanted[name]))throw Error('LEARNING_PERMISSION_PARITY_MISMATCH');
       for(const slug of new Set([...Object.keys(actual.enrollmentIdsBySlug),...Object.keys(wanted.enrollmentIdsBySlug)]))
         if(stableSet(actual.enrollmentIdsBySlug[slug]??[])!==stableSet(wanted.enrollmentIdsBySlug[slug]??[]))throw Error('LEARNING_ENROLLMENT_PARITY_MISMATCH');
@@ -154,18 +177,18 @@ export async function probeLearningAccess(input,core){
       allSourceSubjectsCompared:checkedUsers.length===users.length,selectedSubjects:checkedUsers.length,
       sourceRpcExecuted:Boolean(oracle),sourceRpcResultsCompared:rpcResultsCompared,
       reference:oracle?'POSTGRESQL_RPC_WITH_REPOSITORY_POSTPROCESSING_AND_ENTITLEMENT_RULES_CONSISTENCY_CHECKED_BY_CALLER':'CURRENT_REPOSITORY_SOURCE_SERVICE_PREDICATES_AND_SHARED_ENTITLEMENT_RULES',
-      extraConfiguredOwnerRoleParityVerified:false,progressPercentParityVerified:false,progressWritesExecuted:0,
+      extraConfiguredOwnerRoleParityVerified:false,progressPercentParityVerified:Boolean(input.verifyProgress),progressWritesExecuted:0,
       productionWritten:false,remoteD1Written:false,readyForCutover:false};
   }finally{sql.close();}
 }
 async function main(){
   let text='';for await(const part of process.stdin)text+=part;
   const input=JSON.parse(text),root=path.resolve(input.compilerRoot),{build}=createRequire(path.join(root,'package.json'))('esbuild');
-  const bundle=await build({stdin:{contents:'export {readD1StudentCourseAccess,scopeD1StudentAccessSql} from "./lib/cloudflare/d1-course-access";export {getCourseAccessSlugs,isAdminEmail} from "./lib/course-access";export {mapDbCourseToCourse} from "./lib/courses/course-projection";',resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',write:false,tsconfig:'tsconfig.json',nodePaths:[path.join(root,'node_modules')]});
+  const bundle=await build({stdin:{contents:'export {readD1StudentCourseProgress} from "./lib/cloudflare/d1-student-progress-read";export {readD1StudentCourseAccess,scopeD1StudentAccessSql} from "./lib/cloudflare/d1-course-access";export {getCourseAccessSlugs,isAdminEmail} from "./lib/course-access";export {mapDbCourseToCourse} from "./lib/courses/course-projection";',resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',write:false,tsconfig:'tsconfig.json',nodePaths:[path.join(root,'node_modules')]});
   const core=await import('data:text/javascript;base64,'+Buffer.from(bundle.outputFiles[0].text).toString('base64'));
   process.stdout.write(JSON.stringify(await probeLearningAccess(input,core)));
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){
-  try{await main();}catch(e){const allowed=['LEARNING_SOURCE_SCHEMA_UNAVAILABLE','LEARNING_TARGET_REJECTED','LEARNING_TARGET_READBACK_MISMATCH','LEARNING_PERMISSION_PARITY_MISMATCH','LEARNING_ENROLLMENT_PARITY_MISMATCH','LEARNING_CROSS_SUBJECT_ACCEPTED'];
+  try{await main();}catch(e){const allowed=['LEARNING_SOURCE_SCHEMA_UNAVAILABLE','LEARNING_TARGET_REJECTED','LEARNING_TARGET_READBACK_MISMATCH','LEARNING_PERMISSION_PARITY_MISMATCH','LEARNING_ENROLLMENT_PARITY_MISMATCH','LEARNING_CROSS_SUBJECT_ACCEPTED','LEARNING_PROGRESS_PARITY_MISMATCH','Ambiguous source progress order'];
     process.stderr.write((allowed.includes(e?.message)?e.message:'LEARNING_SNAPSHOT_UNAVAILABLE')+'\n');process.exitCode=2;}
 }

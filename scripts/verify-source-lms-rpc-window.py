@@ -6,6 +6,7 @@ inputs and RPC results stay in RAM/captured child stdin. This is a stable-window
 sample, NOT one MVCC snapshot across the HTTP requests or a final writer fence.
 """
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import argparse
 import datetime
 import importlib.util
 import json
@@ -19,6 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 PROJECT = 'vsxxgdzwtscuxcmjfckt'
 STAGE = 'credentials'
 RPC_READS_COMPLETED = 0
+REPORT_NAME = 'source-lms-rpc-window-a.json'
 
 
 def module(name, path):
@@ -74,7 +76,16 @@ def assert_window_endpoints(before, after, comparison):
 
 
 def main():
-    global STAGE, RPC_READS_COMPLETED
+    global STAGE, RPC_READS_COMPLETED, REPORT_NAME
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--with-progress', action='store_true')
+    args = parser.parse_args()
+    if args.with_progress:
+        REPORT_NAME = 'source-lms-rpc-progress-window-a.json'
+    STAGE = 'source-rpc-contract'
+    check = subprocess.run(['python3', str(ROOT / 'scripts/verify-source-lms-rpc.py')], capture_output=True, text=True, timeout=90)
+    if check.returncode or json.loads(check.stdout).get('status') != 'TESTED_SOURCE_LMS_RPC_CONTRACT':
+        raise ValueError('SOURCE_READ_RPC_CONTRACT_UNVERIFIED')
     live = module('live_window_input', ROOT / 'scripts/verify-live-lms-rpc-parity.py')
     sealed = live.sealed
     policy = module('policy_window_http', ROOT / 'scripts/read-source-auth-policy.py')
@@ -146,7 +157,7 @@ def main():
     comparison = json.loads(result.stdout)
     assert_window_endpoints(before, after, comparison)
     STAGE = 'native-parity-comparison'
-    data = {'project': 'a', 'archive': before_archive, 'masterSecret': master, 'rpcOracle': oracle,
+    data = {'verifyProgress': args.with_progress, 'project': 'a', 'archive': before_archive, 'masterSecret': master, 'rpcOracle': oracle,
             'subjectIds': [u['id'] for u in selected], 'compilerRoot': str(ROOT),
             'schemas': [(ROOT / 'scripts' / name).read_text() for name in ['d1-course-access-source-prototype.sql', 'd1-lms-compatibility-prototype.sql', 'd1-lms-legacy-enrollment-owners-prototype.sql']]}
     result = subprocess.run(['node', str(ROOT / 'scripts/probe-sealed-learning-access.mjs')], cwd=ROOT, capture_output=True, text=True,
@@ -162,7 +173,7 @@ def main():
                   sourceWindowStartedAt=before['capturedAt'], sourceWindowEndedAt=after['capturedAt'],
                   rpcReadsCompleted=RPC_READS_COMPLETED, sourceWriterFenced=False, expiresDuringWindow=False,
                   sourceLoginExecuted=False, sourceDataWritten=False, serviceRolePersisted=False)
-    (ROOT / 'reports/cloudflare-phase2-20261018/source-lms-rpc-window-a.json').write_text(json.dumps(report, indent=2) + '\n')
+    (ROOT / 'reports/cloudflare-phase2-20261018' / REPORT_NAME).write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report))
 
 
@@ -174,5 +185,5 @@ if __name__ == '__main__':
         report = {'status': 'READ_ONLY_RPC_SAMPLE_NOT_VERIFIED', 'stage': STAGE,
                   'reason': str(error) if isinstance(error, ValueError) and str(error) in safe else 'PRIVATE_DETAILS_WITHHELD',
                   'rpcReadsCompleted': RPC_READS_COMPLETED, 'productionWritten': False, 'readyForCutover': False}
-        (ROOT / 'reports/cloudflare-phase2-20261018/source-lms-rpc-window-a.json').write_text(json.dumps(report, indent=2) + '\n')
+        (ROOT / 'reports/cloudflare-phase2-20261018' / REPORT_NAME).write_text(json.dumps(report, indent=2) + '\n')
         print(json.dumps(report)); sys.exit(2)

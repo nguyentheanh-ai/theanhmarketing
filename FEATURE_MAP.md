@@ -1782,3 +1782,11 @@ Không deploy/đổi writer/Auth/Storage/secret. Image đã đóng sau probe. H�
 - Công cụ Python11test và Node reference3test đạt; reviewer không thấy blocker trong chunked Keychain/oracle. Báo cáo chi tiết không PII: `private-storage-a-readback.json`, `source-auth-policy.json`, `source-lms-rpc-window-a.json` trong reports/cloudflare-phase2-20261018. Phiên bản script mới thêm kiểm clock và mô tả đúng giới hạn hai đầu cửa sổ.
 
 IN PROGRESS: dashboard tiến độ, admin/CRM đầy đủ, provider B, rolling Auth/phiên cũ, staging native, source fence/delta và rollback giữ ghi mới. Không deploy, không đổi nguồn ghi/Auth/Storage production, không gửi email hoặc hủy dịch vụ. Supabase và Blue B bridge vẫn cần giữ.
+
+### 18/10 — Tiến độ dashboard native
+
+TESTED backend đọc D1 cùng statement với quyền học/phiên/version/cohort/freshness. Giữ mẫu số playable theo slug; fallback course ID dùng số bài xuất bản theo Source; khóa chưa có bài dùng metadata số hữu hạn, chặn0–100. Source RPC không ORDER BY nhưng dashboard chọn enrollment đầu: candidate từ chối nếu nhiều enrollment có phần trăm khác nhau, không tự chọn thứ tự mới. Đây là gate cần giải quyết trước primary, không đổi Source.
+
+Archive11:41:55UTC:444học viên/3admin bỏ qua,4.440scope,444đổi chéo danh tính bị chặn; phần trăm dashboard/quyền/bài hoàn thành khớp reference repository. Source thật12:44:18–12:45:08UTC:5subject/55RPC đọc khớp thêm phần trăm;11bảng bằng nhau tại hai đầu cửa sổ, không có fence/cùngMVCC, không loại trừ thay đổi tạm ở giữa. Không ghi tiến độ/đăng nhập Source.
+
+HTTP candidate `/api/cloudflare-student/dashboard-progress` trả đúng field, no-store/Vary Cookie, không nhận user/email/course từ query; guest/cross-site/stale bị chặn. Native router chỉ staging QA, không production.18Node focused +5nhóm actual workerd/D1 cục bộ PASS; typecheck/scopedlint PASS. Hạng mục mới là phép đọc/backend, **chưa nối trang dashboard/UI hoặc deploy**. Receipt `sealed-dashboard-progress-a.json`, `source-lms-rpc-progress-window-a.json`, `native-dashboard-progress-workers.json`. Supabase còn writer/Auth/Storage; IN PROGRESS toàn migration.

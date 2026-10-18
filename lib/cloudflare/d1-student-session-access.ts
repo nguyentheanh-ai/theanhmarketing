@@ -3,12 +3,13 @@ import {assertD1AuthMirrorReady,authMirrorReadySql} from '@/lib/cloudflare/d1-au
 import {readD1StudentCourseAccess,scopeD1StudentAccessSql} from '@/lib/cloudflare/d1-course-access';
 import {d1CourseContentRowSql,decodeD1PublishedCourseRow} from '@/lib/cloudflare/d1-course-content';
 import {getOrderedCourseLessons} from '@/lib/course-learning';
+import {deriveD1StudentProgress,withD1StudentProgressSql} from '@/lib/cloudflare/d1-student-progress-read';
 
 const projectId='vsxxgdzwtscuxcmjfckt';
 // Student read boundary for app A only. Caller provides an opaque cookie token,
 // never a client-supplied subject/email/admin flag. No progress writes here.
 type Policy={sessionTtlMs:number;now?:number;allowedUserIds?:readonly string[]};
-async function readSnapshot(db:AuthDatabase,token:string,policy:Policy,courseSlug?:string){
+async function readSnapshot(db:AuthDatabase,token:string,policy:Policy,courseSlug?:string,includeProgress=false){
  const now=policy.now??Date.now();
  const session=await getD1AuthSession(db,token,{...policy,projectId,now});
  if(!session)return {status:'guest' as const};
@@ -29,21 +30,27 @@ async function readSnapshot(db:AuthDatabase,token:string,policy:Policy,courseSlu
  AND ${authMirrorReadySql(4,6,3)} AND (?7='null' OR EXISTS(SELECT 1 FROM json_each(?7) allowed WHERE allowed.value=u.id))`;
  let denied=false;
  let content:unknown;
+ let progressSnapshot:unknown;
  try{
   const access=await readD1StudentCourseAccess(async(sql,args)=>{
-   const projection=courseSlug===undefined?sql:scopeD1StudentAccessSql(sql,8).replace('SELECT u.admin_role,',`SELECT u.admin_role, (${d1CourseContentRowSql(8,4,3,9)}) AS course_content_json,`);
+   const progressSql=includeProgress?withD1StudentProgressSql(sql):sql;
+   const projection=courseSlug===undefined?progressSql:scopeD1StudentAccessSql(progressSql,8).replace('SELECT u.admin_role,',`SELECT u.admin_role, (${d1CourseContentRowSql(8,4,3,9)}) AS course_content_json,`);
    const value=await db.first(projection+guard,[...args,tokenHash,mirror.floor,policy.allowedUserIds===undefined?'null':JSON.stringify(policy.allowedUserIds),...(courseSlug===undefined?[]:[courseSlug,300000])]);
    content=value?.course_content_json;
+   progressSnapshot=value;
    if(!value)denied=true;
    return value;
   },session.user,{now});
-  return {status:'student' as const,user:session.user,access,...(courseSlug===undefined?{}:{content})};
+  return {status:'student' as const,user:session.user,access:includeProgress?{...access,...deriveD1StudentProgress(progressSnapshot,access)}:access,...(courseSlug===undefined?{}:{content})};
  }catch(error){
   if(denied){await assertD1AuthMirrorReady(db,{projectId,now});return {status:'guest' as const};}
   throw error;
  }
 }
 export async function readD1StudentSessionAccess(db:AuthDatabase,token:string,policy:Policy){return readSnapshot(db,token,policy);}
+// Native dashboard reader; not mounted into the production dashboard yet.
+// Uses the same opaque-session, account-version and mirror guards as /learn.
+export async function readD1StudentSessionProgress(db:AuthDatabase,token:string,policy:Policy){return readSnapshot(db,token,policy,undefined,true);}
 
 // Auth, entitlement inputs, progress and content are captured by one SQLite
 // statement. Content never leaves the backend before the rights decision.
