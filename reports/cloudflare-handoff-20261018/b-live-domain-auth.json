@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-10-18T10:36:22.505Z",
+  "status": "PASS",
+  "edgePinned": true,
+  "checks": [
+    {
+      "check": "real-domain-mints-two-cookie-generations",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "check": "authenticated-backend",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "check": "authenticated-SSR",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "check": "tampered-signature-denied",
+      "status": 401,
+      "passed": true
+    }
+  ],
+  "scope": "QA only; real B domain via resolved IP with normal TLS; browser-equivalent removal of deleted cookies; no customer mutation or Meta provider request"
+}
