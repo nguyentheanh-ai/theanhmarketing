@@ -32,8 +32,9 @@ def identifier(name):
     return '"' + name + '"'
 
 
-def catalog_sql(project):
-    schemas = ','.join("'" + s + "'" for s in PROJECTS[project][1])
+def catalog_sql(project, include_auth_storage=False):
+    scopes = PROJECTS[project][1] + (['auth', 'storage'] if include_auth_storage else [])
+    schemas = ','.join("'" + s + "'" for s in scopes)
     return """SELECT coalesce(json_agg(x ORDER BY s,t),'[]'::json) FROM (
       SELECT c.table_schema s,c.table_name t,
        json_agg(json_build_object('n',c.column_name,'ty',c.data_type) ORDER BY c.ordinal_position) cols,
@@ -47,13 +48,14 @@ def catalog_sql(project):
       WHERE c.table_schema IN (%s) GROUP BY c.table_schema,c.table_name) x""" % schemas
 
 
-def validate_catalog(catalog, project):
+def validate_catalog(catalog, project, include_auth_storage=False):
     if not isinstance(catalog, list) or not catalog:
         raise ValueError('empty catalog')
     names = set()
     for table in catalog:
         identifier(table['s']); identifier(table['t'])
-        if table['s'] not in PROJECTS[project][1] or (table['s'], table['t']) in names:
+        scopes = PROJECTS[project][1] + (['auth', 'storage'] if include_auth_storage else [])
+        if table['s'] not in scopes or (table['s'], table['t']) in names:
             raise ValueError('catalog scope mismatch')
         names.add((table['s'], table['t']))
         cols = [c['n'] for c in table['cols']]
@@ -67,13 +69,13 @@ def validate_catalog(catalog, project):
             raise ValueError('invalid primary key')
 
 
-def snapshot_sql(project, catalog):
-    validate_catalog(catalog, project)
+def snapshot_sql(project, catalog, *, sealed_archive=False):
+    validate_catalog(catalog, project, include_auth_storage=sealed_archive)
     parts = []
     for table in catalog:
         name = project + '_' + table['s'] + '__' + table['t']
         relation = identifier(table['s']) + '.' + identifier(table['t'])
-        cells = ['NULL' if SECRET.search(c['n']) else identifier(c['n']) + '::text' for c in table['cols']]
+        cells = ['NULL' if not sealed_archive and SECRET.search(c['n']) else identifier(c['n']) + '::text' for c in table['cols']]
         # PostgreSQL functions accept at most 100 arguments; wide tables are
         # represented as concatenated JSON arrays without losing column order.
         array = ' || '.join('jsonb_build_array(' + ','.join(cells[i:i + 50]) + ')' for i in range(0, len(cells), 50))
@@ -84,7 +86,7 @@ def snapshot_sql(project, catalog):
     # so concurrent edits cannot give one table a later MVCC snapshot.
     return "SELECT jsonb_build_object('snapshot',pg_current_snapshot()::text,'capturedAt',statement_timestamp()," \
            "'catalog',(%s),'tables',(SELECT jsonb_object_agg(name,payload) FROM (%s) tables)) AS export" \
-           % (catalog_sql(project), ' UNION ALL '.join(parts))
+           % (catalog_sql(project, include_auth_storage=sealed_archive), ' UNION ALL '.join(parts))
 
 
 def affinity(ty):

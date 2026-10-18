@@ -1,0 +1,19 @@
+{
+  "project": "b",
+  "database": "IN_MEMORY_SQLITE_ONLY",
+  "users": 276,
+  "profiles": 275,
+  "workspaces": 3,
+  "memberships": 3,
+  "allRowsReadBack": true,
+  "activeProfilesChecked": 275,
+  "membershipsChecked": 3,
+  "crossWorkspaceDenials": 275,
+  "inactiveProfileDenials": 0,
+  "staleCookieRolesRevalidated": true,
+  "authCryptographicSessionValidationTested": false,
+  "sourceSnapshotAt": "2026-10-18T11:40:52.435779+00:00",
+  "productionWritten": false,
+  "remoteD1Written": false,
+  "readyForCutover": false
+}

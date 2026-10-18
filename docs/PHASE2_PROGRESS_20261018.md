@@ -27,6 +27,48 @@ Bản sao D1 ngày 15/10 từng ghi A442/B271 tài khoản: **không dùng bản
 
 ## Mã vừa hoàn thiện
 
+### 18/10 — Bản chụp đầy đủ trường, Auth và phân quyền B
+
+Đã bổ sung `export-sealed-source-snapshot.py` và `sealed-source-snapshot.mjs`. Export một SELECT/MVCC riêng từng project, gồm app + `auth` + metadata `storage`, không NULL cột nhạy cảm. Dữ liệu chỉ đi qua bộ nhớ tiến trình và stdin bắt giữ; mỗi hàng được AES-256-GCM với nonce riêng, AAD gắn project/snapshot/catalog/khóa hàng đã HMAC. HKDF tách khóa theo project/mục đích; manifest và giá trị được xác thực. Toàn bộ SQLite chỉ chứa ciphertext và HMAC, vẫn nằm trong image AES-256 hiện có; không thêm secret production. Đã đọc lại file, xác minh mọi hàng trước khi đưa vào importer. Không in password hash, bearer hoặc thông tin khách hàng.
+
+| Bản chụp kín 18/10 UTC | A | B |
+| --- | ---: | ---: |
+| Thời điểm đầu | 11:32:10 | 11:33:41 |
+| Bảng gồm app/Auth/Storage metadata | 116 | 93 |
+| Hàng đầu | 40.269 | 8.756 |
+| Bảng Auth | 27 | 27 |
+| Bảng metadata Storage | 8 | 8 |
+| Thời điểm thứ hai | 11:41:55 | 11:40:52 |
+| Hàng thứ hai | 40.270 | 8.756 |
+
+209 bảng/49.025 hàng ở lượt đầu, 49.026 hàng lượt sau. A thêm1hàng `public.activity_logs`, không có sửa/xóa; B không đổi. Schema và toàn bộ hàng của hai cặp snapshot đều được xác thực trước so sánh. Đây là đối soát hai thời điểm thật, **chưa apply delta vào runtime hoặc chứng minh source fence/rollback giữ ghi mới**. Không chứa byte file Storage, cấu hình Auth nhà cung cấp/JWT signing key hoặc toàn bộ định nghĩa RLS/function/trigger; không gọi đây là backup logic hoàn chỉnh.
+
+Các probe mới chỉ dùng SQLite RAM, không HTTP/network hay ghi D1 remote:
+
+- `probe-sealed-auth-native.mjs`: nhập và đọc lại từng trường danh tính/trạng thái/metadata/hash mã hóa của A447/B276 tài khoản; 709 bcrypt,14 không có mật khẩu. QA A dùng mật khẩu cũ đăng nhập native core, giữ UUID; mật khẩu sai bị từ chối; hết hạn kiểm đúng lỗi freshness. Đồng hồ cố ý replay tại thời điểm snapshot, không tạo chứng nhận freshness live. B chưa thử mật khẩu vì không có mật khẩu QA B đã xác minh; báo `NOT_RUN_NO_VERIFIED_PASSWORD`.
+- `probe-sealed-legacy-sessions.mjs`: A1.071phiên/3.794token, B30phiên/91token; toàn bộ hàng và HMAC bearer/quan hệ token cha/trạng thái thu hồi đọc lại khớp. A1phiên không còn token hiện hành vẫn đóng. Không lược bỏ security field chưa hỗ trợ; core từ chối trường/graph không tương thích. Riêng `auth.sessions.refreshed_at` là timestamp không timezone được producer Supabase ghi UTC; chỉ adapter trường này chuẩn hóa UTC, giữ microsecond. [Mã producer chính thức](https://github.com/supabase/auth/blob/master/internal/models/sessions.go). Snapshot trạng thái `pending/restored-backup`, không cấp/chấp nhận phiên Worker, chưa final fence/JWT/rolling adoption.
+- `probe-sealed-b-authorization.mjs`: dùng backend B hiện có từ worktree phát hành để kiểm snapshot thật mới ≤5phút. 276Authuser,275profile,3workspace,3membership nhập/đọc lại từng hàng khớp; 275profile active được kiểm lại email/role từ backend dù cookie giả lập role cũ;3membership đúng role/name/UUID;275lượt xin workspace không có membership bị chặn. Không có profile inactive thật nên không tuyên bố kiểm live trường hợp đó; fixture hiện có bao phủ riêng. Không chứng minh xác thực mật mã của cookie/session, toàn bộ B hoặc quyền admin A.
+- `rehearse-sealed-source.py` chạy lại các probe/compare từ image đã mount; lấy khóa hiện có trong Keychain, stdin-only, không chuyển tiếp stdout/stderr lỗi chứa dữ liệu riêng.
+
+Bằng chứng tổng hợp: `reports/cloudflare-phase2-20261018/sealed-native-auth-{a,b}.json`, `sealed-legacy-sessions-{a,b}.json`, `sealed-b-authorization.json`, `sealed-source-delta-{a,b}.json`. Không commit SQLite/bản sao khách hàng. Quyền owner A thêm bằng ENV chưa xác minh parity; B dùng profile/membership riêng. Chưa chuyển writer/Auth/Storage production, không tạo/đổi secret, không deploy hay tác động Adplan.
+
+Kiểm hiện hành:81Nodefixture liên quan (gồm các kiểm cũ payment/session/access) +24Python (delta16/exporter5/sealed3) PASS; typecheck Cloudflare và ESLint bốn file runtime đổi PASS. Reviewer đã kiểm seal/Auth/B/legacy và các probe nghiệp vụ;3phát hiện precision/alias đã sửa và chạy lại fixture tái hiện đạt. Các kết quả này không thay thế staging native, toàn bộ RLS/nghiệp vụ, private R2, hiệu năng và quay lui dữ liệu.
+
+### 18/10 — Đối soát nghiệp vụ và sửa candidate native
+
+- Toàn bộ1.049đơn/67cột nhập native order core và đọc lại JSON + số tiền thực thi khớp;0hàng bị loại. Không trùng mã giao dịch/tham chiếu giữa các đơn. Có27đơn paid không giữ bank identity: không tạo giả receipt, không gửi lại giao hàng; không coi chúng đủ bằng chứng xử lý lại webhook.
+- Nội dung10khóa/23module/59bài/11resource được ghép bằng UUID và đọc lại từng document;23bài qua bộ lọc xuất bản. URL bắt buộc có bài gốc trong phần xuất bản. Hai nhóm sort_order trùng chỉ ở phần chưa xuất bản; phần phục vụ có0nhóm trùng. Có0link resource ở23bài xuất bản trong snapshot này; chưa kiểm byte file/R2 bằng phép kiểm nội dung này.
+- A444subject học viên,3admin đã biết bỏ qua: quyền khóa và tập bài hoàn thành so với predicate dịch vụ Source trong repository khớp, gồm4.440phép kiểm theo courseSlug;444đổi chéo id/email bị từ chối. Nhập/đọc lại193contact/147enrollment/4progress/425đơn paid/47override. **Chưa gọi RPC PostgreSQL thật để làm oracle, chưa kiểm phần trăm tiến độ hoặc quyền owner ENV**; đây là đối soát SQL/native từ archive với logic Source đã đọc, không là chứng nhận đầy đủ hiện trạng production.
+- Reviewer tái hiện decimal/bigint bị JSON.parse làm tròn trước so sánh. `lib/cloudflare/precise-json.ts` nay từ chối literal không giữ nguyên giá trị thập phân khi roundtrip; áp dụng trước parse metadata Source, course, learning và native order prepare/decode. Không âm thầm làm tròn hoặc đổi dữ liệu nguồn. Dữ liệu thật nêu trên đã chạy lại sau guard và đạt.
+- Reviewer tìm thấy nhánh Source dashboard gắn enrollment theo **course ID hoặc slug**, còn `/learn` lọc resolved slug trong RPC và catalog trước. Đã tái hiện test FAIL rồi sửa `d1-course-access.ts` và composition trong `d1-student-session-access.ts`; phân biệt đúng dashboard/lesson, legacyDerived không được mở thêm course qua ID, progress dùng EXISTS tránh nhân bản. Không đổi quyền production.
+- Bổ sung adapter biết catalog `public.orders` hiện hành không có deleted_at; cột tương thích của access slice giữ NULL theo đúng dịch vụ Source, không giả thêm cột ở PostgreSQL. Sửa test-loader để chấp nhận đường dẫn compiler tương đối theo lệnh tài liệu.
+
+Build `zsh scripts/build-cloudflare-production.sh` đạt, từ5biến công khai đúng domain của release A; artifact guard kiểm9cổng tắt/attachDomains=false. Lần sandbox đầu bị EPERM mở127.0.0.1; chạy build với quyền localhost đạt. Không đưa secret runtime production vào môi trường build riêng; cảnh báo thiếu5secret local không chứng minh thiếu secret ở Worker thật. Artifact là **ứng viên từ working tree đang sửa**, không đủ nguồn phát hành để deploy trực tiếp.
+
+Thử actual built vinext/root SSR trên workerd+D1 cục bộ:6nhóm đạt (login, HTML học, hoàn thành+reload, guest cache denial, next UUID, stale form). Payment staging handler trên workerd+D1 cục bộ:7nhóm đạt (idempotency, retry, access/account/email ledger). Tất cả subject/đơn/provider của hai harness là fixture; email/Meta/Telegram/Sheets chặn hoặc cục bộ, không gửi thật. Không có browser/hydration/Safari/hosted native hoặc proof primary trong lần kiểm này. Bằng chứng: `sealed-native-orders-a.json`, `sealed-native-courses-a.json`, `sealed-learning-access-a.json` trong báo cáo phase2 và `reports/cloudflare-d1/native-{full-worker,payment-stage-workers}.json`.
+
+Image backup đã eject sau khi đọc xong. Chưa deploy, chưa tạo secret, chưa chuyển writer/Auth/Storage hoặc hủy dịch vụ cũ.
+
 ### 0. Xuất snapshot mới chỉ đọc
 
 `scripts/export-consistent-app-mirror.py` dùng PAT hiện có trong Keychain và Management API với `read_only=true`. Khám phá catalog trước; sau đó **catalog kiểm lại + count + toàn bộ hàng trong một câu SELECT**, kèm `pg_current_snapshot()` và `statement_timestamp()`. Nếu schema thay đổi giữa hai lần đọc hoặc số hàng trả về bị thiếu thì từ chối. Phân biệt cột khóa chính với cột INCLUDE qua `indnkeyatts`.
@@ -91,7 +133,7 @@ Các file `supabase-dependencies.json`, `-v2.json`, `-v3.json` là đầu ra tru
 
 ## Việc kỹ thuật tiếp theo
 
-1. Bản chụp ứng dụng mới đã có. Tiếp tục đường Auth/cột nhạy cảm mã hóa bảo toàn đầy đủ; sau đó chụp lại để đối soát delta hai thời điểm thật. Không coi baseline18/10 là bản final khi production tiếp tục phát sinh dữ liệu.
+1. Đã có bản chụp kín đầy đủ trường/Auth/Storage metadata và đối soát hai thời điểm thật. Tiếp tục parity nghiệp vụ/native importer, cấu hình provider/JWT và rolling session adoption; không coi baseline18/10 là bản final khi production tiếp tục phát sinh dữ liệu.
 2. Từ graph hiện hành, hoàn thiện provider D1 cho admin/CRM/orders/LMS của A và quyền/workspace/resources của B. Dùng bảng và RPC thực tế; so từng kết quả/quyền với Source. Không gộp A/B hoặc sửa Adplan.
 3. Kiểm staging native không gọi Source cho luồng đã chuyển, gồm Auth/phiên cũ, cấp quyền và tải file riêng tư. Test âm truy cập chéo user/workspace và cache; không dùng tiến độ học viên thật.
 4. Thiết kế bắt kịp ghi, source fence và chiều rollback giữ dữ liệu phát sinh. Công cụ offline mới chỉ là phép diễn tập, không thay thế cơ chế này.

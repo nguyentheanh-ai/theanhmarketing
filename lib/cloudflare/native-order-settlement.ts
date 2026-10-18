@@ -1,4 +1,5 @@
 import {getSepayOrderCode,getSepayTransactionTimestamp,resolveSepayFallbackOrderCode,type SepayWebhookPayload} from '@/lib/payments/sepay';
+import {parseExactJson} from '@/lib/cloudflare/precise-json';
 type Row=Record<string,unknown>;
 export type NativeOrderDatabase={first:(sql:string,params:readonly(string|number|null)[])=>Promise<Row|null>;all:(sql:string,params:readonly(string|number|null)[])=>Promise<Row[]>;batch:(statements:readonly{sql:string;params:(string|number|null)[]}[])=>Promise<{results?:Row[]}[]>};
 type Policy={expectedAccount:string;allowedOrderCodes:readonly string[]};
@@ -14,12 +15,12 @@ function identity(value:unknown){if(value===undefined||value===null||value==='')
 function account(value:unknown){return typeof value==='string'&&/^\d{4,40}$/.test(value.trim())?value.trim():deny();}
 function scope(policy:Policy){const ids=policy.allowedOrderCodes;if(!Array.isArray(ids)||!ids.length||ids.length>10||new Set(ids).size!==ids.length||ids.some(v=>typeof v!=='string'||!ORDER.test(v)))return deny();return JSON.stringify(ids);}
 async function assertReady(db:NativeOrderDatabase){if((await db.first(`SELECT 1 AS ready WHERE ${ready}`,[]))?.ready!==1)throw new NativePaymentUnavailable();}
-function decodeOrder(row:Row){if(typeof row.row_json!=='string'||typeof row.order_code!=='string'||!ORDER.test(row.order_code)||typeof row.id!=='string'||!UUID.test(row.id)||!Number.isSafeInteger(row.revision)||Number(row.revision)<0)return deny();const data=JSON.parse(row.row_json) as Row;if(data.id!==row.id||data.order_code!==row.order_code||data.status!==row.status||vnd(data.amount)!==row.amount_vnd||data.currency!=='VND')return deny();return data;}
+function decodeOrder(row:Row){if(typeof row.row_json!=='string'||typeof row.order_code!=='string'||!ORDER.test(row.order_code)||typeof row.id!=='string'||!UUID.test(row.id)||!Number.isSafeInteger(row.revision)||Number(row.revision)<0)return deny();const data=parseExactJson(row.row_json) as Row;if(data.id!==row.id||data.order_code!==row.order_code||data.status!==row.status||vnd(data.amount)!==row.amount_vnd||data.currency!=='VND')return deny();return data;}
 // Validate a complete source row without projecting away invoice, attribution,
 // product-plan, delivery markers, unknown future fields or private raw payload.
 export function prepareNativeOrderRecord(raw:string){
  if(typeof raw!=='string'||new TextEncoder().encode(raw).length>262144)return deny();
- let data:Row;try{data=JSON.parse(raw) as Row;}catch{return deny();}
+ let data:Row;try{data=parseExactJson(raw) as Row;}catch{return deny();}
  if(!data||typeof data!=='object'||Array.isArray(data)||!['pending','expired','failed','paid'].includes(String(data.status)))return deny();
  const row={id:data.id,order_code:data.order_code,amount_vnd:vnd(data.amount),status:data.status,row_json:raw,revision:0};decodeOrder(row);return row;
 }

@@ -1,0 +1,27 @@
+{
+  "project": "a",
+  "sourceSnapshotAt": "2026-10-18T11:41:55.073822+00:00",
+  "database": "IN_MEMORY_SQLITE_ONLY",
+  "sourceCounts": {
+    "courses": 10,
+    "course_modules": 23,
+    "lessons": 59,
+    "lesson_resources": 0,
+    "course_resources": 11
+  },
+  "allCourseDocumentsReadBack": true,
+  "publishedCourses": 10,
+  "publishedLessons": 23,
+  "publishedLessonResourceLinks": 0,
+  "unlinkedResourceRowsNotInLessonProjection": 0,
+  "duplicateSortOrderGroups": 2,
+  "requiredUrlLessonPresent": true,
+  "requiredUrlLessonPublished": true,
+  "duplicatePublishedSortOrderGroups": 0,
+  "resourceBytesFetched": 0,
+  "studentAuthorizationTested": false,
+  "hostedRenderingTested": false,
+  "productionWritten": false,
+  "remoteD1Written": false,
+  "readyForCutover": false
+}

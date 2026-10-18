@@ -1,6 +1,6 @@
 import {getD1AuthSession,type AuthDatabase} from '@/lib/cloudflare/d1-auth-core';
 import {assertD1AuthMirrorReady,authMirrorReadySql} from '@/lib/cloudflare/d1-auth-authority';
-import {readD1StudentCourseAccess} from '@/lib/cloudflare/d1-course-access';
+import {readD1StudentCourseAccess,scopeD1StudentAccessSql} from '@/lib/cloudflare/d1-course-access';
 import {d1CourseContentRowSql,decodeD1PublishedCourseRow} from '@/lib/cloudflare/d1-course-content';
 import {getOrderedCourseLessons} from '@/lib/course-learning';
 
@@ -31,7 +31,7 @@ async function readSnapshot(db:AuthDatabase,token:string,policy:Policy,courseSlu
  let content:unknown;
  try{
   const access=await readD1StudentCourseAccess(async(sql,args)=>{
-   const projection=courseSlug===undefined?sql:sql.replace('SELECT u.admin_role,',`SELECT u.admin_role, (${d1CourseContentRowSql(8,4,3,9)}) AS course_content_json,`);
+   const projection=courseSlug===undefined?sql:scopeD1StudentAccessSql(sql,8).replace('SELECT u.admin_role,',`SELECT u.admin_role, (${d1CourseContentRowSql(8,4,3,9)}) AS course_content_json,`);
    const value=await db.first(projection+guard,[...args,tokenHash,mirror.floor,policy.allowedUserIds===undefined?'null':JSON.stringify(policy.allowedUserIds),...(courseSlug===undefined?[]:[courseSlug,300000])]);
    content=value?.course_content_json;
    if(!value)denied=true;

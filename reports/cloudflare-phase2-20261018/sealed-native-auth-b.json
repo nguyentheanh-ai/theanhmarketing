@@ -1,0 +1,27 @@
+{
+  "project": "b",
+  "users": 276,
+  "passwordCredentials": 276,
+  "passwordlessUsers": 0,
+  "allIdentityStatusMetadataCredentialRowsVerified": true,
+  "providerIdentityRowsReadBack": 276,
+  "providerIdentityCounts": {
+    "email": 276,
+    "google": 0
+  },
+  "passwordlessUsersWithGoogleLink": 0,
+  "providerLoginTested": false,
+  "extraConfiguredOwnerRoleParityVerified": false,
+  "bProfileWorkspaceAuthorizationVerified": false,
+  "qaStatus": "NOT_RUN_NO_VERIFIED_PASSWORD",
+  "qaLogin": false,
+  "qaUuidPreserved": false,
+  "wrongPasswordDenied": false,
+  "staleSnapshotDenied": false,
+  "clock": "SNAPSHOT_TIME_OFFLINE_REPLAY",
+  "database": "IN_MEMORY_SQLITE_ONLY",
+  "existingSessionsMigrated": false,
+  "productionWritten": false,
+  "remoteD1Written": false,
+  "readyForCutover": false
+}

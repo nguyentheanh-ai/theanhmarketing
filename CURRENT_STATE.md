@@ -1661,3 +1661,16 @@ Chi tiết: docs/PHASE2_PROGRESS_20261018.md. Local tests: 15 Python + 5 Node PA
 
 
 Evidence: reports/cloudflare-phase2-20261018/real-snapshot-rehearsal.json. Tests: delta16 + exporter5 + AST5 PASS. Offline mirror only; Auth/Storage/secret fields and production writer not migrated.
+
+
+## 18/10/2026 — Giai đoạn 2: bản chụp kín và đối soát native
+
+**IN PROGRESS**, chưa READY FOR CUTOVER dữ liệu. Làm trên nhánh riêng `codex/cloudflare-native-phase2-20261018` tại `_cloudflare-migration/phase2-main`; A gồm LMS `/learn`, B là App riêng. Không deploy hoặc đổi nguồn ghi/Auth/Storage production, không tạo secret, không sửa Adplan/11filedirty cũ.
+
+Hai bản chụp kín từng project đã xác minh đọc lại:209bảng gồm app/Auth/Storage metadata,49.025hàng lượt đầu/49.026lượt sau. Không lược bỏ cột; ciphertext/HMAC nằm trong image AES256, image đã eject. Không chứa byte file hoặc toàn bộ cấu hình provider/DDL. Auth723tài khoản/786identity, graph1.101phiên/3.885refresh token đối soát trong RAM đạt; QA A mật khẩu cũ/UUID/sai mật khẩu/freshness đạt, B chưa thử password. Chưa chấp nhận phiên cũ tại Worker.
+
+Native order1.049đơn/67cột và amount thực thi khớp; nội dung10khóa/59bài giữ bài URL cũ trong phần xuất bản; quyền444subject học viên +4.440scope khóa khớp reference repository,444id/email chéo bị chặn. Source RPC thật/chủ quyền owner ENV chưa kiểm. B275profile/3membership và275cross-workspace denial đạt. Không ghi tiến độ hay gửi email thật.
+
+Reviewer tìm và đã kiểm lại sửa3false-green: JSON number mất precision; số tiền thực thi không so; dashboard ID-or-slug khác lesson RPC scope. Candidate thêm guard precise-json và scope SQL riêng, legacyDerived không tăng quyền.81Node +24Python, typecheck Cloudflare, scopedESLint PASS. Build đúng `scripts/build-cloudflare-production.sh` với domain thật PASS/9nativegateOFF/attachDomains=false;6nhóm built vinext/workerd/D1 và7nhóm payment/workerd/D1 cục bộ PASS. Harness dùng fixture/provider cục bộ, không là hosted/browser/provider delivery hoặc primary proof. Artifact build từ working tree đang sửa, không được deploy trực tiếp.
+
+Chi tiết: `_cloudflare-migration/phase2-main/docs/PHASE2_PROGRESS_20261018.md`; receipt không PII trong `reports/cloudflare-phase2-20261018`. Còn native admin/CRM/toàn bộ provider A/B, cấu hình Auth/rolling session, privateR2, Source RPC parity, writer fence/delta/rollback giữ ghi mới và staging. Giữ Supabase writer/Auth/Storage và Blue B bridge. Gom mọi thay đổi production cần duyệt khi đã có kết quả reviewable; chưa hủy Vercel/Supabase.

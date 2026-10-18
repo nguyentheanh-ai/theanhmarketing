@@ -1,0 +1,29 @@
+{
+  "project": "a",
+  "sourceSnapshotAt": "2026-10-18T11:41:55.073822+00:00",
+  "database": "IN_MEMORY_SQLITE_ONLY",
+  "sourceRows": 1049,
+  "sourceColumns": 67,
+  "importedRows": 1049,
+  "rejectedRows": 0,
+  "allProjectedFieldsReadBack": true,
+  "executableAmountsReadBack": true,
+  "numericPrecisionGuarded": true,
+  "statuses": {
+    "expired": 622,
+    "paid": 425,
+    "failed": 1,
+    "pending": 1
+  },
+  "bankIdentityAudit": {
+    "paidWithRetainedTransaction": 398,
+    "paidWithoutRetainedBankIdentity": 27,
+    "duplicateTransactionGroups": 0,
+    "duplicateReferenceGroups": 0
+  },
+  "financialTransitionsExecuted": 0,
+  "emailsSent": 0,
+  "productionWritten": false,
+  "remoteD1Written": false,
+  "readyForCutover": false
+}

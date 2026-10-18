@@ -1,0 +1,1172 @@
+{
+  "project": "a",
+  "beforeAt": "2026-10-18T11:32:10.640639+00:00",
+  "afterAt": "2026-10-18T11:41:55.073822+00:00",
+  "evidence": "VERIFIED_SEALED_SOURCE_SNAPSHOT_DIFFERENCE",
+  "tables": [
+    {
+      "table": "a_auth__audit_log_entries",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__custom_oauth_providers",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__flow_state",
+      "beforeRows": 302,
+      "afterRows": 302,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__identities",
+      "beforeRows": 510,
+      "afterRows": 510,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__instances",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__mfa_amr_claims",
+      "beforeRows": 1071,
+      "afterRows": 1071,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__mfa_challenges",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__mfa_factors",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__mfa_recovery_code_sets",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__mfa_recovery_codes",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__oauth_authorizations",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__oauth_client_states",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__oauth_clients",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__oauth_consents",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__one_time_tokens",
+      "beforeRows": 15,
+      "afterRows": 15,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__refresh_tokens",
+      "beforeRows": 3794,
+      "afterRows": 3794,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__saml_providers",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__saml_relay_states",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__schema_migrations",
+      "beforeRows": 82,
+      "afterRows": 82,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__scim_tokens",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__scim_users",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__sessions",
+      "beforeRows": 1071,
+      "afterRows": 1071,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__sso_domains",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__sso_providers",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__users",
+      "beforeRows": 447,
+      "afterRows": 447,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__webauthn_challenges",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_auth__webauthn_credentials",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__audit_logs",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__contact_tags",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__contacts",
+      "beforeRows": 193,
+      "afterRows": 193,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__coupons",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__course_progress",
+      "beforeRows": 4,
+      "afterRows": 4,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__crm_daily_metrics",
+      "beforeRows": 30,
+      "afterRows": 30,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__crm_email_metrics",
+      "beforeRows": 1,
+      "afterRows": 1,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__crm_events",
+      "beforeRows": 1075,
+      "afterRows": 1075,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__crm_pipeline_metrics",
+      "beforeRows": 5,
+      "afterRows": 5,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__email_campaigns",
+      "beforeRows": 3,
+      "afterRows": 3,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__email_events",
+      "beforeRows": 2886,
+      "afterRows": 2886,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__email_sends",
+      "beforeRows": 317,
+      "afterRows": 317,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__email_suppression_list",
+      "beforeRows": 29,
+      "afterRows": 29,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__email_templates",
+      "beforeRows": 3,
+      "afterRows": 3,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__enrollments",
+      "beforeRows": 147,
+      "afterRows": 147,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__integration_accounts",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__lead_score_events",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__leads",
+      "beforeRows": 264,
+      "afterRows": 264,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__legacy_id_map",
+      "beforeRows": 1583,
+      "afterRows": 1583,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__migration_runs",
+      "beforeRows": 1,
+      "afterRows": 1,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__notes",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__orders",
+      "beforeRows": 139,
+      "afterRows": 139,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__payments",
+      "beforeRows": 138,
+      "afterRows": 138,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__refunds",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__segment_memberships",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__segment_rules",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__segments",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__student_notes",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__support_tickets",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__tags",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__tasks",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__webhook_events",
+      "beforeRows": 2628,
+      "afterRows": 2628,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__workflow_edges",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__workflow_nodes",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__workflow_runs",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__workflow_step_runs",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__workflow_versions",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_crm_v2__workflows",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__accounting_daily_report_runs",
+      "beforeRows": 24,
+      "afterRows": 24,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__activity_logs",
+      "beforeRows": 13919,
+      "afterRows": 13920,
+      "inserted": 1,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__admin_ad_costs",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__admin_deleted_students",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__admin_student_provisioning_operations",
+      "beforeRows": 3,
+      "afterRows": 3,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__admin_users",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__app_settings",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__automation_flows",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__automation_runs",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__blog_posts",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__checkout_abuse_blocks",
+      "beforeRows": 4,
+      "afterRows": 4,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__checkout_abuse_events",
+      "beforeRows": 8,
+      "afterRows": 8,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__click_events",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__coupons",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__course_modules",
+      "beforeRows": 23,
+      "afterRows": 23,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__course_resources",
+      "beforeRows": 11,
+      "afterRows": 11,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__courses",
+      "beforeRows": 10,
+      "afterRows": 10,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__email_campaign_recipients",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__email_campaigns",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__email_contacts",
+      "beforeRows": 32,
+      "afterRows": 32,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__email_events",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__email_logs",
+      "beforeRows": 596,
+      "afterRows": 596,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__email_templates",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__landing_pages",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__lead_activities",
+      "beforeRows": 915,
+      "afterRows": 915,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__lead_email_logs",
+      "beforeRows": 3,
+      "afterRows": 3,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__lead_notes",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__leads",
+      "beforeRows": 1067,
+      "afterRows": 1067,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__lesson_comments",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__lesson_resources",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__lesson_tasks",
+      "beforeRows": 44,
+      "afterRows": 44,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__lessons",
+      "beforeRows": 59,
+      "afterRows": 59,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__orders",
+      "beforeRows": 1049,
+      "afterRows": 1049,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__payment_remarketing_runs",
+      "beforeRows": 558,
+      "afterRows": 558,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__resources",
+      "beforeRows": 1,
+      "afterRows": 1,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__site_settings",
+      "beforeRows": 2,
+      "afterRows": 2,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__spam_logs",
+      "beforeRows": 1,
+      "afterRows": 1,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__student_lesson_task_progress",
+      "beforeRows": 60,
+      "afterRows": 60,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__support_bookings",
+      "beforeRows": 11,
+      "afterRows": 11,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__support_busy_dates",
+      "beforeRows": 1,
+      "afterRows": 1,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__telegram_business_report_runs",
+      "beforeRows": 63,
+      "afterRows": 63,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__telegram_meta_campaign_hourly_snapshots",
+      "beforeRows": 4481,
+      "afterRows": 4481,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_public__testimonials",
+      "beforeRows": 1,
+      "afterRows": 1,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_storage__buckets",
+      "beforeRows": 3,
+      "afterRows": 3,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_storage__buckets_analytics",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_storage__buckets_vectors",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_storage__migrations",
+      "beforeRows": 74,
+      "afterRows": 74,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_storage__objects",
+      "beforeRows": 508,
+      "afterRows": 508,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_storage__s3_multipart_uploads",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_storage__s3_multipart_uploads_parts",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    },
+    {
+      "table": "a_storage__vector_indexes",
+      "beforeRows": 0,
+      "afterRows": 0,
+      "inserted": 0,
+      "updated": 0,
+      "removed": 0,
+      "stablePrimaryKey": true,
+      "changesCanBeAppliedToNativeRuntime": false
+    }
+  ],
+  "schemaMatched": true,
+  "fieldsRedacted": false,
+  "sourceWriterFenced": false,
+  "readyForCutover": false
+}

@@ -1,0 +1,82 @@
+{
+  "status": "VERIFIED_SEALED_SNAPSHOT_AND_OFFLINE_PROJECTIONS",
+  "snapshots": {
+    "a": {
+      "baseline": {
+        "ok": true,
+        "tables": 116,
+        "rows": 40269,
+        "project": "a",
+        "fieldsRedacted": false,
+        "authTables": 27,
+        "storageMetadataTables": 8,
+        "readyForCutover": false,
+        "snapshotAt": "2026-10-18T11:32:10.640639+00:00",
+        "encryptedAtRowLevel": true,
+        "restoredFromDiskVerified": true,
+        "storageObjectBytesIncluded": false,
+        "productionWritten": false,
+        "remoteD1Written": false,
+        "tablesWithoutStablePrimaryKey": 0
+      },
+      "second": {
+        "ok": true,
+        "tables": 116,
+        "rows": 40270,
+        "project": "a",
+        "fieldsRedacted": false,
+        "authTables": 27,
+        "storageMetadataTables": 8,
+        "readyForCutover": false,
+        "snapshotAt": "2026-10-18T11:41:55.073822+00:00",
+        "encryptedAtRowLevel": true,
+        "restoredFromDiskVerified": true,
+        "storageObjectBytesIncluded": false,
+        "productionWritten": false,
+        "remoteD1Written": false,
+        "tablesWithoutStablePrimaryKey": 0
+      }
+    },
+    "b": {
+      "baseline": {
+        "ok": true,
+        "tables": 93,
+        "rows": 8756,
+        "project": "b",
+        "fieldsRedacted": false,
+        "authTables": 27,
+        "storageMetadataTables": 8,
+        "readyForCutover": false,
+        "snapshotAt": "2026-10-18T11:33:41.050926+00:00",
+        "encryptedAtRowLevel": true,
+        "restoredFromDiskVerified": true,
+        "storageObjectBytesIncluded": false,
+        "productionWritten": false,
+        "remoteD1Written": false,
+        "tablesWithoutStablePrimaryKey": 0
+      },
+      "second": {
+        "ok": true,
+        "tables": 93,
+        "rows": 8756,
+        "project": "b",
+        "fieldsRedacted": false,
+        "authTables": 27,
+        "storageMetadataTables": 8,
+        "readyForCutover": false,
+        "snapshotAt": "2026-10-18T11:40:52.435779+00:00",
+        "encryptedAtRowLevel": true,
+        "restoredFromDiskVerified": true,
+        "storageObjectBytesIncluded": false,
+        "productionWritten": false,
+        "remoteD1Written": false,
+        "tablesWithoutStablePrimaryKey": 0
+      }
+    }
+  },
+  "storageObjectBytesIncluded": false,
+  "sourceWriterFenced": false,
+  "productionWritten": false,
+  "remoteD1Written": false,
+  "readyForCutover": false
+}

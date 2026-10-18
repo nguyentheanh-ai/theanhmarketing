@@ -1,0 +1,23 @@
+{
+  "project": "a",
+  "summary": {
+    "sessions": 1071,
+    "tokens": 3794,
+    "currentTokens": 1070,
+    "directParents": 689,
+    "otherRevokedTokens": 2035,
+    "closedSessions": 1
+  },
+  "allRowsReadBack": true,
+  "sourceBearerAndParentDigestsVerified": 3794,
+  "sourceSnapshotAt": "2026-10-18T11:32:10.640639+00:00",
+  "sourceKind": "restored-backup",
+  "snapshotStatus": "pending",
+  "database": "IN_MEMORY_SQLITE_ONLY",
+  "sourceWriterFenced": false,
+  "nativeSessionsIssued": 0,
+  "existingSessionsAcceptedByWorker": false,
+  "productionWritten": false,
+  "remoteD1Written": false,
+  "readyForCutover": false
+}

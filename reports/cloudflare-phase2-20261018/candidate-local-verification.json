@@ -1,0 +1,21 @@
+{
+  "buildCommand": "zsh scripts/build-cloudflare-production.sh",
+  "buildStatus": "PASS",
+  "typecheckCloudflare": "PASS",
+  "scopedRuntimeEslint": "PASS",
+  "focusedNodeTests": 81,
+  "pythonTests": 24,
+  "localBuiltWorkerGroups": 6,
+  "localPaymentWorkerGroups": 7,
+  "artifactSha256": "01f7a9299cf33646e5847e6fab2f683f87ff182525e10469297e54ff7aec2811",
+  "sourceHeadAtBuild": "76bb45e405fe2b58277360d659d0a3e5629dc5d7",
+  "sourceWorkingTreeDirtyAtBuild": true,
+  "sourceIsApprovedRelease": false,
+  "nativeGatesCheckedDisabled": 9,
+  "attachDomains": false,
+  "newSecretsCreated": false,
+  "deploymentPerformed": false,
+  "productionWritten": false,
+  "readyForCutover": false,
+  "limits": "Local candidate only; full business/provider/RLS/data-authority and hosted readiness remain incomplete."
+}

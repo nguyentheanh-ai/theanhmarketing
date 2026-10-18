@@ -6,7 +6,7 @@ import { d1LegacyAccessEvidenceSql } from "@/lib/cloudflare/d1-legacy-access-evi
 // and execute this single statement using DB.withSession("first-primary").
 export const D1_STUDENT_ACCESS_SQL = `
 WITH matching AS (
-  SELECT e.id, coalesce(nullif(e.course_slug,''),
+  SELECT e.id,e.course_id, coalesce(nullif(e.course_slug,''),
     nullif(json_extract(e.metadata,'$.course_slug'),''), course.slug) AS slug,
     legacy.enrollment_id IS NOT NULL AS legacy_derived
   FROM d1_lms_enrollments e
@@ -18,9 +18,11 @@ WITH matching AS (
     ))
     AND e.status IN ('active','completed')
     AND (e.expires_at IS NULL OR julianday(e.expires_at)>julianday(?3))
+    /* tam-source-enrollment-scope */
 ), published_matching AS (
-  SELECT m.id,m.slug,m.legacy_derived FROM matching m
-  JOIN d1_lms_courses c ON c.slug=m.slug AND c.lms_status='published'
+  SELECT m.id,c.slug,m.legacy_derived FROM matching m
+  JOIN d1_lms_courses c ON (c.slug=m.slug OR (m.legacy_derived=0 AND c.id=m.course_id)) AND c.lms_status='published'
+    /* tam-source-published-course-scope */
 )
 SELECT u.admin_role,
   ${d1LegacyAccessEvidenceSql()} AS legacy_evidence_json,
@@ -36,9 +38,19 @@ SELECT u.admin_role,
   (SELECT json_group_array(json_object('id',id,'slug',slug,'legacyDerived',legacy_derived)) FROM
     (SELECT * FROM published_matching ORDER BY id)) AS enrollments_json,
   (SELECT json_group_array(json_object('enrollmentId',p.enrollment_id,'lessonId',p.lesson_id,'status',p.status,'completedAt',p.completed_at))
-    FROM d1_lms_progress p JOIN published_matching m ON m.id=p.enrollment_id) AS progress_json
+    FROM d1_lms_progress p WHERE EXISTS(SELECT 1 FROM published_matching m WHERE m.id=p.enrollment_id)) AS progress_json
 FROM d1_access_users u WHERE u.id=?1 AND u.normalized_email=?2
 `;
+
+// Backend composition only. Source /learn first filters its enrollment RPC by
+// resolved slug, then its course catalog by that same slug. Dashboard omits
+// both filters and preserves Source mapCourse's course-ID OR slug assignment.
+export function scopeD1StudentAccessSql(sql:string,position:number){
+  const enrollment='/* tam-source-enrollment-scope */',catalog='/* tam-source-published-course-scope */';
+  if(!Number.isInteger(position)||position<5||position>1000||sql.split(enrollment).length!==2||sql.split(catalog).length!==2)throw new Error('Invalid student course scope');
+  return sql.replace(enrollment,`AND coalesce(nullif(e.course_slug,''),nullif(json_extract(e.metadata,'$.course_slug'),''),course.slug)=?${position}`)
+    .replace(catalog,`AND c.slug=?${position}`);
+}
 
 type SnapshotReader = (sql: string, parameters: readonly string[]) => Promise<unknown>;
 type VerifiedSubject = { id: string; email: string };

@@ -19,3 +19,23 @@
 ## VERIFIED — Mirror có cột redacted không thể làm bản final
 
 Áp dụng: snapshot ứng dụng18/10,139bảng/40.274hàng. Tám bảng có cột bị lược bỏ, gồm orders. Importer/delta chặn chúng;131bảng còn lại roundtrip cục bộ đạt. Không dùng số dòng/checksum của dữ liệu đã lược bỏ để tuyên bố Auth/thanh toán/rollback production hoàn tất. Secret có thể còn nhúng trong JSON/value nên toàn bộ snapshot chỉ ở image mã hóa. Không có dữ liệu khách hoặc giá trị secret trong bài học này.
+
+## VERIFIED — Probe từ archive kín cần giữ ranh giới kết luận
+
+Áp dụng: probe Auth/B/legacy18/10, chỉ SQLite RAM. QA không chạy phải ghi NOT_RUN, không biến false thành FAIL/PASS; kiểm freshness phải nhận đúng lỗi authority thay vì mọi exception. Đã sửa và chạy QA A thật đạt. Tài khoản/credential roundtrip không chứng minh owner ENV, B profile, JWT hay phiên Worker; cần kiểm riêng từng quyền. Không đưa snapshot cũ thành fresh bằng timestamp heartbeat. Probe B dùng snapshot mới ≤5phút và backend đang phát hành;275profile/3membership đọc lại đúng, cross-workspace bị chặn. Đây chưa là chứng nhận production.
+
+## VERIFIED — Timestamp PostgreSQL phải giữ offset và microsecond
+
+Áp dụng: Auth PG text từ hai project hiện hành. `+00` cần chuẩn hóa `+00:00`, giữ microsecond revision; từ chối ngày rollover/24:00. Riêng auth.sessions.refreshed_at không timezone được producer Supabase ghi UTC (mã chính thức sessions.go); adapter kiểm đúng kiểu/cột trước thêm offset. Không suy rộng UTC cho ngày ứng dụng khác. Test fixture và toàn bộ1.101phiên/3.885token trong archive thật đã qua core validator/readback; không chứng minh live rolling adoption.
+
+## VERIFIED — So cùng object đã làm tròn có thể báo đúng giả
+
+Áp dụng: JSON.parse trong đường import/certify Source numeric/JSON. Reviewer dùng fixture sealed tái hiện bigint nested và decimal amount bị đổi nhưng probe cũ vẫn báo khớp do verifier nhận cùng object đã đổi. Chặn numeric literal không decimal-roundtrip bằng precise-json trước importer; native order prepare/decode cũng chặn, probe kiểm thêm amount_vnd đọc lại. Reviewer chạy lại hai repro đều bị từ chối; toàn bộ snapshot thật dùng trong probe sau sửa đạt. Guard từ chối giá trị chưa chuyển được nguyên vẹn, không tự hỗ trợ bigint/decimal mới hoặc chứng minh mọi provider JSON khác đã dùng guard.
+
+## VERIFIED — Quyền dashboard và lesson có phạm vi khác
+
+Áp dụng: Source services/lmsService.ts và app/learn hiện hành. mapCourse dashboard gắn enrollment qua slug ORcourseId; lesson truyền courseSlug vào RPC và courseQuery trước. Reference chỉ resolvedSlug đã tạo false-green với alias cũ. Test native dashboard tái hiện FAIL trước sửa; thêm scope SQL riêng cho lesson, chặn nhánh courseId đối với legacyDerived và EXISTS progress tránh nhân bản. Focused tests/fixture built Worker đạt; đối soát444subject/4.440scope từ archive thật đạt sau sửa. Source RPC thật và owner ENV chưa là bằng chứng của phép kiểm này.
+
+## VERIFIED — Không suy schema từ cột target tương thích
+
+Áp dụng: A public.orders snapshot18/10. Probe đầu yêu cầu deleted_at vì D1 access slice có cột đó, nhưng catalog Source hiện hành không có. Chỉ đọc lại tên cột để xác định nguyên nhân; bỏ yêu cầu trường Source, giữ nullable compatibility column NULL vì Source selector không lọc deleted_at. Không sửa Source hoặc mặc định bỏ mọi trường thiếu; các trường khác vẫn kiểm schema nghiêm. Probe thật sau sửa đạt.

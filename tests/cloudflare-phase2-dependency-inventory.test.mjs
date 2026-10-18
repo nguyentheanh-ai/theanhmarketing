@@ -6,7 +6,7 @@ import path from 'node:path';
 import {createRequire} from 'node:module';
 import {inventory} from '../scripts/inventory-supabase-dependencies.mjs';
 
-const compilerRoot = process.env.PHASE2_TYPESCRIPT_ROOT ?? path.resolve('../main');
+const compilerRoot = path.resolve(process.env.PHASE2_TYPESCRIPT_ROOT ?? '../main');
 const ts = createRequire(path.join(compilerRoot, 'package.json'))('typescript');
 
 function fixture(t, files) {
