@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-18T04:29:06.767081+00:00",
+  "scope": "Final local production preview artifact; not deployed",
+  "worker": "theanh-main-cf-production",
+  "configSha256": "788a78d322b418b8480cc44e7779a2cdea03f674f6ab2fda84dd7aee94abc35a",
+  "entrypointSha256": "be88c7f9513bad5623acec36ce261469e734e6faec02194aec09df341c2f3572",
+  "domains": [],
+  "triggers": {},
+  "cronMode": "disabled",
+  "serviceBindings": [
+    {
+      "binding": "STUDENT_APP",
+      "service": "theanh-student-cf-production"
+    }
+  ],
+  "tests": {
+    "mainServiceBindingAndCron": 13,
+    "productionArtifact": 3,
+    "studentSecretAndCookie": 12
+  },
+  "productionChanged": false
+}

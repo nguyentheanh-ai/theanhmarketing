@@ -1,3 +1,5 @@
+> **Cập nhật 18/10/2026:** Chưa đủ điều kiện chuyển. Xem [đối chiếu tiếp nhận](CODEX_RETAKE_A_B_20261018.md) trước mọi bước bên dưới: artifact A lúc nhận là staging (đã rebuild đúng), cần compatibility secret cũ/mới khi B chuyển trước A, xác minh Resend webhook, DNS đầy đủ, cron Vercel và release roots. Các kết quả lịch sử/khóa trong phần cũ không tự chứng minh trạng thái hiện tại.
+
 # Chuyển website A (theanhmarketing.com) từ Vercel sang Cloudflare Workers
 
 Trạng thái 15/10/2026 (cập nhật sau khi anh duyệt mục 1–5): **cấu hình production đã áp dụng và build đạt; chưa deploy** vì cần (a) phiên Vercel hợp lệ để chép biến môi trường và (b) quyền tạo Secret trên Worker production (chế độ an toàn chặn). Chưa có gì chạy trên production Cloudflare; Vercel + Supabase vẫn phục vụ website thật.

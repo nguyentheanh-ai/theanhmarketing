@@ -1,3 +1,5 @@
+> **Cập nhật 18/10/2026:** Chưa đủ điều kiện chuyển. Xem [đối chiếu tiếp nhận](CODEX_RETAKE_A_B_20261018.md) trước mọi bước bên dưới: artifact A lúc nhận là staging (đã rebuild đúng), cần compatibility secret cũ/mới khi B chuyển trước A, xác minh Resend webhook, DNS đầy đủ, cron Vercel và release roots. Các kết quả lịch sử/khóa trong phần cũ không tự chứng minh trạng thái hiện tại.
+
 # Ngày chuyển website A + App B từ Vercel sang Cloudflare Workers
 
 Trạng thái 17/10/2026: **chuẩn bị xong, chờ duyệt**. Dữ liệu vẫn ở Supabase A/B (không đổi). Vercel vẫn phục vụ cả hai tên miền.

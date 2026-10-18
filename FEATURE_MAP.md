@@ -1,3 +1,10 @@
+
+## 18/10/2026 — Tiếp nhận Claude → Codex, kiểm tra cutover hosting A/B
+
+Đã đọc4tài liệu bàn giao/runbook và xác minh5worktree: A1734c82/B0dd71b4 sạch; A release cũ43cee59 có11file dirty không đụng; Bmain e379a08 cùng GitHub, production9fcf0d2 vẫnREADY, bản Vercel mớiBLOCKED. Cloudflare chưazone/customdomain/cron; nativegatesOFF. Artifact A lúc nhận là staging, đã rebuild bằng scriptproduction bắt buộc; bổ sung verifier chặn saiWorker/URL/binding/gates/domain/cron. Build local attach và khôngattach đạt, khôngdeploy;16testA+12testB đạt.
+
+Chi tiết và một danh sách duyệt duy nhất: `_cloudflare-migration/main/docs/CODEX_RETAKE_A_B_20261018.md`; mẫu tênkhóa `CUTOVER_KEYS_TEMPLATE.txt`. Còn DNS export, keyfilethiếu, Resend signingsecret, compatibility secretcũ/mớiA→B, cách tắtcronVercel và releaseRootsWorkers. Bướcchuyển chưaREADY, giữSupabase. Khôngghi dữliệu thật/gửiemail/đổiSecret/DNS/webhook trong lượt này. 11filecũ vàgỡauththử/xóafilekhóa xửlý sau.
+
 ## 15/10/2026 09:03 UTC — Kiểm thử học tập bằng trình duyệt nội bộ Codex
 
 A staging đã triển khai mã `df8a88b` (upload `fae4205c-988d-41d0-a4e3-277fc6b6643c`); sau QA config version `b42dfae5-87f4-4c5e-998f-10979038323a`. QA qua đăng nhập, URL bài học bắt buộc, video/phụ đề, refresh, bài trước/tiếp, premium, logout và chặn premium khi guest; kiểm viewport1365×900 và390×844. Không dùng Chrome của anh. Chưa phải Safari iPhone thật, không ghi progress/password/payment trong lượt này. Native vẫn là mirror staging, toàn migration **IN PROGRESS**.

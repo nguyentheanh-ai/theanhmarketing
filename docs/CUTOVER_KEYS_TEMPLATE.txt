@@ -1,0 +1,16 @@
+# Bổ sung các dòng này vào ~/Documents/key.rtf; thay phần sau dấu = bằng giá trị thật.
+# Không gửi nội dung khóa trong chat. Không đổi mật khẩu hoặc reset khóa nhà cung cấp.
+GOOGLE_SHEETS_WEBHOOK_URL=
+META_APP_ID=
+META_APP_SECRET=
+META_ADS_ACCESS_TOKEN=
+META_ADS_AD_ACCOUNT_ID=
+ADS_META_APP_ID=
+ADS_META_APP_SECRET=
+# Khóa ký của webhook Resend HIỆN CÓ (không tự tạo webhook mới):
+RESEND_WEBHOOK_SECRET=
+# Khóa cấp quyền CŨ đang dùng ở Vercel A/B, để chuyển liên tục:
+STUDENT_PORTAL_PROVISION_SECRET=
+# Nếu còn giữ khóa mã hóa Meta B CŨ, thêm tên dưới để bảo toàn kết nối:
+ADS_META_TOKEN_KEY=
+# CRON_SECRET A/B, TELEGRAM_REPORT_SECRET và khóa mới sẽ do công cụ tạo sau duyệt.

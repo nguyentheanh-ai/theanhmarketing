@@ -1,0 +1,117 @@
+{
+  "checkedAt": "2026-10-18T04:26:53.446358+00:00",
+  "scope": "Public DNS observations only; not full authoritative zone export",
+  "queries": [
+    {
+      "name": "theanhmarketing.com",
+      "type": "NS",
+      "exitCode": 0,
+      "answers": [
+        "sapa.vclouddns.com.",
+        "laocai.vclouddns.com."
+      ]
+    },
+    {
+      "name": "theanhmarketing.com",
+      "type": "A",
+      "exitCode": 0,
+      "answers": [
+        "216.198.79.1"
+      ]
+    },
+    {
+      "name": "theanhmarketing.com",
+      "type": "AAAA",
+      "exitCode": 0,
+      "answers": []
+    },
+    {
+      "name": "theanhmarketing.com",
+      "type": "MX",
+      "exitCode": 0,
+      "answers": []
+    },
+    {
+      "name": "theanhmarketing.com",
+      "type": "TXT",
+      "exitCode": 0,
+      "answers": []
+    },
+    {
+      "name": "theanhmarketing.com",
+      "type": "CAA",
+      "exitCode": 0,
+      "answers": []
+    },
+    {
+      "name": "theanhmarketing.com",
+      "type": "DS",
+      "exitCode": 0,
+      "answers": []
+    },
+    {
+      "name": "www.theanhmarketing.com",
+      "type": "CNAME",
+      "exitCode": 0,
+      "answers": [
+        "02a6b1bed5462f9d.vercel-dns-017.com."
+      ]
+    },
+    {
+      "name": "app.theanhmarketing.com",
+      "type": "CNAME",
+      "exitCode": 0,
+      "answers": [
+        "cname.vercel-dns.com."
+      ]
+    },
+    {
+      "name": "adsplan.theanhmarketing.com",
+      "type": "CNAME",
+      "exitCode": 0,
+      "answers": [
+        "cname.vercel-dns.com."
+      ]
+    },
+    {
+      "name": "mail.theanhmarketing.com",
+      "type": "CNAME",
+      "exitCode": 0,
+      "answers": [
+        "mail.resend-dns.com."
+      ]
+    },
+    {
+      "name": "send.theanhmarketing.com",
+      "type": "MX",
+      "exitCode": 0,
+      "answers": [
+        "10 feedback-smtp.ap-northeast-1.amazonses.com."
+      ]
+    },
+    {
+      "name": "send.theanhmarketing.com",
+      "type": "TXT",
+      "exitCode": 0,
+      "answers": [
+        "\"v=spf1 include:amazonses.com ~all\""
+      ]
+    },
+    {
+      "name": "resend._domainkey.theanhmarketing.com",
+      "type": "TXT",
+      "exitCode": 0,
+      "answers": [
+        "\"p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRjbx4GLY/KBySYKQ1iAV2cb+pdMSe1xQ2VUF6g/GN9kbFdav2KH4jEyC80FQOKmHvIsBpfy0p2Bseyz1cYv3cBXSdY8Ihwvd29V4dvfN/LgO08FFpvgADtmAZGz58iwrVsbCuC2EM3YHAO2IMfY+EI/75z/L1U53hqlQHWOAgRQIDAQAB\""
+      ]
+    },
+    {
+      "name": "_dmarc.theanhmarketing.com",
+      "type": "TXT",
+      "exitCode": 0,
+      "answers": [
+        "\"v=DMARC1; p=none;\""
+      ]
+    }
+  ]
+}

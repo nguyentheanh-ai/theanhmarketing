@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-10-18T04:28:29.234084+00:00",
+  "scope": "Local cutover build only; no deploy",
+  "worker": "theanh-main-cf-production",
+  "configSha256": "007c8089ad69892ebcd3ff411fbdd6ff1be55092a85e16d5ad7ad510c3d400fd",
+  "entrypointSha256": "b3fe260acb1410de919f0de7d839e9430bc5ca25043f5dabc2feaecb921523d6",
+  "domains": [
+    {
+      "pattern": "theanhmarketing.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.theanhmarketing.com",
+      "custom_domain": true
+    }
+  ],
+  "triggers": {
+    "crons": [
+      "*/5 * * * *"
+    ]
+  },
+  "cronMode": "enabled",
+  "serviceBindings": [
+    {
+      "binding": "STUDENT_APP",
+      "service": "theanh-student-cf-production"
+    }
+  ]
+}
