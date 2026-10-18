@@ -38,18 +38,18 @@ def archive(directory):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=['auth', 'legacy-sessions', 'b-authorization', 'orders', 'courses', 'learning-access', 'compare'])
+    parser.add_argument('operation', choices=['auth', 'legacy-sessions', 'b-authorization', 'orders', 'courses', 'learning-access', 'admin-orders', 'compare'])
     parser.add_argument('--project', required=True, choices=['a', 'b'])
     parser.add_argument('--directory', required=True)
     parser.add_argument('--before-directory')
     parser.add_argument('--qa-file', help='Existing private QA credential file; never passed as a command argument to Node')
     args = parser.parse_args()
-    if (args.operation == 'b-authorization' and args.project != 'b') or (args.operation in ['orders', 'courses', 'learning-access'] and args.project != 'a') or (args.qa_file and args.operation != 'auth'):
+    if (args.operation == 'b-authorization' and args.project != 'b') or (args.operation in ['orders', 'courses', 'learning-access', 'admin-orders'] and args.project != 'a') or (args.qa_file and args.operation != 'auth'):
         raise ValueError('operation scope mismatch')
     data = {'project': args.project, 'archive': archive(args.directory),
             'masterSecret': sealed.keychain('archive', 'theanh-cloudflare-migration-archive'),
             'compilerRoot': str(ROOT.parent / 'main')}
-    if args.operation in ['auth', 'legacy-sessions']:
+    if args.operation in ['auth', 'legacy-sessions', 'admin-orders']:
         data['credentialKey'] = sealed.keychain('native-a-credential', 'theanh-main-cf-staging-credential')
     if args.operation == 'auth':
         script = 'probe-sealed-auth-native.mjs'
@@ -72,6 +72,11 @@ def main():
     elif args.operation == 'courses':
         script = 'probe-sealed-courses.mjs'
         data['schema'] = (ROOT / 'scripts/d1-course-content-prototype.sql').read_text()
+    elif args.operation == 'admin-orders':
+        script = 'probe-sealed-admin-orders.mjs'
+        data['schemas'] = [(ROOT / 'scripts' / name).read_text() for name in
+                           ['d1-course-access-source-prototype.sql', 'd1-auth-core-prototype.sql',
+                            'd1-admin-role-prototype.sql', 'd1-native-order-settlement.sql']]
     elif args.operation == 'learning-access':
         script = 'probe-sealed-learning-access.mjs'
         data['schemas'] = [(ROOT / 'scripts' / name).read_text() for name in

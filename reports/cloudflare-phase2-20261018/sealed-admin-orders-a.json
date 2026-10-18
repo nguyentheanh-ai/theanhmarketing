@@ -1,0 +1,20 @@
+{
+  "project": "a",
+  "sourceSnapshotAt": "2026-10-18T11:41:55.073822+00:00",
+  "clockMode": "SNAPSHOT_TIME_OFFLINE_REPLAY",
+  "database": "IN_MEMORY_SQLITE_ONLY",
+  "sourceOrderRows": 1049,
+  "sourceUsers": 447,
+  "adminSubjects": 3,
+  "deniedSubjects": 444,
+  "reportComparisons": 18,
+  "sourceRepositoryFunctionsExecuted": true,
+  "sourceRpcExecuted": false,
+  "extraEnvironmentOwnerParityVerified": false,
+  "syntheticSessionWitnessesOnly": true,
+  "administratorPasswordLoginVerified": false,
+  "hostedUiVerified": false,
+  "productionWritten": false,
+  "remoteD1Written": false,
+  "readyForCutover": false
+}

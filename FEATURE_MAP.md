@@ -1765,3 +1765,10 @@ Native order1.049đơn/67cột và amount thực thi khớp; nội dung10khóa/5
 Reviewer tìm và đã kiểm lại sửa3false-green: JSON number mất precision; số tiền thực thi không so; dashboard ID-or-slug khác lesson RPC scope. Candidate thêm guard precise-json và scope SQL riêng, legacyDerived không tăng quyền.81Node +24Python, typecheck Cloudflare, scopedESLint PASS. Build đúng `scripts/build-cloudflare-production.sh` với domain thật PASS/9nativegateOFF/attachDomains=false;6nhóm built vinext/workerd/D1 và7nhóm payment/workerd/D1 cục bộ PASS. Harness dùng fixture/provider cục bộ, không là hosted/browser/provider delivery hoặc primary proof. Artifact build từ working tree đang sửa, không được deploy trực tiếp.
 
 Chi tiết: `_cloudflare-migration/phase2-main/docs/PHASE2_PROGRESS_20261018.md`; receipt không PII trong `reports/cloudflare-phase2-20261018`. Còn native admin/CRM/toàn bộ provider A/B, cấu hình Auth/rolling session, privateR2, Source RPC parity, writer fence/delta/rollback giữ ghi mới và staging. Giữ Supabase writer/Auth/Storage và Blue B bridge. Gom mọi thay đổi production cần duyệt khi đã có kết quả reviewable; chưa hủy Vercel/Supabase.
+
+
+### 18/10 — Checkpoint admin native và RPC quyền học
+
+Nhánh phase2 bổ sung backend/HTTP báo cáo public.orders không lọc, chưa mount router/UI. Protected app_metadata role riêng + owner ENV backend hiện tại, session/revision/status/freshness kiểm cùng SQL; không lấy user_metadata làm quyền. Archive A1049đơn/447user:3admin×6khoảng ngày=18đối chiếu đạt;444subject khác bị chặn. Phiên chỉ tổng hợp trong RAM, chưa login admin thật/owner ENV thêm. Node5 + actual workerd/D1 HTTP5nhóm PASS,0fetch ngoài; Python RPC2 PASS, typecheck/scopedESLint/diff PASS. Reviewer không thấy lỗi chặn trong core/transport/probe. RPC học production metadata-only read_only xác nhận định nghĩa/quyền khớp repository; chưa thực thi RPC hoặc đọc hàng khách qua phép audit này.
+
+Không deploy/đổi writer/Auth/Storage/secret. Image đã đóng sau probe. Hạng mục này chưa hoàn thành toàn bộ quản trị/CRM; chi tiết và giới hạn trong `docs/PHASE2_PROGRESS_20261018.md`. Không hủy Supabase/Vercel.

@@ -1,0 +1,24 @@
+{
+  "status": "TESTED_SOURCE_LMS_RPC_CONTRACT",
+  "sourceProject": "vsxxgdzwtscuxcmjfckt",
+  "function": "public.student_lms_enrollments_scoped(uuid,text,text)",
+  "checks": {
+    "bodyMatchesRepository": true,
+    "languageSql": true,
+    "stable": true,
+    "securityInvoker": true,
+    "parameterTypesMatch": true,
+    "parameterNamesMatch": true,
+    "returnsJsonb": true,
+    "emptySearchPath": true,
+    "anonDenied": true,
+    "authenticatedDenied": true,
+    "serviceRoleAllowed": true,
+    "readOnlyTransactionVerified": true
+  },
+  "repositoryDefinitionSha256": "9ef7797cc5acf9ade32d069d0a8e53a863e67d1258568777b77d882b32a389d0",
+  "sourceRpcExecuted": false,
+  "customerRowsRead": 0,
+  "productionWritten": false,
+  "readyForCutover": false
+}

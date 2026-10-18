@@ -27,6 +27,20 @@ Bản sao D1 ngày 15/10 từng ghi A442/B271 tài khoản: **không dùng bản
 
 ## Mã vừa hoàn thiện
 
+### 18/10 — Quyền admin và báo cáo đơn hàng native
+
+`d1-admin-order-report.ts` + `d1-admin-role-prototype.sql` bổ sung backend báo cáo **public.orders không lọc**, không thay thế danh sách đơn `crm_v2.orders` có bộ lọc. Giữ cách dùng paid_at/created_at, ngày Việt Nam, khóa khách email/điện thoại/order và `buildCrmOrderSummary` hiện có. Chặn bộ lọc chưa hỗ trợ, khoảng ngày không hợp lệ/quá366ngày, dữ liệu vượt10.000hàng và tổng VND vượt số nguyên an toàn; không trả báo cáo thiếu hàng như thành công.
+
+Mỗi phép đọc kiểm cùng một SQL: opaque session/hash/project, revoked/expiry/version, xác nhận email/status/ban/password-change, protected role + revision nguồn và freshness Auth/orders. Protected role được nhập riêng từ `app_metadata`, không từ `user_metadata` hoặc cột role đã trộn owner ENV. Protected editor ưu tiên trước owner ENV; owner fallback lấy danh sách backend hiện tại. Role/revision thiếu hoặc thay đổi thì từ chối. Đây vẫn là mirror, chưa là quyền admin native sau cutover hoặc cơ chế sửa role.
+
+Probe archive thật:1.049đơn/447Authuser;3subject admin qua18phép so sánh (6khoảng ngày),444subject khác bị chặn. Oracle thực thi hàm đếm khách và predicate ngày lấy bằng AST từ repository, dùng selector nguồn cục bộ; **không thực thi RPC/API production**. Phiên trong phép thử là witness tổng hợp trong RAM, không chứng minh đăng nhập mật khẩu admin. Owner ENV bổ sung chưa đối soát. Báo cáo `sealed-admin-orders-a.json` chỉ số đếm, không chứa doanh thu/khách hàng.
+
+Adapter HTTP `d1-admin-order-http.ts` chặn đổi subject/query trùng, cross-origin/cross-site, cookie trùng và phương thức khác GET; response `private, no-store`. **Chưa được gắn router hoặc giao diện staging/production**, không tạo đường quản trị mới đang truy cập được. Actual workerd+D1 cục bộ qua5nhóm HTTP với fixture;0fetch ngoài; Node5kiểm role/race/ngày/giới hạn/import đạt. Reviewer độc lập không thấy lỗi chặn trong core; transport/probe được kiểm tiếp trước checkpoint.
+
+Đã đọc metadata RPC thật `student_lms_enrollments_scoped(uuid,text,text)` bằng Management API `read_only=true`: body SQL token khớp migration, SQL/STABLE/SECURITY INVOKER, search_path rỗng, anon/authenticated không EXECUTE, service_role được EXECUTE.2Python test đạt. Không đọc hàng khách, không gọi RPC, không in body/secret. `source-lms-rpc-contract.json` ghi rõ `sourceRpcExecuted:false`; kết quả này bổ sung bằng chứng định nghĩa, không thay thế kiểm kết quả runtime/RLS.
+
+Không deploy/chuyển nguồn ghi, không đổi secret, không sửa production. Import role chỉ là kế hoạch INSERT ban đầu, phải đi cùng transaction Auth của cùng snapshot; chưa có role delta/native authority. Tiếp tục CRM CRUD, toàn bộ admin, Google OAuth, Storage, đồng bộ và rollback trước khi đề xuất bỏ Supabase.
+
 ### 18/10 — Bản chụp đầy đủ trường, Auth và phân quyền B
 
 Đã bổ sung `export-sealed-source-snapshot.py` và `sealed-source-snapshot.mjs`. Export một SELECT/MVCC riêng từng project, gồm app + `auth` + metadata `storage`, không NULL cột nhạy cảm. Dữ liệu chỉ đi qua bộ nhớ tiến trình và stdin bắt giữ; mỗi hàng được AES-256-GCM với nonce riêng, AAD gắn project/snapshot/catalog/khóa hàng đã HMAC. HKDF tách khóa theo project/mục đích; manifest và giá trị được xác thực. Toàn bộ SQLite chỉ chứa ciphertext và HMAC, vẫn nằm trong image AES-256 hiện có; không thêm secret production. Đã đọc lại file, xác minh mọi hàng trước khi đưa vào importer. Không in password hash, bearer hoặc thông tin khách hàng.

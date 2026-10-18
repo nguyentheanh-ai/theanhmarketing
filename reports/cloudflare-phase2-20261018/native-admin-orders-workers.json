@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-10-18T12:14:09.158Z",
+  "checks": 5,
+  "scope": "Local real workerd + D1 HTTP aggregate report using synthetic fixtures",
+  "outboundFetches": 0,
+  "productionWritten": false,
+  "hostedUiVerified": false,
+  "readyForCutover": false
+}
