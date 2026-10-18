@@ -157,9 +157,25 @@ async function verifyStudentPasswordLogin(email: string, password: string) {
     return { ok: false, reason: error?.message ?? "Could not verify student password login." };
   }
 
-  await supabase.auth.signOut();
+  await supabase.auth.signOut({ scope: "local" });
 
   return { ok: true, reason: null };
+}
+
+// A retry must not clear an existing user's recovery/email-change tokens.
+// Metadata here only selects email wording/credential verification; it never
+// authorizes course access (which remains tied to the paid order and Auth ID).
+async function resumePreservedAccount(input: {
+  email: string; password: string; userId: string; metadata?: Record<string, unknown>;
+}): Promise<StudentAccountProvisionResult> {
+  const ownPassword = input.metadata?.must_change_password === false || Boolean(input.metadata?.password_changed_at);
+  if (ownPassword) return { ok: true, skipped: true, created: false, email: input.email,
+    temporaryPassword: null, userId: input.userId, reason: "Existing student login was preserved after password change." };
+  const verification = await verifyStudentPasswordLogin(input.email, input.password);
+  return { ok: verification.ok, skipped: false, created: false, email: input.email,
+    temporaryPassword: verification.ok ? input.password : null, userId: input.userId,
+    loginVerified: verification.ok,
+    reason: verification.ok ? "Student account provisioning resumed without Auth mutation." : "Existing account credential requires review; Auth was not modified." };
 }
 
 async function completeProvisionedPasswordLogin(
@@ -331,13 +347,8 @@ export async function ensureStudentAccountForPaidOrder(
             options.provisioningOperationId
             && existingUser.user_metadata?.provisioning_operation_id === options.provisioningOperationId
           ) {
-            return completeProvisionedPasswordLogin(supabase, {
-              email: credentials.email,
-              password: credentials.password,
-              userId: existingUser.id,
-              created: false,
-              successReason: "Student account provisioning resumed.",
-            });
+            return resumePreservedAccount({ email: credentials.email, password: credentials.password,
+              userId: existingUser.id, metadata: existingUser.user_metadata });
           }
           return {
             ...baseResult,
@@ -492,13 +503,8 @@ export async function ensureStudentAccountForAccessGrant(
         && options.provisioningOperationId
         && existingUser.user_metadata?.provisioning_operation_id === options.provisioningOperationId
       ) {
-        return completeProvisionedPasswordLogin(supabase, {
-          email: credentials.email,
-          password: credentials.password,
-          userId: existingUser.id,
-          created: false,
-          successReason: "Student account provisioning resumed.",
-        });
+        return resumePreservedAccount({ email: credentials.email, password: credentials.password,
+          userId: existingUser.id, metadata: existingUser.user_metadata });
       }
       return {
         ...baseResult,

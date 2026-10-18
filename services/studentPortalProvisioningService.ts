@@ -63,6 +63,8 @@ export async function notifyStudentPortalProvisioning({
 
   const response = await fetchStudentApp(endpoint, {
     method: "POST",
+    redirect: "manual",
+    signal: AbortSignal.timeout(10_000),
     headers: {
       "content-type": "application/json",
       "x-student-portal-secret": secret,

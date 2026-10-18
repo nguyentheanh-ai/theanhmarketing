@@ -423,6 +423,52 @@ test("provisioning retry reuses only the credential created by the same operatio
   }
 });
 
+test("retry after student password change preserves Auth recovery tokens and does not use old password", async () => {
+  const previous = {
+    role: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    anon: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  };
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-role";
+  process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
+  let updates = 0;
+  let signIns = 0;
+  const { ensureStudentAccountForPaidOrder } = loadTsModuleWithMocks("services/studentAccountService.ts", {
+    "@supabase/supabase-js": { createClient: () => ({ auth: {
+      signInWithPassword: async () => { signIns += 1; return { data: { user: { id: "user-1" } }, error: null }; },
+      signOut: async () => ({ error: null }),
+    } }) },
+    "@/lib/auth/student-account": { buildAutoStudentAccountCredentials: () => ({ email: "student@example.com", password: "Stable0900000000" }) },
+    "@/lib/supabase/admin": { createSupabaseAdminClient: () => ({
+      schema: () => { throw new Error("Existing Auth tokens must remain untouched"); }, unusedSchema: () => ({ from: () => ({ update: () => ({ eq: () => ({ select: () => ({ maybeSingle: async () => ({ data: { id: "user-1" }, error: null }) }) }) }) }) }),
+      auth: { admin: {
+        createUser: async () => ({ data: { user: null }, error: { message: "User already registered" } }),
+        listUsers: async () => ({ data: { users: [{
+          id: "user-1", email: "student@example.com",
+          user_metadata: { provisioning_operation_id: "operation-task7-123", must_change_password: false, password_changed_at: "2026-10-18T10:00:00Z" },
+        }] }, error: null }),
+        updateUserById: async () => { updates += 1; return { data: null, error: null }; },
+      } },
+    }) },
+    "@/services/activityLogService": { logStudentActivity: async () => ({ ok: true }) },
+  });
+  try {
+    const result = await ensureStudentAccountForPaidOrder({
+      studentName: "Hoc Vien", email: "student@example.com", phone: "0900000000", status: "paid",
+      orderCode: "ORDER-100", courseSlug: "course-a", courseTitle: "Course A",
+    }, { preserveExistingAuth: true, provisioningOperationId: "operation-task7-123" });
+    assert.equal(result.ok, true);
+    assert.equal(result.temporaryPassword, null);
+    assert.equal(updates, 0);
+    assert.equal(signIns, 0);
+  } finally {
+    for (const [key, value] of [["SUPABASE_SERVICE_ROLE_KEY", previous.role], ["NEXT_PUBLIC_SUPABASE_URL", previous.url], ["NEXT_PUBLIC_SUPABASE_ANON_KEY", previous.anon]]) {
+      if (value === undefined) delete process.env[key]; else process.env[key] = value;
+    }
+  }
+});
+
 test("paid order provisioning fails closed when the issued password cannot log in", async () => {
   const previousServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const previousSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -550,21 +596,10 @@ test("student account provisioning centralizes auth normalization and password l
   assert.doesNotMatch(resetRoute, /signInWithPassword/);
 });
 
-test("SePay paid email includes account password when an existing user was reset", () => {
-  const route = read("app/api/sepay/webhook/route.ts");
-
-  assert.match(route, /studentAccount\?\.temporaryPassword|provisionedAccount\.temporaryPassword/);
-  assert.doesNotMatch(route, /account:\s*studentAccount\.created/);
-});
-
-test("SePay student success email is blocked until a verified login account is available", () => {
-  const route = read("app/api/sepay/webhook/route.ts");
-
-  assert.match(route, /if \(!preorderDepositOrder && !studentAccount\?\.temporaryPassword\)/);
-  assert.match(route, /Payment success email requires a verified student login account\./);
-  assert.doesNotMatch(route, /requiresVerifiedLoginAccount/);
-  assert.match(
-    route,
-    /if \(!preorderDepositOrder && !studentAccount\?\.temporaryPassword\)[\s\S]*?markPaymentEmailError[\s\S]*?else \{[\s\S]*?sendPaymentSuccessEmail/,
-  );
+test("SePay fulfillment preserves existing passwords and sends verified new-account credentials", () => {
+  const service = read("services/sourcePaidFulfillmentService.ts");
+  assert.match(service, /preserveExistingAuth: true/);
+  assert.match(service, /account\?\.temporaryPassword/);
+  assert.match(service, /account_provisioning_failed/);
+  assert.doesNotMatch(service, /forcePasswordUpdate: true/);
 });

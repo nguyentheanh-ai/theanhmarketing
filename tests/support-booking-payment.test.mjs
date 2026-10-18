@@ -25,9 +25,8 @@ test("SePay confirms support booking before a booking-specific paid Telegram ale
   assert.match(webhook, /isSupportBookingOrder/);
   assert.match(webhook, /confirmSupportBookingForPaidOrder/);
   assert.match(webhook, /sendTelegramSupportBookingNotification/);
-  assert.match(webhook, /if \(!confirmation\.wasAlreadyPaid && supportBookingOrder\)/);
-  assert.match(webhook, /shouldSendPaymentSuccessEmail\(confirmation\.order\) &&\s*!supportBookingOrder/s);
-  assert.match(webhook, /studentAccount = await ensureStudentAccountForPaidOrder/);
+  assert.match(webhook, /if \(supportBookingOrder\)/);
+  assert.match(webhook, /if \(!supportBookingOrder\) \{\s*paymentEmail = await fulfillSourcePaidOrder/s);
   assert.match(service, /\.rpc\("confirm_support_booking"/);
   assert.match(telegram, /export function buildTelegramSupportBookingMessage/);
   assert.match(telegram, /\[PAID SUPPORT BOOKING\]/);

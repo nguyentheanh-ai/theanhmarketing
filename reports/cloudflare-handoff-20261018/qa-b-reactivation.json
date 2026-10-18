@@ -1,0 +1,8 @@
+{
+  "checkedAt": "2026-10-18T10:00:45.548Z",
+  "status": "QA_ACTIVE_AFTER_REVOKED_TOKEN_EXPIRY",
+  "profileCount": 1,
+  "previousQaSessionsRevoked": true,
+  "minimumExpiryPassed": true,
+  "scope": "Only existing QA alias B; no real student, password, entitlement, secret or DNS change"
+}

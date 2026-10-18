@@ -1,13 +1,8 @@
 import { NextResponse } from "next/server";
-import {
-  sendPaymentSuccessEmail,
-  shouldSendPaymentSuccessEmail,
-} from "@/lib/notifications/payment-success-email";
 import { syncOrderToGoogleSheetWithActivity } from "@/lib/notifications/google-sheets-order-sync";
 import { sendTelegramOrderNotification, sendTelegramSupportBookingNotification } from "@/lib/notifications/telegram";
 import { SUPPORT_PRODUCT_SLUG } from "@/lib/support-booking/constants";
 import { isConsultationOrder } from "@/lib/consultation/constants";
-import { sendConsultationPaymentEmail } from "@/lib/notifications/consultation-payment-email";
 import { dispatchMetaPurchaseOrders } from "@/lib/meta/purchase-outbox";
 import {
   verifySepayApiKey,
@@ -24,12 +19,8 @@ import { notifyAccountingForPaidOrder } from "@/services/accountingNotificationS
 import { logStudentActivity } from "@/services/activityLogService";
 import {
   confirmOrderFromSepay,
-  markPaymentEmailError,
-  markPaymentEmailSent,
   type PaymentOrder,
 } from "@/services/orderService";
-import { ensureStudentAccountForPaidOrder } from "@/services/studentAccountService";
-import { notifyStudentPortalProvisioning } from "@/services/studentPortalProvisioningService";
 import { siteConfig } from "@/data/site";
 import { isAgentKitPreorderDepositOrder } from "@/lib/agent-kit-preorder";
 import {
@@ -37,6 +28,8 @@ import {
   markSupportBookingTelegram,
   type ConfirmedSupportBooking,
 } from "@/services/supportBookingService";
+
+import { fulfillSourcePaidOrder, initialSepayFulfillmentReceipt, PaidFulfillmentUnavailable } from "@/services/sourcePaidFulfillmentService";
 
 export const runtime = "nodejs";
 
@@ -85,8 +78,13 @@ export async function POST(request: Request) {
     );
   }
 
+  let paidConfirmed = false;
   try {
-    const confirmation = await confirmOrderFromSepay(payload);
+    const confirmation = await confirmOrderFromSepay(payload, {
+      initialFulfillmentReceipt: order => !isSupportBookingOrder(order)
+        ? initialSepayFulfillmentReceipt() : null,
+    });
+    paidConfirmed = true;
     let paymentEmail: {
       ok: boolean;
       skipped: boolean;
@@ -106,27 +104,27 @@ export async function POST(request: Request) {
       skipped: true,
       reason: "not_sent",
     };
-    let studentAccount: Awaited<
-      ReturnType<typeof ensureStudentAccountForPaidOrder>
-    > | null = null;
-    let studentPortalProvisioning: Awaited<
-      ReturnType<typeof notifyStudentPortalProvisioning>
-    > | null = null;
     const supportBookingOrder = isSupportBookingOrder(confirmation.order);
     const consultationOrder = isConsultationOrder(confirmation.order);
     const preorderDepositOrder = isAgentKitPreorderDepositOrder(confirmation.order);
     let supportBooking: ConfirmedSupportBooking | null = null;
 
-    const accountingEmail = await notifyAccountingForPaidOrder(confirmation.order);
-    if (!accountingEmail.ok) {
-      console.warn("[sepay] Accounting payment email failed:", {
-        orderCode: confirmation.order.orderCode,
-        reason: accountingEmail.reason,
-      });
+    // Paid status and its recovery receipt commit together. Duplicate/late
+    // requests resume fulfillment, preserving existing passwords and using a
+    // database CAS claim plus a payload-bound provider idempotency key.
+    if (!supportBookingOrder) {
+      paymentEmail = await fulfillSourcePaidOrder(confirmation.order, undefined, consultationOrder ? 'consultation' : preorderDepositOrder ? 'preorder' : 'course');
+      if (paymentEmail.ok && !paymentEmail.skipped) {
+        await logStudentActivity({ studentEmail: confirmation.order.email, studentPhone: confirmation.order.phone,
+          eventType: 'payment_success_email_sent', eventTitle: 'Đã gửi email thanh toán thành công', status: 'success', actorType: 'system',
+          metadata: { orderCode: confirmation.order.orderCode, courseSlug: confirmation.order.courseSlug } });
+      }
     }
 
-    if (!confirmation.wasAlreadyPaid && supportBookingOrder) {
-      supportBooking = await confirmSupportBookingForPaidOrder(confirmation.order);
+
+    if (supportBookingOrder) {
+      try { supportBooking = await confirmSupportBookingForPaidOrder(confirmation.order); }
+      catch { throw new PaidFulfillmentUnavailable('support_booking_confirmation_failed'); }
       paymentEmail = {
         ok: true,
         skipped: true,
@@ -134,14 +132,12 @@ export async function POST(request: Request) {
       };
     }
 
-    if (!confirmation.wasAlreadyPaid && consultationOrder) {
-      const result = await sendConsultationPaymentEmail(confirmation.order);
-      paymentEmail = result;
-      if (result.ok && !result.skipped) {
-        await markPaymentEmailSent(confirmation.order.orderCode);
-      } else if (!result.ok) {
-        await markPaymentEmailError(confirmation.order.orderCode, result.reason ?? "Không gửi được email xác nhận tư vấn.");
-      }
+    const accountingEmail = await notifyAccountingForPaidOrder(confirmation.order);
+    if (!accountingEmail.ok) {
+      console.warn("[sepay] Accounting payment email failed:", {
+        orderCode: confirmation.order.orderCode,
+        reason: accountingEmail.reason,
+      });
     }
 
     if (confirmation.order.status === "paid" && !confirmation.order.purchaseEventSent) {
@@ -172,170 +168,7 @@ export async function POST(request: Request) {
       }
     }
 
-    if (
-      !confirmation.wasAlreadyPaid &&
-      shouldSendPaymentSuccessEmail(confirmation.order) &&
-      !supportBookingOrder &&
-      !consultationOrder
-    ) {
-      if (!preorderDepositOrder) {
-        studentAccount = await ensureStudentAccountForPaidOrder(
-          confirmation.order,
-        );
-
-        if (!studentAccount.ok) {
-          logSecurityEvent({
-            action: "student_account_auto_create_failed",
-            request,
-            detail: {
-              orderCode: confirmation.order.orderCode,
-              reason: studentAccount.reason,
-            },
-          });
-        }
-
-        if (studentAccount.ok && studentAccount.userId) {
-          studentPortalProvisioning = await notifyStudentPortalProvisioning({
-            order: confirmation.order,
-            userId: studentAccount.userId,
-          });
-
-          if (!studentPortalProvisioning.ok) {
-            logSecurityEvent({
-              action: "student_portal_provisioning_failed",
-              request,
-              detail: {
-                orderCode: confirmation.order.orderCode,
-                reason: studentPortalProvisioning.reason,
-                status: studentPortalProvisioning.status,
-              },
-            });
-          }
-        }
-      }
-
-      if (!preorderDepositOrder && !studentAccount?.temporaryPassword) {
-        const reason = studentAccount?.ok
-          ? "Payment success email requires a verified student login account."
-          : `Payment success email blocked because student account provisioning failed: ${
-              studentAccount?.reason ?? "unknown reason"
-            }`;
-        paymentEmail = { ok: false, skipped: false, reason };
-
-        const markResult = await markPaymentEmailError(
-          confirmation.order.orderCode,
-          reason,
-        );
-
-        if (!markResult.ok) {
-          logSecurityEvent({
-            action: "payment_success_email_mark_error_failed",
-            request,
-            detail: {
-              orderCode: confirmation.order.orderCode,
-              reason: markResult.error,
-            },
-          });
-        }
-
-        await logStudentActivity({
-          userId: studentAccount?.userId ?? null,
-          studentEmail: confirmation.order.email,
-          studentPhone: confirmation.order.phone,
-          eventType: "payment_success_email_failed",
-          eventTitle: "Chưa gửi email vì chưa cấp được tài khoản học viên",
-          eventDescription: reason,
-          status: "failed",
-          actorType: "system",
-          metadata: {
-            orderCode: confirmation.order.orderCode,
-            courseSlug: confirmation.order.courseSlug,
-          },
-        });
-      } else {
-        const provisionedAccount = studentAccount;
-        const account = provisionedAccount && provisionedAccount.temporaryPassword
-          ? {
-              email: provisionedAccount.email,
-              temporaryPassword: provisionedAccount.temporaryPassword,
-              created: provisionedAccount.created,
-              mustChangePassword: true,
-            }
-          : undefined;
-        const result = await sendPaymentSuccessEmail(confirmation.order, {
-          account,
-        });
-        paymentEmail = {
-          ok: result.ok,
-          skipped: result.skipped,
-          reason: result.reason,
-        };
-
-        if (result.ok && !result.skipped) {
-          const markResult = await markPaymentEmailSent(
-            confirmation.order.orderCode,
-          );
-
-          if (!markResult.ok) {
-            logSecurityEvent({
-              action: "payment_success_email_mark_sent_failed",
-              request,
-              detail: {
-                orderCode: confirmation.order.orderCode,
-                reason: markResult.error,
-              },
-            });
-          }
-          await logStudentActivity({
-            userId: studentAccount?.userId ?? null,
-            studentEmail: confirmation.order.email,
-            studentPhone: confirmation.order.phone,
-            eventType: "payment_success_email_sent",
-            eventTitle: "Đã gửi email thanh toán thành công",
-            eventDescription: `Email xác nhận thanh toán đã gửi cho đơn ${confirmation.order.orderCode}.`,
-            status: "success",
-            actorType: "system",
-            metadata: {
-              orderCode: confirmation.order.orderCode,
-              courseSlug: confirmation.order.courseSlug,
-            },
-          });
-        } else {
-          const reason = result.reason ?? "Payment success email was skipped.";
-          const markResult = await markPaymentEmailError(
-            confirmation.order.orderCode,
-            reason,
-          );
-
-          if (!markResult.ok) {
-            logSecurityEvent({
-              action: "payment_success_email_mark_error_failed",
-              request,
-              detail: {
-                orderCode: confirmation.order.orderCode,
-                reason: markResult.error,
-              },
-            });
-          }
-          await logStudentActivity({
-            userId: studentAccount?.userId ?? null,
-            studentEmail: confirmation.order.email,
-            studentPhone: confirmation.order.phone,
-            eventType: "payment_success_email_failed",
-            eventTitle: "Gửi email thanh toán thành công thất bại",
-            eventDescription: reason,
-            status: "failed",
-            actorType: "system",
-            metadata: {
-              orderCode: confirmation.order.orderCode,
-              courseSlug: confirmation.order.courseSlug,
-            },
-          });
-        }
-      }
-    }
-
-    if (!confirmation.wasAlreadyPaid) {
+    if (!confirmation.wasAlreadyPaid || (!supportBookingOrder && !paymentEmail.skipped)) {
       try {
         const telegram = supportBookingOrder && supportBooking
           ? await sendTelegramSupportBookingNotification(confirmation.order, supportBooking)
@@ -359,7 +192,7 @@ export async function POST(request: Request) {
       }
     }
 
-    if (!confirmation.wasAlreadyPaid) {
+    if (!confirmation.wasAlreadyPaid || (!supportBookingOrder && !paymentEmail.skipped)) {
       try {
         await syncOrderToGoogleSheetWithActivity(confirmation.order, {
           source: "SePay paid webhook",
@@ -381,19 +214,14 @@ export async function POST(request: Request) {
         ? {
             paymentEmail,
             metaPurchase,
-            studentAccount: studentAccount
-              ? {
-                  ok: studentAccount.ok,
-                  skipped: studentAccount.skipped,
-                  created: studentAccount.created,
-                  reason: studentAccount.reason,
-                }
-              : null,
-            studentPortalProvisioning,
           }
         : {}),
     });
   } catch (error) {
+    if (error instanceof PaidFulfillmentUnavailable || paidConfirmed) {
+      logSecurityEvent({ action: "sepay_fulfillment_pending", request, detail: { reason: error instanceof PaidFulfillmentUnavailable ? error.reason : "post_settlement_failure" } });
+      return NextResponse.json({ success: false, message: "Thanh toán đã được lưu; bước cấp quyền đang chờ xử lý lại." }, { status: 503, headers: { "Retry-After": "60", "Cache-Control": "no-store" } });
+    }
     logSecurityEvent({
       action: "sepay_webhook_rejected",
       request,

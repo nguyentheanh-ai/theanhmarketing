@@ -1403,7 +1403,7 @@ async function resolveSepayOrderCode(payload: SepayWebhookPayload) {
   );
 }
 
-export async function confirmOrderFromSepay(payload: SepayWebhookPayload): Promise<PaymentConfirmationResult> {
+export async function confirmOrderFromSepay(payload: SepayWebhookPayload, options: { initialFulfillmentReceipt?: (order: PaymentOrder) => string | null } = {}): Promise<PaymentConfirmationResult> {
   const transferType = String(payload.transferType ?? payload.transfer_type ?? "").toLowerCase();
 
   if (transferType && transferType !== "in") {
@@ -1441,9 +1441,12 @@ export async function confirmOrderFromSepay(payload: SepayWebhookPayload): Promi
     throw new Error("Chưa cấu hình Supabase để cập nhật đơn.");
   }
 
+  const fulfillmentReceipt = options.initialFulfillmentReceipt?.(order);
+  const recoveryFields = fulfillmentReceipt ? { payment_email_last_error: fulfillmentReceipt } : {};
   const primary = await supabase
     .from("orders")
     .update({
+      ...recoveryFields,
       status: "paid",
       payment_status: "paid",
       paid_at: new Date().toISOString(),
@@ -1463,6 +1466,7 @@ export async function confirmOrderFromSepay(payload: SepayWebhookPayload): Promi
     const fallback = await supabase
       .from("orders")
       .update({
+        ...recoveryFields,
         status: "paid",
         payment_status: "paid",
         paid_at: new Date().toISOString(),

@@ -287,7 +287,7 @@ export function shouldSendPaymentSuccessEmail(order: PaymentOrder) {
   return order.status === "paid" && Boolean(order.email.trim()) && !order.paymentEmailSentAt;
 }
 
-function buildPreorderDepositEmailPayload(order: PaymentOrder, options: PaymentEmailOptions = {}): ResendEmailPayload {
+export function buildPreorderDepositEmailPayload(order: PaymentOrder, options: PaymentEmailOptions = {}): ResendEmailPayload {
   const siteUrl = normalizeSiteUrl(options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL);
   const paymentUrl = buildEmailLink(`${siteUrl}/thanh-toan/${encodeURIComponent(order.orderCode)}`, siteUrl);
   const safeName = escapeHtml(order.studentName || "anh/chị");
@@ -849,6 +849,8 @@ export async function sendPaymentSuccessEmail(
       : buildPaymentSuccessEmailPayload(order, options);
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
+      redirect: "manual",
+      signal: AbortSignal.timeout(10_000),
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
@@ -891,6 +893,8 @@ export async function sendPaymentFailedEmail(
     const payload = buildPaymentFailedEmailPayload(order, options);
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
+      redirect: "manual",
+      signal: AbortSignal.timeout(10_000),
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",

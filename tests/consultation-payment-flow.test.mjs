@@ -48,8 +48,10 @@ test("paid consultation is confirmed without student provisioning", () => {
   const poller = read("components/payment/payment-status-poller.tsx");
 
   assert.match(webhook, /isConsultationOrder/);
-  assert.match(webhook, /sendConsultationPaymentEmail/);
-  assert.match(webhook, /!consultationOrder[\s\S]*?ensureStudentAccountForPaidOrder/);
+  const fulfillment = read("services/sourcePaidFulfillmentService.ts");
+  assert.match(webhook, /fulfillSourcePaidOrder/);
+  assert.match(fulfillment, /kind === 'consultation' \? sendConsultationPaymentEmail/);
+  assert.match(fulfillment, /kind === 'course' \? await d\.account/);
   assert.match(email, /The Anh sẽ chủ động liên hệ/);
   assert.doesNotMatch(email, /temporaryPassword|mật khẩu tạm|Vào khóa học/);
   assert.match(checkout, /isConsultationOrder/);

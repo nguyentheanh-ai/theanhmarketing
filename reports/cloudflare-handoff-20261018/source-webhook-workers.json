@@ -1,0 +1,49 @@
+{
+  "checkedAt": "2026-10-18T10:05:32.526Z",
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "wrong bank key is rejected before database/Auth/provider actions",
+      "passed": true
+    },
+    {
+      "name": "valid bank receipt settles and fulfills through actual Workers HTTP route",
+      "passed": true
+    },
+    {
+      "name": "paid replay creates no second email or Auth operation",
+      "passed": true
+    },
+    {
+      "name": "Auth outage after paid commit returns503 then retry finishes access/email",
+      "passed": true
+    },
+    {
+      "name": "App B provisioning outage blocks email until a successful retry",
+      "passed": true
+    },
+    {
+      "name": "provider accepted-response loss retries one idempotent delivery",
+      "passed": true
+    },
+    {
+      "name": "two concurrent bank events deliver one email and retain paid state",
+      "passed": true
+    },
+    {
+      "name": "underpayment does not create an account or send mail",
+      "passed": true
+    }
+  ],
+  "providerRequests": 6,
+  "simulatedDeliveries": 5,
+  "unexpectedOutboundBlocked": 0,
+  "productionContacted": false,
+  "scope": "Actual cfproduction artifact HTTP webhook, actual Source SDK and PostgREST/PostgreSQL clone; Auth, B and Resend transport fixtures. No live bank, live Auth issuance, real emails or production data writes.",
+  "candidateIndexAppliedToCloneOnly": true,
+  "realPostgrest": true,
+  "originalRestoreChanged": false,
+  "ephemeralCloneDropped": true,
+  "localServerStopped": true,
+  "encryptedVolumeUnmounted": true
+}

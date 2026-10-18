@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-10-18T10:07:00.179633+00:00",
+  "status": "TESTED_LOCAL_PENDING_PREVIEW",
+  "relatedTests": {
+    "passed": 75,
+    "failed": 0
+  },
+  "postgresCloneChecks": 13,
+  "workerHttpCloneChecks": 8,
+  "workerCronLocalChecks": 4,
+  "typecheck": "PASS",
+  "changedRuntimeLint": "PASS",
+  "productionBuild": "PASS",
+  "attachDomains": false,
+  "productionMutations": false,
+  "liveCronObservation": {
+    "provider": "Vercel",
+    "scheduledUtc": "2026-10-18T10:05:00Z",
+    "startedUtc": "2026-10-18T10:05:38.256931Z",
+    "state": "failed",
+    "reasonClass": "Meta snapshot incomplete (owner deferred Meta)",
+    "runCount": 1,
+    "sentAt": null
+  },
+  "sourceReadOnlyCounts": {
+    "paidMissingEmail24h": 0,
+    "paidMissingEmail2h": 0,
+    "openCheckouts": 0,
+    "paid24h": 0
+  },
+  "limits": [
+    "No actual iPhone Safari yet",
+    "No real bank payment or actual provider email delivery in isolated settlement tests",
+    "Legacy unmarked incomplete payments require review; no blind resend",
+    "Auxiliary Telegram/Sheets do not have the same new durable fulfillment receipt; source Sheets catch-up job remains",
+    "Actual Vercel cron shutdown not performed; Workers schedules empty"
+  ]
+}

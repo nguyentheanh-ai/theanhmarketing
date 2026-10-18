@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-18T05:48:41.447Z",
+  "checkedAt": "2026-10-18T10:03:30.524Z",
   "status": "PASS",
   "checks": [
     {
@@ -29,12 +29,36 @@
     {
       "name": "same transaction cannot settle two distinct orders concurrently",
       "passed": true
+    },
+    {
+      "name": "paid commit atomically persists recovery receipt before external calls",
+      "passed": true
+    },
+    {
+      "name": "real PostgreSQL CAS recovers after commit without duplicate fulfillment",
+      "passed": true
+    },
+    {
+      "name": "concurrent real PostgreSQL claims yield one account and one send",
+      "passed": true
+    },
+    {
+      "name": "provider failure retains hash and retries with the same provider key",
+      "passed": true
+    },
+    {
+      "name": "expired ambiguous provider attempt stops automatic resend",
+      "passed": true
+    },
+    {
+      "name": "legacy unmarked paid receipt requires manual reconciliation",
+      "passed": true
     }
   ],
   "lostCommittedResponses": 1,
   "outsideNetworkAttempts": 0,
   "productionContacted": false,
-  "scope": "Actual confirmOrderFromSepay via official PostgREST and restored PostgreSQL, synthetic orders only; no webhook fulfillment/email/Meta or live-bank proof",
+  "scope": "Actual settlement and source fulfillment CAS via official PostgREST and restored PostgreSQL; synthetic orders and provider/Auth fixtures only, no actual provider delivery or live-bank proof",
   "candidateIndexAppliedToCloneOnly": true,
   "realPostgrest": true,
   "originalRestoreChanged": false,
