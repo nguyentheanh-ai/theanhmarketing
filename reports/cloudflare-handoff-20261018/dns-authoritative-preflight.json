@@ -1,0 +1,87 @@
+{
+  "checked_at": "2026-10-18T04:44:50.345662+00:00",
+  "server": "ivy.ns.cloudflare.com",
+  "records": [
+    {
+      "name": "www.theanhmarketing.com",
+      "type": "CNAME",
+      "expected": "02a6b1bed5462f9d.vercel-dns-017.com.",
+      "answer": "02a6b1bed5462f9d.vercel-dns-017.com.",
+      "match": true,
+      "exit_code": 0
+    },
+    {
+      "name": "theanhmarketing.com",
+      "type": "A",
+      "expected": "216.198.79.1",
+      "answer": "216.198.79.1",
+      "match": true,
+      "exit_code": 0
+    },
+    {
+      "name": "ladipageverify.theanhmarketing.com",
+      "type": "CNAME",
+      "expected": "dns.ladipage.com.",
+      "answer": "dns.ladipage.com.",
+      "match": true,
+      "exit_code": 0
+    },
+    {
+      "name": "app.theanhmarketing.com",
+      "type": "CNAME",
+      "expected": "cname.vercel-dns.com.",
+      "answer": "cname.vercel-dns.com.",
+      "match": true,
+      "exit_code": 0
+    },
+    {
+      "name": "adsplan.theanhmarketing.com",
+      "type": "CNAME",
+      "expected": "cname.vercel-dns.com.",
+      "answer": "cname.vercel-dns.com.",
+      "match": true,
+      "exit_code": 0
+    },
+    {
+      "name": "send.theanhmarketing.com",
+      "type": "TXT",
+      "expected": "\"v=spf1 include:amazonses.com ~all\"",
+      "answer": "\"v=spf1 include:amazonses.com ~all\"",
+      "match": true,
+      "exit_code": 0
+    },
+    {
+      "name": "send.theanhmarketing.com",
+      "type": "MX",
+      "expected": "10 feedback-smtp.ap-northeast-1.amazonses.com.",
+      "answer": "10 feedback-smtp.ap-northeast-1.amazonses.com.",
+      "match": true,
+      "exit_code": 0
+    },
+    {
+      "name": "_dmarc.theanhmarketing.com",
+      "type": "TXT",
+      "expected": "\"v=DMARC1; p=none;\"",
+      "answer": "\"v=DMARC1; p=none;\"",
+      "match": true,
+      "exit_code": 0
+    },
+    {
+      "name": "mail.theanhmarketing.com",
+      "type": "CNAME",
+      "expected": "mail.resend-dns.com.",
+      "answer": "mail.resend-dns.com.",
+      "match": true,
+      "exit_code": 0
+    },
+    {
+      "name": "resend._domainkey.theanhmarketing.com",
+      "type": "TXT",
+      "expected": "\"p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRjbx4GLY/KBySYKQ1iAV2cb+pdMSe1xQ2VUF6g/GN9kbFdav2KH4jEyC80FQOKmHvIsBpfy0p2Bseyz1cYv3cBXSdY8Ihwvd29V4dvfN/LgO08FFpvgADtmAZGz58iwrVsbCuC2EM3YHAO2IMfY+EI/75z/L1U53hqlQHWOAgRQIDAQAB\"",
+      "answer": "\"p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCRjbx4GLY/KBySYKQ1iAV2cb+pdMSe1xQ2VUF6g/GN9kbFdav2KH4jEyC80FQOKmHvIsBpfy0p2Bseyz1cYv3cBXSdY8Ihwvd29V4dvfN/LgO08FFpvgADtmAZGz58iwrVsbCuC2EM3YHAO2IMfY+EI/75z/L1U53hqlQHWOAgRQIDAQAB\"",
+      "match": true,
+      "exit_code": 0
+    }
+  ],
+  "all_match": true
+}

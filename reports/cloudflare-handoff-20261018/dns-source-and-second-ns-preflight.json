@@ -1,0 +1,126 @@
+{
+  "checked_at": "2026-10-18T04:45:50.588117+00:00",
+  "checks": [
+    {
+      "server": "jason.ns.cloudflare.com",
+      "name": "www.theanhmarketing.com",
+      "type": "CNAME",
+      "match": true
+    },
+    {
+      "server": "jason.ns.cloudflare.com",
+      "name": "theanhmarketing.com",
+      "type": "A",
+      "match": true
+    },
+    {
+      "server": "jason.ns.cloudflare.com",
+      "name": "ladipageverify.theanhmarketing.com",
+      "type": "CNAME",
+      "match": true
+    },
+    {
+      "server": "jason.ns.cloudflare.com",
+      "name": "app.theanhmarketing.com",
+      "type": "CNAME",
+      "match": true
+    },
+    {
+      "server": "jason.ns.cloudflare.com",
+      "name": "adsplan.theanhmarketing.com",
+      "type": "CNAME",
+      "match": true
+    },
+    {
+      "server": "jason.ns.cloudflare.com",
+      "name": "send.theanhmarketing.com",
+      "type": "TXT",
+      "match": true
+    },
+    {
+      "server": "jason.ns.cloudflare.com",
+      "name": "send.theanhmarketing.com",
+      "type": "MX",
+      "match": true
+    },
+    {
+      "server": "jason.ns.cloudflare.com",
+      "name": "_dmarc.theanhmarketing.com",
+      "type": "TXT",
+      "match": true
+    },
+    {
+      "server": "jason.ns.cloudflare.com",
+      "name": "mail.theanhmarketing.com",
+      "type": "CNAME",
+      "match": true
+    },
+    {
+      "server": "jason.ns.cloudflare.com",
+      "name": "resend._domainkey.theanhmarketing.com",
+      "type": "TXT",
+      "match": true
+    },
+    {
+      "server": "sapa.vclouddns.com",
+      "name": "www.theanhmarketing.com",
+      "type": "CNAME",
+      "match": true
+    },
+    {
+      "server": "sapa.vclouddns.com",
+      "name": "theanhmarketing.com",
+      "type": "A",
+      "match": true
+    },
+    {
+      "server": "sapa.vclouddns.com",
+      "name": "ladipageverify.theanhmarketing.com",
+      "type": "CNAME",
+      "match": true
+    },
+    {
+      "server": "sapa.vclouddns.com",
+      "name": "app.theanhmarketing.com",
+      "type": "CNAME",
+      "match": true
+    },
+    {
+      "server": "sapa.vclouddns.com",
+      "name": "adsplan.theanhmarketing.com",
+      "type": "CNAME",
+      "match": true
+    },
+    {
+      "server": "sapa.vclouddns.com",
+      "name": "send.theanhmarketing.com",
+      "type": "TXT",
+      "match": true
+    },
+    {
+      "server": "sapa.vclouddns.com",
+      "name": "send.theanhmarketing.com",
+      "type": "MX",
+      "match": true
+    },
+    {
+      "server": "sapa.vclouddns.com",
+      "name": "_dmarc.theanhmarketing.com",
+      "type": "TXT",
+      "match": true
+    },
+    {
+      "server": "sapa.vclouddns.com",
+      "name": "mail.theanhmarketing.com",
+      "type": "CNAME",
+      "match": true
+    },
+    {
+      "server": "sapa.vclouddns.com",
+      "name": "resend._domainkey.theanhmarketing.com",
+      "type": "TXT",
+      "match": true
+    }
+  ],
+  "all_match": true
+}

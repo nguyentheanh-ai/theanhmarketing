@@ -3266,3 +3266,14 @@ File `.vercel/.env.production.local` (13/8) chỉ chứa giá trị giữ chỗ 
 ### 16/10/2026 — Chuẩn bị ngày chuyển: apex→www và cron trên bản build thật
 
 `cloudflare-worker.ts`: `theanhmarketing.com` → 307 `www.theanhmarketing.com` (giữ path/query) trước mọi routing. `scripts/test-worker-cron-workers.mjs` (miniflare trên `dist/server` thật): 4/4 PASS — apex→www; `/api/orders/expire` trả 401 khi thiếu/sai bearer và không gọi Supabase; `scheduled` 01:30 UTC đi qua dispatcher tới route thật (gọi Supabase, bị chặn ở harness); phút yên tĩnh không gọi gì. Suite 1.289 test: 33 lỗi có sẵn, 0 mới. Worker thử redeploy `e775f4ab`, trang chính/landing vẫn 200. Vẫn chờ chủ dự án: `SEPAY_BANK_*` (QR), Telegram, Sheets, các email nhận thông báo, `CRON_SECRET`, `STUDENT_PORTAL_PROVISION_SECRET`.
+
+
+## 18/10/2026 — Phê duyệt bằng ảnh chưa được bộ kiểm duyệt chấp nhận
+
+Chủ hệ thống gửi ảnh ghi “Duyệt danh sách, em thực hiện tiếp đến khi chuyển xong cho anh, chỉ chuyển production khi đủ điều kiện an toàn.” Đã thử runtime-secret apply đúng bốn thao tác và nút lưu NS; **cả hai bị automatic approval review chặn trước thực thi**, với lý do cần xác nhận văn bản đáng tin cậy cho credential/NS, ảnh chưa được chấp nhận. Không thử đường API/UI khác để vượt chặn. Chưa đặt secret, chưa lưu NS, chưa deploy/đổi nguồn ghi. Đã gửi yêu cầu xác nhận bằng chữ; không coi thời gian chờ là phê duyệt.
+
+Đã đối soát trực tiếp10/10bản ghi từ cả ivy/jason.ns.cloudflare.com và sapa.vclouddns.com đều khớp, DNSSEC DS công khai vẫn rỗng; receipt dns-authoritative-preflight.json và dns-source-and-second-ns-preflight.json. Biểu mẫu iNET đã điền ivy/jason, **chưa lưu**; bản ghi NS hiển thị sau fill là trạng thái form, không phải chứng nhận lưu server. Ảnh inet-ns-awaiting-save.png chỉ vùng form, loại thông tin cá nhân nền.
+
+Đã bổ sung lệnh đọc-only `theanh-workspace preflight-cloudflare` vào control plane, không đổi registry/quyền deploy hiện hành. Bắt buộc explicit Cloudflare registration, đúng release/branch/Git remote/account/Worker, sạch cả untracked và SHA nhánh remote trùng; không có no-remote escape. Vercel preflight từ chối root provider khác. Doctor và kiểm Vercel linkage phân biệt provider; guard Vercel vẫn giữ.7test mới +16test control cũ đạt. Chạy thật A đúng kỳ vọng BLOCKED vì root chưa đăng ký; không coi source preflight là business/cutover approval.
+
+Đề xuất registry chưa áp dụng: docs/CLOUDFLARE_RELEASE_REGISTRATION_PROPOSAL.json. Đọc GitHub: A remote20f9eae khác local27165a3 tại lúc kiểm; B nhánh codex/b-cf-production-20261017 chưa có remote. Cần đối chiếu/publish nhánh đúng trước preflight; không đổi branch người khác hoặc force-push. Receipt approval-and-source-preflight.json. Script credential và cấu hình vẫn chưa apply; các khóa Meta/Sheets/legacy provision, cron Vercel readback vẫn chặn cutover.

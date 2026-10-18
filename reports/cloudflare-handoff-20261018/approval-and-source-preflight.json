@@ -1,0 +1,25 @@
+{
+  "checked_at": "2026-10-18T04:47:57.390312+00:00",
+  "runtime_secret_apply": "REJECTED_BEFORE_EXECUTION",
+  "nameserver_save": "REJECTED_BEFORE_EXECUTION",
+  "reason": "Automatic approval review requires trusted typed confirmation; image approval not accepted",
+  "secrets_written": false,
+  "nameservers_saved": false,
+  "source_preflight": {
+    "new_command": "theanh-workspace preflight-cloudflare",
+    "new_tests_passed": 7,
+    "existing_control_tests_passed": 16,
+    "live_registration": "UNCHANGED",
+    "actual_A_result": "BLOCKED_UNREGISTERED",
+    "cutover_authorized": false
+  },
+  "github_readback": {
+    "A_remote_head": "20f9eae6611b53f3118c83e97759c4f1f22a1332",
+    "A_local_head_at_check": "27165a3",
+    "B_remote_branch_present": false
+  },
+  "file_hashes": {
+    "_workspace-control/workspace_control.py": "4031f924042f2418c2379c5d97dbd3412d935a3b65b6265b31b178635b469086",
+    "_workspace-control/tests/test_cloudflare_preflight.py": "cf1e5d32dcaa8192a0e22c3cfb8476bfe67f4243e9396fa51570e2913630be31"
+  }
+}

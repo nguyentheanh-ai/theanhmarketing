@@ -76,3 +76,14 @@ Bộ kiểm duyệt tự động từ chối thao tác đặt RESEND_WEBHOOK_SEC
 Đã xác minh mã nguồn Terraform chính thức Vercel: PATCH /v1/projects/{id}/crons với enabled=false; đọc lại project.crons.disabledAt. Tham khảo https://raw.githubusercontent.com/vercel/terraform-provider-vercel/main/client/project_crons.go . CLI auth đọc project A/B trả403; connector get_project chỉ cung cấp trường rút gọn không có crons. Chưa chứng minh quyền toggle/readback, chưa tắt cron. Receipt vercel-cron-readonly.json. Cần phiên Vercel dashboard hoặc API đủ quyền trước cutover; không dùng HTTP200 của endpoint khác thay bằng chứng này.
 
 Chưa deploy code A/B, chưa gắn tên miền, chưa đổi nguồn ghi hay hủy Vercel/Supabase. Release routing Workers và compatibility khóa cũ/mới A→B vẫn là điều kiện dừng. Không đổi registry để vượt guard. 11file dirty A release cũ giữ nguyên.
+
+
+## 18/10/2026 — Phê duyệt bằng ảnh chưa được bộ kiểm duyệt chấp nhận
+
+Chủ hệ thống gửi ảnh ghi “Duyệt danh sách, em thực hiện tiếp đến khi chuyển xong cho anh, chỉ chuyển production khi đủ điều kiện an toàn.” Đã thử runtime-secret apply đúng bốn thao tác và nút lưu NS; **cả hai bị automatic approval review chặn trước thực thi**, với lý do cần xác nhận văn bản đáng tin cậy cho credential/NS, ảnh chưa được chấp nhận. Không thử đường API/UI khác để vượt chặn. Chưa đặt secret, chưa lưu NS, chưa deploy/đổi nguồn ghi. Đã gửi yêu cầu xác nhận bằng chữ; không coi thời gian chờ là phê duyệt.
+
+Đã đối soát trực tiếp10/10bản ghi từ cả ivy/jason.ns.cloudflare.com và sapa.vclouddns.com đều khớp, DNSSEC DS công khai vẫn rỗng; receipt dns-authoritative-preflight.json và dns-source-and-second-ns-preflight.json. Biểu mẫu iNET đã điền ivy/jason, **chưa lưu**; bản ghi NS hiển thị sau fill là trạng thái form, không phải chứng nhận lưu server. Ảnh inet-ns-awaiting-save.png chỉ vùng form, loại thông tin cá nhân nền.
+
+Đã bổ sung lệnh đọc-only `theanh-workspace preflight-cloudflare` vào control plane, không đổi registry/quyền deploy hiện hành. Bắt buộc explicit Cloudflare registration, đúng release/branch/Git remote/account/Worker, sạch cả untracked và SHA nhánh remote trùng; không có no-remote escape. Vercel preflight từ chối root provider khác. Doctor và kiểm Vercel linkage phân biệt provider; guard Vercel vẫn giữ.7test mới +16test control cũ đạt. Chạy thật A đúng kỳ vọng BLOCKED vì root chưa đăng ký; không coi source preflight là business/cutover approval.
+
+Đề xuất registry chưa áp dụng: docs/CLOUDFLARE_RELEASE_REGISTRATION_PROPOSAL.json. Đọc GitHub: A remote20f9eae khác local27165a3 tại lúc kiểm; B nhánh codex/b-cf-production-20261017 chưa có remote. Cần đối chiếu/publish nhánh đúng trước preflight; không đổi branch người khác hoặc force-push. Receipt approval-and-source-preflight.json. Script credential và cấu hình vẫn chưa apply; các khóa Meta/Sheets/legacy provision, cron Vercel readback vẫn chặn cutover.
