@@ -61,3 +61,18 @@ Tham khảo hiện hành: https://developers.cloudflare.com/workers/configuratio
 ## 18/10/2026 — Kiểm tra lại nơi lưu khóa theo yêu cầu chủ hệ thống
 
 Đã tìm trong47filedotenv của41worktree thuộc đúng haiGit repo A/B; các khóa Meta/Sheets/cấpquyền cần tìm chỉ có template/rỗng/placeholder, chưa thấy giá trị ứng viên. Keychain có khóa backup/native và ba mục provider đọc được trong bộ nhớ: com.theanhmarketing.resend.production, com.theanhmarketing.sepay.webhook.production, theanh-main.resend. Không yêu cầu nhập lại Resend API/SePay key đã lưu. Không thấy service metadata liên quan các khóa Meta/Sheets đang thiếu trong phạm vi tên đã tìm. Vercel CLI lấy env bị403, connector env listing chưa khả dụng; không suy ra giá trịSensitive đã mất khỏiVercel. Mọi giá trị không in/log/lưu vào báo cáo. Không đổi secret/production. Receipt local-secret-inventory.json chỉ có tên/trạng thái/path.
+
+
+## 18/10/2026 — iNET đăng nhập, DNS đầy đủ và khôi phục khóa hiện có
+
+Trạng thái **IN PROGRESS — chưa READY FOR CUTOVER**. Chủ hệ thống đã đăng nhập iNET trong trình duyệt nội bộ; đọc đủ bảng 10/10 bản ghi và tải bản xuất thật về `reports/cloudflare-handoff-20261018/inet-zone-original.txt`. Bản xuất của iNET thiếu MX priority; lấy priority=10 từ bảng hiển thị rồi chuẩn hóa. Giữ thêm `ladipageverify` vốn không nằm trong mẫu truy vấn DNS trước đó. Không thay đổi bản ghi iNET.
+
+Đã tạo Cloudflare zone Free `48a5bf3cb46181f0cc406162be54d8b5`, trạng thái pending, NS được cấp `ivy.ns.cloudflare.com` và `jason.ns.cloudflare.com`. Nhập bản sao đủ10bản ghi, TTL300, tất cả DNS only, giữ nguyên đích Vercel cho apex/www/app/adsplan và bản ghi Resend. GET đọc lại khớp10/10 cả tên/loại/nội dung/TTL/proxy/MXpriority; receipt `dns-cloudflare-parity.json`. Chưa đổi nameserver; truy vấn công khai vẫn laocai/sapa.vclouddns.com. DS qua1.1.1.1 trả NOERROR, answer0 lúc11:40giờVN; cần kiểm lại ngay trước thao tác NS.
+
+Khóa Resend trong Keychain đọc được webhook hiện có `0f1c3dc2-b52c-4eb6-878c-a16a56254ea5`, enabled, endpoint chính xác `https://www.theanhmarketing.com/api/resend/webhook`; GET detail trả signing_secret. Chỉ xử lý trong bộ nhớ; chưa lưu hoặc đẩy signing secret. Không tạo/đổi webhook, không gửi email. Meta/Sheets/legacy provision secret vẫn chưa tìm thấy trong phạm vi local đã kiểm; không coi đã lấy lại đủ khóa.
+
+Bộ kiểm duyệt tự động từ chối thao tác đặt RESEND_WEBHOOK_SECRET vào Worker A, tạo CRON_SECRET cho A/B và TELEGRAM_REPORT_SECRET cho A: cần phê duyệt cụ thể thay đổi credential trên Worker production-named; lệnh bị chặn trước khi chạy. Không thử đường khác để vượt chặn. Đã chuẩn bị `_cloudflare-migration/scripts/restore-production-runtime-secrets.py`, mặc định PLAN_ONLY không truy cập bên ngoài; --apply chưa chạy. Bốn test an toàn đạt: mặc định không tác động, retry dùng lại Keychain không xoay khóa, lỗi dừng/không lộ chi tiết, Wrangler chỉ nhận giá trị qua stdin. Không coi test mock là đặt secret thành công.
+
+Đã xác minh mã nguồn Terraform chính thức Vercel: PATCH /v1/projects/{id}/crons với enabled=false; đọc lại project.crons.disabledAt. Tham khảo https://raw.githubusercontent.com/vercel/terraform-provider-vercel/main/client/project_crons.go . CLI auth đọc project A/B trả403; connector get_project chỉ cung cấp trường rút gọn không có crons. Chưa chứng minh quyền toggle/readback, chưa tắt cron. Receipt vercel-cron-readonly.json. Cần phiên Vercel dashboard hoặc API đủ quyền trước cutover; không dùng HTTP200 của endpoint khác thay bằng chứng này.
+
+Chưa deploy code A/B, chưa gắn tên miền, chưa đổi nguồn ghi hay hủy Vercel/Supabase. Release routing Workers và compatibility khóa cũ/mới A→B vẫn là điều kiện dừng. Không đổi registry để vượt guard. 11file dirty A release cũ giữ nguyên.

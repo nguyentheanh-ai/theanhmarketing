@@ -1,0 +1,19 @@
+{
+  "checked_at": "2026-10-18T04:41:52.756387+00:00",
+  "scope": "read_only_no_cron_change",
+  "projects": [
+    {
+      "project": "theanh-main",
+      "http_status": 403
+    },
+    {
+      "project": "student-resource-app",
+      "http_status": 403
+    }
+  ],
+  "toggle_api_source": "https://raw.githubusercontent.com/vercel/terraform-provider-vercel/main/client/project_crons.go",
+  "toggle_method": "PATCH /v1/projects/{project_id}/crons",
+  "toggle_body": {
+    "enabled": false
+  }
+}
