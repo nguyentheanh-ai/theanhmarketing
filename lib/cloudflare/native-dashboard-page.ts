@@ -7,7 +7,7 @@ import {logD1StudentDashboardVisit} from '@/lib/cloudflare/d1-student-dashboard-
 import {readNativeUiAuthContext} from '@/lib/cloudflare/native-ui-auth-context';
 import {getD1AuthSession} from '@/lib/cloudflare/d1-auth-core';
 function options(){
- const context=getNativeRequestContext();if(!context||new URL(context.request.url).pathname!=='/dashboard')return null;
+ const context=getNativeRequestContext();if(!context||!['/dashboard','/tai-khoan'].includes(new URL(context.request.url).pathname))return null;
  const settings=resolveNativeStageOptions(context.request,context.env);return settings?{context,settings}:null;
 }
 export function nativeDashboardProvider(){return options()?'native-d1' as const:'supabase' as const;}
@@ -28,7 +28,7 @@ export async function readNativeDashboardPage(){
  const catalog=await readD1StudentPublicCatalog(settings.db),authContext=await readNativeUiAuthContext();
  const displayName=result.studentProfile.fullName.trim()||result.user.email.split('@')[0]||'học viên';
  return {status:'student' as const,...catalog,ownedSlugs:result.access.ownedSlugs,progressBySlug:result.dashboardProgress.progressBySlug,lessonCountsBySlug:result.dashboardProgress.lessonCountsBySlug,
-  displayName,email:result.user.email,authContext,
+  displayName,email:result.user.email,phone:result.studentProfile.phone,authContext,
   // Backend closure only, never pass to a Client Component. Same QA write gate
   // as progress; a read-only QA run deliberately does not insert activity.
   recordVisit:()=>(context.env.CF_NATIVE_QA_PROGRESS_MODE as string)==='qa'?logD1StudentDashboardVisit(settings.db,token,result.access.ownedSlugs,settings):Promise.resolve({recorded:false}),

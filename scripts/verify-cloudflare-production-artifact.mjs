@@ -8,7 +8,7 @@ export function verifyProductionWorkerConfig(config,{attachDomains=false,appUrl,
   if(config.observability?.enabled!==true||config.observability?.redact_query_string!==true||config.observability?.traces?.enabled!==false)fail('Production request monitoring or query redaction is not configured safely');
   if(appUrl!=='https://app.theanhmarketing.com'||siteUrl!=='https://www.theanhmarketing.com')fail('Production public URL mismatch');
   const vars=config.vars??{};
-  const gates=['CF_NATIVE_MARKETING_MODE','CF_NATIVE_AUTH_MODE','CF_NATIVE_QA_PROGRESS_MODE','CF_NATIVE_QA_AUTH_CONTEXT_MODE','CF_NATIVE_QA_REFRESH_MODE','CF_NATIVE_QA_GOOGLE_MODE','CF_NATIVE_QA_PAYMENT_MODE','CF_NATIVE_QA_EMAIL_AUTH_MODE','CF_NATIVE_QA_CREDENTIAL_WRITES'];
+  const gates=['CF_NATIVE_MARKETING_MODE','CF_NATIVE_AUTH_MODE','CF_NATIVE_QA_PROGRESS_MODE','CF_NATIVE_QA_AUTH_CONTEXT_MODE','CF_NATIVE_QA_REFRESH_MODE','CF_NATIVE_QA_GOOGLE_MODE','CF_NATIVE_QA_PAYMENT_MODE','CF_NATIVE_QA_EMAIL_AUTH_MODE','CF_NATIVE_QA_CREDENTIAL_WRITES','CF_NATIVE_QA_PROFILE_WRITES'];
   if(gates.some(name=>vars[name]!=='disabled')||vars.CF_NATIVE_QA_USERS!=='[]')fail('Native gate or QA cohort is not disabled');
   if(vars.CF_R2_STAGE_PRIVATE_DELIVERY!=='false')fail('Production Storage source changed');
   if(vars.CF_CRON_ORIGIN!=='https://www.theanhmarketing.com')fail('Wrong cron origin');

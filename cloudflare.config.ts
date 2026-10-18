@@ -61,6 +61,7 @@ export default defineConfig({
       // Google secrets are optional while this gate is disabled. The router
       // validates all three at runtime before allowing the Google QA flow.
       NATIVE_AUTH_REFRESH_KEY: bindings.secret(),
+      CF_NATIVE_QA_PROFILE_WRITES: bindings.text("disabled"),
       CF_NATIVE_QA_CREDENTIAL_WRITES: bindings.text("disabled"),
       // Production binds the separate Supabase copy D1 (unused while native gates are off).
       NATIVE_AUTH_DB: production ? bindings.d1({ name: "theanh-supabase-copy", id: "f0f2a18e-22c3-4695-99af-a5065aa7dbe5" }) : bindings.d1({ name: "theanh-main-db-staging", id: "694139c9-6cda-4b8c-9228-c973dbcbb719" }),

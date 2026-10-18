@@ -1,3 +1,4 @@
+import {handleD1AccountProfileHttp} from '@/lib/cloudflare/d1-account-profile-http';
 import type {InferEnv,UnwrapConfig} from 'cf/config';
 import type config from '@/cloudflare.config';
 import {createD1AuthDatabase} from '@/lib/cloudflare/d1-auth-database';
@@ -10,7 +11,7 @@ import {handleD1StudentHttp} from '@/lib/cloudflare/d1-student-http';
 import {consumeD1AuthAttempt,consumeD1OAuthRequest} from '@/lib/cloudflare/d1-auth-rate-limit';
 import {resolveD1ProgressLesson} from '@/lib/cloudflare/d1-progress-publication';
 type WorkerConfig=UnwrapConfig<UnwrapConfig<typeof config>['worker']>;
-export type NativeStageEnv=Pick<InferEnv<WorkerConfig>,'CF_NATIVE_AUTH_MODE'|'CF_NATIVE_AUTH_ORIGIN'|'CF_NATIVE_QA_USERS'|'CF_NATIVE_QA_PROGRESS_MODE'|'NATIVE_AUTH_DB'|'NATIVE_AUTH_CREDENTIAL_KEY'|'NATIVE_AUTH_LIMITER_KEY'|'PRIVATE_ASSETS'|'R2_PRIVATE_URL_SECRET'> & Partial<Pick<InferEnv<WorkerConfig>,'STUDENT_PORTAL_PROVISION_SECRET'|'CF_NATIVE_QA_CREDENTIAL_WRITES'|'CF_NATIVE_QA_REFRESH_MODE'|'NATIVE_AUTH_REFRESH_KEY'|'CF_NATIVE_QA_AUTH_CONTEXT_MODE'|'CF_NATIVE_MARKETING_MODE'|'CF_NATIVE_QA_GOOGLE_MODE'>> & {CF_ACCESS_STUDENT_APP_CLIENT_ID?:string;CF_ACCESS_STUDENT_APP_CLIENT_SECRET?:string;NATIVE_GOOGLE_CLIENT_ID?:string;NATIVE_GOOGLE_CLIENT_SECRET?:string;NATIVE_GOOGLE_TRANSACTION_KEY?:string};
+export type NativeStageEnv=Pick<InferEnv<WorkerConfig>,'CF_NATIVE_AUTH_MODE'|'CF_NATIVE_AUTH_ORIGIN'|'CF_NATIVE_QA_USERS'|'CF_NATIVE_QA_PROGRESS_MODE'|'NATIVE_AUTH_DB'|'NATIVE_AUTH_CREDENTIAL_KEY'|'NATIVE_AUTH_LIMITER_KEY'|'PRIVATE_ASSETS'|'R2_PRIVATE_URL_SECRET'> & Partial<Pick<InferEnv<WorkerConfig>,'STUDENT_PORTAL_PROVISION_SECRET'|'CF_NATIVE_QA_PROFILE_WRITES'|'CF_NATIVE_QA_CREDENTIAL_WRITES'|'CF_NATIVE_QA_REFRESH_MODE'|'NATIVE_AUTH_REFRESH_KEY'|'CF_NATIVE_QA_AUTH_CONTEXT_MODE'|'CF_NATIVE_MARKETING_MODE'|'CF_NATIVE_QA_GOOGLE_MODE'>> & {CF_ACCESS_STUDENT_APP_CLIENT_ID?:string;CF_ACCESS_STUDENT_APP_CLIENT_SECRET?:string;NATIVE_GOOGLE_CLIENT_ID?:string;NATIVE_GOOGLE_CLIENT_SECRET?:string;NATIVE_GOOGLE_TRANSACTION_KEY?:string};
 const origin='https://theanh-main-cf-staging.12c1thdtheanh.workers.dev';
 function unavailable(code='NATIVE_D1_DISABLED'){return Response.json({ok:false,code},{status:503,headers:{'Cache-Control':'private, no-store','Vary':'Cookie','X-Content-Type-Options':'nosniff'}});}
 export function resolveNativeStageOptions(request:Request,env:NativeStageEnv){
@@ -66,6 +67,11 @@ export async function handleNativeStageRequest(request:Request,env:NativeStageEn
     allowRequest:(req,phase)=>consumeD1OAuthRequest(db,req,{projectId:'vsxxgdzwtscuxcmjfckt',provider:'google',phase},{secret:env.NATIVE_AUTH_LIMITER_KEY,ip:{limit:phase==='start'?10:20,windowMs:60000}})});
   }
   if(auth&&refreshPolicy&&['/api/cloudflare-auth/refresh-bootstrap','/api/cloudflare-auth/refresh','/api/cloudflare-auth/logout'].includes(url.pathname))return handleD1RefreshHttp(request,{...refresh!,authContextKey});
+  if(auth&&url.pathname==='/api/cloudflare-auth/profile')return handleD1AccountProfileHttp(request,{...options,projectId:'vsxxgdzwtscuxcmjfckt',authContextKey,
+   writeEnabled:(env.CF_NATIVE_QA_PROFILE_WRITES as string)==='qa',allowAttempt:async(req,subject)=>{
+    const ip=req.headers.get('CF-Connecting-IP');if(!ip)throw Error('Trusted edge required');
+    return consumeD1AuthAttempt(db,{projectId:'vsxxgdzwtscuxcmjfckt',ip,email:subject},{secret:env.NATIVE_AUTH_LIMITER_KEY,ip:{limit:30,windowMs:60000},email:{limit:10,windowMs:60000}});
+   }});
   if(auth&&url.pathname==='/api/cloudflare-auth/change-password')return handleD1PasswordChangeHttp(request,{authContextKey,refreshFamilies:!!refresh,db,origin,projectId:'vsxxgdzwtscuxcmjfckt',credentialKey:env.NATIVE_AUTH_CREDENTIAL_KEY,sessionTtlMs,allowedUserIds:cohort,writeEnabled:(env.CF_NATIVE_QA_CREDENTIAL_WRITES as string)==='qa',
    allowAttempt:async(req,subject)=>{const ip=req.headers.get('CF-Connecting-IP');if(!ip)throw Error('Trusted edge required');return consumeD1AuthAttempt(db,{projectId:'vsxxgdzwtscuxcmjfckt',ip,email:subject},{secret:env.NATIVE_AUTH_LIMITER_KEY,ip:{limit:10,windowMs:60000},email:{limit:5,windowMs:60000}})}});
   if(auth)return handleD1AuthHttp(request,{...(refreshPolicy?{refreshFamily:{policy:refreshPolicy,cookieMaxAgeSeconds:30*86400}}:{}),db,origin,projectId:'vsxxgdzwtscuxcmjfckt',credentialKey:env.NATIVE_AUTH_CREDENTIAL_KEY,sessionTtlMs,allowedUserIds:cohort,

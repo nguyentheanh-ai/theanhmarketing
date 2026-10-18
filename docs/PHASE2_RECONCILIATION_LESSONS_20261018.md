@@ -55,3 +55,7 @@
 ## VERIFIED — Guard page sau loading boundary có thể redirect bằng stream200
 
 Áp dụng: vinext1.1.0 dashboard QA có loading.tsx. Bỏ guard layout để page tự auth làm guest nhận200 thay307 trong full built workerd test. Đã thêm await kiểm session native ở layout trước children, giữ kiểm lại quyền/version trong data query; rebuild và cùng harness guest307/noidentity/0outbound đạt. Không suy mọi redirect200 là lộ dữ liệu hoặc mọi router khác cần cùng sửa; lần lỗi ban đầu dừng trước assertion nội dung guest, nên không tuyên bố có/không rò rỉ từ lần đó. Production chưa dùng nhánh này.
+
+## VERIFIED — Profile mutation phải buộc form identity (18/10/2026)
+
+Áp dụng: A native QA `/tai-khoan` và POSTprofile. AuthContext optional với profilewrite cho phép giữformA nhưng cookieB ghi nhầm hồsơB. WebLock chỉserialize khôngbindidentity. Correction: thiếukey503,thiếu/saiwitness409; UIthiếuwitnesskhôngfetch.7SQLHTTPtestsPASS(gồm2users/newfamily/CASauthorityrollback),4clientinteractionPASS vàactualWorkerprofile/stalefamilyPASS. Không khẳng định browser/hydration/hosted; không dùng Sourcefallback hoặc tinUUIDbrowser.

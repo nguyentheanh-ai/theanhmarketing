@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "checkedAt": "2026-10-18T12:55:17.367Z",
+  "checkedAt": "2026-10-18T13:18:03.010Z",
   "checks": [
     {
       "name": "built Worker login creates the native session for the synthetic principal",
@@ -24,6 +24,18 @@
     },
     {
       "name": "built dashboard activity completes in D1 and repeat visits are deduplicated",
+      "status": "PASS"
+    },
+    {
+      "name": "built account page reads native profile and owned courses with private form context",
+      "status": "PASS"
+    },
+    {
+      "name": "built native profile write persists through account and dashboard refresh without Source",
+      "status": "PASS"
+    },
+    {
+      "name": "built native account guest cannot receive cached profile fields",
       "status": "PASS"
     },
     {
@@ -55,8 +67,8 @@
   "brandSourceExists": true,
   "outboundFetches": 0,
   "moduleCount": 547,
-  "moduleManifestDigest": "9b64f8280054516753d2a7851164c9c8bc35a938a83ee274a1a59f5b46f4b0b5",
-  "artifactHash": "14b32aa26cb37f2c516a1eacc9fd8f5b714f6df328493fe295c6cb2e1fe8b096",
+  "moduleManifestDigest": "be7865053fe8fb65808610ed829f9e7e2c34aa351c391f1d3caaf36696ac720f",
+  "artifactHash": "81fb32497c9054cc8b700ec7cb760b4978de88158e83fc91f85107ef0743d1f1",
   "scope": "Actual built vinext Worker/root layout, synthetic D1 dashboard/profile/progress/activity, lesson and protected Ebook PDF/PNG delivery through real local R2, HTTP only",
   "limits": "No browser/hydration/Safari, real Facebook Ads media, hosted deployment or native primary/cutover proof"
 }

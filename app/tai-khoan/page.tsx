@@ -1,3 +1,5 @@
+import {nativeDashboardProvider,readNativeDashboardAuth,readNativeDashboardPage} from '@/lib/cloudflare/native-dashboard-page';
+import {redirect} from 'next/navigation';
 import Link from "next/link";
 import type { Metadata } from "next";
 import { BadgeCheck, BookOpenCheck, GraduationCap, ShieldCheck, UserRound } from "lucide-react";
@@ -12,8 +14,14 @@ export const metadata: Metadata = { title: "Tài khoản", robots: { index: fals
 export const dynamic = "force-dynamic";
 
 export default async function AccountPage() {
-  await requireStudentAuth("/tai-khoan");
-  const { displayName, email, phone, ownedCourses } = await getStudentPortalSnapshot();
+  const nativeSelected=nativeDashboardProvider()==='native-d1';
+  if(nativeSelected){const auth=await readNativeDashboardAuth();if(auth==='guest')redirect('/dang-nhap?next=%2Ftai-khoan');if(auth==='password-change-required')redirect('/doi-mat-khau?next=%2Ftai-khoan');}
+  else await requireStudentAuth("/tai-khoan");
+  const native=nativeSelected?await readNativeDashboardPage():null;
+  if(nativeSelected&&native?.status!=='student')throw Error('Native account unavailable');
+  const snapshot=native?.status==='student'?{displayName:native.displayName,email:native.email,phone:native.phone,ownedCourses:native.courses.filter(c=>native.ownedSlugs.includes(c.slug))}:await getStudentPortalSnapshot();
+  const {displayName,email,phone,ownedCourses}=snapshot;
+  const authProvider=nativeSelected?'native-d1' as const:'supabase' as const,authContext=native?.status==='student'?native.authContext:undefined;
   const initial = displayName.trim().charAt(0).toUpperCase() || "T";
 
   return (
@@ -31,7 +39,7 @@ export default async function AccountPage() {
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#159cfb] px-5 text-sm font-black text-white shadow-[0_12px_28px_rgba(21,156,251,0.22)]" href="/dashboard"><GraduationCap className="size-5" />Khóa học của tôi</Link>
-              <SignOutButton />
+              <SignOutButton authProvider={authProvider} authContext={authContext} />
             </div>
           </div>
           <div className="mt-7 grid gap-3 sm:grid-cols-3">
@@ -45,7 +53,7 @@ export default async function AccountPage() {
           <div>
             <p className="tam-pill w-fit">Thiết lập tài khoản</p>
             <p className="mb-5 mt-3 max-w-2xl text-sm font-semibold leading-6 text-[#6486a2]">Mỗi thay đổi được tách thành một khu vực riêng để bạn dễ kiểm tra và không cập nhật nhầm.</p>
-            <AccountProfileForm email={email} name={displayName} phone={phone} />
+            <AccountProfileForm authProvider={authProvider} authContext={authContext} email={email} name={displayName} phone={phone} />
           </div>
 
           <aside className="h-fit lg:sticky lg:top-28">

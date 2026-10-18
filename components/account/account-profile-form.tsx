@@ -1,5 +1,6 @@
 "use client";
 
+import {withNativeAuthMutation,NativeAuthCoordinationError} from "@/lib/cloudflare/native-auth-mutation";
 import { useState, type FormEvent } from "react";
 import { AlertCircle, ArrowLeft, CheckCircle2, ChevronRight, Eye, EyeOff, LockKeyhole, Mail, UserRound } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -60,7 +61,8 @@ function SectionHeading({ icon: Icon, title, description }: { icon: typeof UserR
   );
 }
 
-export function AccountProfileForm({ name, email, phone }: { name: string; email: string; phone: string }) {
+export function AccountProfileForm({ name, email, phone, authProvider="supabase", authContext }: { name: string; email: string; phone: string; authProvider?:"supabase"|"native-d1";authContext?:string }) {
+  const [operationId]=useState(()=>authProvider==="native-d1"?crypto.randomUUID():null);
   const [profileStatus, setProfileStatus] = useState<FormStatus>(null);
   const [emailStatus, setEmailStatus] = useState<FormStatus>(null);
   const [passwordStatus, setPasswordStatus] = useState<FormStatus>(null);
@@ -87,6 +89,17 @@ export function AccountProfileForm({ name, email, phone }: { name: string; email
       setProfileStatus({ tone: "error", text: "Vui lòng nhập họ tên và số điện thoại hợp lệ." });
       return;
     }
+    if(authProvider==='native-d1'){
+      if(!authContext){setProfileStatus({tone:'error',text:'Phiên biểu mẫu chưa sẵn sàng. Vui lòng tải lại trang.'});return;}
+      setProfileLoading(true);
+      try{await withNativeAuthMutation(async()=>{
+        const response=await fetch('/api/cloudflare-auth/profile',{method:'POST',signal:AbortSignal.timeout(20000),headers:{'Content-Type':'application/json',...(authContext?{'X-TAM-Auth-Context':authContext}:{})},body:JSON.stringify({fullName:full_name,phone:normalizedPhone})});
+        const result=await response.json().catch(()=>null);
+        if(!response.ok||result?.ok!==true){setProfileStatus({tone:'error',text:response.status===409?'Tài khoản đã thay đổi ở phiên khác. Vui lòng tải lại trang.':'Chưa xác nhận được thay đổi. Vui lòng tải lại trang và thử lại.'});return;}
+        setProfileStatus({tone:'success',text:'Đã lưu họ tên và số điện thoại.'});
+      });}catch(error){setProfileStatus({tone:'error',text:error instanceof NativeAuthCoordinationError?error.message:'Chưa xác nhận được thay đổi. Vui lòng tải lại trang và thử lại.'});}
+      finally{setProfileLoading(false);}return;
+    }
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return setProfileStatus({ tone: "error", text: "Chưa kết nối được dịch vụ tài khoản." });
     setProfileLoading(true);
@@ -107,6 +120,7 @@ export function AccountProfileForm({ name, email, phone }: { name: string; email
       setEmailStatus({ tone: "error", text: "Vui lòng nhập một email mới khác email hiện tại." });
       return;
     }
+    if(authProvider==='native-d1'){setEmailStatus({tone:'error',text:'Thay đổi email hiện chưa khả dụng. Vui lòng liên hệ hỗ trợ.'});return;}
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return setEmailStatus({ tone: "error", text: "Chưa kết nối được dịch vụ tài khoản." });
     setEmailLoading(true);
@@ -141,6 +155,18 @@ export function AccountProfileForm({ name, email, phone }: { name: string; email
     if (newPassword === currentPassword) {
       setPasswordStatus({ tone: "error", text: "Mật khẩu mới cần khác mật khẩu hiện tại." });
       return;
+    }
+    if(authProvider==='native-d1'){
+      if(!authContext){setPasswordStatus({tone:'error',text:'Phiên biểu mẫu chưa sẵn sàng. Vui lòng tải lại trang.'});return;}
+      if(new TextEncoder().encode(newPassword).length>72){setPasswordStatus({tone:'error',text:'Mật khẩu mới quá dài.'});return;}
+      setPasswordLoading(true);
+      try{await withNativeAuthMutation(async()=>{
+        const response=await fetch('/api/cloudflare-auth/change-password',{method:'POST',signal:AbortSignal.timeout(20000),headers:{'Content-Type':'application/json',...(authContext?{'X-TAM-Auth-Context':authContext}:{})},body:JSON.stringify({currentPassword,newPassword,operationId})});
+        const result=await response.json().catch(()=>null);
+        if(!response.ok||result?.ok!==true||result.reauthenticate!==true){setPasswordStatus({tone:'error',text:response.status===409?'Tài khoản đã thay đổi ở phiên khác. Vui lòng tải lại trang.':response.status===401?'Phiên hoặc mật khẩu hiện tại chưa hợp lệ.':'Chưa xác nhận được thay đổi. Vui lòng thử lại hoặc đăng nhập lại bằng mật khẩu mới.'});return;}
+        window.location.assign('/dang-nhap?'+new URLSearchParams({passwordChanged:'1',next:'/tai-khoan'}));
+      });}catch(error){setPasswordStatus({tone:'error',text:error instanceof NativeAuthCoordinationError?error.message:'Chưa xác nhận được thay đổi. Vui lòng thử lại hoặc đăng nhập lại bằng mật khẩu mới.'});}
+      finally{setPasswordLoading(false);}return;
     }
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return setPasswordStatus({ tone: "error", text: "Chưa kết nối được dịch vụ tài khoản." });

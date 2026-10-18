@@ -1711,3 +1711,13 @@ Actual built vinext/workerd/D1/R2 cục bộ **12nhóm PASS**,0outbound: login�
 Build đúng `scripts/build-cloudflare-production.sh` PASS/9nativegateOFF/attachDomains=false, artifact từ working tree feature đang sửa. Chưa deploy/gắn domain/đổi writer/Auth/Storage. Typecheck/scopedlint PASS;25Node core tests PASS và15test hồi quy public/portal liên quan PASS sau cập nhật test-loader cho nhánh native và test hành vi workbook mapper. Reviewer không thấy blocker ở catalog/publication/activity/UI/guard; actual runtime là bằng chứng riêng.
 
 Còn `/tai-khoan`, một số route dashboard khác, admin/CRM, App B đầy đủ, hosted OAuth/phiên cũ, fence/delta/rollback giữ ghi mới; không coi mọi link dashboard đã native. Supabase/Blue B bridge vẫn cần giữ. Receipt: `source-public-student-catalog-a.json`, `reports/cloudflare-d1/native-full-worker.json`.
+
+## 18/10/2026 — Tài khoản A native, cập nhật tên/điện thoại QA
+
+**IN PROGRESS.** `/tai-khoan` staging QA lấy profile và khóa học từ cùng reader D1 đã kiểm quyền, logout/form mang witness theo tài khoản/family/version; không Source fallback. Form native cập nhật tên/điện thoại qua POSTbackendD1; đổi mật khẩu gọi endpoint native hiện có, giữ operationID khiretry và bắt đăng nhập lại sau thành công. Native đổi email chưa được port: dừng trước Source, không giả đã gửi thư. SourceproductionOFFpath giữ nguyên.
+
+Gate mới `CF_NATIVE_QA_PROFILE_WRITES=disabled` mặc định; artifact checker bắt buộc cả10nativegatesOFF. Profilewrite cần Origin/CSRF,opaque session,cohort,Authmirrorverified,limiter và **Auth Context key+witness bắt buộc**. JSONchỉcho2fields,giữmetadata khác/UUID/credential/role/sessionversion. CAS trướcupdate và guardedreceipt cùngatomicbatch rollback nếu quyền/authority mất; formA+cookieB hoặc familymới trả409.
+
+35tests Node scoped/hồi quy PASS (7SQL/HTTPprofile,4forminteraction,password/sourceaccount/artifact),CloudflareTypeScript/scopedESLint PASS; buildproduction bằng đúng `scripts/build-cloudflare-production.sh` PASS,10gatesOFF/noattach. ActualvinextWorkerD1/R2local **15nhómPASS,0outbound** gồm tài khoản–lưu profile–refreshdashboard/account–guest307–stalewitness/progress/Ebook. Receipt `reports/cloudflare-d1/native-full-worker.json`; fixture tổng hợp,khôngbrowser/hydration/hosted/productionwrite. Reviewer tìm lỗi thiếuwitness rồi7tests xác nhậnfix; không suy ra quyền cutover.
+
+Còn nativeemailchange,adminCRMCRUD/fullRLS,providerreal/sessionadoption,finaldelta/fence/reverserollback và hostedQA trước bỏSupabase. Không tạo/đổi secret,DNS,Sourcewriter,email hay dịch vụcũ.
