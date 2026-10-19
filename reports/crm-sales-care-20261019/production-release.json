@@ -1,0 +1,84 @@
+{
+  "sourceCommit": "55a0e1fd3b2a6717cf6a87288b0e1410abff758a",
+  "ownerApproval": "User ok after explicit production release request in current chat",
+  "configuration": {
+    "status": "LIVE_CONFIG_VERIFIED",
+    "version": "116d595e-cc53-483c-9d8a-3a35c46e41da",
+    "percentage": 100,
+    "rollbackVersion": "10ce659a-1858-40f5-b03e-31aefbeed1a4",
+    "bindingsPreserved": true,
+    "secretNamesPreserved": true,
+    "secretCount": 38,
+    "observabilityPreserved": true,
+    "subdomainPreserved": true,
+    "crons": [
+      "*/5 * * * *"
+    ]
+  },
+  "http": {
+    "status": "PASS",
+    "checkedAt": "2026-10-19T03:32:30.614Z",
+    "checks": [
+      {
+        "check": "sales-requires-login",
+        "status": 307,
+        "passed": true
+      },
+      {
+        "check": "care-GET-denies-guest",
+        "status": 403,
+        "noStore": true,
+        "passed": true
+      },
+      {
+        "check": "care-POST-denies-guest",
+        "status": 403,
+        "noStore": true,
+        "passed": true
+      },
+      {
+        "check": "published-care-client-matches-built-artifact",
+        "status": 200,
+        "passed": true,
+        "asset": "sales-dashboard-CU9JhkQp.js"
+      },
+      {
+        "check": "homepage",
+        "status": 200,
+        "passed": true
+      }
+    ],
+    "limits": "HTTP/auth-denial and exact client artifact readback; no authenticated admin mutation or browser interaction"
+  },
+  "landingChecks": {
+    "count": 24,
+    "mismatches": 0
+  },
+  "preflight": {
+    "account_id": "8035ac71ae1041614760882f4b8862b2",
+    "branch": "codex/cloudflare-staging-main-20261013",
+    "cutover_authorized": false,
+    "head": "55a0e1fd3b2a6717cf6a87288b0e1410abff758a",
+    "project_id": "theanh-main",
+    "provider": "cloudflare",
+    "remaining_gates": [
+      "artifact",
+      "business_tests",
+      "runtime_secrets",
+      "cron_ownership",
+      "rollback",
+      "owner_approval"
+    ],
+    "remote_checked": true,
+    "root": "/Users/theanh/CodexProjects/Kinh doanh/_cloudflare-migration/main",
+    "source_preflight_passed": true,
+    "worker_name": "theanh-main-cf-production"
+  },
+  "preservation": {
+    "files": 16,
+    "allOriginalBytesPreserved": true,
+    "handoffOriginalPrefixPreserved": true,
+    "stashRetained": true
+  },
+  "scope": "Feature deployed; no production customer notes or authenticated admin mutation performed during verification"
+}

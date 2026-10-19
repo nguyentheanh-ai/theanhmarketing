@@ -1,6 +1,6 @@
 # CRM Sales — trạng thái chăm sóc và ghi chú (19/10/2026)
 
-Trạng thái: mã nguồn và kiểm thử cục bộ; CHƯA phát hành lên website thật.
+Trạng thái hiện hành: ĐÃ PHÁT HÀNH lên website thật, 19/10/2026 10:32 giờ Việt Nam. Phần QA local bên dưới là bằng chứng trước phát hành; xem mục cập nhật cuối để phân biệt giới hạn hosted.
 Project: `theanh-main`. Worktree `worktrees/crm-sales-care-20261019`, nhánh `feat/crm-sales-care-20261019`, base `538889f` từ nguồn Workers đang dùng. Website đã chuyển hosting sang Cloudflare; Supabase vẫn là nguồn dữ liệu/Auth. Không dùng root Vercel cũ để phát hành tính năng này.
 
 ## Cách sử dụng
@@ -31,3 +31,16 @@ Build qua `scripts/build-cloudflare-production.sh`, verifier đúng Worker produ
 `theanh-workspace doctor --project theanh-main --check-remote` báo các root release có dirty/untracked (nguồn Workers hiện chủ yếu tài liệu/báo cáo công việc khác). Không reset/stash/commit hộ các thay đổi đó; tạo feature riêng. Trước phát hành cần duyệt production theo AGENTS, tích hợp đúng nguồn hiện hành và vượt preflight Cloudflare; doctor/preflight fail thì không deploy. Không lấy branch feature làm root deploy hoặc bỏ guard.
 
 Đã đối chiếu registry/control-plane/ACTIVE_TASKS, context workspace, AGENTS/CURRENT_STATE/FEATURE_MAP và các phần kiến trúc/design/database/security/handoff liên quan. Tài liệu hosting live hiện hành ưu tiên hơn ghi nhớ release Vercel cũ.
+
+
+## 19/10/2026 10:32 VN — CRM Sales care đã phát hành
+
+Anh đã duyệt bằng “ok”. Feature `0db34eb` được tích hợp thành source `55a0e1f` tại root phát hành Workers. Đã push GitHub; preflight Cloudflare kiểm nguồn sạch, remote SHA, đúng account và Worker đạt. Build với `CF_ATTACH_PRODUCTION_DOMAINS=1`, verifier kiểm 9 cổng native tắt, dry-run và 59 kiểm thử CRM liên quan đều đạt. API xác nhận Worker `theanh-main-cf-production`, version `116d595e-cc53-483c-9d8a-3a35c46e41da` đang nhận 100% lưu lượng.
+
+Đọc lại cho thấy bindings, 38 tên secret, observability, workers.dev/preview tắt và cron `*/5 * * * *` giữ nguyên. Hai route theo hostname giữ nguyên; không đổi DNS, quy tắc redirect, secret, schema hoặc nguồn ghi. 24 kiểm tra HTTP trước/sau đều khớp: 8 trang landing HTTP 200 có hash như cũ, 16 redirect giữ status/location. Sales chuyển khách chưa đăng nhập về trang đăng nhập; API care GET/POST từ chối guest bằng 403 và no-store. Client JavaScript mới HTTP 200, hash khớp artifact; trang chủ HTTP 200.
+
+Chưa có phiên admin trong lượt xác minh, không ghi note khách thật hoặc tuyên bố đã kiểm lưu note bằng trình duyệt đăng nhập. Cách dùng: tải lại `/admin/crm-v2/sales`, bấm ô Chăm sóc hoặc Thêm ghi chú, chọn trạng thái, nhập note rồi bấm Lưu chăm sóc. Bảng hiện người và thời gian cập nhật; cửa sổ giữ 30 lần cập nhật gần nhất.
+
+16 tài liệu/báo cáo đang dở đã được xem là docs-only và lưu tạm theo danh sách chính xác, có bản sao/mã băm và Git stash. Sau phát hành, đã khôi phục đầy đủ byte gốc; handoff giữ nội dung cũ cùng phần bổ sung của tính năng. Giữ bản sao và stash để phục hồi, không clean/reset/commit hộ nội dung cũ. Việc lưu tạm có kiểm tra được thực hiện sau duyệt phát hành; thay trạng thái trước duyệt chưa stash/deploy. Root lại có tài liệu dirty như trước; một lần phát hành mới vẫn phải vượt preflight. Bản runtime quay lui: `10ce659a-1858-40f5-b03e-31aefbeed1a4`; không reset/xóa dữ liệu activity đã phát sinh.
+
+Bằng chứng: `reports/crm-sales-care-20261019/production-release.json`, `reports/crm-sales-care-20261019/landing-hash-readback.json` và `docs/CRM_SALES_CARE_20261019.md`.

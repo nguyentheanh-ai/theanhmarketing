@@ -1,0 +1,342 @@
+{
+  "before": [
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/academy/ai-master-x10-hieu-suat",
+      "status": 200,
+      "location": null,
+      "sha256": "fcdbee5e0a09e0996aec62a4bf8413ab140d48ed1b6e930df897be14ca536cef"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/academy/ai-master-x10-hieu-suat",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/academy/ai-master-x10-hieu-suat",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/academy/facebook-ads-master-2026",
+      "status": 200,
+      "location": null,
+      "sha256": "813f714f60f50ea8f3fb3dd4023a11c7edcd323104bff4c59ffcb2eaef088908"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/academy/facebook-ads-master-2026",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/academy/facebook-ads-master-2026",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/academy/ebook-facebook-ads-2026",
+      "status": 200,
+      "location": null,
+      "sha256": "9dc95b490032dce080493b494b0f8b23f09b8c6375f3b8a07b2a61258dcd0f42"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/academy/ebook-facebook-ads-2026",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/academy/ebook-facebook-ads-2026",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/academy/ebook-facebook-ads-2026-premium",
+      "status": 200,
+      "location": null,
+      "sha256": "175733b025808ec96266761ebb8ff6ff4c247b13ae5d63e5180d53a459e39021"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/academy/ebook-facebook-ads-2026-premium",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/academy/ebook-facebook-ads-2026-premium",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/ai-master-x10-hieu-suat",
+      "status": 200,
+      "location": null,
+      "sha256": "fcdbee5e0a09e0996aec62a4bf8413ab140d48ed1b6e930df897be14ca536cef"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/ai-master-x10-hieu-suat",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/ai-master-x10-hieu-suat",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/ai-master-x10-hieu-suat.html",
+      "status": 307,
+      "location": "/ladipage/ai-master-x10-hieu-suat",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/ai-master-x10-hieu-suat.html",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/ai-master-x10-hieu-suat.html",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/facebook-ads-2026",
+      "status": 200,
+      "location": null,
+      "sha256": "813f714f60f50ea8f3fb3dd4023a11c7edcd323104bff4c59ffcb2eaef088908"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/facebook-ads-2026",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/facebook-ads-2026",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/facebook-ads-2026.html",
+      "status": 307,
+      "location": "/ladipage/facebook-ads-2026",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/facebook-ads-2026.html",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/facebook-ads-2026.html",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026",
+      "status": 200,
+      "location": null,
+      "sha256": "9dc95b490032dce080493b494b0f8b23f09b8c6375f3b8a07b2a61258dcd0f42"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/ebook-facebook-ads-2026",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026.html",
+      "status": 307,
+      "location": "/ladipage/ebook-facebook-ads-2026",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026.html",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/ebook-facebook-ads-2026.html",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026-premium",
+      "status": 200,
+      "location": null,
+      "sha256": "175733b025808ec96266761ebb8ff6ff4c247b13ae5d63e5180d53a459e39021"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026-premium",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/ebook-facebook-ads-2026-premium",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026-premium.html",
+      "status": 307,
+      "location": "/ladipage/ebook-facebook-ads-2026-premium",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026-premium.html",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/ebook-facebook-ads-2026-premium.html",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    }
+  ],
+  "after": [
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/academy/ai-master-x10-hieu-suat",
+      "status": 200,
+      "location": null,
+      "sha256": "fcdbee5e0a09e0996aec62a4bf8413ab140d48ed1b6e930df897be14ca536cef"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/academy/ai-master-x10-hieu-suat",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/academy/ai-master-x10-hieu-suat",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/academy/facebook-ads-master-2026",
+      "status": 200,
+      "location": null,
+      "sha256": "813f714f60f50ea8f3fb3dd4023a11c7edcd323104bff4c59ffcb2eaef088908"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/academy/facebook-ads-master-2026",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/academy/facebook-ads-master-2026",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/academy/ebook-facebook-ads-2026",
+      "status": 200,
+      "location": null,
+      "sha256": "9dc95b490032dce080493b494b0f8b23f09b8c6375f3b8a07b2a61258dcd0f42"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/academy/ebook-facebook-ads-2026",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/academy/ebook-facebook-ads-2026",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/academy/ebook-facebook-ads-2026-premium",
+      "status": 200,
+      "location": null,
+      "sha256": "175733b025808ec96266761ebb8ff6ff4c247b13ae5d63e5180d53a459e39021"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/academy/ebook-facebook-ads-2026-premium",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/academy/ebook-facebook-ads-2026-premium",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/ai-master-x10-hieu-suat",
+      "status": 200,
+      "location": null,
+      "sha256": "fcdbee5e0a09e0996aec62a4bf8413ab140d48ed1b6e930df897be14ca536cef"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/ai-master-x10-hieu-suat",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/ai-master-x10-hieu-suat",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/ai-master-x10-hieu-suat.html",
+      "status": 307,
+      "location": "/ladipage/ai-master-x10-hieu-suat",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/ai-master-x10-hieu-suat.html",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/ai-master-x10-hieu-suat.html",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/facebook-ads-2026",
+      "status": 200,
+      "location": null,
+      "sha256": "813f714f60f50ea8f3fb3dd4023a11c7edcd323104bff4c59ffcb2eaef088908"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/facebook-ads-2026",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/facebook-ads-2026",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/facebook-ads-2026.html",
+      "status": 307,
+      "location": "/ladipage/facebook-ads-2026",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/facebook-ads-2026.html",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/facebook-ads-2026.html",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026",
+      "status": 200,
+      "location": null,
+      "sha256": "9dc95b490032dce080493b494b0f8b23f09b8c6375f3b8a07b2a61258dcd0f42"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/ebook-facebook-ads-2026",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026.html",
+      "status": 307,
+      "location": "/ladipage/ebook-facebook-ads-2026",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026.html",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/ebook-facebook-ads-2026.html",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026-premium",
+      "status": 200,
+      "location": null,
+      "sha256": "175733b025808ec96266761ebb8ff6ff4c247b13ae5d63e5180d53a459e39021"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026-premium",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/ebook-facebook-ads-2026-premium",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    },
+    {
+      "host": "www.theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026-premium.html",
+      "status": 307,
+      "location": "/ladipage/ebook-facebook-ads-2026-premium",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "host": "theanhmarketing.com",
+      "path": "/ladipage/ebook-facebook-ads-2026-premium.html",
+      "status": 307,
+      "location": "https://www.theanhmarketing.com/ladipage/ebook-facebook-ads-2026-premium.html",
+      "sha256": "7108fef32b066dcb8e074d4114e8614cfb6f1efeb9497c0b0268b7b4039f22bc"
+    }
+  ]
+}

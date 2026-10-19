@@ -12,3 +12,6 @@ Giới hạn: không thay thế browser/authenticated QA; thư mục tmp có th�
 
 
 19/10/2026 — VERIFIED lại trên feature CRM Sales care: đường tmp cũ không còn; chạy admin-customer-workspace thiếu SUPPORT_UI_TEST_MODULE báo isolated React runtime required. Tạo runtime tmp riêng React19.3.0/renderer19.3.0 + htmlparser2/css-select khớp dependency thực, truyền package.json qua biến này:59test liên quan đạt. Không sửa assertion hoặc dependency sản phẩm để làm test qua; đây vẫn là tương tác renderer/fetch giả lập, không phải browser/production persistence.
+
+
+19/10 — HTTP release harness: các URL .html của /ladipage hiện trả 307 sang URL gọn. Giả định mọi URL www đều trả 200 khiến baseline thất bại trước deploy. Đã xác minh status/location thực và thêm URL gọn để so hash trang 200; 24 kiểm tra trước/sau khớp sau deploy. Không đổi hành vi website hoặc coi redirect có sẵn là lỗi phát hành.
