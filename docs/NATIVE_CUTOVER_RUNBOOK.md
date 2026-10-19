@@ -66,3 +66,12 @@ Mục tiêu: website A (www.theanhmarketing.com) và App B (app.theanhmarketing.
 - Kiểm tra: trang chủ, landing, đăng nhập, /rest/v1, /auth/v1, App B; nhật ký production không lỗi.
 - Phiên bản trước để quay lui: theanh-main-cf-production ['75188bac-8352-4f53-85aa-4c297ddbc92e'] 2026-10-19T03:42:56.535893Z;theanh-student-cf-production ['94854193-2688-4ef4-8a43-fd5adff74e78'] 2026-10-18T10:33:42.541077Z;
 - Supabase/Vercel giữ nguyên (chưa hủy). Supabase không còn được website ghi vào.
+
+## Audit sau chuyển — 19/10/2026 (phiên đăng nhập của anh, production)
+
+- A: 43 trang học viên/admin tải 200 (trang admin cũ chuyển hướng sang CRM v2 theo thiết kế); API admin đọc D1: 1.123 lead, LMS 10 khóa/147 ghi danh, đội ngũ, email, báo cáo; bài học có video; nhật ký hoạt động theo email.
+- B: đăng nhập A→B → AdsMind tổng quan; Ads OS workspace/tài liệu/lưu/tự động hóa/Telegram trả ready.
+- Hoạt động thật sau chuyển: 1 đơn pending, nhắc thanh toán queued, 2 email delivered (webhook Resend ghi D1), 1 lead.
+- LỖI ĐÃ SỬA: A→B từ chối người dùng A chưa có tài khoản B (phase2-app 1f3083f, deploy sau preflight PASS) — nay tự tạo tài khoản học viên như bridge cũ.
+- Có sẵn từ trước (không do chuyển): token Meta Ads hết hạn (OAuth 190); CSP chặn iframe/form Facebook Pixel; crm_v2.orders/leads ngừng đồng bộ từ 06–07/2026.
+- Chưa kiểm bằng giao dịch thật: webhook SePay (chưa có đơn được trả tiền sau giờ chuyển).
