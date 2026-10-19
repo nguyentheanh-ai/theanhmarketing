@@ -10,6 +10,7 @@ function load(file, mocks = {}) {
   new Function('require', 'module', 'exports', source)((name) => Object.hasOwn(mocks, name) ? mocks[name] : require(name), mod, mod.exports);
   return mod.exports;
 }
+const careModel = load('lib/admin/sales-care.ts');
 const model = load('lib/admin/sales-dashboard.ts');
 const defaults = { ...model.initialSalesFilters({ range: 'all' }, '2026-10-01') };
 const row = (patch = {}) => ({ id: 'one', name: 'Đặng Ánh', email: 'fixture@example.invalid', phone: '+84 900 000 001', source: 'Website', note: '', registeredAt: '2026-09-30T17:00:00Z', updatedAt: '2026-10-01T06:00:00Z', courseSlugs: ['course'], courseTitles: ['Khóa học'], paidOrderCodes: [], pendingOrderCodes: [], ...patch });
@@ -68,6 +69,7 @@ test('page authenticates before fetching and keeps existing role scope', async (
   for (const role of ['owner', 'editor']) {
     let guarded = false; let options;
     const page = load('app/admin/crm-v2/sales/page.tsx', {
+      '@/services/salesCareService': { listSalesCareSummaries: async () => ({}) },
       '@/lib/auth/session': { requireAdminAuth: async (path, roles) => { assert.equal(path, '/admin/crm-v2/sales'); assert.deepEqual(roles, ['owner', 'editor']); guarded = true; return { adminRole: role }; } },
       '@/services/courseService': { getCourseSummariesStrict: async () => [{ slug: 'course', title: 'Khóa học' }] },
       '@/services/adminCustomerService': { listAdminCustomerProfiles: async (input) => { assert.ok(guarded); options = input; return [row({ secret: 'never-project' })]; } },
@@ -82,6 +84,7 @@ test('page authenticates before fetching and keeps existing role scope', async (
 test('auth rejection prevents data loading', async () => {
   let fetched = false;
   const page = load('app/admin/crm-v2/sales/page.tsx', {
+    '@/services/salesCareService': { listSalesCareSummaries: async () => ({}) },
     '@/lib/auth/session': { requireAdminAuth: async () => { throw new Error('redirect'); } },
     '@/services/courseService': { getCourseSummariesStrict: async () => [{ slug: 'course', title: 'Khóa học' }] },
       '@/services/adminCustomerService': { listAdminCustomerProfiles: async () => { fetched = true; return []; } },
@@ -91,14 +94,14 @@ test('auth rejection prevents data loading', async () => {
 });
 test('dashboard renders labeled filters, empty state and real contact details', () => {
   const { renderToStaticMarkup } = require('react-dom/server');
-  const { SalesDashboard } = load('components/admin/sales-dashboard.tsx', { 'next/navigation': { useRouter: () => ({ refresh() {} }) }, '@/lib/admin/sales-dashboard': model, '@/components/admin/admin-dialog': { AdminDialog: () => null } });
+  const { SalesDashboard } = load('components/admin/sales-dashboard.tsx', { '@/lib/admin/sales-care': careModel, '@/components/admin/sales-care-editor': { SalesCareEditor: () => null }, 'next/navigation': { useRouter: () => ({ refresh() {} }) }, '@/lib/admin/sales-dashboard': model, '@/components/admin/admin-dialog': { AdminDialog: () => null } });
   const props = { today: '2026-10-01', loadedAt: '2026-10-01T00:00:00Z', initialFilters: defaults, includeProspects: true };
   const html = renderToStaticMarkup(require('react').createElement(SalesDashboard, { ...props, records: [row(), row({id: 'paid', paidOrderCodes: ['paid'], pendingOrderCodes: ['pending']})] }));
-  const ext = createRequire(process.env.SUPPORT_UI_TEST_MODULE || '/private/tmp/theanh-sales-ui-20261001/package.json');
+  const ext = createRequire(process.env.SUPPORT_UI_TEST_MODULE || '/private/tmp/theanh-crm-sales-ui/package.json');
   const { parseDocument } = ext('htmlparser2'); const select = ext('css-select');
   const doc = parseDocument(html);
   const textOf = node => node.type === 'text' ? node.data : (node.children || []).map(textOf).join('');
-  assert.deepEqual(select.selectAll('thead th', doc).map(textOf), ['Ngày', 'Tên', 'SĐT', 'Tình trạng', 'Sản phẩm', 'Email']);
+  assert.deepEqual(select.selectAll('thead th', doc).map(textOf), ['Ngày', 'Tên', 'SĐT', 'Thanh toán', 'Sản phẩm', 'Email', 'Chăm sóc', 'Ghi chú / Người cập nhật']);
   const section = select.selectOne('section[aria-label="Danh sách khách hàng"]', doc);
   assert.equal(select.selectAll('[aria-label="Bộ lọc khách hàng"]', section).length, 1);
   assert.equal(select.selectAll('section', doc).length, 1);
@@ -110,13 +113,13 @@ test('dashboard renders labeled filters, empty state and real contact details', 
   assert.ok(empty.includes('Không có khách khớp bộ lọc'));
 });
 test('sale interactions copy selected rows, reset selection on filter and recover from clipboard denial', async () => {
-  const ext = createRequire(process.env.SUPPORT_UI_TEST_MODULE || '/private/tmp/theanh-support-ui-20260928/package.json');
+  const ext = createRequire(process.env.SUPPORT_UI_TEST_MODULE || '/private/tmp/theanh-crm-sales-ui/package.json');
   const React = ext('react'); const { create, act } = ext('react-test-renderer');
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   const copied = [];
   const originalNavigator = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
   Object.defineProperty(globalThis, 'navigator', { configurable: true, value: { clipboard: { writeText: async value => copied.push(value) } } });
-  const { SalesDashboard } = load('components/admin/sales-dashboard.tsx', {
+  const { SalesDashboard } = load('components/admin/sales-dashboard.tsx', { '@/lib/admin/sales-care': careModel, '@/components/admin/sales-care-editor': { SalesCareEditor: () => null },
     react: React, 'react/jsx-runtime': ext('react/jsx-runtime'), 'next/navigation': { useRouter: () => ({ refresh() {} }) },
     'next/link': { __esModule: true, default: ({ children, ...props }) => React.createElement('a', props, children) },
     'lucide-react': new Proxy({}, { get: () => () => null }), '@/lib/admin/sales-dashboard': model,

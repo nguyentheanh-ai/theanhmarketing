@@ -1,0 +1,33 @@
+{
+  "status": "LOCAL_VERIFIED_NOT_DEPLOYED",
+  "project": "theanh-main",
+  "tests": {
+    "passed": 59,
+    "failed": 0,
+    "scope": "model, API/service fixtures, React renderer interaction and customer/activity regressions"
+  },
+  "cloudflareTypecheck": "PASS",
+  "scopedLint": "PASS",
+  "productionArtifactVerifier": {
+    "status": "PASS",
+    "worker": "theanh-main-cf-production",
+    "attachDomains": false,
+    "gatesChecked": 9
+  },
+  "sourceHashes": {
+    "app/admin/crm-v2/sales/page.tsx": "7a603e36482fe957a022cd0060139b136ddfe2f4c7ca299e44c7cc6899a133bc",
+    "components/admin/sales-dashboard.tsx": "4fbc515ce2e7b2e66ca4a576b22c81dc2b5a7821e2dc3ca0bd4366e1291fdfe4",
+    "components/admin/sales-care-editor.tsx": "c35b206822a0d8532187129c83e5e134bb92bf04d53f9c58869942ab18743d44",
+    "lib/admin/sales-care.ts": "bcde82ae066540e5097329334221bed682806850f764cc4f05456aa05b7f0540",
+    "services/salesCareService.ts": "a9328f4c23522736279683eb219615919d98e8283a92d4282492c7e350ca7342",
+    "app/api/admin/crm-v2/sales/care/route.ts": "c3499a5898da39a7b77fdf928fa3b783c8d0c4ca8afaa18c12c0f77307c53591"
+  },
+  "serverBundleSha256": "c4b6f24f01c29992ed4a516889794c44659ffce18e7e1d95eac91a84df94f3bc",
+  "databaseChecks": "Read-only schema, constraints, RLS and initial feature event count verified on main-site project; no remote writes",
+  "limitations": [
+    "No production or staging deployment",
+    "No authenticated browser roundtrip",
+    "Database and provider operations in behavioral tests are fixtures",
+    "Release doctor reports unrelated dirty release roots; guarded integration/preflight and production approval still required"
+  ]
+}

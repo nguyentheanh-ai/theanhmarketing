@@ -9,3 +9,6 @@ Giới hạn: không thay thế browser/authenticated QA; thư mục tmp có th�
 
 
 01/10 — HTTP release check: assertion bắt mọi apex landing là200 đã sai; snapshot trước/sau đều307 cùng Location sang www. Đã sửa kiểm chứng: so riêng status/location của redirect, chỉ so hash nội dung cho7HTML www200. VERIFIED cho release này; không coi hash body307 là hash landing, không kết luận host redirect là regression nếu baseline giống.
+
+
+19/10/2026 — VERIFIED lại trên feature CRM Sales care: đường tmp cũ không còn; chạy admin-customer-workspace thiếu SUPPORT_UI_TEST_MODULE báo isolated React runtime required. Tạo runtime tmp riêng React19.3.0/renderer19.3.0 + htmlparser2/css-select khớp dependency thực, truyền package.json qua biến này:59test liên quan đạt. Không sửa assertion hoặc dependency sản phẩm để làm test qua; đây vẫn là tương tác renderer/fetch giả lập, không phải browser/production persistence.
