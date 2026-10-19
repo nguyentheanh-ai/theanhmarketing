@@ -1,0 +1,69 @@
+[
+ {
+  "kind": "check",
+  "table": "public.admin_student_provisioning_operations",
+  "name": "admin_student_provisioning_operations_check",
+  "def": "CHECK (((status <> 'completed'::text) OR (current_step = 'complete'::text)))"
+ },
+ {
+  "kind": "check",
+  "table": "public.admin_student_provisioning_operations",
+  "name": "admin_student_provisioning_operations_current_step_check",
+  "def": "CHECK ((current_step = ANY (ARRAY['validate'::text, 'resolve_student'::text, 'create_order'::text, 'ensure_account'::text, 'grant_access'::text, 'send_email'::text, 'complete'::text])))"
+ },
+ {
+  "kind": "check",
+  "table": "public.admin_student_provisioning_operations",
+  "name": "admin_student_provisioning_operations_order_code_check",
+  "def": "CHECK (((order_code IS NULL) OR (((length(order_code) >= 1) AND (length(order_code) <= 120)) AND (order_code ~ '^[A-Za-z0-9][A-Za-z0-9._:/-]*$'::text))))"
+ },
+ {
+  "kind": "fk_external",
+  "table": "public.click_events",
+  "def": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL"
+ },
+ {
+  "kind": "fk_external",
+  "table": "public.email_campaigns",
+  "def": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL"
+ },
+ {
+  "kind": "fk_external",
+  "table": "public.email_contacts",
+  "def": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL"
+ },
+ {
+  "kind": "check",
+  "table": "public.leads",
+  "name": "leads_provisioning_operation_id_format",
+  "def": "CHECK (((provisioning_operation_id IS NULL) OR (((length(provisioning_operation_id) >= 8) AND (length(provisioning_operation_id) <= 128)) AND (provisioning_operation_id ~ '^[A-Za-z0-9][A-Za-z0-9._:-]+$'::text))))"
+ },
+ {
+  "kind": "check",
+  "table": "public.orders",
+  "name": "orders_provisioning_operation_id_format",
+  "def": "CHECK (((provisioning_operation_id IS NULL) OR (((length(provisioning_operation_id) >= 8) AND (length(provisioning_operation_id) <= 128)) AND (provisioning_operation_id ~ '^[A-Za-z0-9][A-Za-z0-9._:-]+$'::text))))"
+ },
+ {
+  "kind": "fk_external",
+  "table": "public.student_lesson_task_progress",
+  "def": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+ },
+ {
+  "kind": "check",
+  "table": "public.support_bookings",
+  "name": "support_bookings_duration_check",
+  "def": "CHECK (((duration_minutes = ANY (ARRAY[30, 60, 90, 120])) AND (ends_at = (starts_at + ((duration_minutes)::double precision * '00:01:00'::interval)))))"
+ },
+ {
+  "kind": "fk_external",
+  "table": "public.support_busy_dates",
+  "def": "FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL"
+ },
+ {
+  "kind": "check",
+  "table": "public.telegram_meta_campaign_hourly_snapshots",
+  "name": "telegram_meta_campaign_hourly_snapshots_check",
+  "def": "CHECK ((local_end_at = (local_start_at + '01:00:00'::interval)))"
+ }
+]

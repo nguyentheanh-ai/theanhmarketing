@@ -1,0 +1,48 @@
+[
+ {
+  "kind": "fk_external",
+  "table": "public.ad_clone_logs",
+  "def": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+ },
+ {
+  "kind": "check",
+  "table": "public.ads_assistant_meta_oauth_states",
+  "name": "ads_assistant_meta_oauth_states_check",
+  "def": "CHECK (((expires_at > created_at) AND (expires_at <= (created_at + '00:15:00'::interval))))"
+ },
+ {
+  "kind": "fk_external",
+  "table": "public.course_assets",
+  "def": "FOREIGN KEY (uploaded_by) REFERENCES auth.users(id) ON DELETE SET NULL"
+ },
+ {
+  "kind": "fk_external",
+  "table": "public.course_import_runs",
+  "def": "FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL"
+ },
+ {
+  "kind": "fk_external",
+  "table": "public.course_notes",
+  "def": "FOREIGN KEY (author_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+ },
+ {
+  "kind": "fk_external",
+  "table": "public.course_revisions",
+  "def": "FOREIGN KEY (actor_id) REFERENCES auth.users(id) ON DELETE SET NULL"
+ },
+ {
+  "kind": "fk_external",
+  "table": "public.facebook_post_drafts",
+  "def": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+ },
+ {
+  "kind": "fk_external",
+  "table": "public.facebook_publisher_schedule_settings",
+  "def": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+ },
+ {
+  "kind": "fk_external",
+  "table": "public.profiles",
+  "def": "FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE"
+ }
+]

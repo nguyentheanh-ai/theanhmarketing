@@ -1,0 +1,51 @@
+{
+ "checked": 223,
+ "issues": [
+  {
+   "file": "lib/crm-v2/data.ts",
+   "line": 706,
+   "key": "public.lead_activities",
+   "problem": "column public.lead_activities.type missing",
+   "select": "id,type,title,description,created_at,metadata"
+  },
+  {
+   "file": "lib/crm-v2/data.ts",
+   "line": 2489,
+   "key": "crm_v2.email_sends",
+   "problem": "Could not find a relationship between 'email_sends' and 'campaigns' in the schema cache",
+   "select": "id,subject,status,recipient_email,provider,provider_message_id,sent_at,opened_at,clicked_at,bounced_at,complained_at,metadata,campaign_id,created_at,campaigns(n"
+  },
+  {
+   "file": "lib/crm-v2/data.ts",
+   "line": 3878,
+   "key": "crm_v2.segment_rules",
+   "problem": "column crm_v2.segment_rules.description missing",
+   "select": "segment_id,version,description,rules,updated_at"
+  },
+  {
+   "file": "lib/facebook-provider-token-store.ts",
+   "line": 74,
+   "key": "facebook_provider_tokens",
+   "problem": "table not in schema A (B app, auth or storage)"
+  },
+  {
+   "file": "services/orderService.ts",
+   "line": 793,
+   "key": "public.orders",
+   "problem": "dynamic select template",
+   "select": "${orderSelectFields},sepay_payload"
+  },
+  {
+   "file": "services/studentAccountService.ts",
+   "line": 118,
+   "key": "users",
+   "problem": "table not in schema A (B app, auth or storage)"
+  },
+  {
+   "file": "services/courseService.ts",
+   "line": 18,
+   "key": "public.courses",
+   "problem": "select from variable summaryOnly not resolved"
+  }
+ ]
+}
