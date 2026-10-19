@@ -43,8 +43,10 @@ export function createNativeSupabaseHttp(o:NativeSupabaseHttpOptions){
     const email=String(b.email??'').trim().toLowerCase(),ip=request.headers.get('CF-Connecting-IP')??'';
     if(!ip)return authError(400,'validation_failed','Trusted edge required');
     const session=await authenticateD1Password(o.authDb,{email,password:String(b.password??'')},{...policy(),credentialKey:o.credentialKey,
-     allowAttempt:async()=>(await consumeD1AuthAttempt(o.authDb,{projectId:PROJECT,ip,email:email||'empty@native.invalid'},{secret:o.limiterKey,ip:{limit:10,windowMs:60000},email:{limit:5,windowMs:60000}})).allowed}).catch(()=>null);
-    if(!session)return authError(400,'invalid_credentials','Invalid login credentials');
+     allowAttempt:async()=>{const r=await consumeD1AuthAttempt(o.authDb,{projectId:PROJECT,ip,email:email||'empty@native.invalid'},{secret:o.limiterKey,ip:{limit:10,windowMs:60000},email:{limit:5,windowMs:60000}});if(!r.allowed)console.warn('native_login','rate_limited');return r.allowed;}})
+     .catch((e:unknown)=>{console.warn('native_login','error',e instanceof Error?e.message.slice(0,120):'unknown');return null;});
+    // Stage only (no email/password/token values) for operations.
+    if(!session){console.warn('native_login','rejected');return authError(400,'invalid_credentials','Invalid login credentials');}
     return json(200,await sessionBody(session.token,session.expiresAt,session.user.id),{'Set-Cookie':createD1SessionCookie(session.token,TTL,true)});
    }
    if(grant==='refresh_token'){

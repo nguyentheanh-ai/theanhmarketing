@@ -61,7 +61,7 @@ const stagingWorker = {
     // Native data mode: storage upload/public routes and live object index.
     if ((env as NativeDataEnv).CF_NATIVE_DATA_MODE === "d1" && (url.pathname.startsWith("/auth/v1/") || url.pathname.startsWith("/rest/v1/"))) {
       const api = nativeSupabaseHttp(env as NativeDataEnv, url.origin);
-      if (!api) return new Response(null, { status: 503, headers: { "Cache-Control": "no-store" } });
+      if (!api) { const e = env as Record<string, unknown>; console.warn("native_api_unavailable", ["NATIVE_DATA_DB","NATIVE_AUTH_CREDENTIAL_KEY","NATIVE_AUTH_LIMITER_KEY","NATIVE_DATA_AUTHORITY"].filter(k => !e[k])); return new Response(null, { status: 503, headers: { "Cache-Control": "no-store" } }); }
       const handled = await runNativeRequestContext(request, env as NativeStageEnv, () => api.handle(request));
       if (handled) return handled;
     }
