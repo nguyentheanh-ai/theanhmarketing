@@ -60,7 +60,9 @@ export default defineConfig({
       CF_NATIVE_QA_CHECKOUT_MODE: bindings.text("disabled"),
       // Whole-app Supabase→D1 data switch (shim). Off until writer switch.
       CF_NATIVE_DATA_MODE: bindings.text(native ? "d1" : "disabled"),
-      ...(native ? { NATIVE_DATA_DB: bindings.d1(NATIVE_DB), NATIVE_DATA_AUTHORITY: bindings.secret() } : {}),
+      ...(native ? { NATIVE_DATA_DB: bindings.d1(NATIVE_DB), NATIVE_DATA_AUTHORITY: bindings.secret(),
+        // Test Worker: CRM on, no provider keys (no real email/Meta/Telegram/SePay sends).
+        CRM_V2_ENABLED: bindings.text("true"), CRM_V2_USE_DEMO_DATA: bindings.text("false") } : {}),
       // Native signup confirmation and password recovery for listed QA emails only.
       CF_NATIVE_QA_EMAIL_AUTH_MODE: bindings.text("disabled"),
       // Vercel cron parity; enable only on the production Worker after cutover.
