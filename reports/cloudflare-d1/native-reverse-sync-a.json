@@ -1,0 +1,18 @@
+{
+  "project": "vsxxgdzwtscuxcmjfckt",
+  "since": "2026-10-19T00:00:00+00:00",
+  "apply": false,
+  "tables": {
+    "crm_v2.audit_logs": 3,
+    "crm_v2.crm_events": 2,
+    "crm_v2.email_events": 28,
+    "crm_v2.webhook_events": 28,
+    "public.activity_logs": 24,
+    "public.email_logs": 9,
+    "public.lead_activities": 19,
+    "public.leads": 5,
+    "public.orders": 7,
+    "public.payment_remarketing_runs": 17
+  },
+  "newAuthUsers": 2
+}

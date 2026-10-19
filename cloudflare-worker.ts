@@ -9,7 +9,7 @@ import {protectNativeLearningResponse} from './lib/cloudflare/native-learning-re
 import {handleNativeAppBridgeRequest} from './lib/cloudflare/native-app-login-bridge';
 import {handleNativeResourceRequest} from './lib/cloudflare/native-resource-http';
 import {handleNativePaymentStage,type NativePaymentStageEnv} from './lib/cloudflare/native-payment-stage';
-import {installNativeDataFactory,nativeStorage,nativeSupabaseHttp,type NativeDataEnv} from './lib/cloudflare/native-data-client';
+import {installNativeDataFactory,nativeStorage,nativeSupabaseHttp,runNativeMaintenanceCron,type NativeDataEnv} from './lib/cloudflare/native-data-client';
 installNativeDataFactory();
 import {handleNativeCheckoutStage,runNativeCheckoutCron,type NativeCheckoutStageEnv} from './lib/cloudflare/native-checkout-stage';
 import {handleNativeEmailAuth,type NativeEmailAuthEnv} from './lib/cloudflare/native-email-auth-http';
@@ -103,6 +103,9 @@ const stagingWorker = {
     // No-op unless CF_NATIVE_QA_CHECKOUT_MODE=qa; D1 authority gates every write.
     const native = await runNativeCheckoutCron(env as NativeCheckoutStageEnv, controller.scheduledTime).catch(() => null);
     if (!native) console.warn('[cron] native checkout failed');
+    // Native data mode: replaces the Supabase pg_cron privacy job.
+    const maintenance = await runNativeMaintenanceCron(env as NativeDataEnv, controller.scheduledTime).catch(() => null);
+    if (!maintenance) console.warn('[cron] native maintenance failed');
   },
 };
 

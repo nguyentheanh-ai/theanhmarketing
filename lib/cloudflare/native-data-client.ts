@@ -95,3 +95,14 @@ export async function nativeVerifyStudentPassword(email:string,password:string){
  try{return await verifyLegacyBcryptPassword(password,await openLegacyBcryptHash(row.credential_ciphertext,env.NATIVE_AUTH_CREDENTIAL_KEY!,{projectId:'vsxxgdzwtscuxcmjfckt',userId:String(row.id)}));}catch{return false;}
 }
 export function installNativeDataFactory(){registerNativeDataFactory({client:createNativeDataClient,currentUser:nativeCurrentUser,verifyPassword:nativeVerifyStudentPassword});}
+
+// pg_cron parity (Supabase A job "checkout-abuse-redact-expired-ips", 17 18 * * *):
+// drop IP/user agent of expired checkout-abuse events. Native data mode only.
+export async function runNativeMaintenanceCron(env:NativeDataEnv,scheduledTime:number){
+ if(env.CF_NATIVE_DATA_MODE!=='d1'||!env.NATIVE_DATA_DB)return {status:'disabled' as const};
+ const at=new Date(Math.floor(scheduledTime/60000)*60000);
+ if(!(at.getUTCHours()===18&&at.getUTCMinutes()>=15&&at.getUTCMinutes()<20))return {status:'not_due' as const};
+ const stamp=at.toISOString().replace('Z','+00:00').replace(/\.000\+/,'+');
+ const rows=await createShimDatabase(env.NATIVE_DATA_DB).all(`UPDATE "a_public__checkout_abuse_events" SET ip_address=NULL,user_agent=NULL,updated_at=?1 WHERE expires_at<=?1 AND (ip_address IS NOT NULL OR user_agent IS NOT NULL) RETURNING id`,[stamp]);
+ return {status:'ran' as const,redacted:rows.length};
+}

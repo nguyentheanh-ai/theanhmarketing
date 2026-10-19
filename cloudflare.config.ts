@@ -11,6 +11,11 @@ const production = process.env.CF_DEPLOY_TARGET === "production";
 const native = process.env.CF_DEPLOY_TARGET === "native";
 const NATIVE_DB = { name: "theanh-native-a-staging", id: "8a350ee0-cffd-4885-90aa-33ecfaf7ada4" };
 const attachDomains = production && process.env.CF_ATTACH_PRODUCTION_DOMAINS === "1";
+// Production on native D1 (writer switch, docs/NATIVE_CUTOVER_RUNBOOK.md): needs the
+// production native DB id created at cutover. Off unless CF_PRODUCTION_NATIVE=1.
+const productionNative = production && process.env.CF_PRODUCTION_NATIVE === "1";
+const PROD_NATIVE_DB = { name: "theanh-native-a", id: process.env.CF_NATIVE_PROD_DB_ID ?? "" };
+if (productionNative && !/^[0-9a-f-]{36}$/.test(PROD_NATIVE_DB.id)) throw new Error("CF_NATIVE_PROD_DB_ID required for CF_PRODUCTION_NATIVE=1");
 
 export default defineConfig({
   worker: defineWorker({
@@ -59,7 +64,9 @@ export default defineConfig({
       // Native checkout + expiry + payment reminders on D1; writes need native data authority.
       CF_NATIVE_QA_CHECKOUT_MODE: bindings.text("disabled"),
       // Whole-app Supabase→D1 data switch (shim). Off until writer switch.
-      CF_NATIVE_DATA_MODE: bindings.text(native ? "d1" : "disabled"),
+      CF_NATIVE_DATA_MODE: bindings.text(native || productionNative ? "d1" : "disabled"),
+      ...(productionNative ? { NATIVE_DATA_DB: bindings.d1(PROD_NATIVE_DB), NATIVE_DATA_AUTHORITY: bindings.secret(), NATIVE_RESEND_API_KEY: bindings.secret(),
+        CF_NATIVE_B_ORIGIN: bindings.text("https://app.theanhmarketing.com") } : {}),
       ...(native ? { NATIVE_DATA_DB: bindings.d1(NATIVE_DB), NATIVE_DATA_AUTHORITY: bindings.secret(),
         // Test Worker: CRM on, no provider keys (no real email/Meta/Telegram/SePay sends).
         CRM_V2_ENABLED: bindings.text("true"), CRM_V2_USE_DEMO_DATA: bindings.text("false"),
@@ -76,7 +83,7 @@ export default defineConfig({
       CF_NATIVE_QA_PROFILE_WRITES: bindings.text("disabled"),
       CF_NATIVE_QA_CREDENTIAL_WRITES: bindings.text("disabled"),
       // Production binds the separate Supabase copy D1 (unused while native gates are off).
-      NATIVE_AUTH_DB: native ? bindings.d1(NATIVE_DB) : production ? bindings.d1({ name: "theanh-supabase-copy", id: "f0f2a18e-22c3-4695-99af-a5065aa7dbe5" }) : bindings.d1({ name: "theanh-main-db-staging", id: "694139c9-6cda-4b8c-9228-c973dbcbb719" }),
+      NATIVE_AUTH_DB: native ? bindings.d1(NATIVE_DB) : productionNative ? bindings.d1(PROD_NATIVE_DB) : production ? bindings.d1({ name: "theanh-supabase-copy", id: "f0f2a18e-22c3-4695-99af-a5065aa7dbe5" }) : bindings.d1({ name: "theanh-main-db-staging", id: "694139c9-6cda-4b8c-9228-c973dbcbb719" }),
       NATIVE_AUTH_CREDENTIAL_KEY: bindings.secret(),
       NATIVE_AUTH_LIMITER_KEY: bindings.secret(),
       STUDENT_PORTAL_PROVISION_SECRET: bindings.secret(),
