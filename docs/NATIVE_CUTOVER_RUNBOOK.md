@@ -55,3 +55,14 @@ Mục tiêu: website A (www.theanhmarketing.com) và App B (app.theanhmarketing.
 - Tìm kiếm không dấu ↔ có dấu giữ như Postgres (lower có dấu); không có full-text search.
 - Chưa đo tải thật; D1 phù hợp quy mô hiện tại (~34k dòng A, ~8k dòng B).
 - Ảnh/tài liệu A: 508 file đã có trên R2; file tải lên sau ngày chép cần chép bù (`scripts/mirror` của Codex) trong bước 3.
+
+## Nhật ký chuyển thật — 19/10/2026 (anh duyệt chuyển ngay, thay 23:00)
+
+- T0 (bắt đầu chép): 2026-10-19T05:38:36Z (12:38 giờ VN).
+- D1 production: theanh-native-a (fabea0e7-…) 85 bảng/34.012 dòng PASS; theanh-native-b (89db1f4c-…) 62 bảng/8.439 dòng PASS; file A 508/508 trên R2.
+- Quyền ghi native A kích hoạt 05:49:26Z.
+- Deploy: B production-native (app.theanhmarketing.com), A production native (theanhmarketing.com, www).
+- Chép bù từ T0: A 10 dòng, B 0; không có tài khoản mới.
+- Kiểm tra: trang chủ, landing, đăng nhập, /rest/v1, /auth/v1, App B; nhật ký production không lỗi.
+- Phiên bản trước để quay lui: theanh-main-cf-production ['75188bac-8352-4f53-85aa-4c297ddbc92e'] 2026-10-19T03:42:56.535893Z;theanh-student-cf-production ['94854193-2688-4ef4-8a43-fd5adff74e78'] 2026-10-18T10:33:42.541077Z;
+- Supabase/Vercel giữ nguyên (chưa hủy). Supabase không còn được website ghi vào.
