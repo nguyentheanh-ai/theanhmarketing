@@ -1,10 +1,10 @@
 {
-  "checkedAt": "2026-10-19T03:50:09.172669+00:00",
-  "database": "theanh-native-a-staging",
+  "checkedAt": "2026-10-19T05:49:26.978914+00:00",
+  "database": "theanh-native-a",
   "project": "vsxxgdzwtscuxcmjfckt",
   "status": "PASS",
   "tables": 85,
-  "rows": 33991,
+  "rows": 34012,
   "mismatch": {},
   "foreignKeyViolations": 0,
   "auth": {
@@ -17,8 +17,8 @@
     "skippedWithoutEmail": 0
   },
   "snapshot": [
-    "2026-10-19T03:42:13.226699+00:00",
-    "2026-10-19T03:47:40.111581+00:00"
+    "2026-10-19T05:38:37.128942+00:00",
+    "2026-10-19T05:45:43.149560+00:00"
   ],
   "limits": "Point-in-time copy (pages are separate reads); lease tokens and sessions not copied; Storage bytes live in R2 (index only here)."
 }

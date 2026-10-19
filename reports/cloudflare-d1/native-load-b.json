@@ -1,6 +1,6 @@
 {
-  "checkedAt": "2026-10-19T04:41:54.464139+00:00",
-  "database": "theanh-native-b-staging",
+  "checkedAt": "2026-10-19T05:48:21.842521+00:00",
+  "database": "theanh-native-b",
   "project": "pppiqhkectojxbmhqcnx",
   "status": "PASS",
   "tables": 62,
@@ -17,8 +17,8 @@
     "skippedWithoutEmail": 0
   },
   "snapshot": [
-    "2026-10-19T04:39:29.605322+00:00",
-    "2026-10-19T04:40:30.382202+00:00"
+    "2026-10-19T05:45:43.340873+00:00",
+    "2026-10-19T05:47:00.833983+00:00"
   ],
   "limits": "Point-in-time copy (pages are separate reads); lease tokens and sessions not copied; Storage bytes live in R2 (index only here)."
 }
