@@ -12,8 +12,8 @@ export type NativeCheckoutInput={
  idempotencyKey:string;studentName:string;email:string;phone:string;
  courseSlug?:string;courseSlugs?:string[];paymentPlan?:string;couponCode?:string;
  leadId?:string|null;ipAddress?:string;userAgent?:string;attribution?:AttributionInput;invoice?:InvoiceDetails;
- // Lead CRM note/source are computed by the route exactly like /api/orders.
- leadMessage:string;leadSource:string;
+ // Lead CRM note/source are built from the new order exactly like /api/orders.
+ lead:(order:Record<string,unknown>)=>{message:string;source:string};
 };
 export type NativeCheckoutOptions={
  nativeAuthority:AuthorityHandoff;
@@ -76,7 +76,7 @@ export async function createNativeCheckoutOrder(db:Db,input:NativeCheckoutInput,
  const authority=nativeAuthoritySql(options.nativeAuthority,2);
  const fresh=`EXISTS(SELECT 1 FROM d1_student_catalog_current c JOIN d1_student_catalog_snapshots s ON s.snapshot_id=c.snapshot_id WHERE c.source_project_id='${PROJECT}' AND c.snapshot_id=?3 AND s.status='verified' AND julianday(s.last_verified_at)>=julianday(?2)-${CATALOG_FRESH_MS}/86400000.0)`;
  const guard=`${authority} AND ${fresh} AND NOT EXISTS(SELECT 1 FROM d1_native_checkout_requests WHERE idempotency_key=?1)`;
- const leadPatch={name:studentName,email,phone,message:cleanText(input.leadMessage,4000),source:cleanText(input.leadSource,200)||'Website',...attributionToDbColumns(attribution)};
+ const note=input.lead(row);const leadPatch={name:studentName,email,phone,message:String(note.message??'').slice(0,8000),source:cleanText(note.source,200)||'Website',...attributionToDbColumns(attribution)};
  const newLeadId=leadId??(options.createId??(()=>crypto.randomUUID()))();
  const newLead={id:newLeadId,full_name:studentName,status:'new',sale_status:'Chưa liên hệ',lead_status:'new',payment_status:'unpaid',provisioning_operation_id:null,created_at:stamp,updated_at:stamp,deleted_at:null,...leadPatch};
  const p:(string|number|null)[]=[key,stamp,String(snapshot.snapshot_id),String(record.id),String(record.order_code),Number(record.amount_vnd),String(record.row_json),digest,newLeadId,JSON.stringify(newLead),JSON.stringify({...leadPatch,updated_at:stamp})];

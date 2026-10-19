@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS d1_native_checkout_requests (
 
 -- public.payment_remarketing_runs equivalent (UNIQUE(order_id, sequence_index)).
 CREATE TABLE IF NOT EXISTS d1_native_payment_remarketing_runs (
+ id TEXT NOT NULL UNIQUE DEFAULT (lower(hex(randomblob(16)))),
  order_id TEXT NOT NULL REFERENCES d1_native_orders(id),
  sequence_index INTEGER NOT NULL CHECK(sequence_index>0),
  product_key TEXT NOT NULL,
@@ -30,6 +31,9 @@ CREATE TABLE IF NOT EXISTS d1_native_payment_remarketing_runs (
  lease_expires_at TEXT,
  next_attempt_at TEXT,
  last_error TEXT,
+ attempt_count INTEGER NOT NULL DEFAULT 0 CHECK(attempt_count>=0),
+ resend_email_id TEXT,
+ sent_at TEXT,
  created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
  updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
  PRIMARY KEY(order_id, sequence_index)

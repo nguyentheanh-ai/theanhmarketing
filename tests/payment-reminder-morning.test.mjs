@@ -46,6 +46,7 @@ function workerFixture(local, statuses) {
   const api = load("lib/notifications/payment-reminder-email.ts", {
     "@/lib/notifications/payment-reminder-schedule": load(schedulePath, {}, Clock),
     "@/lib/notifications/pending-payment-email": { buildPendingPaymentEmailPayload: () => ({ html: '<td style="padding:34px">', text: "fixture", to: "fixture@example.invalid" }) },
+    "@/lib/notifications/payment-reminder-payload": load("lib/notifications/payment-reminder-payload.ts", { "@/lib/notifications/pending-payment-email": { buildPendingPaymentEmailPayload: () => ({ html: '<td style="padding:34px">', text: "fixture", to: "fixture@example.invalid" }) } }),
     "@/lib/tracking/attribution": { normalizeAttribution: () => ({}) },
     "@/lib/orders/invoice": { emptyInvoiceDetails: {} },
     "@/lib/supabase/admin": { createSupabaseAdminClient: () => { calls.push({ name: "create-client" }); return client; } },
