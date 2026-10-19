@@ -65,7 +65,7 @@ export default defineConfig({
       CF_NATIVE_QA_CHECKOUT_MODE: bindings.text("disabled"),
       // Whole-app Supabase→D1 data switch (shim). Off until writer switch.
       CF_NATIVE_DATA_MODE: bindings.text(native || productionNative ? "d1" : "disabled"),
-      ...(productionNative ? { NATIVE_DATA_DB: bindings.d1(PROD_NATIVE_DB), NATIVE_DATA_AUTHORITY: bindings.secret(), NATIVE_RESEND_API_KEY: bindings.secret(),
+      ...(productionNative ? { NATIVE_DATA_DB: bindings.d1(PROD_NATIVE_DB), NATIVE_DATA_AUTHORITY: bindings.secret(),
         CF_NATIVE_B_ORIGIN: bindings.text("https://app.theanhmarketing.com") } : {}),
       ...(native ? { NATIVE_DATA_DB: bindings.d1(NATIVE_DB), NATIVE_DATA_AUTHORITY: bindings.secret(),
         // Test Worker: CRM on, no provider keys (no real email/Meta/Telegram/SePay sends).

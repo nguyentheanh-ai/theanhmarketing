@@ -77,7 +77,8 @@ export function nativeSupabaseHttp(env:NativeDataEnv,origin:string){
  const authority=authorityOf(env),authBinding=authDbOf(env);
  if(!env.NATIVE_DATA_DB||!authBinding||!authority||!/^[A-Za-z0-9_-]{43}$/.test(env.NATIVE_AUTH_CREDENTIAL_KEY??'')||!/^[A-Za-z0-9_-]{43}$/.test(env.NATIVE_AUTH_LIMITER_KEY??''))return null;
  const auth=nativeAuth(env) as unknown as {admin:Parameters<typeof createNativeSupabaseHttp>[0]['admin']};
- const send=env.NATIVE_RESEND_API_KEY?createResendSender(env.NATIVE_RESEND_API_KEY):null;
+ // Production reuses its existing RESEND_API_KEY secret.
+ const resendKey=env.NATIVE_RESEND_API_KEY??(env as {RESEND_API_KEY?:string}).RESEND_API_KEY,send=resendKey?createResendSender(resendKey):null;
  const data=env.NATIVE_DATA_DB;
  return createNativeSupabaseHttp({authDb:createD1AuthDatabase(authBinding as unknown as AuthD1Binding),admin:auth.admin,credentialKey:env.NATIVE_AUTH_CREDENTIAL_KEY!,limiterKey:env.NATIVE_AUTH_LIMITER_KEY!,nativeAuthority:authority,
   adminEmails:getConfiguredOwnerEmails(),
