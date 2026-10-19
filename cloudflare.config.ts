@@ -62,7 +62,9 @@ export default defineConfig({
       CF_NATIVE_DATA_MODE: bindings.text(native ? "d1" : "disabled"),
       ...(native ? { NATIVE_DATA_DB: bindings.d1(NATIVE_DB), NATIVE_DATA_AUTHORITY: bindings.secret(),
         // Test Worker: CRM on, no provider keys (no real email/Meta/Telegram/SePay sends).
-        CRM_V2_ENABLED: bindings.text("true"), CRM_V2_USE_DEMO_DATA: bindings.text("false") } : {}),
+        CRM_V2_ENABLED: bindings.text("true"), CRM_V2_USE_DEMO_DATA: bindings.text("false"),
+        // A -> B native sign-in against the paired B test Worker (direct binding; workers.dev fetch is refused).
+        CF_NATIVE_B_ORIGIN: bindings.text("https://theanh-student-cf-native.12c1thdtheanh.workers.dev"), STUDENT_APP: bindings.worker({ worker: "theanh-student-cf-native" }) } : {}),
       // Native signup confirmation and password recovery for listed QA emails only.
       CF_NATIVE_QA_EMAIL_AUTH_MODE: bindings.text("disabled"),
       // Vercel cron parity; enable only on the production Worker after cutover.
