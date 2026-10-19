@@ -65,7 +65,7 @@ export async function handleNativeAppBridgeRequest(request:Request,env:NativeSta
    const authority=JSON.parse(full.NATIVE_DATA_AUTHORITY??'null') as AuthorityHandoff|null,bOrigin=full.CF_NATIVE_B_ORIGIN??'';
    if(!authority||!full.NATIVE_DATA_DB||!/^https:\/\/[a-z0-9.-]+$/.test(bOrigin))return unavailable();
    // workers.dev Worker-to-Worker fetch is refused (1042): use the service binding when bound.
-   const binding=full.STUDENT_APP,fetcher=binding?((input:RequestInfo|URL,init?:RequestInit)=>binding.fetch(new Request(input as RequestInfo,init))) as typeof fetch:undefined;
+   const binding=full.STUDENT_APP,fetcher=binding?((input:RequestInfo|URL,init?:RequestInit)=>{const {cache:_c,...rest}=init??{};void _c;return binding.fetch(new Request(input as RequestInfo,rest));}) as typeof fetch:undefined;
    return handleNativeAppLoginBridge(request,{db:createD1AuthDatabase(full.NATIVE_DATA_DB as AuthD1Binding),sessionTtlMs:30*86400000,allowedUserIds:undefined,nativeAuthority:authority,
     mainOrigin:url.origin,bOrigin,fetcher,sharedSecret:env.STUDENT_PORTAL_PROVISION_SECRET??''});
   }
