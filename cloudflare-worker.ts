@@ -9,6 +9,7 @@ import {protectNativeLearningResponse} from './lib/cloudflare/native-learning-re
 import {handleNativeAppBridgeRequest} from './lib/cloudflare/native-app-login-bridge';
 import {handleNativeResourceRequest} from './lib/cloudflare/native-resource-http';
 import {handleNativePaymentStage,type NativePaymentStageEnv} from './lib/cloudflare/native-payment-stage';
+import {nativeStorage,type NativeDataEnv} from './lib/cloudflare/native-data-client';
 import {handleNativeCheckoutStage,runNativeCheckoutCron,type NativeCheckoutStageEnv} from './lib/cloudflare/native-checkout-stage';
 import {handleNativeEmailAuth,type NativeEmailAuthEnv} from './lib/cloudflare/native-email-auth-http';
 import {runWorkerCron} from './lib/cloudflare/worker-cron';
@@ -56,6 +57,17 @@ const stagingWorker = {
     if(appBridge)return appBridge;
     const resource=await handleNativeResourceRequest(request,env as NativeStageEnv);
     if(resource)return resource;
+    // Native data mode: storage upload/public routes and live object index.
+    if ((env as NativeDataEnv).CF_NATIVE_DATA_MODE === "d1" && url.pathname.startsWith("/__cf/")) {
+      const storage = runNativeRequestContext(request, env as NativeStageEnv, () => nativeStorage(env as NativeDataEnv));
+      if (!storage) return new Response(null, { status: 503, headers: { "Cache-Control": "no-store" } });
+      const handled = await storage.handle(request);
+      if (handled) return handled;
+      if (url.pathname === "/__cf/private-r2") {
+        const b = env as { PRIVATE_ASSETS: PrivateR2Bucket; R2_PRIVATE_URL_SECRET: string };
+        return servePrivateR2(request, b.PRIVATE_ASSETS, b.R2_PRIVATE_URL_SECRET, Date.now(), (key) => storage.isIndexedKey(key));
+      }
+    }
     if (url.pathname === "/__cf/private-r2") {
       const bindings = env as { PRIVATE_ASSETS?: PrivateR2Bucket; R2_PRIVATE_URL_SECRET?: string };
       if (!bindings.PRIVATE_ASSETS || !bindings.R2_PRIVATE_URL_SECRET) {

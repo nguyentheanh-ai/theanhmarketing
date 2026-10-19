@@ -7,9 +7,10 @@ import rlsA from './generated/supabase-rls-a.json';
 import {createNativeAuthAdmin} from './native-auth-admin';
 import {createD1AuthDatabase,type AuthD1Binding} from './d1-auth-database';
 import type {AuthorityHandoff} from './d1-data-authority';
+import {createNativeStorage,type NativeR2Bucket} from './native-storage';
 
 type D1Binding={withSession:(c:string)=>{prepare:(sql:string)=>{bind:(...v:unknown[])=>{all:()=>Promise<{results:Record<string,unknown>[]}>}};batch:(s:unknown[])=>Promise<{results:Record<string,unknown>[]}[]>}};
-export type NativeDataEnv={CF_NATIVE_DATA_MODE?:string;NATIVE_DATA_DB?:D1Binding;NATIVE_AUTH_DB?:D1Binding;NATIVE_AUTH_CREDENTIAL_KEY?:string;NATIVE_AUTH_AUTHORITY?:string};
+export type NativeDataEnv={CF_NATIVE_DATA_MODE?:string;NATIVE_DATA_DB?:D1Binding;NATIVE_AUTH_DB?:D1Binding;NATIVE_AUTH_CREDENTIAL_KEY?:string;NATIVE_AUTH_AUTHORITY?:string;PRIVATE_ASSETS?:NativeR2Bucket;R2_PRIVATE_URL_SECRET?:string};
 
 export function createShimDatabase(binding:D1Binding):ShimDatabase{
  // Primary-pinned session: reads see this request's own writes.
@@ -32,6 +33,11 @@ function nativeAuth(env:NativeDataEnv){
  // Session methods (signIn/getUser) belong to the native auth routes, not the admin client.
  return new Proxy({admin},{get:(t,key)=>key==='admin'?t.admin:key==='then'?undefined:()=>{throw new Error(`Native D1 mode: auth.${String(key)} is not available on the service client`);}});
 }
+export function nativeStorage(env:NativeDataEnv|undefined=getNativeRequestContext()?.env as NativeDataEnv|undefined){
+ const request=getNativeRequestContext()?.request;
+ if(!env?.NATIVE_DATA_DB||!env.PRIVATE_ASSETS||!env.R2_PRIVATE_URL_SECRET||!request)return null;
+ return createNativeStorage({db:createShimDatabase(env.NATIVE_DATA_DB),r2:env.PRIVATE_ASSETS,origin:new URL(request.url).origin,secret:env.R2_PRIVATE_URL_SECRET});
+}
 // Returns a supabase-js compatible client on D1 when CF_NATIVE_DATA_MODE=d1
 // for this request; otherwise null so callers keep the real Supabase client.
 export function nativeDataClient(auth:ShimAuth|null=null):SupabaseClient|null{
@@ -39,6 +45,6 @@ export function nativeDataClient(auth:ShimAuth|null=null):SupabaseClient|null{
  if(env?.CF_NATIVE_DATA_MODE!=='d1')return null;
  if(!env.NATIVE_DATA_DB)throw new Error('Native D1 mode: NATIVE_DATA_DB binding missing');
  const client=createD1PostgrestClient(createShimDatabase(env.NATIVE_DATA_DB),schemaA as unknown as ShimSchema,{prefix:'a',rpc:supabaseARpcs,auth,rls:rlsA as unknown as ShimRls});
- return Object.assign(client,{auth:nativeAuth(env),storage:unported('storage')}) as unknown as SupabaseClient;
+ return Object.assign(client,{auth:nativeAuth(env),storage:nativeStorage(env)??unported('storage')}) as unknown as SupabaseClient;
 }
 export const nativeDataModeEnabled=()=>(getNativeRequestContext()?.env as NativeDataEnv|undefined)?.CF_NATIVE_DATA_MODE==='d1';
