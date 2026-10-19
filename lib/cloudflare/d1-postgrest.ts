@@ -34,7 +34,7 @@ type Value=string|number|null;
 
 export class ShimFailure extends Error{constructor(message:string,public code='PGRST000',public status=400){super(message);}}
 const err=(e:unknown):ShimError=>e instanceof ShimFailure?{message:e.message,code:e.code,details:null,hint:null}:{message:mapSqliteMessage(e),code:sqliteCode(e),details:null,hint:null};
-function sqliteCode(e:unknown){const m=String((e as Error)?.message??e);if(/UNIQUE constraint/i.test(m))return '23505';if(/FOREIGN KEY/i.test(m))return '23503';if(/NOT NULL/i.test(m))return '23502';if(/CHECK constraint/i.test(m))return '23514';return 'D1000';}
+function sqliteCode(e:unknown){const m=String((e as Error)?.message??e);if(/CHECK constraint/i.test(m))return '23514';if(/UNIQUE constraint/i.test(m))return '23505';if(/FOREIGN KEY/i.test(m))return '23503';if(/NOT NULL constraint/i.test(m))return '23502';if(/stale course entity version/i.test(m))return '40001';if(/append-only/i.test(m))return '55000';if(/does not belong to course/i.test(m))return '23514';return 'D1000';}
 function mapSqliteMessage(e:unknown){const c=sqliteCode(e);return c==='23505'?'duplicate key value violates unique constraint':c==='23503'?'violates foreign key constraint':c==='23502'?'null value violates not-null constraint':c==='23514'?'violates check constraint':'Database request failed';}
 
 // ---------- value codec (Postgres JSON shape <-> SQLite storage) ----------
@@ -217,7 +217,10 @@ export class D1PostgrestClient{
   const run=async(mode?:'single'|'maybe'):Promise<ShimResult>=>{
    const fn=this.options.rpc?.[name]??this.options.rpc?.[`${this.schemaName}.${name}`];
    if(!fn)return {data:null,error:{message:`Could not find the function ${this.schemaName}.${name} in the schema cache`,code:'PGRST202',details:null,hint:null},count:null,status:404,statusText:'Not Found'};
-   try{let data=await fn(args,{client:this,now:()=>this.now(),auth:this.options.auth??null});if(mode&&Array.isArray(data)){if(data.length>1||(mode==='single'&&!data.length))throw new ShimFailure('JSON object requested, multiple (or no) rows returned','PGRST116',406);data=data[0]??null;}return {data:data as unknown,error:null,count:null,status:200,statusText:'OK'};}
+   // Postgres RPCs here are SECURITY DEFINER: they run without RLS and check the
+   // caller themselves from `auth`.
+   const definer=this.options.auth?new D1PostgrestClient(this.db,this.schemaJson,{...this.options,auth:null}).schema(this.schemaName):this;
+   try{let data=await fn(args,{client:definer,now:()=>this.now(),auth:this.options.auth??null});if(mode&&Array.isArray(data)){if(data.length>1||(mode==='single'&&!data.length))throw new ShimFailure('JSON object requested, multiple (or no) rows returned','PGRST116',406);data=data[0]??null;}return {data:data as unknown,error:null,count:null,status:200,statusText:'OK'};}
    catch(e){return {data:null,error:err(e),count:null,status:e instanceof ShimFailure?e.status:400,statusText:'Error'};}
   };
   const p=run();return {then:(a,b)=>p.then(a,b),single:()=>run('single'),maybeSingle:()=>run('maybe')};
