@@ -6,7 +6,7 @@
 // upsert/delete with returning, plus registered RPC implementations.
 // Service-role semantics only: no RLS is applied (same as the admin client).
 
-export type ShimSchema={project:string;tables:Record<string,{cols:Record<string,[string,string|null,boolean]>;pk:string[];uniques:{cols:string[];where:string|null}[];fks:{name:string;cols:string[];ref:string;refCols:string[];onDelete:string}[]}>};
+export type ShimSchema={project:string;tables:Record<string,{triggers?:{name:string;timing:string;events:string;function:string}[];cols:Record<string,[string,string|null,boolean]>;pk:string[];uniques:{cols:string[];where:string|null}[];fks:{name:string;cols:string[];ref:string;refCols:string[];onDelete:string}[]}>};
 export type ShimRow=Record<string,unknown>;
 export type ShimDatabase={all:(sql:string,params:unknown[])=>Promise<ShimRow[]>;batch?:(statements:{sql:string;params:unknown[]}[])=>Promise<ShimRow[][]>};
 export type ShimError={message:string;code:string;details:string|null;hint:string|null};
@@ -423,6 +423,8 @@ export class QueryBuilder implements PromiseLike<ShimResult>{
  }
  private async runUpdate(){
   this.assertColumns(this.patch);
+  // BEFORE UPDATE enforce_version_update sets updated_at=now() in Postgres.
+  if((this.table.meta.triggers??[]).some(t=>/enforce_version_update$/.test(t.function))&&this.table.has('updated_at'))this.patch={...this.patch,updated_at:pgTimestamp(new Date(this.client.now()).toISOString())};
   const keys=Object.keys(this.patch);if(!keys.length)throw new ShimFailure('Update requires at least one column','PGRST100');
   const w=this.where('UPDATE'),meta=this.table.meta;
   // WITH CHECK that depends on row columns cannot be re-evaluated on the new row
