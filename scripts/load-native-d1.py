@@ -76,6 +76,7 @@ def fetch(args, pat):
         rk = prefix + '/' + hashlib.sha256(f"{o['b']}\0{o['n']}".encode()).hexdigest()
         db.execute('INSERT INTO d1_storage_objects VALUES(?,?,?,?,?,?,?)', [o['b'], o['n'], rk, o['size'], o['type'], o['c'], o['u'] or o['c']])
     manifest['tables']['d1_storage_buckets'] = len(buckets); manifest['tables']['d1_storage_objects'] = len(objects)
+    if key == 'b': db.executescript((ROOT / 'scripts/d1-native-b-sso.sql').read_text())
     trig = ROOT / f'scripts/d1-native-triggers-{key}.sql'
     if trig.exists(): db.executescript(trig.read_text())
     db.execute('PRAGMA foreign_keys=ON')
@@ -112,8 +113,19 @@ def dump(args):
             order = ' ORDER BY ' + ', '.join(f'"{c}" IS NOT NULL' for c in self_fk) if self_fk else ''
             for row in db.execute(f'SELECT * FROM "{name}"{order}'):
                 stmt = f'INSERT INTO "{name}" ({",".join(chr(34)+c+chr(34) for c in cols)}) VALUES ({",".join(cs.literal(v) for v in row)});'
-                if len(stmt.encode()) > cs.LIMIT: raise SystemExit(f'Oversized row in {name}; split before upload')
-                f.write(stmt + '\n')
+                if len(stmt.encode()) <= cs.LIMIT:
+                    f.write(stmt + '\n'); continue
+                # Oversized row: write it with large text columns empty, then append chunks by primary key.
+                pk = [r[1] for r in sorted(db.execute(f'PRAGMA table_info("{name}")'), key=lambda r: r[5]) if r[5] > 0]
+                if not pk: raise SystemExit(f'Oversized row without primary key in {name}')
+                where = ' AND '.join(f'"{c}"={cs.literal(row[cols.index(c)])}' for c in pk)
+                big = {i for i, v in enumerate(row) if isinstance(v, str) and len(v.encode()) > 20000 and cols[i] not in pk}
+                first = [("''" if i in big else cs.literal(v)) for i, v in enumerate(row)]
+                f.write(f'INSERT INTO "{name}" ({",".join(chr(34)+c+chr(34) for c in cols)}) VALUES ({",".join(first)});\n')
+                for i in big:
+                    text = row[i]
+                    for start in range(0, len(text), 15000):
+                        f.write(f'UPDATE "{name}" SET "{cols[i]}"="{cols[i]}"||{cs.literal(text[start:start+15000])} WHERE {where};\n')
         for typ, name, sql in objs:
             if typ == 'trigger': f.write(sql + ';\n')
     return out
