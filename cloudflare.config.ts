@@ -53,6 +53,8 @@ export default defineConfig({
       CF_NATIVE_QA_GOOGLE_MODE: bindings.text("disabled"),
       // Native SePay settle→access→account→email for listed QA orders only.
       CF_NATIVE_QA_PAYMENT_MODE: bindings.text("disabled"),
+      // Native checkout + expiry + payment reminders on D1; writes need native data authority.
+      CF_NATIVE_QA_CHECKOUT_MODE: bindings.text("disabled"),
       // Native signup confirmation and password recovery for listed QA emails only.
       CF_NATIVE_QA_EMAIL_AUTH_MODE: bindings.text("disabled"),
       // Vercel cron parity; enable only on the production Worker after cutover.

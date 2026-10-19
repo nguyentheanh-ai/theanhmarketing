@@ -9,6 +9,7 @@ import {protectNativeLearningResponse} from './lib/cloudflare/native-learning-re
 import {handleNativeAppBridgeRequest} from './lib/cloudflare/native-app-login-bridge';
 import {handleNativeResourceRequest} from './lib/cloudflare/native-resource-http';
 import {handleNativePaymentStage,type NativePaymentStageEnv} from './lib/cloudflare/native-payment-stage';
+import {handleNativeCheckoutStage,runNativeCheckoutCron,type NativeCheckoutStageEnv} from './lib/cloudflare/native-checkout-stage';
 import {handleNativeEmailAuth,type NativeEmailAuthEnv} from './lib/cloudflare/native-email-auth-http';
 import {runWorkerCron} from './lib/cloudflare/worker-cron';
 
@@ -43,6 +44,9 @@ const stagingWorker = {
     // Default-disabled QA payment path; null keeps the existing webhook route.
     const payment=await handleNativePaymentStage(request,env as NativePaymentStageEnv,context&&'waitUntil' in context?task=>context.waitUntil(task):undefined);
     if(payment)return payment;
+    // Default-disabled native checkout (separate path; /api/orders stays on Source).
+    const checkout=await handleNativeCheckoutStage(request,env as NativeCheckoutStageEnv,context&&'waitUntil' in context?task=>context.waitUntil(task):undefined);
+    if(checkout)return checkout;
     // Default-disabled native signup/recovery; null keeps the existing router.
     const emailAuth=await handleNativeEmailAuth(request,env as NativeEmailAuthEnv);
     if(emailAuth)return emailAuth;
@@ -77,6 +81,9 @@ const stagingWorker = {
   async scheduled(controller: { scheduledTime: number }, env: unknown, context: Parameters<typeof app.fetch>[2]) {
     const results = await runWorkerCron(controller.scheduledTime, env as Parameters<typeof runWorkerCron>[1], request => stagingWorker.fetch(request, env, context));
     for (const r of results) if (r.status >= 400) console.warn('[cron] route failed', r.path, r.status);
+    // No-op unless CF_NATIVE_QA_CHECKOUT_MODE=qa; D1 authority gates every write.
+    const native = await runNativeCheckoutCron(env as NativeCheckoutStageEnv, controller.scheduledTime).catch(() => null);
+    if (!native) console.warn('[cron] native checkout failed');
   },
 };
 
