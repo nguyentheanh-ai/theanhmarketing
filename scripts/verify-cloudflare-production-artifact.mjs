@@ -2,7 +2,7 @@ import {readFileSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';
 
 // Offline release check. Never deploys, reads credentials, or prints config vars.
-export function verifyProductionWorkerConfig(config,{attachDomains=false,appUrl,siteUrl}={}) {
+export function verifyProductionWorkerConfig(config,{attachDomains=false,appUrl,siteUrl,nativeDbId}={}) {
   const fail=message=>{throw new Error(message);};
   if(config.name!=='theanh-main-cf-production')fail('Wrong Worker: rebuild with scripts/build-cloudflare-production.sh');
   if(config.observability?.enabled!==true||config.observability?.redact_query_string!==true||config.observability?.traces?.enabled!==false)fail('Production request monitoring or query redaction is not configured safely');
@@ -15,7 +15,13 @@ export function verifyProductionWorkerConfig(config,{attachDomains=false,appUrl,
   if(vars.CF_CRON_MODE!==(attachDomains?'enabled':'disabled'))fail('Cron mode disagrees with cutover build mode');
   const services=config.services??[];
   if(services.filter(x=>x.binding==='STUDENT_APP').length!==1||services.find(x=>x.binding==='STUDENT_APP')?.service!=='theanh-student-cf-production')fail('Missing or incorrect A to B service binding');
-  if(config.d1_databases?.find(x=>x.binding==='NATIVE_AUTH_DB')?.database_id!=='f0f2a18e-22c3-4695-99af-a5065aa7dbe5')fail('Wrong production D1 binding');
+  // Native writer switch: both D1 bindings must be the production native DB.
+  if(vars.CF_NATIVE_DATA_MODE==='d1'){
+   if(!/^[0-9a-f-]{36}$/.test(nativeDbId??'')||['NATIVE_AUTH_DB','NATIVE_DATA_DB'].some(b=>config.d1_databases?.find(x=>x.binding===b)?.database_id!==nativeDbId))fail('Wrong production native D1 binding');
+  }else{
+   if(vars.CF_NATIVE_DATA_MODE!=='disabled')fail('Native data mode not disabled');
+   if(config.d1_databases?.find(x=>x.binding==='NATIVE_AUTH_DB')?.database_id!=='f0f2a18e-22c3-4695-99af-a5065aa7dbe5')fail('Wrong production D1 binding');
+  }
   const crons=config.triggers?.crons??[],routes=config.routes??[];
   if(attachDomains){
     if(crons.length!==1||crons[0]!=='*/5 * * * *')fail('Wrong production cron trigger');
@@ -26,7 +32,7 @@ export function verifyProductionWorkerConfig(config,{attachDomains=false,appUrl,
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   try{
     const config=JSON.parse(readFileSync('dist/server/wrangler.json','utf8'));
-    const result=verifyProductionWorkerConfig(config,{attachDomains:process.env.CF_ATTACH_PRODUCTION_DOMAINS==='1',appUrl:process.env.NEXT_PUBLIC_APP_URL,siteUrl:process.env.NEXT_PUBLIC_SITE_URL});
+    const result=verifyProductionWorkerConfig(config,{attachDomains:process.env.CF_ATTACH_PRODUCTION_DOMAINS==='1',appUrl:process.env.NEXT_PUBLIC_APP_URL,siteUrl:process.env.NEXT_PUBLIC_SITE_URL,nativeDbId:process.env.CF_NATIVE_PROD_DB_ID});
     console.log(JSON.stringify(result));
   }catch(error){console.error(error.message);process.exitCode=1;}
 }
