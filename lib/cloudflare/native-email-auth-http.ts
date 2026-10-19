@@ -68,8 +68,9 @@ export async function handleNativeEmailAuth(request: Request, env: NativeEmailAu
     const list: unknown = full ? [] : JSON.parse(env.CF_NATIVE_QA_EMAIL_AUTH_EMAILS ?? '[]');
     if (!full && (!Array.isArray(list) || !list.length || list.length > 10 || list.some(e => normalizeSignupEmail(e) !== e))) throw Error();
     allowed = list as string[];
-    authority = JSON.parse(env.NATIVE_AUTH_AUTHORITY ?? 'null'); if (!authority) throw Error();
-    send = deps.send ?? createResendSender(env.NATIVE_RESEND_API_KEY ?? '');
+    authority = JSON.parse((env as { NATIVE_DATA_AUTHORITY?: string }).NATIVE_DATA_AUTHORITY ?? env.NATIVE_AUTH_AUTHORITY ?? 'null'); if (!authority) throw Error();
+    // Production native mode reuses the existing RESEND_API_KEY secret.
+    send = deps.send ?? createResendSender(env.NATIVE_RESEND_API_KEY ?? (env as { RESEND_API_KEY?: string }).RESEND_API_KEY ?? '');
     if (!/^[A-Za-z0-9_-]{43}$/.test(env.NATIVE_AUTH_LIMITER_KEY ?? '')) throw Error();
   } catch { return json(503, { ok: false, status: 'unavailable', message: MSG.unavailable }); }
   const db = createOrderDatabase(env.NATIVE_AUTH_DB), limiter = createD1AuthDatabase(env.NATIVE_AUTH_DB);

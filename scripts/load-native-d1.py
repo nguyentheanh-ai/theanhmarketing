@@ -22,7 +22,7 @@ PROJECTS = {'a': ('vsxxgdzwtscuxcmjfckt', ['public', 'crm_v2']), 'b': ('pppiqhke
 # Ephemeral lease tokens are not copied (a lease never survives a cutover).
 SKIP_COLUMNS = re.compile(r'(^|_)lease_token$')
 PAGE = 500
-AUTH_SQL = ['d1-course-access-source-prototype.sql', 'd1-auth-core-prototype.sql', 'd1-auth-email-tokens.sql']
+AUTH_SQL = ['d1-course-access-source-prototype.sql', 'd1-auth-core-prototype.sql', 'd1-auth-email-tokens.sql', 'd1-auth-refresh-family.sql', 'd1-auth-provider-identities-prototype.sql']
 
 def encode(v):
     if isinstance(v, bool): return int(v)

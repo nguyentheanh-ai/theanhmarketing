@@ -1,3 +1,4 @@
+import { nativeDataModeEnabled } from "@/lib/cloudflare/native-data-mode";
 const defaultSiteUrl = "https://theanhmarketing.com";
 export const passwordResetRedirectPath = "/doi-mat-khau?next=%2Fdashboard&mode=reset";
 
@@ -52,6 +53,8 @@ export function getPasswordResetRedirectUrl() {
 }
 
 export function getPasswordResetConfirmUrl(tokenHash: string) {
+  // Native D1 recovery token: open the native reset form directly (token in the fragment).
+  if (nativeDataModeEnabled()) return `${getPublicSiteUrl()}/doi-mat-khau?next=%2Fdashboard&mode=reset#token=${encodeURIComponent(tokenHash)}`;
   const url = new URL("/api/auth/recovery/confirm", getPublicSiteUrl());
   url.searchParams.set("token_hash", tokenHash);
   url.searchParams.set("type", "recovery");
