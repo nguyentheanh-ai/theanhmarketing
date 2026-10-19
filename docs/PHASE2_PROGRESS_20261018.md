@@ -245,3 +245,10 @@ Reviewer tái hiện hai bypass legacy: courseSlugs bỏ guard hết hạn preor
 ### 18/10 — kiểm hợp đồng ghi checkout hiện hành
 
 SELECT metadata production A xác nhận orders.lead_id → public.leads, parent_order_code → orders, payment_remarketing_runs → orders và khóa unique(order_id,sequence_index). Hai trigger orders đang hoạt động: seed lịch nhắc sau insert và cancel khi trạng thái đổi. crm_v2.contacts là bảng riêng; không được suy thành public.contacts hoặc tự tạo contact sớm trong checkout. Unique index SePay hiện valid/ready; biểu thức index không hiện thành tên cột trong phép chiếu metadata, không suy null là thiếu index. Không đọc hàng khách hoặc đổi quyền/schema/dữ liệu. Receipt: _cloudflare-migration/reports/cloudflare-phase2-20261018/source-checkout-contract-current.json.
+
+## 19/10/2026 — P0-1 checkout native (candidate, chưa mount/deploy)
+
+- `scripts/d1-native-checkout-order.sql`: bảng `d1_native_leads`, `d1_native_checkout_requests` (idempotency), `d1_native_payment_remarketing_runs` + 2 trigger thay `seed_payment_remarketing_runs_on_order` (08:30 giờ VN kế tiếp) và `cancel_payment_remarketing_runs_on_order_status`.
+- `lib/cloudflare/d1-checkout-order.ts` `createNativeCheckoutOrder`: giá chỉ từ quote D1 đã xác minh; lead + đơn + nhắc + bản ghi idempotency trong MỘT batch, kiểm lại native authority và snapshot catalogue trong giao dịch; retry cùng key trả đơn cũ, khác nội dung bị từ chối.
+- Test `tests/cloudflare-d1-checkout-order.test.mjs`: 6/6 đạt; full suite không phát sinh lỗi mới so với nền phase2 (lỗi nền là test landing có sẵn).
+- Còn lại của P0-1: route HTTP sau cổng tắt, side effect Meta/Sheets/Telegram sau commit, hết hạn đơn, chạy cron nhắc từ bảng D1, harness workerd. Source vẫn là writer.
