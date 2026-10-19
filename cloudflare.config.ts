@@ -7,11 +7,14 @@ import { bindings, defineConfig, defineWorker, triggers } from "cf/config";
 // CF_ATTACH_PRODUCTION_DOMAINS=1 (the approved cutover deploy), so the test
 // deploy never runs a cron twice alongside Vercel.
 const production = process.env.CF_DEPLOY_TARGET === "production";
+// Isolated native-data test Worker (workers.dev only): whole app on D1, no Supabase.
+const native = process.env.CF_DEPLOY_TARGET === "native";
+const NATIVE_DB = { name: "theanh-native-a-staging", id: "8a350ee0-cffd-4885-90aa-33ecfaf7ada4" };
 const attachDomains = production && process.env.CF_ATTACH_PRODUCTION_DOMAINS === "1";
 
 export default defineConfig({
   worker: defineWorker({
-    name: production ? "theanh-main-cf-production" : "theanh-main-cf-staging",
+    name: production ? "theanh-main-cf-production" : native ? "theanh-main-cf-native" : "theanh-main-cf-staging",
     entrypoint: "./cloudflare-worker.ts",
     // Keep existing DNS records during hosting migration. Exact-host routes
     // take traffic only after those records are proxied; rollback preserves Blue.
@@ -56,7 +59,8 @@ export default defineConfig({
       // Native checkout + expiry + payment reminders on D1; writes need native data authority.
       CF_NATIVE_QA_CHECKOUT_MODE: bindings.text("disabled"),
       // Whole-app Supabase→D1 data switch (shim). Off until writer switch.
-      CF_NATIVE_DATA_MODE: bindings.text("disabled"),
+      CF_NATIVE_DATA_MODE: bindings.text(native ? "d1" : "disabled"),
+      ...(native ? { NATIVE_DATA_DB: bindings.d1(NATIVE_DB), NATIVE_DATA_AUTHORITY: bindings.secret() } : {}),
       // Native signup confirmation and password recovery for listed QA emails only.
       CF_NATIVE_QA_EMAIL_AUTH_MODE: bindings.text("disabled"),
       // Vercel cron parity; enable only on the production Worker after cutover.
@@ -68,7 +72,7 @@ export default defineConfig({
       CF_NATIVE_QA_PROFILE_WRITES: bindings.text("disabled"),
       CF_NATIVE_QA_CREDENTIAL_WRITES: bindings.text("disabled"),
       // Production binds the separate Supabase copy D1 (unused while native gates are off).
-      NATIVE_AUTH_DB: production ? bindings.d1({ name: "theanh-supabase-copy", id: "f0f2a18e-22c3-4695-99af-a5065aa7dbe5" }) : bindings.d1({ name: "theanh-main-db-staging", id: "694139c9-6cda-4b8c-9228-c973dbcbb719" }),
+      NATIVE_AUTH_DB: native ? bindings.d1(NATIVE_DB) : production ? bindings.d1({ name: "theanh-supabase-copy", id: "f0f2a18e-22c3-4695-99af-a5065aa7dbe5" }) : bindings.d1({ name: "theanh-main-db-staging", id: "694139c9-6cda-4b8c-9228-c973dbcbb719" }),
       NATIVE_AUTH_CREDENTIAL_KEY: bindings.secret(),
       NATIVE_AUTH_LIMITER_KEY: bindings.secret(),
       STUDENT_PORTAL_PROVISION_SECRET: bindings.secret(),
