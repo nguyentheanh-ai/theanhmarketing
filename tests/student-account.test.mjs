@@ -90,7 +90,7 @@ test("auto-created paid student accounts do not depend on listing auth users", a
   let normalizeCalls = 0;
   let signInCalls = 0;
 
-  const { ensureStudentAccountForPaidOrder } = loadTsModuleWithMocks("services/studentAccountService.ts", {
+  const { ensureStudentAccountForPaidOrder } = loadTsModuleWithMocks("services/studentAccountService.ts", { "@/lib/cloudflare/native-data-mode": { nativeDataModeEnabled: () => false, nativeVerifyPassword: async () => false },
     "@supabase/supabase-js": {
       createClient() {
         return {
@@ -229,7 +229,7 @@ test("paid order provisioning resets password for existing auth users", async ()
   let normalizeCalls = 0;
   let signInCalls = 0;
 
-  const { ensureStudentAccountForPaidOrder } = loadTsModuleWithMocks("services/studentAccountService.ts", {
+  const { ensureStudentAccountForPaidOrder } = loadTsModuleWithMocks("services/studentAccountService.ts", { "@/lib/cloudflare/native-data-mode": { nativeDataModeEnabled: () => false, nativeVerifyPassword: async () => false },
     "@supabase/supabase-js": {
       createClient() {
         return {
@@ -388,7 +388,7 @@ test("provisioning retry reuses only the credential created by the same operatio
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
   let updates = 0;
   let signIns = 0;
-  const { ensureStudentAccountForPaidOrder } = loadTsModuleWithMocks("services/studentAccountService.ts", {
+  const { ensureStudentAccountForPaidOrder } = loadTsModuleWithMocks("services/studentAccountService.ts", { "@/lib/cloudflare/native-data-mode": { nativeDataModeEnabled: () => false, nativeVerifyPassword: async () => false },
     "@supabase/supabase-js": { createClient: () => ({ auth: {
       signInWithPassword: async () => { signIns += 1; return { data: { user: { id: "user-1" } }, error: null }; },
       signOut: async () => ({ error: null }),
@@ -434,7 +434,7 @@ test("retry after student password change preserves Auth recovery tokens and doe
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
   let updates = 0;
   let signIns = 0;
-  const { ensureStudentAccountForPaidOrder } = loadTsModuleWithMocks("services/studentAccountService.ts", {
+  const { ensureStudentAccountForPaidOrder } = loadTsModuleWithMocks("services/studentAccountService.ts", { "@/lib/cloudflare/native-data-mode": { nativeDataModeEnabled: () => false, nativeVerifyPassword: async () => false },
     "@supabase/supabase-js": { createClient: () => ({ auth: {
       signInWithPassword: async () => { signIns += 1; return { data: { user: { id: "user-1" } }, error: null }; },
       signOut: async () => ({ error: null }),
@@ -478,7 +478,7 @@ test("paid order provisioning fails closed when the issued password cannot log i
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
   let activityLogCalls = 0;
 
-  const { ensureStudentAccountForPaidOrder } = loadTsModuleWithMocks("services/studentAccountService.ts", {
+  const { ensureStudentAccountForPaidOrder } = loadTsModuleWithMocks("services/studentAccountService.ts", { "@/lib/cloudflare/native-data-mode": { nativeDataModeEnabled: () => false, nativeVerifyPassword: async () => false },
     "@supabase/supabase-js": {
       createClient() {
         return {

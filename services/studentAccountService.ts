@@ -1,3 +1,4 @@
+import { nativeDataModeEnabled, nativeVerifyPassword } from "@/lib/cloudflare/native-data-mode";
 import { createClient } from "@supabase/supabase-js";
 import { buildAutoStudentAccountCredentials } from "@/lib/auth/student-account";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -112,6 +113,8 @@ async function normalizeAuthUserForPasswordLogin(
   if (!userId) {
     return { attempted: false, ok: false, reason: "Missing Auth user id for login normalization." };
   }
+  // Native D1 Auth has no GoTrue token columns to normalize.
+  if (nativeDataModeEnabled()) return { attempted: false, ok: true, reason: null };
 
   try {
     const { error } = await supabase
@@ -137,6 +140,11 @@ async function normalizeAuthUserForPasswordLogin(
 }
 
 async function verifyStudentPasswordLogin(email: string, password: string) {
+  if (nativeDataModeEnabled()) {
+    return (await nativeVerifyPassword(email, password))
+      ? { ok: true, reason: null }
+      : { ok: false, reason: "Could not verify student password login." };
+  }
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 

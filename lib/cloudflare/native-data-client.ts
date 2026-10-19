@@ -15,6 +15,7 @@ import {createNativeSupabaseHttp} from './native-supabase-http';
 import {sendNativeAuthEmail} from './native-email-auth-http';
 import {createResendSender} from './native-paid-email';
 import {getConfiguredOwnerEmails} from '@/lib/admin/admin-emails';
+import {openLegacyBcryptHash,verifyLegacyBcryptPassword} from './legacy-password';
 
 type D1Binding={withSession:(c:string)=>{prepare:(sql:string)=>{bind:(...v:unknown[])=>{all:()=>Promise<{results:Record<string,unknown>[]}>}};batch:(s:unknown[])=>Promise<{results:Record<string,unknown>[]}[]>}};
 export type NativeDataEnv={CF_NATIVE_DATA_MODE?:string;NATIVE_DATA_DB?:D1Binding;NATIVE_AUTH_DB?:D1Binding;NATIVE_AUTH_CREDENTIAL_KEY?:string;NATIVE_AUTH_AUTHORITY?:string;NATIVE_DATA_AUTHORITY?:string;NATIVE_AUTH_LIMITER_KEY?:string;NATIVE_RESEND_API_KEY?:string;PRIVATE_ASSETS?:NativeR2Bucket;R2_PRIVATE_URL_SECRET?:string};
@@ -86,4 +87,11 @@ export function nativeSupabaseHttp(env:NativeDataEnv,origin:string){
 }
 
 // Called once by the Worker entry.
-export function installNativeDataFactory(){registerNativeDataFactory({client:createNativeDataClient,currentUser:nativeCurrentUser});}
+export async function nativeVerifyStudentPassword(email:string,password:string){
+ const env=getNativeRequestContext()?.env as NativeDataEnv|undefined,binding=env?authDbOf(env):undefined;
+ if(!env||!binding||!/^[A-Za-z0-9_-]{43}$/.test(env.NATIVE_AUTH_CREDENTIAL_KEY??''))return false;
+ const row=(await createShimDatabase(binding).all(`SELECT u.id,a.credential_ciphertext FROM d1_access_users u JOIN d1_auth_accounts a ON a.user_id=u.id WHERE u.normalized_email=?1 AND a.deleted_at IS NULL`,[email.trim().toLowerCase()]))[0];
+ if(!row||typeof row.credential_ciphertext!=='string')return false;
+ try{return await verifyLegacyBcryptPassword(password,await openLegacyBcryptHash(row.credential_ciphertext,env.NATIVE_AUTH_CREDENTIAL_KEY!,{projectId:'vsxxgdzwtscuxcmjfckt',userId:String(row.id)}));}catch{return false;}
+}
+export function installNativeDataFactory(){registerNativeDataFactory({client:createNativeDataClient,currentUser:nativeCurrentUser,verifyPassword:nativeVerifyStudentPassword});}
