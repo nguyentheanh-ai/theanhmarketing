@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { createBoundedFetch } from "@/lib/supabase/bounded-fetch";
-import { nativeDataClient } from "@/lib/cloudflare/native-data-client";
+import { nativeDataClient } from "@/lib/cloudflare/native-data-mode";
 
 export function createSupabaseAdminClient(options: { timeoutMs?: number } = {}) {
   // Cloudflare native data mode (default off): same API, data on D1.

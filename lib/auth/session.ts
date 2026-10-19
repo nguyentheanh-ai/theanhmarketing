@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { getConfiguredOwnerEmails } from "@/lib/admin/admin-emails";
 import { shouldRequirePasswordChange } from "@/lib/auth/student-account";
 import { hasSupabaseEnv } from "@/lib/supabase/client";
+import { nativeCurrentUser, nativeDataModeEnabled } from "@/lib/cloudflare/native-data-mode";
 
 type AuthResult = {
   user: User | null;
@@ -72,6 +73,12 @@ export const createSupabaseAuthServerClient = cache(async function createSupabas
 });
 
 export const getCurrentAuth = cache(async function getCurrentAuth(): Promise<AuthResult> {
+  // Native data mode: identity comes from the Cloudflare D1 session cookie.
+  if (nativeDataModeEnabled()) {
+    const user = await nativeCurrentUser();
+    const adminRole = getAdminRole(user, getAdminEmails().includes(user?.email?.toLowerCase() ?? ""));
+    return { user, isAdmin: Boolean(adminRole), adminRole };
+  }
   const supabase = await createSupabaseAuthServerClient();
 
   if (!supabase) {

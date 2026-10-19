@@ -9,7 +9,8 @@ import {protectNativeLearningResponse} from './lib/cloudflare/native-learning-re
 import {handleNativeAppBridgeRequest} from './lib/cloudflare/native-app-login-bridge';
 import {handleNativeResourceRequest} from './lib/cloudflare/native-resource-http';
 import {handleNativePaymentStage,type NativePaymentStageEnv} from './lib/cloudflare/native-payment-stage';
-import {nativeStorage,type NativeDataEnv} from './lib/cloudflare/native-data-client';
+import {installNativeDataFactory,nativeStorage,nativeSupabaseHttp,type NativeDataEnv} from './lib/cloudflare/native-data-client';
+installNativeDataFactory();
 import {handleNativeCheckoutStage,runNativeCheckoutCron,type NativeCheckoutStageEnv} from './lib/cloudflare/native-checkout-stage';
 import {handleNativeEmailAuth,type NativeEmailAuthEnv} from './lib/cloudflare/native-email-auth-http';
 import {runWorkerCron} from './lib/cloudflare/worker-cron';
@@ -58,6 +59,12 @@ const stagingWorker = {
     const resource=await handleNativeResourceRequest(request,env as NativeStageEnv);
     if(resource)return resource;
     // Native data mode: storage upload/public routes and live object index.
+    if ((env as NativeDataEnv).CF_NATIVE_DATA_MODE === "d1" && (url.pathname.startsWith("/auth/v1/") || url.pathname.startsWith("/rest/v1/"))) {
+      const api = nativeSupabaseHttp(env as NativeDataEnv, url.origin);
+      if (!api) return new Response(null, { status: 503, headers: { "Cache-Control": "no-store" } });
+      const handled = await runNativeRequestContext(request, env as NativeStageEnv, () => api.handle(request));
+      if (handled) return handled;
+    }
     if ((env as NativeDataEnv).CF_NATIVE_DATA_MODE === "d1" && url.pathname.startsWith("/__cf/")) {
       const storage = runNativeRequestContext(request, env as NativeStageEnv, () => nativeStorage(env as NativeDataEnv));
       if (!storage) return new Response(null, { status: 503, headers: { "Cache-Control": "no-store" } });

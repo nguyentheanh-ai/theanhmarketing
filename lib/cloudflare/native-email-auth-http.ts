@@ -8,9 +8,9 @@ import { completeNativeRecovery, confirmNativeSignup, normalizeSignupEmail, requ
 import type { NativeStageEnv } from './native-stage-router';
 
 export type NativeEmailAuthEnv = Pick<NativeStageEnv, 'NATIVE_AUTH_DB' | 'NATIVE_AUTH_CREDENTIAL_KEY' | 'NATIVE_AUTH_LIMITER_KEY'> & {
-  CF_NATIVE_QA_EMAIL_AUTH_MODE?: string; CF_NATIVE_QA_EMAIL_AUTH_EMAILS?: string; NATIVE_AUTH_AUTHORITY?: string; NATIVE_RESEND_API_KEY?: string;
+  CF_NATIVE_QA_EMAIL_AUTH_MODE?: string; CF_NATIVE_QA_EMAIL_AUTH_EMAILS?: string; CF_NATIVE_DATA_MODE?: string; NATIVE_AUTH_AUTHORITY?: string; NATIVE_RESEND_API_KEY?: string;
 };
-const ORIGIN = 'https://theanh-main-cf-staging.12c1thdtheanh.workers.dev', PROJECT = 'vsxxgdzwtscuxcmjfckt';
+const STAGING_ORIGIN = 'https://theanh-main-cf-staging.12c1thdtheanh.workers.dev', PROJECT = 'vsxxgdzwtscuxcmjfckt';
 const PATHS = new Set(['/api/cloudflare-auth/signup', '/api/cloudflare-auth/confirm', '/api/cloudflare-auth/forgot-password', '/api/cloudflare-auth/recovery', '/api/cloudflare-auth/recovery/complete']);
 const headers = { 'Cache-Control': 'private, no-store', 'Referrer-Policy': 'no-referrer', 'X-Content-Type-Options': 'nosniff' };
 const json = (status: number, body: Record<string, unknown>) => Response.json(body, { status, headers });
@@ -41,8 +41,8 @@ function resetPage() {
 document.getElementById('f').onsubmit=async e=>{e.preventDefault();const r=await fetch('/api/cloudflare-auth/recovery/complete',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:t,newPassword:document.getElementById('p').value})});const d=await r.json().catch(()=>({}));document.getElementById('m').textContent=d.message||'Có lỗi, vui lòng thử lại.';if(r.ok)setTimeout(()=>location.href='/dang-nhap',1500)};</script></body></html>`,
     { status: 200, headers: { ...headers, 'Content-Type': 'text/html; charset=utf-8', 'Content-Security-Policy': "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'" } });
 }
-async function body(request: Request) {
-  if (request.headers.get('origin') !== ORIGIN) return null; // CSRF: same-origin browser POST only
+async function body(request: Request, origin: string) {
+  if (request.headers.get('origin') !== origin) return null; // CSRF: same-origin browser POST only
   if (request.headers.get('content-type')?.split(';', 1)[0].trim().toLowerCase() !== 'application/json') return null;
   const text = await request.text(); if (text.length > 4096) return null;
   try { const v = JSON.parse(text); return v && typeof v === 'object' && !Array.isArray(v) ? v as Record<string, unknown> : null; } catch { return null; }
@@ -51,14 +51,22 @@ async function body(request: Request) {
 // Staging A only, default disabled (returns null so the existing router answers).
 // QA mode accepts only emails in CF_NATIVE_QA_EMAIL_AUTH_EMAILS and needs a
 // pinned native Auth authority plus a Resend key; otherwise 503.
+// Shared senders for the same-origin /auth/v1 surface (supabase-js signUp/resetPasswordForEmail).
+export async function sendNativeAuthEmail(kind: 'signup' | 'recovery', email: string, token: string, origin: string, send: NativeMailSender) {
+  const mail = kind === 'signup' ? signupEmail(email, `${origin}/api/cloudflare-auth/confirm?token=${token}`) : { ...buildPasswordResetEmail({ email, resetUrl: `${origin}/doi-mat-khau?mode=reset#token=${token}` }), to: email };
+  return send(mail as Parameters<NativeMailSender>[0], `tam-native-${kind}/${token.slice(0, 16)}`);
+}
+
 export async function handleNativeEmailAuth(request: Request, env: NativeEmailAuthEnv, deps: { send?: NativeMailSender } = {}): Promise<Response | null> {
   const url = new URL(request.url);
-  if (!PATHS.has(url.pathname) || (env.CF_NATIVE_QA_EMAIL_AUTH_MODE ?? 'disabled') === 'disabled') return null;
-  if (env.CF_NATIVE_QA_EMAIL_AUTH_MODE !== 'qa' || url.origin !== ORIGIN) return json(503, { ok: false, status: 'unavailable', message: MSG.unavailable });
+  // Native data mode (after writer switch) serves every user on the request origin.
+  const full = env.CF_NATIVE_DATA_MODE === 'd1', ORIGIN = full ? url.origin : STAGING_ORIGIN;
+  if (!PATHS.has(url.pathname) || (!full && (env.CF_NATIVE_QA_EMAIL_AUTH_MODE ?? 'disabled') === 'disabled')) return null;
+  if (!full && (env.CF_NATIVE_QA_EMAIL_AUTH_MODE !== 'qa' || url.origin !== ORIGIN)) return json(503, { ok: false, status: 'unavailable', message: MSG.unavailable });
   let allowed: string[], authority: AuthorityHandoff, send: NativeMailSender;
   try {
-    const list: unknown = JSON.parse(env.CF_NATIVE_QA_EMAIL_AUTH_EMAILS ?? '[]');
-    if (!Array.isArray(list) || !list.length || list.length > 10 || list.some(e => normalizeSignupEmail(e) !== e)) throw Error();
+    const list: unknown = full ? [] : JSON.parse(env.CF_NATIVE_QA_EMAIL_AUTH_EMAILS ?? '[]');
+    if (!full && (!Array.isArray(list) || !list.length || list.length > 10 || list.some(e => normalizeSignupEmail(e) !== e))) throw Error();
     allowed = list as string[];
     authority = JSON.parse(env.NATIVE_AUTH_AUTHORITY ?? 'null'); if (!authority) throw Error();
     send = deps.send ?? createResendSender(env.NATIVE_RESEND_API_KEY ?? '');
@@ -75,7 +83,7 @@ export async function handleNativeEmailAuth(request: Request, env: NativeEmailAu
       return redirect(r.status === 'confirmed' ? '/dang-nhap?confirmed=1' : '/dang-nhap?confirm_error=' + r.status);
     }
     if (request.method !== 'POST') return new Response(null, { status: 405, headers: { ...headers, Allow: 'POST' } });
-    const input = await body(request); if (!input) return json(400, { ok: false, status: 'invalid_request', message: 'Yêu cầu không hợp lệ.' });
+    const input = await body(request, ORIGIN); if (!input) return json(400, { ok: false, status: 'invalid_request', message: 'Yêu cầu không hợp lệ.' });
     if (url.pathname === '/api/cloudflare-auth/recovery/complete') {
       if (!await limit('recovery-complete@native.invalid')) return json(429, { ok: false, status: 'rate_limited', message: 'Vui lòng thử lại sau ít phút.' });
       try {
@@ -85,7 +93,7 @@ export async function handleNativeEmailAuth(request: Request, env: NativeEmailAu
     }
     const email = normalizeSignupEmail(input.email);
     if (!email) return json(400, { ok: false, status: 'invalid_email', message: MSG.invalidEmail });
-    if (!allowed.includes(email)) return json(403, { ok: false, status: 'not_in_qa', message: MSG.unavailable });
+    if (!full && !allowed.includes(email)) return json(403, { ok: false, status: 'not_in_qa', message: MSG.unavailable });
     if (!await limit(email)) return json(429, { ok: false, status: 'rate_limited', message: 'Vui lòng thử lại sau ít phút.' });
     if (url.pathname === '/api/cloudflare-auth/forgot-password') {
       const r = await requestNativeRecovery(db, email, options);

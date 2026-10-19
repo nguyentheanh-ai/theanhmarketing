@@ -26,7 +26,7 @@ test('admin client fails closed without service key and bounds privileged reques
  let calls=0,options;
  try{
   process.env.NEXT_PUBLIC_SUPABASE_URL='https://test.supabase.co';delete process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const {createSupabaseAdminClient}=load('lib/supabase/admin.ts',{'@supabase/supabase-js':{createClient:(_u,_k,o)=>{calls++;options=o;return {}; }},'@/lib/supabase/bounded-fetch':{createBoundedFetch:()=>()=>{}},'@/lib/supabase/server':{createSupabaseServerClient:()=>({anon:true})}});
+  const {createSupabaseAdminClient}=load('lib/supabase/admin.ts',{'@/lib/cloudflare/native-data-mode':{nativeDataClient:()=>null,nativeCurrentUser:async()=>null,nativeDataModeEnabled:()=>false},'@supabase/supabase-js':{createClient:(_u,_k,o)=>{calls++;options=o;return {}; }},'@/lib/supabase/bounded-fetch':{createBoundedFetch:()=>()=>{}},'@/lib/supabase/server':{createSupabaseServerClient:()=>({anon:true})}});
   assert.equal(createSupabaseAdminClient(),null);assert.equal(calls,0);
   process.env.SUPABASE_SERVICE_ROLE_KEY='test-only';createSupabaseAdminClient();
   assert.equal(calls,1);assert.equal(typeof options.global.fetch,'function');assert.equal(options.auth.autoRefreshToken,false);
@@ -53,7 +53,7 @@ test('React render request shares Auth lookups but never caches across requests'
  const saved={url:process.env.NEXT_PUBLIC_SUPABASE_URL,key:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY};
  try{
   process.env.NEXT_PUBLIC_SUPABASE_URL='https://test.supabase.co';process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY='test-only';
-  const mod=load('lib/auth/session.ts',{'react':reactServer,'@supabase/ssr':{createServerClient:()=>({auth:{getUser:async()=>{calls++;await Promise.resolve();return {data:{user:{id:'test',email:'test@example.invalid',app_metadata:{}}}};}}})},'next/headers':{cookies:async()=>({getAll:()=>[]}),headers:async()=>new Headers()},'next/navigation':{redirect:()=>{}},'@/lib/admin/admin-emails':{getConfiguredOwnerEmails:()=>[]},'@/lib/auth/student-account':{shouldRequirePasswordChange:()=>false},'@/lib/supabase/client':{hasSupabaseEnv:()=>true},'@/lib/supabase/bounded-fetch':{createBoundedFetch:()=>()=>{}}});
+  const mod=load('lib/auth/session.ts',{'@/lib/cloudflare/native-data-mode':{nativeDataClient:()=>null,nativeCurrentUser:async()=>null,nativeDataModeEnabled:()=>false},'react':reactServer,'@supabase/ssr':{createServerClient:()=>({auth:{getUser:async()=>{calls++;await Promise.resolve();return {data:{user:{id:'test',email:'test@example.invalid',app_metadata:{}}}};}}})},'next/headers':{cookies:async()=>({getAll:()=>[]}),headers:async()=>new Headers()},'next/navigation':{redirect:()=>{}},'@/lib/admin/admin-emails':{getConfiguredOwnerEmails:()=>[]},'@/lib/auth/student-account':{shouldRequirePasswordChange:()=>false},'@/lib/supabase/client':{hasSupabaseEnv:()=>true},'@/lib/supabase/bounded-fetch':{createBoundedFetch:()=>()=>{}}});
   await Promise.all([mod.getCurrentAuth(),mod.getCurrentAuth(),mod.getCurrentAuth()]);assert.equal(calls,1);
   cacheStore=new Map();await mod.getCurrentAuth();assert.equal(calls,2);
  }finally{internals.A=previous;for(const [key,val] of [['NEXT_PUBLIC_SUPABASE_URL',saved.url],['NEXT_PUBLIC_SUPABASE_ANON_KEY',saved.key]]){ if(val===undefined) delete process.env[key]; else process.env[key]=val; }}

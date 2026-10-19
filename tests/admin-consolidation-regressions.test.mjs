@@ -231,7 +231,7 @@ test('expired admin session preserves the exact route and recovery query through
   const desired='/admin/hoc-vien?add_student=1&operation_id='+id;
   let redirected='';
   try {
-    const auth=load('lib/auth/session.ts',{
+    const auth=load('lib/auth/session.ts',{'@/lib/cloudflare/native-data-mode':{nativeDataClient:()=>null,nativeCurrentUser:async()=>null,nativeDataModeEnabled:()=>false},
       'next/headers':{headers:async()=>new Headers({'x-admin-return-to':desired})},
       'next/navigation':{redirect:url=>{redirected=url;throw new Error('redirect')}},
       '@/lib/supabase/client':{hasSupabaseEnv:()=>false},

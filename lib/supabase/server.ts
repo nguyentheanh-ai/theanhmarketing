@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { hasSupabaseEnv } from "@/lib/supabase/client";
-import { nativeDataClient } from "@/lib/cloudflare/native-data-client";
+import { nativeDataClient } from "@/lib/cloudflare/native-data-mode";
 
 export function createSupabaseServerClient() {
   // Anonymous role with the translated RLS policies in native data mode.
