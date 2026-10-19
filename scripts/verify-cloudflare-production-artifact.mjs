@@ -19,7 +19,7 @@ export function verifyProductionWorkerConfig(config,{attachDomains=false,appUrl,
   if(vars.CF_NATIVE_DATA_MODE==='d1'){
    if(!/^[0-9a-f-]{36}$/.test(nativeDbId??'')||['NATIVE_AUTH_DB','NATIVE_DATA_DB'].some(b=>config.d1_databases?.find(x=>x.binding===b)?.database_id!==nativeDbId))fail('Wrong production native D1 binding');
   }else{
-   if(vars.CF_NATIVE_DATA_MODE!=='disabled')fail('Native data mode not disabled');
+   if(vars.CF_NATIVE_DATA_MODE!==undefined&&vars.CF_NATIVE_DATA_MODE!=='disabled')fail('Native data mode not disabled');
    if(config.d1_databases?.find(x=>x.binding==='NATIVE_AUTH_DB')?.database_id!=='f0f2a18e-22c3-4695-99af-a5065aa7dbe5')fail('Wrong production D1 binding');
   }
   const crons=config.triggers?.crons??[],routes=config.routes??[];
