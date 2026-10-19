@@ -44,3 +44,10 @@ Chưa có phiên admin trong lượt xác minh, không ghi note khách thật ho
 16 tài liệu/báo cáo đang dở đã được xem là docs-only và lưu tạm theo danh sách chính xác, có bản sao/mã băm và Git stash. Sau phát hành, đã khôi phục đầy đủ byte gốc; handoff giữ nội dung cũ cùng phần bổ sung của tính năng. Giữ bản sao và stash để phục hồi, không clean/reset/commit hộ nội dung cũ. Việc lưu tạm có kiểm tra được thực hiện sau duyệt phát hành; thay trạng thái trước duyệt chưa stash/deploy. Root lại có tài liệu dirty như trước; một lần phát hành mới vẫn phải vượt preflight. Bản runtime quay lui: `10ce659a-1858-40f5-b03e-31aefbeed1a4`; không reset/xóa dữ liệu activity đã phát sinh.
 
 Bằng chứng: `reports/crm-sales-care-20261019/production-release.json`, `reports/crm-sales-care-20261019/landing-hash-readback.json` và `docs/CRM_SALES_CARE_20261019.md`.
+
+
+## 19/10/2026 — Sửa thao tác chăm sóc ngay khi mở
+
+Theo phản hồi của anh, chọn trạng thái/nhập note/lưu phải dùng được ngay, không chờ lịch sử. Form nhận `initialEntry` từ summary của hàng đang mở; lịch sử tải riêng và không ghi đè draft. Lỗi đọc lịch sử chỉ báo ở phần lịch sử. Khi bắt đầu lưu, hủy lượt đọc lịch sử đang treo để phản hồi cũ không xóa trạng thái vừa lưu. Vẫn chặn gửi lại mù nếu chính lần ghi không được xác nhận; tải lại lịch sử thành công mới mở lại lần lưu đó. Không đổi API/schema/quyền hoặc thanh toán.
+
+Hai ca kiểm thử mới tái hiện khóa form trước sửa; sau sửa và hồi quy đạt 61/61, TypeScript và scoped ESLint đạt. Đây là kiểm thử React renderer/fetch giả lập, chưa là bằng chứng browser. Bản sửa đang chuẩn bị phát hành tiếp trong phạm vi tính năng đã được anh duyệt.

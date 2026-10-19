@@ -118,7 +118,7 @@ test('care editor loads latest state, saves multiline note, shows actor/history 
   const { SalesCareEditor } = load('components/admin/sales-care-editor.tsx', { react: React, 'react/jsx-runtime': ext('react/jsx-runtime'), '@/lib/admin/sales-care': model });
   let renderer;
   try {
-    await act(async () => { renderer = create(React.createElement(SalesCareEditor, { customerId: row.id, onSaved: value => saved.push(value), onBusyChange: value => busy.push(value) })); });
+    await act(async () => { renderer = create(React.createElement(SalesCareEditor, { customerId: row.id, initialEntry: entry, onSaved: value => saved.push(value), onBusyChange: value => busy.push(value) })); });
     assert.equal(renderer.root.findByType('textarea').props.value, entry.note);
     assert.equal(renderer.root.findByType('select').props.value, 'zalo_contacted');
     await act(async () => renderer.root.findByType('select').props.onChange({ target: { value: 'zoom_met' } }));
@@ -140,4 +140,56 @@ test('care editor loads latest state, saves multiline note, shows actor/history 
     if (renderer) await act(async () => renderer.unmount());
     globalThis.fetch = previousFetch;
   }
+});
+
+test('care form is editable and can save immediately while history remains pending', async () => {
+  const ext = createRequire('/private/tmp/theanh-crm-sales-ui/package.json');
+  const React = ext('react'); const { create, act } = ext('react-test-renderer');
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  const previousFetch = globalThis.fetch; let resolveHistory; const posts = []; const saved = [];
+  const initialEntry = { id: 'seed', status: 'called', note: 'Ghi chú đã có', actorName: 'Sale', actorEmail: 'sale@example.invalid', updatedAt: '2026-10-19T00:00:00Z' };
+  globalThis.fetch = async (_url, options) => {
+    if (options?.method === 'POST') { const body = JSON.parse(options.body); posts.push(body); return Response.json({ ok: true, saved: { ...initialEntry, ...body, id: 'saved' } }); }
+    return new Promise(resolve => { resolveHistory = resolve; });
+  };
+  const { SalesCareEditor } = load('components/admin/sales-care-editor.tsx', { react: React, 'react/jsx-runtime': ext('react/jsx-runtime'), '@/lib/admin/sales-care': model });
+  let renderer;
+  try {
+    await act(async () => { renderer = create(React.createElement(SalesCareEditor, { customerId: row.id, initialEntry, onSaved: entry => saved.push(entry), onBusyChange() {} })); });
+    assert.equal(renderer.root.findByType('select').props.disabled, false);
+    assert.equal(renderer.root.findByType('textarea').props.disabled, false);
+    assert.equal(renderer.root.findByProps({ type: 'submit' }).props.disabled, false);
+    assert.equal(renderer.root.findByType('select').props.value, 'called');
+    assert.equal(renderer.root.findByType('textarea').props.value, initialEntry.note);
+    await act(async () => renderer.root.findByType('select').props.onChange({ target: { value: 'zoom_met' } }));
+    await act(async () => renderer.root.findByType('textarea').props.onChange({ target: { value: 'Nội dung đang sửa' } }));
+    // A late history response must never replace the draft.
+    await act(async () => resolveHistory(Response.json({ ok: true, history: [{ ...initialEntry, status: 'not_contacted', note: 'Dữ liệu cũ' }] })));
+    assert.equal(renderer.root.findByType('select').props.value, 'zoom_met');
+    assert.equal(renderer.root.findByType('textarea').props.value, 'Nội dung đang sửa');
+    // Reload history, leave it pending, and save without waiting for it.
+    await act(async () => renderer.root.findAllByType('button').find(n => n.props.type === 'button').props.onClick());
+    await act(async () => renderer.root.findByType('form').props.onSubmit({ preventDefault() {} }));
+    assert.deepEqual(posts, [{ customerId: row.id, status: 'zoom_met', note: 'Nội dung đang sửa' }]);
+    assert.equal(saved.length, 1);
+    await act(async () => resolveHistory(Response.json({ ok: true, history: [initialEntry] })));
+    assert.equal(renderer.root.findByType('textarea').props.value, 'Nội dung đang sửa');
+    assert.ok(renderer.root.findAllByType('article').some(n => n.props.children.some?.(x => x?.props?.children === 'Nội dung đang sửa')));
+  } finally { if (renderer) await act(async () => renderer.unmount()); globalThis.fetch = previousFetch; }
+});
+
+test('history failure leaves a new care form usable', async () => {
+  const ext = createRequire('/private/tmp/theanh-crm-sales-ui/package.json');
+  const React = ext('react'); const { create, act } = ext('react-test-renderer');
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  const previousFetch = globalThis.fetch;
+  globalThis.fetch = async () => Response.json({ ok: false, message: 'Lịch sử tạm lỗi' }, { status: 503 });
+  const { SalesCareEditor } = load('components/admin/sales-care-editor.tsx', { react: React, 'react/jsx-runtime': ext('react/jsx-runtime'), '@/lib/admin/sales-care': model });
+  let renderer;
+  try {
+    await act(async () => { renderer = create(React.createElement(SalesCareEditor, { customerId: row.id, onSaved() {}, onBusyChange() {} })); });
+    assert.equal(renderer.root.findByType('select').props.disabled, false);
+    assert.equal(renderer.root.findByType('textarea').props.disabled, false);
+    assert.equal(renderer.root.findByProps({ type: 'submit' }).props.disabled, false);
+  } finally { if (renderer) await act(async () => renderer.unmount()); globalThis.fetch = previousFetch; }
 });

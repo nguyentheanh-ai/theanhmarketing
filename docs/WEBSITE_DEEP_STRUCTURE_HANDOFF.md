@@ -3381,3 +3381,10 @@ Cron dispatcher đủ8lịch đã kiểm trên artifact cục bộ, vẫnOFF tr�
 ## 19/10/2026 — CRM Sales: chăm sóc khách hàng (SOURCE / QA LOCAL)
 
 Thêm trạng thái riêng Chưa liên hệ/Zalo/đã gọi/đã Zoom; ghi chú nhiều dòng, người/thời gian cập nhật và lịch sử30lần. Dùng activity_logs hiện có theo customerIdentity, không đổi thanh toán/quyền học/Auth/schema/RLS. API kiểm owner/editor và đúng phạm vi khách, CSRF/JSON/rate-limit/no-store. Feature `worktrees/crm-sales-care-20261019`, nhánh `feat/crm-sales-care-20261019`, base538889f từ Workers. 59tests liên quan, TS/scopedESLint/buildCloudflareproduction đạt; chưa hosted QA/deploy/ghi khách thật. Release roots đang dirty, giữ nguyên; cần duyệt phát hành + integration/preflight đúng nguồn Cloudflare. Chi tiết: `docs/CRM_SALES_CARE_20261019.md`.
+
+
+## 19/10/2026 — Sửa thao tác chăm sóc ngay khi mở
+
+Theo phản hồi của anh, chọn trạng thái/nhập note/lưu phải dùng được ngay, không chờ lịch sử. Form nhận `initialEntry` từ summary của hàng đang mở; lịch sử tải riêng và không ghi đè draft. Lỗi đọc lịch sử chỉ báo ở phần lịch sử. Khi bắt đầu lưu, hủy lượt đọc lịch sử đang treo để phản hồi cũ không xóa trạng thái vừa lưu. Vẫn chặn gửi lại mù nếu chính lần ghi không được xác nhận; tải lại lịch sử thành công mới mở lại lần lưu đó. Không đổi API/schema/quyền hoặc thanh toán.
+
+Hai ca kiểm thử mới tái hiện khóa form trước sửa; sau sửa và hồi quy đạt 61/61, TypeScript và scoped ESLint đạt. Đây là kiểm thử React renderer/fetch giả lập, chưa là bằng chứng browser. Bản sửa đang chuẩn bị phát hành tiếp trong phạm vi tính năng đã được anh duyệt.
