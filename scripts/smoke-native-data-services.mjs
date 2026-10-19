@@ -1,0 +1,55 @@
+// Runs the real A services against an in-memory D1 (generated schema) through
+// the native data switch, to find shim gaps. No network, no Supabase.
+import {build} from 'esbuild';import {DatabaseSync} from 'node:sqlite';import {readFileSync,writeFileSync} from 'node:fs';
+const entry=`export * as orders from "./services/orderService";export * as leads from "./services/leadService";export * as lms from "./services/lmsService";export * as crm from "./lib/crm-v2/data";export * as courses from "./services/courseService";export {runNativeRequestContext} from "./lib/cloudflare/native-request-context";export {createSupabaseAdminClient} from "./lib/supabase/admin";export * as accounts from "./services/studentAccountService";`;
+const built=await build({stdin:{contents:entry,resolveDir:process.cwd(),loader:'ts'},bundle:true,platform:'node',format:'esm',write:false,logLevel:'error',external:['next/*','react','react-dom','server-only'],alias:{'server-only':'./scripts/empty-module.mjs'},define:{'process.env.NODE_ENV':'"test"'},loader:{'.json':'json'}});
+writeFileSync('/private/tmp/claude-501/smoke-bundle.mjs',built.outputFiles[0].text.replace(/from ?"next\/[^"]+"/g,'from "/private/tmp/claude-501/next-stub.mjs"').replace(/from ?"react"/g,'from "/private/tmp/claude-501/react-stub.mjs"'));
+writeFileSync('/private/tmp/claude-501/next-stub.mjs','export const after=f=>{};export const unstable_cache=f=>f;export const revalidatePath=()=>{};export const revalidateTag=()=>{};export const cookies=async()=>({get:()=>undefined,getAll:()=>[]});export const headers=async()=>new Headers();export const redirect=()=>{throw new Error("redirect")};export const notFound=()=>{throw new Error("notFound")};export class NextResponse extends Response{static json(b,i){return Response.json(b,i)}};export default {};');
+writeFileSync('/private/tmp/claude-501/react-stub.mjs','export const cache=f=>f;export default {cache:f=>f};');
+const h=await import('/private/tmp/claude-501/smoke-bundle.mjs');
+const sql=new DatabaseSync(':memory:');sql.exec(readFileSync('scripts/generated/d1-native-a.sql','utf8'));sql.exec(readFileSync('scripts/d1-native-triggers-a.sql','utf8'));
+const stmt=(q,p)=>sql.prepare(q).all(...p.map(v=>v===undefined?null:v));
+const binding={withSession:()=>({prepare:q=>({bind:(...p)=>({all:async()=>({results:stmt(q,p)})})}),batch:async ss=>{sql.exec('BEGIN');try{const r=ss.map(s=>({results:s.run()}));sql.exec('COMMIT');return r}catch(e){sql.exec('ROLLBACK');throw e}}})};
+// batch needs prepared+bound objects: emulate
+binding.withSession=()=>({prepare:q=>({q,bind:(...p)=>({q,p,all:async()=>({results:stmt(q,p)})})}),batch:async ss=>{sql.exec('BEGIN');try{const r=ss.map(s=>({results:stmt(s.q,s.p)}));sql.exec('COMMIT');return r}catch(e){sql.exec('ROLLBACK');throw e}}});
+process.env.NEXT_PUBLIC_SUPABASE_URL='https://example.invalid';process.env.SUPABASE_SERVICE_ROLE_KEY='x';process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY='x';process.env.CRM_V2_ENABLED='true';process.env.CRM_V2_USE_DEMO_DATA='false';
+const asql=new DatabaseSync(':memory:');for(const f of ['d1-course-access-source-prototype.sql','d1-auth-core-prototype.sql','d1-auth-email-tokens.sql'])asql.exec(readFileSync('scripts/'+f,'utf8'));
+const astmt=(q,p)=>asql.prepare(q).all(...p.map(v=>v===undefined?null:v));
+const authBinding={withSession:()=>({prepare:q=>({q,bind:(...p)=>({q,p,all:async()=>({results:astmt(q,p)}),first:async()=>astmt(q,p)[0]??null})}),batch:async ss=>{asql.exec('BEGIN');try{const r=ss.map(s=>({results:astmt(s.q,s.p)}));asql.exec('COMMIT');return r}catch(e){asql.exec('ROLLBACK');throw e}}})};
+const env={CF_NATIVE_DATA_MODE:'d1',NATIVE_DATA_DB:binding,NATIVE_AUTH_DB:authBinding,NATIVE_AUTH_CREDENTIAL_KEY:'A'.repeat(43)};
+const results=[];const run=async(name,fn)=>{try{const v=await h.runNativeRequestContext(new Request('https://x.invalid'),env,fn);results.push({name,ok:true,summary:JSON.stringify(v)?.slice(0,160)});}catch(e){results.push({name,ok:false,error:String(e?.stack??e).split('\n').slice(0,3).join(' | ')});}};
+// seed
+sql.exec(`INSERT INTO a_public__courses(id,slug,title,price,status,lms_status,visibility,sort_order,created_at) VALUES('00000000-0000-4000-8000-0000000000c1','facebook-ads-2026','Quảng cáo Facebook Master 2026',799000,'open','published','public',1,'2026-10-01T00:00:00+00:00')`);
+const q={page:1,pageSize:20,search:'',sortBy:'createdAt',sortDirection:'desc',filters:{},range:'30d'};
+await run('courses.getCourses',()=>h.courses.getCourses?.());
+await run('orders.createPaymentOrder',()=>h.orders.createPaymentOrder({studentName:'Thử',email:'t@example.invalid',phone:'0900000000',courseSlug:'facebook-ads-2026',paymentPlan:'',couponCode:'',leadId:null,ipAddress:'',userAgent:'',attribution:{},invoice:{requested:false,taxCode:'',companyName:'',companyAddress:'',email:''}}));
+await run('orders.getPaymentOrders',()=>h.orders.getPaymentOrders({strict:true}));
+await run('orders.expirePendingPaymentOrders',()=>h.orders.expirePendingPaymentOrders(new Date('2030-01-01')));
+await run('leads.createLeadAdmin',()=>h.leads.createLeadAdmin({name:'Thử',email:'t@example.invalid',phone:'0900000000',message:'m',source:'Website',syncGoogleSheet:false}));
+await run('leads.getLeads',()=>h.leads.getLeads({strict:true}));
+await run('lms.getAdminLmsSnapshot',()=>h.lms.getAdminLmsSnapshot({}));
+await run('lms.listAdminLmsCourses',()=>h.lms.listAdminLmsCourses());
+await run('crm.getCrmV2Dashboard',()=>h.crm.getCrmV2Dashboard());
+await run('crm.listCrmV2Leads',()=>h.crm.listCrmV2Leads(q));
+await run('crm.listCrmV2Orders',()=>h.crm.listCrmV2Orders(q));
+await run('crm.listCrmV2Students',()=>h.crm.listCrmV2Students(q));
+await run('crm.listCrmV2UnifiedCustomers',()=>h.crm.listCrmV2UnifiedCustomers(q));
+await run('crm.listCrmV2SegmentsRows',()=>h.crm.listCrmV2SegmentsRows(q));
+await run('crm.listCrmV2AutomationWorkflows',()=>h.crm.listCrmV2AutomationWorkflows(q));
+await run('crm.listCrmV2EmailCampaigns',()=>h.crm.listCrmV2EmailCampaigns(q));
+await run('crm.listCrmV2TeamMembers',()=>h.crm.listCrmV2TeamMembers(q));
+await run('crm.listCrmV2CourseOptions',()=>h.crm.listCrmV2CourseOptions());
+await run('crm.getCrmV2OrderSummary',()=>h.crm.getCrmV2OrderSummary(q));
+await run('lms.getStudentLmsAccess',()=>h.lms.getStudentLmsAccess({userId:'00000000-0000-4000-8000-0000000000aa',email:'t@example.invalid'}));
+await run('crm.getCrmV2LeadStageSummary',()=>h.crm.getCrmV2LeadStageSummary());
+await run('crm.getCrmV2PaidCustomerCount',()=>h.crm.getCrmV2PaidCustomerCount(q));
+await run('leads.updateLeadSaleStatus',async()=>{const l=await h.leads.getLeads({strict:true});return h.leads.updateLeadSaleStatus(l[0].id,'Đã liên hệ');});
+await run('orders.getPaymentOrders.after',()=>h.orders.getPaymentOrders({strict:true}));
+await run('auth.admin lifecycle',async()=>{const a=h.createSupabaseAdminClient().auth.admin;
+ const c=await a.createUser({email:'New@Example.invalid',password:'Matkhau123!',email_confirm:true,user_metadata:{full_name:'Mới'}});if(c.error)throw new Error(c.error.message);
+ const dup=await a.createUser({email:'new@example.invalid',password:'Matkhau123!'});if(dup.error?.code!=='email_exists')throw new Error('dup not refused');
+ const l=await a.listUsers({page:1,perPage:1000});if(l.data.users.length!==1||l.data.users[0].email!=='new@example.invalid')throw new Error('list');
+ const u=await a.updateUserById(c.data.user.id,{ban_duration:'876000h',user_metadata:{phone:'09'}});if(!u.data.user.banned_until||u.data.user.user_metadata.full_name!=='Mới')throw new Error('update');
+ const d=await a.deleteUser(c.data.user.id);if(d.error)throw new Error('delete');if((await a.listUsers({})).data.users.length!==0)throw new Error('after delete');return 'ok';});
+await run('crm.listCrmV2TeamMembers',()=>h.crm.listCrmV2TeamMembers(q));
+for(const r of results)console.log(r.ok?'OK  ':'FAIL',r.name,r.ok?r.summary:r.error);

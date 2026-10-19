@@ -452,4 +452,4 @@ export class QueryBuilder implements PromiseLike<ShimResult>{
 }
 
 export function resolveRelationForAudit(schema:ShimSchema,from:string,name:string,hint?:string){return resolveRelation(schema,from,name,hint);}
-export function createD1PostgrestClient(db:ShimDatabase,schema:ShimSchema,options:{prefix:string;rpc?:Record<string,ShimRpc>;now?:()=>number}){return new D1PostgrestClient(db,schema,options);}
+export function createD1PostgrestClient(db:ShimDatabase,schema:ShimSchema,options:{prefix:string;rpc?:Record<string,ShimRpc>;now?:()=>number;auth?:ShimAuth|null;rls?:ShimRls}){return new D1PostgrestClient(db,schema,options);}

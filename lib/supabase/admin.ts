@@ -1,7 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 import { createBoundedFetch } from "@/lib/supabase/bounded-fetch";
+import { nativeDataClient } from "@/lib/cloudflare/native-data-client";
 
 export function createSupabaseAdminClient(options: { timeoutMs?: number } = {}) {
+  // Cloudflare native data mode (default off): same API, data on D1.
+  const native = nativeDataClient();
+  if (native) return native;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (process.env.NEXT_PUBLIC_SUPABASE_URL && serviceRoleKey) {
