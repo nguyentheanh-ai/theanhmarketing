@@ -3456,3 +3456,10 @@ Gate mới `CF_NATIVE_QA_PROFILE_WRITES=disabled` mặc định; artifact checke
 35tests Node scoped/hồi quy PASS (7SQL/HTTPprofile,4forminteraction,password/sourceaccount/artifact),CloudflareTypeScript/scopedESLint PASS; buildproduction bằng đúng `scripts/build-cloudflare-production.sh` PASS,10gatesOFF/noattach. ActualvinextWorkerD1/R2local **15nhómPASS,0outbound** gồm tài khoản–lưu profile–refreshdashboard/account–guest307–stalewitness/progress/Ebook. Receipt `reports/cloudflare-d1/native-full-worker.json`; fixture tổng hợp,khôngbrowser/hydration/hosted/productionwrite. Reviewer tìm lỗi thiếuwitness rồi7tests xác nhậnfix; không suy ra quyền cutover.
 
 Còn nativeemailchange,adminCRMCRUD/fullRLS,providerreal/sessionadoption,finaldelta/fence/reverserollback và hostedQA trước bỏSupabase. Không tạo/đổi secret,DNS,Sourcewriter,email hay dịch vụcũ.
+
+## Học viên online + chuẩn bị bot chăm sóc (19/10/2026)
+
+- Heartbeat: `components/app/student-presence.tsx` (gắn ở `app/dashboard/layout.tsx`, `app/learn/layout.tsx`) POST `/api/student/presence` mỗi ~60 giây khi tab đang mở; chỉ lưu path (không query). Bảng D1 `d1_student_presence` (`scripts/d1-student-presence.sql`, đã tạo trên `theanh-native-a`), lib `lib/cloudflare/student-presence.ts`.
+- Admin: `/api/admin/online` (owner/editor) → thẻ `components/admin/online-students-card.tsx` ở đầu `/admin/crm-v2` (online 5 phút + hoạt động 24 giờ, làm mới 30 giây). Chỉ chạy ở chế độ native D1.
+- Ngữ cảnh cho bot: `GET /api/student/context` (chỉ tài khoản đang đăng nhập) trả tên, email, khóa học + tiến độ, khóa nên học tiếp, đơn chờ thanh toán, link hỗ trợ.
+- Nút "Hỗ trợ" nổi: `components/app/student-help-launcher.tsx` — đọc context khi mở, gợi ý tiếp tục học/đơn chờ/đặt lịch 1-1/tài khoản; là chỗ gắn bot sau này. Ở trang bài học nút nằm cao hơn và ẩn trên mobile để không chồng prompt đặt lịch có sẵn.

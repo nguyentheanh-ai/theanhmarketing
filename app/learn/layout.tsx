@@ -1,3 +1,5 @@
+import { StudentPresence } from "@/components/app/student-presence";
+import { StudentHelpLauncher } from "@/components/app/student-help-launcher";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -14,7 +16,7 @@ export default async function LearnLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return children;
+  return <>{children}<StudentPresence /><StudentHelpLauncher /></>;
 }
 
 // Keep student data round trips in the database region (Supabase ap-southeast-2).
