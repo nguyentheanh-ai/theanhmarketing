@@ -1,0 +1,77 @@
+{
+  "status": "LIVE_CODE_VERIFIED",
+  "source": "32e30ae641332231c835aee9f30c53bb67129795",
+  "configuration": {
+    "version": [
+      {
+        "version_id": "75188bac-8352-4f53-85aa-4c297ddbc92e",
+        "percentage": 100
+      }
+    ],
+    "rollbackVersion": [
+      {
+        "version_id": "116d595e-cc53-483c-9d8a-3a35c46e41da",
+        "percentage": 100
+      }
+    ],
+    "mismatches": [],
+    "secretCount": 38
+  },
+  "http": {
+    "status": "PASS",
+    "checkedAt": "2026-10-19T03:43:24.885Z",
+    "checks": [
+      {
+        "check": "sales-requires-login",
+        "status": 307,
+        "passed": true
+      },
+      {
+        "check": "care-GET-denies-guest",
+        "status": 403,
+        "noStore": true,
+        "passed": true
+      },
+      {
+        "check": "care-POST-denies-guest",
+        "status": 403,
+        "noStore": true,
+        "passed": true
+      },
+      {
+        "check": "published-care-client-matches-built-artifact",
+        "status": 200,
+        "passed": true,
+        "asset": "sales-dashboard-0mJ17e5x.js"
+      },
+      {
+        "check": "homepage",
+        "status": 200,
+        "passed": true
+      }
+    ],
+    "limits": "HTTP/auth-denial and exact client artifact readback; no authenticated admin mutation or browser interaction"
+  },
+  "landingChecks": {
+    "count": 24,
+    "mismatches": 0
+  },
+  "behaviorTests": {
+    "passed": 61,
+    "reproducedBeforeFix": [
+      "history pending disables controls",
+      "history failure disables controls"
+    ],
+    "verifiedAfterFix": [
+      "initial status and note from table summary",
+      "edit and save while history pending",
+      "late response does not overwrite draft or saved event",
+      "history failure does not disable controls"
+    ]
+  },
+  "cloudflareTypecheck": "PASS",
+  "scopedLint": "PASS",
+  "productionBuild": "PASS",
+  "preservedOriginalFiles": 16,
+  "limits": "Delayed-history interactions verified in React renderer with controlled fetch; hosted verification is HTTP and exact bundle hash, no authenticated customer mutations"
+}

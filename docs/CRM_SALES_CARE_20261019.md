@@ -51,3 +51,12 @@ Bằng chứng: `reports/crm-sales-care-20261019/production-release.json`, `repo
 Theo phản hồi của anh, chọn trạng thái/nhập note/lưu phải dùng được ngay, không chờ lịch sử. Form nhận `initialEntry` từ summary của hàng đang mở; lịch sử tải riêng và không ghi đè draft. Lỗi đọc lịch sử chỉ báo ở phần lịch sử. Khi bắt đầu lưu, hủy lượt đọc lịch sử đang treo để phản hồi cũ không xóa trạng thái vừa lưu. Vẫn chặn gửi lại mù nếu chính lần ghi không được xác nhận; tải lại lịch sử thành công mới mở lại lần lưu đó. Không đổi API/schema/quyền hoặc thanh toán.
 
 Hai ca kiểm thử mới tái hiện khóa form trước sửa; sau sửa và hồi quy đạt 61/61, TypeScript và scoped ESLint đạt. Đây là kiểm thử React renderer/fetch giả lập, chưa là bằng chứng browser. Bản sửa đang chuẩn bị phát hành tiếp trong phạm vi tính năng đã được anh duyệt.
+
+
+## 19/10/2026 10:43 VN — CRM: sửa trạng thái ngay, không đợi lịch sử (LIVE)
+
+Phản hồi của anh: bấm vào phải đổi trạng thái được ngay. Đã bỏ điều kiện chờ lịch sử khỏi select, note và nút Lưu; form lấy giá trị hiện có từ hàng đang mở. Lịch sử tải riêng, lỗi đọc không khóa form và phản hồi muộn không ghi đè draft/lần lưu mới. Giữ kiểm đối soát nếu chính lần ghi chưa rõ kết quả.
+
+Source `32e30ae`, version Workers `75188bac-8352-4f53-85aa-4c297ddbc92e`, đọc lại 100%. 61 kiểm thử, lint, TS, build và preflight đạt; 24 kiểm tra landing trước/sau khớp. Bundle mới `sales-dashboard-0mJ17e5x.js` HTTP 200/hash khớp artifact; API guest vẫn 403/no-store. Bindings, 38 secret, cron, domain và observability giữ nguyên. 16 tệp cũ được lưu tạm có hash và khôi phục đầy đủ; không ghi khách thật hoặc đổi API/schema/quyền/thanh toán.
+
+Tương tác mạng chậm được kiểm bằng React renderer/fetch điều khiển; chưa dùng phiên admin/browser thật trong lượt này. Bản quay lui: `116d595e-cc53-483c-9d8a-3a35c46e41da`. Bằng chứng: `reports/crm-sales-care-20261019/immediate-edit-release.json`. Mục chuẩn bị phát hành ngay trước đã được thay bằng kết quả LIVE này.
