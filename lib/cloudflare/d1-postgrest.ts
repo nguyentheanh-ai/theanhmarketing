@@ -126,6 +126,8 @@ export function parseSelect(input:string):SelectNode[]{
 // ---------- filters ----------
 type Filter={sql:string;params:Value[]}|{embed:string;filter:RawFilter};
 type RawFilter={column:string;op:string;value:unknown;negate?:boolean};
+const VN_UPPER='ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝĂĐĨŨƠƯẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼẾỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴỶỸ';
+export function vnLower(expr:string){let e=`lower(${expr})`;for(const ch of VN_UPPER)e=`replace(${e},'${ch}','${ch.toLocaleLowerCase('vi')}')`;return e;}
 const LIKE_ESC=(v:string)=>v.replace(/\*/g,'%');
 
 class Table{
@@ -154,7 +156,8 @@ function compile(table:Table,f:RawFilter,alias:string):{sql:string;params:Value[
   case 'gt':case 'gte':case 'lt':case 'lte':out={sql:`${c} ${({gt:'>',gte:'>=',lt:'<',lte:'<='} as Record<string,string>)[f.op]} ?`,params:[filterValue(udt,v)]};
    if(udt&&(INT.has(udt)||NUM.has(udt)))out={sql:`CAST(${c} AS REAL) ${({gt:'>',gte:'>=',lt:'<',lte:'<='} as Record<string,string>)[f.op]} ?`,params:[Number(v)]};break;
   case 'like':out={sql:`${c} GLOB ?`,params:[LIKE_ESC(String(v)).replace(/%/g,'*').replace(/_/g,'?')]};break;
-  case 'ilike':out={sql:`lower(${c}) LIKE lower(?) ESCAPE '\\'`,params:[LIKE_ESC(String(v))]};break;
+  // SQLite lower()/LIKE fold ASCII only; fold Vietnamese capitals explicitly.
+  case 'ilike':out={sql:`${vnLower(c)} LIKE ? ESCAPE '\\'`,params:[LIKE_ESC(String(v)).toLocaleLowerCase('vi')]};break;
   case 'is':{const s=v===null||v==='null'?'IS NULL':v===true||v==='true'?'= 1':v===false||v==='false'?'= 0':null;if(!s)throw new ShimFailure('invalid is value','PGRST100');out={sql:`${c} ${s}`,params:[]};break;}
   // One JSON parameter keeps any list size under the D1 bound-parameter limit.
   case 'in':{const list=(Array.isArray(v)?v:parseList(String(v))).map(x=>filterValue(udt,x));out={sql:`${c} IN (SELECT value FROM json_each(?))`,params:[JSON.stringify(list)]};break;}
