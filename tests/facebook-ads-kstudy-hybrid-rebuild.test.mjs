@@ -41,7 +41,7 @@ test("Facebook Ads active pair uses the approved hybrid section order", () => {
 test("Facebook Ads system copy keeps the approved Data, AI, instructor and support contracts", () => {
   const source = read("public/ladipage/facebook-ads-2026.html");
 
-  assert.match(source, /Quảng cáo là <span>tài sản tích lũy<\/span>/);
+  assert.match(source, /Dataset \+ Meta AI: <span>quảng cáo càng chạy càng hiểu khách<\/span>/);
   assert.match(source, /Mỗi đồng ngân sách phải để lại dữ liệu cho lần chạy tiếp theo/);
   assert.match(source, /Dataset/);
   assert.match(source, /Meta AI/);
@@ -117,8 +117,8 @@ test("Facebook Ads annotated hero keeps concise copy, unique card elements and f
   assert.match(source, /\.course-portrait\s*\{[\s\S]*?scale\(/);
   assert.match(source, /mask-image:\s*linear-gradient\(to bottom,[\s\S]*?transparent/);
   assert.match(hero, /Trực tiếp hướng dẫn/i);
-  assert.match(hero, /Tự xây dựng và vận hành hệ thống/);
-  assert.match(hero, /Dataset đến đọc số – tối ưu – scale/);
+  assert.match(hero, /Xây <span class="accent">Dataset<\/span> để <span class="accent">Meta AI<\/span>/);
+  assert.match(hero, /dữ liệu khách hàng thật \(inbox, lead, đơn hàng\) về Meta/);
   assert.doesNotMatch(hero, />Cài đặt tracking và dữ liệu</);
   assert.match(hero, /Tự đọc số &amp; tối ưu/);
   assert.deepEqual(duplicateIds, []);
@@ -177,7 +177,7 @@ test("Facebook Ads phone hero expands below the portrait for the short descripti
   const hero = source.match(/<section class="course-hero"[\s\S]*?<\/section>/)?.[0] ?? "";
 
   assert.match(hero, /class="course-hero-mobile-details"/);
-  assert.match(hero, /class="course-hero-copy course-hero-copy-mobile"[\s\S]*?Dataset đến đọc số – tối ưu – scale/);
+  assert.match(hero, /class="course-hero-copy course-hero-copy-mobile"[\s\S]*?dữ liệu khách hàng thật \(inbox, lead, đơn hàng\) về Meta/);
   assert.match(hero, /class="course-hero-actions-mobile"[\s\S]*?href="#hoc-phi"[^>]*>Nhận toàn bộ hệ thống Facebook Ads – 799\.000đ/);
   assert.match(hero, /class="course-bonus-line-mobile"[\s\S]*?Bao gồm AI Agent hỗ trợ nghiên cứu, lập kế hoạch và triển khai quảng cáo/);
   assert.match(source, /@media \(max-width: 1020px\)[\s\S]*?\.course-hero-mobile-details\s*\{[\s\S]*?display:\s*block/);

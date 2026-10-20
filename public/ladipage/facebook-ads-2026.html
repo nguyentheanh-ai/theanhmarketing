@@ -5418,6 +5418,15 @@
         .sticky-menu-toggle { width: 40px; height: 44px; }
         .page { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
       }
+          .hero-price-pill { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; margin: 0 0 18px; padding: 10px 16px; border: 1px solid #80630b; border-radius: 14px; background: #1c1606; }
+      .hero-price-pill strong { color: #ffd12b; font-size: 24px; }
+      .hero-price-pill del { color: #a6a6ad; }
+      .hero-price-pill span { color: #d9d4c4; font-size: 14px; }
+      .learn-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-top: 28px; text-align: left; }
+      .learn-steps .course-outcome-element { display: inline-flex; width: auto; min-width: 0; height: auto; padding: 4px 10px; white-space: nowrap; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+      .form-trust { display: grid; gap: 6px; margin: 4px 0 16px; padding: 0; list-style: none; font-size: 14px; opacity: .85; }
+      .course-hero-title .accent { display: inline; }
+      .form-trust li::before { content: "✓ "; color: #f5c400; font-weight: 800; }
     </style>
     <script src="../checkout-invoice.js" defer></script>
     <script src="../landing-assets/facebook-ads-event-contract.js" defer></script>
@@ -5430,14 +5439,14 @@
             <div class="course-hero-grid">
               <div class="course-hero-content">
                 <p class="course-hero-label">FACEBOOK ADS MASTER 2026</p>
-                <aside class="hero-combo-offer" aria-label="Ưu đãi combo giảm 20%"><strong class="hero-combo-discount">GIẢM 20%</strong><div class="hero-combo-details"><span>Khóa học Facebook Ads + Ebook 2026</span><div class="hero-combo-price"><strong>1.098.000đ</strong><del>1.400.000đ</del></div></div></aside>
-                <h1 id="course-hero-title" class="course-hero-title">Tự xây dựng và vận hành hệ thống <span class="accent">Facebook Ads 2026</span> bằng Data &amp; AI</h1>
+                <p class="hero-price-pill"><strong>799.000đ</strong><del>2.590.000đ</del><span>Khóa video + AI Agent + bộ công cụ</span></p>
+                <h1 id="course-hero-title" class="course-hero-title">Xây <span class="accent">Dataset</span> để <span class="accent">Meta AI</span> tự tìm đúng người mua cho bạn</h1>
                 <div class="course-hero-copy">
-                  <p>Từ Fanpage, tài nguyên, Content, quảng cáo, Dataset đến đọc số – tối ưu – scale. Giúp bạn biết quảng cáo đang sai ở đâu và cần làm gì tiếp theo thay vì chạy theo cảm giác.</p>
+                  <p>Facebook Ads 2026 không còn thắng bằng target sở thích. Khóa học hướng dẫn bạn đưa dữ liệu khách hàng thật (inbox, lead, đơn hàng) về Meta, dựng chiến dịch để Meta AI học từ dữ liệu đó, rồi đọc số để biết nên giữ, sửa hay scale.</p>
                 </div>
                 <div class="course-hero-actions">
                   <a class="btn btn-primary" href="#hoc-phi" data-meta-cta data-cta-id="hero-primary" data-cta-text="Nhận toàn bộ hệ thống Facebook Ads – 799.000đ" data-cta>Nhận toàn bộ hệ thống Facebook Ads – 799.000đ</a>
-                  <a class="btn btn-secondary" href="#ket-qua">Xem sau khóa học bạn làm được gì</a>
+                  <a class="btn btn-secondary" href="#tich-luy">Xem bạn học được gì</a>
                 </div>
                 <p class="course-bonus-line">✦ Bao gồm AI Agent hỗ trợ nghiên cứu, lập kế hoạch và triển khai quảng cáo.</p>
               </div>
@@ -5469,21 +5478,21 @@
 
               <div class="course-hero-mobile-details">
                 <div class="course-hero-copy course-hero-copy-mobile">
-                  <p>Từ Fanpage, tài nguyên, Content, quảng cáo, Dataset đến đọc số – tối ưu – scale. Giúp bạn biết quảng cáo đang sai ở đâu và cần làm gì tiếp theo thay vì chạy theo cảm giác.</p>
+                  <p>Facebook Ads 2026 không còn thắng bằng target sở thích. Khóa học hướng dẫn bạn đưa dữ liệu khách hàng thật (inbox, lead, đơn hàng) về Meta, dựng chiến dịch để Meta AI học từ dữ liệu đó, rồi đọc số để biết nên giữ, sửa hay scale.</p>
                 </div>
                 <div class="course-hero-actions-mobile">
                   <a class="btn btn-primary" href="#hoc-phi" data-meta-cta data-cta-id="hero-mobile-primary" data-cta-text="Nhận toàn bộ hệ thống Facebook Ads – 799.000đ" data-cta>Nhận toàn bộ hệ thống Facebook Ads – 799.000đ</a>
-                  <a class="btn btn-secondary" href="#ket-qua">Xem sau khóa học bạn làm được gì</a>
+                  <a class="btn btn-secondary" href="#tich-luy">Xem bạn học được gì</a>
                 </div>
                 <p class="course-bonus-line-mobile">✦ Bao gồm AI Agent hỗ trợ nghiên cứu, lập kế hoạch và triển khai quảng cáo.</p>
               </div>
             </div>
 
             <div class="course-outcomes hero-pillars" aria-label="Bốn trụ cột của hệ thống">
-              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">01</span><strong>Hệ thống tài nguyên chuẩn</strong><p>Fanpage, BM, tài khoản, quyền và thanh toán được tổ chức rõ ràng.</p></article>
-              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">02</span><strong>Quảng cáo đúng khách</strong><p>Content, cấu trúc và tín hiệu bám sát mục tiêu kinh doanh.</p></article>
-              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">03</span><strong>Dataset tích lũy dữ liệu</strong><p>Mỗi lần chạy để lại dữ liệu có ích cho lần tối ưu tiếp theo.</p></article>
-              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">04</span><strong>Tự đọc số &amp; tối ưu</strong><p>Biết cần giữ, sửa, tắt hay tăng ngân sách dựa trên tín hiệu.</p></article>
+              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">01</span><strong>Dataset</strong><p>Gom tín hiệu inbox, lead, đơn hàng thật về Meta qua Pancake, Website hoặc Landing Page.</p></article>
+              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">02</span><strong>Meta AI</strong><p>Dựng chiến dịch Advantage+ để thuật toán tự tìm người giống khách đã mua.</p></article>
+              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">03</span><strong>Content là target</strong><p>Angle, hook, creative đúng khách để Meta AI biết phải tìm ai.</p></article>
+              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">04</span><strong>Đọc số &amp; scale</strong><p>Biết giữ, sửa, tắt hay tăng ngân sách dựa trên tín hiệu thật.</p></article>
             </div>
           </div>
         </section>
@@ -5507,13 +5516,20 @@
         <section class="section gold-section" id="tich-luy">
           <div class="container">
             <div class="section-head">
-              <p class="gold-kicker">Big Idea</p>
-              <h2 class="gold-title">Quảng cáo là <span>tài sản tích lũy</span></h2>
-              <p class="section-copy">Mỗi đồng ngân sách phải để lại dữ liệu cho lần chạy tiếp theo.</p>
+              <p class="gold-kicker">Trọng tâm khóa học</p>
+              <h2 class="gold-title">Dataset + Meta AI: <span>quảng cáo càng chạy càng hiểu khách</span></h2>
+              <p class="section-copy">Meta AI chỉ tìm đúng khách khi được "dạy" bằng dữ liệu thật. Mỗi đồng ngân sách phải để lại dữ liệu cho lần chạy tiếp theo.</p>
             </div>
             <div class="system-flow-grid" aria-label="Vòng lặp dữ liệu quảng cáo">
-              <span>Khách hàng</span><b>→</b><span>Data</span><b>→</b><span>Meta AI</span><b>→</b><span>Quảng cáo tốt hơn</span><b>→</b><span>Data mới</span>
+              <span>Khách hàng thật</span><b>→</b><span>Dataset</span><b>→</b><span>Meta AI học</span><b>→</b><span>Tìm đúng người mua</span><b>→</b><span>Data mới</span>
             </div>
+            <div class="course-outcomes learn-steps" aria-label="Bạn học được gì về Dataset và Meta AI">
+              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">Bước 1</span><strong>Dựng Dataset đúng mô hình bán hàng</strong><p>Bán qua inbox, Pancake hay Website/Landing Page đều có cách gửi sự kiện Lead, Purchase về Meta. Lọc khách rác để Meta chỉ học từ người mua thật.</p></article>
+              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">Bước 2</span><strong>Để Meta AI làm phần target</strong><p>Cấu trúc chiến dịch, tệp rộng, Advantage+ và ngân sách để thuật toán có đủ tín hiệu tối ưu — thay vì đoán sở thích.</p></article>
+              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">Bước 3</span><strong>Content dẫn đường cho Meta AI</strong><p>Angle, hook, creative quyết định Meta AI tìm ai. Có prompt nghiên cứu khách hàng và đối thủ đi kèm.</p></article>
+              <article class="course-outcome"><span class="course-outcome-element" aria-hidden="true">Bước 4</span><strong>Đọc số, tối ưu và scale</strong><p>Bảng quyết định giữ – sửa – tắt – tăng ngân sách; biết lỗi nằm ở Creative, tệp, Offer, Landing Page hay Sale.</p></article>
+            </div>
+            <div class="hero-actions section-action"><a class="btn btn-primary" href="#hoc-phi" data-meta-cta data-cta-id="learn-primary" data-cta-text="Nhận toàn bộ hệ thống Facebook Ads – 799.000đ" data-cta>Nhận toàn bộ hệ thống Facebook Ads – 799.000đ</a></div>
           </div>
         </section>
 
@@ -5632,12 +5648,12 @@
             </div>
             <div class="value-stack-clusters">
               <div class="value-stack-grid value-stack-cluster">
-                <article class="value-stack-card"><span>01</span><h3>Facebook Ads Master 2026 — Giá trị 2.999.000đ</h3><p>Hệ thống từ Fanpage, tài nguyên, Content, quảng cáo, Dataset đến tối ưu và Scale.</p></article>
-                <article class="value-stack-card"><span>02</span><h3>AI Agent Facebook Ads — Giá trị 1.999.000đ</h3><p>Hỗ trợ nghiên cứu, lập kế hoạch và dựng Campaign – Ad Set – Ads ở trạng thái PAUSED.</p></article>
-                <article class="value-stack-card"><span>03</span><h3>Bộ Prompt + Checklist + Framework tối ưu — Giá trị 999.000đ</h3><p>Prompt nghiên cứu, checklist setup, khung test và bảng ra quyết định tối ưu.</p></article>
+                <article class="value-stack-card"><span>01</span><h3>Facebook Ads Master 2026</h3><p>Trọng tâm Dataset + Meta AI, kèm Fanpage, tài nguyên, Content, tối ưu và Scale.</p></article>
+                <article class="value-stack-card"><span>02</span><h3>AI Agent Facebook Ads</h3><p>Hỗ trợ nghiên cứu, lập kế hoạch và dựng Campaign – Ad Set – Ads ở trạng thái PAUSED.</p></article>
+                <article class="value-stack-card"><span>03</span><h3>Bộ Prompt + Checklist + Framework tối ưu</h3><p>Prompt nghiên cứu, checklist setup, khung test và bảng ra quyết định tối ưu.</p></article>
               </div>
               <div class="value-stack-total value-stack-cluster">
-                <p><del>Tổng giá trị: <strong>5.997.000đ</strong></del></p>
+                <p><del>Tổng giá trị: <strong>2.590.000đ</strong></del></p>
                 <p>Hôm nay bạn sở hữu toàn bộ với <strong>799.000đ</strong></p>
               </div>
             </div>
@@ -5668,6 +5684,7 @@
 
               <aside class="form-card">
                 <h3>Nhận toàn bộ hệ thống Facebook Ads – 799.000đ</h3>
+                <ul class="form-trust"><li>Hơn 1.000 học viên đang học</li><li>Mở quyền tự động ngay sau chuyển khoản</li><li>Hỗ trợ trực tiếp qua Zalo</li></ul>
                 <p id="payment-plan-summary">Khóa video, AI Agent và bộ công cụ để bạn bắt đầu triển khai có hệ thống.</p>
                 <form id="payment-form" class="form" data-invoice-checkout>
                   <input type="hidden" name="paymentPlan" value="zoom-kit" />

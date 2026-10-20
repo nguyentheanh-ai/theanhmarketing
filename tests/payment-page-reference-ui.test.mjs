@@ -16,7 +16,7 @@ test("payment page follows the agent kit checkout section structure", () => {
   assert.doesNotMatch(page, /Thanh toán 359K để nhận Bộ AI Agent thoát việc lặp/);
   assert.match(page, /Thanh toán chuyển khoản/);
   assert.match(page, /PaymentOfferCountdown/);
-  assert.match(page, /Thế Anh sẽ không gọi thúc bạn thanh toán/);
+  assert.match(page, /Chỉ còn một bước: quét QR để thanh toán/);
   assert.match(page, /Thông tin đơn hàng/);
   assert.match(page, /Thanh toán ngay - 3 bước đơn giản/);
   assert.match(page, /Quét QR hoặc chuyển khoản/);
@@ -55,9 +55,9 @@ test("Facebook Ads and Ebook checkout prioritizes payment and real Zalo proof", 
   assert.match(page, /Hệ thống gửi tài khoản học tập ngay sau 5 giây thanh toán/);
   assert.match(page, /Hơn 1\.000 anh\/chị học viên đang học/);
   assert.match(page, /nhận cả tài khoản học tập và Ebook/);
-  assert.match(page, /Thế Anh sẽ không gọi thúc bạn thanh toán/);
-  assert.match(page, /Mình chỉ nhắn tin cho học viên đăng ký thành công/);
-  assert.match(page, /Nếu bạn nghiêm túc - thanh toán luôn ở trang này/);
+  assert.match(page, /Chỉ còn một bước: quét QR để thanh toán/);
+  assert.match(page, /Cần hỗ trợ\? Nhắn Zalo Thế Anh ngay bên dưới/);
+  assert.match(page, /Hệ thống tự mở quyền học trong vài giây/);
   assert.match(page, /payment-topbar[^\n]*fixed inset-x-0 top-0/);
   assert.match(page, /payment-topbar-desktop/);
   assert.match(page, /payment-topbar-mobile/);

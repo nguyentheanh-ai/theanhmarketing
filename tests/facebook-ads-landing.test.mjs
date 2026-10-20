@@ -48,10 +48,10 @@ test("Facebook Ads rewrite preserves SEO, tracking and order contracts", () => {
 test("Facebook Ads P0 rewrite sells the Data and AI system instead of a curriculum", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
 
-  assert.match(html, /Tự xây dựng và vận hành hệ thống <span class="accent">Facebook Ads 2026<\/span> bằng Data &amp; AI/);
-  assert.match(html, /Từ Fanpage, tài nguyên, Content, quảng cáo, Dataset đến đọc số – tối ưu – scale/);
+  assert.match(html, /Xây <span class="accent">Dataset<\/span> để <span class="accent">Meta AI<\/span> tự tìm đúng người mua cho bạn/);
+  assert.match(html, /đưa dữ liệu khách hàng thật \(inbox, lead, đơn hàng\) về Meta/);
   assert.match(html, /Bao gồm AI Agent hỗ trợ nghiên cứu, lập kế hoạch và triển khai quảng cáo/);
-  assert.match(html, /Quảng cáo là <span>tài sản tích lũy<\/span>/);
+  assert.match(html, /Dataset \+ Meta AI: <span>quảng cáo càng chạy càng hiểu khách<\/span>/);
   assert.match(html, /Mỗi đồng ngân sách phải để lại dữ liệu cho lần chạy tiếp theo/);
   assert.doesNotMatch(html, /21 bài|Sáu module|Bài 1\b|Bài 2\b|id="lo-trinh"|legacy-curriculum|data-module-trigger/);
   assert.equal((html.match(/data-outcome-card=/g) || []).length, 12);
@@ -85,10 +85,10 @@ test("Facebook Ads P0 rewrite places the value stack immediately before checkout
   assert.match(html, /\.value-stack-cluster\s*\{[\s\S]*?overflow:\s*hidden;[\s\S]*?border:\s*1px solid/);
   assert.match(html, /\.value-stack-card\s*\{[\s\S]*?border:\s*0;[\s\S]*?border-radius:\s*0;[\s\S]*?background:\s*transparent/);
   assert.match(html, /\.value-stack-total p\s*\{[\s\S]*?border:\s*0;[\s\S]*?border-radius:\s*0;[\s\S]*?background:\s*transparent/);
-  assert.match(html, /Facebook Ads Master 2026 — Giá trị 2\.999\.000đ/);
-  assert.match(html, /AI Agent Facebook Ads — Giá trị 1\.999\.000đ/);
-  assert.match(html, /Bộ Prompt \+ Checklist \+ Framework tối ưu — Giá trị 999\.000đ/);
-  assert.match(html, /<del>Tổng giá trị:\s*<strong>5\.997\.000đ<\/strong><\/del>/);
+  assert.match(html, /<h3>Facebook Ads Master 2026<\/h3>/);
+  assert.match(html, /<h3>AI Agent Facebook Ads<\/h3>/);
+  assert.match(html, /<h3>Bộ Prompt \+ Checklist \+ Framework tối ưu<\/h3>/);
+  assert.match(html, /<del>Tổng giá trị:\s*<strong>2\.590\.000đ<\/strong><\/del>/);
   assert.match(html, /\.value-stack-total del\s*\{[\s\S]*?text-decoration-thickness:\s*2px/);
   assert.match(html, /Hôm nay bạn sở hữu toàn bộ với\s*<strong>799\.000đ<\/strong>/);
   assert.doesNotMatch(pricing, /Học phí &amp; đăng ký/);

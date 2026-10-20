@@ -712,13 +712,12 @@ export default async function PaymentPage({
       <div className="payment-topbar fixed inset-x-0 top-0 z-50 bg-gradient-to-r from-blue-600 to-cyan-400 px-4 py-3 text-center text-base font-black text-white shadow-lg">
         <div className="payment-topbar-content mx-auto max-w-6xl">
           <div className="payment-topbar-desktop hidden sm:block">
-            <p><span className="payment-notice-label">Lưu ý:</span> Thế Anh sẽ không gọi thúc bạn thanh toán.</p>
-            <p>Mình chỉ nhắn tin cho học viên đăng ký thành công. Nếu bạn nghiêm túc - thanh toán luôn ở trang này.</p>
+            <p>Chỉ còn một bước: quét QR để thanh toán, hệ thống tự mở quyền học trong vài giây.</p>
+            <p>Cần hỗ trợ? Nhắn Zalo Thế Anh ngay bên dưới.</p>
           </div>
           <div className="payment-topbar-mobile space-y-1 sm:hidden">
-            <p><span className="payment-notice-label">Lưu ý:</span> Thế Anh sẽ không gọi thúc bạn thanh toán</p>
-            <p>Mình chỉ nhắn tin cho học viên đăng ký thành công</p>
-            <p>Nếu bạn nghiêm túc - thanh toán luôn ở trang này</p>
+            <p>Chỉ còn một bước: quét QR để thanh toán</p>
+            <p>Hệ thống tự mở quyền học trong vài giây</p>
           </div>
         </div>
       </div>

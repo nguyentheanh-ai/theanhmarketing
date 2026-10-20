@@ -19,3 +19,7 @@ VERIFIED: webhook cấu hình nhận tất cả tài khoản có thể gửi c�
 Hiệu chỉnh kết luận: chỉ nói request tương ứng bị chặn. Không nói lỗi này là nguyên nhân doanh thu bằng không nếu chưa có giao dịch khớp đơn và tài khoản. Trạng thái gói đang hoạt động/hóa đơn đã thanh toán tại thời điểm kiểm tra không chứng minh dịch vụ không từng bị ngưng trước đó.
 
 Giới hạn: giao diện checkout tải được và QR đúng không chứng minh luồng nhận tiền, settlement, cấp quyền và email sau cutover. Cần giao dịch thật hợp lệ để kiểm chứng toàn luồng; không tự replay tiền cá nhân hoặc giả lập giao dịch thật.
+
+## Phân biệt lỗi thiếu mã với lỗi Telegram
+
+VERIFIED: `confirmOrderFromSepay` ném `Webhook Sepay thiếu mã đơn.` trước paid commit; nhánh Telegram chỉ chạy sau xác nhận. Khi đơn vẫn pending, paid_at và transaction ID đều rỗng, không có log Telegram failure thì chưa có cơ sở kết luận bot hỏng. Log cùng thời điểm nhưng không có transaction/order identifier chỉ là tương quan, cần payload SePay chính xác để nối giao dịch với đơn. Không tự gửi thông báo PAID hoặc đổi trạng thái chỉ để che lỗi nhận diện.

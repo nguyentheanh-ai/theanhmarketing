@@ -3470,3 +3470,9 @@ Còn nativeemailchange,adminCRMCRUD/fullRLS,providerreal/sessionadoption,finalde
 - `scripts/build-cloudflare-production-native.sh` bật `placement: smart` để Worker chạy gần D1 (APAC).
 - `lib/cloudflare/public-page-cache.ts` (gọi trong `cloudflare-worker.ts`): cache edge HTML cho khách chưa đăng nhập ở `/`, `/khoa-hoc`, `/khoa-hoc/<slug>`, `/academy/<slug>`; khóa = path (bỏ query utm/fbclid), làm mới nền sau 60 s, bỏ qua RSC/cookie phiên/Set-Cookie. Header `X-Edge-Cache` HIT/STALE/MISS. Trang này không được đọc query/cookie phía server — nếu sau này cần, phải loại path khỏi regex.
 - Landing tĩnh `public/*.html` (vd. `/academy/ebook-facebook-ads-2026-premium`) vốn phục vụ thẳng từ asset edge; chỉ cải thiện được bằng định tuyến (gói zone cao hơn).
+
+## Landing Facebook Ads Master — Dataset + Meta AI (20/10/2026, anh duyệt)
+
+- `public/academy/facebook-ads-master-2026.html` (= `public/ladipage/facebook-ads-2026.html`, test bắt buộc giống nhau): hero đổi sang "Xây Dataset để Meta AI tự tìm đúng người mua cho bạn", bỏ thẻ combo 1.098K khỏi hero (combo chỉ còn trong form), 4 trụ cột Dataset/Meta AI/Content/Đọc số; mục `#tich-luy` thành lộ trình 4 bước Dataset + Meta AI + CTA `learn-primary` (7 CTA có tracking); giá neo thống nhất 2.590.000đ (hero, sticky, value stack, trang thanh toán); dòng tin cậy trên form.
+- Trang thanh toán: bỏ câu "không gọi thúc… nếu bạn nghiêm túc", thay bằng hướng dẫn một bước; hết giờ giữ đơn hiển thị "vẫn có thể thanh toán" (server vẫn nhận tiền đơn expired). Thời hạn đơn 20 phút phía server giữ nguyên.
+- Test copy đã cập nhật tương ứng (facebook-ads-landing, kstudy-hybrid, event-contract, payment-page-reference-ui).

@@ -76,7 +76,11 @@ export function PaymentOfferCountdown({
         Mã đơn này đã khóa đúng số tiền cần chuyển khoản. Anh/chị chỉ cần thanh toán đúng số tiền và nội dung bên dưới để hệ thống đối soát tự động.
       </p>
 
-      {deadline ? (
+      {deadline && !Number.isNaN(targetTime) && secondsLeft <= 0 && Date.now() >= targetTime ? (
+        <p className="mt-6 rounded-2xl bg-blue-50 px-4 py-3 text-sm font-bold leading-6 text-blue-700">
+          Anh/chị vẫn có thể thanh toán đơn này: chỉ cần chuyển đúng số tiền và nội dung bên dưới, hệ thống vẫn tự mở quyền học.
+        </p>
+      ) : deadline ? (
         <>
           <p className="mt-6 inline-flex rounded-full bg-orange-50 px-4 py-2 text-xs font-black text-orange-600 sm:px-5">
             {label}

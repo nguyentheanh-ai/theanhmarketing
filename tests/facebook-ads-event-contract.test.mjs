@@ -21,8 +21,8 @@ test("Facebook Ads engagement event contract is wired only to explicit primary C
   const eventModule = read("public/landing-assets/facebook-ads-event-contract.js");
   const ctas = [...html.matchAll(/<a\b[^>]*\bdata-meta-cta\b[^>]*>/g)].map((match) => match[0]);
 
-  assert.equal(ctas.length, 6);
-  assert.equal(new Set(ctas.map((cta) => cta.match(/data-cta-id="([^"]+)"/)?.[1])).size, 6);
+  assert.equal(ctas.length, 7);
+  assert.equal(new Set(ctas.map((cta) => cta.match(/data-cta-id="([^"]+)"/)?.[1])).size, 7);
   for (const cta of ctas) {
     assert.match(cta, /\bdata-cta\b/);
     assert.match(cta, /data-cta-id="[a-z0-9-]+"/);
