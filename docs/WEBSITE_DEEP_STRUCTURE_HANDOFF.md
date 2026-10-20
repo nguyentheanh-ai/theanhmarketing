@@ -3476,3 +3476,10 @@ Còn nativeemailchange,adminCRMCRUD/fullRLS,providerreal/sessionadoption,finalde
 - `public/academy/facebook-ads-master-2026.html` (= `public/ladipage/facebook-ads-2026.html`, test bắt buộc giống nhau): hero đổi sang "Xây Dataset để Meta AI tự tìm đúng người mua cho bạn", bỏ thẻ combo 1.098K khỏi hero (combo chỉ còn trong form), 4 trụ cột Dataset/Meta AI/Content/Đọc số; mục `#tich-luy` thành lộ trình 4 bước Dataset + Meta AI + CTA `learn-primary` (7 CTA có tracking); giá neo thống nhất 2.590.000đ (hero, sticky, value stack, trang thanh toán); dòng tin cậy trên form.
 - Trang thanh toán: bỏ câu "không gọi thúc… nếu bạn nghiêm túc", thay bằng hướng dẫn một bước; hết giờ giữ đơn hiển thị "vẫn có thể thanh toán" (server vẫn nhận tiền đơn expired). Thời hạn đơn 20 phút phía server giữ nguyên.
 - Test copy đã cập nhật tương ứng (facebook-ads-landing, kstudy-hybrid, event-contract, payment-page-reference-ui).
+
+
+## 20/10/2026 — Sửa nhận diện mã thanh toán bị VPBank chèn khoảng trắng (CHƯA DEPLOY)
+
+Giao dịch đặt lịch bị webhook từ chối `Webhook Sepay thiếu mã đơn.` do ngân hàng gửi tiền tố dạng `T AM...` thay vì `TAM...`. Đã đối chiếu payload trong giao diện SePay; đây là lỗi nhận diện nội dung, không phải Telegram Bot API. Shared `lib/payments/sepay.ts` giữ ưu tiên mã liền hiện có, bổ sung nhận diện khoảng trắng ngang trong tiền tố TAM; không nối từ sau mã, không bỏ kiểm tra đơn/tài khoản/số tiền, không sửa giá hay quyền học.
+
+Đã tái hiện hai kiểm thử thất bại trước sửa; sau sửa 40 kiểm thử SePay/settlement/HTTP/đặt lịch đạt, gồm không ghép tiền tố giữa hai trường payload. Typecheck, scoped ESLint và build production native đạt; verifier đúng Worker/domain/binding/native gates PASS. Chưa deploy, chưa phát lại giao dịch, chưa xác nhận lịch hoặc gửi thông báo cho khách. Bản sửa cần duyệt hành động production theo policy; sau phát hành chỉ xử lý lại đúng giao dịch đã đối chiếu và đọc lại paid/booking/Telegram.

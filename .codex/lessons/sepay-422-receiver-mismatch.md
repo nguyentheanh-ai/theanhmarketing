@@ -23,3 +23,7 @@ Giới hạn: giao diện checkout tải được và QR đúng không chứng m
 ## Phân biệt lỗi thiếu mã với lỗi Telegram
 
 VERIFIED: `confirmOrderFromSepay` ném `Webhook Sepay thiếu mã đơn.` trước paid commit; nhánh Telegram chỉ chạy sau xác nhận. Khi đơn vẫn pending, paid_at và transaction ID đều rỗng, không có log Telegram failure thì chưa có cơ sở kết luận bot hỏng. Log cùng thời điểm nhưng không có transaction/order identifier chỉ là tương quan, cần payload SePay chính xác để nối giao dịch với đơn. Không tự gửi thông báo PAID hoặc đổi trạng thái chỉ để che lỗi nhận diện.
+
+## Khoảng trắng do ngân hàng chèn trong tiền tố (VERIFIED)
+
+Payload ngân hàng có thể giữ số tiền và tài khoản đúng nhưng chèn khoảng trắng giữa T và AM; regex chỉ tìm TAM liền sẽ không nhận diện. Sau đối chiếu payload thật, sửa nhận diện khoảng trắng ngang chỉ trong tiền tố, giữ kiểm tra đơn chính xác, tài khoản nhận, số tiền và retry. Hai test tái hiện thất bại trước sửa, 39 test liên quan đạt sau sửa. Chưa có bằng chứng live cho bản sửa; không áp dụng bằng cách xóa mọi khoảng trắng trong toàn bộ nội dung.

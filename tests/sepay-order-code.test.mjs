@@ -107,3 +107,30 @@ test("does not match a code-less payment when payer identity differs", () => {
     "",
   );
 });
+
+test("recognizes a booking reference when VPBank inserts whitespace inside TAM", () => {
+  for (const prefix of ["T AM", "TA M", "T A M"]) {
+    assert.equal(getSepayOrderCode({
+      gateway: "VPBank", code: null,
+      content: `NHAN TU 000000000 TRACE 123456 ND ${prefix}DEMOBOOKING77`,
+      transferAmount: 500000,
+    }), "TAMDEMOBOOKING77");
+  }
+});
+
+test("recognizes a split prefix in description without absorbing following words", () => {
+  assert.equal(getSepayOrderCode({
+    description: "BankAPINotify ND T AMDEMOBOOKING77 CHUYEN TIEN",
+  }), "TAMDEMOBOOKING77");
+});
+
+test("does not invent a reference from an incomplete or multiline prefix", () => {
+  for (const content of ["ND T AM", "ND T\nAMDEMOBOOKING77", "ND T-AMDEMOBOOKING77"]) {
+    assert.equal(getSepayOrderCode({ content }), "");
+  }
+});
+
+
+test("does not join a split prefix across different payload fields", () => {
+  assert.equal(getSepayOrderCode({content: "ND T", description: "AMDEMOBOOKING77"}), "");
+});

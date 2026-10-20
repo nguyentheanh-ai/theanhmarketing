@@ -1721,3 +1721,10 @@ Gate mới `CF_NATIVE_QA_PROFILE_WRITES=disabled` mặc định; artifact checke
 35tests Node scoped/hồi quy PASS (7SQL/HTTPprofile,4forminteraction,password/sourceaccount/artifact),CloudflareTypeScript/scopedESLint PASS; buildproduction bằng đúng `scripts/build-cloudflare-production.sh` PASS,10gatesOFF/noattach. ActualvinextWorkerD1/R2local **15nhómPASS,0outbound** gồm tài khoản–lưu profile–refreshdashboard/account–guest307–stalewitness/progress/Ebook. Receipt `reports/cloudflare-d1/native-full-worker.json`; fixture tổng hợp,khôngbrowser/hydration/hosted/productionwrite. Reviewer tìm lỗi thiếuwitness rồi7tests xác nhậnfix; không suy ra quyền cutover.
 
 Còn nativeemailchange,adminCRMCRUD/fullRLS,providerreal/sessionadoption,finaldelta/fence/reverserollback và hostedQA trước bỏSupabase. Không tạo/đổi secret,DNS,Sourcewriter,email hay dịch vụcũ.
+
+
+## 20/10/2026 — Sửa nhận diện mã thanh toán bị VPBank chèn khoảng trắng (CHƯA DEPLOY)
+
+Giao dịch đặt lịch bị webhook từ chối `Webhook Sepay thiếu mã đơn.` do ngân hàng gửi tiền tố dạng `T AM...` thay vì `TAM...`. Đã đối chiếu payload trong giao diện SePay; đây là lỗi nhận diện nội dung, không phải Telegram Bot API. Shared `lib/payments/sepay.ts` giữ ưu tiên mã liền hiện có, bổ sung nhận diện khoảng trắng ngang trong tiền tố TAM; không nối từ sau mã, không bỏ kiểm tra đơn/tài khoản/số tiền, không sửa giá hay quyền học.
+
+Đã tái hiện hai kiểm thử thất bại trước sửa; sau sửa 40 kiểm thử SePay/settlement/HTTP/đặt lịch đạt, gồm không ghép tiền tố giữa hai trường payload. Typecheck, scoped ESLint và build production native đạt; verifier đúng Worker/domain/binding/native gates PASS. Chưa deploy, chưa phát lại giao dịch, chưa xác nhận lịch hoặc gửi thông báo cho khách. Bản sửa cần duyệt hành động production theo policy; sau phát hành chỉ xử lý lại đúng giao dịch đã đối chiếu và đọc lại paid/booking/Telegram.

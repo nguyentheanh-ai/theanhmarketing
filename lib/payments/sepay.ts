@@ -206,12 +206,14 @@ export function getSepayOrderCode(payload: SepayWebhookPayload) {
     return directCode;
   }
 
-  const text = `${payload.content ?? ""} ${payload.transactionContent ?? ""} ${
-    payload.transaction_content ?? ""
-  } ${payload.description ?? ""}`.toUpperCase();
-  const match = text.match(new RegExp(`${orderPrefix}[A-Z0-9]+`));
+  const text = [payload.content, payload.transactionContent,
+    payload.transaction_content, payload.description].join("\n").toUpperCase();
+  // VPBank can insert a space inside the TAM prefix (for example T AM...).
+  // Normalize only that prefix; never join words after the order reference.
+  const match = text.match(new RegExp(`${orderPrefix}[A-Z0-9]+`))
+    ?? text.match(/\bT[ \t]*A[ \t]*M[A-Z0-9]+/);
 
-  return match?.[0] ?? "";
+  return match?.[0].replace(/[ \t]/g, "") ?? "";
 }
 
 const SEPAY_FALLBACK_LOOKBACK_MS = 24 * 60 * 60 * 1000;
