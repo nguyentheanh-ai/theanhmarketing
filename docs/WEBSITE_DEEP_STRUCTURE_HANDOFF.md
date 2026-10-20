@@ -3483,3 +3483,14 @@ Còn nativeemailchange,adminCRMCRUD/fullRLS,providerreal/sessionadoption,finalde
 Giao dịch đặt lịch bị webhook từ chối `Webhook Sepay thiếu mã đơn.` do ngân hàng gửi tiền tố dạng `T AM...` thay vì `TAM...`. Đã đối chiếu payload trong giao diện SePay; đây là lỗi nhận diện nội dung, không phải Telegram Bot API. Shared `lib/payments/sepay.ts` giữ ưu tiên mã liền hiện có, bổ sung nhận diện khoảng trắng ngang trong tiền tố TAM; không nối từ sau mã, không bỏ kiểm tra đơn/tài khoản/số tiền, không sửa giá hay quyền học.
 
 Đã tái hiện hai kiểm thử thất bại trước sửa; sau sửa 40 kiểm thử SePay/settlement/HTTP/đặt lịch đạt, gồm không ghép tiền tố giữa hai trường payload. Typecheck, scoped ESLint và build production native đạt; verifier đúng Worker/domain/binding/native gates PASS. Chưa deploy, chưa phát lại giao dịch, chưa xác nhận lịch hoặc gửi thông báo cho khách. Bản sửa cần duyệt hành động production theo policy; sau phát hành chỉ xử lý lại đúng giao dịch đã đối chiếu và đọc lại paid/booking/Telegram.
+
+
+## 20/10/2026 — SePay khoảng trắng tiền tố: LIVE, lịch đã phục hồi
+
+Anh duyệt phát hành và xử lý giao dịch bằng “ok”. Source `737d871` đã push; source preflight Cloudflare, 40 tests, TS/scoped lint, build/native artifact verifier và dry-run đạt. Worker `theanh-main-cf-production` version `34714b79-6506-4569-a7db-584764231a30` được đọc lại 100%. Cron và hai route production giữ nguyên. Landing Facebook Ads 206060 byte có SHA-256 khớp trước/sau. Bản quay lui runtime trước phát hành: `5d479349-341f-4c36-97a1-60c6a1bf7962`.
+
+Giao dịch thật `91767108`, đơn đặt lịch `TAMMVGSY77DDSSK5`, 500000 VND đã được phát lại với dữ liệu gốc đã đọc trên SePay; webhook live HTTP 200, order paid và transaction ID khớp. Telegram có `telegram_sent_at=2026-10-20T15:24:31.709+00:00`, không lỗi. Không coi đây là bằng chứng người dùng đã đọc thông báo.
+
+Replay sau hạn giữ chỗ đưa booking vào needs_review. Đã kiểm thời điểm ngân hàng 14:53:34Z trước hạn giữ chỗ 15:12:25Z, tài khoản/số tiền/transaction trong paid order, không ngày bận hoặc lịch held/confirmed chồng lấn; thực hiện đúng owner-approved recovery bằng UPDATE có đầy đủ điều kiện và ghi activity log. Booking confirmed: 11:30–12:00 ngày23/10/2026 VN. Không thay giờ, giá, quyền học hoặc tạo giao dịch ngân hàng mới. Mục CHƯA DEPLOY phía trước là lịch sử và đã được thay thế bởi kết quả LIVE này.
+
+Giới hạn/công cụ: request thử từ urllib bị Cloudflare 403/1010, chưa tới xử lý thanh toán; client curl HTTP1 nhận 200. Các thao tác UI có phản hồi không rõ kết quả được đối chiếu database/log trước khi kết luận; retry trùng giữ cùng transaction, không ghi nhận tiền hai lần. OAuth CLI sau đó có authentication error; connector D1 đã kết nối sẵn đọc/ghi được, không thay quyền. Không tổng quát đây là lỗi quyền D1 hoặc lỗi webhook.

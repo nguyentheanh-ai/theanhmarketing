@@ -27,3 +27,7 @@ VERIFIED: `confirmOrderFromSepay` ném `Webhook Sepay thiếu mã đơn.` trư�
 ## Khoảng trắng do ngân hàng chèn trong tiền tố (VERIFIED)
 
 Payload ngân hàng có thể giữ số tiền và tài khoản đúng nhưng chèn khoảng trắng giữa T và AM; regex chỉ tìm TAM liền sẽ không nhận diện. Sau đối chiếu payload thật, sửa nhận diện khoảng trắng ngang chỉ trong tiền tố, giữ kiểm tra đơn chính xác, tài khoản nhận, số tiền và retry. Hai test tái hiện thất bại trước sửa, 39 test liên quan đạt sau sửa. Chưa có bằng chứng live cho bản sửa; không áp dụng bằng cách xóa mọi khoảng trắng trong toàn bộ nội dung.
+
+## Kiểm chứng sau phát hành
+
+VERIFIED: bản sửa nhận diện tiền tố có khoảng trắng đã xử lý webhook thật HTTP200 và paid đúng transaction; booking Telegram được ghi sent. Replay muộn có thể đưa booking vào needs_review dù thời điểm chuyển tiền ngân hàng nằm trong hold ban đầu. Chỉ phục hồi confirmed sau kiểm paid order/receiver/amount/transaction, bank time trước hold expiry, không busy date/overlap, có owner approval và audit; không bỏ cơ chế review cho mọi thanh toán muộn.
