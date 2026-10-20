@@ -11,6 +11,8 @@ export NEXT_PUBLIC_SUPABASE_URL=https://www.theanhmarketing.com NEXT_PUBLIC_SUPA
 export CF_DEPLOY_TARGET=production CF_ATTACH_PRODUCTION_DOMAINS=1 CF_PRODUCTION_NATIVE=1
 node node_modules/vite/bin/vite.js build --mode cfproduction
 node scripts/cloudflare-prune-staging-assets.mjs
+# Run the Worker next to D1 (APAC) even when visitors land on a far edge.
+node -e 'const f="dist/server/wrangler.json",fs=require("fs"),c=JSON.parse(fs.readFileSync(f));c.placement={mode:"smart"};fs.writeFileSync(f,JSON.stringify(c))'
 node scripts/verify-cloudflare-production-artifact.mjs
 grep -rq "$NEXT_PUBLIC_APP_URL" dist/server || { echo "APP URL not inlined"; exit 1; }
 grep -q '"theanh-native-a"' dist/server/wrangler.json || { echo "native DB binding missing"; exit 1; }

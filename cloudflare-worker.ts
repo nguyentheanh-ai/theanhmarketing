@@ -14,6 +14,7 @@ installNativeDataFactory();
 import {handleNativeCheckoutStage,runNativeCheckoutCron,type NativeCheckoutStageEnv} from './lib/cloudflare/native-checkout-stage';
 import {handleNativeEmailAuth,type NativeEmailAuthEnv} from './lib/cloudflare/native-email-auth-http';
 import {runWorkerCron} from './lib/cloudflare/worker-cron';
+import {servePublicPage} from './lib/cloudflare/public-page-cache';
 
 // Exact public video path above the Workers asset limit; bytes live in R2 staging.
 const oversizedPublicVideo = "/doi-ngu-nhan-su-ai/media/proof/editor-ai-jun-08-2026.mp4";
@@ -30,7 +31,8 @@ const stagingWorker = {
       incoming.hostname = "www.theanhmarketing.com";
       return Response.redirect(incoming.toString(), 307);
     }
-    const response = await stagingWorker.route(request, env, context);
+    const waitUntil = context && 'waitUntil' in context ? (task: Promise<unknown>) => context.waitUntil(task) : undefined;
+    const response = await servePublicPage(request, req => stagingWorker.route(req, env, context), waitUntil);
     // Test hostnames (*.workers.dev) must never be indexed next to the real domain.
     if (!new URL(request.url).hostname.endsWith('.workers.dev')) return response;
     const tagged = new Response(response.body, response);

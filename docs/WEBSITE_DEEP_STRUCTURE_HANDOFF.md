@@ -3463,3 +3463,10 @@ Còn nativeemailchange,adminCRMCRUD/fullRLS,providerreal/sessionadoption,finalde
 - Admin: `/api/admin/online` (owner/editor) → thẻ `components/admin/online-students-card.tsx` ở đầu `/admin/crm-v2` (online 5 phút + hoạt động 24 giờ, làm mới 30 giây). Chỉ chạy ở chế độ native D1.
 - Ngữ cảnh cho bot: `GET /api/student/context` (chỉ tài khoản đang đăng nhập) trả tên, email, khóa học + tiến độ, khóa nên học tiếp, đơn chờ thanh toán, link hỗ trợ.
 - Nút "Hỗ trợ" nổi: `components/app/student-help-launcher.tsx` — đọc context khi mở, gợi ý tiếp tục học/đơn chờ/đặt lịch 1-1/tài khoản; là chỗ gắn bot sau này. Ở trang bài học nút nằm cao hơn và ẩn trên mobile để không chồng prompt đặt lịch có sẵn.
+
+## Tốc độ / ổn định landing (20/10/2026)
+
+- Zone `theanhmarketing.com` đang gói Free: khách VN lúc vào edge SIN (~1 s), lúc bị đưa sang WAW/ARN (3–7 s). Worker Paid (5 USD) không đổi định tuyến.
+- `scripts/build-cloudflare-production-native.sh` bật `placement: smart` để Worker chạy gần D1 (APAC).
+- `lib/cloudflare/public-page-cache.ts` (gọi trong `cloudflare-worker.ts`): cache edge HTML cho khách chưa đăng nhập ở `/`, `/khoa-hoc`, `/khoa-hoc/<slug>`, `/academy/<slug>`; khóa = path (bỏ query utm/fbclid), làm mới nền sau 60 s, bỏ qua RSC/cookie phiên/Set-Cookie. Header `X-Edge-Cache` HIT/STALE/MISS. Trang này không được đọc query/cookie phía server — nếu sau này cần, phải loại path khỏi regex.
+- Landing tĩnh `public/*.html` (vd. `/academy/ebook-facebook-ads-2026-premium`) vốn phục vụ thẳng từ asset edge; chỉ cải thiện được bằng định tuyến (gói zone cao hơn).
