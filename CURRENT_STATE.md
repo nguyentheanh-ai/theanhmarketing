@@ -1739,3 +1739,14 @@ Giao dịch thật `91767108`, đơn đặt lịch `TAMMVGSY77DDSSK5`, 500000 VN
 Replay sau hạn giữ chỗ đưa booking vào needs_review. Đã kiểm thời điểm ngân hàng 14:53:34Z trước hạn giữ chỗ 15:12:25Z, tài khoản/số tiền/transaction trong paid order, không ngày bận hoặc lịch held/confirmed chồng lấn; thực hiện đúng owner-approved recovery bằng UPDATE có đầy đủ điều kiện và ghi activity log. Booking confirmed: 11:30–12:00 ngày23/10/2026 VN. Không thay giờ, giá, quyền học hoặc tạo giao dịch ngân hàng mới. Mục CHƯA DEPLOY phía trước là lịch sử và đã được thay thế bởi kết quả LIVE này.
 
 Giới hạn/công cụ: request thử từ urllib bị Cloudflare 403/1010, chưa tới xử lý thanh toán; client curl HTTP1 nhận 200. Các thao tác UI có phản hồi không rõ kết quả được đối chiếu database/log trước khi kết luận; retry trùng giữ cùng transaction, không ghi nhận tiền hai lần. OAuth CLI sau đó có authentication error; connector D1 đã kết nối sẵn đọc/ghi được, không thay quyền. Không tổng quát đây là lỗi quyền D1 hoặc lỗi webhook.
+
+
+## 23/10/2026 — Bot 24/7 landing, Tải về, Điều khoản: LIVE
+
+Anh duyệt phát hành bằng "ok". Source `1fbeba0` (nhánh `codex/cloudflare-native-phase2-20261018`, đã push) gồm: `/bot-24-7`, `/bot-24-7/tai-ve`, `/bot-24-7/dieu-khoan` (tệp tĩnh `public/academy/bot-24-7*.html`, alias trong `cloudflare-worker.ts` `STATIC_ASSET_ALIASES`), gói giá cố định 990.000đ cho slug `bot-24-7` trong `lib/orders/payment-package.ts` (không cần dòng danh mục D1), email sau thanh toán riêng cho Bot 24/7 (link bộ cài, không link khóa học), bỏ tạo tài khoản học viên cho `bot-24-7` ở cả `services/studentAccountService.ts` và `lib/cloudflare/native-paid-account.ts`.
+
+Kiểm tra: `theanh-workspace preflight-cloudflare` source PASS; 272 test thanh toán/SePay/đơn/email: 266 pass, 3 fail có sẵn từ `29b0246` (agent-kit-preorder-lifecycle ×2, support-booking-schedule ×1, chạy lại trên base cũng fail), 3 skip; build `scripts/build-cloudflare-production.sh` với `CF_ATTACH_PRODUCTION_DOMAINS=1 CF_PRODUCTION_NATIVE=1 CF_NATIVE_PROD_DB_ID=fabea0e7-…` (artifact verifier 10/10, attachDomains=true); binding/biến so khớp version đang chạy; dry-run đạt.
+
+Worker `theanh-main-cf-production` version `92c248e8-cd18-4229-bb13-273c5132607d` 100%; hai route và cron `*/5` giữ nguyên. Sau phát hành: 3 trang Bot 24/7 200, video 200, `/`, `/khoa-hoc` 200; landing Facebook Ads 206060 byte SHA-256 khớp trước/sau. Bản quay lui: `34714b79-6506-4569-a7db-584764231a30`. Chưa đặt đơn thật thử (chờ anh duyệt).
+
+Lưu ý: build production thiếu 3 biến trên sẽ ra bản preview (gỡ route, tắt cron, dữ liệu Supabase) — không được deploy bản đó.
