@@ -21,7 +21,13 @@ const oversizedPublicVideo = "/doi-ngu-nhan-su-ai/media/proof/editor-ai-jun-08-2
 const oversizedPublicVideoKey = `public${oversizedPublicVideo}`;
 // next.config rewrites to a public .html whose pretty path differs from the
 // request path. Assets cannot match these, so serve the file here (Vercel parity).
-const STATIC_ASSET_ALIASES: Record<string, string> = { "/academy/quang-cao-chuyen-gia": "/industry-ads/chuyen-gia" };
+const STATIC_ASSET_ALIASES: Record<string, string> = {
+  "/academy/quang-cao-chuyen-gia": "/industry-ads/chuyen-gia",
+  // Bot 24/7: landing, trang Tải về, Điều khoản (tệp tĩnh trong public/academy)
+  "/bot-24-7": "/academy/bot-24-7",
+  "/bot-24-7/tai-ve": "/academy/bot-24-7-tai-ve",
+  "/bot-24-7/dieu-khoan": "/academy/bot-24-7-dieu-khoan",
+};
 
 const stagingWorker = {
   async fetch(request: Request, env: unknown, context: Parameters<typeof app.fetch>[2]) {
