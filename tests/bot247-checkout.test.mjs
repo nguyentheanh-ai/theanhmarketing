@@ -3,6 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import ts from "typescript";
+import { createRequire } from "node:module";
+const requireNode = createRequire(import.meta.url);
 
 // Bot 24/7 là phần mềm (slug "bot-24-7"): email sau thanh toán gửi bộ cài + hướng dẫn, không gửi link vào khóa học,
 // không tạo tài khoản học viên; landing tĩnh đặt hàng qua /api/orders với đúng slug.
@@ -11,7 +13,8 @@ function loadTsModule(relativePath) {
   const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, esModuleInterop: true } }).outputText;
   const mod = { exports: {} };
   const requireShim = (specifier) => {
-    if (specifier === "@/lib/notifications/email-link-bridge") return loadTsModule("lib/notifications/email-link-bridge.ts");
+    if (specifier.startsWith("@/")) { const base = specifier.slice(2); for (const f of [base + ".ts", base + "/index.ts"]) if (fs.existsSync(path.resolve(f))) return loadTsModule(f); }
+    if (!specifier.startsWith(".") && !specifier.startsWith("@/")) return requireNode(specifier);
     throw new Error(`Unsupported test import: ${specifier}`);
   };
   new Function("exports", "module", "require", compiled)(mod.exports, mod, requireShim);
@@ -66,4 +69,18 @@ test("Bot 24/7 download and terms pages are routed and linked", () => {
   const landing = fs.readFileSync(path.resolve("public/academy/bot-24-7.html"), "utf8");
   assert.match(landing, /href="\/bot-24-7\/dieu-khoan"/);
   assert.match(landing, /href="\/bot-24-7\/tai-ve"/);
+});
+
+test("Bot 24/7 has a fixed server-side price of 990.000đ (no D1 catalogue row needed)", () => {
+  const { getFixedPaymentPackage } = loadTsModule("lib/orders/payment-package.ts");
+  const p = getFixedPaymentPackage({ courseSlug: "bot-24-7" });
+  assert.equal(p.amount, 990000);
+  assert.equal(p.orderItems[0].slug, "bot-24-7");
+  assert.equal(getFixedPaymentPackage({ courseSlug: "bot-24-7", paymentPlan: "x" }), null);
+  assert.equal(getFixedPaymentPackage({ courseSlug: "facebook-ads-2026" }), null);
+});
+
+test("Native D1 paid flow skips student account for Bot 24/7", () => {
+  const src = fs.readFileSync(path.resolve("lib/cloudflare/native-paid-account.ts"), "utf8");
+  assert.match(src, /product\.courseSlug === "bot-24-7"/);
 });

@@ -32,7 +32,13 @@ function isVietnamThangThaiLanPromotionActive(now = new Date()) {
   return today >= VIETNAM_THANG_THAI_LAN_PROMOTION_START && today <= VIETNAM_THANG_THAI_LAN_PROMOTION_END;
 }
 
+// Bot 24/7 (phần mềm, bán qua /bot-24-7): giá cố định do server quyết định, không cần sản phẩm trong danh mục khóa học D1
+const BOT247_SLUG = "bot-24-7", BOT247_TITLE = "Bot 24/7 - Đội nhân viên AI cho doanh nghiệp", BOT247_PRICE_VND = 990000;
+
 function getFixedPaymentPackage(input: PaymentPackageInput) {
+  if (input.courseSlug === BOT247_SLUG && !input.paymentPlan) {
+    return { amount: BOT247_PRICE_VND, courseSlug: BOT247_SLUG, courseTitle: BOT247_TITLE, orderItems: [{ slug: BOT247_SLUG, title: BOT247_TITLE, price: BOT247_PRICE_VND }] };
+  }
   if (input.courseSlug !== CONSULTATION_PRODUCT_SLUG || input.paymentPlan !== CONSULTATION_PAYMENT_PLAN) {
     return null;
   }

@@ -23,7 +23,8 @@ export async function provisionNativePaidAccount(db: NativeOrderDatabase, code: 
   const text = (key: string) => typeof source[key] === 'string' ? source[key] as string : '';
   const items = (Array.isArray(source.order_items) ? source.order_items : []) as { slug: string; title: string; price: number }[];
   const product = { courseSlug: text('course_slug'), courseTitle: text('course_title'), paymentPlan: text('payment_plan'), orderItems: items };
-  if (product.courseSlug === SUPPORT_PRODUCT_SLUG || items.some(item => item.slug === SUPPORT_PRODUCT_SLUG) || isConsultationOrder(product) || isAgentKitPreorderDepositOrder(product)) return { skipped: true as const, reason: 'product_has_no_account_fulfillment' };
+  // Bot 24/7 là phần mềm: không tạo tài khoản học viên (email riêng gửi bộ cài)
+  if (product.courseSlug === "bot-24-7" || items.some(item => item.slug === "bot-24-7") || product.courseSlug === SUPPORT_PRODUCT_SLUG || items.some(item => item.slug === SUPPORT_PRODUCT_SLUG) || isConsultationOrder(product) || isAgentKitPreorderDepositOrder(product)) return { skipped: true as const, reason: 'product_has_no_account_fulfillment' };
   const credentials = buildAutoStudentAccountCredentials({ studentName: text('student_name'), email: text('email'), phone: text('phone') });
   if (!credentials.email || credentials.email.length > 320 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(credentials.email)) throw new NativePaymentDenied();
   const prior = await db.first('SELECT id FROM d1_access_users WHERE normalized_email=?1', [credentials.email]);
