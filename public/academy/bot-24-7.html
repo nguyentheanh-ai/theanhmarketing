@@ -74,7 +74,11 @@
 
       /* Hero */
       .hero { padding: 70px 0 70px; overflow: hidden; }
-      .hero .grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; position: relative; z-index: 1; }
+      .hero .grid { display: grid; grid-template-columns: 1fr; gap: 54px; justify-items: center; text-align: center; position: relative; z-index: 1; }   /* chữ ở trên, video to toàn khung ở dưới */
+      .hero .grid > div:first-child { max-width: 1040px; }
+      .hero .team-strip, .hero .price-tag, .hero .cta-row { justify-content: center; }
+      .hero p.lead { margin-left: auto; margin-right: auto; max-width: 680px; }
+      .hero .vbox { width: 100%; max-width: 1080px; }
       .badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 15px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font-size: 13.5px; font-weight: 700; box-shadow: 0 6px 18px rgba(109,93,252,.1); }
       .badge i { width: 8px; height: 8px; border-radius: 4px; background: var(--grn); box-shadow: 0 0 0 0 rgba(24,195,126,.6); animation: ping 1.8s infinite; }
       @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(24,195,126,.55); } 100% { box-shadow: 0 0 0 10px rgba(24,195,126,0); } }
@@ -330,7 +334,8 @@
         .sticky { display: block; }
         .mesh i { animation: none; filter: blur(50px); width: 340px; height: 340px; }   /* điện thoại: nền đứng yên cho nhẹ máy */
         #bot { bottom: 88px; right: 12px; } #bot .face { width: 58px; height: 58px; }   /* trên thanh nút Thuê đội ngũ */
-        .fc1 { left: 8px; } .fc2 { right: 8px; }
+        .fc1, .fc2 { display: none; }   /* điện thoại: không che video */
+        .hero .vbox { width: calc(100% + 24px); margin: 0 -12px; } .hero .video { border-radius: 18px; }
       }
       @media (max-width: 560px) {
         .team, .wins, .steps { grid-template-columns: 1fr; } .top .btn { display: none; }
@@ -367,7 +372,7 @@
         <div class="vbox rv d2">
           <div class="float-card fc2"><span class="dot" style="background:#0068ff">Za</span><div>Khách vừa hỏi giá<small>Đã trả lời sau 3 giây</small></div></div>
           <div class="video" id="video">
-            <video id="vid" preload="none" playsinline controls poster="/academy/bot-24-7-assets/poster.webp" src="/academy/bot-24-7-assets/gioi-thieu.mp4"></video>
+            <video id="vid" preload="none" playsinline poster="/academy/bot-24-7-assets/poster.webp" src="/academy/bot-24-7-assets/gioi-thieu.mp4"></video>
             <button class="play" id="play" aria-label="Xem video giới thiệu"><span>▶ Xem đội làm việc · 1 phút</span></button>
           </div>
           <div class="float-card fc1"><span class="dot" style="background:var(--grn)">✓</span><div>5 bài tuần sau đã soạn xong<small>Chờ bạn duyệt</small></div></div>
@@ -454,7 +459,7 @@
     </div></section>
 
     <!-- 5c. Video Reels -->
-    <section id="video" style="padding-top:20px"><div class="wrap feat">
+    <section id="reels" style="padding-top:20px"><div class="wrap feat">
       <div class="txt rv"><span class="eyebrow">05 · Video Reels tự dựng</span>
         <h3 class="t">Một ý tưởng.<br><span class="gt">Ra video hoàn chỉnh.</span></h3>
         <p>Bạn nói muốn làm video gì, nhân viên video viết kịch bản, đọc lời, chèn phụ đề chạy theo từng chữ và nhạc nền. Video xong nằm sẵn trong lịch đăng, chờ bạn duyệt.</p>
@@ -753,7 +758,7 @@
 
         // Video giới thiệu: chỉ tải khi bấm xem
         var vid = document.getElementById("vid"), play = document.getElementById("play");
-        function startVideo() { play.style.display = "none"; vid.play(); }
+        function startVideo() { play.style.display = "none"; vid.controls = true; vid.play(); }   // thanh điều khiển chỉ hiện khi đã bấm xem
         play.addEventListener("click", startVideo);
         document.getElementById("watch").addEventListener("click", function () { setTimeout(startVideo, 350); });
 
