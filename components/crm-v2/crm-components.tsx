@@ -43,6 +43,8 @@ const primaryNavItems = [
   { href: "/admin/crm-v2/customers", label: "Khách hàng & học viên", icon: Users },
   { href: "/admin/crm-v2/courses", label: "Khóa học", icon: BookOpen },
   { href: "/admin/crm-v2/support-bookings", label: "Lịch hỗ trợ", icon: CalendarDays },
+  { href: "/admin/crm-v2/adsmind", label: "AdsMind", icon: Sparkles },
+  { href: "/admin/crm-v2/bot247", label: "Bot 24/7", icon: Bot },
   { href: "/admin/crm-v2/reports", label: "Báo cáo", icon: BarChart3 },
   { href: "/admin/crm-v2/settings", label: "Cài đặt", icon: Settings2 },
 ];
@@ -66,6 +68,20 @@ const advancedNavItems = [
 const editorPaths = new Set(["/admin/crm-v2/sales", "/admin/crm-v2/customers", "/admin/crm-v2/settings", "/admin/crm-v2/students", "/admin/crm-v2/courses", "/admin/cms", "/admin/bai-viet", "/admin/tai-lieu", "/admin/feedback"]);
 function visibleNav(items: readonly CrmNavItem[], role: AdminRole) {
   return items.filter((item) => role === "owner" || editorPaths.has(item.href));
+}
+
+/** Sidebar groups by product; pages not listed fall into "Hệ thống". */
+const navGroups: Array<{ label: string; hrefs: string[] }> = [
+  { label: "Chung", hrefs: ["/admin/crm-v2", "/admin/crm-v2/customers", "/admin/crm-v2/reports"] },
+  { label: "Khóa học", hrefs: ["/admin/crm-v2/sales", "/admin/crm-v2/courses", "/admin/crm-v2/support-bookings"] },
+  { label: "AdsMind", hrefs: ["/admin/crm-v2/adsmind"] },
+  { label: "Bot 24/7", hrefs: ["/admin/crm-v2/bot247"] },
+];
+function groupedNav(role: AdminRole) {
+  const items = visibleNav(primaryNavItems, role), used = new Set(navGroups.flatMap((g) => g.hrefs));
+  const groups = navGroups.map((g) => ({ label: g.label, items: items.filter((i) => g.hrefs.includes(i.href)) }));
+  groups.push({ label: "Hệ thống", items: items.filter((i) => !used.has(i.href)) });
+  return groups.filter((g) => g.items.length);
 }
 
 const activityNavItems = [
@@ -289,9 +305,12 @@ export function CrmSidebar({ adminRole = "owner" }: { adminRole?: AdminRole }) {
       <span className="grid size-9 place-items-center rounded-xl bg-blue-600 text-sm font-black text-white">TA</span>
       <span><span className="block text-sm font-bold">The Anh Marketing</span><span className="block text-xs text-slate-500">Không gian quản trị</span></span>
     </Link>
-    <nav aria-label="Điều hướng chính" className="flex-1 space-y-1 overflow-y-auto p-3">
-      {visibleNav(primaryNavItems, adminRole).map((item) => { const Icon = item.icon; const active = isAdminNavActive(item.href, pathname); return <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined}
-        className={`flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold transition ${active ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}><Icon className="size-4 shrink-0" /><span>{item.label}</span></Link>; })}
+    <nav aria-label="Điều hướng chính" className="flex-1 space-y-4 overflow-y-auto p-3">
+      {groupedNav(adminRole).map((group) => <div key={group.label}>
+        <div className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">{group.label}</div>
+        <div className="space-y-1">{group.items.map((item) => { const Icon = item.icon; const active = isAdminNavActive(item.href, pathname); return <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined}
+        className={`flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold transition ${active ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"}`}><Icon className="size-4 shrink-0" /><span>{item.label}</span></Link>; })}</div>
+      </div>)}
     </nav>
     <div className="border-t border-slate-200 p-4 text-xs text-slate-500">{adminRole === "owner" ? "Chủ hệ thống" : "Biên tập viên"}<Link href="/" target="_blank" rel="noopener noreferrer" className="mt-2 block font-semibold text-blue-700">Xem website ↗</Link></div>
   </aside>;
