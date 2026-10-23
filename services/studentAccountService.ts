@@ -258,6 +258,11 @@ export async function ensureStudentAccountForPaidOrder(
     return { ...baseResult, ok: true, skipped: true, created: false, reason: "Order is not paid." };
   }
 
+  // Bot 24/7 là phần mềm cài trên máy khách (giao bằng mã kích hoạt + bộ cài), không có bài học → không tạo tài khoản học viên.
+  if (order.courseSlug === "bot-24-7" || (order.orderItems || []).some((item) => item.slug === "bot-24-7")) {
+    return { ...baseResult, ok: true, skipped: true, created: false, reason: "Software order (Bot 24/7): no student account." };
+  }
+
   if (!credentials.email || !credentials.password) {
     return {
       ...baseResult,

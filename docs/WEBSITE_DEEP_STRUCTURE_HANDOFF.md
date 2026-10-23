@@ -947,6 +947,7 @@ Quy tac quan trong: khong load full data mot lan neu co the query theo module/pa
 | `/khoa-hoc` | `app/khoa-hoc/page.tsx` | Danh sach khoa hoc public. |
 | `/khoa-hoc/[slug]` | `app/khoa-hoc/[slug]/page.tsx` | Trang sales/detail tung khoa hoc. |
 | `/khoa-hoc/bo-kit-agent-doanh-nghiep` | `app/khoa-hoc/bo-kit-agent-doanh-nghiep/page.tsx` | Landing private/noindex cho ads ban Bo Agent Kit X10, checkout truc tiep qua `/api/orders`. |
+| `/bot-24-7` | `public/academy/bot-24-7.html` (rewrite trong `next.config.ts`) | Landing tĩnh bán phần mềm Bot 24/7 990K: checkout trực tiếp qua `/api/orders` với `courseSlug: "bot-24-7"` → `/thanh-toan/[code]` (SePay). Ảnh/video ở `public/academy/bot-24-7-assets/`. |
 | `/dang-ky` | `app/dang-ky/page.tsx` | Form dang ky/lead/order entry. |
 | `/gio-hang` | `app/gio-hang/page.tsx` | Cart page client. |
 | `/thanh-toan/[code]` | `app/thanh-toan/[code]/page.tsx` | Huong dan thanh toan va polling trang thai; co layout checkout sang cho AI Agent Business/Agent Kit va Facebook Ads 2026, demo local `AGENTKITDEMO`, van dung `SEPAY_*`, QR SePay, `TransferDetails`, `PaymentStatusPoller`. Facebook Ads 2026 phai nhan dien bang slug, khong dua vao title co chu `Agent kit`: 799K hien `2.590.000d -> 799.000d`, 399K hien `2.290.000d -> 399.000d`. Since 2026-06-10 this page schedules customer pending-payment email and Telegram `order_created` after the page response through `services/checkoutNotificationService.ts`. |
@@ -1182,6 +1183,7 @@ Order APIs:
 - `app/api/orders/expire/route.ts`: expire stale pending orders.
 - `app/api/admin/payment-links/route.ts`: owner/editor admin order/payment form sender; reuse existing order service and pending-payment email instead of manual scripts.
 - `app/api/sepay/webhook/route.ts`: SePay payment webhook; on newly paid order it syncs paid order status to Google Sheet and keeps payment/account/email flow intact.
+- 2026-10-23: Bot 24/7 (slug `bot-24-7`, khai báo ở `data/marketing-courses.ts`, giá 990K do server chốt, không hiện ở `/khoa-hoc` vì production lấy danh mục từ Supabase) là phần mềm: `ensureStudentAccountForPaidOrder` bỏ qua (không tạo tài khoản học viên); `buildPaymentSuccessEmailPayload` gửi email riêng có link bộ cài Mac/Windows + hướng dẫn; mã kích hoạt cấp tay từ trang quản trị Bot 24/7 (repo Bot 24/7, `connect-gateway/admin`). Test: `tests/bot247-checkout.test.mjs`.
 - `app/api/leads/route.ts`: public lead capture endpoint used by registration/contact lead forms before order creation.
 - Production note 2026-06-06: public anti-spam guard was removed after the Facebook Ads mobile checkout regression. Do not re-add hidden `company`/`formStartedAt` or `enforceSpamProtection()` unless a new mobile/static HTML test plan is approved.
 

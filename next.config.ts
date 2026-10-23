@@ -92,6 +92,11 @@ const nextConfig: NextConfig = {
         destination: "/academy/facebook-ads-master-2026.html",
       },
       {
+        // Landing bán phần mềm Bot 24/7 (static HTML, checkout qua /api/orders → /thanh-toan/[code])
+        source: "/bot-24-7",
+        destination: "/academy/bot-24-7.html",
+      },
+      {
         source: "/academy/ebook-facebook-ads-2026",
         destination: "/academy/ebook-facebook-ads-2026.html",
       },

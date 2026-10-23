@@ -333,6 +333,10 @@ export function buildPaymentSuccessEmailPayload(
   options: PaymentEmailOptions = {},
 ): ResendEmailPayload {
   const siteUrl = normalizeSiteUrl(options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL);
+  // Bot 24/7 (phần mềm): email riêng với link bộ cài + hướng dẫn, không có khóa học / tài khoản học viên
+  if (isBot247Order(order)) {
+    return buildBot247PaymentSuccessEmail(order, { from: getSender(options), siteUrl });
+  }
   const isAgentKit = !isAgentKitPreorderDepositOrder(order) && (
     order.courseSlug.split(",").some((slug) => slug.trim() === AGENT_KIT_SLUG)
     || order.orderItems.some((item) => item.slug === AGENT_KIT_SLUG)
@@ -915,4 +919,84 @@ export async function sendPaymentFailedEmail(
   }
 
   return { ok: true, skipped: false, reason: null };
+}
+
+/* ---------- Bot 24/7 (phần mềm, slug "bot-24-7" trong data/marketing-courses.ts) ---------- */
+const BOT247_SLUG = "bot-24-7";
+
+// Bot 24/7 là phần mềm cài trên máy khách (không phải khóa học): sau khi thanh toán, khách nhận link bộ cài + hướng dẫn;
+// mã kích hoạt do Thế Anh Marketing cấp từ trang quản trị Bot 24/7 (connect-gateway/admin) và gửi riêng.
+const BOT247_INSTALLERS = {
+  macArm: "https://drive.google.com/file/d/1JvTaFJMhzYtI7LQVews2pyou2z6JYQ3R/view?usp=sharing",
+  macIntel: "https://drive.google.com/file/d/1s6AJX7BlOZyXWWbovE9EWYn-q8UonTCD/view?usp=sharing",
+  windows: "https://drive.google.com/file/d/1IFfRumCpDbD7Bu4Ovn0A0Rf4Ibdlg7kP/view?usp=sharing",
+};
+const supportUrl = "https://www.theanhmarketing.com/lien-he";   // trang liên hệ chung (nhóm Zalo hiện có là của học viên Facebook Ads)
+
+export function isBot247Order(order: Pick<PaymentOrder, "courseSlug" | "orderItems">) {
+  return order.courseSlug === BOT247_SLUG || (order.orderItems || []).some((item) => item.slug === BOT247_SLUG);
+}
+
+const escBot = (value: string) =>
+  String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+
+function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from }: { from: string; siteUrl: string }) {
+  const name = escBot(order.studentName || "bạn");
+  const code = escBot(order.orderCode);
+  const amount = escBot(order.amountLabel);
+  const font = `'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif`;
+  const btn = (href: string, label: string, dark = false) =>
+    `<a href="${escBot(href)}" style="display:block;margin-top:10px;background:${dark ? "#111111" : "#ffffff"};color:${dark ? "#ffffff" : "#111111"};border:1.5px solid #111111;text-decoration:none;border-radius:10px;padding:13px 18px;font-size:15px;font-weight:700;text-align:center">${label}</a>`;
+  const step = (n: number, title: string, body: string) =>
+    `<tr><td style="padding:10px 0;vertical-align:top;width:34px"><div style="width:26px;height:26px;border-radius:13px;background:#111;color:#fff;font-size:13px;font-weight:800;text-align:center;line-height:26px">${n}</div></td><td style="padding:10px 0;font-size:14.5px;line-height:1.6;color:#222"><b>${title}</b><br/>${body}</td></tr>`;
+
+  const html = `<!doctype html><html><head><meta charset="UTF-8" /></head><body style="margin:0;padding:0;background:#f4f4f2">
+<div style="max-width:560px;margin:0 auto;padding:28px 16px;font-family:${font};color:#111">
+  <div style="background:#ffffff;border-radius:18px;padding:28px 26px;border:1px solid #e6e6e2">
+    <div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#777;font-weight:700">Bot 24/7 · Thế Anh Marketing</div>
+    <h1 style="font-size:24px;margin:10px 0 6px">Cảm ơn ${name}, đơn đã thanh toán thành công</h1>
+    <p style="font-size:14.5px;line-height:1.6;color:#444;margin:0">Mã đơn <b>${code}</b> · ${amount}. Dưới đây là bộ cài và cách cài Bot 24/7.</p>
+
+    <div style="margin-top:20px;padding:16px 18px;border-radius:14px;background:#f7f7f5;border:1px solid #e6e6e2;font-size:14.5px;line-height:1.6">
+      <b>Mã kích hoạt</b> (dạng B247-XXXX-XXXX-XXXX) sẽ được Thế Anh Marketing gửi riêng qua email này hoặc Zalo. Bạn cứ cài trước, khi có mã thì nhập ở bước đầu tiên.
+    </div>
+
+    <h2 style="font-size:17px;margin:24px 0 4px">1. Tải bộ cài</h2>
+    <p style="font-size:13.5px;color:#666;margin:0">Mac: bấm biểu tượng Apple › Giới thiệu về máy Mac, xem dòng "Chip". Mở link › Tải xuống › Vẫn tải xuống.</p>
+    ${btn(BOT247_INSTALLERS.windows, "Windows 10/11 · Bot247-Setup.exe", true)}
+    ${btn(BOT247_INSTALLERS.macArm, "Mac chip Apple (M1–M4)")}
+    ${btn(BOT247_INSTALLERS.macIntel, "Mac chip Intel")}
+
+    <h2 style="font-size:17px;margin:26px 0 4px">2. Cài đặt (khoảng 1 phút)</h2>
+    <table style="width:100%;border-collapse:collapse">
+      ${step(1, "Windows", "Bấm đúp <b>Bot247-Setup.exe</b> › Cài đặt › Hoàn tất. Nếu Windows báo chặn: More info › Run anyway.")}
+      ${step(2, "Mac", "Bấm đúp tệp <b>.pkg</b> › Cài đặt › nhập mật khẩu máy. Nếu máy báo chưa xác minh: chuột phải › Mở.")}
+      ${step(3, "Bot tự mở", "Bot tải tiếp bộ não AI ở nền (5–30 phút lần đầu), có thanh tiến trình ở góc màn hình.")}
+      ${step(4, "Kích hoạt & đăng nhập AI", "Dán mã kích hoạt › Kích hoạt. Đăng nhập Claude (gói Pro/Max) hoặc ChatGPT (gói Plus/Pro) › Xong. Rồi vào mục Bắt đầu.")}
+    </table>
+
+    <h2 style="font-size:17px;margin:22px 0 4px">Cần hỗ trợ cài đặt?</h2>
+    <p style="font-size:14.5px;line-height:1.6;color:#444;margin:0">Nhắn nhóm hỗ trợ, gửi kèm mã đơn <b>${code}</b>.</p>
+    ${btn(supportUrl, "Liên hệ hỗ trợ")}
+  </div>
+  <p style="font-size:12px;color:#888;text-align:center;margin-top:14px">Dữ liệu và tri thức của bạn nằm trên máy của bạn. Bot dùng gói Claude/ChatGPT bạn tự đăng ký.</p>
+</div></body></html>`;
+
+  const text = [
+    `Cảm ơn ${order.studentName || "bạn"}, đơn ${order.orderCode} (${order.amountLabel}) đã thanh toán thành công.`,
+    "",
+    "Mã kích hoạt Bot 24/7 sẽ được Thế Anh Marketing gửi riêng qua email hoặc Zalo.",
+    "",
+    "Tải bộ cài:",
+    `- Windows 10/11: ${BOT247_INSTALLERS.windows}`,
+    `- Mac chip Apple: ${BOT247_INSTALLERS.macArm}`,
+    `- Mac chip Intel: ${BOT247_INSTALLERS.macIntel}`,
+    "",
+    "Windows: bấm đúp Bot247-Setup.exe › Cài đặt › Hoàn tất. Mac: bấm đúp tệp .pkg › Cài đặt.",
+    "Bot tự mở và tải tiếp bộ não AI ở nền. Dán mã kích hoạt, đăng nhập Claude hoặc ChatGPT, rồi vào mục Bắt đầu.",
+    "",
+    `Hỗ trợ: ${supportUrl}`,
+  ].join("\n");
+
+  return { from, to: order.email, subject: `Bot 24/7 · Đã thanh toán đơn ${order.orderCode} · Bộ cài và hướng dẫn`, html, text };
 }

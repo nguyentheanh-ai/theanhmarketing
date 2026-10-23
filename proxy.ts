@@ -23,7 +23,9 @@ function isLadiPageRoute(pathname: string) {
     pathname === "/academy/ebook-facebook-ads-2026" ||
     pathname === "/academy/ebook-facebook-ads-2026.html" ||
     pathname === "/academy/ebook-facebook-ads-2026-premium" ||
-    pathname === "/academy/ebook-facebook-ads-2026-premium.html"
+    pathname === "/academy/ebook-facebook-ads-2026-premium.html" ||
+    pathname === "/bot-24-7" ||
+    pathname === "/academy/bot-24-7.html"
   );
 }
 
