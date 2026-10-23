@@ -196,24 +196,62 @@
       .emp li { display: flex; gap: 8px; } .emp li::before { content: "•"; color: var(--c); font-weight: 900; }
       .emp .outc { margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 14px; font-weight: 800; }
 
-      /* Lịch đăng / video / duyệt (cảnh nhỏ) */
-      .trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 42px; }
-      .tcard { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 22px; overflow: hidden; }
-      .tcard h3 { font-size: 19px; margin: 14px 0 6px; } .tcard p { margin: 0; color: var(--ink2); font-size: 14.5px; }
-      .mini { border-radius: 16px; padding: 14px; background: var(--bg); height: 210px; position: relative; overflow: hidden; }
-      .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-      .cal div { aspect-ratio: 1; border-radius: 8px; background: #fff; position: relative; }
-      .cal div.p::after { content: ""; position: absolute; left: 4px; right: 4px; bottom: 5px; height: 6px; border-radius: 3px; background: var(--c, var(--vio)); transform: scaleX(0); transform-origin: left; animation: fillx .5s forwards; animation-delay: var(--dl); }
-      @keyframes fillx { to { transform: scaleX(1); } }
-      .reel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; height: 100%; }
-      .reel div { border-radius: 12px; background: var(--g); padding: 8px; color: #fff; font-size: 11px; font-weight: 800; display: flex; flex-direction: column; justify-content: flex-end; position: relative; overflow: hidden; }
-      .reel div::before { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%); transform: translateX(-100%); animation: shine 2.8s infinite; animation-delay: var(--dl); }
-      @keyframes shine { to { transform: translateX(100%); } }
-      .reel div span { background: rgba(255,255,255,.95); color: #111; border-radius: 6px; padding: 2px 6px; margin-top: 4px; display: inline-block; font-size: 10px; }
-      .ap { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 12px; padding: 10px; margin-bottom: 8px; font-size: 13px; font-weight: 700; }
-      .ap .ic { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; color: #fff; font-size: 11px; background: var(--c); }
-      .ap .b { margin-left: auto; padding: 5px 12px; border-radius: 8px; background: var(--ink); color: #fff; font-size: 12px; transition: .3s; }
-      .ap.ok .b { background: var(--grn); }
+      /* Cảnh 04: lịch đăng đa kênh */
+      .s-cal { background: linear-gradient(140deg, #eef1ff, #fbefff 60%, #eafaff); padding: 24px; max-width: 1040px; margin: 36px auto 0; min-height: 0; }
+      .ticks.row3 { grid-template-columns: repeat(3, 1fr); max-width: 1040px; margin: 26px auto 0; }
+      .calbar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 15px; min-height: 34px; }
+      .calbar b { white-space: nowrap; }
+      .calbar .chs2 { display: flex; gap: 4px; }
+      .calbar .chs2 i, .pc .h i { font-style: normal; color: #fff; background: var(--c); display: grid; place-items: center; font-weight: 900; }
+      .calbar .chs2 i { width: 22px; height: 22px; border-radius: 7px; font-size: 9.5px; }
+      .apall { margin-left: auto; padding: 8px 14px; border-radius: 10px; background: var(--ink); color: #fff; font-size: 13px; font-weight: 800; opacity: 0; transform: scale(.8); transition: .35s; white-space: nowrap; }
+      .apall.on { opacity: 1; transform: none; box-shadow: 0 0 0 0 rgba(109,93,252,.5); animation: ring 1.2s infinite; }
+      .apall.press { background: var(--grn); transform: scale(.94); animation: none; }
+      @keyframes ring { to { box-shadow: 0 0 0 12px rgba(109,93,252,0); } }
+      .draft { display: flex; gap: 12px; align-items: center; background: #fff; border-radius: 16px; padding: 10px 12px; box-shadow: 0 10px 30px rgba(60,50,160,.14); margin-bottom: 12px; min-height: 68px; transition: opacity .35s, transform .35s; }
+      .draft .th { width: 46px; height: 46px; border-radius: 12px; background: var(--g, var(--grad)); flex: none; display: grid; place-items: center; font-size: 22px; }
+      .draft small { font-weight: 800; color: var(--c, var(--vio)); font-size: 12px; }
+      .draft p { margin: 2px 0 0; font-size: 14px; font-weight: 700; min-height: 20px; color: var(--ink); }
+      .draft p::after { content: ""; display: inline-block; width: 2px; height: 14px; background: var(--vio); margin-left: 2px; vertical-align: -2px; animation: blinkc .8s infinite; }
+      @keyframes blinkc { 50% { opacity: 0; } }
+      .draft .ai { margin-left: auto; font-size: 11px; font-weight: 800; color: #fff; background: var(--grad); padding: 4px 9px; border-radius: 20px; white-space: nowrap; flex: none; }
+      .draft.go { opacity: 0; transform: translateY(12px) scale(.96); }
+      .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+      .day { background: rgba(255,255,255,.72); border-radius: 14px; padding: 8px 6px; min-height: 250px; min-width: 0; }
+      .day .dn { display: block; font-size: 11px; font-weight: 800; color: var(--ink2); text-align: center; }
+      .day .dd { display: block; width: 26px; font-size: 14px; font-weight: 900; text-align: center; margin: 1px auto 6px; border-radius: 8px; }
+      .day.today .dd { color: #fff; background: var(--grad); }
+      .pc { overflow: hidden; background: #fff; border-radius: 10px; padding: 7px 8px; margin-bottom: 7px; border-left: 3px solid var(--c); box-shadow: 0 3px 10px rgba(40,40,120,.08); font-size: 12px; transition: transform .6s cubic-bezier(.2,.8,.2,1), opacity .6s; }
+      .pc .h { display: flex; align-items: center; gap: 4px; font-weight: 800; }
+      .pc .h i { width: 18px; height: 18px; border-radius: 6px; font-size: 8.5px; flex: none; }
+      .pc .x { margin: 3px 0; font-weight: 600; line-height: 1.25; color: var(--ink); }
+      .pc .st { display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; font-size: 10.5px; font-weight: 800; padding: 2px 7px; border-radius: 6px; background: #fff3d6; color: #a86a00; transition: .3s; white-space: nowrap; }
+      .pc.ok .st { background: #e3f8ee; color: #0d8a55; }
+      .pc.live .st { background: var(--grn); color: #fff; }
+      .pc.live { animation: pcpop .5s; }
+      @keyframes pcpop { 50% { transform: scale(1.1); } }
+
+      /* Cảnh 05: video Reels */
+      .s-reel { background: radial-gradient(circle at 15% 15%, rgba(255,79,163,.35), transparent 45%), radial-gradient(circle at 85% 85%, rgba(18,194,233,.35), transparent 45%), linear-gradient(150deg, #15123a, #2a1b5c); display: grid; grid-template-columns: 1fr auto; gap: 22px; align-items: center; color: #fff; }
+      .rs { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 11px 12px; margin-bottom: 10px; font-size: 14px; font-weight: 700; opacity: .35; transition: .4s; }
+      .rs:last-child { margin-bottom: 0; }
+      .rs i { font-style: normal; width: 30px; height: 30px; border-radius: 9px; background: rgba(255,255,255,.12); display: grid; place-items: center; flex: none; }
+      .rs.on { opacity: 1; background: rgba(255,255,255,.14); }
+      .rs.on::after { content: "✓"; margin-left: auto; width: 20px; height: 20px; border-radius: 10px; background: var(--grn); display: grid; place-items: center; font-size: 11px; flex: none; }
+      .phone { width: 212px; aspect-ratio: 9 / 16; border-radius: 30px; padding: 7px; background: #0b0a1c; box-shadow: 0 20px 60px rgba(0,0,0,.45), 0 0 0 2px rgba(255,255,255,.12); }
+      .scr { position: relative; height: 100%; border-radius: 24px; overflow: hidden; background: var(--g, linear-gradient(160deg, #6d5dfc, #2f8cff)); }
+      .scr .big { position: absolute; left: 50%; top: 38%; font-size: 76px; transform: translate(-50%, -50%); animation: kb 3s ease-in-out infinite alternate; }
+      @keyframes kb { to { transform: translate(-50%, -55%) scale(1.15) rotate(-5deg); } }
+      .rtop { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; }
+      .rtop b { background: rgba(0,0,0,.25); padding: 2px 8px; border-radius: 8px; }
+      .sub { position: absolute; left: 10px; right: 10px; bottom: 62px; text-align: center; font-size: 17px; font-weight: 900; line-height: 1.3; text-shadow: 0 2px 8px rgba(0,0,0,.4); }
+      .sub span { transition: .15s; display: inline-block; margin: 0 .1em; }
+      .sub span.on { color: #ffe14d; transform: scale(1.14); }
+      .wave { position: absolute; left: 0; right: 0; bottom: 26px; display: flex; justify-content: center; gap: 3px; height: 22px; align-items: flex-end; }
+      .wave i { width: 4px; border-radius: 2px; background: rgba(255,255,255,.85); height: 25%; animation: wv .8s ease-in-out infinite alternate; animation-delay: calc(var(--k) * -.13s); }
+      @keyframes wv { to { height: 100%; } }
+      .prog { position: absolute; left: 12px; right: 12px; bottom: 13px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.3); }
+      .prog i { display: block; height: 100%; width: 0; border-radius: 2px; background: #fff; transition: width .35s linear; }
 
       /* So sánh, bước, mua, hỏi đáp */
       .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 40px; }
@@ -297,6 +335,9 @@
       @media (max-width: 560px) {
         .team, .wins, .steps { grid-template-columns: 1fr; } .top .btn { display: none; }
         .stage { padding: 18px; min-height: 400px; } .inbox { margin-left: 70px; } .chs { left: 12px; } .ch { width: 42px; height: 42px; } .fly { left: 58px; }
+        .s-cal { padding: 14px; } .calbar .chs2, .draft .ai, .pc .x, .pc .h i { display: none; } .week { gap: 3px; } .day { min-height: 140px; padding: 5px 2px; } .pc { padding: 5px 3px; font-size: 10px; margin-bottom: 4px; } .pc .h { justify-content: center; } .pc .st { display: block; font-size: 0; height: 4px; padding: 0; margin-top: 4px; background: var(--amb); } .pc.ok .st { background: #9be3c2; } .pc.live .st { background: var(--grn); }
+        .ticks.row3 { grid-template-columns: 1fr; }
+        .s-reel { grid-template-columns: 1fr; } .phone { margin: 0 auto; width: 196px; } .rs { padding: 8px 10px; font-size: 13px; }
         .src, .out { font-size: 12px; padding: 7px 10px; } .brain { width: 92px; height: 92px; } .brain svg { width: 60px; height: 60px; }
         #bot .bubble { width: 210px; right: 68px; bottom: 6px; } #bot .panel { bottom: 70px; }
       }
@@ -307,7 +348,7 @@
     <header class="top"><div class="wrap">
       <a class="logo" href="#"><svg viewBox="0 0 64 64"><path d="M32 4c15 0 27 10 27 26s-9 30-27 30S5 46 5 30 17 4 32 4z" fill="#0f0d1a"/><g fill="#fff"><rect x="22" y="22" width="7" height="19" rx="3.5" transform="rotate(-14 25 31)"/><rect x="39" y="22" width="7" height="19" rx="3.5" transform="rotate(-14 42 31)"/></g></svg>Bot 24/7</a>
       <div class="sp"></div>
-      <nav><a href="#da-kenh">Tư vấn đa kênh</a><a href="#tri-thuc">Tri thức</a><a href="#ban-dem">Làm việc ban đêm</a><a href="#doi-ngu">Đội ngũ</a><a href="#hoi-dap">Hỏi đáp</a></nav>
+      <nav><a href="#da-kenh">Tư vấn đa kênh</a><a href="#tri-thuc">Tri thức</a><a href="#ban-dem">Làm việc ban đêm</a><a href="#lich-dang">Lịch đăng</a><a href="#doi-ngu">Đội ngũ</a><a href="#hoi-dap">Hỏi đáp</a></nav>
       <a class="btn" href="#mua" data-cta>Thuê đội ngũ · 990.000đ</a>
     </div></header>
 
@@ -399,20 +440,36 @@
       </div>
     </div></section>
 
+    <!-- 5b. Lịch đăng đa kênh -->
+    <section id="lich-dang" style="padding-top:20px"><div class="wrap">
+      <div class="center rv"><span class="eyebrow">04 · Lịch đăng đa kênh</span>
+        <h2>Cả tuần nội dung. <span class="gt">Soạn sẵn, đăng đúng giờ.</span></h2>
+        <p class="lead2">Nhân viên nội dung đọc tri thức của shop, tự soạn bài cho Facebook, Instagram, TikTok, YouTube rồi xếp vào lịch theo giờ khách hay online. Bạn lướt qua, bấm Duyệt, đến giờ bài tự lên.</p></div>
+      <div class="stage s-cal rv d1" id="sCal">
+        <div class="calbar"><b>Lịch đăng · Tuần này</b><span class="chs2"><i style="--c:#1877f2">f</i><i style="--c:#e1306c">IG</i><i style="--c:#111">TT</i><i style="--c:#ff0000">YT</i></span><span class="apall" id="apAll">Duyệt tất cả</span></div>
+        <div class="draft" id="draft"><div class="th" id="dTh">✍️</div><div style="min-width:0"><small id="dCh">Nhân viên nội dung</small><p id="dTx"></p></div><span class="ai" id="dAi">✦ Đang soạn</span></div>
+        <div class="week" id="week"></div>
+      </div>
+      <ul class="ticks row3 rv"><li>Một lịch cho mọi kênh, nhìn là biết tuần này đăng gì</li><li>Bài viết đúng giọng shop, kèm ảnh hoặc video</li><li>Không bài nào được đăng khi bạn chưa bấm Duyệt</li></ul>
+    </div></section>
+
+    <!-- 5c. Video Reels -->
+    <section id="video" style="padding-top:20px"><div class="wrap feat">
+      <div class="txt rv"><span class="eyebrow">05 · Video Reels tự dựng</span>
+        <h3 class="t">Một ý tưởng.<br><span class="gt">Ra video hoàn chỉnh.</span></h3>
+        <p>Bạn nói muốn làm video gì, nhân viên video viết kịch bản, đọc lời, chèn phụ đề chạy theo từng chữ và nhạc nền. Video xong nằm sẵn trong lịch đăng, chờ bạn duyệt.</p>
+        <ul class="ticks"><li>Video dọc đúng khổ Reels, TikTok, Shorts</li><li>Phụ đề sáng theo từng chữ, xem không cần bật tiếng</li><li>Không cần thuê người dựng, không cần biết phần mềm</li></ul></div>
+      <div class="stage s-reel rv d2" id="sReel">
+        <div id="rSteps"><div class="rs"><i>✍️</i>Viết kịch bản</div><div class="rs"><i>🎙️</i>Đọc lời tự nhiên</div><div class="rs"><i>💬</i>Phụ đề chạy theo chữ</div><div class="rs"><i>🎵</i>Nhạc nền và hiệu ứng</div></div>
+        <div class="phone"><div class="scr" id="rScr"><span class="big" id="rBig">👗</span><div class="rtop"><b>Reels</b><span id="rTime">0:00 / 0:30</span></div><div class="sub" id="rSub"></div><div class="wave"><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i><i style="--k:3"></i><i style="--k:4"></i><i style="--k:5"></i><i style="--k:6"></i><i style="--k:7"></i><i style="--k:8"></i><i style="--k:9"></i><i style="--k:10"></i><i style="--k:11"></i><i style="--k:12"></i><i style="--k:13"></i></div><div class="prog"><i id="rProg"></i></div></div></div>
+      </div>
+    </div></section>
+
     <!-- 6. Đội ngũ -->
     <section id="doi-ngu" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">
       <div class="center rv"><span class="eyebrow">Đội ngũ của bạn</span><h2>8 nhân viên, <span class="gt">mỗi người một nghề.</span></h2>
         <p class="lead2">Bạn giao việc bằng một câu chat. Trợ lý trưởng tự chia việc cho đúng người, gom kết quả về cho bạn duyệt.</p></div>
       <div class="team" id="team"></div>
-      <div class="trio">
-        <div class="tcard rv"><div class="mini"><div class="cal" id="cal"></div></div><h3>Lịch đăng kín cả tháng</h3><p>Facebook, Instagram, TikTok, YouTube trên một lịch.</p></div>
-        <div class="tcard rv d1"><div class="mini"><div class="reel"><div style="--g:linear-gradient(160deg,#6d5dfc,#2f8cff);--dl:0s">Ra mắt bộ sưu tập<span>0:30</span></div><div style="--g:linear-gradient(160deg,#ff4fa3,#ffb020);--dl:.6s">Ưu đãi cuối tuần<span>0:20</span></div><div style="--g:linear-gradient(160deg,#12c2e9,#18c37e);--dl:1.2s">Khách nói gì<span>0:45</span></div></div></div><h3>Video Reels có giọng đọc</h3><p>Phụ đề chạy theo chữ, không cần thuê ngoài.</p></div>
-        <div class="tcard rv d2"><div class="mini" id="apbox">
-          <div class="ap" style="--c:var(--blu)"><span class="ic">FB</span>Bài ra mắt bộ sưu tập<span class="b">Duyệt</span></div>
-          <div class="ap" style="--c:var(--pin)"><span class="ic">▶</span>Reels ưu đãi cuối tuần<span class="b">Duyệt</span></div>
-          <div class="ap" style="--c:var(--grn)"><span class="ic">W</span>Trang đăng ký khoá học<span class="b">Duyệt</span></div>
-          <div class="ap" style="--c:var(--amb)"><span class="ic">Ad</span>Quảng cáo · tạm dừng<span class="b">Duyệt</span></div></div><h3>Bạn luôn là người quyết định</h3><p>Không gì ra ngoài khi bạn chưa bấm Duyệt.</p></div>
-      </div>
       <div class="center" style="margin-top:40px"><a class="btn big" href="#mua" data-cta>Thuê cả đội · 990.000đ</a></div>
     </div></section>
 
@@ -597,12 +654,62 @@
               items.forEach(function (x) { if (mins(x.dataset.t) <= m) x.classList.add("done"); }); await sleep(55); }
             morning.classList.add("on"); await sleep(4200); } });
 
-        // ---- Lịch đăng tự lấp đầy + duyệt lần lượt
-        var CC = ["#6d5dfc", "#ff4fa3", "#12c2e9", "#ffb020"], cal = ""; for (var d = 1; d <= 28; d++) cal += '<div class="' + (d % 7 === 0 ? "" : "p") + '" style="--c:' + CC[d % 4] + ";--dl:" + (d * .06) + 's"></div>';
-        document.getElementById("cal").innerHTML = cal;
-        whenVisible(document.getElementById("apbox"), async function () { var aps = document.querySelectorAll("#apbox .ap");
-          for (;;) { for (var i = 0; i < aps.length; i++) { await sleep(900); aps[i].classList.add("ok"); aps[i].querySelector(".b").textContent = "✓ Đã duyệt"; }
-            await sleep(2500); aps.forEach(function (a) { a.classList.remove("ok"); a.querySelector(".b").textContent = "Duyệt"; }); } });
+        // ---- Lịch đăng: soạn từng bài, xếp vào lịch, chủ duyệt, đến giờ tự đăng
+        var DN = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"], DD = [26, 27, 28, 29, 30, 31, 1];
+        var CHN = { f: ["#1877f2", "Facebook"], IG: ["#e1306c", "Instagram"], TT: ["#111", "TikTok"], YT: ["#ff0000", "YouTube"] };
+        var POSTS = [
+          { d: 0, ch: "f", t: "19:30", x: "Ra mắt bộ sưu tập thu", e: "👗", g: "linear-gradient(140deg,#6d5dfc,#2f8cff)" },
+          { d: 1, ch: "IG", t: "12:00", x: "3 cách phối đồ đi làm", e: "📸", g: "linear-gradient(140deg,#ff4fa3,#ffb020)" },
+          { d: 1, ch: "TT", t: "21:00", x: "Thử đồ 30 giây", e: "🎬", g: "linear-gradient(140deg,#222,#6d5dfc)" },
+          { d: 2, ch: "f", t: "20:00", x: "Khách nói gì về shop", e: "💬", g: "linear-gradient(140deg,#12c2e9,#18c37e)" },
+          { d: 3, ch: "YT", t: "18:00", x: "Hướng dẫn chọn size", e: "📏", g: "linear-gradient(140deg,#ff5f6d,#ffc371)" },
+          { d: 4, ch: "IG", t: "11:30", x: "Cuối tuần giảm 15%", e: "🔥", g: "linear-gradient(140deg,#ff4fa3,#6d5dfc)" },
+          { d: 5, ch: "TT", t: "20:30", x: "Hậu trường đóng hàng", e: "📦", g: "linear-gradient(140deg,#ffb020,#18c37e)" },
+          { d: 6, ch: "f", t: "09:00", x: "Chủ nhật shop mở cửa", e: "🛍️", g: "linear-gradient(140deg,#2f8cff,#12c2e9)" }];
+        var week = document.getElementById("week");
+        week.innerHTML = DN.map(function (n, i) { return '<div class="day' + (i ? "" : " today") + '"><span class="dn">' + n + '</span><span class="dd">' + DD[i] + '</span><div class="sl"></div></div>'; }).join("");
+        whenVisible(document.getElementById("sCal"), async function () {
+          var sl = week.querySelectorAll(".sl"), draft = document.getElementById("draft"), dTx = document.getElementById("dTx"), dCh = document.getElementById("dCh"), dTh = document.getElementById("dTh"), ap = document.getElementById("apAll"), dAi = document.getElementById("dAi");
+          for (;;) {
+            sl.forEach(function (x) { x.innerHTML = ""; }); dAi.textContent = "✦ Đang soạn"; ap.className = "apall"; ap.textContent = "Duyệt tất cả (" + POSTS.length + ")";
+            var cards = [];
+            for (var i = 0; i < POSTS.length; i++) { var p = POSTS[i], c = CHN[p.ch];
+              draft.style.setProperty("--c", c[0]); draft.style.setProperty("--g", p.g); dTh.textContent = p.e; dCh.textContent = c[1] + " · " + DN[p.d] + " " + p.t; dTx.textContent = ""; draft.classList.remove("go");
+              for (var k = 1; k <= p.x.length; k++) { dTx.textContent = p.x.slice(0, k); await sleep(26); }
+              await sleep(260);
+              var el = document.createElement("div"); el.className = "pc"; el.style.setProperty("--c", c[0]);
+              el.innerHTML = '<div class="h"><i>' + p.ch + "</i>" + p.t + '</div><div class="x">' + p.x + '</div><span class="st">Chờ duyệt</span>';
+              sl[p.d].appendChild(el);
+              var A = draft.getBoundingClientRect(), B = el.getBoundingClientRect();
+              el.style.transition = "none"; el.style.opacity = ".3"; el.style.transform = "translate(" + (A.left - B.left) + "px," + (A.top - B.top) + "px) scale(1.3)";
+              el.offsetWidth; el.style.transition = ""; el.style.opacity = ""; el.style.transform = "";
+              draft.classList.add("go"); cards.push(el); await sleep(480); }
+            draft.style.setProperty("--g", "var(--grad)"); dTh.textContent = "✅"; dCh.textContent = "Đã soạn xong " + POSTS.length + " bài cho tuần này"; dTx.textContent = "Bạn xem qua rồi bấm Duyệt nhé"; dAi.textContent = "Chờ bạn duyệt"; draft.classList.remove("go");
+            ap.classList.add("on"); await sleep(1600);
+            ap.classList.add("press"); ap.textContent = "✓ Đã duyệt";
+            for (var j = 0; j < cards.length; j++) { cards[j].classList.add("ok"); cards[j].querySelector(".st").textContent = "Đã lên lịch"; await sleep(110); }
+            await sleep(900); dTh.textContent = "⏰"; dCh.textContent = "Đến giờ là tự đăng"; dTx.textContent = "Bạn không cần canh giờ nữa"; dAi.textContent = "✓ Tự đăng";
+            for (var q = 0; q < 3; q++) { cards[q].classList.add("live"); cards[q].querySelector(".st").textContent = "✓ Đã đăng"; await sleep(900); }
+            await sleep(3800); } });
+
+        // ---- Video Reels: các bước tích dần, phụ đề sáng theo từng chữ
+        var SCN = [
+          { e: "👗", g: "linear-gradient(160deg,#6d5dfc,#2f8cff)", w: "Bộ sưu tập thu đã về đủ size" },
+          { e: "🔥", g: "linear-gradient(160deg,#ff4fa3,#ffb020)", w: "Cuối tuần này giảm 15%" },
+          { e: "💬", g: "linear-gradient(160deg,#12c2e9,#18c37e)", w: "Nhắn shop để giữ mẫu nhé!" }];
+        whenVisible(document.getElementById("sReel"), async function () {
+          var rs = document.querySelectorAll("#rSteps .rs"), scr = document.getElementById("rScr"), big = document.getElementById("rBig"), sub = document.getElementById("rSub"), prog = document.getElementById("rProg"), tm = document.getElementById("rTime");
+          var total = SCN.reduce(function (n, x) { return n + x.w.split(" ").length; }, 0);
+          for (;;) {
+            rs.forEach(function (r) { r.classList.remove("on"); }); sub.innerHTML = ""; prog.style.width = "0"; tm.textContent = "0:00 / 0:30"; scr.style.setProperty("--g", SCN[0].g); big.textContent = "🎬";
+            for (var i = 0; i < rs.length; i++) { await sleep(650); rs[i].classList.add("on"); }
+            var done = 0;
+            for (var s = 0; s < SCN.length; s++) { var x = SCN[s]; scr.style.setProperty("--g", x.g); big.textContent = x.e;
+              sub.innerHTML = x.w.split(" ").map(function (w) { return "<span>" + w + "</span>"; }).join(" "); var sp = sub.children;
+              for (var j = 0; j < sp.length; j++) { if (j) sp[j - 1].classList.remove("on"); sp[j].classList.add("on"); done++;
+                prog.style.width = (done / total * 100) + "%"; tm.textContent = "0:" + String(Math.round(done / total * 30)).padStart(2, "0") + " / 0:30"; await sleep(380); }
+              await sleep(450); }
+            await sleep(2000); } });
 
         // ---- Chú Bot góc phải
         var face = document.getElementById("botFace"), eL = document.getElementById("eL"), eR = document.getElementById("eR"), bubble = document.getElementById("botBubble"), panel = document.getElementById("botPanel");
