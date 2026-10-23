@@ -162,6 +162,7 @@ test("checkout persists the selected price in order, item and SePay QR", async (
     "@/lib/meta/purchase-outbox": {},
     "@/services/courseService": {},
     "@/lib/consultation/constants": {},
+    "@/lib/bot247/constants": {},
     "@/lib/agent-kit-preorder": {},
     "@/lib/admin/command-center-source": {},
     "@/lib/admin/read-all-rows": load("lib/admin/read-all-rows.ts"),

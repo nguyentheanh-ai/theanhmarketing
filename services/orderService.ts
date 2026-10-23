@@ -1,3 +1,4 @@
+import { BOT247_PAYMENT_PLAN, BOT247_PRICE_VND, BOT247_PRODUCT_SLUG, BOT247_PRODUCT_TITLE } from "@/lib/bot247/constants";
 import { applyOrderCoupon } from "@/lib/orders/coupon";
 import { readAllAdminRows } from "@/lib/admin/read-all-rows";
 import { fallbackOrders } from "@/data/platform";
@@ -387,6 +388,15 @@ function isVietnamThangThaiLanPromotionActive(now = new Date()) {
 }
 
 function getFixedPaymentPackage(input: CreatePaymentOrderInput) {
+  if (input.courseSlug === BOT247_PRODUCT_SLUG && input.paymentPlan === BOT247_PAYMENT_PLAN) {
+    return {
+      amount: BOT247_PRICE_VND,
+      courseSlug: BOT247_PRODUCT_SLUG,
+      courseTitle: BOT247_PRODUCT_TITLE,
+      orderItems: [{ slug: BOT247_PRODUCT_SLUG, title: BOT247_PRODUCT_TITLE, price: BOT247_PRICE_VND }],
+    };
+  }
+
   if (input.courseSlug !== CONSULTATION_PRODUCT_SLUG || input.paymentPlan !== CONSULTATION_PAYMENT_PLAN) {
     return null;
   }
