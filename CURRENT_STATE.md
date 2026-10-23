@@ -1750,3 +1750,7 @@ Kiểm tra: `theanh-workspace preflight-cloudflare` source PASS; 272 test thanh 
 Worker `theanh-main-cf-production` version `92c248e8-cd18-4229-bb13-273c5132607d` 100%; hai route và cron `*/5` giữ nguyên. Sau phát hành: 3 trang Bot 24/7 200, video 200, `/`, `/khoa-hoc` 200; landing Facebook Ads 206060 byte SHA-256 khớp trước/sau. Bản quay lui: `34714b79-6506-4569-a7db-584764231a30`. Chưa đặt đơn thật thử (chờ anh duyệt).
 
 Lưu ý: build production thiếu 3 biến trên sẽ ra bản preview (gỡ route, tắt cron, dữ liệu Supabase) — không được deploy bản đó.
+
+## 23/10/2026 — Trang Tải về Bot 24/7 (tự nhận diện máy): LIVE
+
+Anh duyệt "ok". Source `4b567e7` (push), preflight source PASS, test Bot 24/7 6/6, build production với 3 biến native/attach (verifier 10/10), cấu hình khớp (2 route, cron */5, D1 fabea0e7, CF_CRON_MODE enabled, CF_NATIVE_DATA_MODE d1), dry-run đạt. Worker version `ca8e9f3b-c5a8-43c3-b044-153fa52d1a0f` 100%. Sau phát hành: /bot-24-7, /bot-24-7/tai-ve, /bot-24-7/dieu-khoan, /, /khoa-hoc 200; landing Facebook Ads SHA khớp. Quay lui: `92c248e8-cd18-4229-bb13-273c5132607d`.
