@@ -35,6 +35,8 @@ test("Bot 24/7 paid email sends installer links and no course access link", () =
   assert.match(payload.html, /Mã kích hoạt/);
   assert.doesNotMatch(payload.html, /vao-khoa-hoc/);
   assert.doesNotMatch(payload.text, /vao-khoa-hoc/);
+  assert.match(payload.text, /theanhmarketing\.com\/bot-24-7\/tai-ve/);
+  assert.match(payload.html, /bot-24-7\/dieu-khoan/);
 });
 
 test("Bot 24/7 orders skip student account creation", () => {
@@ -51,4 +53,17 @@ test("Bot 24/7 landing posts the bot-24-7 slug to /api/orders and redirects to c
   assert.match(html, /fbq\("init", "1315653423712065"\)/);
   const products = fs.readFileSync(path.resolve("data/marketing-courses.ts"), "utf8");
   assert.match(products, /price: "990K"/);
+});
+
+test("Bot 24/7 download and terms pages are routed and linked", () => {
+  const config = fs.readFileSync(path.resolve("next.config.ts"), "utf8");
+  assert.match(config, /source: "\/bot-24-7\/tai-ve"/);
+  assert.match(config, /source: "\/bot-24-7\/dieu-khoan"/);
+  const dl = fs.readFileSync(path.resolve("public/academy/bot-24-7-tai-ve.html"), "utf8");
+  for (const id of ["1JvTaFJMhzYtI7LQVews2pyou2z6JYQ3R", "1s6AJX7BlOZyXWWbovE9EWYn-q8UonTCD", "1IFfRumCpDbD7Bu4Ovn0A0Rf4Ibdlg7kP"]) assert.match(dl, new RegExp(id));
+  const terms = fs.readFileSync(path.resolve("public/academy/bot-24-7-dieu-khoan.html"), "utf8");
+  for (const id of ["rieng-tu", "tai-khoan", "yeu-cau", "phap-luat"]) assert.match(terms, new RegExp(`id="${id}"`));
+  const landing = fs.readFileSync(path.resolve("public/academy/bot-24-7.html"), "utf8");
+  assert.match(landing, /href="\/bot-24-7\/dieu-khoan"/);
+  assert.match(landing, /href="\/bot-24-7\/tai-ve"/);
 });

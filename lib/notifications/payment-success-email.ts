@@ -940,7 +940,10 @@ export function isBot247Order(order: Pick<PaymentOrder, "courseSlug" | "orderIte
 const escBot = (value: string) =>
   String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 
-function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from }: { from: string; siteUrl: string }) {
+function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from, siteUrl }: { from: string; siteUrl: string }) {
+  const site = String(siteUrl || "https://www.theanhmarketing.com").replace(/\/$/, "");
+  const guideUrl = `${site}/bot-24-7/tai-ve`;
+  const termsUrl = `${site}/bot-24-7/dieu-khoan`;
   const name = escBot(order.studentName || "bạn");
   const code = escBot(order.orderCode);
   const amount = escBot(order.amountLabel);
@@ -966,6 +969,7 @@ function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from }: { from: s
     ${btn(BOT247_INSTALLERS.windows, "Windows 10/11 · Bot247-Setup.exe", true)}
     ${btn(BOT247_INSTALLERS.macArm, "Mac chip Apple (M1–M4)")}
     ${btn(BOT247_INSTALLERS.macIntel, "Mac chip Intel")}
+    <p style="font-size:13.5px;color:#666;margin:10px 0 0">Hướng dẫn chi tiết có ảnh và lỗi thường gặp: <a href="${escBot(guideUrl)}" style="color:#111;font-weight:700">trang Tải về Bot 24/7</a>.</p>
 
     <h2 style="font-size:17px;margin:26px 0 4px">2. Cài đặt (khoảng 1 phút)</h2>
     <table style="width:100%;border-collapse:collapse">
@@ -979,7 +983,7 @@ function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from }: { from: s
     <p style="font-size:14.5px;line-height:1.6;color:#444;margin:0">Nhắn nhóm hỗ trợ, gửi kèm mã đơn <b>${code}</b>.</p>
     ${btn(supportUrl, "Liên hệ hỗ trợ")}
   </div>
-  <p style="font-size:12px;color:#888;text-align:center;margin-top:14px">Dữ liệu và tri thức của bạn nằm trên máy của bạn. Bot dùng gói Claude/ChatGPT bạn tự đăng ký.</p>
+  <p style="font-size:12px;color:#888;text-align:center;margin-top:14px">Dữ liệu và tri thức của bạn nằm trên máy của bạn. Bot dùng gói Claude/ChatGPT bạn tự đăng ký. <a href="${escBot(termsUrl)}" style="color:#888">Điều khoản dịch vụ</a></p>
 </div></body></html>`;
 
   const text = [
@@ -995,7 +999,9 @@ function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from }: { from: s
     "Windows: bấm đúp Bot247-Setup.exe › Cài đặt › Hoàn tất. Mac: bấm đúp tệp .pkg › Cài đặt.",
     "Bot tự mở và tải tiếp bộ não AI ở nền. Dán mã kích hoạt, đăng nhập Claude hoặc ChatGPT, rồi vào mục Bắt đầu.",
     "",
+    `Hướng dẫn chi tiết: ${guideUrl}`,
     `Hỗ trợ: ${supportUrl}`,
+    `Điều khoản dịch vụ: ${termsUrl}`,
   ].join("\n");
 
   return { from, to: order.email, subject: `Bot 24/7 · Đã thanh toán đơn ${order.orderCode} · Bộ cài và hướng dẫn`, html, text };

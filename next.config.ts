@@ -97,6 +97,14 @@ const nextConfig: NextConfig = {
         destination: "/academy/bot-24-7.html",
       },
       {
+        source: "/bot-24-7/tai-ve",
+        destination: "/academy/bot-24-7-tai-ve.html",
+      },
+      {
+        source: "/bot-24-7/dieu-khoan",
+        destination: "/academy/bot-24-7-dieu-khoan.html",
+      },
+      {
         source: "/academy/ebook-facebook-ads-2026",
         destination: "/academy/ebook-facebook-ads-2026.html",
       },
