@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Bot 24/7 · Đội 8 nhân viên AI làm việc cho bạn 24/7 · 990.000đ</title>
-    <meta name="description" content="Thuê ngay đội 8 nhân viên AI: chăm khách, viết bài, dựng video, làm web, báo cáo quảng cáo, lập kế hoạch. Làm việc 24/7, chỉ 990.000đ." />
+    <meta name="description" content="Thuê ngay đội 8 nhân viên AI: tư vấn khách đa kênh, đồng bộ tri thức doanh nghiệp, viết bài, dựng video, làm web, báo cáo quảng cáo. Làm việc cả khi bạn ngủ. 990.000đ." />
     <meta property="og:title" content="Bot 24/7 · Đội 8 nhân viên AI làm việc cho bạn 24/7" />
-    <meta property="og:description" content="Chăm khách, viết bài, dựng video, làm web, báo cáo quảng cáo. Một đội đủ vai, chỉ 990.000đ." />
+    <meta property="og:description" content="Tư vấn khách đa kênh, đồng bộ tri thức doanh nghiệp, làm việc cả khi bạn ngủ. 990.000đ cho cả đội." />
     <meta property="og:image" content="/academy/bot-24-7-assets/poster.webp" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -26,288 +26,439 @@
     </script>
     <noscript><img height="1" width="1" style="display: none" src="https://www.facebook.com/tr?id=1315653423712065&ev=PageView&noscript=1" alt="" /></noscript>
     <style>
-      :root { --ink: #0d0d0d; --ink2: #3a3a38; --soft: #6b6b66; --line: #e6e6e1; --bg: #f6f6f3; --card: #ffffff; --chip: #f0f0eb; }
+      :root {
+        --ink: #0f0d1a; --ink2: #3b3852; --soft: #6e6a86; --line: #e7e4f3; --bg: #f7f6fc; --card: #ffffff;
+        --vio: #6d5dfc; --blu: #2f8cff; --cya: #12c2e9; --pin: #ff4fa3; --amb: #ffb020; --grn: #18c37e;
+        --grad: linear-gradient(120deg, #6d5dfc 0%, #2f8cff 45%, #12c2e9 100%);
+        --grad2: linear-gradient(120deg, #ff4fa3 0%, #6d5dfc 60%, #2f8cff 100%);
+      }
       * { box-sizing: border-box; }
       html { scroll-behavior: smooth; }
-      body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 Inter, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+      body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 Inter, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
       a { color: inherit; }
       img, video { max-width: 100%; height: auto; display: block; }
-      .wrap { max-width: 1140px; margin: 0 auto; padding: 0 20px; }
-      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1.5px solid var(--ink); background: var(--ink); color: #fff; font: inherit; font-weight: 700; padding: 15px 26px; border-radius: 14px; text-decoration: none; cursor: pointer; transition: transform .15s, box-shadow .15s; }
-      .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(0,0,0,.18); }
-      .btn.light { background: #fff; color: var(--ink); }
-      .btn.big { font-size: 18px; padding: 18px 30px; }
-      .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 2.4px; text-transform: uppercase; color: var(--soft); }
+      .wrap { max-width: 1160px; margin: 0 auto; padding: 0 20px; position: relative; }
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; background: var(--grad); background-size: 200% 200%; color: #fff; font: inherit; font-weight: 800; padding: 16px 28px; border-radius: 16px; text-decoration: none; cursor: pointer; box-shadow: 0 12px 30px rgba(109,93,252,.35); transition: transform .2s, box-shadow .2s; animation: gshift 6s ease infinite; }
+      .btn:hover { transform: translateY(-2px) scale(1.01); box-shadow: 0 18px 40px rgba(109,93,252,.45); }
+      .btn.light { background: #fff; color: var(--ink); box-shadow: 0 6px 18px rgba(15,13,26,.08); border: 1.5px solid var(--line); animation: none; }
+      .btn.big { font-size: 18px; padding: 18px 32px; }
+      @keyframes gshift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+      .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--vio); }
       h1, h2, h3, h4 { letter-spacing: -.02em; margin: 0; }
-      h2 { font-size: clamp(30px, 4.4vw, 48px); line-height: 1.1; font-weight: 850; }
+      h2 { font-size: clamp(30px, 4.6vw, 50px); line-height: 1.08; font-weight: 900; margin-top: 10px; }
+      .gt { background: var(--grad2); -webkit-background-clip: text; background-clip: text; color: transparent; }
       .lead2 { font-size: 18px; color: var(--ink2); margin: 14px 0 0; max-width: 720px; }
-      section { padding: 88px 0; }
+      section { padding: 96px 0; position: relative; }
       .center { text-align: center; } .center .lead2 { margin-left: auto; margin-right: auto; }
+      .rv { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.8,.2,1); }
+      .rv.in { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; }
 
       /* Thanh trên */
-      .top { position: sticky; top: 0; z-index: 30; background: rgba(246,246,243,.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
-      .top .wrap { display: flex; align-items: center; gap: 12px; height: 64px; }
-      .logo { display: flex; align-items: center; gap: 10px; font-weight: 850; font-size: 19px; text-decoration: none; }
-      .logo svg { width: 32px; height: 32px; }
+      .top { position: sticky; top: 0; z-index: 30; background: rgba(247,246,252,.82); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+      .top .wrap { display: flex; align-items: center; gap: 12px; height: 66px; }
+      .logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 19px; text-decoration: none; }
+      .logo svg { width: 34px; height: 34px; }
       .top .sp { flex: 1; }
-      .top nav a { text-decoration: none; color: var(--ink2); font-size: 14.5px; font-weight: 600; margin-right: 18px; }
-      .top .btn { padding: 10px 18px; font-size: 14.5px; border-radius: 12px; }
+      .top nav a { text-decoration: none; color: var(--ink2); font-size: 14.5px; font-weight: 600; margin-right: 20px; }
+      .top nav a:hover { color: var(--vio); }
+      .top .btn { padding: 11px 18px; font-size: 14.5px; border-radius: 12px; }
+
+      /* Nền gradient chuyển động */
+      .mesh { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+      .mesh i { position: absolute; width: 520px; height: 520px; border-radius: 50%; filter: blur(70px); opacity: .55; animation: float 14s ease-in-out infinite; will-change: transform; }
+      .mesh i:nth-child(1) { background: #a99dff; left: -120px; top: -140px; }
+      .mesh i:nth-child(2) { background: #7fd8ff; right: -140px; top: 40px; animation-delay: -4s; }
+      .mesh i:nth-child(3) { background: #ffb0d6; left: 30%; bottom: -260px; animation-delay: -8s; }
+      @keyframes float { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(40px,-30px) scale(1.08); } 66% { transform: translate(-30px,30px) scale(.95); } }
 
       /* Hero */
-      .hero { padding: 64px 0 56px; }
-      .hero .grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; }
-      .badge { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font-size: 13.5px; font-weight: 700; }
-      .badge i { width: 8px; height: 8px; border-radius: 4px; background: #1f9d55; box-shadow: 0 0 0 4px rgba(31,157,85,.15); }
-      .hero h1 { font-size: clamp(38px, 5.8vw, 66px); line-height: 1.03; font-weight: 900; letter-spacing: -.04em; margin-top: 18px; }
-      .hero p.lead { font-size: 19.5px; color: var(--ink2); margin: 20px 0 26px; max-width: 560px; }
-      .team-strip { display: flex; margin: 0 0 26px; }
-      .team-strip span { width: 46px; height: 46px; border-radius: 23px; background: #fff; border: 2px solid var(--bg); display: grid; place-items: center; margin-left: -8px; box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+      .hero { padding: 70px 0 70px; overflow: hidden; }
+      .hero .grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; position: relative; z-index: 1; }
+      .badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 15px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font-size: 13.5px; font-weight: 700; box-shadow: 0 6px 18px rgba(109,93,252,.1); }
+      .badge i { width: 8px; height: 8px; border-radius: 4px; background: var(--grn); box-shadow: 0 0 0 0 rgba(24,195,126,.6); animation: ping 1.8s infinite; }
+      @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(24,195,126,.55); } 100% { box-shadow: 0 0 0 10px rgba(24,195,126,0); } }
+      .hero h1 { font-size: clamp(40px, 6vw, 70px); line-height: 1.02; font-weight: 900; letter-spacing: -.045em; margin-top: 20px; }
+      .rot { display: block; min-height: 1.05em; }
+      .rot b { display: inline-block; color: var(--vio); text-shadow: 0 8px 30px rgba(109,93,252,.25); animation: rotin .5s cubic-bezier(.2,.8,.2,1); }   /* chữ màu đặc: chữ gradient bị mất khi chạy hiệu ứng xoay */
+      @keyframes rotin { from { opacity: 0; transform: translateY(22px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+      .hero p.lead { font-size: 19.5px; color: var(--ink2); margin: 20px 0 24px; max-width: 560px; }
+      .team-strip { display: flex; margin: 0 0 8px; }
+      .team-strip span { width: 48px; height: 48px; border-radius: 24px; border: 3px solid #fff; display: grid; place-items: center; margin-left: -10px; box-shadow: 0 6px 16px rgba(0,0,0,.12); animation: bob 3s ease-in-out infinite; }
       .team-strip span:first-child { margin-left: 0; }
       .team-strip svg { width: 32px; height: 32px; }
-      .team-strip + p { margin: -14px 0 26px; font-size: 14.5px; color: var(--soft); }
+      @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+      .strip-note { margin: 6px 0 24px; font-size: 14.5px; color: var(--soft); }
       .price-tag { display: flex; align-items: baseline; gap: 12px; margin-bottom: 22px; }
-      .price-tag b { font-size: 36px; font-weight: 900; letter-spacing: -.02em; }
+      .price-tag b { font-size: 40px; font-weight: 900; letter-spacing: -.03em; }
       .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
-      .video { position: relative; border-radius: 22px; overflow: hidden; background: #0b0b0c; box-shadow: 0 30px 80px rgba(0,0,0,.22); aspect-ratio: 16 / 9; }
+      .vbox { position: relative; }
+      .video { position: relative; border-radius: 24px; overflow: hidden; background: #0b0b14; box-shadow: 0 40px 90px rgba(47,52,140,.35); aspect-ratio: 16 / 9; border: 3px solid #fff; }
       .video video { width: 100%; height: 100%; object-fit: cover; }
-      .video .play { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(0,0,0,.25); border: 0; cursor: pointer; font: inherit; }
-      .video .play span { display: flex; align-items: center; gap: 10px; background: #fff; color: var(--ink); padding: 14px 22px; border-radius: 999px; font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+      .video .play { position: absolute; inset: 0; display: grid; place-items: center; background: linear-gradient(160deg, rgba(109,93,252,.35), rgba(18,194,233,.2)); border: 0; cursor: pointer; font: inherit; }
+      .video .play span { display: flex; align-items: center; gap: 10px; background: #fff; color: var(--ink); padding: 15px 24px; border-radius: 999px; font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,.3); animation: pulse 2.2s infinite; }
+      @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+      .float-card { position: absolute; background: #fff; border-radius: 16px; padding: 10px 14px; box-shadow: 0 16px 40px rgba(15,13,26,.16); font-size: 13.5px; font-weight: 700; display: flex; align-items: center; gap: 10px; animation: bob 4s ease-in-out infinite; z-index: 2; }
+      .float-card .dot { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; color: #fff; font-size: 13px; }
+      .float-card small { display: block; font-weight: 500; color: var(--soft); font-size: 12px; }
+      .fc1 { left: -26px; bottom: -22px; } .fc2 { right: -18px; top: -24px; animation-delay: -2s; }
 
-      /* Kết quả khách nhận được */
-      .wins { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 38px; }
-      .win { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 24px 22px; }
-      .win b { display: block; font-size: 34px; font-weight: 900; letter-spacing: -.03em; line-height: 1; }
-      .win h3 { font-size: 17px; margin: 14px 0 6px; line-height: 1.3; }
+      /* Kết quả */
+      .wins { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 40px; }
+      .win { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 26px 22px; position: relative; overflow: hidden; }
+      .win::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--c, var(--vio)); }
+      .win b { display: block; font-size: 42px; font-weight: 900; letter-spacing: -.04em; line-height: 1; color: var(--c, var(--vio)); }
+      .win h3 { font-size: 17.5px; margin: 14px 0 6px; line-height: 1.3; }
       .win p { margin: 0; font-size: 14.5px; color: var(--ink2); }
 
+      /* Khối tính năng có cảnh động */
+      .feat { display: grid; grid-template-columns: 1fr 1.05fr; gap: 56px; align-items: center; }
+      .feat.rev .txt { order: 2; }
+      .feat h3.t { font-size: clamp(28px, 3.6vw, 40px); line-height: 1.1; font-weight: 900; margin: 12px 0 14px; }
+      .feat p { color: var(--ink2); margin: 0 0 18px; font-size: 17.5px; }
+      .ticks { margin: 0; padding: 0; list-style: none; display: grid; gap: 11px; }
+      .ticks li { display: flex; gap: 12px; font-size: 16px; align-items: flex-start; }
+      .ticks li::before { content: "✓"; flex: none; width: 22px; height: 22px; border-radius: 11px; background: var(--grad); color: #fff; font-size: 12px; font-weight: 900; display: grid; place-items: center; margin-top: 2px; }
+      .stage { position: relative; border-radius: 28px; padding: 26px; min-height: 420px; overflow: hidden; box-shadow: 0 30px 80px rgba(47,52,140,.18); }
+
+      /* Cảnh 1: đa kênh → một hộp thư */
+      .s-chat { background: linear-gradient(150deg, #efeaff, #e3f4ff); }
+      .chs { display: flex; flex-direction: column; gap: 14px; position: absolute; left: 22px; top: 50%; transform: translateY(-50%); z-index: 2; }
+      .ch { width: 50px; height: 50px; border-radius: 16px; display: grid; place-items: center; color: #fff; font-weight: 900; font-size: 13px; box-shadow: 0 8px 20px rgba(0,0,0,.15); position: relative; }
+      .ch.za { background: #0068ff; } .ch.ms { background: linear-gradient(135deg, #00b2ff, #a033ff, #ff5280); } .ch.ig { background: linear-gradient(135deg, #feda75, #d62976, #4f5bd5); } .ch.tt { background: #111; }
+      .ch .n { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; border-radius: 10px; background: var(--pin); color: #fff; font-size: 11px; display: grid; place-items: center; padding: 0 5px; border: 2px solid #fff; animation: pulse 1.6s infinite; }
+      .fly { position: absolute; left: 80px; width: 12px; height: 12px; border-radius: 6px; background: var(--vio); box-shadow: 0 0 12px var(--vio); z-index: 1; animation: fly 2.4s linear infinite; }
+      @keyframes fly { 0% { transform: translateX(0) scale(.6); opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translateX(120px) scale(1); opacity: 0; } }
+      .inbox { margin-left: 110px; background: #fff; border-radius: 22px; padding: 16px; box-shadow: 0 18px 50px rgba(47,52,140,.18); min-height: 360px; }
+      .inbox .ih { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 800; padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+      .inbox .ih svg { width: 28px; height: 28px; }
+      .inbox .ih .live { margin-left: auto; color: var(--grn); font-size: 12px; display: flex; align-items: center; gap: 6px; }
+      .inbox .ih .live::before { content: ""; width: 7px; height: 7px; border-radius: 4px; background: var(--grn); animation: ping 1.8s infinite; }
+      .msgs { display: flex; flex-direction: column; gap: 9px; }
+      .m { max-width: 86%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.45; animation: pop .4s cubic-bezier(.2,.8,.2,1); }
+      .m.c { background: #f1effa; border-bottom-left-radius: 5px; } .m.b { background: var(--grad); color: #fff; margin-left: auto; border-bottom-right-radius: 5px; }
+      .m .src { display: inline-block; font-size: 11px; font-weight: 800; padding: 1px 7px; border-radius: 6px; color: #fff; margin-bottom: 4px; }
+      .typing { display: inline-flex; gap: 4px; padding: 12px 14px; background: var(--grad); border-radius: 16px; margin-left: auto; }
+      .typing i { width: 6px; height: 6px; border-radius: 3px; background: #fff; animation: tdot 1s infinite; } .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+      @keyframes tdot { 0%,100% { opacity: .3; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
+      @keyframes pop { from { opacity: 0; transform: translateY(10px) scale(.96); } to { opacity: 1; transform: none; } }
+
+      /* Cảnh 2: đồng bộ tri thức */
+      .s-know { background: linear-gradient(150deg, #e7fbf3, #e6f0ff); }
+      .s-know svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .s-know .wire { fill: none; stroke: #b9c2e8; stroke-width: 2; stroke-dasharray: 6 8; animation: dash 1.2s linear infinite; }
+      @keyframes dash { to { stroke-dashoffset: -28; } }
+      .src { position: absolute; left: 22px; display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 14px; padding: 9px 13px; font-size: 13.5px; font-weight: 700; box-shadow: 0 8px 22px rgba(0,0,0,.08); z-index: 2; }
+      .src .ic { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; color: #fff; font-size: 12px; font-weight: 900; }
+      .brain { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 120px; height: 120px; border-radius: 34px; background: #fff; display: grid; place-items: center; box-shadow: 0 0 0 10px rgba(109,93,252,.12), 0 20px 50px rgba(109,93,252,.3); z-index: 2; animation: glow 2.4s ease-in-out infinite; }
+      .brain svg { width: 80px; height: 80px; }
+      .brain small { position: absolute; bottom: -30px; white-space: nowrap; font-size: 13px; font-weight: 800; color: var(--vio); }
+      @keyframes glow { 0%,100% { box-shadow: 0 0 0 10px rgba(109,93,252,.12), 0 20px 50px rgba(109,93,252,.3); } 50% { box-shadow: 0 0 0 20px rgba(109,93,252,.06), 0 20px 60px rgba(18,194,233,.4); } }
+      .pkt { position: absolute; width: 10px; height: 10px; border-radius: 5px; background: var(--cya); box-shadow: 0 0 10px var(--cya); z-index: 1; offset-rotate: 0deg; animation: travel 2.2s linear infinite; }
+      @keyframes travel { from { offset-distance: 0%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } to { offset-distance: 100%; opacity: 0; } }
+      .out { position: absolute; right: 22px; display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 14px; padding: 10px 14px; font-size: 13.5px; font-weight: 700; box-shadow: 0 8px 22px rgba(0,0,0,.08); z-index: 2; opacity: 0; transform: translateX(16px) scale(.95); transition: .5s cubic-bezier(.2,.8,.2,1); }
+      .out.on { opacity: 1; transform: none; }
+      .out .ok { width: 22px; height: 22px; border-radius: 11px; background: var(--grn); color: #fff; display: grid; place-items: center; font-size: 12px; }
+      .out small { display: block; font-weight: 500; color: var(--soft); font-size: 12px; }
+      .kcount { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--ink); color: #fff; border-radius: 999px; padding: 8px 16px; font-size: 13px; font-weight: 700; z-index: 3; white-space: nowrap; }
+
+      /* Cảnh 3: đêm */
+      .s-night { background: linear-gradient(170deg, #12103a 0%, #1f1b5c 55%, #3a2a7a 100%); color: #fff; }
+      .stars i { position: absolute; width: 3px; height: 3px; border-radius: 2px; background: #fff; animation: tw 2.6s ease-in-out infinite; }
+      @keyframes tw { 0%,100% { opacity: .2; } 50% { opacity: 1; } }
+      .moon { position: absolute; right: 30px; top: 26px; width: 54px; height: 54px; border-radius: 50%; box-shadow: inset -14px -6px 0 0 #ffd56b; transform: rotate(-20deg); filter: drop-shadow(0 0 18px rgba(255,213,107,.5)); }
+      .clock { font-size: 56px; font-weight: 900; letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+      .clock + small { color: rgba(255,255,255,.65); font-size: 13.5px; }
+      .tl { margin-top: 22px; display: grid; gap: 10px; position: relative; z-index: 1; }
+      .tli { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 14px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); font-size: 14.5px; opacity: .45; transition: .5s; }
+      .tli .tm { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 13px; color: rgba(255,255,255,.7); width: 44px; }
+      .tli .ck { margin-left: auto; width: 22px; height: 22px; border-radius: 11px; border: 2px solid rgba(255,255,255,.3); display: grid; place-items: center; font-size: 12px; transition: .4s; }
+      .tli.done { opacity: 1; background: rgba(255,255,255,.12); }
+      .tli.done .ck { background: var(--grn); border-color: var(--grn); }
+      .tli.done .ck::after { content: "✓"; font-weight: 900; }
+      .morning { margin-top: 14px; padding: 14px 16px; border-radius: 16px; background: linear-gradient(120deg, #ffb020, #ff4fa3); color: #fff; font-weight: 700; font-size: 14.5px; display: flex; gap: 10px; align-items: center; opacity: 0; transform: translateY(10px); transition: .6s; }
+      .morning.on { opacity: 1; transform: none; }
+      .sleeper { position: absolute; left: 26px; bottom: 22px; font-size: 13px; color: rgba(255,255,255,.6); display: flex; gap: 6px; align-items: center; }
+      .zz { display: inline-block; animation: zz 2s ease-in-out infinite; }
+      @keyframes zz { 0% { transform: translate(0,0); opacity: 0; } 50% { opacity: 1; } 100% { transform: translate(8px,-12px); opacity: 0; } }
+
       /* Đội ngũ */
-      .team { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 40px; }
-      .emp { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 22px; display: flex; flex-direction: column; gap: 12px; transition: transform .2s, box-shadow .2s; }
-      .emp:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(0,0,0,.08); }
-      .emp .av { width: 64px; height: 64px; border-radius: 20px; background: var(--chip); display: grid; place-items: center; }
+      .team { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 42px; }
+      .emp { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 22px; display: flex; flex-direction: column; gap: 12px; transition: transform .25s, box-shadow .25s; position: relative; overflow: hidden; }
+      .emp::after { content: ""; position: absolute; right: -40px; top: -40px; width: 120px; height: 120px; border-radius: 50%; background: var(--c); opacity: .12; transition: .3s; }
+      .emp:hover { transform: translateY(-6px) rotate(-.4deg); box-shadow: 0 24px 50px rgba(47,52,140,.15); }
+      .emp:hover::after { transform: scale(1.4); opacity: .2; }
+      .emp .av { width: 64px; height: 64px; border-radius: 20px; background: var(--c); display: grid; place-items: center; box-shadow: 0 10px 22px color-mix(in srgb, var(--c) 45%, transparent); }
       .emp .av svg { width: 46px; height: 46px; }
-      .emp .role { font-size: 12.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--soft); }
+      .emp .role { font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--c); }
       .emp h3 { font-size: 19px; line-height: 1.25; }
       .emp ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; font-size: 14.5px; color: var(--ink2); }
-      .emp li { display: flex; gap: 8px; } .emp li::before { content: "✓"; font-weight: 900; color: var(--ink); }
-      .emp .out { margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 14px; font-weight: 700; }
+      .emp li { display: flex; gap: 8px; } .emp li::before { content: "•"; color: var(--c); font-weight: 900; }
+      .emp .outc { margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 14px; font-weight: 800; }
 
-      /* Khối minh hoạ: nhân viên đang làm việc */
-      .show { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; padding: 30px 0; }
-      .show.rev .txt { order: 2; }
-      .show h3 { font-size: clamp(26px, 3.2vw, 36px); line-height: 1.12; font-weight: 850; margin: 10px 0 14px; }
-      .show p { color: var(--ink2); margin: 0 0 16px; font-size: 17px; }
-      .show ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
-      .show li { display: flex; gap: 10px; font-size: 16px; } .show li::before { content: "✓"; font-weight: 900; }
-      .mock { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 22px; box-shadow: 0 24px 60px rgba(0,0,0,.08); }
-      .mock .mh { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; color: var(--soft); margin-bottom: 14px; }
-      .mock .mh svg { width: 26px; height: 26px; }
-      .bub { max-width: 82%; padding: 11px 15px; border-radius: 16px; font-size: 14.5px; line-height: 1.45; margin-bottom: 10px; }
-      .bub.c { background: var(--chip); border-bottom-left-radius: 6px; }
-      .bub.b { background: var(--ink); color: #fff; margin-left: auto; border-bottom-right-radius: 6px; }
-      .bub small { display: block; opacity: .6; font-size: 12px; margin-top: 4px; }
-      .tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--chip); }
-      .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-      .cal div { aspect-ratio: 1; border-radius: 10px; background: var(--bg); font-size: 11px; padding: 5px; color: var(--soft); position: relative; }
-      .cal div.p::after { content: ""; position: absolute; left: 5px; right: 5px; bottom: 6px; height: 7px; border-radius: 4px; background: var(--ink); }
-      .cal div.p2::after { background: #8a8a84; }
-      .chs { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
-      .row-ap { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
-      .row-ap:first-of-type { border-top: 0; }
-      .row-ap .ic { width: 42px; height: 42px; border-radius: 12px; background: var(--chip); display: grid; place-items: center; font-weight: 800; font-size: 13px; }
-      .row-ap .t { flex: 1; } .row-ap .t b { display: block; font-size: 14.5px; } .row-ap .t span { font-size: 12.5px; color: var(--soft); }
-      .row-ap .ok { background: var(--ink); color: #fff; border-radius: 10px; padding: 7px 14px; font-size: 13px; font-weight: 700; }
-      .reel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-      .reel div { aspect-ratio: 9 / 16; border-radius: 14px; background: linear-gradient(160deg, #1b1b1d, #3a3a3d); color: #fff; padding: 10px; font-size: 12px; font-weight: 800; display: flex; flex-direction: column; justify-content: flex-end; position: relative; overflow: hidden; }
-      .reel div::before { content: "▶"; position: absolute; top: 10px; right: 10px; width: 26px; height: 26px; border-radius: 13px; background: rgba(255,255,255,.2); display: grid; place-items: center; font-size: 10px; }
-      .reel div span { background: rgba(255,255,255,.95); color: #111; border-radius: 6px; padding: 3px 6px; display: inline-block; margin-top: 4px; font-size: 11px; }
+      /* Lịch đăng / video / duyệt (cảnh nhỏ) */
+      .trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 42px; }
+      .tcard { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 22px; overflow: hidden; }
+      .tcard h3 { font-size: 19px; margin: 14px 0 6px; } .tcard p { margin: 0; color: var(--ink2); font-size: 14.5px; }
+      .mini { border-radius: 16px; padding: 14px; background: var(--bg); height: 210px; position: relative; overflow: hidden; }
+      .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+      .cal div { aspect-ratio: 1; border-radius: 8px; background: #fff; position: relative; }
+      .cal div.p::after { content: ""; position: absolute; left: 4px; right: 4px; bottom: 5px; height: 6px; border-radius: 3px; background: var(--c, var(--vio)); transform: scaleX(0); transform-origin: left; animation: fillx .5s forwards; animation-delay: var(--dl); }
+      @keyframes fillx { to { transform: scaleX(1); } }
+      .reel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; height: 100%; }
+      .reel div { border-radius: 12px; background: var(--g); padding: 8px; color: #fff; font-size: 11px; font-weight: 800; display: flex; flex-direction: column; justify-content: flex-end; position: relative; overflow: hidden; }
+      .reel div::before { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%); transform: translateX(-100%); animation: shine 2.8s infinite; animation-delay: var(--dl); }
+      @keyframes shine { to { transform: translateX(100%); } }
+      .reel div span { background: rgba(255,255,255,.95); color: #111; border-radius: 6px; padding: 2px 6px; margin-top: 4px; display: inline-block; font-size: 10px; }
+      .ap { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 12px; padding: 10px; margin-bottom: 8px; font-size: 13px; font-weight: 700; }
+      .ap .ic { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; color: #fff; font-size: 11px; background: var(--c); }
+      .ap .b { margin-left: auto; padding: 5px 12px; border-radius: 8px; background: var(--ink); color: #fff; font-size: 12px; transition: .3s; }
+      .ap.ok .b { background: var(--grn); }
 
-      /* So sánh đội ngũ */
-      .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 36px; }
-      .cmp { border-radius: 22px; padding: 28px; border: 1px solid var(--line); background: var(--card); }
-      .cmp.dark { background: var(--ink); color: #fff; border-color: var(--ink); }
-      .cmp h3 { font-size: 21px; margin-bottom: 4px; } .cmp .s { font-size: 14px; color: var(--soft); margin-bottom: 16px; } .cmp.dark .s { color: rgba(255,255,255,.6); }
-      .cmp ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 11px; font-size: 15.5px; }
-      .cmp li { display: flex; gap: 10px; } .cmp li::before { content: "–"; color: var(--soft); } .cmp.dark li::before { content: "✓"; color: #fff; font-weight: 900; }
-      .cmp .big { font-size: 40px; font-weight: 900; letter-spacing: -.03em; margin-top: 18px; }
-
-      /* Các bước */
-      .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 36px; }
-      .step { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 24px; }
-      .step .n { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 17px; background: var(--ink); color: #fff; font-weight: 800; font-size: 14px; }
-      .step h3 { font-size: 17px; margin: 14px 0 6px; } .step p { margin: 0; font-size: 14.5px; color: var(--ink2); }
-
-      /* Mua */
-      .buy { background: var(--ink); color: #fff; }
-      .buy .grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: start; }
-      .buy .eyebrow { color: rgba(255,255,255,.55); }
-      .offer { border: 1.5px solid rgba(255,255,255,.18); border-radius: 24px; padding: 30px; background: rgba(255,255,255,.04); margin-top: 24px; }
-      .offer .p { display: flex; align-items: baseline; gap: 10px; }
-      .offer .p b { font-size: 56px; font-weight: 900; letter-spacing: -.03em; }
-      .offer h4 { font-size: 15px; margin: 22px 0 12px; color: rgba(255,255,255,.65); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-      .offer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 11px; }
-      .offer li { display: flex; gap: 12px; font-size: 15.5px; } .offer li::before { content: "✓"; font-weight: 900; }
-      form.pay { background: #fff; color: var(--ink); border-radius: 24px; padding: 30px; display: grid; gap: 14px; }
+      /* So sánh, bước, mua, hỏi đáp */
+      .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 40px; }
+      .cmp { border-radius: 26px; padding: 30px; border: 1px solid var(--line); background: var(--card); }
+      .cmp.dark { background: linear-gradient(150deg, #1d1950, #3b2a8a); color: #fff; border: 0; box-shadow: 0 30px 70px rgba(59,42,138,.35); }
+      .cmp h3 { font-size: 22px; margin-bottom: 4px; } .cmp .s { font-size: 14px; color: var(--soft); margin-bottom: 18px; } .cmp.dark .s { color: rgba(255,255,255,.65); }
+      .cmp ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; font-size: 15.5px; }
+      .cmp li { display: flex; gap: 10px; } .cmp li::before { content: "✕"; color: #c0bcd6; font-weight: 900; } .cmp.dark li::before { content: "✓"; color: #7ff0c4; }
+      .cmp .big { font-size: 46px; font-weight: 900; letter-spacing: -.03em; margin-top: 20px; }
+      .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 40px; counter-reset: s; }
+      .step { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 26px; position: relative; }
+      .step .n { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 13px; background: var(--grad); color: #fff; font-weight: 900; font-size: 16px; box-shadow: 0 8px 18px rgba(109,93,252,.35); }
+      .step h3 { font-size: 17.5px; margin: 14px 0 6px; } .step p { margin: 0; font-size: 14.5px; color: var(--ink2); }
+      .buy { background: linear-gradient(160deg, #15123d 0%, #2b2178 60%, #4a2c8f 100%); color: #fff; overflow: hidden; }
+      .buy .mesh i { opacity: .3; }
+      .buy .grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 44px; align-items: start; position: relative; z-index: 1; }
+      .buy .eyebrow { color: #a8c8ff; }
+      .offer { border: 1.5px solid rgba(255,255,255,.18); border-radius: 26px; padding: 30px; background: rgba(255,255,255,.06); margin-top: 24px; backdrop-filter: blur(8px); }
+      .offer .p b { font-size: 60px; font-weight: 900; letter-spacing: -.03em; background: linear-gradient(120deg, #fff, #a8c8ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      .offer h4 { font-size: 13px; margin: 22px 0 12px; color: rgba(255,255,255,.65); font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+      .offer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+      .offer li { display: flex; gap: 12px; font-size: 15.5px; } .offer li::before { content: "✓"; color: #7ff0c4; font-weight: 900; }
+      form.pay { background: #fff; color: var(--ink); border-radius: 26px; padding: 30px; display: grid; gap: 14px; box-shadow: 0 40px 90px rgba(0,0,0,.35); }
       form.pay h3 { font-size: 23px; }
       form.pay label { display: grid; gap: 6px; font-size: 14px; font-weight: 600; }
-      form.pay input { font: inherit; font-size: 16px; padding: 14px; border: 1.5px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink); }
-      form.pay input:focus { outline: none; border-color: var(--ink); }
-      form.pay .sum { display: flex; justify-content: space-between; padding: 14px 0 4px; border-top: 1px solid var(--line); font-weight: 700; }
+      form.pay input { font: inherit; font-size: 16px; padding: 14px; border: 1.5px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink); transition: .2s; }
+      form.pay input:focus { outline: none; border-color: var(--vio); box-shadow: 0 0 0 4px rgba(109,93,252,.15); }
+      form.pay .sum { display: flex; justify-content: space-between; padding: 14px 0 4px; border-top: 1px solid var(--line); font-weight: 800; }
       form.pay .btn { width: 100%; font-size: 17px; }
       form.pay small { color: var(--soft); font-size: 13px; line-height: 1.5; }
       .qr-steps { display: grid; gap: 6px; font-size: 13.5px; color: var(--ink2); background: var(--bg); border-radius: 12px; padding: 12px 14px; }
-
-      /* Hỏi đáp */
-      .faq { max-width: 820px; margin: 34px auto 0; display: grid; gap: 10px; }
-      details { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; }
-      summary { cursor: pointer; font-weight: 750; font-size: 16.5px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
-      summary::after { content: "+"; font-weight: 400; font-size: 22px; line-height: 1; }
+      .faq { max-width: 820px; margin: 36px auto 0; display: grid; gap: 10px; }
+      details { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px 22px; transition: .2s; }
+      details[open] { box-shadow: 0 14px 36px rgba(47,52,140,.1); border-color: #d6d0f5; }
+      summary { cursor: pointer; font-weight: 800; font-size: 16.5px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+      summary::after { content: "+"; font-weight: 400; font-size: 24px; line-height: 1; color: var(--vio); }
       details[open] summary::after { content: "–"; }
       details p { margin: 12px 0 0; color: var(--ink2); }
+      footer { padding: 34px 0 120px; color: var(--soft); font-size: 13.5px; text-align: center; border-top: 1px solid var(--line); }
 
-      footer { padding: 34px 0 110px; color: var(--soft); font-size: 13.5px; text-align: center; border-top: 1px solid var(--line); }
-      .sticky { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: none; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); background: rgba(255,255,255,.96); border-top: 1px solid var(--line); backdrop-filter: blur(10px); }
+      /* Chú Bot góc phải */
+      #bot { position: fixed; right: 20px; bottom: 20px; z-index: 50; }
+      #bot .face { width: 72px; height: 72px; border: 0; padding: 0; background: none; cursor: pointer; filter: drop-shadow(0 12px 24px rgba(47,52,140,.45)); animation: bob 3.2s ease-in-out infinite; position: relative; }
+      #bot .face svg { width: 100%; height: 100%; overflow: visible; }
+      #bot .ring { position: absolute; inset: -6px; border-radius: 50%; border: 3px solid transparent; background: var(--grad) border-box; -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: spin 4s linear infinite; opacity: .9; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      #bot .dot { position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 8px; background: var(--pin); border: 3px solid #fff; }
+      #bot .bubble { position: absolute; right: 84px; bottom: 14px; width: 250px; background: #fff; border-radius: 18px 18px 6px 18px; padding: 14px 16px; box-shadow: 0 18px 40px rgba(15,13,26,.18); font-size: 14px; line-height: 1.45; opacity: 0; transform: translateY(8px) scale(.96); transform-origin: bottom right; transition: .35s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+      #bot .bubble.on { opacity: 1; transform: none; pointer-events: auto; }
+      #bot .bubble b { display: block; margin-bottom: 2px; }
+      #bot .panel { position: absolute; right: 0; bottom: 86px; width: min(340px, calc(100vw - 32px)); background: #fff; border-radius: 22px; box-shadow: 0 30px 70px rgba(15,13,26,.25); overflow: hidden; opacity: 0; transform: translateY(12px) scale(.97); transform-origin: bottom right; transition: .35s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+      #bot .panel.on { opacity: 1; transform: none; pointer-events: auto; }
+      #bot .ph { background: var(--grad); color: #fff; padding: 16px 18px; display: flex; align-items: center; gap: 12px; }
+      #bot .ph svg { width: 40px; height: 40px; }
+      #bot .ph b { display: block; font-size: 15.5px; } #bot .ph small { opacity: .85; font-size: 12.5px; }
+      #bot .ph .x { margin-left: auto; background: rgba(255,255,255,.2); border: 0; color: #fff; width: 30px; height: 30px; border-radius: 15px; font-size: 18px; cursor: pointer; }
+      #bot .pb { padding: 14px; max-height: 330px; overflow: auto; display: flex; flex-direction: column; gap: 8px; }
+      #bot .pb .m { max-width: 92%; }
+      #bot .qs { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 12px; }
+      #bot .qs button { border: 1.5px solid #d9d3fb; background: #f6f4ff; color: var(--vio); border-radius: 999px; padding: 7px 12px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+      #bot .qs button:hover { background: var(--vio); color: #fff; }
+      #bot .pf { padding: 0 14px 14px; } #bot .pf .btn { width: 100%; padding: 13px; font-size: 15px; }
+
+      .sticky { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: none; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); background: rgba(255,255,255,.95); border-top: 1px solid var(--line); backdrop-filter: blur(10px); }
       .sticky .btn { width: 100%; }
-      .toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 600; font-size: 14.5px; opacity: 0; transition: .2s; pointer-events: none; z-index: 60; max-width: 92vw; text-align: center; }
+      .toast { position: fixed; left: 50%; bottom: 100px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 600; font-size: 14.5px; opacity: 0; transition: .2s; pointer-events: none; z-index: 60; max-width: 92vw; text-align: center; }
       .toast.on { opacity: 1; } .toast.err { background: #b3261e; }
 
-      @media (max-width: 980px) { .team, .wins { grid-template-columns: 1fr 1fr; } }
+      @media (max-width: 1000px) { .team, .wins { grid-template-columns: 1fr 1fr; } .trio { grid-template-columns: 1fr; } }
       @media (max-width: 900px) {
-        section { padding: 60px 0; }
+        section { padding: 64px 0; }
         .top nav { display: none; }
-        .hero .grid, .show, .compare, .buy .grid { grid-template-columns: 1fr; gap: 28px; }
-        .show.rev .txt { order: 0; }
+        .hero .grid, .feat, .compare, .buy .grid { grid-template-columns: 1fr; gap: 30px; }
+        .feat.rev .txt { order: 0; }
         .steps { grid-template-columns: 1fr 1fr; }
         .sticky { display: block; }
+        .mesh i { animation: none; filter: blur(50px); width: 340px; height: 340px; }   /* điện thoại: nền đứng yên cho nhẹ máy */
+        #bot { bottom: 88px; right: 12px; } #bot .face { width: 58px; height: 58px; }   /* trên thanh nút Thuê đội ngũ */
+        .fc1 { left: 8px; } .fc2 { right: 8px; }
       }
-      @media (max-width: 560px) { .team, .wins, .steps { grid-template-columns: 1fr; } .top .btn { display: none; } }
+      @media (max-width: 560px) {
+        .team, .wins, .steps { grid-template-columns: 1fr; } .top .btn { display: none; }
+        .stage { padding: 18px; min-height: 400px; } .inbox { margin-left: 70px; } .chs { left: 12px; } .ch { width: 42px; height: 42px; } .fly { left: 58px; }
+        .src, .out { font-size: 12px; padding: 7px 10px; } .brain { width: 92px; height: 92px; } .brain svg { width: 60px; height: 60px; }
+        #bot .bubble { width: 210px; right: 68px; bottom: 6px; } #bot .panel { bottom: 70px; }
+      }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .rv { opacity: 1; transform: none; } }
     </style>
   </head>
   <body>
     <header class="top"><div class="wrap">
-      <a class="logo" href="#"><svg viewBox="0 0 64 64"><path d="M32 4c15 0 27 10 27 26s-9 30-27 30S5 46 5 30 17 4 32 4z" fill="#0D0D0D"/><g fill="#fff"><rect x="22" y="22" width="7" height="19" rx="3.5" transform="rotate(-14 25 31)"/><rect x="39" y="22" width="7" height="19" rx="3.5" transform="rotate(-14 42 31)"/></g></svg>Bot 24/7</a>
+      <a class="logo" href="#"><svg viewBox="0 0 64 64"><path d="M32 4c15 0 27 10 27 26s-9 30-27 30S5 46 5 30 17 4 32 4z" fill="#0f0d1a"/><g fill="#fff"><rect x="22" y="22" width="7" height="19" rx="3.5" transform="rotate(-14 25 31)"/><rect x="39" y="22" width="7" height="19" rx="3.5" transform="rotate(-14 42 31)"/></g></svg>Bot 24/7</a>
       <div class="sp"></div>
-      <nav><a href="#doi-ngu">Đội ngũ</a><a href="#nhan-duoc">Bạn nhận được</a><a href="#hoi-dap">Hỏi đáp</a></nav>
+      <nav><a href="#da-kenh">Tư vấn đa kênh</a><a href="#tri-thuc">Tri thức</a><a href="#ban-dem">Làm việc ban đêm</a><a href="#doi-ngu">Đội ngũ</a><a href="#hoi-dap">Hỏi đáp</a></nav>
       <a class="btn" href="#mua" data-cta>Thuê đội ngũ · 990.000đ</a>
     </div></header>
 
     <!-- 1. Hero -->
-    <section class="hero"><div class="wrap grid">
-      <div>
-        <span class="badge"><i></i>Làm việc 24 giờ, 7 ngày một tuần</span>
-        <h1>Thuê ngay đội 8 nhân viên AI cho doanh nghiệp của bạn.</h1>
-        <p class="lead">Chăm khách, viết bài, dựng video, làm website, đọc báo cáo quảng cáo, lập kế hoạch marketing. Cả đội làm việc cho bạn mỗi ngày, bạn chỉ cần giao việc và duyệt.</p>
-        <div class="team-strip" id="strip"></div>
-        <p>8 nhân viên · một khung chat để giao việc</p>
-        <div class="price-tag"><b>990.000đ</b><span style="color:var(--soft)">cho cả đội</span></div>
-        <div class="cta-row"><a class="btn big" href="#mua" data-cta>Thuê đội ngũ ngay</a><a class="btn big light" href="#video" id="watch">Xem đội làm việc</a></div>
+    <section class="hero">
+      <div class="mesh"><i></i><i></i><i></i></div>
+      <div class="wrap grid">
+        <div>
+          <span class="badge rv"><i></i>Đang làm việc 24 giờ, 7 ngày một tuần</span>
+          <h1 class="rv d1">Đội 8 nhân viên AI giúp bạn <span class="rot" id="rot"><b>tư vấn khách</b></span></h1>
+          <p class="lead rv d2">Tư vấn khách trên mọi kênh, tự học kiến thức doanh nghiệp, viết bài, dựng video, làm website. Cả đội làm việc ngay cả khi bạn đang ngủ, bạn chỉ cần giao việc và duyệt.</p>
+          <div class="rv d3"><div class="team-strip" id="strip"></div><div class="strip-note">8 nhân viên · giao việc bằng một câu chat</div></div>
+          <div class="price-tag rv d3"><b class="gt">990.000đ</b><span style="color:var(--soft)">cho cả đội</span></div>
+          <div class="cta-row rv d4"><a class="btn big" href="#mua" data-cta>Thuê đội ngũ ngay</a><a class="btn big light" href="#video" id="watch">▶ Xem đội làm việc</a></div>
+        </div>
+        <div class="vbox rv d2">
+          <div class="float-card fc2"><span class="dot" style="background:#0068ff">Za</span><div>Khách vừa hỏi giá<small>Đã trả lời sau 3 giây</small></div></div>
+          <div class="video" id="video">
+            <video id="vid" preload="none" playsinline controls poster="/academy/bot-24-7-assets/poster.webp" src="/academy/bot-24-7-assets/gioi-thieu.mp4"></video>
+            <button class="play" id="play" aria-label="Xem video giới thiệu"><span>▶ Xem đội làm việc · 1 phút</span></button>
+          </div>
+          <div class="float-card fc1"><span class="dot" style="background:var(--grn)">✓</span><div>5 bài tuần sau đã soạn xong<small>Chờ bạn duyệt</small></div></div>
+        </div>
       </div>
-      <div class="video" id="video">
-        <video id="vid" preload="none" playsinline controls poster="/academy/bot-24-7-assets/poster.webp" src="/academy/bot-24-7-assets/gioi-thieu.mp4"></video>
-        <button class="play" id="play" aria-label="Xem video giới thiệu"><span>▶ Xem đội làm việc · 1 phút</span></button>
-      </div>
-    </div></section>
+    </section>
 
-    <!-- 2. Kết quả bạn nhận được -->
-    <section id="nhan-duoc" style="padding-top:20px"><div class="wrap">
-      <div class="center"><div class="eyebrow">Bạn nhận được</div><h2>Việc chạy đều mỗi ngày,<br>bạn có thời gian làm việc của chủ.</h2></div>
+    <!-- 2. Bạn nhận được -->
+    <section style="padding-top:30px"><div class="wrap">
+      <div class="center rv"><span class="eyebrow">Bạn nhận được</span><h2>Việc chạy đều mỗi ngày,<br><span class="gt">bạn có thời gian làm việc của chủ.</span></h2></div>
       <div class="wins">
-        <div class="win"><b>24/7</b><h3>Không bỏ lỡ khách nào</h3><p>Tin nhắn Zalo, Messenger, Instagram được trả lời ngay, cả lúc khuya và ngày lễ.</p></div>
-        <div class="win"><b>30</b><h3>Ngày bài đăng có sẵn</h3><p>Lịch đăng Facebook, Instagram, TikTok kín cả tháng, đúng giọng shop.</p></div>
-        <div class="win"><b>8</b><h3>Vai trò trong một đội</h3><p>Video, website, quảng cáo, kế hoạch: không cần thuê ngoài từng việc.</p></div>
-        <div class="win"><b>1</b><h3>Nút duyệt là xong</h3><p>Đội soạn sẵn mọi thứ, bạn bấm Duyệt. Không gì ra ngoài khi bạn chưa đồng ý.</p></div>
+        <div class="win rv" style="--c:var(--vio)"><b data-count="24">0</b><h3>Giờ trực mỗi ngày</h3><p>Khách nhắn lúc nào cũng có người tư vấn, cả đêm và ngày lễ.</p></div>
+        <div class="win rv d1" style="--c:var(--blu)"><b data-count="4">0</b><h3>Kênh trong một hộp thư</h3><p>Zalo, Messenger, Instagram, TikTok trả lời ở một chỗ.</p></div>
+        <div class="win rv d2" style="--c:var(--pin)"><b data-count="30">0</b><h3>Ngày bài đăng có sẵn</h3><p>Lịch đăng kín cả tháng, đúng giọng shop của bạn.</p></div>
+        <div class="win rv d3" style="--c:var(--amb)"><b data-count="8">0</b><h3>Nhân viên trong một đội</h3><p>Video, website, quảng cáo, kế hoạch: không thuê ngoài từng việc.</p></div>
       </div>
     </div></section>
 
-    <!-- 3. Đội ngũ 8 nhân viên -->
+    <!-- 3. Tư vấn khách đa kênh -->
+    <section id="da-kenh"><div class="wrap feat">
+      <div class="txt rv"><span class="eyebrow">01 · Tư vấn khách đa kênh</span>
+        <h3 class="t">Khách nhắn kênh nào,<br><span class="gt">đội trả lời kênh đó.</span></h3>
+        <p>Tin nhắn Zalo, Messenger, Instagram, TikTok về chung một hộp thư. Nhân viên chăm khách tư vấn đúng sản phẩm, đúng giá, đúng giọng shop, chốt đơn và ghi lịch hẹn cho bạn.</p>
+        <ul class="ticks"><li>Trả lời trong vài giây, không để khách chờ</li><li>Tư vấn theo đúng bảng giá và chính sách của bạn</li><li>Gặp câu chưa chắc thì hỏi bạn, soạn sẵn câu trả lời để bạn bấm gửi</li><li>Khách hẹn ghé, hẹn gọi là tự ghi lịch</li></ul></div>
+      <div class="stage s-chat rv d2" id="sChat">
+        <div class="chs"><div class="ch za">Za<span class="n">2</span></div><div class="ch ms">M<span class="n">3</span></div><div class="ch ig">IG<span class="n">1</span></div><div class="ch tt">TT<span class="n">1</span></div></div>
+        <i class="fly" style="top:30%"></i><i class="fly" style="top:48%;animation-delay:.8s;background:var(--pin);box-shadow:0 0 12px var(--pin)"></i><i class="fly" style="top:66%;animation-delay:1.6s;background:var(--cya);box-shadow:0 0 12px var(--cya)"></i>
+        <div class="inbox"><div class="ih" data-face="cskh">Hộp thư chung · Nhân viên chăm khách<span class="live">Đang trực</span></div><div class="msgs" id="msgs"></div></div>
+      </div>
+    </div></section>
+
+    <!-- 4. Đồng bộ tri thức -->
+    <section id="tri-thuc" style="padding-top:20px"><div class="wrap feat rev">
+      <div class="txt rv"><span class="eyebrow">02 · Đồng bộ tri thức doanh nghiệp</span>
+        <h3 class="t">Kết nối một lần,<br><span class="gt">cả đội hiểu shop như bạn.</span></h3>
+        <p>Đội tự đọc Google Drive, Fanpage, Notion, bảng giá của bạn và tự cập nhật mỗi khi có tài liệu mới. Cả 8 nhân viên dùng chung một bộ não: cùng giá, cùng chính sách, cùng cách nói chuyện.</p>
+        <ul class="ticks"><li>Tự tách sản phẩm và giá, chính sách, câu hỏi thường gặp</li><li>Tài liệu mới là tự học, không cần nhập lại</li><li>Học cả văn phong của bạn từ những gì bạn viết</li><li>Dữ liệu nằm trên máy của bạn</li></ul></div>
+      <div class="stage s-know rv d2" id="sKnow">
+        <svg class="wires" viewBox="0 0 520 420" preserveAspectRatio="none" id="wires"></svg>
+        <div class="src" style="top:42px"><span class="ic" style="background:#1fa463">Dr</span>Google Drive</div>
+        <div class="src" style="top:128px"><span class="ic" style="background:#1877f2">Fb</span>Fanpage</div>
+        <div class="src" style="top:214px"><span class="ic" style="background:#111">N</span>Notion</div>
+        <div class="src" style="top:300px"><span class="ic" style="background:#21a366">XL</span>Bảng giá.xlsx</div>
+        <div class="brain" data-face2="data"><small>Bộ não doanh nghiệp</small></div>
+        <div class="out" style="top:70px"><span class="ok">✓</span><div>Sản phẩm & giá<small>48 sản phẩm</small></div></div>
+        <div class="out" style="top:170px"><span class="ok">✓</span><div>Chính sách<small>Giao hàng, đổi trả</small></div></div>
+        <div class="out" style="top:270px"><span class="ok">✓</span><div>Câu hỏi thường gặp<small>36 câu</small></div></div>
+        <div class="kcount" id="kcount">Đang học · 0 ghi chú</div>
+      </div>
+    </div></section>
+
+    <!-- 5. Làm việc cả khi bạn ngủ -->
+    <section id="ban-dem" style="padding-top:20px"><div class="wrap feat">
+      <div class="txt rv"><span class="eyebrow">03 · Làm việc ngay cả khi bạn đang ngủ</span>
+        <h3 class="t">Bạn ngủ.<br><span class="gt">Đội vẫn làm.</span></h3>
+        <p>Đêm qua khách vẫn được tư vấn, bài tuần sau đã soạn xong, video đã dựng, số liệu quảng cáo đã được đọc. Sáng ra bạn chỉ việc mở điện thoại xem báo cáo và bấm duyệt.</p>
+        <ul class="ticks"><li>Trực tin nhắn suốt đêm</li><li>Việc định kỳ chạy theo lịch: báo cáo sáng, soạn bài, đồng bộ tài liệu</li><li>Mỗi sáng một bản tóm tắt việc đã làm</li></ul></div>
+      <div class="stage s-night rv d2" id="sNight">
+        <div class="stars" id="stars"></div><div class="moon"></div>
+        <div style="position:relative;z-index:1"><div class="clock" id="clock">23:00</div><small>Bạn đang ngủ · đội vẫn làm việc</small></div>
+        <div class="tl" id="tl">
+          <div class="tli" data-t="23:04"><span class="tm">23:04</span>Tư vấn 3 khách hỏi giá trên Zalo<span class="ck"></span></div>
+          <div class="tli" data-t="00:30"><span class="tm">00:30</span>Ghi 2 lịch hẹn khách ghé cửa hàng<span class="ck"></span></div>
+          <div class="tli" data-t="02:00"><span class="tm">02:00</span>Soạn 5 bài Facebook cho tuần sau<span class="ck"></span></div>
+          <div class="tli" data-t="04:00"><span class="tm">04:00</span>Dựng 2 video Reels có phụ đề<span class="ck"></span></div>
+          <div class="tli" data-t="06:00"><span class="tm">06:00</span>Đọc số liệu quảng cáo hôm qua<span class="ck"></span></div>
+        </div>
+        <div class="morning" id="morning">☀️ 07:00 · Báo cáo sáng đã gửi cho bạn. 3 việc đang chờ duyệt.</div>
+        <div class="sleeper">Chủ shop <span class="zz">z</span><span class="zz" style="animation-delay:.6s">z</span></div>
+      </div>
+    </div></section>
+
+    <!-- 6. Đội ngũ -->
     <section id="doi-ngu" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">
-      <div class="center"><div class="eyebrow">Đội ngũ của bạn</div><h2>8 nhân viên, mỗi người một nghề.</h2>
+      <div class="center rv"><span class="eyebrow">Đội ngũ của bạn</span><h2>8 nhân viên, <span class="gt">mỗi người một nghề.</span></h2>
         <p class="lead2">Bạn giao việc bằng một câu chat. Trợ lý trưởng tự chia việc cho đúng người, gom kết quả về cho bạn duyệt.</p></div>
       <div class="team" id="team"></div>
-      <div class="center" style="margin-top:34px"><a class="btn big" href="#mua" data-cta>Thuê cả đội · 990.000đ</a></div>
+      <div class="trio">
+        <div class="tcard rv"><div class="mini"><div class="cal" id="cal"></div></div><h3>Lịch đăng kín cả tháng</h3><p>Facebook, Instagram, TikTok, YouTube trên một lịch.</p></div>
+        <div class="tcard rv d1"><div class="mini"><div class="reel"><div style="--g:linear-gradient(160deg,#6d5dfc,#2f8cff);--dl:0s">Ra mắt bộ sưu tập<span>0:30</span></div><div style="--g:linear-gradient(160deg,#ff4fa3,#ffb020);--dl:.6s">Ưu đãi cuối tuần<span>0:20</span></div><div style="--g:linear-gradient(160deg,#12c2e9,#18c37e);--dl:1.2s">Khách nói gì<span>0:45</span></div></div></div><h3>Video Reels có giọng đọc</h3><p>Phụ đề chạy theo chữ, không cần thuê ngoài.</p></div>
+        <div class="tcard rv d2"><div class="mini" id="apbox">
+          <div class="ap" style="--c:var(--blu)"><span class="ic">FB</span>Bài ra mắt bộ sưu tập<span class="b">Duyệt</span></div>
+          <div class="ap" style="--c:var(--pin)"><span class="ic">▶</span>Reels ưu đãi cuối tuần<span class="b">Duyệt</span></div>
+          <div class="ap" style="--c:var(--grn)"><span class="ic">W</span>Trang đăng ký khoá học<span class="b">Duyệt</span></div>
+          <div class="ap" style="--c:var(--amb)"><span class="ic">Ad</span>Quảng cáo · tạm dừng<span class="b">Duyệt</span></div></div><h3>Bạn luôn là người quyết định</h3><p>Không gì ra ngoài khi bạn chưa bấm Duyệt.</p></div>
+      </div>
+      <div class="center" style="margin-top:40px"><a class="btn big" href="#mua" data-cta>Thuê cả đội · 990.000đ</a></div>
     </div></section>
 
-    <!-- 4. Đội đang làm việc -->
+    <!-- 7. So sánh -->
     <section><div class="wrap">
-      <div class="show">
-        <div class="txt"><div class="eyebrow">Nhân viên chăm khách</div><h3>Khách hỏi lúc nào, đội trả lời lúc đó.</h3>
-          <p>Trả lời đúng giá, đúng chính sách, đúng giọng shop của bạn. Thấy khách hẹn ghé là tự ghi lịch hẹn.</p>
-          <ul><li>Một hộp thư cho Zalo, Messenger, Instagram</li><li>Gặp câu chưa chắc thì hỏi bạn, soạn sẵn câu trả lời để bạn bấm gửi</li><li>Càng dùng càng hiểu sản phẩm và khách của bạn</li></ul></div>
-        <div class="mock"><div class="mh" data-face="cskh">Nhân viên chăm khách · Messenger · 23:04</div>
-          <div class="bub c">Shop ơi mẫu váy này còn size M không ạ?</div>
-          <div class="bub b">Dạ mẫu này còn size M màu be và đen ạ, giá 289k, đơn từ 2 sản phẩm shop miễn phí giao hàng. Chị lấy màu nào để em giữ hàng cho chị ạ?<small>Trả lời sau 3 giây</small></div>
-          <div class="bub c">Lấy màu be nha, mai giao được không em?</div>
-          <div class="bub b">Dạ được ạ, chị gửi em địa chỉ nhận hàng nhé 🙌<small>Đã lưu khách vào hồ sơ</small></div></div>
-      </div>
-      <div class="show rev">
-        <div class="txt"><div class="eyebrow">Biên tập viên nội dung</div><h3>Fanpage có bài đều đặn, không còn bí ý tưởng.</h3>
-          <p>Viết bài cả tuần theo đúng văn phong của bạn, lên lịch cho từng kênh, đăng đúng giờ sau khi bạn duyệt.</p>
-          <ul><li>Một bài đăng được nhiều kênh cùng lúc</li><li>Xem trước bài như trên Facebook trước khi đăng</li><li>Muốn ngắn hơn, hấp dẫn hơn: một chạm là viết lại</li></ul></div>
-        <div class="mock"><div class="mh" data-face="social">Lịch đăng · Tháng này</div>
-          <div class="cal" id="cal"></div>
-          <div class="chs"><span class="tag">Facebook</span><span class="tag">Instagram</span><span class="tag">TikTok</span><span class="tag">YouTube</span></div></div>
-      </div>
-      <div class="show">
-        <div class="txt"><div class="eyebrow">Dựng video & thiết kế web</div><h3>Có video Reels và trang bán hàng mà không thuê ngoài.</h3>
-          <p>Đưa nội dung vào, đội dựng video dọc có giọng đọc tiếng Việt và phụ đề chạy theo chữ. Cần trang bán hàng thì có landing page chỉnh trên cả máy tính lẫn điện thoại.</p>
-          <ul><li>Thư viện mẫu video theo phong cách</li><li>Khách để lại thông tin trên trang là về thẳng hộp thư</li></ul></div>
-        <div class="mock"><div class="mh" data-face="video">Video & Reels · 3 video tuần này</div>
-          <div class="reel"><div>Ra mắt bộ sưu tập<span>0:30</span></div><div>Ưu đãi cuối tuần<span>0:20</span></div><div>Khách nói gì<span>0:45</span></div></div></div>
-      </div>
-      <div class="show rev">
-        <div class="txt"><div class="eyebrow">Trợ lý trưởng</div><h3>Bạn luôn là người quyết định.</h3>
-          <p>Bài đăng, quảng cáo, website: đội soạn sẵn và chờ bạn bấm Duyệt, ngay trên điện thoại. Quảng cáo luôn được tạo ở trạng thái tạm dừng để bạn tự bật.</p>
-          <ul><li>Mỗi sáng có báo cáo việc đã làm</li><li>Duyệt ở đâu cũng được, trên máy tính hay điện thoại</li></ul></div>
-        <div class="mock"><div class="mh" data-face="chief">Chờ duyệt · 3 việc</div>
-          <div class="row-ap"><div class="ic">FB</div><div class="t"><b>Bài đăng: Ra mắt bộ sưu tập thu</b><span>Facebook, Instagram · 19:00 thứ Sáu</span></div><div class="ok">Duyệt</div></div>
-          <div class="row-ap"><div class="ic">▶</div><div class="t"><b>Reels 30 giây: Ưu đãi cuối tuần</b><span>Video dọc · có giọng đọc, phụ đề</span></div><div class="ok">Duyệt</div></div>
-          <div class="row-ap"><div class="ic">WEB</div><div class="t"><b>Trang đăng ký khoá học</b><span>Đã kiểm tra trên điện thoại</span></div><div class="ok">Duyệt</div></div></div>
-      </div>
-    </div></section>
-
-    <!-- 5. So sánh -->
-    <section style="padding-top:20px"><div class="wrap">
-      <div class="center"><div class="eyebrow">Một đội đủ vai</div><h2>Thay vì tuyển từng người,<br>bạn có cả đội trong hôm nay.</h2></div>
+      <div class="center rv"><span class="eyebrow">Một đội đủ vai</span><h2>Thay vì tuyển từng người,<br><span class="gt">bạn có cả đội trong hôm nay.</span></h2></div>
       <div class="compare">
-        <div class="cmp"><h3>Tuyển đủ 8 vị trí</h3><div class="s">Chăm khách, nội dung, video, web, quảng cáo, kế hoạch…</div><ul>
+        <div class="cmp rv"><h3>Tuyển đủ 8 vị trí</h3><div class="s">Chăm khách, nội dung, video, web, quảng cáo, kế hoạch…</div><ul>
           <li>Trả lương hằng tháng cho từng người</li><li>Mất thời gian tuyển, đào tạo, quản lý</li><li>Nghỉ ca đêm, nghỉ lễ, nghỉ việc</li><li>Mỗi người hiểu sản phẩm một kiểu</li></ul></div>
-        <div class="cmp dark"><h3>Đội ngũ Bot 24/7</h3><div class="s">8 nhân viên AI, một khung chat để giao việc</div><ul>
+        <div class="cmp dark rv d1"><h3>Đội ngũ Bot 24/7</h3><div class="s">8 nhân viên AI, một khung chat để giao việc</div><ul>
           <li>Làm việc mỗi ngày, cả đêm và ngày lễ</li><li>Học sản phẩm, giá, chính sách từ chính tài liệu của bạn</li><li>Dùng ngay hôm nay, không cần tuyển hay đào tạo</li><li>Mọi việc chờ bạn duyệt rồi mới ra ngoài</li></ul>
           <div class="big">990.000đ</div></div>
       </div>
     </div></section>
 
-    <!-- 6. Bắt đầu -->
+    <!-- 8. Bắt đầu -->
     <section style="padding-top:20px"><div class="wrap">
-      <div class="center"><div class="eyebrow">Bắt đầu trong hôm nay</div><h2>Đội ngũ vào việc sau vài phút.</h2></div>
+      <div class="center rv"><span class="eyebrow">Bắt đầu trong hôm nay</span><h2>Đội ngũ vào việc <span class="gt">sau vài phút.</span></h2></div>
       <div class="steps">
-        <div class="step"><span class="n">1</span><h3>Thanh toán QR</h3><p>Điền tên, số điện thoại, email và quét QR. Hệ thống tự xác nhận khi tiền về.</p></div>
-        <div class="step"><span class="n">2</span><h3>Nhận bộ cài qua email</h3><p>Bộ cài cho Mac và Windows kèm hướng dẫn, cùng mã kích hoạt riêng của bạn.</p></div>
-        <div class="step"><span class="n">3</span><h3>Cài trong 1 phút</h3><p>Bấm đúp như phần mềm bình thường, đội ngũ tự vào vị trí.</p></div>
-        <div class="step"><span class="n">4</span><h3>Giao việc đầu tiên</h3><p>Nối Fanpage, Zalo, Drive vài cú bấm rồi nhắn việc cho Trợ lý trưởng.</p></div>
+        <div class="step rv"><span class="n">1</span><h3>Thanh toán QR</h3><p>Điền tên, số điện thoại, email và quét QR. Hệ thống tự xác nhận khi tiền về.</p></div>
+        <div class="step rv d1"><span class="n">2</span><h3>Nhận bộ cài qua email</h3><p>Bộ cài cho Mac và Windows kèm hướng dẫn, cùng mã kích hoạt riêng của bạn.</p></div>
+        <div class="step rv d2"><span class="n">3</span><h3>Cài trong 1 phút</h3><p>Bấm đúp như phần mềm bình thường, đội ngũ tự vào vị trí.</p></div>
+        <div class="step rv d3"><span class="n">4</span><h3>Giao việc đầu tiên</h3><p>Nối Fanpage, Zalo, Drive vài cú bấm rồi nhắn việc cho Trợ lý trưởng.</p></div>
       </div>
     </div></section>
 
-    <!-- 7. Mua -->
-    <section class="buy" id="mua"><div class="wrap grid">
-      <div>
-        <div class="eyebrow">Thuê đội ngũ</div>
-        <h2 style="margin-top:8px">Cả đội 8 nhân viên AI</h2>
+    <!-- 9. Mua -->
+    <section class="buy" id="mua"><div class="mesh"><i></i><i></i><i></i></div><div class="wrap grid">
+      <div class="rv">
+        <span class="eyebrow">Thuê đội ngũ</span>
+        <h2>Cả đội 8 nhân viên AI</h2>
         <div class="offer">
           <div class="p"><b>990.000đ</b></div>
-          <div style="color:rgba(255,255,255,.7)">Thanh toán một lần qua QR chuyển khoản</div>
+          <div style="color:rgba(255,255,255,.75)">Thanh toán một lần qua QR chuyển khoản</div>
           <h4>Bạn nhận được</h4>
           <ul>
             <li>Đội 8 nhân viên AI: chăm khách, nội dung, video, web, quảng cáo, chiến lược, tri thức, trợ lý trưởng</li>
-            <li>Bộ cài cho Mac và Windows, mã kích hoạt cài được trên tối đa 5 lần cài</li>
-            <li>Hộp thư chung cho Zalo, Messenger, Instagram</li>
+            <li>Tư vấn khách đa kênh: Zalo, Messenger, Instagram, TikTok trong một hộp thư</li>
+            <li>Đồng bộ tri thức từ Google Drive, Fanpage, Notion, thư mục trên máy</li>
             <li>Lịch đăng nhiều kênh, thư viện mẫu video, công cụ làm landing page</li>
-            <li>Bộ video hướng dẫn sử dụng từng tính năng</li>
-            <li>Bản cập nhật tính năng mới bằng một nút trong app</li>
+            <li>Bộ cài Mac và Windows, mã kích hoạt cài được tối đa 5 lần</li>
+            <li>Bộ video hướng dẫn và bản cập nhật tính năng mới trong app</li>
           </ul>
         </div>
       </div>
-      <form class="pay" id="pay" novalidate>
+      <form class="pay rv d1" id="pay" novalidate>
         <h3>Thông tin nhận đội ngũ</h3>
         <label>Họ và tên<input name="name" required autocomplete="name" placeholder="Nguyễn Văn A" /></label>
         <label>Số điện thoại<input name="phone" required inputmode="tel" autocomplete="tel" pattern="[0-9 +.]{9,15}" placeholder="0901 234 567" /></label>
@@ -319,10 +470,10 @@
       </form>
     </div></section>
 
-    <!-- 8. Hỏi đáp -->
+    <!-- 10. Hỏi đáp -->
     <section id="hoi-dap"><div class="wrap">
-      <div class="center"><div class="eyebrow">Hỏi đáp</div><h2>Trước khi thuê đội ngũ</h2></div>
-      <div class="faq">
+      <div class="center rv"><span class="eyebrow">Hỏi đáp</span><h2>Trước khi thuê đội ngũ</h2></div>
+      <div class="faq" id="faq">
         <details><summary>Cần chuẩn bị gì để dùng?</summary><p>Một máy Mac (macOS 13 trở lên) hoặc Windows 10/11, và tài khoản Claude Pro/Max hoặc ChatGPT Plus/Pro của bạn. Đội ngũ làm việc trên máy tính của bạn, nên để máy bật là đội trực liên tục.</p></details>
         <details><summary>Ngoài 990.000đ có tốn thêm phí API không?</summary><p>Không. Đội ngũ dùng chính gói Claude hoặc ChatGPT bạn đang đăng ký, không mất thêm phí API riêng.</p></details>
         <details><summary>Dữ liệu khách và tài liệu của tôi có an toàn không?</summary><p>Tri thức, hội thoại và đăng nhập đều nằm trên máy của bạn. Đội ngũ chỉ đọc nguồn bạn cho phép, không sửa hay xoá gì trên Drive hay Fanpage.</p></details>
@@ -330,16 +481,30 @@
         <details><summary>Tôi không rành công nghệ, có dùng được không?</summary><p>Được. Cài bằng cách bấm đúp như phần mềm bình thường, giao việc bằng cách nhắn tin như với nhân viên. Có bộ video hướng dẫn từng tính năng.</p></details>
         <details><summary>Thanh toán xong bao lâu thì dùng được?</summary><p>Tiền về là hệ thống tự xác nhận và gửi email bộ cài ngay. Mã kích hoạt được Thế Anh Marketing gửi riêng cho bạn qua email hoặc Zalo.</p></details>
       </div>
-      <div class="center" style="margin-top:40px"><a class="btn big" href="#mua" data-cta>Thuê đội 8 nhân viên AI · 990.000đ</a></div>
+      <div class="center" style="margin-top:42px"><a class="btn big" href="#mua" data-cta>Thuê đội 8 nhân viên AI · 990.000đ</a></div>
     </div></section>
 
     <footer><div class="wrap">© Thế Anh Marketing · <a href="/lien-he">Liên hệ</a></div></footer>
     <div class="sticky"><a class="btn" href="#mua" data-cta>Thuê đội ngũ · 990.000đ</a></div>
+
+    <!-- Chú Bot góc phải: mắt nhìn theo chuột, chớp mắt, chào khách, bấm để hỏi nhanh -->
+    <div id="bot">
+      <div class="bubble" id="botBubble"></div>
+      <div class="panel" id="botPanel">
+        <div class="ph"><span id="botPhFace"></span><div><b>Bot 24/7</b><small>Hỏi nhanh về đội ngũ</small></div><button class="x" id="botX" aria-label="Đóng">×</button></div>
+        <div class="pb" id="botMsgs"></div>
+        <div class="qs" id="botQs"></div>
+        <div class="pf"><a class="btn" href="#mua" data-cta id="botCta">Thuê đội ngũ · 990.000đ</a></div>
+      </div>
+      <button class="face" id="botFace" aria-label="Hỏi Bot 24/7"><span class="ring"></span>
+        <svg viewBox="0 0 64 64"><path d="M32 4c15 0 27 10 27 26s-9 30-27 30S5 46 5 30 17 4 32 4z" fill="#0f0d1a"/><ellipse cx="22" cy="14" rx="10" ry="5" fill="#fff" opacity=".14"/><g id="botEyes" fill="#fff"><rect id="eL" x="21" y="22" width="8" height="17" rx="4"/><rect id="eR" x="37" y="22" width="8" height="17" rx="4"/></g></svg>
+        <span class="dot"></span></button>
+    </div>
     <div class="toast" id="toast"></div>
 
     <script>
-      // Linh vật 8 nhân viên (blob đen, phân biệt bằng mắt — cùng bộ với app Bot 24/7) + nội dung thẻ đội ngũ, lịch minh hoạ
       (function () {
+        // ---- Linh vật 8 nhân viên (blob đen, phân biệt bằng mắt — cùng bộ với app Bot 24/7)
         var FACES = {
           chief: '<rect x="22" y="22" width="7" height="19" rx="3.5" transform="rotate(-14 25 31)"/><rect x="39" y="22" width="7" height="19" rx="3.5" transform="rotate(-14 42 31)"/>',
           cskh: '<path d="M20 30q5-6 10 0M36 30q5-6 10 0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>',
@@ -350,25 +515,123 @@
           mkt: '<path d="M20 33l10-5M36 28l10 5" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round"/>',
           ads: '<circle cx="25" cy="31" r="6"/><circle cx="42" cy="31" r="3.5"/>'
         };
-        function blob(id) { return '<svg viewBox="0 0 64 64"><path d="M32 4c15 0 27 10 27 26s-9 30-27 30S5 46 5 30 17 4 32 4z" fill="#0D0D0D"/><g fill="#fff">' + FACES[id] + '</g></svg>'; }
+        function blob(id) { return '<svg viewBox="0 0 64 64"><path d="M32 4c15 0 27 10 27 26s-9 30-27 30S5 46 5 30 17 4 32 4z" fill="#0f0d1a"/><g fill="#fff">' + FACES[id] + '</g></svg>'; }
         var TEAM = [
-          ["chief", "Trợ lý trưởng", "Điều phối cả đội", ["Nhận việc từ bạn qua một câu chat", "Chia việc cho đúng người", "Báo cáo mỗi sáng"], "Bạn chỉ cần nói một lần"],
-          ["cskh", "Nhân viên chăm khách", "Trực tin nhắn 24/7", ["Trả lời Zalo, Messenger, Instagram", "Báo giá đúng, tư vấn đúng giọng shop", "Ghi lịch hẹn khi khách hẹn ghé"], "Không bỏ lỡ khách nào"],
-          ["social", "Biên tập viên nội dung", "Viết & lên lịch bài", ["Viết bài cả tuần theo văn phong của bạn", "Lên lịch Facebook, Instagram, TikTok", "Đăng đúng giờ sau khi bạn duyệt"], "Fanpage đều bài mỗi ngày"],
-          ["video", "Nhân viên dựng video", "Reels & TikTok", ["Viết kịch bản, dựng video dọc", "Giọng đọc tiếng Việt, phụ đề theo chữ", "Thư viện mẫu theo phong cách"], "Có video không cần thuê ngoài"],
-          ["web", "Nhân viên thiết kế web", "Landing page", ["Làm trang bán hàng chuẩn chuyển đổi", "Kiểm tra trên máy tính và điện thoại", "Khách để lại thông tin về thẳng hộp thư"], "Có trang bán hàng trong ngày"],
-          ["ads", "Chuyên viên quảng cáo", "Đọc số & soạn quảng cáo", ["Gom số liệu mọi tài khoản quảng cáo", "Cảnh báo khi chi phí vượt mức", "Soạn quảng cáo nháp ở trạng thái tạm dừng"], "Biết tiền quảng cáo đi đâu"],
-          ["mkt", "Chuyên viên chiến lược", "Kế hoạch marketing", ["Lập kế hoạch 30 ngày", "Phân tích đối thủ", "Lưu thành tài liệu để bạn sửa"], "Biết tháng này làm gì"],
-          ["data", "Quản lý tri thức", "Bộ não doanh nghiệp", ["Đọc Drive, Fanpage, tài liệu của bạn", "Nhớ sản phẩm, giá, chính sách", "Cả đội dùng chung một kiến thức"], "Cả đội hiểu shop như bạn"]
+          ["chief", "Trợ lý trưởng", "Điều phối cả đội", "#6d5dfc", ["Nhận việc từ bạn qua một câu chat", "Chia việc cho đúng người", "Báo cáo mỗi sáng"], "Bạn chỉ cần nói một lần"],
+          ["cskh", "Nhân viên chăm khách", "Tư vấn đa kênh 24/7", "#2f8cff", ["Trả lời Zalo, Messenger, Instagram, TikTok", "Báo giá đúng, tư vấn đúng giọng shop", "Ghi lịch hẹn khi khách hẹn ghé"], "Không bỏ lỡ khách nào"],
+          ["social", "Biên tập viên nội dung", "Viết & lên lịch bài", "#ff4fa3", ["Viết bài cả tuần theo văn phong của bạn", "Lên lịch nhiều kênh", "Đăng đúng giờ sau khi bạn duyệt"], "Fanpage đều bài mỗi ngày"],
+          ["video", "Nhân viên dựng video", "Reels & TikTok", "#ff7a45", ["Viết kịch bản, dựng video dọc", "Giọng đọc tiếng Việt, phụ đề theo chữ", "Thư viện mẫu theo phong cách"], "Có video không cần thuê ngoài"],
+          ["web", "Nhân viên thiết kế web", "Landing page", "#12c2e9", ["Làm trang bán hàng chuẩn chuyển đổi", "Kiểm tra trên máy tính và điện thoại", "Khách để lại thông tin về thẳng hộp thư"], "Có trang bán hàng trong ngày"],
+          ["ads", "Chuyên viên quảng cáo", "Đọc số & soạn quảng cáo", "#ffb020", ["Gom số liệu mọi tài khoản quảng cáo", "Cảnh báo khi chi phí vượt mức", "Soạn quảng cáo nháp ở trạng thái tạm dừng"], "Biết tiền quảng cáo đi đâu"],
+          ["mkt", "Chuyên viên chiến lược", "Kế hoạch marketing", "#a855f7", ["Lập kế hoạch 30 ngày", "Phân tích đối thủ", "Lưu thành tài liệu để bạn sửa"], "Biết tháng này làm gì"],
+          ["data", "Quản lý tri thức", "Đồng bộ tri thức doanh nghiệp", "#18c37e", ["Đọc Drive, Fanpage, Notion của bạn", "Nhớ sản phẩm, giá, chính sách", "Cả đội dùng chung một kiến thức"], "Cả đội hiểu shop như bạn"]
         ];
-        document.getElementById("team").innerHTML = TEAM.map(function (t) {
-          return '<div class="emp"><div class="av">' + blob(t[0]) + '</div><div><div class="role">' + t[2] + '</div><h3>' + t[1] + '</h3></div><ul>' +
-            t[3].map(function (x) { return "<li>" + x + "</li>"; }).join("") + '</ul><div class="out">→ ' + t[4] + '</div></div>';
+        document.getElementById("team").innerHTML = TEAM.map(function (t, i) {
+          return '<div class="emp rv d' + (i % 4) + '" style="--c:' + t[3] + '"><div class="av">' + blob(t[0]) + '</div><div><div class="role">' + t[2] + '</div><h3>' + t[1] + '</h3></div><ul>' +
+            t[4].map(function (x) { return "<li>" + x + "</li>"; }).join("") + '</ul><div class="outc">→ ' + t[5] + '</div></div>';
         }).join("");
-        document.getElementById("strip").innerHTML = TEAM.map(function (t) { return "<span>" + blob(t[0]) + "</span>"; }).join("");
+        document.getElementById("strip").innerHTML = TEAM.map(function (t, i) { return '<span style="background:' + t[3] + ';animation-delay:' + (i * .18) + 's">' + blob(t[0]) + "</span>"; }).join("");
         document.querySelectorAll("[data-face]").forEach(function (h) { h.insertAdjacentHTML("afterbegin", blob(h.getAttribute("data-face"))); });
-        var cal = ""; for (var d = 1; d <= 28; d++) cal += '<div class="' + (d % 7 === 0 ? "" : d % 3 === 0 ? "p p2" : "p") + '">' + d + "</div>";
+        document.querySelectorAll("[data-face2]").forEach(function (h) { h.insertAdjacentHTML("afterbegin", blob(h.getAttribute("data-face2"))); });
+        document.getElementById("botPhFace").innerHTML = blob("chief");
+
+        // ---- Hiện dần khi cuộn tới + đếm số
+        var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (!e.isIntersecting) return; e.target.classList.add("in"); io.unobserve(e.target);
+          e.target.querySelectorAll("[data-count]").forEach(function (n) { var to = +n.dataset.count, t0 = performance.now(); (function step(t) { var p = Math.min(1, (t - t0) / 1200); n.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(step); })(t0); }); }); }, { threshold: .18 });
+        document.querySelectorAll(".rv").forEach(function (el) { io.observe(el); });
+        // Phần đang trong màn hình lúc tải: hiện ngay (không chờ). Dự phòng: sau 3 giây mọi phần đã cuộn qua đều hiện.
+        var showNow = function () { document.querySelectorAll(".rv:not(.in)").forEach(function (el) { if (el.getBoundingClientRect().top < innerHeight) el.classList.add("in"); }); };
+        showNow(); setTimeout(showNow, 3000); addEventListener("scroll", function () { clearTimeout(showNow.t); showNow.t = setTimeout(showNow, 400); }, { passive: true });
+
+        // ---- Chữ chạy ở tiêu đề
+        var words = ["tư vấn khách", "viết bài", "dựng video", "làm website", "đọc quảng cáo", "làm cả đêm"], wi = 0, rot = document.getElementById("rot");
+        setInterval(function () { wi = (wi + 1) % words.length; rot.innerHTML = "<b>" + words[wi] + "</b>"; }, 2200);
+
+        // Chạy cảnh khi khung xuất hiện trên màn hình, dừng khi khuất
+        function whenVisible(el, start) { var on = false; new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting && !on) { on = true; start(); } }); }, { threshold: .3 }).observe(el); }
+        var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+
+        // ---- Cảnh 1: khách nhắn từ nhiều kênh → Bot trả lời
+        var CONV = [
+          ["c", "Zalo", "#0068ff", "Shop ơi mẫu váy này còn size M không ạ?"],
+          ["b", "", "", "Dạ còn size M màu be và đen ạ, giá 289k. Đơn từ 2 sản phẩm shop miễn phí giao hàng ạ 🙌"],
+          ["c", "Messenger", "#a033ff", "Mai mình ghé cửa hàng lúc 10h được không?"],
+          ["b", "", "", "Dạ được ạ, em ghi lịch hẹn 10h sáng mai cho anh. Cửa hàng ở 12 Lê Lợi ạ 📍"],
+          ["c", "Instagram", "#d62976", "Có ship COD không shop?"],
+          ["b", "", "", "Dạ có ạ, nhận hàng kiểm tra rồi thanh toán. Chị gửi em địa chỉ nhé ✨"]
+        ];
+        whenVisible(document.getElementById("sChat"), async function () {
+          var box = document.getElementById("msgs");
+          for (;;) { box.innerHTML = "";
+            for (var i = 0; i < CONV.length; i++) { var m = CONV[i];
+              if (m[0] === "b") { var ty = document.createElement("div"); ty.className = "typing"; ty.innerHTML = "<i></i><i></i><i></i>"; box.appendChild(ty); await sleep(1100); ty.remove(); }
+              var d = document.createElement("div"); d.className = "m " + m[0];
+              d.innerHTML = (m[1] ? '<span class="src" style="background:' + m[2] + '">' + m[1] + "</span><br>" : "") + m[3]; box.appendChild(d);
+              while (box.children.length > 5) box.removeChild(box.firstChild);
+              await sleep(m[0] === "c" ? 900 : 1600); }
+            await sleep(2200); } });
+
+        // ---- Cảnh 2: nguồn → bộ não → thẻ tri thức
+        whenVisible(document.getElementById("sKnow"), async function () {
+          var stage = document.getElementById("sKnow"), svg = document.getElementById("wires"), W = 520, H = 420, cx = W / 2, cy = H / 2;
+          var ys = [62, 148, 234, 320], paths = "";
+          ys.forEach(function (y) { paths += '<path class="wire" d="M150 ' + y + ' C 210 ' + y + ', 200 ' + cy + ', ' + (cx - 60) + ' ' + cy + '"/>'; });
+          [90, 190, 290].forEach(function (y) { paths += '<path class="wire" d="M' + (cx + 60) + ' ' + cy + ' C 330 ' + cy + ', 330 ' + y + ', 380 ' + y + '"/>'; });
+          svg.innerHTML = paths;
+          // Gói dữ liệu chạy dọc dây (offset-path theo toạ độ thật của khung)
+          var r = stage.getBoundingClientRect(), sx = r.width / W, sy = r.height / H;
+          ys.forEach(function (y, i) { var p = document.createElement("i"); p.className = "pkt";
+            p.style.offsetPath = "path('M" + 150 * sx + " " + y * sy + " C " + 210 * sx + " " + y * sy + ", " + 200 * sx + " " + cy * sy + ", " + (cx - 60) * sx + " " + cy * sy + "')";
+            p.style.animationDelay = (i * .5) + "s"; p.style.left = "0"; p.style.top = "0"; stage.appendChild(p); });
+          var outs = stage.querySelectorAll(".out"), kc = document.getElementById("kcount"), n = 0;
+          var tick = setInterval(function () { n = Math.min(2025, n + 37); kc.textContent = (n >= 2025 ? "Đã học · " : "Đang học · ") + n.toLocaleString("vi-VN") + " ghi chú"; if (n >= 2025) clearInterval(tick); }, 60);
+          for (var i = 0; i < outs.length; i++) { await sleep(1100); outs[i].classList.add("on"); } });
+
+        // ---- Cảnh 3: đêm → sáng
+        var stars = document.getElementById("stars"); for (var s = 0; s < 40; s++) { var st = document.createElement("i"); st.style.left = Math.random() * 100 + "%"; st.style.top = Math.random() * 70 + "%"; st.style.animationDelay = Math.random() * 2.6 + "s"; stars.appendChild(st); }
+        whenVisible(document.getElementById("sNight"), async function () {
+          var clock = document.getElementById("clock"), items = [].slice.call(document.querySelectorAll("#tl .tli")), morning = document.getElementById("morning");
+          var mins = function (t) { var a = t.split(":"); var m = +a[0] * 60 + +a[1]; return m < 12 * 60 ? m + 1440 : m; };
+          for (;;) { items.forEach(function (x) { x.classList.remove("done"); }); morning.classList.remove("on");
+            for (var m = 23 * 60; m <= 31 * 60; m += 10) { var h = Math.floor(m / 60) % 24, mm = m % 60; clock.textContent = String(h).padStart(2, "0") + ":" + String(mm).padStart(2, "0");
+              items.forEach(function (x) { if (mins(x.dataset.t) <= m) x.classList.add("done"); }); await sleep(55); }
+            morning.classList.add("on"); await sleep(4200); } });
+
+        // ---- Lịch đăng tự lấp đầy + duyệt lần lượt
+        var CC = ["#6d5dfc", "#ff4fa3", "#12c2e9", "#ffb020"], cal = ""; for (var d = 1; d <= 28; d++) cal += '<div class="' + (d % 7 === 0 ? "" : "p") + '" style="--c:' + CC[d % 4] + ";--dl:" + (d * .06) + 's"></div>';
         document.getElementById("cal").innerHTML = cal;
+        whenVisible(document.getElementById("apbox"), async function () { var aps = document.querySelectorAll("#apbox .ap");
+          for (;;) { for (var i = 0; i < aps.length; i++) { await sleep(900); aps[i].classList.add("ok"); aps[i].querySelector(".b").textContent = "✓ Đã duyệt"; }
+            await sleep(2500); aps.forEach(function (a) { a.classList.remove("ok"); a.querySelector(".b").textContent = "Duyệt"; }); } });
+
+        // ---- Chú Bot góc phải
+        var face = document.getElementById("botFace"), eL = document.getElementById("eL"), eR = document.getElementById("eR"), bubble = document.getElementById("botBubble"), panel = document.getElementById("botPanel");
+        var tx = 0, ty = 0;
+        addEventListener("mousemove", function (e) { var r = face.getBoundingClientRect(), dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2), d = Math.hypot(dx, dy) || 1;
+          tx = dx / d * Math.min(4, d / 40); ty = dy / d * Math.min(3.5, d / 40); eL.setAttribute("transform", "translate(" + tx + " " + ty + ")"); eR.setAttribute("transform", "translate(" + tx + " " + ty + ")"); });
+        (function blink() { setTimeout(function () { [eL, eR].forEach(function (e) { e.setAttribute("height", 3); e.setAttribute("y", 29); }); setTimeout(function () { [eL, eR].forEach(function (e) { e.setAttribute("height", 17); e.setAttribute("y", 22); }); blink(); }, 140); }, 2200 + Math.random() * 3000); })();
+        var TIPS = ["<b>Chào bạn 👋</b>Mình là Bot 24/7. Bấm vào mình để hỏi nhanh về đội ngũ nhé!", "<b>Đội 8 nhân viên AI</b>chỉ 990.000đ cho cả đội.", "<b>Bạn ngủ, đội vẫn làm 🌙</b>Bấm để xem đội làm gì ban đêm."], tip = 0, tipT;
+        function showTip() { if (panel.classList.contains("on")) return; bubble.innerHTML = TIPS[tip % TIPS.length]; tip++; bubble.classList.add("on"); clearTimeout(tipT); tipT = setTimeout(function () { bubble.classList.remove("on"); }, 6000); }
+        setTimeout(showTip, 2500); setInterval(showTip, 22000);
+        bubble.addEventListener("click", function () { openPanel(); });
+        var QA = [
+          ["Đội làm được những gì?", "Tư vấn khách đa kênh, đồng bộ tri thức doanh nghiệp, viết và lên lịch bài, dựng video Reels, làm landing page, đọc số liệu quảng cáo, lập kế hoạch marketing. 8 nhân viên, mỗi người một nghề."],
+          ["Giá bao nhiêu?", "990.000đ cho cả đội, thanh toán một lần qua QR. Đội dùng gói Claude hoặc ChatGPT bạn đang có, không mất thêm phí API."],
+          ["Cần chuẩn bị gì?", "Máy Mac hoặc Windows 10/11 và tài khoản Claude Pro/Max hoặc ChatGPT Plus/Pro. Cài bằng cách bấm đúp, khoảng 1 phút."],
+          ["Có tự đăng bài không?", "Không. Mọi bài đăng, quảng cáo, website đều chờ bạn bấm Duyệt rồi mới ra ngoài."],
+          ["Dữ liệu có an toàn?", "Tri thức, hội thoại, đăng nhập đều nằm trên máy của bạn."]
+        ];
+        var msgs = document.getElementById("botMsgs"), qs = document.getElementById("botQs"), greeted = false;
+        function say(cls, html) { var d = document.createElement("div"); d.className = "m " + cls; d.innerHTML = html; msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight; }
+        qs.innerHTML = QA.map(function (q, i) { return '<button data-i="' + i + '">' + q[0] + "</button>"; }).join("");
+        qs.addEventListener("click", async function (e) { var b = e.target.closest("button"); if (!b) return; var q = QA[+b.dataset.i];
+          say("c", q[0]); var ty = document.createElement("div"); ty.className = "typing"; ty.innerHTML = "<i></i><i></i><i></i>"; msgs.appendChild(ty); msgs.scrollTop = msgs.scrollHeight; await sleep(700); ty.remove(); say("b", q[1]); });
+        function openPanel() { bubble.classList.remove("on"); panel.classList.add("on"); face.querySelector(".dot").style.display = "none";
+          if (!greeted) { greeted = true; say("b", "Chào bạn 👋 Mình là Trợ lý trưởng của đội Bot 24/7. Bạn muốn hỏi gì về đội ngũ?"); }
+          try { if (window.fbq) window.fbq("trackCustom", "BotWidgetOpen"); } catch (e) {} }
+        face.addEventListener("click", function () { panel.classList.contains("on") ? panel.classList.remove("on") : openPanel(); });
+        document.getElementById("botX").addEventListener("click", function () { panel.classList.remove("on"); });
+        document.getElementById("botCta").addEventListener("click", function () { panel.classList.remove("on"); });
       })();
     </script>
 
