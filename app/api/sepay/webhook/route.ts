@@ -8,9 +8,6 @@ import { sendTelegramOrderNotification, sendTelegramSupportBookingNotification }
 import { SUPPORT_PRODUCT_SLUG } from "@/lib/support-booking/constants";
 import { isConsultationOrder } from "@/lib/consultation/constants";
 import { sendConsultationPaymentEmail } from "@/lib/notifications/consultation-payment-email";
-import { BOT247_ACTIVATIONS, bot247InstanceForOrder, isBot247Order } from "@/lib/bot247/constants";
-import { sendBot247LicenseEmail } from "@/lib/notifications/bot247-license-email";
-import { bot247LicenseAction } from "@/lib/products/bot247-admin";
 import { dispatchMetaPurchaseOrders } from "@/lib/meta/purchase-outbox";
 import {
   verifySepayApiKey,
@@ -117,7 +114,6 @@ export async function POST(request: Request) {
     > | null = null;
     const supportBookingOrder = isSupportBookingOrder(confirmation.order);
     const consultationOrder = isConsultationOrder(confirmation.order);
-    const bot247Order = isBot247Order(confirmation.order);
     const preorderDepositOrder = isAgentKitPreorderDepositOrder(confirmation.order);
     let supportBooking: ConfirmedSupportBooking | null = null;
 
@@ -145,21 +141,6 @@ export async function POST(request: Request) {
         await markPaymentEmailSent(confirmation.order.orderCode);
       } else if (!result.ok) {
         await markPaymentEmailError(confirmation.order.orderCode, result.reason ?? "Không gửi được email xác nhận tư vấn.");
-      }
-    }
-
-    if (!confirmation.wasAlreadyPaid && bot247Order) {
-      // Bot 24/7: issue an activation code on the licence gateway and email it. A failure is recorded on the order; the owner can issue by hand in /admin/crm-v2/bot247.
-      const issued = await bot247LicenseAction({ action: "new", instance: bot247InstanceForOrder(confirmation.order.orderCode), name: confirmation.order.studentName, max: BOT247_ACTIVATIONS, by: `sepay:${confirmation.order.orderCode}` });
-      if (issued.ok && issued.data.code) {
-        const result = await sendBot247LicenseEmail(confirmation.order, issued.data.code);
-        paymentEmail = result;
-        if (result.ok && !result.skipped) await markPaymentEmailSent(confirmation.order.orderCode);
-        else if (!result.ok) await markPaymentEmailError(confirmation.order.orderCode, result.reason ?? "Không gửi được email mã kích hoạt Bot 24/7.");
-      } else {
-        paymentEmail = { ok: false, skipped: false, reason: "bot247_license_failed" };
-        await markPaymentEmailError(confirmation.order.orderCode, `Chưa cấp được mã Bot 24/7 (${issued.ok ? "thiếu mã" : issued.reason}). Cấp tay ở /admin/crm-v2/bot247.`);
-        console.warn("[sepay] Bot 24/7 licence issue failed:", { orderCode: confirmation.order.orderCode, reason: issued.ok ? "missing_code" : issued.reason });
       }
     }
 
@@ -195,8 +176,7 @@ export async function POST(request: Request) {
       !confirmation.wasAlreadyPaid &&
       shouldSendPaymentSuccessEmail(confirmation.order) &&
       !supportBookingOrder &&
-      !consultationOrder &&
-      !bot247Order
+      !consultationOrder
     ) {
       if (!preorderDepositOrder) {
         studentAccount = await ensureStudentAccountForPaidOrder(

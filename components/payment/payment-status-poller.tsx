@@ -54,10 +54,6 @@ function getPaidRedirectPath(order: PaymentOrder) {
     return "/dich-vu?consultation=paid";
   }
 
-  if (hasExactCourseSlug(order, "bot-24-7")) {
-    return "/bot-24-7?paid=1";
-  }
-
   if (isFacebookAdsCourseOrder(order)) {
     return facebookAdsThankYouPath;
   }

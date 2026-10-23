@@ -26,7 +26,6 @@ import {
   SUPPORT_PRODUCT_TITLE,
 } from "@/lib/support-booking/constants";
 import { CONSULTATION_POLICY, isConsultationOrder } from "@/lib/consultation/constants";
-import { isBot247Order } from "@/lib/bot247/constants";
 import { sendCheckoutEntryNotifications } from "@/services/checkoutNotificationService";
 import { getPaymentOrder, type PaymentOrder } from "@/services/orderService";
 import {
@@ -318,20 +317,6 @@ function getLocalDemoPaymentOrder(code: string): PaymentOrder | null {
 }
 
 function getCheckoutContent(order: PaymentOrder) {
-  if (isBot247Order(order)) {
-    return {
-      eyebrow: "Bản quyền trọn đời",
-      title: "Hoàn tất thanh toán Bot 24/7",
-      description: "Thanh toán một lần, dùng mãi. Tiền về là hệ thống tự gửi mã kích hoạt qua email của bạn.",
-      productLabel: "Bot 24/7",
-      productHref: "/bot-24-7",
-      includes: ["Bản quyền trọn đời, không phí hằng tháng", "Mã kích hoạt gửi tự động qua email", "Hướng dẫn cài đặt và hỗ trợ từ The Anh Marketing"],
-      saleReasons: defaultSaleReasons,
-      nextSteps: ["Hệ thống xác nhận thanh toán", "Nhận email chứa mã kích hoạt", "Cài Bot 24/7 và nhập mã ở bước đầu tiên"],
-      stickyCopy: "Thanh toán Bot 24/7",
-    };
-  }
-
   if (isConsultationOrder(order)) {
     return {
       eyebrow: "Phí giữ yêu cầu tư vấn",

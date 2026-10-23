@@ -17,10 +17,3 @@ Menu admin chia nhóm theo sản phẩm: **Chung** (Tổng quan, Khách hàng & 
 
 ## API nội bộ của website
 `POST /api/admin/crm-v2/products/adsmind` {email, plan} · `POST /api/admin/crm-v2/products/bot247` {action:new|revoke|restore, instance, name?, max?} — đều qua `requireCrmV2OwnerRequest`.
-
-## Bán Bot 24/7 — bản quyền trọn đời 990.000đ (23/10/2026)
-- Trang bán `/bot-24-7` (form họ tên, SĐT, email) → `POST /api/bot247` → `createPaymentOrder` với gói cố định `bot-24-7` / `lifetime-990` (cùng khuôn với gói tư vấn) → trang `/thanh-toan/[mã]` có QR SePay.
-- Webhook SePay (`app/api/sepay/webhook/route.ts`): đơn Bot 24/7 vừa chuyển sang "paid" → gọi cổng cấp mã (`instance = don-<mã đơn>`, tối đa 5 lần kích hoạt, `by = sepay:<mã đơn>`) → gửi email mã kích hoạt (`lib/notifications/bot247-license-email.ts`, Resend, idempotent theo mã đơn). Không tạo tài khoản học viên.
-- Cấp mã lỗi: đơn ghi `payment_email_last_error` "Chưa cấp được mã Bot 24/7…"; chủ hệ thống cấp tay ở `/admin/crm-v2/bot247`.
-- Sau khi trả tiền, trang thanh toán chuyển về `/bot-24-7?paid=1` (báo đã gửi mã qua email).
-- Ảnh giao diện: `public/bot247/*.jpg` (chụp giao diện thật với dữ liệu mẫu).
