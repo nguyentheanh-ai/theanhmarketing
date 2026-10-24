@@ -1,4 +1,12 @@
 
+## 24/10/2026 — Bot 24/7: Video hướng dẫn + Mã kích hoạt trong CRM: LIVE
+
+Anh duyệt "ok". Source `33a797d` (nhánh `codex/bot247-license-admin-20261024`, đặt trên `c7fe952`; đã đưa vào `codex/cloudflare-native-phase2-20261018`). Worker `theanh-main-cf-production` version **e1ae3216-db78-40a8-b690-bc4abb1090a2** 100%; quay lui: **35a23045-aea7-48c9-aa32-2fec2ec5e79d**. Binding khớp bản cũ + secret mới `BOT247_VIDEO_LINK_SECRET` (đưa lên bằng `--secrets-file .env.bot247-video`, bản sao ở `phase2-main/.env.bot247-video`, gitignored). Build production 3 biến, verifier 10/10, dry-run đạt. Preflight-cloudflare báo BLOCKED vì worktree `worktrees/bot247-videos-20261024` chưa có trong registry.
+- `/bot-24-7/huong-dan`: 8 tập ở R2 `theanh-main-assets-staging/bot247/huong-dan/`, chỉ mở bằng link riêng từng đơn (HMAC); email mua Bot có link. Đã thử bằng mã đơn giả TAMTHU-VIDEO (không tạo đơn): API 200, 8 video 206 có Range; không mã / sửa mã → 401.
+- `/admin/crm-v2/bot247` (owner): danh sách/tạo/gửi mã/Zalo/+5 lượt/thu hồi qua cổng. Cần secret website `BOT247_GATEWAY_ADMIN_TOKEN` (= ADMIN_TOKEN của cổng), anh tự dán; chưa có thì CRM báo lỗi cổng, email thanh toán vẫn gửi không kèm mã.
+- Webhook SePay: đơn Bot đi nhánh `bot247` (trước đó thiếu userId → không gửi email).
+- Cổng `bot247-connect` deploy `8eefa105-9aaf-4cf6-9ac0-8af736da1795` (quay lui `aaa10341-d92b-44cf-8a98-26b53f3c5315`).
+- Sau phát hành: /bot-24-7, /bot-24-7/tai-ve, /bot-24-7/huong-dan, /, /khoa-hoc 200; landing Facebook Ads SHA khớp bản trước. D1 chưa có đơn bot-24-7 nào → không cần gửi bổ sung.
 ## 24/10/2026 08:05 — Bot 24/7 landing: logo thật các nền tảng, thẻ Cài đặt ở hero
 
 Commit 75a6c65 (`public/academy/bot-24-7.html`): logo Zalo/Messenger/Instagram/TikTok/Facebook/YouTube/Drive/Notion/Excel (Simple Icons, nhúng sprite), sửa nhãn kênh bị bay (trùng class `.src`), căn giữa mô tả hero, thêm thẻ "Cài đặt · chạy ngay trên máy bạn". Deploy production version **255e8757-b2bf-48ef-89f6-97b81336b269**; quay lui: **e72bacff-e826-459f-88fa-9ef58a1af359**. Binding khớp bản cũ (native-a fabea0e7). Đã kiểm /academy/bot-24-7(.html) và /bot-24-7 trả 200 có logo mới.
