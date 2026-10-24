@@ -316,8 +316,6 @@ test("Facebook Ads P1 rewrite follows the final 13-section order and keeps five 
   const main = html.match(/<main>([\s\S]*?)<\/main>/)?.[1] || "";
   const sectionIds = [...main.matchAll(/<section[^>]+id="([^"]+)"/g)].map((match) => match[1]);
   const expectedAssets = [
-    "facebook-ads-agent-demo.gif",
-    "facebook-ads-agent-demo-poster.webp",
     "zalo-support/zalo-proof-01-agent-plan.webp",
     "zalo-support/zalo-proof-02-marketing-advice.webp",
     "zalo-support/zalo-proof-03-course-feedback.webp",
@@ -340,9 +338,9 @@ test("Facebook Ads P1 rewrite follows the final 13-section order and keeps five 
     "faq",
     "bat-dau",
   ]);
-  assert.match(html, /Một câu lệnh\.\s*<span>Agent tự động lên toàn bộ quảng cáo\.<\/span>/);
-  assert.match(html, /<source media="\(prefers-reduced-motion: reduce\)" srcset="\.\.\/ladipage\/assets\/facebook-ads-agent-demo-poster\.webp"/);
-  assert.match(html, /<img[^>]+src="\.\.\/ladipage\/assets\/facebook-ads-agent-demo\.gif"[^>]+loading="lazy"[^>]+decoding="async"/);
+  // 24/10/2026 (owner): the Agent GIF is replaced by a coded AdsMind command demo.
+  assert.match(html, /Một câu lệnh\.\s*<span>AdsMind soạn sẵn cả chiến dịch\.<\/span>/);
+  assert.match(html, /class="am-cmd"[\s\S]*?Lên quảng cáo tin nhắn 300k\/ngày nữ 25–40 Hà Nội[\s\S]*?Tạm dừng/);
   assert.doesNotMatch(html, /facebook-ads-agent-demo\.mp4/);
   assert.equal((html.match(/class="proof-case-card"/g) || []).length, 5);
   assert.doesNotMatch(main, /zalo-proof-(?:04|05|06|07|08|09|11)-/);
@@ -352,8 +350,6 @@ test("Facebook Ads P1 rewrite follows the final 13-section order and keeps five 
     assert.match(html, new RegExp(asset.replaceAll(".", "\\.")));
   }
 
-  const gifSize = fs.statSync(path.resolve("public/ladipage/assets/facebook-ads-agent-demo.gif")).size;
-  assert.ok(gifSize <= 12 * 1024 * 1024, `GIF is too large: ${gifSize} bytes`);
 });
 
 test("Facebook Ads P1 rewrite updates navigation, FAQs and the primary CTA", () => {

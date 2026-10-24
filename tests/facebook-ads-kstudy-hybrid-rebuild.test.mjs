@@ -84,7 +84,7 @@ test("Facebook Ads hybrid keeps real brand proof motion and checkout contracts",
   assert.match(source, /CEO Greezhub Việt Nam/);
   assert.equal((source.match(/class="proof-case-card"/g) ?? []).length, 5);
   assert.match(source, /zalo-proof-12-support-schedule\.webp/);
-  assert.match(source, /facebook-ads-agent-demo\.gif/);
+  assert.match(source, /class="am-cmd"/);
   assert.match(source, /1315653423712065/);
   assert.match(source, /value:\s*799000/);
   assert.match(source, /id="payment-form"/);
