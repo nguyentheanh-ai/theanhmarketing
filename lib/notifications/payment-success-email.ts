@@ -1,5 +1,6 @@
 import type { PaymentOrder } from "@/services/orderService";
 import { buildEmailLink } from "@/lib/notifications/email-link-bridge";
+import { bot247GuideUrl } from "@/lib/bot247/video-access";
 import {
   AGENT_KIT_SLUG,
   AGENT_KIT_PREORDER_DEPOSIT_VND,
@@ -11,6 +12,8 @@ import {
 type PaymentEmailOptions = {
   from?: string;
   siteUrl?: string;
+  // Khóa ký link video hướng dẫn Bot 24/7 (mặc định R2_PRIVATE_URL_SECRET của Worker)
+  bot247VideoSecret?: string;
   force?: boolean;
   idempotencyKey?: string;
   account?: {
@@ -335,7 +338,7 @@ export function buildPaymentSuccessEmailPayload(
   const siteUrl = normalizeSiteUrl(options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL);
   // Bot 24/7 (phần mềm): email riêng với link bộ cài + hướng dẫn, không có khóa học / tài khoản học viên
   if (isBot247Order(order)) {
-    return buildBot247PaymentSuccessEmail(order, { from: getSender(options), siteUrl });
+    return buildBot247PaymentSuccessEmail(order, { from: getSender(options), siteUrl, videoSecret: options.bot247VideoSecret ?? process.env.R2_PRIVATE_URL_SECRET });
   }
   const isAgentKit = !isAgentKitPreorderDepositOrder(order) && (
     order.courseSlug.split(",").some((slug) => slug.trim() === AGENT_KIT_SLUG)
@@ -940,8 +943,10 @@ export function isBot247Order(order: Pick<PaymentOrder, "courseSlug" | "orderIte
 const escBot = (value: string) =>
   String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 
-function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from, siteUrl }: { from: string; siteUrl: string }) {
+function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from, siteUrl, videoSecret }: { from: string; siteUrl: string; videoSecret?: string }) {
   const site = String(siteUrl || "https://www.theanhmarketing.com").replace(/\/$/, "");
+  // Link bộ video hướng dẫn riêng của đơn này (thiếu khóa ký thì bỏ mục video, email vẫn gửi)
+  const videoUrl = bot247GuideUrl(site, videoSecret, order.orderCode);
   const guideUrl = `${site}/bot-24-7/tai-ve`;
   const termsUrl = `${site}/bot-24-7/dieu-khoan`;
   const name = escBot(order.studentName || "bạn");
@@ -979,6 +984,10 @@ function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from, siteUrl }: 
       ${step(4, "Kích hoạt & đăng nhập AI", "Dán mã kích hoạt › Kích hoạt. Đăng nhập Claude (gói Pro/Max) hoặc ChatGPT (gói Plus/Pro) › Xong. Rồi vào mục Bắt đầu.")}
     </table>
 
+    ${videoUrl ? `<h2 style="font-size:17px;margin:22px 0 4px">3. Xem video hướng dẫn</h2>
+    <p style="font-size:14.5px;line-height:1.6;color:#444;margin:0">Bộ video ngắn, có phụ đề: bắt đầu, kết nối kênh, giao việc, chăm khách, lịch đăng, làm video, làm website. Link này là của riêng đơn <b>${code}</b>, vui lòng không chia sẻ.</p>
+    ${btn(videoUrl, "Xem bộ video hướng dẫn", true)}` : ""}
+
     <h2 style="font-size:17px;margin:22px 0 4px">Cần hỗ trợ cài đặt?</h2>
     <p style="font-size:14.5px;line-height:1.6;color:#444;margin:0">Nhắn nhóm hỗ trợ, gửi kèm mã đơn <b>${code}</b>.</p>
     ${btn(supportUrl, "Liên hệ hỗ trợ")}
@@ -1000,6 +1009,7 @@ function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from, siteUrl }: 
     "Bot tự mở và tải tiếp bộ não AI ở nền. Dán mã kích hoạt, đăng nhập Claude hoặc ChatGPT, rồi vào mục Bắt đầu.",
     "",
     `Hướng dẫn chi tiết: ${guideUrl}`,
+    ...(videoUrl ? [`Video hướng dẫn (link riêng của đơn, không chia sẻ): ${videoUrl}`] : []),
     `Hỗ trợ: ${supportUrl}`,
     `Điều khoản dịch vụ: ${termsUrl}`,
   ].join("\n");

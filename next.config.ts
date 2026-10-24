@@ -105,6 +105,11 @@ const nextConfig: NextConfig = {
         destination: "/academy/bot-24-7-dieu-khoan.html",
       },
       {
+        // Video hướng dẫn: trang tĩnh, video tự kiểm mã truy cập ở Worker (lib/cloudflare/bot247-video-guide.ts)
+        source: "/bot-24-7/huong-dan",
+        destination: "/academy/bot-24-7-huong-dan.html",
+      },
+      {
         source: "/academy/ebook-facebook-ads-2026",
         destination: "/academy/ebook-facebook-ads-2026.html",
       },

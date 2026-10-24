@@ -29,7 +29,9 @@ function isLadiPageRoute(pathname: string) {
     pathname === "/bot-24-7/tai-ve" ||
     pathname === "/academy/bot-24-7-tai-ve.html" ||
     pathname === "/bot-24-7/dieu-khoan" ||
-    pathname === "/academy/bot-24-7-dieu-khoan.html"
+    pathname === "/academy/bot-24-7-dieu-khoan.html" ||
+    pathname === "/bot-24-7/huong-dan" ||
+    pathname === "/academy/bot-24-7-huong-dan.html"
   );
 }
 

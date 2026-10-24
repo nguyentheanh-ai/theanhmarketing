@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Video hướng dẫn Bot 24/7</title>
+    <meta name="description" content="Bộ video hướng dẫn dùng Bot 24/7 dành cho khách đã mua." />
+    <meta name="robots" content="noindex, nofollow" />
+    <!-- Link có mã truy cập riêng của đơn: không gửi đường dẫn này sang trang khác -->
+    <meta name="referrer" content="no-referrer" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <script>
+      // Lấy mã truy cập khỏi thanh địa chỉ ngay khi mở (không để lộ khi chụp màn hình / chia sẻ), nhớ trên máy này.
+      (function () {
+        var q = new URLSearchParams(location.search), k = q.get("k");
+        if (k) { try { localStorage.setItem("bot247-video-k", k); } catch (e) {} window.__k = k; q.delete("k"); history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "") + location.hash); }
+        else { try { window.__k = localStorage.getItem("bot247-video-k"); } catch (e) {} }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root { --bg: #0a0a0a; --panel: #141414; --line: #262626; --ink: #f5f5f5; --ink2: #a3a3a3; --soft: #737373; }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 Inter, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+      a { color: inherit; }
+      .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+      .top { position: sticky; top: 0; z-index: 20; background: rgba(10,10,10,.8); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255,255,255,.06); }
+      .top .wrap { display: flex; align-items: center; gap: 28px; height: 68px; }
+      .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; text-decoration: none; }
+      .logo svg { width: 30px; height: 30px; }
+      .top nav { display: flex; gap: 24px; font-size: 15px; } .top nav a { text-decoration: none; color: var(--ink); opacity: .85; } .top nav a:hover { opacity: 1; }
+      .top .sp { flex: 1; }
+      .pill { display: inline-flex; align-items: center; gap: 10px; border-radius: 999px; padding: 12px 22px; font: 500 16px Inter, sans-serif; text-decoration: none; cursor: pointer; border: 0; transition: background .2s; white-space: nowrap; }
+      .pill.white { background: #fff; color: #0a0a0a; } .pill.white:hover { background: #e5e5e5; }
+      .pill.dark { background: #262626; color: var(--ink); } .pill.dark:hover { background: #333; }
+      .top .pill { padding: 10px 20px; font-size: 15px; }
+      .hero { text-align: center; padding: 72px 0 36px; }
+      .chip { display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 7px 16px; font-size: 15px; color: var(--ink2); }
+      .chip b { color: var(--ink); font-weight: 600; }
+      h1 { font-size: clamp(38px, 6.4vw, 72px); line-height: 1.04; letter-spacing: -.045em; font-weight: 600; margin: 26px 0 16px; }
+      .lead { font-size: clamp(16px, 2vw, 20px); color: var(--ink2); max-width: 720px; margin: 0 auto; }
+      /* Trình phát */
+      .stage { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 18px; align-items: start; }
+      .player { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; }
+      .player video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+      .player .meta { padding: 18px 22px 22px; }
+      .player h2 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -.02em; } .player p { margin: 6px 0 0; color: var(--ink2); font-size: 15px; }
+      .list { display: flex; flex-direction: column; gap: 8px; }
+      .ep { display: flex; gap: 14px; align-items: flex-start; text-align: left; width: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; color: var(--ink); font: inherit; cursor: pointer; }
+      .ep:hover { border-color: #3a3a3a; } .ep.on { border-color: #fff; }
+      .ep .n { flex: none; width: 30px; height: 30px; border-radius: 50%; background: #262626; display: grid; place-items: center; font-size: 13px; font-weight: 600; }
+      .ep.on .n { background: #fff; color: #0a0a0a; }
+      .ep b { display: block; font-weight: 600; font-size: 15.5px; line-height: 1.35; } .ep small { display: block; color: var(--soft); font-size: 13px; line-height: 1.4; margin-top: 3px; }
+      .ep[disabled] { cursor: default; opacity: .6; } .ep[disabled] .n::before { content: ""; }
+      /* Khoá */
+      .lock { max-width: 760px; margin: 0 auto 26px; border: 1px solid var(--line); border-radius: 24px; padding: 30px; text-align: center; background: linear-gradient(180deg, #141414, #0f0f0f); }
+      .lock h2 { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -.02em; } .lock p { margin: 8px 0 0; color: var(--ink2); }
+      .lock .acts { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
+      .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 760px; margin: 0 auto; }
+      .note { text-align: center; color: var(--soft); font-size: 14px; margin: 26px 0 0; }
+      .sec { padding: 10px 0 80px; }
+      [hidden] { display: none !important; }
+      footer { border-top: 1px solid var(--line); padding: 30px 0 50px; color: var(--soft); font-size: 14px; text-align: center; } footer a { margin: 0 8px; color: var(--ink2); }
+      @media (max-width: 900px) { .stage { grid-template-columns: 1fr; } .top nav { display: none; } .top .pill.dark { display: none; } .grid { grid-template-columns: 1fr; } .hero { padding: 48px 0 26px; } .wrap { padding: 0 16px; } }
+    </style>
+  </head>
+  <body>
+    <header class="top"><div class="wrap">
+      <a class="logo" href="/bot-24-7"><svg viewBox="0 0 64 64"><path d="M32 4c15 0 27 10 27 26s-9 30-27 30S5 46 5 30 17 4 32 4z" fill="#fff"/><g fill="#0a0a0a"><rect x="22" y="22" width="7" height="19" rx="3.5" transform="rotate(-14 25 31)"/><rect x="39" y="22" width="7" height="19" rx="3.5" transform="rotate(-14 42 31)"/></g></svg>Bot 24/7</a>
+      <nav><a href="/bot-24-7">Giới thiệu</a><a href="/bot-24-7/tai-ve">Tải về</a><a href="/bot-24-7/dieu-khoan">Điều khoản</a></nav>
+      <div class="sp"></div>
+      <a class="pill dark" href="/lien-he">Hỗ trợ</a>
+      <a class="pill white" href="/bot-24-7/tai-ve">Tải về</a>
+    </div></header>
+
+    <section class="hero"><div class="wrap">
+      <span class="chip"><b>Dành cho khách đã mua</b> · có phụ đề</span>
+      <h1>Video hướng dẫn</h1>
+      <p class="lead">Mỗi tập một tính năng, quay trên giao diện thật của Bot 24/7. Xem theo thứ tự từ tập 1 là dùng được ngay.</p>
+    </div></section>
+
+    <section class="sec"><div class="wrap">
+      <div id="loading" class="note">Đang mở bộ video…</div>
+
+      <div id="locked" hidden>
+        <div class="lock">
+          <h2 id="lock-title">Bộ video dành cho khách đã mua Bot 24/7</h2>
+          <p id="lock-text">Mở nút <b>Xem bộ video hướng dẫn</b> trong email xác nhận thanh toán Bot 24/7. Mỗi đơn có một link riêng, mở một lần là máy này nhớ.</p>
+          <div class="acts">
+            <a class="pill white" href="/bot-24-7#mua">Mua Bot 24/7 · 990.000đ</a>
+            <a class="pill dark" href="/lien-he">Đã mua nhưng không thấy email</a>
+          </div>
+        </div>
+        <div class="grid" id="locked-list"></div>
+      </div>
+
+      <div id="open" hidden>
+        <div class="stage">
+          <div class="player">
+            <video id="video" controls playsinline preload="metadata" controlslist="nodownload"></video>
+            <div class="meta"><h2 id="ep-title"></h2><p id="ep-desc"></p></div>
+          </div>
+          <div class="list" id="list"></div>
+        </div>
+        <p class="note">Link xem là của riêng đơn <b id="order"></b>, vui lòng không chia sẻ. Cần hỗ trợ: <a href="/lien-he">liên hệ</a>, gửi kèm mã đơn.</p>
+      </div>
+    </div></section>
+
+    <footer><div class="wrap">© Thế Anh Marketing<a href="/bot-24-7">Bot 24/7</a><a href="/bot-24-7/tai-ve">Tải về</a><a href="/bot-24-7/dieu-khoan">Điều khoản dịch vụ</a><a href="/lien-he">Liên hệ</a></div></footer>
+
+    <script>
+      (function () {
+        // Tên tập hiển thị khi chưa mở được (nguồn chính: lib/bot247/video-access.ts, trả về qua /bot-24-7/huong-dan/api/tap)
+        var PREVIEW = ["8 bước bắt đầu", "Kết nối kênh và chọn mô hình AI", "Giao việc bằng chat", "Bộ não doanh nghiệp", "Chăm khách 24/7", "Lên lịch đăng", "Làm video", "Làm website"];
+        var $ = function (id) { return document.getElementById(id); };
+        function el(tag, cls, html) { var x = document.createElement(tag); if (cls) x.className = cls; if (html != null) x.innerHTML = html; return x; }
+        function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+        function epButton(n, title, desc) { var b = el("button", "ep", '<span class="n">' + n + "</span><span><b>" + esc(title) + "</b>" + (desc ? "<small>" + esc(desc) + "</small>" : "") + "</span>"); b.type = "button"; return b; }
+
+        function showLocked(expired) {
+          $("loading").hidden = true; $("locked").hidden = false;
+          if (expired) { $("lock-title").textContent = "Link xem video không đúng hoặc đã hết hiệu lực"; }
+          PREVIEW.forEach(function (t, i) { var b = epButton(i + 1, t, "Khóa · dành cho khách đã mua"); b.disabled = true; $("locked-list").appendChild(b); });
+        }
+
+        function showOpen(data) {
+          $("loading").hidden = true; $("open").hidden = false; $("order").textContent = data.orderCode;
+          var video = $("video"), buttons = [];
+          function play(i, autoplay) {
+            var e = data.episodes[i];
+            buttons.forEach(function (b, j) { b.classList.toggle("on", j === i); });
+            $("ep-title").textContent = "Tập " + e.n + " · " + e.title; $("ep-desc").textContent = e.desc;
+            video.src = e.src; if (autoplay) video.play().catch(function () {});
+            try { localStorage.setItem("bot247-video-ep", String(i)); } catch (x) {}
+          }
+          data.episodes.forEach(function (e, i) { var b = epButton(e.n, e.title, e.desc); b.onclick = function () { play(i, true); window.scrollTo({ top: $("open").offsetTop - 80, behavior: "smooth" }); }; buttons.push(b); $("list").appendChild(b); });
+          video.addEventListener("ended", function () { var i = buttons.findIndex(function (b) { return b.classList.contains("on"); }); if (i + 1 < data.episodes.length) play(i + 1, true); });
+          var last = 0; try { last = Number(localStorage.getItem("bot247-video-ep")) || 0; } catch (x) {}
+          play(Math.min(last, data.episodes.length - 1), false);
+        }
+
+        if (!window.__k) return showLocked(false);
+        fetch("/bot-24-7/huong-dan/api/tap?k=" + encodeURIComponent(window.__k), { cache: "no-store" })
+          .then(function (r) { return r.json().then(function (d) { return { status: r.status, data: d }; }); })
+          .then(function (res) {
+            if (res.status === 200 && res.data.ok) return showOpen(res.data);
+            if (res.status === 401) { try { localStorage.removeItem("bot247-video-k"); } catch (x) {} }
+            showLocked(res.status === 401);
+          })
+          .catch(function () { $("loading").textContent = "Không tải được danh sách video. Kiểm tra mạng rồi tải lại trang."; });
+      })();
+    </script>
+  </body>
+</html>

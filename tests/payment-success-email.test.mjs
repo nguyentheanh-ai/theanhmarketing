@@ -23,6 +23,10 @@ function loadTsModule(relativePath) {
     if (specifier === "@/lib/agent-kit-preorder") {
       return loadTsModule("lib/agent-kit-preorder.ts");
     }
+    if (specifier === "@/lib/bot247/video-access") {
+      return loadTsModule("lib/bot247/video-access.ts");
+    }
+    if (specifier === "node:crypto") return process.getBuiltinModule("node:crypto");
 
     throw new Error(`Unsupported test import: ${specifier}`);
   };

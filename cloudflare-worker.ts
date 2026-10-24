@@ -15,6 +15,7 @@ import {handleNativeCheckoutStage,runNativeCheckoutCron,type NativeCheckoutStage
 import {handleNativeEmailAuth,type NativeEmailAuthEnv} from './lib/cloudflare/native-email-auth-http';
 import {runWorkerCron} from './lib/cloudflare/worker-cron';
 import {servePublicPage} from './lib/cloudflare/public-page-cache';
+import {handleBot247GuideRequest,type Bot247GuideEnv} from './lib/cloudflare/bot247-video-guide';
 
 // Exact public video path above the Workers asset limit; bytes live in R2 staging.
 const oversizedPublicVideo = "/doi-ngu-nhan-su-ai/media/proof/editor-ai-jun-08-2026.mp4";
@@ -27,6 +28,7 @@ const STATIC_ASSET_ALIASES: Record<string, string> = {
   "/bot-24-7": "/academy/bot-24-7",
   "/bot-24-7/tai-ve": "/academy/bot-24-7-tai-ve",
   "/bot-24-7/dieu-khoan": "/academy/bot-24-7-dieu-khoan",
+  "/bot-24-7/huong-dan": "/academy/bot-24-7-huong-dan",
 };
 
 const stagingWorker = {
@@ -50,6 +52,9 @@ const stagingWorker = {
     const url = new URL(request.url);
     const alias = STATIC_ASSET_ALIASES[url.pathname];
     const assets = (env as { ASSETS?: { fetch: (input: Request) => Promise<Response> } }).ASSETS;
+    // Bot 24/7: video hướng dẫn trong R2 riêng tư, chỉ mở bằng mã truy cập của đơn đã mua
+    const bot247Guide = await handleBot247GuideRequest(request, env as Bot247GuideEnv);
+    if (bot247Guide) return bot247Guide;
     if (alias && assets && (request.method === "GET" || request.method === "HEAD")) return assets.fetch(new Request(new URL(alias, url), request));
     // Default-disabled QA payment path; null keeps the existing webhook route.
     const payment=await handleNativePaymentStage(request,env as NativePaymentStageEnv,context&&'waitUntil' in context?task=>context.waitUntil(task):undefined);
