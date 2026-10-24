@@ -3496,3 +3496,14 @@ Giao dịch thật `91767108`, đơn đặt lịch `TAMMVGSY77DDSSK5`, 500000 VN
 Replay sau hạn giữ chỗ đưa booking vào needs_review. Đã kiểm thời điểm ngân hàng 14:53:34Z trước hạn giữ chỗ 15:12:25Z, tài khoản/số tiền/transaction trong paid order, không ngày bận hoặc lịch held/confirmed chồng lấn; thực hiện đúng owner-approved recovery bằng UPDATE có đầy đủ điều kiện và ghi activity log. Booking confirmed: 11:30–12:00 ngày23/10/2026 VN. Không thay giờ, giá, quyền học hoặc tạo giao dịch ngân hàng mới. Mục CHƯA DEPLOY phía trước là lịch sử và đã được thay thế bởi kết quả LIVE này.
 
 Giới hạn/công cụ: request thử từ urllib bị Cloudflare 403/1010, chưa tới xử lý thanh toán; client curl HTTP1 nhận 200. Các thao tác UI có phản hồi không rõ kết quả được đối chiếu database/log trước khi kết luận; retry trùng giữ cùng transaction, không ghi nhận tiền hai lần. OAuth CLI sau đó có authentication error; connector D1 đã kết nối sẵn đọc/ghi được, không thay quyền. Không tổng quát đây là lỗi quyền D1 hoặc lỗi webhook.
+
+
+## 23/10/2026 — Cấu hình email kế toán production
+Theo yêu cầu chủ hệ thống, sửa duy nhất secret ACCOUNTING_NOTIFICATION_EMAIL trên Worker production qua Wrangler; config version e72bacff-e826-459f-88fa-9ef58a1af359 100%. Đối chiếu đơn D1 và Resend chứng minh luồng kế toán hiện gửi từng đơn. Đã gửi bù toàn bộ đơn paid trong cửa sổ yêu cầu, provider delivered; không đổi payment/Auth/access/code. Biên nhận riêng và tình trạng drift báo cáo ngày: workspace docs/EMAIL-FLOW.md và docs/NEED_VERIFY.md, mục 23/10/2026. Không tự chạy lại bulk import secrets từ môi trường cũ; phải đối chiếu cấu hình production hiện tại trước.
+
+## Landing Facebook Ads Master — giao diện công nghệ (24/10/2026, anh yêu cầu)
+
+- Bảng màu ấm (cam/vàng) đổi sang xanh–tím bằng cách xoay sắc độ (giữ độ sáng/độ tương phản); test ghim màu đã cập nhật tương ứng.
+- Hero thêm lớp `.tech-stage`: luồng Dataset → CAPI → Meta AI (chấm chạy), chip sự kiện Purchase/Lead, bong bóng AI Agent; ẩn `.hero-scene`/`.facebook-float-layer` cũ. Mục `#tich-luy` thêm `.tech-feed` (bảng sự kiện Dataset, ghi "Minh họa").
+- 3 ảnh stock thay bằng ảnh gen đã duyệt trong `public/landing-assets/facebook-ads-tech/` (dashboard-pipeline, ceo-data-stack, data-source).
+- Giữ quy tắc chống chớp trắng: không `backdrop-filter`, mọi animation có số vòng hữu hạn, có `prefers-reduced-motion`.

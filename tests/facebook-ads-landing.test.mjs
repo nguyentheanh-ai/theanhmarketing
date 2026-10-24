@@ -107,19 +107,12 @@ test("Facebook Ads direct-file checkout loads and submits the shared invoice fie
 
 test("Facebook Ads landing keeps the three approved owner photos", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
-  const approvedAssets = [
-    "public/ladipage/assets/facebook-ads-kstudy-hybrid/hero-operator.webp",
-    "public/ladipage/assets/facebook-ads-kstudy-hybrid/fragmented-handoffs.webp",
-    "public/ladipage/assets/facebook-ads-kstudy-hybrid/role-marketing.webp",
-  ];
-
-  assert.match(html, /<section id="van-de"[\s\S]*?src="\.\.\/ladipage\/assets\/facebook-ads-kstudy-hybrid\/hero-operator\.webp"/);
-  assert.match(html, /<section class="hybrid-section" id="ket-qua">[\s\S]*?src="\.\.\/ladipage\/assets\/facebook-ads-kstudy-hybrid\/fragmented-handoffs\.webp"/);
-  assert.match(html, /<section class="hybrid-section is-cream" id="bo-cong-cu">[\s\S]*?src="\.\.\/ladipage\/assets\/facebook-ads-kstudy-hybrid\/role-marketing\.webp"/);
-  assert.doesNotMatch(html, /pain-owner-ads-workspace\.webp|outcomes-dashboard-operator\.webp|method-ads-workflow\.webp/);
-
-  for (const asset of approvedAssets) {
-    assert.ok(fs.existsSync(path.resolve(asset)), `Missing approved owner photo: ${asset}`);
+  // 24/10/2026: owner replaced the stock-style photos with the approved generated data visuals.
+  assert.match(html, /<section id="van-de"[\s\S]*?src="\.\.\/landing-assets\/facebook-ads-tech\/dashboard-pipeline\.webp"/);
+  assert.match(html, /<section class="hybrid-section" id="ket-qua">[\s\S]*?src="\.\.\/landing-assets\/facebook-ads-tech\/ceo-data-stack\.webp"/);
+  assert.match(html, /<section class="hybrid-section is-cream" id="bo-cong-cu">[\s\S]*?src="\.\.\/landing-assets\/facebook-ads-tech\/data-source\.webp"/);
+  for (const asset of ["dashboard-pipeline", "ceo-data-stack", "data-source"]) {
+    assert.ok(fs.existsSync(path.resolve(process.cwd(), `public/landing-assets/facebook-ads-tech/${asset}.webp`)));
   }
 });
 
@@ -128,16 +121,16 @@ test("Facebook Ads cream tools section and Zalo proof cards remain readable", ()
 
   assert.match(
     html,
-    /\.hybrid-section\.is-cream \.hybrid-copy h2\s*\{[\s\S]*?color:\s*#2d170f;[\s\S]*?text-shadow:\s*none;/
+    /\.hybrid-section\.is-cream \.hybrid-copy h2\s*\{[\s\S]*?color:\s*#0e182e;[\s\S]*?text-shadow:\s*none;/
   );
-  assert.match(html, /\.hybrid-section\.is-cream \.hybrid-copy > p\s*\{[\s\S]*?color:\s*#6b4938;/);
-  assert.match(html, /\.hybrid-section\.is-cream \.section-kicker\s*\{[\s\S]*?color:\s*#b34116;/);
+  assert.match(html, /\.hybrid-section\.is-cream \.hybrid-copy > p\s*\{[\s\S]*?color:\s*#37466c;/);
+  assert.match(html, /\.hybrid-section\.is-cream \.section-kicker\s*\{[\s\S]*?color:\s*#1247b7;/);
   assert.match(
     html,
-    /\.hybrid-section\.is-cream \.learning-format-card\s*\{[\s\S]*?background:[\s\S]*?rgba\(255,\s*255,\s*255,\s*0\.62\)[\s\S]*?border-color:\s*rgba\(91,\s*48,\s*29,\s*0\.2\)/
+    /\.hybrid-section\.is-cream \.learning-format-card\s*\{[\s\S]*?background:[\s\S]*?rgba\(255,\s*255,\s*255,\s*0\.62\)[\s\S]*?border-color:\s*rgba\(27,\s*47,\s*93,\s*0\.2\)/
   );
-  assert.match(html, /\.hybrid-section\.is-cream \.learning-format-card h3\s*\{[\s\S]*?color:\s*#361c12;/);
-  assert.match(html, /\.hybrid-section\.is-cream \.learning-format-card p\s*\{[\s\S]*?color:\s*#6b4938;/);
+  assert.match(html, /\.hybrid-section\.is-cream \.learning-format-card h3\s*\{[\s\S]*?color:\s*#111d37;/);
+  assert.match(html, /\.hybrid-section\.is-cream \.learning-format-card p\s*\{[\s\S]*?color:\s*#37466c;/);
   assert.match(
     html,
     /\.proof-case-card img\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*auto;[\s\S]*?aspect-ratio:\s*auto;[\s\S]*?object-fit:\s*contain;/
@@ -386,7 +379,7 @@ test("Facebook Ads landing keeps section navigation with a compact amber progres
   assert.equal((rail.match(/data-section-progress-dot/g) || []).length, 12);
   assert.match(rail, /href="#dau-trang"[^>]+aria-label="Đầu trang"/);
   assert.match(rail, /href="#bat-dau"[^>]+aria-label="Bắt đầu"/);
-  assert.match(html, /\.section-progress-fill\s*\{[\s\S]*?background:\s*#f7b51b/);
+  assert.match(html, /\.section-progress-fill\s*\{[\s\S]*?background:\s*#1524fc/);
   assert.match(html, /\.section-progress-dot\.is-reached/);
   assert.match(html, /\.section-progress-dot\.is-active/);
   assert.match(html, /function updateSectionProgress\(activeIndex\)/);
