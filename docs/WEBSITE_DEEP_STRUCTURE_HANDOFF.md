@@ -3507,3 +3507,4 @@ Theo yêu cầu chủ hệ thống, sửa duy nhất secret ACCOUNTING_NOTIFICAT
 - Hero thêm lớp `.tech-stage`: luồng Dataset → CAPI → Meta AI (chấm chạy), chip sự kiện Purchase/Lead, bong bóng AI Agent; ẩn `.hero-scene`/`.facebook-float-layer` cũ. Mục `#tich-luy` thêm `.tech-feed` (bảng sự kiện Dataset, ghi "Minh họa").
 - 3 ảnh stock thay bằng ảnh gen đã duyệt trong `public/landing-assets/facebook-ads-tech/` (dashboard-pipeline, ceo-data-stack, data-source).
 - Giữ quy tắc chống chớp trắng: không `backdrop-filter`, mọi animation có số vòng hữu hạn, có `prefers-reduced-motion`.
+- 24/10 (sau phản hồi của anh): đổi lớp tối thành lớp **trắng + xanh** (`Light tech layer`): nền trắng lưới xanh nhạt, chữ đen #0b1220 / xám #475569, thẻ trắng bóng mềm, nút gradient xanh. Pipeline hero có gói sự kiện (Purchase/Lead/ViewContent) chạy Dataset → CAPI → Meta AI; animation chỉ chạy khi khối đang trong màn hình (IntersectionObserver thêm `.is-live`, mặc định `paused`).
