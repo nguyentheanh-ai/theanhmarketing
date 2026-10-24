@@ -14,6 +14,8 @@ type PaymentEmailOptions = {
   siteUrl?: string;
   // Khóa ký link video hướng dẫn Bot 24/7 (mặc định secret BOT247_VIDEO_LINK_SECRET của Worker)
   bot247VideoSecret?: string;
+  // Mã kích hoạt Bot 24/7 đã cấp cho đơn (lib/bot247/license-gateway.ts); thiếu thì email báo sẽ gửi riêng
+  bot247ActivationCode?: string | null;
   force?: boolean;
   idempotencyKey?: string;
   account?: {
@@ -338,7 +340,7 @@ export function buildPaymentSuccessEmailPayload(
   const siteUrl = normalizeSiteUrl(options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL);
   // Bot 24/7 (phần mềm): email riêng với link bộ cài + hướng dẫn, không có khóa học / tài khoản học viên
   if (isBot247Order(order)) {
-    return buildBot247PaymentSuccessEmail(order, { from: getSender(options), siteUrl, videoSecret: options.bot247VideoSecret ?? process.env.BOT247_VIDEO_LINK_SECRET });
+    return buildBot247PaymentSuccessEmail(order, { from: getSender(options), siteUrl, videoSecret: options.bot247VideoSecret ?? process.env.BOT247_VIDEO_LINK_SECRET, activationCode: options.bot247ActivationCode });
   }
   const isAgentKit = !isAgentKitPreorderDepositOrder(order) && (
     order.courseSlug.split(",").some((slug) => slug.trim() === AGENT_KIT_SLUG)
@@ -882,6 +884,24 @@ export async function sendPaymentSuccessEmail(
 
 }
 
+// Admin CRM › Bot 24/7 › Gửi mã cho khách (anh xem trước rồi mới bấm gửi).
+export async function sendBot247LicenseEmail(input: Parameters<typeof buildBot247LicenseEmail>[0], options: PaymentEmailOptions = {}) {
+  const apiKey = getResendApiKey();
+  if (!apiKey) return { ok: false, reason: "Missing RESEND_API_KEY" };
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST", redirect: "manual", signal: AbortSignal.timeout(10_000),
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", ...(options.idempotencyKey ? { "Idempotency-Key": options.idempotencyKey } : {}) },
+      body: JSON.stringify(buildBot247LicenseEmail(input, options)),
+    });
+    if (!response.ok) return { ok: false, reason: (await response.text()) || response.statusText };
+    const result = await response.json().catch(() => null) as { id?: unknown } | null;
+    return { ok: true, reason: null, resendEmailId: typeof result?.id === "string" ? result.id : null };
+  } catch (error) {
+    return { ok: false, reason: error instanceof Error ? error.message : "Could not send Bot 24/7 license email." };
+  }
+}
+
 export async function sendPaymentFailedEmail(
   order: PaymentOrder,
   options: PaymentEmailOptions = {},
@@ -943,7 +963,16 @@ export function isBot247Order(order: Pick<PaymentOrder, "courseSlug" | "orderIte
 const escBot = (value: string) =>
   String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 
-function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from, siteUrl, videoSecret }: { from: string; siteUrl: string; videoSecret?: string }) {
+type Bot247EmailInput = { from: string; siteUrl: string; videoSecret?: string; activationCode?: string | null; mode?: "paid" | "license" };
+
+// Admin CRM › Bot 24/7 › Gửi mã: cùng mẫu email, không có dòng "đã thanh toán" khi mã cấp tay không gắn đơn.
+// Link video dùng mã đơn nếu có, không thì dùng chính mã kích hoạt làm khóa của link.
+export function buildBot247LicenseEmail(input: { name: string; email: string; activationCode: string; orderCode?: string | null }, options: PaymentEmailOptions = {}) {
+  const order = { orderCode: input.orderCode || input.activationCode, studentName: input.name, email: input.email, amountLabel: "", courseSlug: BOT247_SLUG, orderItems: [] } as unknown as PaymentOrder;
+  return buildBot247PaymentSuccessEmail(order, { from: getSender(options), siteUrl: normalizeSiteUrl(options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL), videoSecret: options.bot247VideoSecret ?? process.env.BOT247_VIDEO_LINK_SECRET, activationCode: input.activationCode, mode: input.orderCode ? "paid" : "license" });
+}
+
+function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from, siteUrl, videoSecret, activationCode, mode = "paid" }: Bot247EmailInput) {
   const site = String(siteUrl || "https://www.theanhmarketing.com").replace(/\/$/, "");
   // Link bộ video hướng dẫn riêng của đơn này (thiếu khóa ký thì bỏ mục video, email vẫn gửi)
   const videoUrl = bot247GuideUrl(site, videoSecret, order.orderCode);
@@ -962,12 +991,16 @@ function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from, siteUrl, vi
 <div style="max-width:560px;margin:0 auto;padding:28px 16px;font-family:${font};color:#111">
   <div style="background:#ffffff;border-radius:18px;padding:28px 26px;border:1px solid #e6e6e2">
     <div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#777;font-weight:700">Bot 24/7 · Thế Anh Marketing</div>
-    <h1 style="font-size:24px;margin:10px 0 6px">Cảm ơn ${name}, đơn đã thanh toán thành công</h1>
-    <p style="font-size:14.5px;line-height:1.6;color:#444;margin:0">Mã đơn <b>${code}</b> · ${amount}. Dưới đây là bộ cài và cách cài Bot 24/7.</p>
+    <h1 style="font-size:24px;margin:10px 0 6px">${mode === "license" ? `Chào ${name}, đây là mã kích hoạt Bot 24/7 của bạn` : `Cảm ơn ${name}, đơn đã thanh toán thành công`}</h1>
+    <p style="font-size:14.5px;line-height:1.6;color:#444;margin:0">${mode === "license" ? "" : `Mã đơn <b>${code}</b>${amount ? ` · ${amount}` : ""}. `}Dưới đây là bộ cài và cách cài Bot 24/7.</p>
 
-    <div style="margin-top:20px;padding:16px 18px;border-radius:14px;background:#f7f7f5;border:1px solid #e6e6e2;font-size:14.5px;line-height:1.6">
+    ${activationCode ? `<div style="margin-top:20px;padding:18px;border-radius:14px;background:#111;color:#fff;text-align:center">
+      <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#bbb;font-weight:700">Mã kích hoạt</div>
+      <div style="font-size:24px;font-weight:800;letter-spacing:2px;margin-top:6px;font-family:Menlo,Consolas,monospace">${escBot(activationCode)}</div>
+      <div style="font-size:13px;color:#bbb;margin-top:6px">Dán mã này ở bước đầu tiên khi Bot mở lần đầu. Mỗi mã cài được tối đa 5 lần.</div>
+    </div>` : `<div style="margin-top:20px;padding:16px 18px;border-radius:14px;background:#f7f7f5;border:1px solid #e6e6e2;font-size:14.5px;line-height:1.6">
       <b>Mã kích hoạt</b> (dạng B247-XXXX-XXXX-XXXX) sẽ được Thế Anh Marketing gửi riêng qua email này hoặc Zalo. Bạn cứ cài trước, khi có mã thì nhập ở bước đầu tiên.
-    </div>
+    </div>`}
 
     <h2 style="font-size:17px;margin:24px 0 4px">1. Tải bộ cài</h2>
     <p style="font-size:13.5px;color:#666;margin:0">Mac: bấm biểu tượng Apple › Giới thiệu về máy Mac, xem dòng "Chip". Mở link › Tải xuống › Vẫn tải xuống.</p>
@@ -985,7 +1018,7 @@ function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from, siteUrl, vi
     </table>
 
     ${videoUrl ? `<h2 style="font-size:17px;margin:22px 0 4px">3. Xem video hướng dẫn</h2>
-    <p style="font-size:14.5px;line-height:1.6;color:#444;margin:0">Bộ video ngắn, có phụ đề: bắt đầu, kết nối kênh, giao việc, chăm khách, lịch đăng, làm video, làm website. Link này là của riêng đơn <b>${code}</b>, vui lòng không chia sẻ.</p>
+    <p style="font-size:14.5px;line-height:1.6;color:#444;margin:0">Bộ video ngắn, có phụ đề: bắt đầu, kết nối kênh, giao việc, chăm khách, lịch đăng, làm video, làm website. Link này là của riêng bạn, vui lòng không chia sẻ.</p>
     ${btn(videoUrl, "Xem bộ video hướng dẫn", true)}` : ""}
 
     <h2 style="font-size:17px;margin:22px 0 4px">Cần hỗ trợ cài đặt?</h2>
@@ -996,9 +1029,9 @@ function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from, siteUrl, vi
 </div></body></html>`;
 
   const text = [
-    `Cảm ơn ${order.studentName || "bạn"}, đơn ${order.orderCode} (${order.amountLabel}) đã thanh toán thành công.`,
+    mode === "license" ? `Chào ${order.studentName || "bạn"}, đây là mã kích hoạt Bot 24/7 của bạn.` : `Cảm ơn ${order.studentName || "bạn"}, đơn ${order.orderCode}${order.amountLabel ? ` (${order.amountLabel})` : ""} đã thanh toán thành công.`,
     "",
-    "Mã kích hoạt Bot 24/7 sẽ được Thế Anh Marketing gửi riêng qua email hoặc Zalo.",
+    activationCode ? `Mã kích hoạt: ${activationCode} (dán ở bước đầu tiên khi Bot mở lần đầu, cài tối đa 5 lần).` : "Mã kích hoạt Bot 24/7 sẽ được Thế Anh Marketing gửi riêng qua email hoặc Zalo.",
     "",
     "Tải bộ cài:",
     `- Windows 10/11: ${BOT247_INSTALLERS.windows}`,
@@ -1009,10 +1042,11 @@ function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from, siteUrl, vi
     "Bot tự mở và tải tiếp bộ não AI ở nền. Dán mã kích hoạt, đăng nhập Claude hoặc ChatGPT, rồi vào mục Bắt đầu.",
     "",
     `Hướng dẫn chi tiết: ${guideUrl}`,
-    ...(videoUrl ? [`Video hướng dẫn (link riêng của đơn, không chia sẻ): ${videoUrl}`] : []),
+    ...(videoUrl ? [`Video hướng dẫn (link riêng của bạn, không chia sẻ): ${videoUrl}`] : []),
     `Hỗ trợ: ${supportUrl}`,
     `Điều khoản dịch vụ: ${termsUrl}`,
   ].join("\n");
 
-  return { from, to: order.email, subject: `Bot 24/7 · Đã thanh toán đơn ${order.orderCode} · Bộ cài và hướng dẫn`, html, text };
+  const subject = mode === "license" ? "Bot 24/7 · Mã kích hoạt, bộ cài và video hướng dẫn" : `Bot 24/7 · Đã thanh toán đơn ${order.orderCode} · ${activationCode ? "Mã kích hoạt và bộ cài" : "Bộ cài và hướng dẫn"}`;
+  return { from, to: order.email, subject, html, text };
 }

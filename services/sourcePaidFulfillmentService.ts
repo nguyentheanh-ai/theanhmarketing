@@ -5,12 +5,14 @@ import { ensureStudentAccountForPaidOrder } from '@/services/studentAccountServi
 import { notifyStudentPortalProvisioning } from '@/services/studentPortalProvisioningService';
 import { buildConsultationPaymentEmailPayload, sendConsultationPaymentEmail } from '@/lib/notifications/consultation-payment-email';
 import type { PaymentOrder } from '@/services/orderService';
+import { ensureBot247LicenseForOrder } from '@/lib/bot247/license-gateway';
 
 // No credentials or email bodies are persisted. The existing private order error
 // field holds a versioned CAS receipt until payment_email_sent_at is committed.
 // Unknown legacy receipts are never adopted automatically: Blue may have sent an
 // email without recording it, and its sender does not share our idempotency key.
-type Receipt = { protocol: 'sepay-fulfillment-v1'; token?: string; until?: number; hash?: string; started?: number; accepted?: boolean; providerId?: string };
+// license: mã kích hoạt Bot 24/7 đã cấp cho đơn ("" = cổng lỗi, đã gửi email không có mã), giữ để lần gọi lại ra cùng email.
+type Receipt = { protocol: 'sepay-fulfillment-v1'; token?: string; until?: number; hash?: string; started?: number; accepted?: boolean; providerId?: string; license?: string };
 type Row = { payment_email_last_error: string | null; payment_email_sent_at: string | null };
 export function initialSepayFulfillmentReceipt() { return JSON.stringify({ protocol: 'sepay-fulfillment-v1' }); }
 function parse(raw: string | null): Receipt | null {
@@ -20,6 +22,7 @@ function parse(raw: string | null): Receipt | null {
     if (r.started !== undefined && (!Number.isFinite(r.started) || r.started < 0)) return null;
     if (r.hash !== undefined && !/^[a-f0-9]{64}$/.test(r.hash)) return null;
     if (r.until !== undefined && (!Number.isFinite(r.until) || r.until < 0)) return null;
+    if (r.license !== undefined && (typeof r.license !== 'string' || !/^(|B247-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4})$/.test(r.license))) return null;
     if (r.accepted && (typeof r.providerId !== 'string' || !/^[A-Za-z0-9._:-]{1,160}$/.test(r.providerId))) return null;
     return r;
   } catch { return null; }
@@ -57,9 +60,11 @@ type Dependencies = {
   send: typeof sendPaymentSuccessEmail;
   build: typeof buildPaymentSuccessEmailPayload;
   now: () => number;
+  license?: typeof ensureBot247LicenseForOrder;
 };
-export async function fulfillSourcePaidOrder(order: PaymentOrder, supplied?: Dependencies, kind: 'course' | 'preorder' | 'consultation' = 'course') {
-  const d = supplied ?? { store: createSourceFulfillmentStore(), account: ensureStudentAccountForPaidOrder, portal: notifyStudentPortalProvisioning, send: kind === 'consultation' ? sendConsultationPaymentEmail : sendPaymentSuccessEmail, build: kind === 'consultation' ? buildConsultationPaymentEmailPayload : kind === 'preorder' ? buildPreorderDepositEmailPayload : buildPaymentSuccessEmailPayload, now: Date.now };
+// kind 'bot247': phần mềm Bot 24/7, không tài khoản học viên / App B; cấp mã kích hoạt ở cổng rồi gửi email có mã.
+export async function fulfillSourcePaidOrder(order: PaymentOrder, supplied?: Dependencies, kind: 'course' | 'preorder' | 'consultation' | 'bot247' = 'course') {
+  const d = supplied ?? { store: createSourceFulfillmentStore(), account: ensureStudentAccountForPaidOrder, portal: notifyStudentPortalProvisioning, send: kind === 'consultation' ? sendConsultationPaymentEmail : sendPaymentSuccessEmail, build: kind === 'consultation' ? buildConsultationPaymentEmailPayload : kind === 'preorder' ? buildPreorderDepositEmailPayload : buildPaymentSuccessEmailPayload, now: Date.now, license: ensureBot247LicenseForOrder };
   const row = await d.store.read(order.orderCode);
   const parsed = parse(row.payment_email_last_error);
   // A sent marker without our accepted receipt belongs to a completed/legacy
@@ -87,7 +92,9 @@ export async function fulfillSourcePaidOrder(order: PaymentOrder, supplied?: Dep
       checkProviderWindow();
       const account = kind === 'course' ? await d.account(order, { preserveExistingAuth: true, provisioningOperationId: `sepay:${order.orderCode}` }) : null;
       if (kind === 'course' && (!account?.ok || !account.userId)) throw new PaidFulfillmentUnavailable('account_provisioning_failed');
+      if (kind === 'bot247' && receipt.license === undefined) await persist({ ...receipt, license: (await (d.license ?? ensureBot247LicenseForOrder)(order)) || '' });
       const options = {
+        ...(kind === 'bot247' ? { bot247ActivationCode: receipt.license || null } : {}),
         account: account?.temporaryPassword ? { email: account.email, temporaryPassword: account.temporaryPassword, created: account.created, mustChangePassword: true } : undefined,
         idempotencyKey: `tam-sepay-paid-email/${order.orderCode}`,
       };

@@ -29,6 +29,7 @@ import {
   type ConfirmedSupportBooking,
 } from "@/services/supportBookingService";
 
+import { isBot247Order } from "@/lib/notifications/payment-success-email";
 import { fulfillSourcePaidOrder, initialSepayFulfillmentReceipt, PaidFulfillmentUnavailable } from "@/services/sourcePaidFulfillmentService";
 
 export const runtime = "nodejs";
@@ -113,7 +114,7 @@ export async function POST(request: Request) {
     // requests resume fulfillment, preserving existing passwords and using a
     // database CAS claim plus a payload-bound provider idempotency key.
     if (!supportBookingOrder) {
-      paymentEmail = await fulfillSourcePaidOrder(confirmation.order, undefined, consultationOrder ? 'consultation' : preorderDepositOrder ? 'preorder' : 'course');
+      paymentEmail = await fulfillSourcePaidOrder(confirmation.order, undefined, consultationOrder ? 'consultation' : preorderDepositOrder ? 'preorder' : isBot247Order(confirmation.order) ? 'bot247' : 'course');
       if (paymentEmail.ok && !paymentEmail.skipped) {
         await logStudentActivity({ studentEmail: confirmation.order.email, studentPhone: confirmation.order.phone,
           eventType: 'payment_success_email_sent', eventTitle: 'Đã gửi email thanh toán thành công', status: 'success', actorType: 'system',

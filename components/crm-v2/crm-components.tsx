@@ -13,6 +13,7 @@ import {
   BookOpen,
   Bot,
   CalendarDays,
+  KeyRound,
   ChevronDown,
   CreditCard,
   Filter,
@@ -43,6 +44,7 @@ const primaryNavItems = [
   { href: "/admin/crm-v2/customers", label: "Khách hàng & học viên", icon: Users },
   { href: "/admin/crm-v2/courses", label: "Khóa học", icon: BookOpen },
   { href: "/admin/crm-v2/support-bookings", label: "Lịch hỗ trợ", icon: CalendarDays },
+  { href: "/admin/crm-v2/bot247", label: "Bot 24/7 · Mã kích hoạt", icon: KeyRound },
   { href: "/admin/crm-v2/reports", label: "Báo cáo", icon: BarChart3 },
   { href: "/admin/crm-v2/settings", label: "Cài đặt", icon: Settings2 },
 ];
