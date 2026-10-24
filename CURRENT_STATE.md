@@ -1,4 +1,8 @@
 
+## 24/10/2026 08:05 — Bot 24/7 landing: logo thật các nền tảng, thẻ Cài đặt ở hero
+
+Commit 75a6c65 (`public/academy/bot-24-7.html`): logo Zalo/Messenger/Instagram/TikTok/Facebook/YouTube/Drive/Notion/Excel (Simple Icons, nhúng sprite), sửa nhãn kênh bị bay (trùng class `.src`), căn giữa mô tả hero, thêm thẻ "Cài đặt · chạy ngay trên máy bạn". Deploy production version **255e8757-b2bf-48ef-89f6-97b81336b269**; quay lui: **e72bacff-e826-459f-88fa-9ef58a1af359**. Binding khớp bản cũ (native-a fabea0e7). Đã kiểm /academy/bot-24-7(.html) và /bot-24-7 trả 200 có logo mới.
+
 ## 18/10/2026 — Tiếp nhận Claude → Codex, kiểm tra cutover hosting A/B
 
 Đã đọc4tài liệu bàn giao/runbook và xác minh5worktree: A1734c82/B0dd71b4 sạch; A release cũ43cee59 có11file dirty không đụng; Bmain e379a08 cùng GitHub, production9fcf0d2 vẫnREADY, bản Vercel mớiBLOCKED. Cloudflare chưazone/customdomain/cron; nativegatesOFF. Artifact A lúc nhận là staging, đã rebuild bằng scriptproduction bắt buộc; bổ sung verifier chặn saiWorker/URL/binding/gates/domain/cron. Build local attach và khôngattach đạt, khôngdeploy;16testA+12testB đạt.
