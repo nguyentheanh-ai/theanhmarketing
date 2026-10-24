@@ -1,4 +1,8 @@
 
+## 24/10/2026 — Trang Tải về Bot 24/7 chỉ cho khách đã mua
+
+Anh duyệt "ok". Source `a70b892`: link bộ cài không còn trong HTML (trả qua `/bot-24-7/tai-ve/api/links?k=`); khách nhập email ở trang → `/api/bot-24-7/dang-nhap` gửi link `?k=` vào chính email (đơn bot-24-7 đã thanh toán hoặc mã cấp tay); email mua hàng dẫn tới Tải về đã đăng nhập sẵn. Version **04ec434d-5e67-488d-bc08-bd86b1a25b47**; quay lui **a756918c-1425-4ca0-9519-5f2535057c36**. Binding khớp. Sau phát hành: trang 200, không còn link Drive trong trang, API links không mã 401 / mã thử 200, đăng nhập email lạ trả câu chung. Chưa thử gửi email đăng nhập thật. Link Drive vẫn là "ai có link đều tải" (đã nằm trong email khách cũ).
+
 ## 24/10/2026 — Luồng mua Bot 24/7: trang thanh toán + chuyển về Tải về
 
 Anh duyệt "ok". Source `fb750e8`: `/thanh-toan/[code]` có nội dung riêng cho đơn `bot-24-7` (mã kích hoạt, bộ cài, video; logo về /bot-24-7); thanh toán xong chuyển `/bot-24-7/tai-ve?da-mua=1` (lời cảm ơn) thay vì `/dashboard`; email chờ thanh toán ghi "Sản phẩm". Version **a756918c-1425-4ca0-9519-5f2535057c36**; quay lui **2ed6c206-e098-4109-991a-372079d9e1f4**. Binding khớp. Trang Bot, /, /khoa-hoc, landing Facebook Ads 200; lời cảm ơn hiện đúng với ?da-mua=1. Chưa xem trang thanh toán bằng đơn Bot thật (chưa tạo đơn). Còn lại: bộ cài trên Drive 1.11.0, cổng phát hành 1.11.2.
