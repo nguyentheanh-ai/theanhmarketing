@@ -107,11 +107,13 @@ test("Facebook Ads direct-file checkout loads and submits the shared invoice fie
 
 test("Facebook Ads landing keeps the three approved owner photos", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
-  // 24/10/2026: owner replaced the stock-style photos with the approved generated data visuals.
-  assert.match(html, /<section id="van-de"[\s\S]*?src="\.\.\/landing-assets\/facebook-ads-tech\/dashboard-pipeline\.webp"/);
-  assert.match(html, /<section class="hybrid-section" id="ket-qua">[\s\S]*?src="\.\.\/landing-assets\/facebook-ads-tech\/ceo-data-stack\.webp"/);
-  assert.match(html, /<section class="hybrid-section is-cream" id="bo-cong-cu">[\s\S]*?src="\.\.\/landing-assets\/facebook-ads-tech\/data-source\.webp"/);
-  for (const asset of ["dashboard-pipeline", "ceo-data-stack", "data-source"]) {
+  // 24/10/2026 (owner): animated dataset card + real AdsMind screenshots, never cropped.
+  assert.match(html, /<section id="van-de"[\s\S]*?class="ds-card"/);
+  assert.match(html, /<section class="hybrid-section" id="ket-qua">[\s\S]*?adsmind-dashboard\.webp/);
+  assert.match(html, /<section class="hybrid-section is-cream" id="bo-cong-cu">[\s\S]*?adsmind-bm-map\.webp/);
+  assert.match(html, /id="adsmind-7-ngay"[\s\S]*?adsmind-geo-age\.webp/);
+  assert.match(html, /\.am-frame img \{[^}]*object-fit: contain/);
+  for (const asset of ["adsmind-dashboard", "adsmind-bm-map", "adsmind-geo-age"]) {
     assert.ok(fs.existsSync(path.resolve(process.cwd(), `public/landing-assets/facebook-ads-tech/${asset}.webp`)));
   }
 });
@@ -311,7 +313,7 @@ test("Facebook Ads landing does not fire InitiateCheckout before a real order co
   assert.match(html, /window\.location\.href = "\/thanh-toan\/" \+ encodeURIComponent\(payload\.order\.orderCode\);/);
 });
 
-test("Facebook Ads P1 rewrite follows the final 12-section order and keeps five content-rich proofs", () => {
+test("Facebook Ads P1 rewrite follows the final 13-section order and keeps five content-rich proofs", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
   const main = html.match(/<main>([\s\S]*?)<\/main>/)?.[1] || "";
   const sectionIds = [...main.matchAll(/<section[^>]+id="([^"]+)"/g)].map((match) => match[1]);
@@ -334,6 +336,7 @@ test("Facebook Ads P1 rewrite follows the final 12-section order and keeps five 
     "feedback",
     "giang-vien",
     "bo-cong-cu",
+    "adsmind-7-ngay",
     "gia-tri",
     "hoc-phi",
     "faq",
