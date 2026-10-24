@@ -1,4 +1,8 @@
 
+## 24/10/2026 — Bot 24/7 bộ cài 1.11.3 (sửa lõi AI treo 91–97%)
+
+Anh duyệt "ok". App Bot 1.11.3 phát hành ở cổng (release:latest sha256 4f31086a…, khách đã kích hoạt tự nhận). Bộ cài mới trên Drive (thư mục 1n5gnMeOqYIcIRtUcETuO0l1aeDkDYzIK, 1.11.0 vẫn giữ): arm64 `1yHSvfXaIlkKqgMc0VFcGBCO5fdeBQL7r`, x64 `1T4_obtA688K4PkWInWeBpcHqWXaiDxbE`, Setup.exe `1RJpUDfVN79QlxJD2MV4NG2roFTIKZD0F`. Website source `b8bff64` (`lib/bot247/video-access.ts` BOT247_INSTALLERS + trang Tải về ghi 1.11.3). Version **bb3f188b-f9d2-458a-9dbb-3b4190a29b44**; quay lui **04ec434d-5e67-488d-bc08-bd86b1a25b47**. Binding khớp. Trang Bot, /, /khoa-hoc, landing Facebook Ads 200; API link tải trả link 1.11.3 với mã hợp lệ, 401 khi không mã.
+
 ## 24/10/2026 — Trang Tải về Bot 24/7 chỉ cho khách đã mua
 
 Anh duyệt "ok". Source `a70b892`: link bộ cài không còn trong HTML (trả qua `/bot-24-7/tai-ve/api/links?k=`); khách nhập email ở trang → `/api/bot-24-7/dang-nhap` gửi link `?k=` vào chính email (đơn bot-24-7 đã thanh toán hoặc mã cấp tay); email mua hàng dẫn tới Tải về đã đăng nhập sẵn. Version **04ec434d-5e67-488d-bc08-bd86b1a25b47**; quay lui **a756918c-1425-4ca0-9519-5f2535057c36**. Binding khớp. Sau phát hành: trang 200, không còn link Drive trong trang, API links không mã 401 / mã thử 200, đăng nhập email lạ trả câu chung. Chưa thử gửi email đăng nhập thật. Link Drive vẫn là "ai có link đều tải" (đã nằm trong email khách cũ).
