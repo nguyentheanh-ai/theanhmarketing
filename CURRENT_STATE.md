@@ -5,6 +5,7 @@ Anh duyệt "ok". Source `33a797d` (nhánh `codex/bot247-license-admin-20261024`
 - `/bot-24-7/huong-dan`: 8 tập ở R2 `theanh-main-assets-staging/bot247/huong-dan/`, chỉ mở bằng link riêng từng đơn (HMAC); email mua Bot có link. Đã thử bằng mã đơn giả TAMTHU-VIDEO (không tạo đơn): API 200, 8 video 206 có Range; không mã / sửa mã → 401.
 - `/admin/crm-v2/bot247` (owner): danh sách/tạo/gửi mã/Zalo/+5 lượt/thu hồi qua cổng. Cần secret website `BOT247_GATEWAY_ADMIN_TOKEN` (= ADMIN_TOKEN của cổng), anh tự dán; chưa có thì CRM báo lỗi cổng, email thanh toán vẫn gửi không kèm mã.
 - Webhook SePay: đơn Bot đi nhánh `bot247` (trước đó thiếu userId → không gửi email).
+- Secret đã đặt (anh bảo "làm luôn"): token mới sinh ngẫu nhiên cho `ADMIN_TOKEN` của cổng và `BOT247_GATEWAY_ADMIN_TOKEN` của website (bản sao `~/.bot247/gateway-admin-token`, 600). Website thành version `12b1ead4-24fa-46bf-b77c-e60bce9ff382` (chỉ thêm secret, quay lui vẫn 35a23045), cổng `cc7a8023-cb0c-4988-91d7-017d1f46dd51`.
 - Cổng `bot247-connect` deploy `8eefa105-9aaf-4cf6-9ac0-8af736da1795` (quay lui `aaa10341-d92b-44cf-8a98-26b53f3c5315`).
 - Sau phát hành: /bot-24-7, /bot-24-7/tai-ve, /bot-24-7/huong-dan, /, /khoa-hoc 200; landing Facebook Ads SHA khớp bản trước. D1 chưa có đơn bot-24-7 nào → không cần gửi bổ sung.
 ## 24/10/2026 08:05 — Bot 24/7 landing: logo thật các nền tảng, thẻ Cài đặt ở hero
