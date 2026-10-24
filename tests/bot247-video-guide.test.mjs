@@ -37,7 +37,7 @@ function fakeBucket(objects) {
   };
 }
 const video = new Uint8Array(1000).map((_, i) => i % 256);
-const env = { PRIVATE_ASSETS: fakeBucket({ "bot247/huong-dan/tap-01-bat-dau.mp4": video }), R2_PRIVATE_URL_SECRET: SECRET };
+const env = { PRIVATE_ASSETS: fakeBucket({ "bot247/huong-dan/tap-01-bat-dau.mp4": video }), BOT247_VIDEO_LINK_SECRET: SECRET };
 const site = "https://www.theanhmarketing.com";
 
 test("access token is per order, tamper-proof and revocable", () => {
@@ -84,7 +84,7 @@ test("videos stream from private R2 only with a valid link, with Range for seeki
   assert.equal(part.status, 206);
   assert.equal(part.headers.get("content-range"), "bytes 100-199/1000");
   assert.deepEqual(new Uint8Array(await part.arrayBuffer()), video.subarray(100, 200));
-  const missing = await handleBot247GuideRequest(new Request(`${url}?k=${k}`), { R2_PRIVATE_URL_SECRET: SECRET });
+  const missing = await handleBot247GuideRequest(new Request(`${url}?k=${k}`), { BOT247_VIDEO_LINK_SECRET: SECRET });
   assert.equal(missing.status, 503);
 });
 

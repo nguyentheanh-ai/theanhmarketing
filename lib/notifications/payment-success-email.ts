@@ -12,7 +12,7 @@ import {
 type PaymentEmailOptions = {
   from?: string;
   siteUrl?: string;
-  // Khóa ký link video hướng dẫn Bot 24/7 (mặc định R2_PRIVATE_URL_SECRET của Worker)
+  // Khóa ký link video hướng dẫn Bot 24/7 (mặc định secret BOT247_VIDEO_LINK_SECRET của Worker)
   bot247VideoSecret?: string;
   force?: boolean;
   idempotencyKey?: string;
@@ -338,7 +338,7 @@ export function buildPaymentSuccessEmailPayload(
   const siteUrl = normalizeSiteUrl(options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL);
   // Bot 24/7 (phần mềm): email riêng với link bộ cài + hướng dẫn, không có khóa học / tài khoản học viên
   if (isBot247Order(order)) {
-    return buildBot247PaymentSuccessEmail(order, { from: getSender(options), siteUrl, videoSecret: options.bot247VideoSecret ?? process.env.R2_PRIVATE_URL_SECRET });
+    return buildBot247PaymentSuccessEmail(order, { from: getSender(options), siteUrl, videoSecret: options.bot247VideoSecret ?? process.env.BOT247_VIDEO_LINK_SECRET });
   }
   const isAgentKit = !isAgentKitPreorderDepositOrder(order) && (
     order.courseSlug.split(",").some((slug) => slug.trim() === AGENT_KIT_SLUG)

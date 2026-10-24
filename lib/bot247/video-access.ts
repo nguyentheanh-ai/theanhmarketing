@@ -2,7 +2,7 @@ import { createHmac } from "node:crypto";
 
 // Bộ video hướng dẫn Bot 24/7 (/bot-24-7/huong-dan): khách mua Bot không có tài khoản học viên,
 // nên quyền xem là một mã riêng từng đơn: "<MÃ ĐƠN>.<chữ ký HMAC>", gửi trong email sau thanh toán.
-// Không lưu gì thêm trong D1; muốn thu hồi một đơn thì thêm mã đơn vào biến BOT247_VIDEO_REVOKED.
+// Khóa ký: secret BOT247_VIDEO_LINK_SECRET của Worker (bản sao cục bộ: phase2-main/.env.bot247-video). Không lưu gì thêm trong D1; muốn thu hồi một đơn thì thêm mã đơn vào biến BOT247_VIDEO_REVOKED.
 export const BOT247_GUIDE_PATH = "/bot-24-7/huong-dan";
 export const BOT247_VIDEO_R2_PREFIX = "bot247/huong-dan/";
 
