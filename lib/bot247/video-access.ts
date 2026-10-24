@@ -7,11 +7,11 @@ export const BOT247_GUIDE_PATH = "/bot-24-7/huong-dan";
 export const BOT247_DOWNLOAD_PATH = "/bot-24-7/tai-ve";
 
 // Bộ cài (Google Drive). Chỉ trả ra sau khi kiểm mã truy cập (trang Tải về) hoặc trong email gửi riêng cho khách đã mua.
-export const BOT247_INSTALLER_VERSION = "1.11.0";
+export const BOT247_INSTALLER_VERSION = "1.11.3";
 export const BOT247_INSTALLERS = {
-  macArm: "https://drive.google.com/file/d/1JvTaFJMhzYtI7LQVews2pyou2z6JYQ3R/view?usp=sharing",
-  macIntel: "https://drive.google.com/file/d/1s6AJX7BlOZyXWWbovE9EWYn-q8UonTCD/view?usp=sharing",
-  windows: "https://drive.google.com/file/d/1IFfRumCpDbD7Bu4Ovn0A0Rf4Ibdlg7kP/view?usp=sharing",
+  macArm: "https://drive.google.com/file/d/1yHSvfXaIlkKqgMc0VFcGBCO5fdeBQL7r/view?usp=sharing",
+  macIntel: "https://drive.google.com/file/d/1T4_obtA688K4PkWInWeBpcHqWXaiDxbE/view?usp=sharing",
+  windows: "https://drive.google.com/file/d/1RJpUDfVN79QlxJD2MV4NG2roFTIKZD0F/view?usp=sharing",
 };
 export const BOT247_VIDEO_R2_PREFIX = "bot247/huong-dan/";
 

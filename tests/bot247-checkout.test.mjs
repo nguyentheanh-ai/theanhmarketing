@@ -64,7 +64,7 @@ test("Bot 24/7 download and terms pages are routed and linked", () => {
   assert.match(config, /source: "\/bot-24-7\/dieu-khoan"/);
   const dl = fs.readFileSync(path.resolve("public/academy/bot-24-7-tai-ve.html"), "utf8");
   // Bộ cài chỉ dành cho khách đã mua: link Drive không được nằm trong trang công khai
-  for (const id of ["1JvTaFJMhzYtI7LQVews2pyou2z6JYQ3R", "1s6AJX7BlOZyXWWbovE9EWYn-q8UonTCD", "1IFfRumCpDbD7Bu4Ovn0A0Rf4Ibdlg7kP"]) assert.doesNotMatch(dl, new RegExp(id));
+  for (const id of ["1yHSvfXaIlkKqgMc0VFcGBCO5fdeBQL7r", "1T4_obtA688K4PkWInWeBpcHqWXaiDxbE", "1RJpUDfVN79QlxJD2MV4NG2roFTIKZD0F"]) assert.doesNotMatch(dl, new RegExp(id));
   const terms = fs.readFileSync(path.resolve("public/academy/bot-24-7-dieu-khoan.html"), "utf8");
   for (const id of ["rieng-tu", "tai-khoan", "yeu-cau", "phap-luat"]) assert.match(terms, new RegExp(`id="${id}"`));
   const landing = fs.readFileSync(path.resolve("public/academy/bot-24-7.html"), "utf8");
