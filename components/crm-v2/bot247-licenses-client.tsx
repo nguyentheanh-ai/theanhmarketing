@@ -74,7 +74,8 @@ export function Bot247LicensesClient({ initialSnapshot }: { initialSnapshot: Bot
     setCreating({ name: order.studentName, email: order.email, phone: order.phone, note: "Cấp tay cho đơn đã thanh toán", orderCode: order.orderCode });
   }
 
-  return <div className="space-y-4">
+  // data-admin-ui="modern": tránh lớp đổi màu admin cũ (globals.css) làm mất chữ trắng trên nút tối
+  return <div data-admin-ui="modern" className="space-y-4">
     {snapshot.gatewayError ? <div className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800"><AlertTriangle className="mt-0.5 size-4 shrink-0" /><span>Không đọc được cổng Bot 24/7: {snapshot.gatewayError}</span></div> : null}
     {snapshot.ordersWithoutLicense.length ? <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
       <div className="flex items-center gap-2 font-semibold"><AlertTriangle className="size-4" />{snapshot.ordersWithoutLicense.length} đơn Bot 24/7 đã thanh toán chưa có mã kích hoạt</div>
@@ -113,7 +114,7 @@ export function Bot247LicensesClient({ initialSnapshot }: { initialSnapshot: Bot
                 ? <button type="button" className={buttonClass} disabled={!!busy} onClick={() => act("restore:" + l.code, { action: "restore", instance: l.instance }, `Đã mở lại ${l.code}.`)}>Mở lại</button>
                 : <button type="button" className={buttonClass} disabled={!!busy} onClick={() => { if (window.confirm(`Thu hồi mã ${l.code}? Bot trên máy khách sẽ bị chặn kết nối cổng.`)) act("revoke:" + l.code, { action: "revoke", instance: l.instance }, `Đã thu hồi ${l.code}.`); }}>Thu hồi</button>}
             </div></td>
-          </tr>) : <tr><td colSpan={7} className="px-3 py-8 text-center text-slate-500">{snapshot.licenses.length ? "Không có mã khớp tìm kiếm." : "Chưa có mã kích hoạt nào."}</td></tr>}
+          </tr>) : <tr><td colSpan={7} className="px-3 py-10 text-center text-slate-500">{snapshot.licenses.length ? "Không có mã khớp tìm kiếm." : <div className="space-y-3"><p className="font-semibold text-slate-700">Chưa có mã kích hoạt nào</p><p className="text-sm">Khách mua Bot qua website sẽ tự được cấp mã ở đây. Cấp tay cho khách mua ngoài: bấm Tạo mã mới.</p><button type="button" className={primaryClass} onClick={() => setCreating({ ...emptyDraft })}><Plus className="size-4" />Tạo mã mới</button></div>}</td></tr>}
         </tbody>
       </table>
     </div>
