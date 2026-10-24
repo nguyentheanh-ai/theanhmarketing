@@ -6,6 +6,15 @@
     <title>Tải Bot 24/7 · macOS và Windows</title>
     <meta name="description" content="Tải Bot 24/7 cho máy của bạn: macOS (chip Apple, chip Intel) hoặc Windows 10/11. Bấm đúp là cài, khoảng 1 phút là mở được Bot." />
     <meta name="theme-color" content="#0a0a0a" />
+    <meta name="referrer" content="no-referrer" />
+    <script>
+      // Link đăng nhập (?k=MÃ.CHỮ KÝ, gửi qua email): nhớ trên máy này, xóa khỏi thanh địa chỉ trước khi Pixel đọc URL. Dùng chung với trang video.
+      (function () {
+        var q = new URLSearchParams(location.search), k = q.get("k");
+        if (k) { try { localStorage.setItem("bot247-video-k", k); } catch (e) {} window.__k = k; q.delete("k"); history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "") + location.hash); }
+        else { try { window.__k = localStorage.getItem("bot247-video-k"); } catch (e) {} }
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <script>
@@ -77,6 +86,15 @@
       .faq { max-width: 820px; margin: 0 auto; }
       .buy { margin-top: 60px; border: 1px solid var(--line); border-radius: 26px; padding: 34px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; background: linear-gradient(180deg, #141414, #0f0f0f); }
       .buy h3 { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -.02em; } .buy p { margin: 6px 0 0; color: var(--ink2); }
+      /* Đăng nhập để tải (chỉ khách đã mua) */
+      .login { max-width: 560px; margin: 40px auto 0; border: 1px solid var(--line); background: var(--panel); border-radius: 24px; padding: 26px; text-align: left; }
+      .login h3 { margin: 0; font-size: 21px; font-weight: 600; letter-spacing: -.01em; } .login p { margin: 6px 0 0; color: var(--ink2); font-size: 15px; }
+      .login form { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+      .login input { flex: 1 1 240px; min-height: 50px; border-radius: 999px; border: 1px solid var(--line); background: #0a0a0a; color: var(--ink); padding: 0 20px; font: 16px Inter, sans-serif; outline: none; } .login input:focus { border-color: #fff; }
+      .login .msg { margin-top: 14px; font-size: 14.5px; color: var(--ink2); } .login .msg.ok { color: #9be3b0; } .login .msg.err { color: #ff9b9b; }
+      .login .buy-link { margin-top: 16px; font-size: 14px; color: var(--soft); } .login .buy-link a { color: var(--ink); }
+      .unlocked-note { margin-top: 14px; font-size: 14px; color: var(--soft); } .unlocked-note a { color: var(--ink2); }
+      [hidden] { display: none !important; }
       /* Vừa thanh toán xong (chuyển từ trang thanh toán với ?da-mua=1) */
       .thanks { max-width: 760px; margin: 0 auto 30px; border: 1px solid #2f6b3f; background: #0f1f14; color: #d9f5e0; border-radius: 18px; padding: 16px 20px; font-size: 15.5px; text-align: left; } .thanks b { color: #fff; }
       footer { border-top: 1px solid var(--line); padding: 30px 0 50px; color: var(--soft); font-size: 14px; text-align: center; } footer a { margin: 0 8px; color: var(--ink2); }
@@ -93,16 +111,24 @@
     </div></header>
 
     <section class="hero" id="tai"><div class="wrap">
-      <div class="thanks" id="thanks" hidden><b>Cảm ơn bạn đã mua Bot 24/7!</b> Email có <b>mã kích hoạt</b>, link bộ cài và video hướng dẫn đã gửi tới hộp thư bạn đăng ký (xem cả mục Spam hoặc Quảng cáo). Tải bộ cài ngay bên dưới, khi Bot mở lần đầu thì dán mã vào.</div>
+      <div class="thanks" id="thanks" hidden><b>Cảm ơn bạn đã mua Bot 24/7!</b> Email có <b>mã kích hoạt</b>, link bộ cài và video hướng dẫn đã gửi tới hộp thư bạn đăng ký (xem cả mục Spam hoặc Quảng cáo). Bấm <b>Mở trang Tải về</b> trong email, hoặc nhập email bên dưới để nhận link đăng nhập.</div>
       <a class="chip" href="/bot-24-7"><b>Bot 24/7 bản 1.11.0</b><span class="x"> · Đội 8 nhân viên AI trên máy của bạn</span> <i>↗</i></a>
       <h1>Tải <svg class="face" viewBox="0 0 64 64"><path d="M32 4c15 0 27 10 27 26s-9 30-27 30S5 46 5 30 17 4 32 4z" fill="#fff"/><g fill="#0a0a0a"><rect x="22" y="22" width="7" height="19" rx="3.5" transform="rotate(-14 25 31)"/><rect x="39" y="22" width="7" height="19" rx="3.5" transform="rotate(-14 42 31)"/></g></svg> Bot 24/7</h1>
       <p class="lead">Bấm đúp là cài, khoảng 1 phút là mở được Bot. Mọi dữ liệu nằm trên máy của bạn, đội AI chạy bằng gói ChatGPT hoặc Claude bạn đang có.</p>
-      <div class="acts">
+      <div class="login" id="login" hidden>
+        <h3>Đăng nhập để tải Bot 24/7</h3>
+        <p>Bộ cài chỉ dành cho khách đã mua. Nhập email bạn dùng khi mua, hệ thống gửi link đăng nhập vào chính email đó.</p>
+        <form id="login-form" novalidate><input id="login-email" type="email" required autocomplete="email" placeholder="Email đã dùng khi mua" /><button class="pill white" type="submit">Gửi link đăng nhập</button></form>
+        <div class="msg" id="login-msg" role="status"></div>
+        <div class="buy-link">Chưa mua? <a href="/bot-24-7#mua">Mua Bot 24/7 · 990.000đ</a></div>
+      </div>
+      <div class="acts" id="acts" hidden>
         <div class="dl"><a class="pill white" id="dl-main" href="#" target="_blank" rel="noopener"><span id="dl-ic"></span><span id="dl-label">Tải về</span></a><button class="pill white more" id="dl-more" aria-label="Chọn bản khác"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button></div>
-        <a class="pill dark" href="/bot-24-7#mua">Mua mã kích hoạt · 990.000đ</a>
+        <a class="pill dark" id="video-pill" href="/bot-24-7/huong-dan">Xem video hướng dẫn</a>
         <div class="menu" id="dl-menu"></div>
       </div>
-      <p class="detected" id="dl-note"></p>
+      <p class="detected" id="dl-note" hidden></p>
+      <p class="unlocked-note" id="unlocked-note" hidden>Đã đăng nhập bằng mã <b id="acc"></b> · <a id="video-link" href="/bot-24-7/huong-dan">Xem video hướng dẫn</a> · <a href="#" id="logout">Đăng xuất</a></p>
     </div></section>
 
     <section class="sec"><div class="wrap">
@@ -140,15 +166,15 @@
     <script>
       if (new URLSearchParams(location.search).has("da-mua")) document.getElementById("thanks").hidden = false;
       (function () {
-        // Bộ cài (cùng link với email sau thanh toán)
+        // Bộ cài: link thật lấy từ /bot-24-7/tai-ve/api/links sau khi kiểm mã đăng nhập (không để trong trang)
         var APPLE = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.02-1.5-2.62-1.7-3.19-1.72-1.36-.14-2.65.8-3.34.8-.69 0-1.75-.78-2.88-.76-1.48.02-2.85.86-3.61 2.19-1.54 2.67-.39 6.63 1.11 8.8.73 1.06 1.6 2.25 2.75 2.21 1.1-.04 1.52-.71 2.85-.71 1.33 0 1.71.71 2.88.69 1.19-.02 1.94-1.08 2.67-2.15.84-1.23 1.19-2.42 1.21-2.48-.03-.01-2.32-.89-2.33-3.56zM14.18 6.13c.61-.74 1.02-1.76.91-2.78-.88.04-1.94.59-2.57 1.32-.56.65-1.06 1.69-.93 2.69.98.08 1.98-.5 2.59-1.23z"/></svg>';
         var WIN = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.1 10.4 4v7.2H3zm8.3-1.2L21 2.5v8.7h-9.7zM3 12.2h7.4v7.2L3 18.3zm8.3 0H21v8.8l-9.7-1.4z"/></svg>';
         var B = {
-          "mac-arm": { label: "Tải cho macOS", sub: "Chip Apple M1–M4 · Bot247-1.11.0-arm64.pkg", short: "Mac chip Apple", ic: APPLE, url: "https://drive.google.com/file/d/1JvTaFJMhzYtI7LQVews2pyou2z6JYQ3R/view?usp=sharing",
+          "mac-arm": { label: "Tải cho macOS", sub: "Chip Apple M1–M4 · Bot247-1.11.0-arm64.pkg", short: "Mac chip Apple", ic: APPLE, url: "",
             install: "Bấm đúp tệp <b>.pkg</b> vừa tải, bấm <b>Cài đặt</b> và nhập mật khẩu máy. Nếu máy báo chưa xác minh: chuột phải vào tệp › <b>Mở</b>." },
-          "mac-intel": { label: "Tải cho macOS (Intel)", sub: "Chip Intel · Bot247-1.11.0-x64.pkg", short: "Mac chip Intel", ic: APPLE, url: "https://drive.google.com/file/d/1s6AJX7BlOZyXWWbovE9EWYn-q8UonTCD/view?usp=sharing",
+          "mac-intel": { label: "Tải cho macOS (Intel)", sub: "Chip Intel · Bot247-1.11.0-x64.pkg", short: "Mac chip Intel", ic: APPLE, url: "",
             install: "Bấm đúp tệp <b>.pkg</b> vừa tải, bấm <b>Cài đặt</b> và nhập mật khẩu máy. Nếu máy báo chưa xác minh: chuột phải vào tệp › <b>Mở</b>." },
-          "windows": { label: "Tải cho Windows", sub: "Windows 10/11 · Bot247-1.11.0-Setup.exe", short: "Windows", ic: WIN, url: "https://drive.google.com/file/d/1IFfRumCpDbD7Bu4Ovn0A0Rf4Ibdlg7kP/view?usp=sharing",
+          "windows": { label: "Tải cho Windows", sub: "Windows 10/11 · Bot247-1.11.0-Setup.exe", short: "Windows", ic: WIN, url: "",
             install: "Bấm đúp <b>Setup.exe</b>, bấm <b>Cài đặt</b> rồi <b>Hoàn tất</b>. Nếu Windows báo chặn: <b>More info › Run anyway</b>." }
         };
         // Nhận diện máy khách: Windows / Mac; Mac thì đoán chip Apple hay Intel (Chrome/Edge hỏi được kiến trúc; Safari đoán qua card đồ hoạ)
@@ -165,12 +191,31 @@
           document.getElementById("dl-menu").innerHTML = Object.keys(B).map(function (k) { var x = B[k]; return '<a href="' + x.url + '" target="_blank" rel="noopener" data-k="' + k + '"' + (k === key && sure ? ' class="me"' : "") + ">" + x.ic + "<span>" + x.short + "<small>" + x.sub.split(" · ")[1] + "</small></span></a>"; }).join("");
         }
         if (os === "mac") { var g = gpuIsApple(); if (g === false) key = "mac-intel"; }
-        render();
-        if (os === "mac" && navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) navigator.userAgentData.getHighEntropyValues(["architecture"]).then(function (v) { if (v.architecture === "x86") { key = "mac-intel"; render(); } else if (v.architecture === "arm") { key = "mac-arm"; render(); } }).catch(function () {});
+        var unlocked = false, $ = function (id) { return document.getElementById(id); };
+        function showLogin(msg, cls) { $("login").hidden = false; $("acts").hidden = true; $("dl-note").hidden = true; $("unlocked-note").hidden = true; if (msg) { $("login-msg").textContent = msg; $("login-msg").className = "msg " + (cls || ""); } }
+        function unlock(d) {
+          unlocked = true; B["mac-arm"].url = d.installers.macArm; B["mac-intel"].url = d.installers.macIntel; B.windows.url = d.installers.windows;
+          $("login").hidden = true; $("acts").hidden = false; $("dl-note").hidden = false; $("unlocked-note").hidden = false; $("acc").textContent = d.orderCode; $("video-link").href = d.videoUrl; $("video-pill").href = d.videoUrl; render();
+        }
+        if (!window.__k) showLogin();
+        else fetch("/bot-24-7/tai-ve/api/links?k=" + encodeURIComponent(window.__k), { cache: "no-store" }).then(function (r) { return r.json().then(function (d) { return { s: r.status, d: d }; }); })
+          .then(function (x) { if (x.s === 200 && x.d.ok) return unlock(x.d); if (x.s === 401) { try { localStorage.removeItem("bot247-video-k"); } catch (e) {} } showLogin(x.s === 401 ? "Link đăng nhập không đúng hoặc đã hết hiệu lực. Nhập email để nhận link mới." : "", "err"); })
+          .catch(function () { showLogin("Không kiểm tra được đăng nhập. Kiểm tra mạng rồi tải lại trang.", "err"); });
+        $("logout").onclick = function (e) { e.preventDefault(); try { localStorage.removeItem("bot247-video-k"); } catch (x) {} location.reload(); };
+        $("login-form").onsubmit = function (e) {
+          e.preventDefault(); var em = $("login-email"), btn = e.target.querySelector("button");
+          if (!em.reportValidity()) return; btn.disabled = true; $("login-msg").textContent = "Đang kiểm tra…"; $("login-msg").className = "msg";
+          fetch("/api/bot-24-7/dang-nhap", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: em.value.trim() }) })
+            .then(function (r) { return r.json().then(function (d) { return { s: r.status, d: d }; }); })
+            .then(function (x) { $("login-msg").textContent = x.d.message || (x.s === 429 ? "Thử lại sau ít phút." : "Chưa gửi được, thử lại sau."); $("login-msg").className = "msg " + (x.s === 200 ? "ok" : "err"); })
+            .catch(function () { $("login-msg").textContent = "Không gửi được. Kiểm tra mạng rồi thử lại."; $("login-msg").className = "msg err"; })
+            .then(function () { btn.disabled = false; });
+        };
+        if (os === "mac" && navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) navigator.userAgentData.getHighEntropyValues(["architecture"]).then(function (v) { if (v.architecture === "x86") key = "mac-intel"; else if (v.architecture === "arm") key = "mac-arm"; if (unlocked) render(); }).catch(function () {});
         var menu = document.getElementById("dl-menu");
         document.getElementById("dl-more").onclick = function (e) { e.stopPropagation(); menu.classList.toggle("on"); };
         document.addEventListener("click", function () { menu.classList.remove("on"); });
-        document.querySelector("[data-dl-top]").onclick = function (e) { e.preventDefault(); document.getElementById("dl-main").click(); };
+        document.querySelector("[data-dl-top]").onclick = function (e) { e.preventDefault(); if (unlocked) $("dl-main").click(); else { $("login").scrollIntoView({ behavior: "smooth", block: "center" }); $("login-email").focus({ preventScroll: true }); } };
         document.addEventListener("click", function (e) { var a = e.target.closest && e.target.closest("#dl-main, #dl-menu a"); if (!a) return; try { fbq("trackCustom", "Bot247Download", { os: a.dataset.k || key }); } catch (x) {} }, true);
       })();
     </script>

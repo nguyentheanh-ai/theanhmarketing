@@ -1,6 +1,6 @@
 import type { PaymentOrder } from "@/services/orderService";
 import { buildEmailLink } from "@/lib/notifications/email-link-bridge";
-import { bot247GuideUrl } from "@/lib/bot247/video-access";
+import { BOT247_INSTALLERS, bot247DownloadUrl, bot247GuideUrl } from "@/lib/bot247/video-access";
 import {
   AGENT_KIT_SLUG,
   AGENT_KIT_PREORDER_DEPOSIT_VND,
@@ -884,6 +884,40 @@ export async function sendPaymentSuccessEmail(
 
 }
 
+// Trang Tải về › Đăng nhập: khách nhập email đã mua → nhận link đăng nhập (Tải về + video) vào chính email đó.
+export function buildBot247LoginEmail(input: { name: string; email: string; accessId: string }, options: PaymentEmailOptions = {}) {
+  const site = normalizeSiteUrl(options.siteUrl || process.env.NEXT_PUBLIC_SITE_URL), secret = options.bot247VideoSecret ?? process.env.BOT247_VIDEO_LINK_SECRET;
+  const downloadUrl = bot247DownloadUrl(site, secret, input.accessId), videoUrl = bot247GuideUrl(site, secret, input.accessId);
+  if (!downloadUrl || !videoUrl) return null;
+  const name = escBot(input.name || "bạn"), font = `'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif`;
+  const html = `<!doctype html><html><head><meta charset="UTF-8" /></head><body style="margin:0;padding:0;background:#f4f4f2">
+<div style="max-width:560px;margin:0 auto;padding:28px 16px;font-family:${font};color:#111">
+  <div style="background:#ffffff;border-radius:18px;padding:28px 26px;border:1px solid #e6e6e2">
+    <div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#777;font-weight:700">Bot 24/7 · Thế Anh Marketing</div>
+    <h1 style="font-size:22px;margin:10px 0 6px">Chào ${name}, đây là link đăng nhập trang Tải về</h1>
+    <p style="font-size:14.5px;line-height:1.6;color:#444;margin:0">Bấm nút dưới để mở trang Tải về Bot 24/7 trên máy tính. Mở một lần là máy đó nhớ. Link là của riêng bạn, vui lòng không chia sẻ.</p>
+    <a href="${escBot(downloadUrl)}" style="display:block;margin-top:18px;background:#111;color:#fff;text-decoration:none;border-radius:10px;padding:13px 18px;font-size:15px;font-weight:700;text-align:center">Mở trang Tải về</a>
+    <a href="${escBot(videoUrl)}" style="display:block;margin-top:10px;background:#fff;color:#111;border:1.5px solid #111;text-decoration:none;border-radius:10px;padding:13px 18px;font-size:15px;font-weight:700;text-align:center">Xem video hướng dẫn</a>
+    <p style="font-size:13px;color:#888;margin:16px 0 0">Không phải bạn yêu cầu? Bỏ qua email này. Mã kích hoạt nằm trong email xác nhận mua hàng; cần gửi lại, nhắn hỗ trợ: ${escBot(supportUrl)}</p>
+  </div>
+</div></body></html>`;
+  const text = [`Chào ${input.name || "bạn"}, đây là link đăng nhập trang Tải về Bot 24/7 (link riêng, không chia sẻ):`, downloadUrl, "", `Video hướng dẫn: ${videoUrl}`, "", "Không phải bạn yêu cầu? Bỏ qua email này."].join("\n");
+  return { from: getSender(options), to: input.email, subject: "Bot 24/7 · Link đăng nhập trang Tải về", html, text };
+}
+
+export async function sendBot247LoginEmail(input: Parameters<typeof buildBot247LoginEmail>[0], options: PaymentEmailOptions = {}) {
+  const payload = buildBot247LoginEmail(input, options), apiKey = getResendApiKey();
+  if (!payload || !apiKey) return { ok: false, reason: "not_configured" };
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST", redirect: "manual", signal: AbortSignal.timeout(10_000),
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", ...(options.idempotencyKey ? { "Idempotency-Key": options.idempotencyKey } : {}) },
+      body: JSON.stringify(payload),
+    });
+    return { ok: response.ok, reason: response.ok ? null : `resend_${response.status}` };
+  } catch { return { ok: false, reason: "resend_unreachable" }; }
+}
+
 // Admin CRM › Bot 24/7 › Gửi mã cho khách (anh xem trước rồi mới bấm gửi).
 export async function sendBot247LicenseEmail(input: Parameters<typeof buildBot247LicenseEmail>[0], options: PaymentEmailOptions = {}) {
   const apiKey = getResendApiKey();
@@ -949,11 +983,7 @@ const BOT247_SLUG = "bot-24-7";
 
 // Bot 24/7 là phần mềm cài trên máy khách (không phải khóa học): sau khi thanh toán, khách nhận link bộ cài + hướng dẫn;
 // mã kích hoạt do Thế Anh Marketing cấp từ trang quản trị Bot 24/7 (connect-gateway/admin) và gửi riêng.
-const BOT247_INSTALLERS = {
-  macArm: "https://drive.google.com/file/d/1JvTaFJMhzYtI7LQVews2pyou2z6JYQ3R/view?usp=sharing",
-  macIntel: "https://drive.google.com/file/d/1s6AJX7BlOZyXWWbovE9EWYn-q8UonTCD/view?usp=sharing",
-  windows: "https://drive.google.com/file/d/1IFfRumCpDbD7Bu4Ovn0A0Rf4Ibdlg7kP/view?usp=sharing",
-};
+// Link bộ cài: lib/bot247/video-access.ts (BOT247_INSTALLERS), dùng chung với trang Tải về
 const supportUrl = "https://www.theanhmarketing.com/lien-he";   // trang liên hệ chung (nhóm Zalo hiện có là của học viên Facebook Ads)
 
 export function isBot247Order(order: Pick<PaymentOrder, "courseSlug" | "orderItems">) {
@@ -976,7 +1006,8 @@ function buildBot247PaymentSuccessEmail(order: PaymentOrder, { from, siteUrl, vi
   const site = String(siteUrl || "https://www.theanhmarketing.com").replace(/\/$/, "");
   // Link bộ video hướng dẫn riêng của đơn này (thiếu khóa ký thì bỏ mục video, email vẫn gửi)
   const videoUrl = bot247GuideUrl(site, videoSecret, order.orderCode);
-  const guideUrl = `${site}/bot-24-7/tai-ve`;
+  // Trang Tải về đã đăng nhập sẵn bằng mã truy cập của đơn (thiếu khóa ký thì về trang đăng nhập bằng email)
+  const guideUrl = bot247DownloadUrl(site, videoSecret, order.orderCode) || `${site}/bot-24-7/tai-ve`;
   const termsUrl = `${site}/bot-24-7/dieu-khoan`;
   const name = escBot(order.studentName || "bạn");
   const code = escBot(order.orderCode);

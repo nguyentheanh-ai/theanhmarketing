@@ -4,6 +4,15 @@ import { createHmac } from "node:crypto";
 // nên quyền xem là một mã riêng từng đơn: "<MÃ ĐƠN>.<chữ ký HMAC>", gửi trong email sau thanh toán.
 // Khóa ký: secret BOT247_VIDEO_LINK_SECRET của Worker (bản sao cục bộ: phase2-main/.env.bot247-video). Không lưu gì thêm trong D1; muốn thu hồi một đơn thì thêm mã đơn vào biến BOT247_VIDEO_REVOKED.
 export const BOT247_GUIDE_PATH = "/bot-24-7/huong-dan";
+export const BOT247_DOWNLOAD_PATH = "/bot-24-7/tai-ve";
+
+// Bộ cài (Google Drive). Chỉ trả ra sau khi kiểm mã truy cập (trang Tải về) hoặc trong email gửi riêng cho khách đã mua.
+export const BOT247_INSTALLER_VERSION = "1.11.0";
+export const BOT247_INSTALLERS = {
+  macArm: "https://drive.google.com/file/d/1JvTaFJMhzYtI7LQVews2pyou2z6JYQ3R/view?usp=sharing",
+  macIntel: "https://drive.google.com/file/d/1s6AJX7BlOZyXWWbovE9EWYn-q8UonTCD/view?usp=sharing",
+  windows: "https://drive.google.com/file/d/1IFfRumCpDbD7Bu4Ovn0A0Rf4Ibdlg7kP/view?usp=sharing",
+};
 export const BOT247_VIDEO_R2_PREFIX = "bot247/huong-dan/";
 
 // Thêm tập mới: tải tệp lên R2 tại bot247/huong-dan/<file> rồi thêm một dòng ở đây (thứ tự = thứ tự trên trang).
@@ -41,7 +50,12 @@ export function verifyBot247VideoToken(secret: string | undefined | null, token:
   return revoked.split(/[\s,]+/).some((item) => item.toUpperCase() === code) ? null : code;
 }
 
-export function bot247GuideUrl(siteUrl: string, secret: string | undefined | null, orderCode: string) {
+export function bot247GuideUrl(siteUrl: string, secret: string | undefined | null, orderCode: string, page = BOT247_GUIDE_PATH) {
   const token = bot247VideoToken(secret, orderCode);
-  return token ? `${String(siteUrl).replace(/\/$/, "")}${BOT247_GUIDE_PATH}?k=${encodeURIComponent(token)}` : null;
+  return token ? `${String(siteUrl).replace(/\/$/, "")}${page}?k=${encodeURIComponent(token)}` : null;
+}
+
+/** Link trang Tải về đã đăng nhập sẵn (cùng mã truy cập với trang video). */
+export function bot247DownloadUrl(siteUrl: string, secret: string | undefined | null, orderCode: string) {
+  return bot247GuideUrl(siteUrl, secret, orderCode, BOT247_DOWNLOAD_PATH);
 }
