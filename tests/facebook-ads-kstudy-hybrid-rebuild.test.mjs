@@ -203,7 +203,7 @@ test("Facebook Ads landing images resolve in direct-file review and the academy 
     .map((match) => match[1])
     .filter((src) => !src.startsWith("https://"));
 
-  assert.ok(localImageSources.length >= 10);
+  assert.ok(localImageSources.length >= 7); // 24/10: AdsMind screens are coded HTML, not images
   assert.doesNotMatch(source, /<img[^>]+src="\/ladipage\/assets\//);
   assert.ok(localImageSources.every((src) => src.startsWith("../ladipage/assets/") || src.startsWith("../landing-assets/")));
 });

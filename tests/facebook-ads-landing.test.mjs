@@ -107,15 +107,13 @@ test("Facebook Ads direct-file checkout loads and submits the shared invoice fie
 
 test("Facebook Ads landing keeps the three approved owner photos", () => {
   const html = read("public/ladipage/facebook-ads-2026.html");
-  // 24/10/2026 (owner): animated dataset card + real AdsMind screenshots, never cropped.
+  // 24/10/2026 (owner): AdsMind screens are re-coded as animated HTML, no screenshots.
   assert.match(html, /<section id="van-de"[\s\S]*?class="ds-card"/);
-  assert.match(html, /<section class="hybrid-section" id="ket-qua">[\s\S]*?adsmind-dashboard\.webp/);
-  assert.match(html, /<section class="hybrid-section is-cream" id="bo-cong-cu">[\s\S]*?adsmind-bm-map\.webp/);
-  assert.match(html, /id="adsmind-7-ngay"[\s\S]*?adsmind-geo-age\.webp/);
-  assert.match(html, /\.am-frame img \{[^}]*object-fit: contain/);
-  for (const asset of ["adsmind-dashboard", "adsmind-bm-map", "adsmind-geo-age"]) {
-    assert.ok(fs.existsSync(path.resolve(process.cwd(), `public/landing-assets/facebook-ads-tech/${asset}.webp`)));
-  }
+  assert.match(html, /<section class="hybrid-section" id="ket-qua">[\s\S]*?class="am-ui am-dash"/);
+  assert.match(html, /<section class="hybrid-section is-cream" id="bo-cong-cu">[\s\S]*?class="am-ui am-bm"/);
+  assert.match(html, /id="adsmind-7-ngay"[\s\S]*?class="am-ui am-geo"/);
+  assert.match(html, /class="am-gift"[\s\S]*?Dùng thử AdsMind miễn phí 7 ngày/);
+  assert.doesNotMatch(html, /adsmind-(dashboard|bm-map|geo-age)\.webp/);
 });
 
 test("Facebook Ads cream tools section and Zalo proof cards remain readable", () => {

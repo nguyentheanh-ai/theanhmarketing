@@ -5570,8 +5570,6 @@
       .am-bar span { margin-left: 10px; padding: 3px 10px; border-radius: 8px; background: #fff; border: 1px solid #eef1f7; font-size: 11px; color: #64748b; }
       .am-chip { position: absolute; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #0b1220 !important; background: #fff; border: 1px solid #e4e9f3; box-shadow: 0 12px 26px -16px rgba(30, 64, 175, .6); }
       .is-live .tech-dot { animation-play-state: running; }
-      [data-anim-frame] { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
-      [data-anim-frame].is-live, [data-anim-frame].was-seen { opacity: 1; transform: none; }
       .hybrid-media.am-frame::after { display: none; }
       .adsmind-trial { padding-top: 72px; padding-bottom: 72px; }
       .adsmind-grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 40px; align-items: center; }
@@ -5590,6 +5588,106 @@
         .am-chip { font-size: 11px; right: 8px; bottom: 8px; }
       }
       @media (prefers-reduced-motion: reduce) { .ds-pkt { display: none; } .ds-a, .ds-meta .ds-tile { animation: none !important; } [data-anim-frame] { opacity: 1; transform: none; transition: none; } }
+          /* ===== Round 4: coded AdsMind screens, pricing cards, gift ===== */
+      #hoc-phi .pricing-grid { align-items: stretch !important; }
+      #hoc-phi .plan-card { padding: clamp(24px, 3vw, 36px) !important; border-radius: 24px !important; height: 100%; }
+      #hoc-phi .plan-name { margin-top: 18px !important; font-size: clamp(22px, 2.4vw, 30px) !important; }
+      #hoc-phi .plan-price span, #hoc-phi .plan-card p, #hoc-phi .plan-features li { color: #475569 !important; }
+      #hoc-phi .form-card { background: #fff !important; border: 1px solid #e4e9f3 !important; color: #0b1220 !important; }
+      #hoc-phi .form-card h3 { color: #0b1220 !important; }
+      .am-gift { position: relative; display: grid; grid-template-columns: auto 1fr auto; gap: 20px; align-items: center; margin: 0 auto 28px; padding: 22px 26px; border-radius: 24px; color: #fff; background: linear-gradient(110deg, #1d4ed8, #4f46e5 55%, #7c3aed); box-shadow: 0 26px 60px -30px rgba(79, 70, 229, .9); overflow: hidden; }
+      .am-gift::after { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,.22) 50%, transparent 65%); transform: translateX(-100%); }
+      .am-gift.was-seen::after { animation: am-sheen 1.6s ease .3s 2; }
+      @keyframes am-sheen { to { transform: translateX(100%); } }
+      .am-gift-badge { justify-self: start; padding: 6px 12px; border-radius: 999px; background: #fff; color: #1d4ed8 !important; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; }
+      .am-gift-body b { display: block; font-size: clamp(20px, 2.2vw, 26px); color: #fff !important; }
+      .am-gift-body p { margin: 4px 0 0; color: rgba(255,255,255,.88) !important; font-size: 14px; }
+      .am-gift-tags { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+      .am-gift-tags span { padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.3); font-size: 12px; font-weight: 600; color: #fff !important; }
+      .adsmind-trial-line { font-size: 15px !important; padding: 10px 16px !important; background: linear-gradient(110deg, #1d4ed8, #6d4aff) !important; border: 0 !important; color: #fff !important; box-shadow: 0 14px 30px -16px rgba(79, 70, 229, .8); }
+      .adsmind-trial-line b { color: #fff !important; } .adsmind-trial-line span { background: #fff !important; color: #1d4ed8 !important; }
+      .adsmind-trial { position: relative; margin: 40px auto; max-width: 1200px; border-radius: 32px; background: linear-gradient(135deg, #eef3ff, #f5f0ff) !important; border: 1px solid #dbe5ff; }
+      .adsmind-copy h2 { font-size: clamp(32px, 3.8vw, 52px) !important; }
+      .am-ui { margin: 0; padding: 16px; border-radius: 22px; background: #fff; border: 1px solid #e4e9f3; box-shadow: 0 30px 70px -40px rgba(30, 64, 175, .6); color: #0b1220; position: relative; text-align: left; }
+      .am-ui small { display: block; font-size: 10px; font-weight: 700; letter-spacing: .08em; color: #64748b !important; }
+      .am-ui b { color: #0b1220; }
+      .am-ui-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+      .am-ui-head b { font-size: 14px; }
+      .am-brand { padding: 6px 10px; border-radius: 10px; font-weight: 800; font-size: 13px; color: #fff; background: linear-gradient(90deg, #1d6bff, #6d4aff); }
+      .am-live { margin-left: auto; display: flex; gap: 6px; align-items: center; font-style: normal; font-size: 11px; font-weight: 700; color: #16a34a; }
+      .am-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+      .am-kpi { position: relative; padding: 10px 10px 26px; border-radius: 14px; border: 1px solid #eef1f7; overflow: hidden; }
+      .am-kpi small { display: flex; gap: 6px; align-items: center; text-transform: none; letter-spacing: 0; font-size: 11px; }
+      .am-kpi small i { width: 7px; height: 7px; border-radius: 50%; }
+      .am-kpi > b { display: block; margin: 4px 0; font-size: clamp(14px, 1.3vw, 18px); font-variant-numeric: tabular-nums; white-space: nowrap; }
+      .am-up, .am-down { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px; }
+      .am-up { color: #15803d; background: #dcfce7; } .am-down { color: #b91c1c; background: #fee2e2; }
+      .am-kpi svg { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 22px; }
+      .am-spark { fill: none; stroke-width: 2; stroke-dasharray: 200; stroke-dashoffset: 200; vector-effect: non-scaling-stroke; }
+      .was-seen .am-spark { transition: stroke-dashoffset 1.4s ease .3s; stroke-dashoffset: 0; }
+      .am-panels { display: grid; grid-template-columns: 1.6fr 1fr; gap: 8px; margin-top: 8px; }
+      .am-panel { padding: 12px; border-radius: 14px; border: 1px solid #eef1f7; }
+      .am-panel > b { display: block; font-size: 13px; margin: 2px 0 10px; }
+      .am-chart { position: relative; height: 130px; background: repeating-linear-gradient(0deg, #f1f5f9 0 1px, transparent 1px 32px); }
+      .am-cols { position: absolute; inset: 0 0 0 0; display: grid; grid-template-columns: repeat(7, 1fr); align-items: end; gap: 10%; padding: 0 4%; }
+      .am-col { display: block; height: 0; border-radius: 4px 4px 0 0; background: linear-gradient(180deg, #60a5fa, #2563eb); }
+      .was-seen .am-col { transition: height .9s cubic-bezier(.2, .8, .2, 1) var(--d); height: var(--h); }
+      .am-line { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+      .am-line polyline { fill: none; stroke: #7c3aed; stroke-width: 2.5; stroke-dasharray: 600; stroke-dashoffset: 600; vector-effect: non-scaling-stroke; }
+      .am-line circle { fill: #fff; stroke: #7c3aed; stroke-width: 2; opacity: 0; vector-effect: non-scaling-stroke; }
+      .was-seen .am-line polyline { transition: stroke-dashoffset 1.6s ease .8s; stroke-dashoffset: 0; }
+      .was-seen .am-line circle { transition: opacity .4s ease 2.2s; opacity: 1; }
+      .am-axis { display: flex; justify-content: space-between; margin-top: 6px; font-size: 10px; color: #94a3b8; }
+      .am-donut { position: relative; width: 120px; margin: 0 auto 8px; }
+      .am-donut svg { transform: rotate(-90deg); }
+      .am-donut circle { fill: none; stroke-width: 6; }
+      .am-ring-bg { stroke: #eef1f7; }
+      .am-ring { stroke: #2563eb; stroke-dasharray: 0 100; stroke-linecap: round; }
+      .was-seen .am-ring { transition: stroke-dasharray 1.4s ease .4s; stroke-dasharray: var(--p) 100; }
+      .am-donut > span { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+      .am-donut > span b { font-size: 18px; } .am-donut > span small { font-weight: 500; letter-spacing: 0; }
+      .am-legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+      .am-legend li { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #334155 !important; }
+      .am-legend i { width: 8px; height: 8px; border-radius: 2px; } .am-legend b { margin-left: auto; font-size: 11px; }
+      .am-bm { padding: 20px; }
+      .am-bm-root { display: flex; align-items: center; gap: 12px; width: max-content; max-width: 100%; margin: 0 auto; padding: 12px 18px; border-radius: 14px; background: #0b1220; }
+      .am-bm-root b { color: #fff !important; font-size: 15px; } .am-bm-root small { color: #94a3b8 !important; letter-spacing: 0; font-weight: 500; text-transform: none; }
+      .am-bm-ico { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #1d6bff, #6d4aff); }
+      .am-bm-wires { display: block; width: 100%; height: 30px; }
+      .am-bm-wires path { fill: none; stroke: #cbd5e1; stroke-width: 2; stroke-dasharray: 400; stroke-dashoffset: 400; vector-effect: non-scaling-stroke; }
+      .was-seen .am-bm-wires path { transition: stroke-dashoffset 1s ease .1s; stroke-dashoffset: 0; }
+      .am-bm-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .am-bm-col { display: grid; gap: 6px; align-content: start; }
+      .am-bm-h { padding: 10px; border-radius: 12px; border: 1px solid #e4e9f3; text-align: center; font-weight: 700; font-size: 13px; color: #0b1220; }
+      .am-bm-h i { font-style: normal; margin-left: 4px; padding: 1px 7px; border-radius: 999px; background: #eef3ff; color: #1d4ed8; font-size: 11px; }
+      .am-pill { display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 12px; border: 1px solid #eef1f7; font-size: 11px; color: #334155; background: #fff; opacity: 0; transform: translateY(8px); }
+      .was-seen .am-pill { transition: opacity .5s ease var(--d), transform .5s ease var(--d); opacity: 1; transform: none; }
+      .am-pill b { font-size: 12px; white-space: nowrap; } .am-pill em { white-space: nowrap; } .am-pill em { margin-left: auto; font-style: normal; font-size: 10px; padding: 2px 6px; border-radius: 6px; background: #0b1220; color: #fff; }
+      .am-pill i { width: 7px; height: 7px; border-radius: 50%; flex: none; } .am-pill i.k { background: #0b1220; } .am-pill i.v { background: #7c3aed; } .am-pill i.o { background: #f59e0b; }
+      .am-pulse { animation: am-pulse 1.8s ease-out infinite paused; }
+      .is-live .am-pulse { animation-play-state: running; }
+      @keyframes am-pulse { 0% { box-shadow: 0 0 0 0 rgba(124, 58, 237, .55); } 100% { box-shadow: 0 0 0 8px rgba(124, 58, 237, 0); } }
+      .am-geo { padding: 16px 16px 56px; }
+      .am-geo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .am-prov, .am-ages { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+      .am-prov li { display: grid; grid-template-columns: 1fr auto; gap: 3px 8px; font-size: 12px; color: #334155 !important; }
+      .am-prov li i { grid-column: 1 / -1; display: block; height: 5px; width: 0; border-radius: 4px; background: linear-gradient(90deg, #93c5fd, #2563eb); }
+      .am-ages li { display: grid; grid-template-columns: 38px 1fr 40px; gap: 8px; align-items: center; font-size: 11px; color: #334155 !important; }
+      .am-ages li i { display: block; height: 10px; width: 0; border-radius: 4px; background: #bfdbfe; } .am-ages li i.hot { background: #2563eb; }
+      .am-ages li b, .am-prov li b { font-size: 11px; text-align: right; }
+      .was-seen .am-prov li i, .was-seen .am-ages li i { transition: width 1s cubic-bezier(.2, .8, .2, 1) var(--d); width: var(--w); }
+      .am-gender { display: flex; height: 22px; margin-bottom: 10px; border-radius: 6px; overflow: hidden; font-size: 10px; font-weight: 700; color: #fff; }
+      .am-gender span { display: grid; place-items: center; width: 50%; transition: width 1s ease .3s; }
+      .am-gender span:first-child { background: #ec4899; } .am-gender span:last-child { background: #2563eb; }
+      .was-seen .am-gender span { width: var(--w); }
+      .am-chip { position: absolute; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #0b1220 !important; background: #fff; border: 1px solid #e4e9f3; box-shadow: 0 12px 26px -16px rgba(30, 64, 175, .6); }
+      @media (max-width: 860px) { .am-gift { grid-template-columns: 1fr; text-align: left; } .am-gift-tags { justify-content: flex-start; } }
+      @media (max-width: 680px) {
+        .am-kpis { grid-template-columns: repeat(2, 1fr); } .am-panels, .am-geo-grid { grid-template-columns: 1fr; }
+        .am-bm-cols { grid-template-columns: 1fr; } .am-bm-wires { display: none; } .am-bm-root { margin-bottom: 10px; }
+        .adsmind-trial { margin: 24px 12px; border-radius: 24px; }
+      }
+      @media (prefers-reduced-motion: reduce) { .am-ui *, .am-gift::after { transition: none !important; animation: none !important; } }
     </style>
     <script src="../checkout-invoice.js" defer></script>
     <script src="../landing-assets/facebook-ads-event-contract.js" defer></script>
@@ -5738,10 +5836,27 @@
                 <h2>Sau khóa học, bạn tự xây được một hệ thống Facebook Ads hoàn chỉnh</h2>
                 <p>Bạn đi từ nền tảng → tài nguyên → Content → quảng cáo → Dataset → tối ưu → Scale để từng bước sở hữu năng lực tự vận hành, thay vì chỉ biết các thao tác rời rạc.</p>
               </div>
-              <figure class="am-frame" data-anim-frame>
-                <div class="am-bar"><i></i><i></i><i></i><span>adsmind.vn/app · Tổng quan</span></div>
-                <img src="../landing-assets/facebook-ads-tech/adsmind-dashboard.webp" alt="Bảng điều khiển AdsMind: chi tiêu, khách tiềm năng, chi phí mỗi khách theo ngày" loading="lazy" decoding="async" />
-                <figcaption class="am-chip"><span class="tech-dot"></span>Số liệu thật · Greezhub 01</figcaption>
+              <figure class="am-ui am-dash" data-anim-frame aria-label="Bảng điều khiển AdsMind: số liệu thật tài khoản Greezhub 01, 16–22/10">
+                <div class="am-ui-head"><span class="am-brand">AdsMind</span><div><small>BẢNG ĐIỀU KHIỂN</small><b>Greezhub 01 · 16/10 → 22/10</b></div><em class="am-live"><span class="tech-dot"></span>Số liệu thật</em></div>
+                <div class="am-kpis">
+                  <div class="am-kpi"><small><i style="background:#f97316"></i>Chi tiêu</small><b data-count="12050569" data-suffix=" đ">12.050.569 đ</b><span class="am-up">↗ +15%</span><svg viewBox="0 0 100 24" preserveAspectRatio="none"><path class="am-spark" d="M0 20 L16 22 L33 19 L50 6 L66 10 L83 14 L100 15" style="stroke:#f97316"/></svg></div>
+                  <div class="am-kpi"><small><i style="background:#2563eb"></i>Khách tiềm năng</small><b data-count="41">41</b><span class="am-down">↘ −28%</span><svg viewBox="0 0 100 24" preserveAspectRatio="none"><path class="am-spark" d="M0 12 L16 22 L33 14 L50 11 L66 6 L83 9 L100 7" style="stroke:#2563eb"/></svg></div>
+                  <div class="am-kpi"><small><i style="background:#16a34a"></i>Chi phí / khách</small><b data-count="293916" data-suffix=" đ">293.916 đ</b><span class="am-down">↗ +59%</span><svg viewBox="0 0 100 24" preserveAspectRatio="none"><path class="am-spark" d="M0 20 L16 4 L33 20 L50 4 L66 18 L83 18 L100 21" style="stroke:#16a34a"/></svg></div>
+                  <div class="am-kpi"><small><i style="background:#f59e0b"></i>CTR (tất cả)</small><b data-count="2.62" data-dec="2" data-suffix="%">2,62%</b><span class="am-up">↗ +20%</span><svg viewBox="0 0 100 24" preserveAspectRatio="none"><path class="am-spark" d="M0 18 L16 16 L33 17 L50 12 L66 10 L83 8 L100 6" style="stroke:#f59e0b"/></svg></div>
+                </div>
+                <div class="am-panels">
+                  <div class="am-panel">
+                    <small>CHI TIÊU &amp; KẾT QUẢ THEO NGÀY</small><b>Cột chi tiêu · đường khách tiềm năng</b>
+                    <div class="am-chart"><div class="am-cols"><span class="am-col" style="--h:50%;--d:0ms"></span><span class="am-col" style="--h:34%;--d:90ms"></span><span class="am-col" style="--h:43%;--d:180ms"></span><span class="am-col" style="--h:93%;--d:270ms"></span><span class="am-col" style="--h:79%;--d:360ms"></span><span class="am-col" style="--h:68%;--d:450ms"></span><span class="am-col" style="--h:64%;--d:540ms"></span></div>
+                      <svg class="am-line" viewBox="0 0 400 120" preserveAspectRatio="none"><polyline points="20,54 80,88 140,54 200,43 260,21 320,32 380,21" /><circle cx="20" cy="54" r="4" /><circle cx="80" cy="88" r="4" /><circle cx="140" cy="54" r="4" /><circle cx="200" cy="43" r="4" /><circle cx="260" cy="21" r="4" /><circle cx="320" cy="32" r="4" /><circle cx="380" cy="21" r="4" /></svg></div>
+                    <div class="am-axis"><span>16/10</span><span>19/10</span><span>22/10</span></div>
+                  </div>
+                  <div class="am-panel am-donut-panel">
+                    <small>CHI TIÊU THEO NỀN TẢNG</small><b>Facebook chiếm 93%</b>
+                    <div class="am-donut"><svg viewBox="0 0 42 42"><circle cx="21" cy="21" r="15.9" class="am-ring-bg"/><circle cx="21" cy="21" r="15.9" class="am-ring" pathLength="100" style="--p:93"/></svg><span><b>12,1tr</b><small>tổng chi tiêu</small></span></div>
+                    <ul class="am-legend"><li><i style="background:#2563eb"></i>Facebook<b>93%</b></li><li><i style="background:#7c3aed"></i>Audience Network<b>4%</b></li><li><i style="background:#16a34a"></i>Instagram<b>2%</b></li></ul>
+                  </div>
+                </div>
               </figure>
             </div>
             <div class="course-outcomes outcome-grid" aria-label="Mười hai kết quả sau khóa học">
@@ -5827,10 +5942,23 @@
                 <h2>Không chỉ xem video – bạn có bộ công cụ để triển khai</h2>
                 <p>Dùng lại checklist, prompt, framework test và bảng ra quyết định trong công việc hằng ngày.</p>
               </div>
-              <figure class="am-frame" data-anim-frame>
-                <div class="am-bar"><i></i><i></i><i></i><span>adsmind.vn/app · Sơ đồ BM</span></div>
-                <img src="../landing-assets/facebook-ads-tech/adsmind-bm-map.webp" alt="Sơ đồ Business Manager trong AdsMind: con người, tài khoản quảng cáo, Pixel và Dataset" loading="lazy" decoding="async" />
-                <figcaption class="am-chip"><span class="tech-dot"></span>10 Pixel / Dataset đang kết nối</figcaption>
+              <figure class="am-ui am-bm" data-anim-frame aria-label="Sơ đồ Business Manager trong AdsMind: con người, tài khoản quảng cáo, Pixel và Dataset">
+                <div class="am-bm-root"><span class="am-bm-ico"></span><div><b>Greezhub Agency VietNam</b><small>Đã xác minh doanh nghiệp</small></div></div>
+                <svg class="am-bm-wires" viewBox="0 0 300 30" preserveAspectRatio="none"><path d="M150 0 V12 M50 30 V12 H250 V30 M150 12 V30"/></svg>
+                <div class="am-bm-cols">
+                  <div class="am-bm-col"><div class="am-bm-h">Con người <i>5</i></div>
+                    <span class="am-pill" style="--d:300ms"><i class="k"></i>Quản trị viên · 2</span>
+                    <span class="am-pill" style="--d:450ms"><i class="v"></i>Conversions API System User</span>
+                    <span class="am-pill" style="--d:600ms"><i class="o"></i>Đối tác · 2 BM</span></div>
+                  <div class="am-bm-col"><div class="am-bm-h">Tài khoản QC <i>5</i></div>
+                    <span class="am-pill" style="--d:400ms"><b>Greezhub 05</b><em>Toàn quyền</em></span>
+                    <span class="am-pill" style="--d:550ms"><b>Greezhub 04</b><em>Toàn quyền</em></span>
+                    <span class="am-pill" style="--d:700ms"><b>Greezhub 03</b><em>Toàn quyền</em></span></div>
+                  <div class="am-bm-col am-bm-ds"><div class="am-bm-h">Pixel / Dataset <i>10</i></div>
+                    <span class="am-pill" style="--d:500ms"><i class="v am-pulse"></i>The Anh Marketing · CAPI</span>
+                    <span class="am-pill" style="--d:650ms"><i class="v am-pulse"></i>Tệp sản phẩm 500.000đ · CAPI</span>
+                    <span class="am-pill" style="--d:800ms"><i class="v am-pulse"></i>Lonton Figure · CAPI</span></div>
+                </div>
               </figure>
             </div>
             <div class="tool-grid">
@@ -5853,11 +5981,15 @@
               <p>Học xong áp dụng ngay trên công cụ thật: kết nối tài khoản quảng cáo, xem Dataset, đọc báo cáo theo tỉnh/thành, độ tuổi và chi phí mỗi khách — trong một bảng điều khiển.</p>
               <ul class="adsmind-points"><li>Quản lý nhiều TKQC và BM</li><li>Kiểm tra Pixel / Dataset</li><li>Báo cáo kiểu Power BI</li></ul>
             </div>
-            <figure class="am-frame" data-anim-frame>
-                <div class="am-bar"><i></i><i></i><i></i><span>adsmind.vn/app · Báo cáo</span></div>
-                <img src="../landing-assets/facebook-ads-tech/adsmind-geo-age.webp" alt="Báo cáo AdsMind theo tỉnh/thành, độ tuổi và giới tính" loading="lazy" decoding="async" />
-                <figcaption class="am-chip"><span class="tech-dot"></span>Dùng thử 7 ngày · miễn phí</figcaption>
-              </figure>
+            <figure class="am-ui am-geo" data-anim-frame aria-label="Báo cáo AdsMind theo tỉnh/thành, độ tuổi và giới tính">
+              <div class="am-geo-grid">
+                <div class="am-panel"><small>PHÂN PHỐI THEO TỈNH/THÀNH</small><b>63 tỉnh/thành có chi tiêu</b><ul class="am-prov"><li><span>TP. Hồ Chí Minh</span><b>5,1tr</b><i style="--w:100%;--d:0ms"></i></li><li><span>Hà Nội</span><b>2,6tr</b><i style="--w:51%;--d:90ms"></i></li><li><span>Đà Nẵng</span><b>481k</b><i style="--w:9%;--d:180ms"></i></li><li><span>Bình Dương</span><b>360k</b><i style="--w:7%;--d:270ms"></i></li><li><span>Nghệ An</span><b>232k</b><i style="--w:5%;--d:360ms"></i></li></ul></div>
+                <div class="am-panel"><small>ĐỘ TUỔI &amp; GIỚI TÍNH</small><b>Nhóm 35–44 dẫn đầu</b>
+                  <div class="am-gender"><span style="--w:46%">Nữ 46%</span><span style="--w:54%">Nam 54%</span></div>
+                  <ul class="am-ages"><li><span>18-24</span><i style="--w:11%;--d:0ms" class=""></i><b>574k</b></li><li><span>25-34</span><i style="--w:88%;--d:90ms" class=""></i><b>4,5tr</b></li><li><span>35-44</span><i style="--w:100%;--d:180ms" class="hot"></i><b>5,1tr</b></li><li><span>45-54</span><i style="--w:20%;--d:270ms" class=""></i><b>1tr</b></li><li><span>55-64</span><i style="--w:6%;--d:360ms" class=""></i><b>322k</b></li><li><span>65+</span><i style="--w:11%;--d:450ms" class=""></i><b>542k</b></li></ul></div>
+              </div>
+              <figcaption class="am-chip"><span class="tech-dot"></span>Dùng thử 7 ngày · miễn phí</figcaption>
+            </figure>
           </div>
         </section>
 
@@ -5885,6 +6017,11 @@
           <div class="container">
             <div class="section-head pricing-head">
               <p class="section-copy">Một chiến dịch test sai 300.000đ/ngày trong 3 ngày đã tiêu 900.000đ. Mục tiêu không phải để bạn biết thêm Facebook Ads, mà để biết tiền quảng cáo đang đi đâu và phải làm gì tiếp theo.</p>
+            </div>
+            <div class="am-gift" data-anim-frame>
+              <span class="am-gift-badge">Quà tặng kèm</span>
+              <div class="am-gift-body"><b>Dùng thử AdsMind miễn phí 7 ngày</b><p>Công cụ quản lý TKQC, Dataset và báo cáo kiểu Power BI — áp dụng ngay những gì vừa học.</p></div>
+              <div class="am-gift-tags"><span>Quản lý TKQC</span><span>Dataset</span><span>Báo cáo</span></div>
             </div>
             <div class="pricing-grid">
               <div class="plan-grid" aria-label="Gói học Facebook Ads Master 2026">
@@ -6504,10 +6641,19 @@
     </script>
   <script>
       (function () {
+        function fmt(v, dec) { return dec ? v.toFixed(dec).replace(".", ",") : Math.round(v).toLocaleString("vi-VN"); }
+        function countUp(root) {
+          if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+          root.querySelectorAll("[data-count]").forEach(function (el) {
+            var end = parseFloat(el.dataset.count), dec = +(el.dataset.dec || 0), suf = el.dataset.suffix || "", t0 = null;
+            function step(t) { if (!t0) t0 = t; var k = Math.min(1, (t - t0) / 1400); el.textContent = fmt(end * (1 - Math.pow(1 - k, 3)), dec) + suf; if (k < 1) requestAnimationFrame(step); }
+            requestAnimationFrame(step);
+          });
+        }
         var targets = document.querySelectorAll(".tech-stage, .tech-feed, [data-anim-frame]");
         if (!("IntersectionObserver" in window)) { targets.forEach(function (t) { t.classList.add("is-live"); }); return; }
         var io = new IntersectionObserver(function (entries) {
-          entries.forEach(function (e) { e.target.classList.toggle("is-live", e.isIntersecting); if (e.isIntersecting) e.target.classList.add("was-seen"); });
+          entries.forEach(function (e) { e.target.classList.toggle("is-live", e.isIntersecting); if (e.isIntersecting && !e.target.classList.contains("was-seen")) { e.target.classList.add("was-seen"); countUp(e.target); } });
         }, { threshold: 0.15 });
         targets.forEach(function (t) { io.observe(t); });
       })();
