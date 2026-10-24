@@ -1,4 +1,8 @@
 
+## 24/10/2026 — Luồng mua Bot 24/7: trang thanh toán + chuyển về Tải về
+
+Anh duyệt "ok". Source `fb750e8`: `/thanh-toan/[code]` có nội dung riêng cho đơn `bot-24-7` (mã kích hoạt, bộ cài, video; logo về /bot-24-7); thanh toán xong chuyển `/bot-24-7/tai-ve?da-mua=1` (lời cảm ơn) thay vì `/dashboard`; email chờ thanh toán ghi "Sản phẩm". Version **a756918c-1425-4ca0-9519-5f2535057c36**; quay lui **2ed6c206-e098-4109-991a-372079d9e1f4**. Binding khớp. Trang Bot, /, /khoa-hoc, landing Facebook Ads 200; lời cảm ơn hiện đúng với ?da-mua=1. Chưa xem trang thanh toán bằng đơn Bot thật (chưa tạo đơn). Còn lại: bộ cài trên Drive 1.11.0, cổng phát hành 1.11.2.
+
 ## 24/10/2026 — CRM Bot 24/7 · Mã kích hoạt: sửa nút mất chữ
 
 Anh duyệt "ok". Thêm `data-admin-ui="modern"` cho `components/crm-v2/bot247-licenses-client.tsx` (lớp đổi màu admin cũ làm chữ trắng thành tối), danh sách trống có nút Tạo mã. Version **2ed6c206-e098-4109-991a-372079d9e1f4**; quay lui **12b1ead4-24fa-46bf-b77c-e60bce9ff382**. Binding khớp, 2 secret BOT247_* giữ nguyên. /bot-24-7, /bot-24-7/huong-dan, /, landing Facebook Ads 200.
