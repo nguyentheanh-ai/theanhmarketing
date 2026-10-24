@@ -54,6 +54,11 @@ function getPaidRedirectPath(order: PaymentOrder) {
     return "/dich-vu?consultation=paid";
   }
 
+  // Bot 24/7: không có khu học viên; về trang Tải về (có lời cảm ơn khi ?da-mua=1)
+  if (hasExactCourseSlug(order, "bot-24-7")) {
+    return "/bot-24-7/tai-ve?da-mua=1";
+  }
+
   if (isFacebookAdsCourseOrder(order)) {
     return facebookAdsThankYouPath;
   }
@@ -173,6 +178,8 @@ export function PaymentStatusPoller({
     ? "Thanh toán đã được xác nhận. Lịch hẹn của bạn đã được ghi nhận. Đang chuyển tới trang xác nhận..."
     : hasExactCourseSlug(order, consultationSlug)
       ? "Thanh toán đã được xác nhận. The Anh sẽ chủ động liên hệ để sắp xếp buổi tư vấn."
+    : hasExactCourseSlug(order, "bot-24-7")
+      ? "Thanh toán đã được xác nhận. Email có mã kích hoạt, link bộ cài và video hướng dẫn đang được gửi tới bạn (xem cả mục Spam). Đang chuyển bạn tới trang Tải về..."
     : isFacebookAdsCourseOrder(order)
     ? "Thanh toán đã được xác nhận. Hệ thống sẽ gửi email tài khoản học viên. Đang chuyển bạn tới trang hướng dẫn vào khóa học Facebook Ads..."
     : isFacebookEbookOrder(order)

@@ -331,6 +331,31 @@ function getCheckoutContent(order: PaymentOrder) {
     };
   }
 
+  // Bot 24/7 là phần mềm: không có khóa học / tài khoản học viên; giao bằng email mã kích hoạt + trang Tải về
+  if (hasExactCourseSlug(order, "bot-24-7")) {
+    return {
+      eyebrow: "Bước cuối để nhận Bot 24/7",
+      title: "Bot 24/7 · Đội 8 nhân viên AI trên máy của bạn",
+      description:
+        "Quét QR hoặc chuyển khoản đúng nội dung. Tiền về là đơn tự xác nhận, hệ thống gửi ngay email có mã kích hoạt, link tải bộ cài và video hướng dẫn.",
+      productLabel: "Bot 24/7",
+      productHref: "/bot-24-7",
+      includes: [
+        "Mã kích hoạt Bot 24/7, cài được tối đa 5 lần",
+        "Bộ cài macOS (chip Apple, Intel) và Windows 10/11",
+        "Bộ video hướng dẫn riêng cho khách đã mua",
+        "Cập nhật tính năng mới tự động trong app",
+      ],
+      saleReasons: defaultSaleReasons,
+      nextSteps: [
+        "Nhận email có mã kích hoạt (xem cả mục Spam hoặc Quảng cáo)",
+        "Tải bộ cài ở trang Tải về, bấm đúp để cài",
+        "Dán mã kích hoạt khi Bot mở lần đầu, đăng nhập Claude hoặc ChatGPT",
+      ],
+      stickyCopy: "Nhận Bot 24/7",
+    };
+  }
+
   if (isAgentKit(order)) {
     if (isAgentKitPreorderDepositOrder(order)) {
       return {
@@ -508,6 +533,7 @@ export default async function PaymentPage({
   const paymentReturnUrl = `https://www.theanhmarketing.com/thanh-toan/${encodeURIComponent(order.orderCode)}`;
   const courseTitle = getDisplayCourseTitle(order);
   const content = getCheckoutContent(order);
+  const isBot247Order = hasExactCourseSlug(order, "bot-24-7");
   const paymentOffer = getPaymentOffer(order, amountLabel);
   const isFacebookAdsConversionCheckout = isFacebookAds2026(order);
   const conversionMessage = isFacebookAdsConversionCheckout ? getFacebookAdsConversionMessage(order) : null;
@@ -712,12 +738,12 @@ export default async function PaymentPage({
       <div className="payment-topbar fixed inset-x-0 top-0 z-50 bg-gradient-to-r from-blue-600 to-cyan-400 px-4 py-3 text-center text-base font-black text-white shadow-lg">
         <div className="payment-topbar-content mx-auto max-w-6xl">
           <div className="payment-topbar-desktop hidden sm:block">
-            <p>Chỉ còn một bước: quét QR để thanh toán, hệ thống tự mở quyền học trong vài giây.</p>
+            <p>{isBot247Order ? "Chỉ còn một bước: quét QR để thanh toán, email mã kích hoạt và bộ cài gửi ngay khi tiền về." : "Chỉ còn một bước: quét QR để thanh toán, hệ thống tự mở quyền học trong vài giây."}</p>
             <p>Cần hỗ trợ? Nhắn Zalo Thế Anh ngay bên dưới.</p>
           </div>
           <div className="payment-topbar-mobile space-y-1 sm:hidden">
             <p>Chỉ còn một bước: quét QR để thanh toán</p>
-            <p>Hệ thống tự mở quyền học trong vài giây</p>
+            <p>{isBot247Order ? "Tiền về là nhận ngay mã kích hoạt" : "Hệ thống tự mở quyền học trong vài giây"}</p>
           </div>
         </div>
       </div>

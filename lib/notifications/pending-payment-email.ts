@@ -623,7 +623,7 @@ export function buildPendingPaymentEmailPayload(
     "Đơn đăng ký chưa thanh toán tại The Anh Marketing",
     `Chào ${order.studentName || "bạn"},`,
     `Mã đơn: ${order.orderCode}`,
-    `Khóa học: ${productTitle}`,
+    `${order.courseSlug === "bot-24-7" ? "Sản phẩm" : "Khóa học"}: ${productTitle}`,
     `Số tiền: ${order.amountLabel}`,
     `Trạng thái thanh toán: ${statusLabel}`,
     transferRows.length
