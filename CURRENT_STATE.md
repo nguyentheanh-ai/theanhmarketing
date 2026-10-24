@@ -1,4 +1,8 @@
 
+## 24/10/2026 — CRM Bot 24/7 · Mã kích hoạt: sửa nút mất chữ
+
+Anh duyệt "ok". Thêm `data-admin-ui="modern"` cho `components/crm-v2/bot247-licenses-client.tsx` (lớp đổi màu admin cũ làm chữ trắng thành tối), danh sách trống có nút Tạo mã. Version **2ed6c206-e098-4109-991a-372079d9e1f4**; quay lui **12b1ead4-24fa-46bf-b77c-e60bce9ff382**. Binding khớp, 2 secret BOT247_* giữ nguyên. /bot-24-7, /bot-24-7/huong-dan, /, landing Facebook Ads 200.
+
 ## 24/10/2026 — Bot 24/7: Video hướng dẫn + Mã kích hoạt trong CRM: LIVE
 
 Anh duyệt "ok". Source `33a797d` (nhánh `codex/bot247-license-admin-20261024`, đặt trên `c7fe952`; đã đưa vào `codex/cloudflare-native-phase2-20261018`). Worker `theanh-main-cf-production` version **e1ae3216-db78-40a8-b690-bc4abb1090a2** 100%; quay lui: **35a23045-aea7-48c9-aa32-2fec2ec5e79d**. Binding khớp bản cũ + secret mới `BOT247_VIDEO_LINK_SECRET` (đưa lên bằng `--secrets-file .env.bot247-video`, bản sao ở `phase2-main/.env.bot247-video`, gitignored). Build production 3 biến, verifier 10/10, dry-run đạt. Preflight-cloudflare báo BLOCKED vì worktree `worktrees/bot247-videos-20261024` chưa có trong registry.
