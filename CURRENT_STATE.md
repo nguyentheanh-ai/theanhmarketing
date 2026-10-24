@@ -1,4 +1,8 @@
 
+## 24/10/2026 — Bot 24/7 bộ cài 1.11.4 (tải lõi chịu mạng chậm, đăng nhập AI không cửa sổ lệnh)
+
+Anh duyệt "ok". App Bot 1.11.4 phát hành ở cổng (release:latest sha256 8b720569…). Drive: arm64 `18mni4lY9luKzAb9BcAKk7CiRDhFgW_Qc`, x64 `1ukcE6xcXbkwlk88JR-8qjJPu2WLhyPJX`, Setup.exe `1CZBZZs-7s1-UeNCI__BJikPAsD5AYoft` (1.11.0, 1.11.3 vẫn giữ). Website source `5c516bc`, version **68486225-2678-46b7-bc57-b4eb00e90b3f**; quay lui **bb3f188b-f9d2-458a-9dbb-3b4190a29b44**. Binding khớp. Trang Bot, /, /khoa-hoc, landing Facebook Ads 200; API link tải trả 1.11.4 với mã hợp lệ, 401 khi không mã. Bản Windows chưa cài thử trên máy Windows thật.
+
 ## 24/10/2026 — Bot 24/7 bộ cài 1.11.3 (sửa lõi AI treo 91–97%)
 
 Anh duyệt "ok". App Bot 1.11.3 phát hành ở cổng (release:latest sha256 4f31086a…, khách đã kích hoạt tự nhận). Bộ cài mới trên Drive (thư mục 1n5gnMeOqYIcIRtUcETuO0l1aeDkDYzIK, 1.11.0 vẫn giữ): arm64 `1yHSvfXaIlkKqgMc0VFcGBCO5fdeBQL7r`, x64 `1T4_obtA688K4PkWInWeBpcHqWXaiDxbE`, Setup.exe `1RJpUDfVN79QlxJD2MV4NG2roFTIKZD0F`. Website source `b8bff64` (`lib/bot247/video-access.ts` BOT247_INSTALLERS + trang Tải về ghi 1.11.3). Version **bb3f188b-f9d2-458a-9dbb-3b4190a29b44**; quay lui **04ec434d-5e67-488d-bc08-bd86b1a25b47**. Binding khớp. Trang Bot, /, /khoa-hoc, landing Facebook Ads 200; API link tải trả link 1.11.3 với mã hợp lệ, 401 khi không mã.
